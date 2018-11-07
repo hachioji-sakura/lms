@@ -15,3 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::resource('rest','RestController');
+Route::get('auth','AuthController@auth');
+Route::post('login/:login_id','AuthController@login');
+Route::post('logout','AuthController@logout');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
