@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\User;
+use Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
@@ -13,102 +14,27 @@ class AuthController extends Controller
    */
    public function auth()
    {
-       $user = Auth::user();
-       if(isset($user)){
-         echo "true";
-       }
-       else {
-         echo "false";
-       }
-       //$user->id より、各ユーザーを引き当てる
-       return view('rest.create');
+     //abort('500', 'ページが存在しません');
+     $user = Auth::user();
+     if(isset($user)){
+       //ログイン済みであれば自動ログイン
+        return view('home');
+     }
+     return view('auth.login');
    }
-   public function login()
-   {
-       $user = Auth::user();
-       //$user->id より、各ユーザーを引き当てる
-       if(isset($user)){
-         //login成功
-         return view('rest.create');
-       }
-       return view('rest.create');
+   public function email_check($email){
+     $item = User::where('email', $email)->first();
+     if(isset($item)){
+       $json = $this->api_responce(200,"","",["email"=>$email]);
+       $this->send_json_response($json);
+     }
+     return$this->notfound();
    }
-
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create()
-  {
-      return view('rest.create');
-  }
-
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-      $restdata = new Restdata;
-      $form = $request->all();
-      unset($form['_token']);
-      $restdata->fill($form)->save();
-      return redirect('/rest');
-  }
-
-  /**
-   * Display the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show($id)
-  {
-      $items = Restdata::find($id);
-      return $items->toArray();
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function edit($id)
-  {
-    $target = Restdata::find($id);
-    return view('rest.create', ['form' => $target]);
-
-  }
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-      $items = Restdata::find($id);
-      $form = $request->all();
-      unset($form['_token']);
-      $items->fill($form)->save();
-      return redirect('/rest');
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($id)
-  {
-      $items = Restdata::find($id)->delete();
-      return redirect('/rest');
-  }
+   public function mail_send(){
+     Mail::raw('mail_send test',
+      function($message) {
+        $message->to('yasui.hideo@gmail.com')
+          ->subject('tinker');
+      });
+   }
 }
