@@ -100,7 +100,8 @@ EOT;
       //事務以外はアクセス不可
       abort(403);
     }
-    $res = $this->_store($request);
+    $form = $request->all();
+    $res = $this->_store($form);
     if($this->is_success_responce($res)){
       return redirect('/'.$this->domain)->with([
         'success_message' => $this->domain_name.'登録しました。'
@@ -114,9 +115,8 @@ EOT;
       ]);
     }
   }
-  public function _store(Request $request)
+  public function _store($form)
   {
-    $form = $request->all();
     try {
       DB::beginTransaction();
       $form["image_id"] = $this->default_image_id;
