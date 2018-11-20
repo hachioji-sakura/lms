@@ -178,7 +178,7 @@ EOT;
     }
     $use_icons = DB::table('images')
       ->where('create_user_id','=',$user->user_id)
-      ->orWhere('publiced_at','<=','current_date')
+      ->orWhere('publiced_at','<=', date('Y-m-d'))
       ->get(['id', 'alias', 's3_url']);
 
     return view($this->domain.'.page', [

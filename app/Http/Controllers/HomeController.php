@@ -29,10 +29,10 @@ class HomeController extends Controller
         //ログイン済みであれば自動ログイン
         switch($user->role){
           case "manager" :
-            return redirect('/teachers');
+            return redirect('/managers/'.$user->id);
             break;
           case "teacher" :
-            return redirect('/students');
+            return redirect('/teachers/'.$user->id);
             break;
           case "student" :
             return redirect('/students/'.$user->id);
