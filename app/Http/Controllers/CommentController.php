@@ -17,7 +17,7 @@ class CommentController extends StudentController
     $comments = User::find(3)->target_comments;
     $comments = $comments->sortByDesc('created_date');
     foreach($comments as $comment){
-      $create_user = $comment->create_user->getData();
+      $create_user = $comment->create_user->attributes();
       $comment->create_user_name = $create_user->name;
       $comment->create_user_kana = $create_user->kana;
       $comment->create_user_icon = $create_user->icon;
@@ -38,7 +38,7 @@ class CommentController extends StudentController
    */
   public function student_comments_store(Request $request, $id)
   {
-    $user = $this->get_login_user();
+    $user = $this->login_attribute();
     $form = $request->all();
     try {
       DB::beginTransaction();

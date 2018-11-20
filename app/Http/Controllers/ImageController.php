@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use DB;
-class ImageController extends StudentController
+class ImageController extends UserController
 {
     /**
      * Display a listing of the resource.
@@ -53,7 +53,7 @@ class ImageController extends StudentController
       ]);
       $form = $request->all();
       if ($request->file('image')->isValid([])) {
-        $res = $this->save_image($request->file('image'), date('Y-m-d'), $form['alias']);
+        $res = $this->save_image($request->file('image'), date('Y-m-d'), $form['alias'], env("AWS_S3_ICON_FOLDER"));
         return view('sample.create');
         //return redirect('/images/create')->with('success', "");
       }
@@ -72,10 +72,10 @@ class ImageController extends StudentController
      */
     public function icon_change(Request $request, $id)
     {
-      $user = $this->get_login_user();
+      $user = $this->login_attribute();
       if($this->is_student($user->role)===true){
         //生徒は、自分（生徒）の内容しか見れない
-        $id = $user->student_id;
+        $id = $user->id;
       }
       $this->validate($request, [
           'image' => [
@@ -99,7 +99,7 @@ class ImageController extends StudentController
 
       if($request->hasFile('image')){
         if ($request->file('image')->isValid([])) {
-          $res = $this->save_image($request->file('image'), "9999-12-31", "");
+          $res = $this->save_image($request->file('image'), "9999-12-31", "", env("AWS_S3_ICON_FOLDER"));
           if($this->is_success_responce($res)){
             $image_id = $res["data"]->id;
             $_message .= "画像アップロードしました(".$image_id.")";
@@ -119,7 +119,7 @@ class ImageController extends StudentController
         }
       }
       if(!empty($image_id)){
-        $student = Student::find($id)->user->getData();
+        $student = Student::find($id)->user->attributes();
         $res = $this->update_user_image($student->user_id, $image_id);
         if($this->is_success_responce($res)){
           return back()->with([
@@ -184,9 +184,9 @@ class ImageController extends StudentController
       return redirect('/images');
     }
 
-    private function save_image($request_file, $publiced_at='9999-12-31', $alias='', $save_folder="user_icon")
+    private function save_image($request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
-      $user = $this->get_login_user();
+      $user = $this->login_attribute();
       $image = new Image;
 
       try {
@@ -217,6 +217,7 @@ class ImageController extends StudentController
           $message .= "s3_path:".$s3_url."\n";
           $message .= "path:".$path."\n";
           */
+          return $this->api_responce(200, "", "", $image);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
@@ -227,29 +228,6 @@ class ImageController extends StudentController
           DB::rollBack();
           return $this->error_responce("DB Exception", $e->getMessage());
       }
-      return $this->api_responce(200, "", "", $image);
-    }
-    private function update_user_image($user_id, $image_id)
-    {
-
-      if(!is_numeric($user_id) || !is_numeric($image_id)){
-        return $this->bad_request("", "user_id($user_id),image_id($image_id)");
-      }
-      try {
-        DB::beginTransaction();
-        User::where('id', $user_id)->update(['image_id' => $image_id]);
-        DB::commit();
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_responce("Query Exception", $e->getMessage());
-      }
-      catch(\Exception $e){
-          echo $e->getMessage();
-          DB::rollBack();
-          return $this->error_responce("DB Exception", $e->getMessage());
-      }
-      return $this->api_responce(200, "", "");
     }
 
 }

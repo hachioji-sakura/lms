@@ -2,6 +2,9 @@
 @include('layouts.end')
 @include('layouts.modal')
 @include('layouts.message')
+@include('dashboard.menu.navbar')
+@include('dashboard.menu.sidemenu')
+@include('dashboard.menu.footer')
 
 @yield('start')
 <body class="hold-transition sidebar-mini">

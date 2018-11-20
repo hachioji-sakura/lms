@@ -1,4 +1,4 @@
-@include('students.domain')
+@include('managers.domain')
 @section('title')
   @yield('domain_name')一覧
 @endsection

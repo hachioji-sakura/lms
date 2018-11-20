@@ -1,7 +1,12 @@
+@include('students.domain')
+@section('title')
+  @yield('domain_name')登録
+@endsection
+
 @extends('layouts.loginbox')
-@section('title', '生徒登録')
+
 @section('content')
-<form id="edit" method="POST" action="/students">
+<form id="edit" method="POST" action="/yield('domain')">
   @csrf
   <div class="card-body">
     <div class="row">
@@ -11,7 +16,7 @@
             氏
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例):山田" required="true" inputtype="zenkaku">
+          <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例：山田" required="true" inputtype="zenkaku">
         </div>
       </div>
       <div class="col-12">
@@ -20,7 +25,7 @@
             名
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例):太郎" required="true" inputtype="zenkaku">
+          <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku">
         </div>
       </div>
       <div class="col-12">
@@ -29,14 +34,14 @@
             氏（カナ）
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="kana_last" name="kana_last" class="form-control" placeholder="例):ヤマダ" required="true" inputtype="zenkakukana">
+          <input type="text" id="kana_last" name="kana_last" class="form-control" placeholder="例：ヤマダ" required="true" inputtype="zenkakukana">
         </div>
         <div class="form-group">
           <label for="kana_first">
             名（カナ）
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="kana_first" name="kana_first" class="form-control" placeholder="例):タロウ" required="true" inputtype="zenkakukana">
+          <input type="text" id="kana_first" name="kana_first" class="form-control" placeholder="例：タロウ" required="true" inputtype="zenkakukana">
         </div>
       </div>
       <div class="col-12">
@@ -45,7 +50,7 @@
             メールアドレス
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="email" name="email" class="form-control" placeholder="例):hachioji@sakura.com" required="true" inputtype="email">
+          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです">
         </div>
       </div>
       <div class="col-12">
@@ -63,7 +68,7 @@
             パスワード（確認）
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="" minlength=8 maxlength=16 required="true">
+          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="" minlength=8 maxlength=16 required="true" equal="password" equal‗error="パスワードが一致しません">
         </div>
       </div>
       <div class="col-12">
@@ -94,7 +99,7 @@
             生年月日
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input id="birth_day" type="text" class="form-control{{ $errors->has('birth_day') ? ' is-invalid' : '' }}" name="birth_day" value="{{ old('birth_day') }}" inputtype="date" plaeholder="例):2000/01/01" required="true">
+          <input id="birth_day" type="text" class="form-control{{ $errors->has('birth_day') ? ' is-invalid' : '' }}" name="birth_day" value="{{ old('birth_day') }}" inputtype="date" plaeholder="例：2000/01/01" required="true">
 
           @if ($errors->has('birth_day'))
               <span class="invalid-feedback" role="alert">

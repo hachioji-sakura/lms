@@ -11,7 +11,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     protected function send_json_response($json){
-      return response($json, $json->status)->header('Content-Type', 'application/json');
+      return response($json, $json["status"])->header('Content-Type', 'application/json');
     }
     protected function api_responce($status=200, $message="", $description="", $data=[]){
       $json = [
@@ -24,6 +24,7 @@ class Controller extends BaseController
     }
     protected function is_success_responce($json){
       if($json["status"]===200) return true;
+      if($json["status"]==="success") return true;
       return false;
     }
     protected function error_responce($message="system error", $description=""){

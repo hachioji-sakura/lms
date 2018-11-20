@@ -15,14 +15,18 @@ Auth::routes();
 Route::redirect('/', '/login', 301);
 
 Route::get('auth','AuthController@auth');
-Route::get('auth/email/{email}','AuthController@email_check');
+Route::get('users/email/{email}','UserController@email_check');
 Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
 Route::get('logout','Auth\LoginController@logout');
 
 Route::resource('images','ImageController');
 Route::resource('rest','RestController');
+Route::get('import/{object}','ImportController@index');
+Route::post('import/{object}','ImportController@store');
+Route::resource('courses','CourseController');
 Route::resource('students','StudentController');
+Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');
 Route::resource('comments','CommentController');
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');

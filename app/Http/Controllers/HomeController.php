@@ -23,19 +23,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-      $user = Auth::user()->getData();
+      $user = Auth::user()->attributes();
 
       if(isset($user)){
         //ログイン済みであれば自動ログイン
         switch($user->role){
           case "manager" :
-            return view('home', ['user' => $user]);
+            return redirect('/teachers');
             break;
           case "teacher" :
             return redirect('/students');
             break;
           case "student" :
-            return redirect('/students/'.$user->student_id);
+            return redirect('/students/'.$user->id);
             break;
         }
       }

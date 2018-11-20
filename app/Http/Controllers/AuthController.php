@@ -22,14 +22,6 @@ class AuthController extends Controller
      }
      return view('auth.login');
    }
-   public function email_check($email){
-     $item = User::where('email', $email)->first();
-     if(isset($item)){
-       $json = $this->api_responce(200,"","",["email"=>$email]);
-       $this->send_json_response($json);
-     }
-     return$this->notfound();
-   }
    public function mail_send(){
      Mail::raw('mail_send test',
       function($message) {

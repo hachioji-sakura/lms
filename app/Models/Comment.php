@@ -16,12 +16,8 @@ class Comment extends Model
   );
   public function type_name()
   {
-    switch($this->type){
-      case "study":
-        return "学習内容";
-        break;
-    }
-    return "その他";
+    $types = config('attribute.comment_type');
+    return $types[$this->type];
   }
   public function target_user(){
     return $this->belongsTo('App\User', 'target_user_id');

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\Models\Image;
 use App\Models\Student;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -12,310 +11,251 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use DB;
-class StudentController extends Controller
+class StudentController extends UserController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-    */
-    public function index(Request $request)
-    {
-        $user = $this->get_login_user();
-        if($this->is_manager_or_teacher($user->role)!==true){
-          abort(403);
-        }
-        $items = $this->search($request);
-        return view('students.lists', ['user' => $user, 'items' => $items])->with(["search_word"=>$request->search_word]);
+  public $domain = "students";
+  public $domain_name = "生徒";
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+  */
+  public function index(Request $request)
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager_or_teacher($user->role)!==true){
+      abort(403);
     }
-    protected function search(Request $request)
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        abort(403);
-      }
-      $items = DB::table('students')
-        ->join('users', 'users.id', '=', 'students.user_id')
-        ->join('images', 'images.id', '=', 'users.image_id');
-      //ID 検索
-      if(isset($request->id)){
-        $items = $items->where('students.id','=', $request->id);
-      }
-      //性別 検索
-      if(isset($request->gender)){
-        $items = $items->where('students.gender','=', $request->gender);
-      }
-      //検索ワード
-      if(isset($request->search_word)){
-        $search_words = explode(' ', $request->search_word);
-        foreach($search_words as $_search_word){
-          $_like = '%'.$_search_word.'%';
-          $items = $items->where('students.name_last','like', $_like)
-            ->orWhere('students.name_first','like', $_like)
-            ->orWhere('students.kana_last','like', $_like)
-            ->orWhere('students.kana_first','like', $_like);
-        }
-      }
+    $items = $this->search($request);
+    return view($this->domain.'.lists', ['user' => $user, 'items' => $items])->with(["search_word"=>$request->search_word]);
+  }
+  private function search(Request $request)
+  {
+    $items = DB::table($this->domain)
+      ->join('users', 'users.id', '=', $this->domain.'.user_id')
+      ->join('images', 'images.id', '=', 'users.image_id');
 
-      //メールアドレス検索
-      if(isset($request->email)){
-        $_like = '%'.$request->email.'%';
-        $items = $items->where('users.email','like', $_like);
-      }
+    $items = $this->_search_scope($request, $items);
 
-      //ページング
-      $_line = 20;
-      if(isset($request->_line)){
-        $_line = $request->_line;
+    $items = $this->_search_pagenation($request, $items);
+
+    $items = $this->_search_sort($request, $items);
+
+    $select_row = <<<EOT
+      $this->domain.id,
+      concat($this->domain.name_last, '', $this->domain.name_first) as name,
+      concat($this->domain.kana_last, '', $this->domain.kana_first) as kana,
+      images.s3_url as icon,
+      $this->domain.gender,
+      $this->domain.birth_day
+EOT;
+    $items = $items->selectRaw($select_row)->get();
+    return $items->toArray();
+  }
+  private function _search_scope(Request $request, $items)
+  {
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where($this->domain.'.id','=', $request->id);
+    }
+    //性別 検索
+    if(isset($request->gender)){
+      $items = $items->where($this->domain.'.gender','=', $request->gender);
+    }
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $items = $items->where($this->domain.'.name_last','like', $_like)
+          ->orWhere($this->domain.'.name_first','like', $_like)
+          ->orWhere($this->domain.'.kana_last','like', $_like)
+          ->orWhere($this->domain.'.kana_first','like', $_like);
       }
-      if(isset($request->_page)){
-        $_offset = ($request->_page-1)*$_line;
-        if($_offset < 0) $_offset = 0;
-        $items = $items->offset($_offset);
-        $items = $items->limit($_line);
-      }
-      //ソート
-      if(isset($request->_sort)){
-        $_sort_order = "asc";
-        if(isset($request->_sort_order) && $request->_sort_order==="desc") {
-          $_sort_order = "desc";
-        }
-        $items = $items->orderBy($request->_sort, $_sort_order);
-      }
-      $items = $items->get([
-        'students.id',
-        'students.name_last',
-        'students.name_first',
-        'students.kana_last',
-        'students.kana_first',
-        'images.s3_url as icon',
-        'users.email',
-        'students.gender',
-        'students.birth_day',
+    }
+
+    //メールアドレス検索
+    if(isset($request->email)){
+      $_like = '%'.$request->email.'%';
+      $items = $items->where('users.email','like', $_like);
+    }
+
+    return $items;
+  }
+  /**
+   * Show the form for creating a new resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create()
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager_or_teacher($user->role)!==true){
+      abort(403);
+    }
+    return view($this->domain.'.create', ["error_message" => ""]);
+  }
+
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(Request $request)
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager_or_teacher($user->role)!==true){
+      //事務・講師以外はアクセス不可
+      abort(403);
+    }
+    $res = $this->_store($request);
+    if($this->is_success_responce($res)){
+      return redirect('/'.$this->domain)->with([
+        'success_message' => $this->domain_name.'登録しました。'
       ]);
-
-      return $items->toArray();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        abort(403);
-      }
-      return view('students.create', ["error_message" => ""]);
+    else {
+      return view($this->domain.'.create', ["error_message" => $res["description"]]);
+      return back()->with([
+        'error_message' => $res["message"],
+        'error_message_description' => $res["description"]
+      ]);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        abort(403);
-      }
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
-        $user = User::create([
-            'name' => $form['name_last'].' '.$form['name_first'],
-            'email' => $form['email'],
-            'image_id' => $form['gender'],
-            'password' => Hash::make($form['password']),
-        ]);
-        $Student = new Student;
-        $form['user_id'] = $user->id;
+  }
+  public function _store(Request $request)
+  {
+    $form = $request->all();
+    try {
+      DB::beginTransaction();
+      $form["name"] = $form['name_last'].' '.$form['name_first'];
+      //デフォルトのアイコンは性別と一緒にしておく
+      $form["image_id"] = $form['gender'];
+      $res = $this->user_create($form);
+      if($this->is_success_responce($res)){
+        $form['user_id'] = $res["data"]->id;
+        unset($form['name']);
+        unset($form['image_id']);
         unset($form['_token']);
         unset($form['password']);
         unset($form['email']);
         unset($form['password-confirm']);
-        $Student->fill($form)->save();
+        $Student = new Student;
+        $_item = $Student->fill($form)->save();
         DB::commit();
+        return $this->api_responce(200, "", "", $_item);
       }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return view('students.create', ["error_message" => "登録に失敗しました。"]);
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return view('students.create', ["error_message" => "登録に失敗しました。"]);
-      }
-      return redirect('/students');
+      return $res;
+    }
+    catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        return $this->error_responce("Query Exception", $e->getMessage());
+    }
+    catch(\Exception $e){
+        DB::rollBack();
+        return $this->error_responce("DB Exception", $e->getMessage());
+    }
+  }
+  /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function show(Request $request, $id)
+  {
+    $user = $this->login_attribute();
+    if($this->is_student($user->role)===true){
+      //生徒は、自分（生徒）の内容しか見れない
+      $id = $user->id;
+    }
+    $student = Student::find($id)->user;
+    $item = $student->attributes();
+    $comments = $student->target_comments;
+    if($this->is_teacher($user->role)){
+      //講師の場合、公開されたコメントのみ閲覧可能
+      $comments = $comments->where('publiced_at', '<=' ,'current_date');
+    }
+    $comments = $comments->sortByDesc('created_at');
+
+    foreach($comments as $comment){
+      $create_user = $comment->create_user->attributes();
+      $comment->create_user_name = $create_user->name;
+      $comment->create_user_icon = $create_user->icon;
+      unset($comment->create_user);
+    }
+    $use_icons = DB::table('images')
+      ->where('create_user_id','=',$user->user_id)
+      ->orWhere('publiced_at','<=','current_date')
+      ->get(['id', 'alias', 's3_url']);
+    return view($this->domain.'.page', [
+      'user' => $user,
+      'item' => $item,
+      'comments'=>$comments,
+      'use_icons'=>$use_icons,
+    ]);
+  }
+
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit($id)
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager_or_teacher($user->role)!==true){
+      //事務・講師以外は、自分（生徒）の内容しか見れない
+      $items = Student::find($id)->where("user_id", "=", $user->user_id);
+    }
+    else {
+      $items = Student::find($id);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, $id)
-    {
-      $user = $this->get_login_user();
-      if($this->is_student($user->role)===true){
-        //生徒は、自分（生徒）の内容しか見れない
-        $id = $user->student_id;
-      }
-      $stuendt = Student::find($id)->user;
-      $item = $stuendt->getData();
-      $comments = $stuendt->target_comments;
-      if($this->is_teacher($user->role)){
-        //講師の場合、公開されたコメントのみ閲覧可能
-        $comments = $comments->where('publiced_at', '<=' ,'current_date');
-      }
-      $comments = $comments->sortByDesc('created_at');
+    return view($this->domain.'.create', ['form' => $items]);
+  }
 
-      foreach($comments as $comment){
-        $create_user = $comment->create_user->getData();
-        $comment->create_user_name = $create_user->name;
-        $comment->create_user_icon = $create_user->icon;
-        unset($comment->create_user);
-      }
-      $use_icons = DB::table('images')
-        ->where('create_user_id','=',$user->user_id)
-        ->orWhere('publiced_at','<=','current_date')
-        ->get(['id', 'alias', 's3_url']);
-      return view('students.page', [
-        'user' => $user,
-        'item' => $item,
-        'comments'=>$comments,
-        'use_icons'=>$use_icons,
-      ]);
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function update(Request $request, $id)
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager_or_teacher($user->role)!==true){
+      //事務・講師以外は、自分（生徒）の内容しか更新できない
+      $items = Student::find($id)->where("user_id", "=", $user->id);
     }
+    else {
+      $items = Student::find($id);
+    }
+    $form = $request->all();
+    unset($form['_token']);
+    $items->fill($form)->save();
+    return redirect('/'.$this->domain.'/'.$id);
+  }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        //事務・講師以外は、自分（生徒）の内容しか見れない
-        $items = Student::find($id)->where("user_id", "=", $user->user_id);
-      }
-      else {
-        $items = Student::find($id);
-      }
-
-      return view('students.create', ['form' => $items]);
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy($id)
+  {
+    $user = $this->login_attribute();
+    if($this->is_manager($user->role)!==true){
+      //事務以外は、削除できない
+      abort(403);
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        //事務・講師以外は、自分（生徒）の内容しか更新できない
-        $items = Student::find($id)->where("user_id", "=", $user->id);
-      }
-      else {
-        $items = Student::find($id);
-      }
-      $form = $request->all();
-      unset($form['_token']);
-      $items->fill($form)->save();
-      return redirect('/students/'.$id);
+    else {
+      $items = Student::find($id);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-      $user = $this->get_login_user();
-      if($this->is_manager($user->role)!==true){
-        //事務以外は、削除できない
-        abort(403);
-      }
-      else {
-        $items = Student::find($id);
-      }
-      $items->delete();
-      return redirect('/students');
-    }
-    /**
-     * 認証済みユーザーのデータを取得
-     *
-     * @return Collection User->getData()
-    */
-    protected function get_login_user()
-    {
-      $user = Auth::user();
-      if(!isset($user)){
-        abort(403);
-        return "";
-      }
-      return $user->getData();
-    }
-
-    /**
-      * roleが事務の場合 true
-      * @param string role
-      * @return boolean
-    */
-    protected function is_manager($role)
-    {
-      if($role==="manager"){
-        return true;
-      }
-      return false;
-    }
-    /**
-      * roleが講師の場合 true
-      * @param string role
-      * @return boolean
-    */
-    protected function is_teacher($role)
-    {
-      if($role==="teacher"){
-        return true;
-      }
-      return false;
-    }
-    /**
-      * roleが生徒の場合 true
-      * @param string role
-      * @return boolean
-    */
-    protected function is_student($role)
-    {
-      if($role==="student"){
-        return true;
-      }
-      return false;
-    }
-    /**
-      * roleが事務、もしくは講師の場合 true
-      * @param string role
-      * @return boolean
-    */
-    protected function is_manager_or_teacher($role)
-    {
-      if($role==="manager" || $role==="teacher"){
-        return true;
-      }
-      return false;
-    }
-
+    $items->delete();
+    return redirect('/'.$this->domain);
+  }
 }

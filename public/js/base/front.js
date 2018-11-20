@@ -185,11 +185,11 @@
 		var accesskey= $(selecter).attr("accesskey");
 		var groupname= $(selecter).attr("groupname");
 		var equal= $(selecter).attr("equal");
-		var equalerror= $(selecter).attr("equalerror");
+		var equal_error= $(selecter).attr("equal_error");
 		var less= $(selecter).attr("less");
-		var lesserror= $(selecter).attr("lesserror");
+		var less_error= $(selecter).attr("less_error");
 		var greater= $(selecter).attr("greater");
-		var greatererror= $(selecter).attr("greatererror");
+		var greater_error= $(selecter).attr("greater_error");
 		var query_check= $(selecter).attr("query_check");
 		var query_check_nodata= $(selecter).attr("query_check_nodata");
 		var query_check_error= $(selecter).attr("query_check_error");
@@ -382,21 +382,21 @@
  				 && val != $("[name="+equal+"]", $("#"+formId)).val()){
  				//値が一致するかチェック、対象値と一致しない場合エラーとする
  				_isSuccess = false;
- 				messageCode = equalerror;
+ 				messageCode = equal_error;
  				messageParam=val+"|"+ $("[name="+equal+"]", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(less) && !util.isEmpty($("[name="+less+"]", $("#"+formId)).val())
  				 && util.diffVal(val, $("[name="+less+"]", $("#"+formId)).val())>0){
  				//値が小さいかチェック、対象値より大きい場合エラーとする
  				_isSuccess = false;
- 				messageCode = lesserror;
+ 				messageCode = less_error;
  				messageParam=val+"|"+ $("[name="+less+"]", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(greater) && !util.isEmpty($("[name="+greater+"]", $("#"+formId)).val())
  				 && util.diffVal(val, $("[name="+greater+"]", $("#"+formId)).val())<0){
  				//値が大きいかチェック、対象値より小さい場合エラーとする
  				_isSuccess = false;
- 				messageCode = greatererror;
+ 				messageCode = greater_error;
  				messageParam=val+"|"+ $("[name="+greater+"]", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(query_check)){
