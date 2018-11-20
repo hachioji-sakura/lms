@@ -20,7 +20,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons])
             @slot('courtesy')
             　様
             @endslot
