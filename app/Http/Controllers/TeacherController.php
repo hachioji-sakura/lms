@@ -158,13 +158,19 @@ EOT;
   public function show($id)
   {
     $user = $this->login_attribute();
-    if($this->is_manager($user->role)!==true){
+    if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
     }
     if($this->domain === "teachers"){
+      if($this->is_teacher($user->role)===true){
+          $id = $user->id;
+      }
       $model = Teacher::find($id)->user;
     }
     else if($this->domain === "managers"){
+      if($this->is_teacher($user->role)===true){
+        abort(403);
+      }
       $model = Manager::find($id)->user;
     }
     $item = $model->attributes();
