@@ -118,7 +118,7 @@ EOT;
     $form = $request->all();
     try {
       DB::beginTransaction();
-      $form["image_id"] = $this->$default_image_id;
+      $form["image_id"] = $this->default_image_id;
       $res = $this->user_create($form);
       if($this->is_success_responce($res)){
         $form['user_id'] = $res["data"]->id;
