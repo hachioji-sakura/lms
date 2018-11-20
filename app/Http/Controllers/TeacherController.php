@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
+use App\Models\Manager;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -128,10 +129,10 @@ EOT;
         unset($form['email']);
         unset($form['password-confirm']);
         if($this->domain === "teachers"){
-          $model = Teacher::find($id)->user;
+          $model = new Teacher();
         }
         else if($this->domain === "managers"){
-          $model = Manager::find($id)->user;
+          $model = new Manager();
         }
         $_item = $model->fill($form)->save();
         DB::commit();

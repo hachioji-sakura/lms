@@ -76,13 +76,16 @@ class User extends Authenticatable
         return $item;
       }
       $item = Student::where('user_id', $this->id)->first();
-      $item['role'] = 'student';
-      $item['student_id'] = $item['id'];
-      $item['age'] = floor((date("Ymd") - str_replace("-", "", $item['birth_day']))/10000);
-      $item['name'] = $item->name_last.' '.$item->name_first;
-      $item['kana'] = $item->kana_last.' '.$item->kana_first;
-      $item['icon'] = $s3_url;
-      return $item;
+      if(isset($item)){
+        $item['role'] = 'student';
+        $item['student_id'] = $item['id'];
+        $item['age'] = floor((date("Ymd") - str_replace("-", "", $item['birth_day']))/10000);
+        $item['name'] = $item->name_last.' '.$item->name_first;
+        $item['kana'] = $item->kana_last.' '.$item->kana_first;
+        $item['icon'] = $s3_url;
+        return $item;
+      }
+      return $this;
     }
     public function create_comments(){
       return $this->hasMany('App\Models\Comment', 'create_user_id');
@@ -91,6 +94,6 @@ class User extends Authenticatable
       return $this->hasMany('App\Models\Comment', 'target_user_id');
     }
     public function aliases(){
-      return $this->hasMany('App\Models\UserAlias');      
+      return $this->hasMany('App\Models\UserAlias');
     }
 }
