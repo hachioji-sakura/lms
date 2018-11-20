@@ -2,6 +2,7 @@
 @component('components.profile', ['item' => $item, 'user' => $user])
     @slot('courtesy')
     @endslot
+
     @slot('alias')
       <h6 class="widget-user-desc">
         <!--

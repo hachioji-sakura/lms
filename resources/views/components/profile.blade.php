@@ -23,9 +23,7 @@
               アイコン：
               <select name="change_icon" class="form-control" placeholder="アバター" >
                 <option value="">選択してください</option>
-                @foreach($use_icons as $index => $use_icon)
-                   <option value="{{ $use_icon->id }}">{{$use_icon->alias}}</option>
-                @endforeach
+
               </select>
             </div>
           </div>

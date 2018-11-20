@@ -20,44 +20,10 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons])
             @slot('courtesy')
-            　様
             @endslot
             @slot('alias')
-              <h6 class="widget-user-desc">
-                <small class="badge badge-secondary mt-1">
-                  塾
-                </small>
-                <small class="badge badge-info mt-1">
-                  中１数学
-                </small>
-                <small class="badge badge-success mt-1">
-                  中１国語
-                </small>
-                <small class="badge badge-danger mt-1">
-                  中１英語
-                </small>
-                <small class="badge badge-warning mt-1">
-                  中１社会
-                </small>
-              </h6>
-                <div class="card-footer p-0">
-                  <ul class="nav flex-column">
-                    <li class="nav-item">
-                      <a href="#charge_students" class="nav-link">
-                        担当生徒数
-                        <span class="float-right badge bg-danger">99</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#tasks" class="nav-link">
-                        タスク
-                        <span class="float-right badge bg-danger">99</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
             @endslot
         @endcomponent
 			</div>

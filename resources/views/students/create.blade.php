@@ -6,7 +6,7 @@
 @extends('layouts.loginbox')
 
 @section('content')
-<form id="edit" method="POST" action="/yield('domain')">
+<form id="edit" method="POST" action="/@yield('domain')">
   @csrf
   <div class="card-body">
     <div class="row">
