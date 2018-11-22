@@ -14,8 +14,4 @@ class Restdata extends Model
         'message' => 'required'
     );
 
-    public function getData()
-    {
-        return $this->name . ':' .$this->message;
-    }
 }
