@@ -23,7 +23,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-      $user = Auth::user()->attributes();
+      $user = Auth::user()->details();
 
       if(isset($user)){
         //ログイン済みであれば自動ログイン

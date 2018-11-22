@@ -20,19 +20,21 @@ class UserController extends Controller
   protected function user_create($form)
   {
     try {
+      if(!isset($form['status'])) $form['status']=0;
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
           'image_id' => $form['image_id'],
+          'status' => $form['status'],
           'password' => Hash::make($form['password']),
       ]);
       return $this->api_responce(200, "", "", $user);
     }
     catch (\Illuminate\Database\QueryException $e) {
-        return $this->error_responce("Query Exception", $e->getMessage());
+        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
-        return $this->error_responce("DB Exception", $e->getMessage());
+        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   protected function _search_pagenation(Request $request, $items)
@@ -77,16 +79,16 @@ class UserController extends Controller
   /**
    * 認証済みユーザーのデータを取得
    *
-   * @return Collection User->attributes()
+   * @return Collection User->details()
   */
-  protected function login_attribute()
+  protected function login_details()
   {
     $user = Auth::user();
     if(!isset($user)){
       abort(403);
       return "";
     }
-    return $user->attributes();
+    return $user->details();
   }
 
   /**
@@ -155,12 +157,12 @@ class UserController extends Controller
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", $e->getMessage());
+        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         echo $e->getMessage();
         DB::rollBack();
-        return $this->error_responce("DB Exception", $e->getMessage());
+        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
 }

@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'image_id', 'email', 'password',
+        'id', 'name', 'image_id', 'email', 'password', 'status',
     ];
 
     /**
@@ -54,7 +54,7 @@ class User extends Authenticatable
     {
         $this->notify(new CustomPasswordReset($token));
     }
-    public function attributes(){
+    public function details(){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = Image::where('id', $this->image_id)->first();
       $s3_url = '';
@@ -65,7 +65,8 @@ class User extends Authenticatable
       if(isset($item)){
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
-        $item['icon'] = $s3_url;
+        $item['
+        icon'] = $s3_url;
         return $item;
       }
       $item = Teacher::where('user_id', $this->id)->first();
@@ -94,6 +95,6 @@ class User extends Authenticatable
       return $this->hasMany('App\Models\Comment', 'target_user_id');
     }
     public function aliases(){
-      return $this->hasMany('App\Models\UserAlias');
+      return $this->hasMany('App\Models\UserTag');
     }
 }

@@ -50,7 +50,17 @@
 			</div>
 		</div>
 		@endif
-		@yield('contents')
+		<section id="main" class="content">
+		  <div class="container-fluid">
+		    <div class="row">
+					<div class="col-12">
+					  <div class="card">
+							@yield('contents')
+						</div>
+					</div>
+				</div>
+			</div>
+			</section>
 
 		@yield('modal')
 

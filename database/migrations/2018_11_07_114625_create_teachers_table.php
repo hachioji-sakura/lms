@@ -15,9 +15,10 @@ class CreateTeachersTable extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unique();
+            $table->integer('user_id')->index('index_user_id')->comment('ユーザーID')->unique();
             $table->string('name')->nullable(false);
             $table->string('kana')->nullable(false);
+            $table->integer('create_user_id');
             $table->timestamps();
         });
     }

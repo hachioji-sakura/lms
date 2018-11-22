@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserAliasesTable extends Migration
+class CreatePublishersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,12 @@ class CreateUserAliasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_aliases', function (Blueprint $table) {
+        Schema::create('publishers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->string('alias_key');
-            $table->string('alias_value');
-            $table->string('create_user_id');
+            $table->string('name')->nullable(false);
+            $table->string('url')->default('')->comment('出版社HP');
+            $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
-            $table->index('user_id');
-            $table->index('alias_key');
         });
     }
 
@@ -32,6 +29,6 @@ class CreateUserAliasesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_aliases');
+        Schema::dropIfExists('publishers');
     }
 }

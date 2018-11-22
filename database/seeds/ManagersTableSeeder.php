@@ -14,15 +14,37 @@ class ManagersTableSeeder extends Seeder
      */
     public function run()
     {
-      $_user = User::create([
-          'name' => 'root',
-          'email' => 'root',
+      DB::beginTransaction();
+      try {
+        $this->create_user([
+          'email' => 'root@hachioji-sakura.com',
           'password' => 'password',
+          'name' => 'root',
+          'kana' => 'ルート',
+          'image_id' => 4
+        ]);
+        DB::commit();
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+      }
+    }
+    private function create_user($item){
+      $_user = User::create([
+          'name' => $item['name'],
+          'email' => $item['email'],
+          'image_id' => $item['image_id'],
+          'password' => Hash::make($item['password']),
         ]);
       $_item = Manager::create([
         'user_id' => $_user->id,
-        'name' => 'root',
-        'kana' => 'ルート',
+        'name' => $item['name'],
+        'kana' => $item['kana'],
+        'create_user_id' => 1,
         ]);
+
     }
 }

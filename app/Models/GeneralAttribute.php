@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Attribute extends Model
+class GeneralAttribute  extends Model
 {
-  protected $table = 'attributes';
+  protected $table = 'general_attributes';
   protected $guarded = array('id');
 
   public static $rules = array(
@@ -23,7 +23,7 @@ class Attribute extends Model
   {
       return $query->where('attribute_key', 'lesson')->findVal($val);
   }
-  public function scopeSubject($query, $val)->findVal($val);
+  public function scopeSubject($query, $val)
   {
       return $query->where('attribute_key', 'subject')->findVal($val);
   }

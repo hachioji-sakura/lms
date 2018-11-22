@@ -15,12 +15,12 @@ class CreateCommentsTable extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('title')->nullable(false);
-            $table->string('body')->nullable(false);
-            $table->string('type')->nullable(false);
-            $table->date('publiced_at');
-            $table->integer('target_user_id');
-            $table->integer('create_user_id');
+            $table->string('title')->nullable(false)->comment('件名');
+            $table->string('body')->nullable(false)->comment('内容');
+            $table->string('type')->nullable(false)->comment('コメント種別');
+            $table->date('publiced_at')->comment('公開日');
+            $table->integer('target_user_id')->index('index_target_user_id')->comment('対象ユーザーID');
+            $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
         });
     }

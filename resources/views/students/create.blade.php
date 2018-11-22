@@ -2,15 +2,18 @@
 @section('title')
   @yield('domain_name')登録
 @endsection
+@extends('dashboard.common')
+@include('dashboard.menu.page_sidemenu')
 
-@extends('layouts.loginbox')
-
-@section('content')
-<form id="edit" method="POST" action="/@yield('domain')">
+@section('contents')
+<div class="card-header">
+  <h3 class="card-title">@yield('title')</h3>
+</div>
+<div class="card-body">
+  <form id="edit" method="POST" action="/@yield('domain')">
   @csrf
-  <div class="card-body">
     <div class="row">
-      <div class="col-12">
+      <div class="col-12 col-lg-6 col-md-6">
         <div class="form-group">
           <label for="field1">
             氏
@@ -19,7 +22,7 @@
           <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例：山田" required="true" inputtype="zenkaku">
         </div>
       </div>
-      <div class="col-12">
+      <div class="col-12 col-lg-6 col-md-6">
         <div class="form-group">
           <label for="name_first">
             名
@@ -28,7 +31,7 @@
           <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku">
         </div>
       </div>
-      <div class="col-12">
+      <div class="col-12 col-lg-6 col-md-6">
         <div class="form-group">
           <label for="kana_last">
             氏（カナ）
@@ -36,12 +39,51 @@
           </label>
           <input type="text" id="kana_last" name="kana_last" class="form-control" placeholder="例：ヤマダ" required="true" inputtype="zenkakukana">
         </div>
+      </div>
+      <div class="col-12 col-lg-6 col-md-6">
         <div class="form-group">
           <label for="kana_first">
             名（カナ）
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
           <input type="text" id="kana_first" name="kana_first" class="form-control" placeholder="例：タロウ" required="true" inputtype="zenkakukana">
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 col-md-6">
+        <div class="form-group">
+          <label for="birth_day">
+            生年月日
+            <span class="right badge badge-danger ml-1">必須</span>
+          </label>
+          <input id="birth_day" type="text" class="form-control{{ $errors->has('birth_day') ? ' is-invalid' : '' }}" name="birth_day" value="{{ old('birth_day') }}" inputtype="date" plaeholder="例：2000/01/01" required="true">
+
+          @if ($errors->has('birth_day'))
+              <span class="invalid-feedback" role="alert">
+                  <strong>{{ $errors->first('birth_day') }}</strong>
+              </span>
+          @endif
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 col-md-6">
+        <div class="form-group">
+          <label for="password-confirm">
+            性別
+            <span class="right badge badge-danger ml-1">必須</span>
+          </label>
+          <div class="input-group">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="gender" id="gender_2" {{ old('gender') ? 'checked' : '' }} value="2" required="true">
+                <label class="form-check-label" for="gender_2">
+                    女性
+                </label>
+            </div>
+            <div class="form-check ml-2">
+                <input class="form-check-input" type="radio" name="gender" id="gender_1" {{ old('gender') ? 'checked' : '' }} value="1" required="true">
+                <label class="form-check-label" for="gender_1">
+                    男性
+                </label>
+            </div>
+          </div>
         </div>
       </div>
       <div class="col-12">
@@ -71,46 +113,9 @@
           <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="" minlength=8 maxlength=16 required="true" equal="password" equal‗error="パスワードが一致しません">
         </div>
       </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="password-confirm">
-            性別
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <div class="input-group">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="gender" id="gender_2" {{ old('gender') ? 'checked' : '' }} value="2" required="true">
-                <label class="form-check-label" for="gender_2">
-                    女性
-                </label>
-            </div>
-            <div class="form-check ml-2">
-                <input class="form-check-input" type="radio" name="gender" id="gender_1" {{ old('gender') ? 'checked' : '' }} value="1" required="true">
-                <label class="form-check-label" for="gender_1">
-                    男性
-                </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="birth_day">
-            生年月日
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <input id="birth_day" type="text" class="form-control{{ $errors->has('birth_day') ? ' is-invalid' : '' }}" name="birth_day" value="{{ old('birth_day') }}" inputtype="date" plaeholder="例：2000/01/01" required="true">
-
-          @if ($errors->has('birth_day'))
-              <span class="invalid-feedback" role="alert">
-                  <strong>{{ $errors->first('birth_day') }}</strong>
-              </span>
-          @endif
-        </div>
-      </div>
     </div>
     <div class="row">
-      <div class="col-12">
+      <div class="col-12 col-lg-6 col-md-6">
           <button type="submit" class="btn btn-primary btn-block">
               登録する
           </button>
@@ -120,9 +125,14 @@
             </span>
           @endif
       </div>
+      <div class="col-12 col-lg-6 col-md-6">
+          <button type="button" class="btn btn-secondary btn-block" accesskey="cancel" onClick="history.back();">
+              キャンセル
+          </button>
+      </div>
     </div>
-  </div>
-</form>
+  </form>
+</div>
 <script>
 $(function(){
   @if(env('APP_DEBUG'))

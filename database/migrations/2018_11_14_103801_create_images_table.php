@@ -15,13 +15,13 @@ class CreateImagesTable extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('type');
-            $table->integer('size');
-            $table->string('s3_url');
-            $table->string('alias');
-            $table->string('create_user_id');
-            $table->date('publiced_at');
+            $table->string('name')->nullable(false)->comment('保存ファイル名');
+            $table->string('type')->nullable(false)->comment('mimetype');
+            $table->integer('size')->nullable(false)->comment('ファイルサイズ');
+            $table->string('s3_url')->nullable(false)->comment('S3ダウンロードURL');
+            $table->string('alias')->comment('エイリアス');
+            $table->date('publiced_at')->comment('公開日');
+            $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
         });
     }

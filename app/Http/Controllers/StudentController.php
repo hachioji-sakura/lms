@@ -22,7 +22,7 @@ class StudentController extends UserController
   */
   public function index(Request $request)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
     }
@@ -87,13 +87,15 @@ EOT;
    *
    * @return \Illuminate\Http\Response
    */
-  public function create()
+  public function create(Request $request)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
     }
-    return view($this->domain.'.create', ["error_message" => ""]);
+    //return view($this->domain.'.create', ["error_message" => ""]);
+    return view($this->domain.'.create', ['user' => $user, "error_message" => ""])
+        ->with(["search_word"=>$request->search_word]);
   }
 
   /**
@@ -104,7 +106,7 @@ EOT;
    */
   public function store(Request $request)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager_or_teacher($user->role)!==true){
       //事務・講師以外はアクセス不可
       abort(403);
@@ -134,6 +136,8 @@ EOT;
       $res = $this->user_create($form);
       if($this->is_success_responce($res)){
         $form['user_id'] = $res["data"]->id;
+        $user = $this->login_details();
+        $form["create_user_id"] = $user->user_id;
         unset($form['name']);
         unset($form['image_id']);
         unset($form['_token']);
@@ -149,11 +153,11 @@ EOT;
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", $e->getMessage());
+        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         DB::rollBack();
-        return $this->error_responce("DB Exception", $e->getMessage());
+        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   /**
@@ -164,13 +168,13 @@ EOT;
    */
   public function show(Request $request, $id)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_student($user->role)===true){
       //生徒は、自分（生徒）の内容しか見れない
       $id = $user->id;
     }
     $student = Student::find($id)->user;
-    $item = $student->attributes();
+    $item = $student->details();
     $comments = $student->target_comments;
     if($this->is_teacher($user->role)){
       //講師の場合、公開されたコメントのみ閲覧可能
@@ -179,7 +183,7 @@ EOT;
     $comments = $comments->sortByDesc('created_at');
 
     foreach($comments as $comment){
-      $create_user = $comment->create_user->attributes();
+      $create_user = $comment->create_user->details();
       $comment->create_user_name = $create_user->name;
       $comment->create_user_icon = $create_user->icon;
       unset($comment->create_user);
@@ -204,7 +208,7 @@ EOT;
    */
   public function edit($id)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager_or_teacher($user->role)!==true){
       //事務・講師以外は、自分（生徒）の内容しか見れない
       $items = Student::find($id)->where("user_id", "=", $user->user_id);
@@ -225,7 +229,7 @@ EOT;
    */
   public function update(Request $request, $id)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager_or_teacher($user->role)!==true){
       //事務・講師以外は、自分（生徒）の内容しか更新できない
       $items = Student::find($id)->where("user_id", "=", $user->id);
@@ -247,7 +251,7 @@ EOT;
    */
   public function destroy($id)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     if($this->is_manager($user->role)!==true){
       //事務以外は、削除できない
       abort(403);

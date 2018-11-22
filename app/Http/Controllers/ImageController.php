@@ -72,7 +72,7 @@ class ImageController extends UserController
      */
     public function icon_change(Request $request, $id)
     {
-      $user = $this->login_attribute();
+      $user = $this->login_details();
       if($this->is_student($user->role)===true){
         //生徒は、自分（生徒）の内容しか見れない
         $id = $user->id;
@@ -119,7 +119,7 @@ class ImageController extends UserController
         }
       }
       if(!empty($image_id)){
-        $student = Student::find($id)->user->attributes();
+        $student = Student::find($id)->user->details();
         $res = $this->update_user_image($student->user_id, $image_id);
         if($this->is_success_responce($res)){
           return back()->with([
@@ -186,7 +186,7 @@ class ImageController extends UserController
 
     private function save_image($request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
-      $user = $this->login_attribute();
+      $user = $this->login_details();
       $image = new Image;
 
       try {
@@ -221,12 +221,12 @@ class ImageController extends UserController
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", $e->getMessage());
+          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           echo $e->getMessage();
           DB::rollBack();
-          return $this->error_responce("DB Exception", $e->getMessage());
+          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 

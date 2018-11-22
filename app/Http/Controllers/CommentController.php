@@ -6,7 +6,7 @@ use App\Models\Comment;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use DB;
-class CommentController extends StudentController
+class CommentController extends UserController
 {
   public function index(Request $request)
   {
@@ -17,7 +17,7 @@ class CommentController extends StudentController
     $comments = User::find(3)->target_comments;
     $comments = $comments->sortByDesc('created_date');
     foreach($comments as $comment){
-      $create_user = $comment->create_user->attributes();
+      $create_user = $comment->create_user->details();
       $comment->create_user_name = $create_user->name;
       $comment->create_user_kana = $create_user->kana;
       $comment->create_user_icon = $create_user->icon;
@@ -25,11 +25,6 @@ class CommentController extends StudentController
     }
     return $comments->toArray();
   }
-  public function student_comments()
-  {
-
-  }
-
   /**
    * Store a newly created resource in storage.
    *
@@ -38,7 +33,7 @@ class CommentController extends StudentController
    */
   public function student_comments_store(Request $request, $id)
   {
-    $user = $this->login_attribute();
+    $user = $this->login_details();
     $form = $request->all();
     try {
       DB::beginTransaction();

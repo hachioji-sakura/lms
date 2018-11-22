@@ -13,15 +13,13 @@ class CreateAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('attributes', function (Blueprint $table) {
+        Schema::create('general_attributes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('attribute_key');
-            $table->string('attribute_value');
-            $table->string('attribute_name');
-            $table->string('create_user_id');
+            $table->string('attribute_key')->nullable(false)->index('index_attribute_key')->comment('属性キー');
+            $table->string('attribute_value')->nullable(false)->index('index_attribute_value')->comment('属性値');
+            $table->string('attribute_name')->comment('属性名');
+            $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
-            $table->index('attribute_key');
-            $table->index('attribute_value');
         });
     }
 
