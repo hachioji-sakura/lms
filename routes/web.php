@@ -16,6 +16,9 @@ Route::redirect('/', '/login', 301);
 
 Route::get('auth','AuthController@auth');
 Route::get('users/email/{email}','UserController@email_check');
+Route::get('password','UserController@password');
+Route::post('password','UserController@password_update');
+
 Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
 Route::get('logout','Auth\LoginController@logout');

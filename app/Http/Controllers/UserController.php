@@ -69,6 +69,10 @@ class UserController extends Controller
    * @return response
   */
   public function email_check($email){
+    $user = $this->login_details();
+    if(!isset($user) || !is_numeric($user->user_id)){
+      abort(403);
+    }
     $item = User::where('email', $email)->first();
     if(isset($item)){
       $json = $this->api_responce(200,"","",["email"=>$email]);
@@ -76,6 +80,44 @@ class UserController extends Controller
     }
     return $this->send_json_response($this->notfound());
   }
+  /**
+   * パスワード設定画面
+   *
+   * @return response
+  */
+  public function password(Request $request){
+    $user = $this->login_details();
+    if(!isset($user) || !is_numeric($user->user_id)){
+      abort(403);
+    }
+    return view('dashboard.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
+  }
+  /**
+   * パスワード更新
+   *
+   * @return response
+  */
+  public function password_update(Request $request){
+    $user = $this->login_details();
+    if(!isset($user) || !is_numeric($user->user_id)){
+      abort(403);
+    }
+    $form = $request->all();
+    $res = $this->update_user_password($user->user_id, $form['password']);
+    if($this->is_success_responce($res)){
+      return back()->with([
+        'success_message' => 'パスワード更新しました。'
+      ]);
+    }
+    else {
+      return view($this->domain.'.create', ["error_message" => $res["description"]]);
+      return back()->with([
+        'error_message' => $res["message"],
+        'error_message_description' => $res["description"]
+      ]);
+    }
+  }
+
   /**
    * 認証済みユーザーのデータを取得
    *
@@ -152,6 +194,32 @@ class UserController extends Controller
     try {
       DB::beginTransaction();
       User::where('id', $user_id)->update(['image_id' => $image_id]);
+      DB::commit();
+      return $this->api_responce(200, "", "");
+    }
+    catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+    }
+    catch(\Exception $e){
+        echo $e->getMessage();
+        DB::rollBack();
+        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+    }
+  }
+  /**
+   * パスワード更新
+   *
+   * @return resonse
+  */
+  protected function update_user_password($user_id, $password)
+  {
+    if(!is_numeric($user_id) || empty($password)){
+      return $this->bad_request("", "user_id($user_id),image_id($image_id)");
+    }
+    try {
+      DB::beginTransaction();
+      User::where('id', $user_id)->update(['password' => Hash::make($password)]);
       DB::commit();
       return $this->api_responce(200, "", "");
     }

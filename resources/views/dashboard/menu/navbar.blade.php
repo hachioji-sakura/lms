@@ -56,13 +56,11 @@
       <i class="fa fa-user-alt"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-      {{-- まだ対応しない
-      <a href="javascript:void(0);" class="dropdown-item">
-        <i class="fa fa-user-circle mr-2"></i>ユーザー設定
+      <a href="/password" class="dropdown-item">
+        <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>
       <div class="dropdown-divider"></div>
-      --}}
-      <a href="{{ route('logout') }}" class="dropdown-item">
+      <a href="/logout" class="dropdown-item">
         <i class="fa fa-sign-out-alt mr-2"></i>ログアウト
       </a>
     </div>
