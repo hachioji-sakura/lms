@@ -18,7 +18,6 @@ class CreateMilestonesTable extends Migration
           $table->string('title')->nullable(false)->comment('件名');
           $table->string('body')->nullable(false)->comment('内容');
           $table->string('type')->nullable(false)->comment('種別');
-          $table->date('publiced_at')->comment('公開日');
           $table->integer('target_user_id')->index('index_target_user_id')->comment('対象ユーザーID');
           $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
           $table->timestamps();
