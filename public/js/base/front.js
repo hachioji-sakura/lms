@@ -400,30 +400,33 @@
  				messageParam=val+"|"+ $("[name="+greater+"]", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(query_check)){
+				var _isExists = false;
  				service.getAjax(false, "/"+query_check+"/"+val, null,
  					function(result, st, xhr) {
-						if(util.isEmpty(query_check_nodata)){
-							//データが存在する場合エラー
-							if(result["status"]===200){
-								_isSuccess = false;
-								messageCode = query_check_error;
-								messageParam=val+"|";
-							}
-						}
-						else {
-							//データが存在しない場合エラー
-							if(!(result["status"]===404)){
-								_isSuccess = false;
-								messageCode = query_check_error;
-								messageParam=val+"|";
-							}
+						if(result["status"]===200){
+							_isExists = true;
 						}
  					},
  					function(xhr, st, err) {
- 						_isSuccess = false;
- 						service.error("validate/querycheck\n"+err.message+"\n"+xhr.responseText);
+						if(xhr.responseJSON["status"]!==404){
+							_isSuccess = false;
+							messageCode = "error";
+							messageParam= "validate/querycheck\n"+err.message+"\n"+xhr.responseText;
+						}
  					}
  				);
+				if(_isExists && util.isEmpty(query_check_nodata)){
+					//データが存在する場合エラー
+					_isSuccess = false;
+					messageCode = query_check_error;
+					messageParam=val+"|";
+				}
+				else if(!_isExists && !util.isEmpty(query_check_nodata)){
+					//データが存在しない場合エラー
+					_isSuccess = false;
+					messageCode = query_check_error;
+					messageParam=val+"|";
+				}
  			}
  		}
 		if(!_isSuccess) showValidateError(selecter, messageCode, messageParam);
