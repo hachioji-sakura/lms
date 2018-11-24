@@ -5,4 +5,4 @@
 @extends('dashboard.common')
 @include('dashboard.menu.page_sidemenu')
 @include('dashboard.menu.page_footer')
-@include('dashboard.lists')
+@include('dashboard.tiles')

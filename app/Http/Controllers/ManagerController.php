@@ -8,6 +8,7 @@ use DB;
 class ManagerController extends TeacherController
 {
     public $domain = "managers";
+    public $table = "managers";
     public $domain_name = "事務";
     public $default_image_id = 4;
 

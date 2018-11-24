@@ -15,7 +15,7 @@
     <div class="row">
       <div class="col-12 col-lg-6 col-md-6">
         <div class="form-group">
-          <label for="field1">
+          <label for="name_last">
             氏
             <span class="right badge badge-danger ml-1">必須</span>
           </label>

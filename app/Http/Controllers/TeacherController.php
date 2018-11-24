@@ -14,6 +14,7 @@ use DB;
 class TeacherController extends UserController
 {
   public $domain = "teachers";
+  public $table = "teachers";
   public $domain_name = "講師";
   public $default_image_id = 3;
   /**
@@ -32,8 +33,8 @@ class TeacherController extends UserController
   }
   private function search(Request $request)
   {
-    $items = DB::table($this->domain)
-      ->join('users', 'users.id', '=', $this->domain.'.user_id')
+    $items = DB::table($this->table)
+      ->join('users', 'users.id', '=', $this->table.'.user_id')
       ->join('images', 'images.id', '=', 'users.image_id');
 
     $items = $this->_search_scope($request, $items);
@@ -43,9 +44,9 @@ class TeacherController extends UserController
     $items = $this->_search_sort($request, $items);
 
     $select_row = <<<EOT
-      $this->domain.id,
-      $this->domain.name,
-      $this->domain.kana,
+      $this->table.id,
+      $this->table.name,
+      $this->table.kana,
       images.s3_url as icon
 EOT;
     $items = $items->selectRaw($select_row)->get();
@@ -55,15 +56,15 @@ EOT;
   {
     //ID 検索
     if(isset($request->id)){
-      $items = $items->where($this->domain.'.id','=', $request->id);
+      $items = $items->where($this->table.'.id','=', $request->id);
     }
     //検索ワード
     if(isset($request->search_word)){
       $search_words = explode(' ', $request->search_word);
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
-        $items = $items->where($this->domain.'.name','like', $_like)
-          ->orWhere($this->domain.'.kana','like', $_like);
+        $items = $items->where($this->table.'.name','like', $_like)
+          ->orWhere($this->table.'.kana','like', $_like);
       }
     }
     //メールアドレス検索

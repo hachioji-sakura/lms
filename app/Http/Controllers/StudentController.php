@@ -14,6 +14,7 @@ use DB;
 class StudentController extends UserController
 {
   public $domain = "students";
+  public $table = "students";
   public $domain_name = "生徒";
   /**
    * Display a listing of the resource.
@@ -31,8 +32,8 @@ class StudentController extends UserController
   }
   private function search(Request $request)
   {
-    $items = DB::table($this->domain)
-      ->join('users', 'users.id', '=', $this->domain.'.user_id')
+    $items = DB::table($this->table)
+      ->join('users', 'users.id', '=', $this->table.'.user_id')
       ->join('images', 'images.id', '=', 'users.image_id');
 
     $items = $this->_search_scope($request, $items);
@@ -42,12 +43,12 @@ class StudentController extends UserController
     $items = $this->_search_sort($request, $items);
 
     $select_row = <<<EOT
-      $this->domain.id,
-      concat($this->domain.name_last, '', $this->domain.name_first) as name,
-      concat($this->domain.kana_last, '', $this->domain.kana_first) as kana,
+      $this->table.id,
+      concat($this->table.name_last, '', $this->table.name_first) as name,
+      concat($this->table.kana_last, '', $this->table.kana_first) as kana,
       images.s3_url as icon,
-      $this->domain.gender,
-      $this->domain.birth_day
+      $this->table.gender,
+      $this->table.birth_day
 EOT;
     $items = $items->selectRaw($select_row)->get();
     return $items->toArray();
@@ -56,21 +57,21 @@ EOT;
   {
     //ID 検索
     if(isset($request->id)){
-      $items = $items->where($this->domain.'.id','=', $request->id);
+      $items = $items->where($this->table.'.id','=', $request->id);
     }
     //性別 検索
     if(isset($request->gender)){
-      $items = $items->where($this->domain.'.gender','=', $request->gender);
+      $items = $items->where($this->table.'.gender','=', $request->gender);
     }
     //検索ワード
     if(isset($request->search_word)){
       $search_words = explode(' ', $request->search_word);
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
-        $items = $items->where($this->domain.'.name_last','like', $_like)
-          ->orWhere($this->domain.'.name_first','like', $_like)
-          ->orWhere($this->domain.'.kana_last','like', $_like)
-          ->orWhere($this->domain.'.kana_first','like', $_like);
+        $items = $items->where($this->table.'.name_last','like', $_like)
+          ->orWhere($this->table.'.name_first','like', $_like)
+          ->orWhere($this->table.'.kana_last','like', $_like)
+          ->orWhere($this->table.'.kana_first','like', $_like);
       }
     }
 
@@ -144,8 +145,7 @@ EOT;
         unset($form['password']);
         unset($form['email']);
         unset($form['password-confirm']);
-        $Student = new Student;
-        $_item = $Student->fill($form)->save();
+        $_item = Student::create($form);
         DB::commit();
         return $this->api_responce(200, "", "", $_item);
       }

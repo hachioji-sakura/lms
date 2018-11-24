@@ -18,18 +18,18 @@
       </div>
       <h3 class="card-title">@yield('title')</h3>
     </div>
-    <div class="card-body table-responsive p-0">
-      @if(count($items) > 0)
-      <table class="table table-hover">
-        <tbody>
-          @include('components.lists', [
+    <div class="card-body">
+      <div id="listTable" class="card-body card-list" alt="CardTable">
+        @if(count($items) > 0)
+        <ul class="mailbox-attachments clearfix row">
+          @include('components.tiles', [
             'items'=>$items
             ])
-        </tbody>
-      </table>
-      @else
-      データがありません。
-      @endif
+        </ul>
+        @else
+        データがありません。
+        @endif
+      </div>
     </div>
 <script>
 $(function(){
