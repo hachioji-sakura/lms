@@ -4,8 +4,8 @@
 @endsection
 @extends('dashboard.common')
 
-@include('teachers.menu.page_sidemenu')
-@include('teachers.menu.page_footer')
+@include('students.menu.page_sidemenu')
+@include('students.menu.page_footer')
 
 @include('dashboard.widget.comments')
 

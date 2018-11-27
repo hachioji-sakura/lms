@@ -24,10 +24,11 @@ Route::get('auth/mail','AuthController@mail_send');
 Route::get('logout','Auth\LoginController@logout');
 
 Route::resource('images','ImageController');
-Route::resource('rest','RestController');
+//Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 'store', 'destroy']]);
 Route::get('import/{object?}','ImportController@index');
 
 Route::resource('attributes','GeneralAttributeController');
+
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 Route::resource('students','StudentController');

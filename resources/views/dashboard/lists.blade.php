@@ -28,7 +28,9 @@
         </tbody>
       </table>
       @else
-      データがありません。
+      <div class="alert">
+        <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+      </div>
       @endif
     </div>
 <script>

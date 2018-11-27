@@ -14,6 +14,10 @@ class GeneralAttribute  extends Model
       'attribute_value' => 'required',
       'attribute_name' => 'required'
   );
+  public function scopeFindId($query, $val)
+  {
+      return $query->where('id', $val);
+  }
   public function scopeFindVal($query, $val)
   {
       return $query->where('attribute_value', $val);

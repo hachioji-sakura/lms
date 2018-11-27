@@ -29,7 +29,7 @@ class TeacherController extends UserController
       abort(403);
     }
     $items = $this->search($request);
-    return view($this->domain.'.lists', ['user' => $user, 'items' => $items])->with(["search_word"=>$request->search_word]);
+    return view($this->domain.'.tiles', ['user' => $user, 'items' => $items])->with(["search_word"=>$request->search_word]);
   }
   private function search(Request $request)
   {

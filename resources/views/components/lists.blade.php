@@ -10,23 +10,19 @@
       @if($key==="buttons")
         @foreach($field["button"] as $button)
           @if($button==="edit")
-          <button type="button" class="btn btn-success btn-sm float-left mr-1">
+          <a href="/@yield('domain')/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1">
             <i class="fa fa-edit"></i>
-          </button>
-          @elseif($button==="copy")
-          <button type="button" class="btn btn-primary btn-sm float-left mr-1">
-            <i class="fa fa-clone"></i>
-          </button>
+          </a>
           @elseif($button==="delete")
-          <button type="button" class="btn btn-danger btn-sm float-left mr-1">
+          <a href="/@yield('domain')/{{$row['id']}}?_del=1" role="button" class="btn btn-danger btn-sm float-left mr-1">
             <i class="fa fa-times"></i>
-          </button>
+          </a>
           @endif
         @endforeach
       @else
         @if(isset($field['link']))
           @if($field['link']==='show')
-            <a href="@yield('domain')/{{$row['id']}}">{{$row[$key]}}</a>
+            <a href="/@yield('domain')/{{$row['id']}}">{{$row[$key]}}</a>
           @else
             <a href="{{$field['link']}}">{{$row[$key]}}</a>
           @endif

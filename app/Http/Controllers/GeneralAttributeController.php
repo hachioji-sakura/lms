@@ -18,19 +18,35 @@ class GeneralAttributeController extends UserController
     */
     public function index(Request $request)
     {
+      $_param = $this->get_param($request);
+      $_table = $this->search($request, $_param['select_key']);
+      return view($this->domain.'.lists', $_table)
+        ->with($_param);
+    }
+    private function get_param(Request $request, $attribute_key='keys'){
       $user = $this->login_details();
+      if(!empty($request->get('key'))){
+        $attribute_key = $request->get('key');
+      }
       if($this->is_manager_or_teacher($user->role)!==true){
         abort(403);
       }
-      $_table = $this->search($request);
-      $_table['user'] = $user;
-
-      return view($this->domain.'.lists', $_table)->with(["search_word"=>$request->search_word]);
+      $select_key = GeneralAttribute::findKey('keys')->findVal($attribute_key)->first();
+      if(!isset($select_key)){
+        abort(404);
+      }
+      $keys = GeneralAttribute::findKey('keys')->get()->toArray();
+      return [
+        "user" => $user,
+        "search_word"=>$request->search_word,
+        "select_key"=>$attribute_key,
+        "select_key_name"=>$select_key['attribute_name'],
+        "keys"=>$keys,
+      ];
     }
-    private function search(Request $request)
+    private function search(Request $request, $attribute_key)
     {
-      $items = GeneralAttribute::where('attribute_key','=','subject');
-
+      $items = GeneralAttribute::findKey($attribute_key);
       $items = $this->_search_scope($request, $items);
 
       $items = $this->_search_pagenation($request, $items);
@@ -54,7 +70,7 @@ class GeneralAttributeController extends UserController
         ],
         "buttons" => [
           "label" => "操作",
-          "button" => ["edit", "copy", "delete"]
+          "button" => ["edit", "delete"]
         ]
       ];
       return ["items" => $items->toArray(), "fields" => $fields];
@@ -83,13 +99,9 @@ class GeneralAttributeController extends UserController
      */
    public function create(Request $request)
    {
-      $user = $this->login_details();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        abort(403);
-      }
-      //return view($this->domain.'.create', ["error_message" => ""]);
-      return view($this->domain.'.create', ['user' => $user, "error_message" => ""])
-          ->with(["search_word"=>$request->search_word]);
+      $_param = $this->get_param($request);
+      return view($this->domain.'.create', ["error_message" => ""])
+        ->with($_param);
     }
 
     /**
@@ -100,27 +112,27 @@ class GeneralAttributeController extends UserController
      */
     public function store(Request $request)
     {
-      $user = $this->login_details();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        //事務・講師以外はアクセス不可
-        abort(403);
-      }
+      $attribute_key = $request->get('attribute_key');
+      $_param = $this->get_param($request, $attribute_key);
+
       $res = $this->_store($request);
+      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました');
+    }
+    private function save_redirect($res, $param, $success_message){
       if($this->is_success_responce($res)){
-        return redirect('/'.$this->domain)->with([
-          'success_message' => $this->domain_name.'登録しました。'
-        ]);
+        $_param['success_message'] = $success_message;
+        return redirect('/'.$this->domain.'?key='.$param['select_key'])
+          ->with($_param);
       }
       else {
-        return back()->with([
-          'error_message' => $res["message"],
-          'error_message_description' => $res["description"]
-        ]);
+        $_param['error_message'] = $res["message"];
+        $_param['error_message_description'] = $res["description"];
+        return back()->with($_param);
       }
     }
     public function _store(Request $request)
     {
-      $res = $this->store_validate($request);
+      $res = $this->save_validate($request);
       if(!$this->is_success_responce($res)){
         return $res;
       }
@@ -130,6 +142,7 @@ class GeneralAttributeController extends UserController
         $user = $this->login_details();
         $form["create_user_id"] = $user->user_id;
         unset($form['_token']);
+        unset($form['key']);
         $_item = GeneralAttribute::create($form);
         DB::commit();
         return $this->api_responce(200, "", "", $_item);
@@ -143,15 +156,20 @@ class GeneralAttributeController extends UserController
           return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
-    public function store_validate(Request $request)
+    public function save_validate(Request $request)
     {
       $form = $request->all();
       if(empty($form['attribute_key']) || empty($form['attribute_value']) || empty($form['attribute_name'])){
-        return $this->bad_request();
+        return $this->bad_request('リクエストエラー', '属性キー='.$form['attribute_key'].'/属性値='.$form['attribute_value'].'/属性名='.$form['attribute_name']);
+      }
+      if(!empty($form['attribute_value_org']) && $form['attribute_value']===$form['attribute_value_org']){
+        //更新時に属性値の変更なし
+        return $this->api_responce(200, "", "");
       }
       $_isExist = GeneralAttribute::findKey($form['attribute_key'])->findVal($form['attribute_value'])->first();
       if($_isExist){
-        return $this->error_responce('この属性は登録済みです', "属性キー、属性値の重複登録はできません");
+        return $this->error_responce('この属性は登録済みです',
+          '属性キー「'.$form['attribute_key'].'」、属性値「'.$form['attribute_value'].'」の重複登録はできません');
       }
       return $this->api_responce(200, "", "");
     }
@@ -164,11 +182,10 @@ class GeneralAttributeController extends UserController
      */
     public function show(Request $request, $id)
     {
-      $user = $this->login_details();
-      if($this->is_manager_or_teacher($user->role)!==true){
-        abort(403);
-      }
-      $item = GeneralAttribute::find($id)->first();
+      $item = GeneralAttribute::findId($id)->first();
+      $attribute_key = $item['attribute_key'];
+      $_param = $this->get_param($request, $attribute_key);
+
       $fields = [
         "attribute_key" => [
           "label" => "属性キー",
@@ -187,10 +204,10 @@ class GeneralAttributeController extends UserController
         ]
       ];
       return view($this->domain.'.page', [
-        "user"=>$user,
+        "_del" => $request->get('_del'),
         "item"=>$item,
         "fields"=>$fields])
-        ->with(["search_word"=>$request->search_word]);
+        ->with($_param);
     }
 
     /**
@@ -199,9 +216,33 @@ class GeneralAttributeController extends UserController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
+      $item = GeneralAttribute::findId($id)->first();
+      $attribute_key = $item['attribute_key'];
+      $_param = $this->get_param($request, $attribute_key);
+      $fields = [
+        "attribute_key" => [
+          "label" => "属性キー",
+        ],
+        "attribute_value" => [
+          "label" => "属性値",
+        ],
+        "attribute_name" => [
+          "label" => "名称",
+        ],
+        "created_at" => [
+          "label" => "登録日時",
+        ],
+        "updated_at" => [
+          "label" => "更新日時",
+        ]
+      ];
+      return view($this->domain.'.create', [
+        "_edit" => true,
+        "item"=>$item,
+        "fields"=>$fields])
+        ->with($_param);
     }
 
     /**
@@ -213,7 +254,40 @@ class GeneralAttributeController extends UserController
      */
     public function update(Request $request, $id)
     {
-        //
+      $item = GeneralAttribute::findId($id)->first();
+      $attribute_key = $item['attribute_key'];
+      $_param = $this->get_param($request, $attribute_key);
+
+      $res = $this->_update($request, $id);
+      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました');
+    }
+    public function _update(Request $request, $id)
+    {
+      $res = $this->save_validate($request);
+      if(!$this->is_success_responce($res)){
+        return $res;
+      }
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $user = $this->login_details();
+        //$form["update_user_id"] = $user->user_id;
+        $form = $request->all();
+        $item = GeneralAttribute::findId($id)->update([
+          'attribute_name' => $form['attribute_name'],
+          'attribute_value' => $form['attribute_value'],
+        ]);
+        DB::commit();
+        return $this->api_responce(200, "", "", $item);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
     }
 
     /**
@@ -222,8 +296,34 @@ class GeneralAttributeController extends UserController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+      $item = GeneralAttribute::findId($id)->first();
+      $attribute_key = $item['attribute_key'];
+      $_param = $this->get_param($request, $attribute_key);
+
+      $res = $this->_delete($request, $id);
+      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました');
     }
+    public function _delete(Request $request, $id)
+    {
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $user = $this->login_details();
+        //$form["update_user_id"] = $user->user_id;
+        $items = GeneralAttribute::findId($id)->delete();
+        DB::commit();
+        return $this->api_responce(200, "", "", $items);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
+    }
+
 }
