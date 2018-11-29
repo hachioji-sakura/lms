@@ -61,6 +61,8 @@ class User extends Authenticatable
       if(isset($image)){
         $s3_url = $image->s3_url;
       }
+      echo "image_id:".$this->image_id;
+      echo "s3_url:".$s3_url;
       $item = Manager::where('user_id', $this->id)->first();
       if(isset($item)){
         $item['manager_id'] = $item['id'];
@@ -93,6 +95,9 @@ class User extends Authenticatable
     }
     public function target_comments(){
       return $this->hasMany('App\Models\Comment', 'target_user_id');
+    }
+    public function target_milestones(){
+      return $this->hasMany('App\Models\Milestone', 'target_user_id');
     }
     public function aliases(){
       return $this->hasMany('App\Models\UserTag');

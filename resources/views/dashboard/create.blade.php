@@ -1,5 +1,5 @@
 @section('title')
-  @yield('domain_name')登録
+  {{$domain_name}}登録
 @endsection
 @extends('dashboard.common')
 @include('dashboard.menu.page_sidemenu')
@@ -9,7 +9,7 @@
   <h3 class="card-title">@yield('title')</h3>
 </div>
 <div class="card-body">
-  <form id="edit" method="POST" action="/@yield('domain')">
+  <form id="edit" method="POST" action="/{{$domain}}">
       @csrf
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6">

@@ -1,6 +1,6 @@
 @include('managers.domain')
 @section('title')
-  @yield('domain_name')ダッシュボード
+  {{$domain_name}}ダッシュボード
 @endsection
 @extends('dashboard.common')
 

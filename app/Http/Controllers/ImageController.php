@@ -70,12 +70,12 @@ class ImageController extends UserController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function icon_change(Request $request, $id)
+    public function icon_change(Request $request, $student_id)
     {
       $user = $this->login_details();
       if($this->is_student($user->role)===true){
         //生徒は、自分（生徒）の内容しか見れない
-        $id = $user->id;
+        $student_id = $user->id;
       }
       $this->validate($request, [
           'image' => [
@@ -119,7 +119,7 @@ class ImageController extends UserController
         }
       }
       if(!empty($image_id)){
-        $student = Student::find($id)->user->details();
+        $student = Student::find($student_id)->user->details();
         $res = $this->update_user_image($student->user_id, $image_id);
         if($this->is_success_responce($res)){
           return back()->with([

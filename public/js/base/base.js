@@ -29,12 +29,6 @@
 	var _isPageLoad = false;
 	var public_method = {
 		//初期処理
-		init : function(){
-			window.onpopstate=function(e){
-				pageOnload( e.state);
-			};
-			window.onload = pageOnload;
-		},
 		pageSettinged : pageSettinged,
 		getFileForm : getFileForm,
 		listRefresh : listRefresh,
@@ -47,32 +41,6 @@
 	//---------------------------------------------------
 	//onload系～
 	//---------------------------------------------------
-	function pageOnload(state){
-		service.setQueryParam();
-		var lq = service.getQueryParam("query_code");
-		if(!util.isEmpty(lq)){
-			_isPageLoad=true;
-			var _queryString = util.convQueryStringToJson();
-			var _req = {"query_code" : _queryString["query_code"], "PID" : _queryString["PID"]};
-			listInit("listTable", _req, false, function(){
-				var lt = service.getQueryParam("lt");
-				if(!util.isEmpty(lt) && lt!=="undefined"){
-					$(".content-title").html(lt)
-				}
-				var su = service.getQueryParam("su");
-				if(!util.isEmpty(su) && su==1) _isUpdate=true;
-				var pagecode = service.getQueryParam("sp");
-				var formId = service.getQueryParam("sf");
-				var data = _queryString;
-				var _savedata = util.getLocalData("autosave");
-				if(su && _savedata != null) data = $.extend(data, _savedata);
-				if(!util.isEmpty(formId) && !util.isEmpty(pagecode)){
-					_isPageLoad=true;
-					showEditPage(formId, pagecode,lq, data, su);
-				}
-			});
-		}
-	}
 	//---------------------------------------------------
 	//画面表示系～
 	//---------------------------------------------------
@@ -705,7 +673,6 @@
 				$("title").html(title);
 				$('body, html').scrollTop(0);
 				if(callback && $.type(callback)=="function") callback(option);
-				setUrl();
 			},
 			function(xhr, st, err) {
 				service.error("listInit\n"+err.message+"\n"+xhr.responseText);
@@ -894,7 +861,6 @@
 		 _cache["_url"]["showPage"]["su"] = "";
 		if(isEdit) _cache["_url"]["showPage"]["su"] ="1";
 		_isUpdate = isEdit;
-		setUrl();
 		if(util.isEmpty(querycode) || util.isEmpty(_req["ID"])){
 			showPage(formId, pagecode, data, function(){
 				pageOpen();
@@ -954,9 +920,11 @@
 		if(util.isEmpty(formId)) return;
 		if(formId=="main") return;
 		delete _cache["_url"]["showPage"];
-		setUrl();
 		if($("#"+formId).hasClass("modal")){
 			$("#"+formId).modal('hide');
+		}
+		else if($("#"+formId).hasClass("collapse")){
+			
 		}
 		else {
 			$("#"+formId).hide();
@@ -1018,26 +986,6 @@
 		}
 		util.setLocalData("autosave", {});
 	}
-	function getUrl(){
-		var url = location.pathname;
-		var lt = $(".content-title").html();
-		var _url_params = $.extend({}, _cache["_url"]["listInit"]);
-		var treestatus = getTreeStatus();
-		_url_params =$.extend(_url_params, _cache["_url"]["showPage"]);
-		_url_params =$.extend(_url_params, treestatus);
-		_url_params["lt"] = lt;
-		url += "?" + util.convJsonToQueryString(_url_params);
-		return url;
-	}
-	function setUrl(){
-		console.log("setUrl");
-		if(!_isPageLoad) {
-			var _url = getUrl();
-			console.log("setUrl:"+_url);
-			window.history.pushState(null, null, _url);
-		}
-		_isPageLoad = false;
-	}
 	function getTreeStatus(){
 		var ta = "";
 		$(".nav-link.active").each(function(t){
@@ -1070,5 +1018,3 @@
 	root.base = $.extend({}, root.base, public_method);
 
 })(this);
-
-base.init();

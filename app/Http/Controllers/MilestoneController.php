@@ -3,27 +3,134 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-class MilestoneController extends Controller
+use App\Models\Milestone;
+use App\Models\Student;
+use DB;
+class MilestoneController extends UserController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+    public $domain = 'milestones';
+    public $table = 'milestones';
+    public $domain_name = '目標';
+    public function model(){
+      return Milestone::query();
     }
+    public function index(Request $request)
+    {
+      $_param = $this->get_param($request);
+      $_table = $this->search($request);
+      return view($this->domain.'.lists', $_table)
+        ->with($_param);
+    }
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details();
+      $ret = [
+        'domain' => $this->domain,
+        'domain_name' => $this->domain_name,
+        'user' => $user,
+        'search_word'=>$request->search_word,
+        'search_status'=>$request->status
+      ];
+      if(is_numeric($id) && $id > 0){
+        $item = $this->model()->where('id','=',$id)->first();
+        if($this->is_student($user->role) &&
+          $item['create_user_id'] !== $user->user_id){
+            //生徒は自分の起票したものしか編集できない
+            abort(404);
+        }
+        $target_user = $item->target_user->details();
+        $item->target_user_name = $target_user->name;
+        unset($item->target_user);
+        $ret['item'] = $item;
+      }
+      return $ret;
+    }
+    public function search(Request $request)
+    {
+      $items = $this->model();
+      $user = $this->login_details();
+      if($this->is_manager_or_teacher($user->role)!==true){
+        //生徒の場合は自分自身を対象とする
+        $items = $items->where('target_user_id', '=', $user->user_id);
+      }
+      $items = $this->_search_scope($request, $items);
+      $items = $this->_search_pagenation($request, $items);
 
+      $items = $this->_search_sort($request, $items);
+      $items = $items->get();
+      foreach($items as $item){
+        $create_user = $item->create_user->details();
+        $item->create_user_name = $create_user->name;
+        unset($item->create_user);
+        $target_user = $item->target_user->details();
+        $item->target_user_name = $target_user->name;
+        unset($item->target_user);
+      }
+      $fields = [
+        'id' => [
+          'label' => 'ID',
+        ],
+        'title' => [
+          'label' => 'タイトル',
+          'link' => 'show',
+        ],
+      ];
+      if($this->is_manager_or_teacher($user->role)===true){
+        //生徒以外の場合は、対象者も表示する
+        $fields['target_user_name'] = [
+          'label' => 'ユーザー',
+        ];
+      }
+
+      $fields['created_at'] = [
+        'label' => '登録日時',
+      ];
+      $fields['buttons'] = [
+        'label' => '操作',
+        'button' => ['edit', 'delete']
+      ];
+      return ['items' => $items->toArray(), 'fields' => $fields];
+    }
+    public function _search_scope(Request $request, $items)
+    {
+      //ID 検索
+      if(isset($request->id)){
+        $items = $items->where('id','=', $request->id);
+      }
+      //ステータス 検索
+      if(isset($request->search_status)){
+        $items = $items->where('status','=', $request->search_status);
+      }
+      //種別 検索
+      if(isset($request->search_type)){
+        $items = $items->where('type','=', $request->search_type);
+      }
+      //検索ワード
+      if(isset($request->search_word)){
+        $search_words = explode(' ', $request->search_word);
+        $items = $items->where(function($items)use($search_words){
+          foreach($search_words as $_search_word){
+            if(empty($_search_word)) continue;
+            $_like = '%'.$_search_word.'%';
+            $items->orWhere('title','like',$_like)->orWhere('body','like',$_like);
+          }
+        });
+      }
+
+      return $items;
+    }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+   public function create(Request $request)
+   {
+      $_param = $this->get_param($request);
+      return view($this->domain.'.create',
+        ['_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
+         'student_id' => $request->get('student_id'),
+         'error_message' => ''])
+        ->with($_param);
     }
 
     /**
@@ -34,7 +141,57 @@ class MilestoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $_param = $this->get_param($request);
+
+      $res = $this->_store($request);
+      //生徒詳細からもCALLされる
+      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+    }
+    public function _store(Request $request)
+    {
+      $res = $this->save_validate($request);
+      if(!$this->is_success_responce($res)){
+        return $res;
+      }
+      try {
+        DB::beginTransaction();
+        $user = $this->login_details();
+        $form = [];
+        $form['create_user_id'] = $user->user_id;
+        $form['type'] = $request->get('type');
+        $form['title'] = $request->get('title');
+        $form['body'] = $request->get('body');
+
+        if($this->is_student($user->role)===true){
+          //生徒の場合は自分自身を対象とする
+          $form['target_user_id'] = $user->user_id;
+        }
+        else {
+          $student = Student::find($request->get('student_id'));
+          $form['target_user_id'] = $student->user_id;
+        }
+        unset($form['_token']);
+        $_item = $this->model()->create($form);
+        DB::commit();
+        return $this->api_responce(200, '', '', $_item);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+    }
+    public function save_validate(Request $request)
+    {
+      $form = $request->all();
+      //保存時にパラメータをチェック
+      if(empty($form['title']) || empty($form['body']) || empty($form['type'])){
+        return $this->bad_request('リクエストエラー', '種別='.$form['type'].'/タイトル='.$form['title'].'/内容='.$form['body']);
+      }
+      return $this->api_responce(200, '', '');
     }
 
     /**
@@ -43,9 +200,39 @@ class MilestoneController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+      $_param = $this->get_param($request, $id);
+
+      $fields = [
+        'type' => [
+          'label' => '種別',
+        ],
+        'title' => [
+          'label' => 'タイトル',
+        ],
+        'body' => [
+          'label' => '内容',
+        ],
+      ];
+      if($this->is_manager_or_teacher($_param['user']->role)===true){
+        //生徒以外の場合は、対象者も表示する
+        $fields['target_user_name'] = [
+          'label' => 'ユーザー',
+        ];
+      }
+      $fields['created_at'] = [
+        'label' => '登録日時',
+      ];
+      $fields['updated_at'] = [
+        'label' => '更新日時',
+      ];
+
+      return view('components.page', [
+        '_del' => $request->get('_del'),
+        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
+        'fields'=>$fields])
+        ->with($_param);
     }
 
     /**
@@ -54,9 +241,13 @@ class MilestoneController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
+      $_param = $this->get_param($request, $id);
+      return view($this->domain.'.create', [
+        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
+        '_edit' => true])
+        ->with($_param);
     }
 
     /**
@@ -68,7 +259,38 @@ class MilestoneController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $_param = $this->get_param($request, $id);
+      $res = $this->_update($request, $id);
+      //生徒詳細からもCALLされる
+      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました', str_replace('_', '/', $request->get('_page_origin')));
+    }
+    public function _update(Request $request, $id)
+    {
+      $res = $this->save_validate($request);
+      if(!$this->is_success_responce($res)){
+        return $res;
+      }
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $user = $this->login_details();
+        $form = $request->all();
+        $item = $this->model()->find($id)->update([
+          'type' => $form['type'],
+          'title' => $form['title'],
+          'body' => $form['body'],
+        ]);
+        DB::commit();
+        return $this->api_responce(200, '', '', $item);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
     }
 
     /**
@@ -77,8 +299,32 @@ class MilestoneController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+      $_param = $this->get_param($request, $id);
+
+      $res = $this->_delete($request, $id);
+      //生徒詳細からもCALLされる
+      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました', str_replace('_', '/', $request->get('_page_origin')));
+    }
+
+    public function _delete(Request $request, $id)
+    {
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $user = $this->login_details();
+        $items = $this->model()->find($id)->delete();
+        DB::commit();
+        return $this->api_responce(200, '', '', $items);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
     }
 }

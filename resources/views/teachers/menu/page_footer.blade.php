@@ -1,6 +1,6 @@
 @section('page_footer_form')
 <div id="comment_add" class="card card-primary card-outline collapse">
-  <form id="edit" method="POST" action="/@yield('domain')/{{$item->id}}/comments/create">
+  <form id="edit" method="POST" action="/{{$domain}}/{{$item->id}}/comments/create">
     @csrf
     <div class="card-header">
       <h3 class="card-title">コメント追加</h3>
