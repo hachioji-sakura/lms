@@ -4,19 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Textbook;
-use DB;
-class TextbookController extends Controller
+use App\Models\TextbookChapter;
+class TextbookChapterController extends Controller
 {
-    public function examination(Request $request){
-      $textbooks = Textbook::all();
-      $items = [];
-      foreach($textbooks as $textbook){
-        $chapter = $textbook->chapters;
-        if(isset($chapter) && count($chapter)>0){
-          $items[] = ['id' => $textbook->id, 'name' => $textbook->name];
-        }
-      }
-      return view('examinations.textbooks', ['items' => $items]);
+    public function examination(Request $request, $textbook_id){
+      $items = TextbookChapter::where('textbook_id', '=', $textbook_id)->get();
+      return view('examinations.chapters', ['items' => $items->toArray()]);
     }
     /**
      * Display a listing of the resource.
