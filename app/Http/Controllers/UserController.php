@@ -13,10 +13,9 @@ use Illuminate\Http\Request;
 use DB;
 class UserController extends Controller
 {
-  public $domain = "teachers";
-  public $domain_name = "講師";
+  public $domain = "users";
+  public $domain_name = "ユーザー";
   protected $pagenation_line = 20;
-
   protected function user_create($form)
   {
     try {
@@ -233,4 +232,5 @@ class UserController extends Controller
         return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
+
 }

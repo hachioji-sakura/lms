@@ -12,6 +12,6 @@ class Publisher extends Model
       'name' => 'required',
   );
   public function textbook(){
-    return $this->hasMany('App\Model\Textbook');
+    return $this->hasMany('App\Models\Textbook');
   }
 }
