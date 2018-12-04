@@ -11,7 +11,7 @@ class Textbook extends Model
   public static $rules = array(
       'name' => 'required'
   );
-  public function publisher(){
-    return $this->belongsTo('App\Publisher');
+  public function chapters(){
+    return $this->hasMany('App\Models\TextbookChapter');
   }
 }

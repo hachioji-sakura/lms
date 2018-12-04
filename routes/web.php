@@ -38,6 +38,20 @@ Route::resource('textbooks','TextbookController');
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');
+Route::resource('comments','CommentController');
+Route::resource('user_examinations','UserExaminationController');
 
+Route::post('students/{id}/comments/create','CommentController@student_comments_store');
+Route::post('students/{id}/icon','ImageController@icon_change');
 Route::post('students/{student_id}/icon','ImageController@icon_change');
 Route::get('/home', 'HomeController@index')->name('home');
+
+//教科書を選択する画面
+Route::get('/examinations', 'TextbookController@examination');
+//目次を選択する画面
+Route::get('/examinations/{textbook_id}', 'TextbookChapterController@examination');
+//問題ページを表示する画面(question_idがない場合はカレントの問題を表示）
+Route::get('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@examination');
+Route::post('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
+//Route::redirect('/examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
+Route::post('/examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
