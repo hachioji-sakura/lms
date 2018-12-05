@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Milestone;
+use App\Models\Teacher;
+use App\Models\Manager;
 use App\Models\Student;
 use DB;
 class MilestoneController extends UserController
@@ -11,9 +13,64 @@ class MilestoneController extends UserController
     public $domain = 'milestones';
     public $table = 'milestones';
     public $domain_name = '目標';
+    /**
+     * このdomainで管理するmodel
+     *
+     * @return model
+     */
     public function model(){
       return Milestone::query();
     }
+    /**
+     * 新規登録用フォーム
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return json
+     */
+    public function create_form(Request $request){
+      $user = $this->login_details();
+      $form = [];
+      $form['create_user_id'] = $user->user_id;
+      $form['type'] = $request->get('type');
+      $form['title'] = $request->get('title');
+      $form['body'] = $request->get('body');
+      if($this->is_student($user->role)===true){
+        //生徒の場合は自分自身を対象とする
+        $form['target_user_id'] = $user->user_id;
+      }
+      else {
+        if($request->has('student_id')){
+          $u = Student::find($request->get('student_id'));
+        }
+        else if($request->has('teacher_id')){
+          $u = Teacher::find($request->get('teacher_id'));
+        }
+        else if($request->has('manager_id')){
+          $u = Manager::find($request->get('manager_id'));
+        }
+        $form['target_user_id'] = $u->user_id;
+      }
+      return $form;
+    }
+    /**
+     * 更新用フォーム
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return json
+     */
+    public function update_form(Request $request){
+      $form = [];
+      $form['type'] = $request->get('type');
+      $form['title'] = $request->get('title');
+      $form['body'] = $request->get('body');
+      return $form;
+    }
+    /**
+     * 一覧表示
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return view / domain.lists
+     */
     public function index(Request $request)
     {
       $_param = $this->get_param($request);
@@ -21,12 +78,22 @@ class MilestoneController extends UserController
       return view($this->domain.'.lists', $_table)
         ->with($_param);
     }
+    /**
+     * 共通パラメータ取得
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id　（this.domain.model.id)
+     * @return json
+     */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details();
       $ret = [
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
         'user' => $user,
+        'teacher_id' => $request->teacher_id,
+        'manager_id' => $request->manager_id,
+        'student_id' => $request->student_id,
         'search_word'=>$request->search_word,
         'search_status'=>$request->status
       ];
@@ -42,8 +109,15 @@ class MilestoneController extends UserController
         unset($item->target_user);
         $ret['item'] = $item;
       }
+
       return $ret;
     }
+    /**
+     * 検索～一覧
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return [Collection, field]
+     */
     public function search(Request $request)
     {
       $items = $this->model();
@@ -90,6 +164,13 @@ class MilestoneController extends UserController
       ];
       return ['items' => $items->toArray(), 'fields' => $fields];
     }
+    /**
+     * フィルタリングロジック
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Collection $items
+     * @return Collection
+     */
     public function _search_scope(Request $request, $items)
     {
       //ID 検索
@@ -119,7 +200,7 @@ class MilestoneController extends UserController
       return $items;
     }
     /**
-     * Show the form for creating a new resource.
+     * 新規登録画面
      *
      * @return \Illuminate\Http\Response
      */
@@ -128,15 +209,13 @@ class MilestoneController extends UserController
       $_param = $this->get_param($request);
       return view($this->domain.'.create',
         ['_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-         'student_id' => $request->get('student_id'),
          'error_message' => ''])
         ->with($_param);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 新規登録
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -147,33 +226,23 @@ class MilestoneController extends UserController
       //生徒詳細からもCALLされる
       return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
     }
+    /**
+     * 新規登録ロジック
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function _store(Request $request)
     {
+      $form = $this->create_form($request);
       $res = $this->save_validate($request);
       if(!$this->is_success_responce($res)){
         return $res;
       }
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
-        $form = [];
-        $form['create_user_id'] = $user->user_id;
-        $form['type'] = $request->get('type');
-        $form['title'] = $request->get('title');
-        $form['body'] = $request->get('body');
-
-        if($this->is_student($user->role)===true){
-          //生徒の場合は自分自身を対象とする
-          $form['target_user_id'] = $user->user_id;
-        }
-        else {
-          $student = Student::find($request->get('student_id'));
-          $form['target_user_id'] = $student->user_id;
-        }
-        unset($form['_token']);
-        $_item = $this->model()->create($form);
+        $item = $this->model()->create($form);
         DB::commit();
-        return $this->api_responce(200, '', '', $_item);
+        return $this->api_responce(200, '', '', $item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
@@ -183,7 +252,12 @@ class MilestoneController extends UserController
           DB::rollBack();
           return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
-    }
+     }
+    /**
+     * データ更新時のパラメータチェック
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function save_validate(Request $request)
     {
       $form = $request->all();
@@ -195,7 +269,7 @@ class MilestoneController extends UserController
     }
 
     /**
-     * Display the specified resource.
+     * 詳細画面表示
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -274,12 +348,7 @@ class MilestoneController extends UserController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        $form = $request->all();
-        $item = $this->model()->find($id)->update([
-          'type' => $form['type'],
-          'title' => $form['title'],
-          'body' => $form['body'],
-        ]);
+        $item = $this->model()->find($id)->update($this->update_form($request));
         DB::commit();
         return $this->api_responce(200, '', '', $item);
       }

@@ -36,24 +36,4 @@
     <i class="fa fa-plus"></i>{{$domain_name}}登録
   </a>
 </dt>
-<script>
-$(function(){
-  $("#search_button").on("click", function(e){
-    var _search_word = $("input[name=search_word]").val();
-    if(!util.isEmpty(_search_word)){
-      location.href="./{{$domain}}?search_word="+_search_word;
-    }
-  });
-  $("a[page_url]").on("click", function(e){
-    $("#subDialog .content-sub-title").html($(this).attr("page_title"));
-    $("#subDialog .content-sub-body").load($(this).attr("page_url"), function(){
-      base.pageOpen('subDialog');
-    });
-  });
-  $(".btn[type=submit]").on("click", function(){
-    if(!front.validateFormValue("edit")) return false;
-    $("#edit").submit();
-  });
-})
-</script>
 @endsection

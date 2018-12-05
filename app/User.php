@@ -61,14 +61,11 @@ class User extends Authenticatable
       if(isset($image)){
         $s3_url = $image->s3_url;
       }
-      echo "image_id:".$this->image_id;
-      echo "s3_url:".$s3_url;
       $item = Manager::where('user_id', $this->id)->first();
       if(isset($item)){
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
-        $item['
-        icon'] = $s3_url;
+        $item['icon'] = $s3_url;
         return $item;
       }
       $item = Teacher::where('user_id', $this->id)->first();

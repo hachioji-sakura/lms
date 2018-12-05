@@ -19,14 +19,20 @@ class TeacherController extends StudentController
   public $table = "teachers";
   public $domain_name = "講師";
   public $default_image_id = 3;
+  /**
+   * このdomainで管理するmodel
+   *
+   * @return model
+   */
   public function model(){
    return Teacher::query();
   }
   /**
-  * Display a listing of the resource.
-  *
-  * @return \Illuminate\Http\Response
-  */
+   * 一覧表示
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return view / domain.lists
+   */
   public function index(Request $request)
   {
    $_param = $this->get_param($request);
@@ -34,6 +40,13 @@ class TeacherController extends StudentController
    return view($this->domain.'.tiles', $_table)
     ->with($_param);
   }
+  /**
+   * 共通パラメータ取得
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id　（this.domain.model.id)
+   * @return json
+   */
   public function get_param(Request $request, $id=null){
    $user = $this->login_details();
    $ret = [
@@ -61,6 +74,12 @@ class TeacherController extends StudentController
    }
    return $ret;
   }
+  /**
+   * 検索～一覧
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return [Collection, field]
+   */
   public function search(Request $request)
   {
    $items = DB::table($this->table)
@@ -82,6 +101,13 @@ EOT;
    $items = $items->selectRaw($select_row)->get();
    return ["items" => $items->toArray()];
   }
+  /**
+   * フィルタリングロジック
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  Collection $items
+   * @return Collection
+   */
   public function _search_scope(Request $request, $items)
   {
    //ID 検索
@@ -143,30 +169,31 @@ EOT;
   */
   public function show(Request $request, $id)
   {
-   $user = $this->login_details();
-   if($this->is_manager_or_teacher($user->role)!==true){
-    abort(403);
-   }
-   $model = $this->model()->find($id)->user;
-   $item = $model->details();
-   $comments = $model->target_comments;
-   $comments = $comments->sortByDesc('created_at');
-   foreach($comments as $comment){
-    $create_user = $comment->create_user->details();
-    $comment->create_user_name = $create_user->name;
-    $comment->create_user_icon = $create_user->icon;
-    unset($comment->create_user);
-   }
-   $use_icons = DB::table('images')
-    ->where('create_user_id','=',$user->user_id)
-    ->orWhere('publiced_at','<=', date('Y-m-d'))
-    ->get(['id', 'alias', 's3_url']);
+    $_param = $this->get_param($request);
+    $model = $this->model()->find($id)->user;
+    $item = $model->details();
+    $user = $_param['user'];
+    //コメントデータ取得
+    $comments = $model->target_comments;
+    $comments = $comments->sortByDesc('created_at');
 
-   return view($this->domain.'.page', [
-    'user' => $user,
-    'item' => $item,
-    'comments'=>$comments,
-    'use_icons'=>$use_icons,
-   ]);
+    //目標データ取得
+    $milestones = $model->target_milestones;
+
+    foreach($comments as $comment){
+      $create_user = $comment->create_user->details();
+      $comment->create_user_name = $create_user->name;
+      $comment->create_user_icon = $create_user->icon;
+    }
+    $use_icons = DB::table('images')
+      ->where('create_user_id','=',$user->user_id)
+      ->orWhere('publiced_at','<=', date('Y-m-d'))
+      ->get(['id', 'alias', 's3_url']);
+    return view($this->domain.'.page', [
+      'item' => $item,
+      'comments'=>$comments,
+      'milestones'=>$milestones,
+      'use_icons'=>$use_icons,
+    ])->with($_param);
   }
 }

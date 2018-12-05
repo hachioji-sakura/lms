@@ -12,6 +12,12 @@
   @if(isset($student_id))
     <input type="hidden" value="{{$student_id}}" name="student_id" />
   @endif
+  @if(isset($teacher_id))
+    <input type="hidden" value="{{$teacher_id}}" name="teacher_id" />
+  @endif
+  @if(isset($manager_id))
+    <input type="hidden" value="{{$manager_id}}" name="manager_id" />
+  @endif
     <div class="row">
       <div class="col-12">
         <div class="form-group">

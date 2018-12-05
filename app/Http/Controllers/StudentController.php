@@ -16,15 +16,21 @@ class StudentController extends UserController
   public $domain = "students";
   public $table = "students";
   public $domain_name = "生徒";
+  /**
+   * このdomainで管理するmodel
+   *
+   * @return model
+   */
   public function model(){
     return Student::query();
   }
 
   /**
-   * Display a listing of the resource.
+   * 一覧表示
    *
-   * @return \Illuminate\Http\Response
-  */
+   * @param  \Illuminate\Http\Request  $request
+   * @return view / domain.lists
+   */
   public function index(Request $request)
   {
    $_param = $this->get_param($request);
@@ -32,6 +38,13 @@ class StudentController extends UserController
    return view($this->domain.'.tiles', $_table)
      ->with($_param);
   }
+  /**
+   * 共通パラメータ取得
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id　（this.domain.model.id)
+   * @return json
+   */
   public function get_param(Request $request, $id=null){
    $user = $this->login_details();
    $ret = [
@@ -56,6 +69,12 @@ class StudentController extends UserController
    return $ret;
   }
 
+  /**
+   * 検索～一覧
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return [Collection, field]
+   */
   public function search(Request $request)
   {
    $items = DB::table($this->table)
@@ -79,6 +98,13 @@ EOT;
    $items = $items->selectRaw($select_row)->get();
    return ["items" => $items->toArray()];
   }
+  /**
+   * フィルタリングロジック
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  Collection $items
+   * @return Collection
+   */
   public function _search_scope(Request $request, $items)
   {
    //ID 検索
@@ -110,9 +136,8 @@ EOT;
    return $items;
   }
   /**
-   * Show the form for creating a new resource.
+   * 新規登録画面
    *
-   * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
   public function create(Request $request)
@@ -123,11 +148,10 @@ EOT;
       ->with($_param);
    }
    /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
+    * 新規登録
+    *
+    * @return \Illuminate\Http\Response
+    */
    public function store(Request $request)
    {
     $_param = $this->get_param($request);
@@ -136,6 +160,11 @@ EOT;
     //生徒詳細からもCALLされる
     return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
    }
+   /**
+    * 新規登録ロジック
+    *
+    * @return \Illuminate\Http\Response
+    */
    public function _store(Request $request)
    {
      $form = $request->all();
@@ -170,26 +199,30 @@ EOT;
         return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
      }
    }
+   /**
+    * データ更新時のパラメータチェック
+    *
+    * @return \Illuminate\Http\Response
+    */
    public function save_validate(Request $request)
    {
      //保存時にパラメータをチェック
      return $this->api_responce(200, '', '');
    }
-  /**
-   * Display the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
+   /**
+    * 詳細画面表示
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
   public function show(Request $request, $id)
   {
    $_param = $this->get_param($request);
-
-   $student = Student::find($id)->user;
-   $item = $student->details();
+   $model = $this->model()->find($id)->user;
+   $item = $model->details();
    $user = $_param['user'];
    //コメントデータ取得
-   $comments = $student->target_comments;
+   $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
      //講師の場合、公開されたコメントのみ閲覧可能
      $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
@@ -197,14 +230,8 @@ EOT;
    $comments = $comments->sortByDesc('created_at');
 
    //目標データ取得
-   $milestones = $student->target_milestones;
+   $milestones = $model->target_milestones;
 
-   foreach($comments as $comment){
-     $create_user = $comment->create_user->details();
-     $comment->create_user_name = $create_user->name;
-     $comment->create_user_icon = $create_user->icon;
-     unset($comment->create_user);
-   }
    $use_icons = DB::table('images')
      ->where('create_user_id','=',$user->user_id)
      ->orWhere('publiced_at','<=', date('Y-m-d'))

@@ -110,11 +110,13 @@
     * @return {void} return nothing
     */
 	function loadStop (){
+		/*
 		if(_loadTimer!=null){
 			clearTimeout(_loadTimer);
 			_loadTimer = null;
 		}
 		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
+		*/
 	}
 	/**
 	* ローディングダイアログを閉じる

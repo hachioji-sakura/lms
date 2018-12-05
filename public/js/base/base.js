@@ -80,104 +80,6 @@
 				}
 			});
 		});
-		$("button.btn[accesskey]", $("#"+formId)).unbind('click');
-		$("button.btn[accesskey]", $("#"+formId)).click(function(e){
-			var alt = $(this).attr("alt");
-			var accesskey = $(this).attr("accesskey");
-			var target = $(this).attr("target");
-			var type = $(this).attr("type");
-			var query = $(this).attr("query");
-			//console.log("accesskey="+accesskey+",alt="+alt+",target="+target);
-			switch(accesskey){
-				case "fileclear":
-					_cache["_fileUI"][alt].fileUI("clear");
-					break;
-				case "fileopen":
-					_cache["_fileUI"][alt].fileUI("click");
-					break;
-				case "fileupload":
-					fileUpload(alt);
-					break;
-				case "fileimport":
-					fileImport(alt);
-					break;
-				case "print":
-					window.print();
-					break;
-				case "save":
-					_saveProc(function(){
-						if(util.isEmpty(target)){
-							_savedReload();
-						}
-						else {
-							var _req = front.getFormValue(_currentForm);
-							var link = $("*[name="+target+"]", $("#"+formId));
-							linkProc(link, _req);
-						}
-					});
-					break;
-				case "savemulti":
-					if(util.isEmpty(alt)) alt = "upd";
-					saveProc(alt, query,  function(){
-						if(util.isEmpty(target)){
-							_savedReload();
-						}
-						else {
-							var _req = front.getFormValue(_currentForm);
-							var link = $("*[name="+target+"]", $("#"+formId));
-							linkProc(link, _req);
-						}
-					});
-					break;
-				case "export":
-					if(util.isEmpty(target)) target = _currentRequest["query_code"];
-					exportProc(target);
-					break;
-				case "search":
-					searchProc();
-					break;
-				case "clear":
-					front.clearFormValue(_currentForm);
-					break;
-				case "back":
-				case "close":
-				case "cancel":
-					pageClose();
-					break;
-				case "yes":
-					if(util.isFunction(_cache["__callback"])) _cache["__callback"]();
-					break;
-				case "no":
-					_cache["__callback"] = null;
-					break;
-			}
-			e.preventDefault();
-		});
-		$(document).unbind("keydown");
-		$(document).on("keydown", function(e){
-			//ショートカットキー設定
-			return;
-			if(!e.key || util.isEmpty(e.key)) return;
-			console.log("["+e.key+"]["+e.ctrlKey+"]["+e.shiftKey+"]["+e.altKey+"]");
-			switch(e.key.toLowerCase()){
-				case "i":
-					if(e.altKey) $("button.btn[accesskey=newadd]:visible").click();
-					break;
-				case "d":
-					if(e.altKey) $("button.btn[accesskey=close]:visible").click();
-					break;
-				case "s":
-					if(e.altKey) $("button.btn[accesskey=save]:visible").click();
-					break;
-				case "y":
-					if(e.altKey) $("button.btn[accesskey=yes]:visible").click();
-					break;
-				case "n":
-					if(e.altKey) $("button.btn[accesskey=no]:visible").click();
-					break;
-			}
-		});
-
 		$("select[accesskey]", $("#"+formId)).each(function(i){
 			var _defaultSelect = $(this).attr("defaultSelect");
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, null, formData);
@@ -196,10 +98,6 @@
 		})
 
 		/*
-		//バーコードフォーム
-		dom.setBarcodeForm(formId);
-		//パスワード入力
-		dom.setPasswordForm(formId);
 		//郵便番号入力
 		dom.setPostnoForm(formId);
 		//日付入力
@@ -924,7 +822,7 @@
 			$("#"+formId).modal('hide');
 		}
 		else if($("#"+formId).hasClass("collapse")){
-			
+
 		}
 		else {
 			$("#"+formId).hide();
