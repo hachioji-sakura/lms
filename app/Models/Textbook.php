@@ -14,4 +14,10 @@ class Textbook extends Model
   public function chapters(){
     return $this->hasMany('App\Models\TextbookChapter');
   }
+  public function image(){
+    return $this->belongsTo('App\Models\Image');
+  }
+  public function publisher(){
+    return $this->belongsTo('App\Models\Publisher');
+  }
 }
