@@ -14,7 +14,7 @@
     {{$alias}}
     @if($item->user_id == $user->user_id)
     <div id="icon_change" class="card card-outline collapse">
-      <form method="POST" action="/@yield('domain')/{{$item->id}}/icon" enctype="multipart/form-data">
+      <form method="POST" action="/{{$domain}}/{{$item->id}}/icon" enctype="multipart/form-data">
         @csrf
         <!-- /.card-header -->
         <div class="card-body">

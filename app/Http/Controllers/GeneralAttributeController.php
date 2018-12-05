@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GeneralAttribute;
 use Illuminate\Http\Request;
+use App\Models\GeneralAttribute;
 use DB;
 class GeneralAttributeController extends UserController
 {
     public $domain = "attributes";
     public $table = "general_attributes";
     public $domain_name = "定義属性";
-
     /**
      * Display a listing of the resource.
      *
@@ -37,6 +36,8 @@ class GeneralAttributeController extends UserController
       }
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
       return [
+        'domain' => $this->domain,
+        'domain_name' => $this->domain_name,
         "user" => $user,
         "search_word"=>$request->search_word,
         "select_key"=>$attribute_key,
@@ -84,11 +85,12 @@ class GeneralAttributeController extends UserController
       //検索ワード
       if(isset($request->search_word)){
         $search_words = explode(' ', $request->search_word);
-        foreach($search_words as $_search_word){
-          $_like = '%'.$_search_word.'%';
-          $items = $items->where('attribute_value','like', $_like)
-            ->orWhere('attribute_name','like', $_like);
-        }
+          $items = $items->where(function($items)use($search_words){
+            foreach($search_words as $_search_word){
+              $_like = '%'.$_search_word.'%';
+              $items->orWhere('attribute_value','like',$_like)->orWhere('attribute_name','like',$_like);
+            }
+          });
       }
       return $items;
     }
@@ -116,19 +118,7 @@ class GeneralAttributeController extends UserController
       $_param = $this->get_param($request, $attribute_key);
 
       $res = $this->_store($request);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました');
-    }
-    private function save_redirect($res, $param, $success_message){
-      if($this->is_success_responce($res)){
-        $_param['success_message'] = $success_message;
-        return redirect('/'.$this->domain.'?key='.$param['select_key'])
-          ->with($_param);
-      }
-      else {
-        $_param['error_message'] = $res["message"];
-        $_param['error_message_description'] = $res["description"];
-        return back()->with($_param);
-      }
+      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _store(Request $request)
     {
@@ -203,7 +193,7 @@ class GeneralAttributeController extends UserController
           "label" => "更新日時",
         ]
       ];
-      return view($this->domain.'.page', [
+      return view('components.page', [
         "_del" => $request->get('_del'),
         "item"=>$item,
         "fields"=>$fields])
@@ -259,7 +249,7 @@ class GeneralAttributeController extends UserController
       $_param = $this->get_param($request, $attribute_key);
 
       $res = $this->_update($request, $id);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました');
+      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました''/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _update(Request $request, $id)
     {
@@ -271,7 +261,6 @@ class GeneralAttributeController extends UserController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        //$form["update_user_id"] = $user->user_id;
         $form = $request->all();
         $item = GeneralAttribute::findId($id)->update([
           'attribute_name' => $form['attribute_name'],
@@ -303,7 +292,7 @@ class GeneralAttributeController extends UserController
       $_param = $this->get_param($request, $attribute_key);
 
       $res = $this->_delete($request, $id);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました');
+      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました''/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _delete(Request $request, $id)
     {
@@ -311,7 +300,6 @@ class GeneralAttributeController extends UserController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        //$form["update_user_id"] = $user->user_id;
         $items = GeneralAttribute::findId($id)->delete();
         DB::commit();
         return $this->api_responce(200, "", "", $items);
@@ -325,5 +313,4 @@ class GeneralAttributeController extends UserController
           return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
-
 }

@@ -1,46 +1,73 @@
 @section('contents')
-    <div class="card-header">
-      <div class="card-tools">
-        <div class="input-group input-group-sm" style="">
-          <input type="text" name="search_word" class="form-control float-right" placeholder="Search" value="{{$search_word}}">
-          <div class="input-group-append">
-            <button type="submit" class="btn btn-default" id="search_button">
-              <i class="fa fa-search"></i>
-            </button>
-          </div>
-          <!--
-          <a type="button" class="btn btn-primary btn-sm" href="#">
-            <i class="fa fa-plus"></i>
-            <span class="btn-label">追加</span>
-          </a>
-          -->
-        </div>
+<div class="card-header">
+  <div class="card-tools">
+    <div class="input-group input-group-sm" style="">
+      <input type="text" name="search_word" class="form-control float-right" placeholder="Search" value="{{$search_word}}">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-default" id="search_button">
+          <i class="fa fa-search"></i>
+        </button>
       </div>
-      <h3 class="card-title">@yield('title')</h3>
+      <!--
+      <a type="button" class="btn btn-primary btn-sm" href="#">
+        <i class="fa fa-plus"></i>
+        <span class="btn-label">追加</span>
+      </a>
+      -->
     </div>
-    <div class="card-body table-responsive p-0">
-      @if(count($items) > 0)
-      <table class="table table-hover">
-        <tbody>
-          @include('components.lists', [
-            'items'=>$items
-            ])
-        </tbody>
-      </table>
-      @else
-      <div class="alert">
-        <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
-      </div>
-      @endif
-    </div>
-<script>
-$(function(){
-  $("#search_button").on("click", function(e){
-    var _search_word = $("input[name=search_word]").val();
-    if(!util.isEmpty(_search_word)){
-      location.href="./@yield('domain')?search_word="+_search_word;
-    }
-  });
-});
-</script>
+  </div>
+  <h3 class="card-title">@yield('title')</h3>
+</div>
+<div class="card-body table-responsive p-0">
+  @if(count($items) > 0)
+  <table class="table table-hover">
+    <tbody>
+      <tr>
+        @foreach($fields as $key => $field)
+          <th>{{$field['label']}}</th>
+        @endforeach
+      </tr>
+      @foreach($items as $i => $row)
+        <tr>
+          @foreach($fields as $key => $field)
+            <td>
+            @if($key==="buttons")
+              @foreach($field["button"] as $button)
+                @if($button==="edit")
+                <a href="javascript:void(0);" page_title="{{$domain_name}}編集" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1">
+                  <i class="fa fa-edit"></i>
+                </a>
+                @elseif($button==="delete")
+                <a href="javascript:void(0);" page_title="{{$domain_name}}削除" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?_del=1" role="button" class="btn btn-danger btn-sm float-left mr-1">
+                  <i class="fa fa-times"></i>
+                </a>
+                @endif
+              @endforeach
+            @else
+              @if(isset($field['link']))
+                <a
+                @if($field['link']==='show')
+                   href="javascript:void(0);" page_title="{{$domain_name}}詳細" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}"
+                @else
+                  href="{{$field['link']}}"
+                @endif
+                >
+              @endif
+              {{str_limit($row[$key], 50, '...')}}
+              @if(isset($field['link']))
+                </a>
+              @endif
+            @endif
+            </td>
+          @endforeach
+        </tr>
+      @endforeach
+    </tbody>
+  </table>
+  @else
+  <div class="alert">
+    <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+  </div>
+  @endif
+</div>
 @endsection

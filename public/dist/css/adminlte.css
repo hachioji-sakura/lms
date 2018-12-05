@@ -5189,7 +5189,7 @@ button.close, button.mailbox-attachment-close {
 
 @media (min-width: 576px) {
 	.modal-dialog {
-		max-width: 500px;
+		width: 70%;
 		margin: 1.75rem auto;
 	}
 	.modal-dialog-centered {
@@ -8693,6 +8693,7 @@ body,
 	bottom:0;
 	left:0;
 	width:100%;
+	z-index:1039;
 	/*
 	padding: 15px;
 	color: #555;
@@ -10724,20 +10725,22 @@ label:not(.form-check-label):not(.custom-file-label) {
 	transition: all 0.3s linear;
 	position: absolute;
 	top: -10px;
-	right: 10px;
+	right: 20px;
+	/*
 	z-index: 0;
-	font-size: 90px;
+	*/
+	font-size: 60px;
 	color: rgba(0, 0, 0, 0.15);
 }
 
 .small-box:hover {
 	text-decoration: none;
 }
-
+/*
 .small-box:hover .icon {
 	font-size: 95px;
 }
-
+*/
 @media (max-width: 767.98px) {
 	.small-box {
 		text-align: center;

@@ -675,8 +675,8 @@
 
 	//引数(json)を登録用のフォームに値をセット
 	function setEditForm(data, form, _isUpdate){
-		$("input[type=text], textarea", $("#"+form)).val("");
-		$("input[type=radio],input[type=checkbox]", $("#"+form)).prop("checked", false);
+		//$("input[type=text], textarea", $("#"+form)).val("");
+		//$("input[type=radio],input[type=checkbox]", $("#"+form)).prop("checked", false);
 		if(data){
 			$("input, textarea, select", $("#"+form)).each(function(){
 				var field = $(this).attr("name");

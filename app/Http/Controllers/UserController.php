@@ -62,6 +62,20 @@ class UserController extends Controller
     }
     return $items;
   }
+  protected function save_redirect($res, $param, $success_message, $redirect_url=''){
+   if(empty($redirect_url)) $redirect_url ='/'.$this->domain;
+   if($this->is_success_responce($res)){
+     $_param['success_message'] = $success_message;
+     return redirect($redirect_url)
+      ->with($_param);
+   }
+   else {
+     $_param['error_message'] = $res['message'];
+     $_param['error_message_description'] = $res['description'];
+     return back()->with($_param);
+   }
+  }
+
   /**
    * メールアドレス存在チェック
    *

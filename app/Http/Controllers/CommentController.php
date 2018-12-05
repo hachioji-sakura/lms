@@ -1,100 +1,56 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\User;
-use App\Models\Comment;
-use App\Models\Student;
+
 use Illuminate\Http\Request;
+use App\Models\Comment;
+use App\Models\Teacher;
+use App\Models\Manager;
+use App\Models\Student;
 use DB;
-class CommentController extends UserController
+class CommentController extends MilestoneController
 {
-  public function index(Request $request)
-  {
-    /*
-    $items = $this->comments($request);
-    return $items;
-    */
-    $comments = User::find(3)->target_comments;
-    $comments = $comments->sortByDesc('created_date');
-    foreach($comments as $comment){
-      $create_user = $comment->create_user->details();
-      $comment->create_user_name = $create_user->name;
-      $comment->create_user_kana = $create_user->kana;
-      $comment->create_user_icon = $create_user->icon;
-      unset($comment->create_user);
+    public $domain = 'comments';
+    public $table = 'comments';
+    public $domain_name = 'コメント';
+    public function model(){
+      return Comment::query();
     }
-    return $comments->toArray();
-  }
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function student_comments_store(Request $request, $id)
-  {
-    $user = $this->login_details();
-    $form = $request->all();
-    try {
-      DB::beginTransaction();
-      $Comment = new Comment;
+    public function create_form(Request $request){
+      $user = $this->login_details();
+      $form = [];
+      $form['publiced_at'] = '9999-12-31';
       $form['create_user_id'] = $user->user_id;
-      $form['publiced_at'] = date("Y/m/d");
+      $form['type'] = $request->get('type');
+      $form['title'] = $request->get('title');
+      $form['body'] = $request->get('body');
       if($this->is_student($user->role)===true){
-        //生徒の場合は自分自身を対象とし、コメントは公開しない
-        $form['publiced_at'] = '9999-12-31';
+        //生徒の場合は自分自身を対象とする
         $form['target_user_id'] = $user->user_id;
       }
       else {
-        $student = Student::find($id);
-        $form['target_user_id'] = $student->user_id;
+        if($request->has('student_id')){
+          $u = Student::find($request->get('student_id'));
+        }
+        else if($request->has('teacher_id')){
+          $u = Teacher::find($request->get('teacher_id'));
+        }
+        else if($request->has('manager_id')){
+          $u = Manager::find($request->get('manager_id'));
+        }
+        $form['target_user_id'] = $u->user_id;
       }
-      unset($form['_token']);
-      $Comment->fill($form)->save();
-      DB::commit();
+      return $form;
     }
-    catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        abort(500, $e->getMessage());
+    public function update_form(Request $request){
+      $form = [];
+      if(!empty($request->get('publiced_at'))){
+        $form['publiced_at'] = $request->get('publiced_at');
+      }
+      $form['type'] = $request->get('type');
+      $form['title'] = $request->get('title');
+      $form['body'] = $request->get('body');
+      return $form;
     }
-    catch(\Exception $e){
-        DB::rollBack();
-        return back()->with('error_message','登録に失敗しました。');
-    }
-    return back()->with('success_message','コメントを追加しました');
-  }
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function edit($id)
-  {
-      //
-  }
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-      //
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($id)
-  {
-      //
-  }
 }

@@ -65,8 +65,7 @@ class User extends Authenticatable
       if(isset($item)){
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
-        $item['
-        icon'] = $s3_url;
+        $item['icon'] = $s3_url;
         return $item;
       }
       $item = Teacher::where('user_id', $this->id)->first();
@@ -93,6 +92,9 @@ class User extends Authenticatable
     }
     public function target_comments(){
       return $this->hasMany('App\Models\Comment', 'target_user_id');
+    }
+    public function target_milestones(){
+      return $this->hasMany('App\Models\Milestone', 'target_user_id');
     }
     public function aliases(){
       return $this->hasMany('App\Models\UserTag');

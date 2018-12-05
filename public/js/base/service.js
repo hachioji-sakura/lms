@@ -35,6 +35,12 @@
 		clearRequestCache : clearRequestCache
 	};
 	var _message = {
+		"C_POST_INS" : {"title" : "登録確認", "body": "登録しますが、よろしいですか？"},
+		"C_POST_UPD" : {"title" : "更新確認", "body": "更新しますが、よろしいですか？"},
+		"C_POST_DEL" : {"title" : "削除確認", "body": "削除しますが、よろしいですか？"},
+		"C_POST_IMP" : {"title" : "ファイル取込", "body": "ファイルインポートを開始しますが、よろしいですか？"},
+		"C_POST_EXP" : {"title" : "ファイル出力", "body": "出力ファイルをダウンロードしますが、よろしいですか？"},
+		"C_POST_UPL" : {"title" : "ファイルアップロード", "body": "ファイルアップロードしますが、よろしいですか？"},
 		"REQ" :{"title" : "入力エラー", "body": "入力してください"},
 		"FLS" :{"title" : "入力エラー", "body": "{%0}MBを超えるファイルは添付できません"},
 		"MINL" :{"title" : "入力エラー", "body": "{%0}文字以上で入力してください"},
@@ -58,7 +64,6 @@
 		"YMD" :{"title" : "入力エラー", "body": "日付形式が正しくありません"},
 		"JSON" :{"title" : "入力エラー", "body": "JSON形式が正しくありません"},
 	}
-	startProc();
 	//クロージャー
 	/**
 	* 初期処理 :
@@ -80,8 +85,8 @@
 				_cache["userSetting"][key] = data[key];
 			}
 		}
-		loadRequestCache();
-		setQueryParam();
+		//loadRequestCache();
+		//setQueryParam();
 		//setGroupCode();
 	}
 	/**
@@ -105,11 +110,13 @@
     * @return {void} return nothing
     */
 	function loadStop (){
+		/*
 		if(_loadTimer!=null){
 			clearTimeout(_loadTimer);
 			_loadTimer = null;
 		}
 		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
+		*/
 	}
 	/**
 	* ローディングダイアログを閉じる
@@ -173,7 +180,7 @@
     * @method setQueryParam
     * @return {void} return nothing
     */
-	function setQueryParam(){
+	function _setQueryParam(){
 		var _urls = (document.URL+"").split('/');
 		var _pageCode = _urls[_urls.length-1].replace("#","");
 		//urlからページコード取得
@@ -193,6 +200,25 @@
 		if(!util.isEmpty(h)) _cache["h0"] = h;
 		return {"page" : _cache["page"], "h" : h, "query" : _cache["_query_"]};
 	}
+	function setQueryParam(param){
+		_setQueryParam();
+		for(var key in param){
+			_cache["_query_"][key] = param[key];
+		}
+		return getUrl();
+	}
+	function getUrl(){
+		var _url = _cache["page"]+"?";
+		for(var key in _cache["_query_"]){
+			if(util.isEmpty(_cache["_query_"][key])) continue;
+			_url+=key+"="+_cache["_query_"][key]+"&";
+		}
+		_url = _url.substring(0, _url.length-1);
+		if(!util.isEmpty(_cache["h0"])){
+			_url += "#"+_cache["h0"];
+		}
+		return _url;
+	}
 	/**
     * URLパラメータ取得
 	* キャッシュしたURLパラメータより値を取得
@@ -206,7 +232,6 @@
 		if(util.isEmpty(ret)) return "";
 		return ret;
 	}
-
 	/**
 	* base64デコード
 	* base64文字列をutf8にデコード
