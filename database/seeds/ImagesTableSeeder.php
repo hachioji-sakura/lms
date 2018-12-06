@@ -12,6 +12,7 @@ class ImagesTableSeeder extends Seeder
      */
     public function run()
     {
+      DB::table('images')->truncate();
       $_image = Image::create([
           'name' => 'svg_f_object_115_0bg.svg',
           'type' => 'svg',

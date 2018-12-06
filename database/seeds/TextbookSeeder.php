@@ -17,7 +17,10 @@ class TextbookSeeder extends Seeder
      */
     public function run()
     {
-
+      DB::table('textbooks')->truncate();
+      DB::table('textbook_chapters')->truncate();
+      DB::table('textbook_questions')->truncate();
+      DB::table('textbook_answers')->truncate();
       $_publisher = Publisher::create([
         'name' => '八王子サクラ',
         'url' => 'http://hachiojisakura.com',
