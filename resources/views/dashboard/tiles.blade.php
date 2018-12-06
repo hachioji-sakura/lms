@@ -2,7 +2,7 @@
     <div class="card-header">
       <div class="card-tools">
         <div class="input-group input-group-sm" style="">
-          <input type="text" name="search_word" class="form-control float-right" placeholder="Search" value="{{$search_word}}">
+          <input type="text" name="search_word" class="form-control float-right stretch" placeholder="Search" value="{{$search_word}}">
           <div class="input-group-append">
             <button type="submit" class="btn btn-default" id="search_button">
               <i class="fa fa-search"></i>
