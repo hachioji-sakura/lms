@@ -15,9 +15,6 @@ class UserExamination extends Model
   public function textbook_chapter(){
     return $this->belongsTo('App\Models\TextbookChapter', 'chapter_id');
   }
-  public function retry_questions(){
-    return $this->hasMany('App\Models\UserRetryQuestion');
-  }
   public function answers(){
     return $this->hasMany('App\Models\UserAnswer');
   }

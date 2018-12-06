@@ -1,60 +1,75 @@
-<html>
-<head>
-<title>回答結果ページ</title>
-<style>
-body {
-  background: #00ff00;
-  font-family: Meiryo;
-  font-size: xx-large;
-}
-input {
-  font-size : 30px;
-}
-</style>
+@section('title')
+  @yield('domain_name')
+@endsection
+@extends('dashboard.common')
 
-</head>
-<body>
-{{-- 直近回答の表示+次へのリンク --}}
-@if(isset($item))
-<!-- h1>{{$chapter_title}} 問題:{{$item['sort_no']}}</h1 -->
-<!-- h3>{{$item['title']}}</h3 -->
-<h3>問題：<span style="color:#f00;">{{$item['body']}}</span></h3>
-<h3>回答内容：<span style="color:#f00;">{{$answer_text}}</span></h3>
-  @if($judge===1)
-    <h4>
-      @if($is_traning===1)
-        練習モード：
+@section('contents')
+<div class="card-header mb-4">
+  <div class="row">
+    <div class="col-12 text-sm mb-4" style="border-bottom:solid 1px #AAA;">
+      <a href="/examinations">{{str_limit($textbook_title, 42,'...')}}</a> ＞ <a href="/examinations/{{$textbook_id}}">{{str_limit($chapter_title, 42,'...')}}</a>
+    </div>
+  </div>
+  <h1 class="card-title">No{{$item['sort_no']}}.{{$item['title']}}</h1>
+  @if($is_traning===1)
+    <h4>練習モード</h4>
+  @endif
+  <div class="row">
+    <div class="col-12">
+      <h2>{{$item['body']}} <span class="text-primary" style="font-size:2rem;text-decoration:underline;">答え：{{$answer_text}}</span></h2>
+    </div>
+  </div>
+</div>
+<div class="card-body">
+  <div class="row">
+    <div class="col-12">
+      @if($judge===1)
+      <div class="col-12 text-success" style="font-size:2rem;">
+        〇正解
+      </div>
+      @else
+      <div class="col-12 text-danger" style="font-size:2rem;">
+        ×不正解
+      </div>
+      <div class="col-12 text-danger" style="font-size:1.2rem;text-decoration:underline;">
+        答え：<span style="color:#f00;">{{$item['answer_text']}}</span><br>
+      </div>
       @endif
-      正解です！
-    </h4>
-    @if(!isset($result))
-      <input type="button" onCLick='location.href="/examinations/{{$textbook_id}}/{{$chapter_id}}";' value="次の問題に進む"><br>
-    @endif
-  @else
-    <h4>
-      不正解です。正解は<br>
-      <span style="color:#f00;">{{$item['answer_text']}}</span><br>
-      です。
-    </h4>
-    <input type="button" onCLick='location.href="/examinations/{{$textbook_id}}/{{$chapter_id}}";' value="もう１回同じ問題を練習する"><br>
-  @endif
-@endif
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 mt-4">
+      @if($judge===1)
+        @if(isset($result))
+          <h3>{{$chapter_title}} にすべて回答しました</h3>
+          <div class="row my-2">
+              <div class="col-12">
+                <h4 class="text-primary">正解/問題：{{$result['success']}} / {{$result['total']}}</h4>
+              </div>
+          </div>
+          @if($result['success'] < $result['total'])
+            <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
+              @csrf
+              <button type="submit" class="btn btn-block btn-info btn-lg">まちがえた問題のみ解く</button>
+            </form>
+          @else
+            <a class="btn btn-block btn-secondary btn-lg" href="/examinations/{{$textbook_id}}">章選択に戻る</a>
+          @endif
+        @else
+          <a class="btn btn-block btn-info btn-lg" href="/examinations/{{$textbook_id}}/{{$chapter_id}}">次の問題</a>
+        @endif
+      @else
+      <a class="btn btn-block btn-info btn-lg" href="/examinations/{{$textbook_id}}/{{$chapter_id}}">同じ問題を練習する</a>
+      @endif
+    </div>
+  </div>
+</div>
+<script>
+</script>
+@endsection
 
-{{-- 結果の表示 --}}
-@if(isset($result))
-<h1>{{$chapter_title}} はすべて終了しました</h1>
-<h4 style="color:#f00;">結果・正解数/問題数：{{$result['success']}} / {{$result['total']}}</h4>
-  @if($result['success']!==$result['total'])
-  <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
-    @csrf
-    <input type="submit" value="間違った問題のみ再挑戦する"><br>
-  </form>
-  @endif
-@endif
-<br>
-<br>
-<a href="/examinations/{{$textbook_id}}/">章の選択画面へ</a><br>
-<a href="/logout">ログイン画面へ</a><br>
+@section('page_sidemenu')
+@endsection
 
-</body>
-</html>
+@section('page_footer')
+@endsection

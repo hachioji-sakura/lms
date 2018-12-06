@@ -46,27 +46,28 @@ class StudentController extends UserController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-   $user = $this->login_details();
-   $ret = [
-     'domain' => $this->domain,
-     'domain_name' => $this->domain_name,
-     'user' => $user,
-     'search_word'=>$request->search_word
-   ];
-   if(is_numeric($id) && $id > 0){
+    $id = intval($id);
+    $user = $this->login_details();
+    $ret = [
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
+       'user' => $user,
+       'search_word'=>$request->search_word
+    ];
+    if(is_numeric($id) && $id > 0){
      //id指定がある
      if($this->is_student($user->role) && $id!==$user->id){
       //生徒は自分のidしか閲覧できない
       abort(404);
      }
-   }
-   else {
+    }
+    else {
      //id指定がない、かつ、講師・事務以外はNG
      if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
      }
-   }
-   return $ret;
+    }
+    return $ret;
   }
 
   /**
@@ -217,7 +218,7 @@ EOT;
     */
   public function show(Request $request, $id)
   {
-   $_param = $this->get_param($request);
+   $_param = $this->get_param($request, $id);
    $model = $this->model()->find($id)->user;
    $item = $model->details();
    $user = $_param['user'];

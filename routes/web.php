@@ -47,9 +47,9 @@ Route::post('students/{student_id}/icon','ImageController@icon_change');
 Route::get('/home', 'HomeController@index')->name('home');
 
 //教科書を選択する画面
-Route::get('/examinations', 'TextbookController@examination');
+Route::get('/examinations', 'TextbookController@examination_textbook');
 //目次を選択する画面
-Route::get('/examinations/{textbook_id}', 'TextbookChapterController@examination');
+Route::get('/examinations/{textbook_id}', 'TextbookChapterController@examination_chapter');
 //問題ページを表示する画面(question_idがない場合はカレントの問題を表示）
 Route::get('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@examination');
 Route::post('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');

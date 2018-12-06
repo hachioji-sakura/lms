@@ -48,31 +48,32 @@ class TeacherController extends StudentController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-   $user = $this->login_details();
-   $ret = [
-    'domain' => $this->domain,
-    'domain_name' => $this->domain_name,
-    'user' => $user,
-    'search_word'=>$request->search_word
-   ];
-   //講師・事務以外はNG
-   if($this->is_manager_or_teacher($user->role)!==true){
-    abort(403);
-   }
-   if(is_numeric($id) && $id > 0){
-    //id指定がある
-    if($this->is_teacher($user->role) && $id!==$user->id){
-      //講師は自分のidしか閲覧できない
-      abort(404);
-    }
-   }
-   else {
-    //id指定がない、かつ、事務以外はNG
-    if($this->is_manager($user->role)!==true){
+    $id = intval($id);
+    $user = $this->login_details();
+    $ret = [
+      'domain' => $this->domain,
+      'domain_name' => $this->domain_name,
+      'user' => $user,
+      'search_word'=>$request->search_word
+    ];
+    //講師・事務以外はNG
+    if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
     }
-   }
-   return $ret;
+    if(is_numeric($id) && $id > 0){
+      //id指定がある
+      if($this->is_teacher($user->role) && $id!==$user->id){
+        //講師は自分のidしか閲覧できない
+        abort(404);
+      }
+    }
+    else {
+      //id指定がない、かつ、事務以外はNG
+      if($this->is_manager($user->role)!==true){
+        abort(403);
+      }
+    }
+    return $ret;
   }
   /**
    * 検索～一覧
@@ -169,7 +170,7 @@ EOT;
   */
   public function show(Request $request, $id)
   {
-    $_param = $this->get_param($request);
+    $_param = $this->get_param($request, $id);
     $model = $this->model()->find($id)->user;
     $item = $model->details();
     $user = $_param['user'];

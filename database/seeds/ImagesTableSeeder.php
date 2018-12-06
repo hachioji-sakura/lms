@@ -12,7 +12,8 @@ class ImagesTableSeeder extends Seeder
      */
     public function run()
     {
-      $_image = Image::create([
+      $_add_items = [
+        [
           'name' => 'svg_f_object_115_0bg.svg',
           'type' => 'svg',
           'size' => 8502,
@@ -20,8 +21,8 @@ class ImagesTableSeeder extends Seeder
           'alias' => '男性',
           'create_user_id' => 1,
           'publiced_at' => '2018/11/01',
-      ]);
-      $_image = Image::create([
+        ],
+        [
           'name' => 'svg_f_object_116_0bg.svg',
           'type' => 'svg',
           'size' => 5320,
@@ -29,8 +30,8 @@ class ImagesTableSeeder extends Seeder
           'alias' => '女性',
           'create_user_id' => 1,
           'publiced_at' => '2018/11/01',
-      ]);
-      $_image = Image::create([
+        ],
+        [
           'name' => 'svg_f_object_170_0bg.svg',
           'type' => 'svg',
           'size' => 8894,
@@ -38,8 +39,8 @@ class ImagesTableSeeder extends Seeder
           'alias' => '講師',
           'create_user_id' => 1,
           'publiced_at' => '2018/11/01',
-      ]);
-      $_image = Image::create([
+        ],
+        [
           'name' => 'svg_f_object_86_0bg.svg',
           'type' => 'svg',
           'size' => 2796,
@@ -47,7 +48,13 @@ class ImagesTableSeeder extends Seeder
           'alias' => 'サクラ',
           'create_user_id' => 1,
           'publiced_at' => '2018/11/01',
-      ]);
-
+        ],
+      ];
+      foreach($_add_items as $_add_item){
+        $_item = Image::where('name', '=', $_add_item['name']);
+        if($_item->count()<1){
+          $_item = Image::create($_add_item);
+        }
+      }
     }
 }

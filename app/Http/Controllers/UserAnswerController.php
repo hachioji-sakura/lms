@@ -11,7 +11,11 @@ use App\Models\TextbookQuestion;
 use DB;
 class UserAnswerController extends UserExaminationController
 {
-    private function model(){
+    public $domain = 'user_answers';
+    public $table = 'user_answers';
+    public $domain_name = '問題回答';
+
+    public function model(){
       return UserAnswer::query();
     }
     /**
@@ -23,18 +27,14 @@ class UserAnswerController extends UserExaminationController
      * @return view
      */
     public function answer(Request $request, $textbook_id, $chapter_id, $question_id=null){
-      $user = $this->login_details();
       $judge = 0;
       $is_save_answer = true;
       $is_traning = 0;
       $answer_text = $request->get('answer_text');
 
       //受講中の状況取得
-      $current_examination = $this->get_examintaion($user->user_id, $chapter_id);
-      if(!isset($current_examination)){
-        //受講中の状況がない
-        return abort(500);
-      }
+      $_param = $this->get_param($request, $chapter_id);
+      $current_examination = $_param['current_examination'];
 
       //受講中の問題-直近の回答を取得
       $current_answer = $current_examination->answers->where('question_id','=', $question_id)
@@ -90,29 +90,22 @@ class UserAnswerController extends UserExaminationController
         }
       }
 
-      $next_question_id = $this->get_next_question_id($current_examination->id);
-      $next_question = TextbookQuestion::where('id', '=', $next_question_id)->first();
-      $result = null;
-      if(!isset($next_question)){
-        //章問題についてすべて終了した場合、結果を設定
-        $_total = count($this->get_questions($current_examination->id));
-        $_success = $_total - count($this->get_miss_questions($current_examination->id));
-        $result = [
-          'total' => $_total,
-          'success' => $_success
-        ];
-      }
+      $result = $this->get_result($current_examination->id);
+      $chapter = $current_examination->textbook_chapter;
+      $textbook = $chapter->textbook;
 
       return view('examinations.result',[
         'textbook_id' => $textbook_id,
         'chapter_id' => $chapter_id,
+        'textbook_title' => $textbook->name,
         'chapter_title' => $chapter->title,
         'item' => $question->toArray(),
         'judge'=>$judge,
         'is_traning' => $is_traning,
         'result'=>$result,
         'answer_text'=>$answer_text
-      ]);
+      ])
+      ->with($_param);
     }
     /**
      * 回答を保存する（採点も行う）
@@ -181,80 +174,5 @@ class UserAnswerController extends UserExaminationController
           DB::rollBack();
           return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

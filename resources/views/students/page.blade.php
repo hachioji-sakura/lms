@@ -17,7 +17,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             　様
             @endslot
@@ -37,54 +37,41 @@
                   </small>
               -->
               </h6>
-              {{--
-                <div class="card-footer p-0">
-                  <ul class="nav flex-column">
-                    <li class="nav-item">
-                      <a href="#comments" class="nav-link">
-                        コメント
-                        <span class="float-right badge bg-danger">99</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#events" class="nav-link">
-                        イベント
-                        <span class="float-right badge bg-danger">99</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="#tasks" class="nav-link">
-                        タスク
-                        <span class="float-right badge bg-danger">99</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              --}}
+              <div class="card-footer p-0">
+                <ul class="nav flex-column">
+                  <li class="nav-item">
+                    <a href="/examinations" class="nav-link">
+                      <i class="fa fa-file-signature mr-2"></i>
+                      確認テスト
+                      <span class="float-right badge bg-danger">New</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             @endslot
         @endcomponent
 			</div>
 			<div class="col-md-8">
-        @yield('milestones')
+        @yield('comments')
 			</div>
 		</div>
 	</div>
 </section>
 
+{{--まだ対応しない
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @yield('comments')
+        @yield('milestones')
 			</div>
-      {{--まだ対応しない
 			<div class="col-12 col-lg-6 col-md-6">
 				@yield('events')
 			</div>
-      --}}
 		</div>
 	</div>
 </section>
+--}}
 
 {{--まだ対応しない
 <section class="content">
