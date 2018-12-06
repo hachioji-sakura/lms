@@ -218,7 +218,7 @@ EOT;
     */
   public function show(Request $request, $id)
   {
-   $_param = $this->get_param($request);
+   $_param = $this->get_param($request, $id);
    $model = $this->model()->find($id)->user;
    $item = $model->details();
    $user = $_param['user'];
