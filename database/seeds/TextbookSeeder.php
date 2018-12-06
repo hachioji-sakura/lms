@@ -17,6 +17,7 @@ class TextbookSeeder extends Seeder
      */
     public function run()
     {
+      DB::table('publishers')->truncate();
       DB::table('textbooks')->truncate();
       DB::table('textbook_chapters')->truncate();
       DB::table('textbook_questions')->truncate();
@@ -45,19 +46,18 @@ class TextbookSeeder extends Seeder
         ['q' => '２＋２＝', 'a' => [4,'４']],
         ['q' => '２＋３＝', 'a' => [5,'５']],
       ];
-      $c = 0;
-      foreach($_templates as $_template){
-        $c++;
+      foreach($_templates as $i => $_template){
         $_question = TextbookQuestion::create([
           'chapter_id' => $_chapter->id,
           'title' => 'つぎのけいさんをしてみよう',
           'body' => $_template['q'],
+          'sort_no' => ($i+1),
           'score' => 20
         ]);
-        foreach($_template['a'] as $_answer){
+        foreach($_template['a'] as $j => $_answer){
           $_a = TextbookAnswer::create([
             'question_id' => $_question->id,
-            'sort_no' => $c,
+            'sort_no' => $j,
             'answer_text' => $_answer,
           ]);
         }
@@ -75,19 +75,18 @@ class TextbookSeeder extends Seeder
         ['q' => '２×４＝', 'a' => [8,'８']],
         ['q' => '２×５＝', 'a' => [10,'１０']],
       ];
-      $c = 0;
-      foreach($_templates as $_template){
-        $c++;
+      foreach($_templates as $i => $_template){
         $_question = TextbookQuestion::create([
           'chapter_id' => $_chapter->id,
           'title' => 'つぎのけいさんをしてみよう',
           'body' => $_template['q'],
+          'sort_no' => ($i+1),
           'score' => 20
         ]);
-        foreach($_template['a'] as $_answer){
+        foreach($_template['a'] as $j => $_answer){
           $_a = TextbookAnswer::create([
             'question_id' => $_question->id,
-            'sort_no' => $c,
+            'sort_no' => $j,
             'answer_text' => $_answer,
           ]);
         }
