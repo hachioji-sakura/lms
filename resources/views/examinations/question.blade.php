@@ -20,7 +20,7 @@
 </div>
 <div class="card-body">
   <div class="row">
-    <div class="col-6">
+    <div class="col-12 col-lg-6 col-md-6 mb-2">
     <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
       @csrf
       @if($result['success'] < $result['total'])
@@ -30,8 +30,8 @@
       @endif
     </form>
     </div>
-    <div class="col-6">
-    <a class="btn btn-block btn-info btn-lg" href="/examinations/{{$textbook_id}}">章選択に戻る</a>
+    <div class="col-12 col-lg-6 col-md-6 mb-2">
+    <a class="btn btn-block btn-secondary btn-lg" href="/examinations/{{$textbook_id}}">章選択に戻る</a>
     </div>
   </div>
 @else
