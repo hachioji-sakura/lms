@@ -23,6 +23,7 @@ class ImportController extends UserController
       "teachers" =>  "api_get_teacher",
       "general_attributes" =>  "api_get_course",
       "textbooks" =>  "api_get_material",
+      "calendar" => "api_get_calendar",
       "charge_students" =>  "api_get_teacherstudent",
     ];
     //API auth token
@@ -41,6 +42,7 @@ class ImportController extends UserController
           "teachers",
           "textbooks",
           "charge_students",
+          "calendar",
         ];
         foreach($objects as $_object){
           $res = $this->import($request, $_object);
@@ -82,6 +84,9 @@ class ImportController extends UserController
             break;
           case "textbooks":
             $res = $this->textbooks_import($items);
+            break;
+          case "calendar":
+            $res = $this->calendars_import($items);
             break;
         }
         return $res;
@@ -237,6 +242,30 @@ class ImportController extends UserController
       }
     }
     /**
+     * 事務管理システムから取得したデータを取り込み
+     * @param array $items
+     * @return boolean
+     */
+    private function calendars_import($items){
+      try {
+        DB::beginTransaction();
+        $c = 0;
+        foreach($items as $item){
+          if($this->store_calendar($item)) $c++;
+        }
+        DB::commit();
+        return $this->api_responce(200, __FUNCTION__, "count[$c]");
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
+      catch(\Exception $e){
+        DB::rollBack();
+        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
+    }
+    /**
      * 講師情報登録
      * @param array $item
      * @return boolean
@@ -253,7 +282,7 @@ class ImportController extends UserController
       $item["image_id"] = 3;
       $item['password'] = 'sakusaku';
       $item['status'] = 0;
-      if(intval($item["del_flag"])===2){
+      if(intval($item['del_flag'])===2){
         $item['status'] = 9;
       }
       //認証情報登録
@@ -377,6 +406,42 @@ class ImportController extends UserController
         "body" => "course_id=".$item["course_id"],
         "create_user_id" => 1
       ]);
+      return true;
+    }
+    /**
+     * 担当生徒登録
+     * @param array $item
+     * @return boolean
+     */
+    private function store_calendar($item){
+      if(empty($item["teacher_no"]) || intval($item["teacher_no"])==0) return false;
+      $student = User::where('name', $item["student_no"])->first();
+      if(!isset($student)){
+        return false;
+      }
+      if(!isset($student->student) || !is_numeric($student->student->id)){
+        //存在しない生徒
+        return false;
+      }
+      $student = $student->student;
+      $teacher = User::where('name', $item["teacher_no"])->first();
+      if(!isset($teacher)){
+        return false;
+      }
+      if(!isset($teacher->teacher) || !is_numeric($teacher->teacher->id)){
+        //存在しない講師
+        return false;
+      }
+      $teacher = $teacher->teacher;
+
+      $items = ChargeStudent::where('student_id', $student->id)
+        ->where('teacher_id', $teacher->id)->first();
+
+      if(isset($items)){
+        //すでに存在する場合は保存しない
+        return false;
+      }
+
       return true;
     }
     /**

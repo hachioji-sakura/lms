@@ -3,16 +3,47 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Textbook;
+use App\Models\TextbookChapter;
+use App\Models\TextbookQuestion;
 use App\Models\UserExamination;
 use App\Models\UserAnswer;
-use App\Models\TextbookQuestion;
 use DB;
 
-class UserExaminationController extends UserController
+class UserExaminationController extends TextbookChapterController
 {
-    private function model(){
+    public $domain = 'user_examinations';
+    public $table = 'user_examinations';
+    public $domain_name = '問題';
+
+    public function model(){
       return UserExamination::query();
     }
+    /**
+     * 共通パラメータ取得
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id　（this.domain.model.id)
+     * @return json
+     */
+    public function get_param(Request $request, $chapter_id=null){
+      $user = $this->login_details();
+      if(!is_numeric($chapter_id) || $chapter_id <= 0){
+        abort(500);
+      }
+      //受講中の状況取得
+      $current_examination = $this->get_examintaion($user->user_id, $chapter_id);
+      $ret = [
+        'domain' => $this->domain,
+        'domain_name' => $this->domain_name,
+        'current_examination' => $current_examination,
+        'user' => $user,
+        'search_word'=>$request->search_word,
+        'search_status'=>$request->status
+      ];
+      return $ret;
+    }
+
     /**
      * textbook>chapterの受講状況をチェックし、問題ページを表示
      *
@@ -22,10 +53,11 @@ class UserExaminationController extends UserController
      * @return view
      */
     public function examination(Request $request, $textbook_id, $chapter_id){
-      $message = "";
-      $user = $this->login_details();
+
       //受講中の状況取得
-      $current_examination = $this->get_examintaion($user->user_id, $chapter_id);
+      $_param = $this->get_param($request, $chapter_id);
+      $current_examination = $_param['current_examination'];
+
       if(!isset($current_examination)){
         //受講中の状況がない=新規登録・・・？
         $res = $this->create_examination($request, $textbook_id, $chapter_id);
@@ -33,7 +65,6 @@ class UserExaminationController extends UserController
           $current_examination = $res["data"];
         }
         else {
-          return "受講登録エラー";
           abort(500);
         }
       }
@@ -59,24 +90,18 @@ class UserExaminationController extends UserController
         }
       }
 
-      $result = null;
-      if($is_result === true){
-        //終了した場合、結果を設定
-        $result = [
-          'total' => 99,
-          'score' => 100
-        ];
-      }
+      $result = $this->get_result($current_examination->id);
       $chapter = $current_examination->textbook_chapter;
-
+      $textbook = $chapter->textbook;
       return view('examinations.question', [
         'textbook_id' => $textbook_id,
         'chapter_id' => $chapter_id,
+        'textbook_title' => $textbook->name,
         'chapter_title' => $chapter->title,
         'item' => $question,
         'result' => $result,
-        'message' => $message
-      ]);
+      ])
+      ->with($_param);
     }
     /**
      * textbook>chapterの新規受講を登録し、問題ページを表示
@@ -97,6 +122,21 @@ class UserExaminationController extends UserController
         abort(500);
       }
     }
+    protected function get_result($user_examination_id){
+      $next_question_id = $this->get_next_question_id($user_examination_id);
+      $next_question = TextbookQuestion::where('id', '=', $next_question_id)->first();
+      $result = null;
+      if(!isset($next_question)){
+        //章問題についてすべて終了した場合、結果を設定
+        $_total = count($this->get_questions($user_examination_id));
+        $_success = $_total - count($this->get_miss_questions($user_examination_id));
+        $result = [
+          'total' => $_total,
+          'success' => $_success
+        ];
+      }
+      return $result;
+    }
     /**
      * textbook>chapterの新規受講を登録
      *
@@ -106,13 +146,13 @@ class UserExaminationController extends UserController
      * @return response
      */
     protected function create_examination(Request $request, $textbook_id, $chapter_id){
-      $user = $this->login_details();
       $retry = 0;
       if(!empty($request->get('retry'))){
         $retry = 1;
       }
       //受講中の状況を取得
-      $current_examination = $this->get_examintaion($user->user_id, $chapter_id);
+      $_param = $this->get_param($request, $chapter_id);
+      $current_examination = $_param['current_examination'];
 
       if(!isset($current_examination) || $this->is_result($current_examination)){
         //受講中の状況がないor 受講終了の場合、新規登録
@@ -151,122 +191,11 @@ class UserExaminationController extends UserController
       return false;
     }
     /**
-     * 受講状況取得
-     *
-     * @param  int  $user_id
-     * @param  int  $chapter_id
-     * @return boolean
-     */
-    protected function get_examintaion($user_id, $chapter_id){
-      return $current_examination = UserExamination::where('user_id', '=', $user_id)
-        ->where('chapter_id', '=', $chapter_id)
-        ->orderBy('created_at', 'desc')
-        ->first();
-    }
-    /**
-     * 対象問題の取得
-     *
-     * @param  int  $user_examination_id
-     * @return TextbookQuestion
-     */
-    protected function get_questions($user_examination_id){
-      //カレントの試験状態
-      $current_examination = UserExamination::where('id', '=', $user_examination_id)->first();
-      if($current_examination->parent_id > 0){
-        //リトライ対象の問題=前回間違えたことがある問題
-        $sql =<<<EOT
-          select distinct q.id, q.sort_no
-            from textbook_questions q
-            inner join user_examinations ue on q.chapter_id = ue.chapter_id and ue.id = ?
-            where q.id in (select question_id from user_answers where user_examination_id = ue.parent_id and judge = 0)
-            order by q.sort_no
-EOT;
-        $questions = DB::select($sql, [$current_examination->id]);
-      }
-      else {
-        //リトライではない＝章の問題
-        $sql =<<<EOT
-          select distinct q.id, q.sort_no
-            from textbook_questions q
-            inner join user_examinations ue on q.chapter_id = ue.chapter_id and ue.id = ?
-            order by q.sort_no
-EOT;
-        $questions = DB::select($sql, [$current_examination->id]);
-      }
-      return $questions;
-    }
-    /**
-     * 間違えた問題の取得
-     *
-     * @param  int  $user_examination_id
-     * @return TextbookQuestion
-     */
-    protected function get_miss_questions($user_examination_id){
-      //今回間違えた問題
-      $sql =<<<EOT
-        select distinct q.id, q.sort_no
-          from textbook_questions q
-          inner join user_examinations ue on q.chapter_id = ue.chapter_id and ue.id = ?
-          where q.id in (select question_id from user_answers where user_examination_id = ue.id and judge = 0)
-          order by q.sort_no
-EOT;
-      $questions = DB::select($sql, [$user_examination_id]);
-      return $questions;
-    }
-    /**
-     * 次の問題のidを取得
-     *
-     * @param  int  $user_examination_id
-     * @return int
-     */
-    protected function get_next_question_id($user_examination_id){
-      //カレントの試験状態
-      $current_examination = UserExamination::where('id', '=', $user_examination_id)->first();
-      if($current_examination->parent_id > 0){
-        //リトライ対象の問題=前回間違えたことがある問題かつ、今回正解がない問題
-        $sql =<<<EOT
-          select distinct q.id, q.sort_no
-            from textbook_questions q
-            inner join user_answers ua on q.id = ua.question_id and ua.user_examination_id = ?
-            where ua.judge = 0
-            and q.id not in (select question_id from user_answers where user_examination_id = ? and judge = 1)
-            order by q.sort_no
-EOT;
-        $questions = DB::select($sql, [$current_examination->parent_id, $current_examination->id]);
-      }
-      else {
-        //リトライではない＝章の問題かつ、今回正解がない問題が対象
-        $sql =<<<EOT
-          select distinct q.id, q.sort_no
-            from textbook_questions q
-            inner join user_examinations ue on q.chapter_id = ue.chapter_id and ue.id = ?
-            and q.id not in (select question_id from user_answers where user_examination_id = ue.id and judge = 1)
-            order by q.sort_no
-EOT;
-        $questions = DB::select($sql, [$current_examination->id]);
-      }
-      $sort_no = -1;
-      if($current_examination->current_question_id > 0){
-        $current_question = TextbookQuestion::where('id', '=', $current_examination->current_question_id)->first();
-        if(isset($current_question)){
-          $sort_no = $current_question->sort_no;
-        }
-      }
-      $ret = -1;
-      foreach($questions as $i => $question){
-        if($sort_no <= $question->sort_no){
-          $ret = $question->id;
-          break;
-        }
-      }
-      return $ret;
-    }
-    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+     public function index(Request $request)
     {
       $user = $this->login_details();
 
@@ -276,37 +205,6 @@ EOT;
       ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
     public function _store(Request $request)
     {
       $form = $request->all();
@@ -333,28 +231,6 @@ EOT;
       }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
     public function _update(Request $request, $id)
     {
       $form = $request->all();
@@ -378,14 +254,4 @@ EOT;
       }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

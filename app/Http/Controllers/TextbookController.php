@@ -5,92 +5,106 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Textbook;
 use DB;
-class TextbookController extends Controller
+class TextbookController extends MilestoneController
 {
-    public function examination(Request $request){
-      $textbooks = Textbook::all();
-      $items = [];
-      foreach($textbooks as $textbook){
-        $chapter = $textbook->chapters;
-        if(isset($chapter) && count($chapter)>0){
-          $items[] = ['id' => $textbook->id, 'name' => $textbook->name];
-        }
+    public $domain = 'textbooks';
+    public $table = 'textbooks';
+    public $domain_name = '教科書・参考書';
+
+    public function model(){
+      return Textbook::query();
+    }
+    /**
+     * 共通パラメータ取得
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id　（this.domain.model.id)
+     * @return json
+     */
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details();
+      $ret = [
+        'domain' => $this->domain,
+        'domain_name' => $this->domain_name,
+        'user' => $user,
+        'search_word'=>$request->search_word,
+        'search_status'=>$request->status
+      ];
+      return $ret;
+    }
+    public function examination_textbook(Request $request){
+      $_param = $this->get_param($request);
+      $_param['domain'] = "examinations";
+      $_table = $this->search($request);
+      return view('examinations.textbooks',   $_table)
+        ->with($_param);
+    }
+    /**
+     * 検索～一覧
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return [Collection, field]
+     */
+    public function search(Request $request)
+    {
+      $items = $this->model();
+      $user = $this->login_details();
+      if($this->is_manager_or_teacher($user->role)!==true){
+        //生徒の場合は所有しているものを表示する
       }
-      return view('examinations.textbooks', ['items' => $items]);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+      $items = $this->_search_scope($request, $items);
+      $items = $this->_search_pagenation($request, $items);
 
+      $items = $this->_search_sort($request, $items);
+      $items = $items->get();
+      $fields = [
+        'id' => [
+          'label' => 'ID',
+        ],
+        'name' => [
+          'label' => 'タイトル',
+          'link' => 'show',
+        ],
+      ];
+      foreach($items as $item){
+        $chapter = $item->chapters;
+        $item->kana = '出版：'.$item->publisher->name;
+        $icon = asset('svg/folder_in_file.svg');
+        if($item->image && !empty($item->image->s3_url)){
+          $icon = $item->image->s3_url;
+        }
+        $item->icon = $icon;
+        $item->chapter_count = count($chapter);
+      }
+      return ['items' => $items->toArray(), 'fields' => $fields];
+    }
     /**
-     * Store a newly created resource in storage.
+     * フィルタリングロジック
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Collection $items
+     * @return Collection
      */
-    public function store(Request $request)
+    public function _search_scope(Request $request, $items)
     {
-        //
+      //ID 検索
+      if(isset($request->id)){
+        $items = $items->where('id','=', $request->id);
+      }
+      //検索ワード
+      if(isset($request->search_word)){
+        $search_words = explode(' ', $request->search_word);
+        $items = $items->where(function($items)use($search_words){
+          foreach($search_words as $_search_word){
+            if(empty($_search_word)) continue;
+            $_like = '%'.$_search_word.'%';
+            $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
+          }
+        });
+      }
+
+      return $items;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

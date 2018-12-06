@@ -109,7 +109,6 @@ class MilestoneController extends UserController
         unset($item->target_user);
         $ret['item'] = $item;
       }
-
       return $ret;
     }
     /**

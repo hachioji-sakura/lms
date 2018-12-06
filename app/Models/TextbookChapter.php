@@ -16,6 +16,6 @@ class TextbookChapter extends Model
     return $this->belongsTo('App\Models\Textbook');
   }
   public function questions(){
-    return $this->hasMany('App\TextbookQuestion', 'chapter_id');
+    return $this->hasMany('App\Models\TextbookQuestion', 'chapter_id');
   }
 }
