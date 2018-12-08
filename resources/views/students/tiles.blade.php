@@ -20,6 +20,10 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
+      <li class="nav-item hr-1">
+        @component('components.search_word', ['search_word' => $search_word])
+        @endcomponent
+      </li>
       <li class="nav-item">
         <a href="" class="nav-link">
           <i class="fa fa-users nav-icon"></i>すべて

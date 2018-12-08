@@ -33,8 +33,8 @@ class UserAnswerController extends UserExaminationController
       $answer_text = $request->get('answer_text');
 
       //受講中の状況取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       //受講中の問題-直近の回答を取得
       $current_answer = $current_examination->answers->where('question_id','=', $question_id)
@@ -105,7 +105,10 @@ class UserAnswerController extends UserExaminationController
         'result'=>$result,
         'answer_text'=>$answer_text
       ])
-      ->with($_param);
+      ->with($param);
+    }
+    private function answer_judge($input, $answer){
+      
     }
     /**
      * 回答を保存する（採点も行う）

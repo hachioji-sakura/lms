@@ -17,10 +17,10 @@ class GeneralAttributeController extends UserController
     */
     public function index(Request $request)
     {
-      $_param = $this->get_param($request);
-      $_table = $this->search($request, $_param['select_key']);
+      $param = $this->get_param($request);
+      $_table = $this->search($request, $param['select_key']);
       return view($this->domain.'.lists', $_table)
-        ->with($_param);
+        ->with($param);
     }
     private function get_param(Request $request, $attribute_key='keys'){
       $user = $this->login_details();
@@ -101,9 +101,9 @@ class GeneralAttributeController extends UserController
      */
    public function create(Request $request)
    {
-      $_param = $this->get_param($request);
+     $param = $this->get_param($request);
       return view($this->domain.'.create', ["error_message" => ""])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -115,10 +115,10 @@ class GeneralAttributeController extends UserController
     public function store(Request $request)
     {
       $attribute_key = $request->get('attribute_key');
-      $_param = $this->get_param($request, $attribute_key);
+      $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_store($request);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _store(Request $request)
     {
@@ -174,7 +174,7 @@ class GeneralAttributeController extends UserController
     {
       $item = GeneralAttribute::findId($id)->first();
       $attribute_key = $item['attribute_key'];
-      $_param = $this->get_param($request, $attribute_key);
+      $param = $this->get_param($request, $attribute_key);
 
       $fields = [
         "attribute_key" => [
@@ -197,7 +197,7 @@ class GeneralAttributeController extends UserController
         "_del" => $request->get('_del'),
         "item"=>$item,
         "fields"=>$fields])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -210,7 +210,7 @@ class GeneralAttributeController extends UserController
     {
       $item = GeneralAttribute::findId($id)->first();
       $attribute_key = $item['attribute_key'];
-      $_param = $this->get_param($request, $attribute_key);
+      $param = $this->get_param($request, $attribute_key);
       $fields = [
         "attribute_key" => [
           "label" => "属性キー",
@@ -232,7 +232,7 @@ class GeneralAttributeController extends UserController
         "_edit" => true,
         "item"=>$item,
         "fields"=>$fields])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -246,10 +246,10 @@ class GeneralAttributeController extends UserController
     {
       $item = GeneralAttribute::findId($id)->first();
       $attribute_key = $item['attribute_key'];
-      $_param = $this->get_param($request, $attribute_key);
+      $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_update($request, $id);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました''/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _update(Request $request, $id)
     {
@@ -289,10 +289,10 @@ class GeneralAttributeController extends UserController
     {
       $item = GeneralAttribute::findId($id)->first();
       $attribute_key = $item['attribute_key'];
-      $_param = $this->get_param($request, $attribute_key);
+      $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_delete($request, $id);
-      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました''/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _delete(Request $request, $id)
     {

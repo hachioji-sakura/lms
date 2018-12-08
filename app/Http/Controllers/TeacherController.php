@@ -35,10 +35,10 @@ class TeacherController extends StudentController
    */
   public function index(Request $request)
   {
-   $_param = $this->get_param($request);
+   $param = $this->get_param($request);
    $_table = $this->search($request);
    return view($this->domain.'.tiles', $_table)
-    ->with($_param);
+    ->with($param);
   }
   /**
    * 共通パラメータ取得
@@ -170,10 +170,10 @@ EOT;
   */
   public function show(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
     $model = $this->model()->find($id)->user;
     $item = $model->details();
-    $user = $_param['user'];
+    $user = $param['user'];
     //コメントデータ取得
     $comments = $model->target_comments;
     $comments = $comments->sortByDesc('created_at');
@@ -195,6 +195,6 @@ EOT;
       'comments'=>$comments,
       'milestones'=>$milestones,
       'use_icons'=>$use_icons,
-    ])->with($_param);
+    ])->with($param);
   }
 }

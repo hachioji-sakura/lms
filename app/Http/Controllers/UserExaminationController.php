@@ -55,8 +55,8 @@ class UserExaminationController extends TextbookChapterController
     public function examination(Request $request, $textbook_id, $chapter_id){
 
       //受講中の状況取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       if(!isset($current_examination)){
         //受講中の状況がない=新規登録・・・？
@@ -101,7 +101,7 @@ class UserExaminationController extends TextbookChapterController
         'item' => $question,
         'result' => $result,
       ])
-      ->with($_param);
+      ->with($param);
     }
     /**
      * textbook>chapterの新規受講を登録し、問題ページを表示
@@ -151,8 +151,8 @@ class UserExaminationController extends TextbookChapterController
         $retry = 1;
       }
       //受講中の状況を取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       if(!isset($current_examination) || $this->is_result($current_examination)){
         //受講中の状況がないor 受講終了の場合、新規登録

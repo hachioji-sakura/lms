@@ -35,4 +35,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'slack' => [
+        'endpoint' => env('SLACK_ENDPOINT'),
+        'channel' => env('SLACK_CHANNEL'),
+    ],
 ];

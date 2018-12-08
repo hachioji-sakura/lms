@@ -6,20 +6,6 @@
 @section('contents')
 <div class="card-header">
   <div class="card-tools">
-    <div class="input-group input-group-sm" style="">
-      <input type="text" name="search_word" class="form-control float-right stretch" placeholder="Search" value="{{$search_word}}">
-      <div class="input-group-append">
-        <button type="submit" class="btn btn-default" id="search_button">
-          <i class="fa fa-search"></i>
-        </button>
-      </div>
-      <!--
-      <a type="button" class="btn btn-primary btn-sm" href="#">
-        <i class="fa fa-plus"></i>
-        <span class="btn-label">追加</span>
-      </a>
-      -->
-    </div>
   </div>
   <h3 class="card-title">
     <a href="/examinations">{{str_limit($textbook_title, 42,'...')}}</a> ＞ 章を選択してください
@@ -69,6 +55,23 @@
 @endsection
 
 @section('page_sidemenu')
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <li class="nav-item has-treeview menu-open mt-2">
+    <a href="#" class="nav-link">
+      <i class="nav-icon fa fa-filter"></i>
+      <p>
+        フィルタリング
+        <i class="right fa fa-angle-left"></i>
+      </p>
+    </a>
+    <ul class="nav nav-treeview">
+      <li class="nav-item hr-1">
+        @component('components.search_word', ['search_word' => $search_word])
+        @endcomponent
+      </li>
+    </ul>
+  </li>
+</ul>
 @endsection
 
 @section('page_footer')

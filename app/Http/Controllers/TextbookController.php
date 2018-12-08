@@ -33,11 +33,11 @@ class TextbookController extends MilestoneController
       return $ret;
     }
     public function examination_textbook(Request $request){
-      $_param = $this->get_param($request);
-      $_param['domain'] = "examinations";
+      $param = $this->get_param($request);
+      $param['domain'] = "examinations";
       $_table = $this->search($request);
       return view('examinations.textbooks',   $_table)
-        ->with($_param);
+        ->with($param);
     }
     /**
      * 検索～一覧

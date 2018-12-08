@@ -47,8 +47,8 @@ class TextbookChapterController extends TextbookController
     }
 
     public function examination_chapter(Request $request, $textbook_id){
-      $_param = $this->get_param($request, $textbook_id);
-      $_param['domain'] = "examinations";
+      $param = $this->get_param($request, $textbook_id);
+      $param['domain'] = "examinations";
       if(!$request->has('textbook_id')){
         $request->merge([
           'textbook_id' => $textbook_id,
@@ -56,7 +56,7 @@ class TextbookChapterController extends TextbookController
       }
       $_table = $this->search($request);
       return view('examinations.chapters',   $_table)
-        ->with($_param);
+        ->with($param);
     }
     /**
      * 検索～一覧

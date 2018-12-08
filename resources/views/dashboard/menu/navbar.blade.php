@@ -56,7 +56,7 @@
       <i class="fa fa-user-alt"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-      <a href="/password" class="dropdown-item">
+      <a href="javascript:void(0);" class="dropdown-item"  page_title="パスワード設定" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>
       <div class="dropdown-divider"></div>
@@ -68,4 +68,6 @@
 </ul>
 </nav>
 <!-- /.Navbar -->
+@component('components.action_message', [])
+@endcomponent
 @endsection

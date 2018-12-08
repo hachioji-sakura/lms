@@ -33,10 +33,10 @@ class StudentController extends UserController
    */
   public function index(Request $request)
   {
-   $_param = $this->get_param($request);
+   $param = $this->get_param($request);
    $_table = $this->search($request);
    return view($this->domain.'.tiles', $_table)
-     ->with($_param);
+     ->with($param);
   }
   /**
    * 共通パラメータ取得
@@ -143,10 +143,10 @@ EOT;
    */
   public function create(Request $request)
   {
-    $_param = $this->get_param($request);
+    $param = $this->get_param($request);
     return view($this->domain.'.create',
       ['error_message' => ''])
-      ->with($_param);
+      ->with($param);
    }
    /**
     * 新規登録
@@ -155,11 +155,11 @@ EOT;
     */
    public function store(Request $request)
    {
-    $_param = $this->get_param($request);
+    $param = $this->get_param($request);
 
     $res = $this->_store($request);
     //生徒詳細からもCALLされる
-    return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+    return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
    }
    /**
     * 新規登録ロジック
@@ -218,10 +218,10 @@ EOT;
     */
   public function show(Request $request, $id)
   {
-   $_param = $this->get_param($request, $id);
+   $param = $this->get_param($request, $id);
    $model = $this->model()->find($id)->user;
    $item = $model->details();
-   $user = $_param['user'];
+   $user = $param['user'];
    //コメントデータ取得
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
@@ -242,7 +242,7 @@ EOT;
      'comments'=>$comments,
      'milestones'=>$milestones,
      'use_icons'=>$use_icons,
-   ])->with($_param);
+   ])->with($param);
   }
   /**
    * Show the form for editing the specified resource.
@@ -252,10 +252,10 @@ EOT;
    */
   public function edit(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
     return view($this->domain.'.create', [
       '_edit' => true])
-      ->with($_param);
+      ->with($param);
   }
   /**
    * Update the specified resource in storage.
@@ -266,9 +266,9 @@ EOT;
    */
   public function update(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
     $res = $this->_update($request, $id);
-    return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました');
+    return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
   }
 
   public function _update(Request $request, $id)
@@ -303,10 +303,10 @@ EOT;
    */
   public function destroy(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
 
     $res = $this->_delete($request, $id);
-    return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました');
+    return $this->save_redirect($res, $param, $this->domain_name.'を削除しました');
   }
 
   public function _delete(Request $request, $id)

@@ -73,10 +73,10 @@ class MilestoneController extends UserController
      */
     public function index(Request $request)
     {
-      $_param = $this->get_param($request);
+      $param = $this->get_param($request);
       $_table = $this->search($request);
       return view($this->domain.'.lists', $_table)
-        ->with($_param);
+        ->with($param);
     }
     /**
      * 共通パラメータ取得
@@ -205,11 +205,11 @@ class MilestoneController extends UserController
      */
    public function create(Request $request)
    {
-      $_param = $this->get_param($request);
+      $param = $this->get_param($request);
       return view($this->domain.'.create',
         ['_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
          'error_message' => ''])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -219,11 +219,11 @@ class MilestoneController extends UserController
      */
     public function store(Request $request)
     {
-      $_param = $this->get_param($request);
+      $param = $this->get_param($request);
 
       $res = $this->_store($request);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
     }
     /**
      * 新規登録ロジック
@@ -275,7 +275,7 @@ class MilestoneController extends UserController
      */
     public function show(Request $request, $id)
     {
-      $_param = $this->get_param($request, $id);
+      $param = $this->get_param($request, $id);
 
       $fields = [
         'type' => [
@@ -288,7 +288,7 @@ class MilestoneController extends UserController
           'label' => '内容',
         ],
       ];
-      if($this->is_manager_or_teacher($_param['user']->role)===true){
+      if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
         $fields['target_user_name'] = [
           'label' => 'ユーザー',
@@ -305,7 +305,7 @@ class MilestoneController extends UserController
         '_del' => $request->get('_del'),
         '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         'fields'=>$fields])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -316,11 +316,11 @@ class MilestoneController extends UserController
      */
     public function edit(Request $request, $id)
     {
-      $_param = $this->get_param($request, $id);
+      $param = $this->get_param($request, $id);
       return view($this->domain.'.create', [
         '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         '_edit' => true])
-        ->with($_param);
+        ->with($param);
     }
 
     /**
@@ -332,10 +332,10 @@ class MilestoneController extends UserController
      */
     public function update(Request $request, $id)
     {
-      $_param = $this->get_param($request, $id);
+      $param = $this->get_param($request, $id);
       $res = $this->_update($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', str_replace('_', '/', $request->get('_page_origin')));
     }
     public function _update(Request $request, $id)
     {
@@ -369,11 +369,11 @@ class MilestoneController extends UserController
      */
     public function destroy(Request $request, $id)
     {
-      $_param = $this->get_param($request, $id);
+      $param = $this->get_param($request, $id);
 
       $res = $this->_delete($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました', str_replace('_', '/', $request->get('_page_origin')));
     }
 
     public function _delete(Request $request, $id)

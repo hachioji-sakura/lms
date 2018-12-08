@@ -50,10 +50,10 @@
         </div>
     </div>
 </form>
-{{-- まだ対応しない
 <h6 class="my-2">
-	<a href="{{ route('password.request') }}" class="small">パスワード忘れた方</a>
+	<a href="/forget" class="small">パスワード忘れた方</a>
 </h6>
+{{-- まだ対応しない
 <hr class="my-3">
 <p class="my-2">
 	<button type="button" class="btn btn-outline-success btn-block">新規登録する</button>

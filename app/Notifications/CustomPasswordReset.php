@@ -30,7 +30,7 @@ class CustomPasswordReset extends Notification
         return (new MailMessage)
                     ->subject(__('パスワード再設定のご案内'))
                     ->view('emails.reset')
-                    ->action(__('再設定'), url('password/reset', $this->token));
+                    ->action('パスワード再設定画面', url('password/reset', $this->token));
      }
     /**
      * Get the notification's delivery channels.

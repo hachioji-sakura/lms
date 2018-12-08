@@ -1,5 +1,9 @@
-<form method="POST" action="/password">
+@extends('layouts.loginbox')
+@section('title', 'パスワード再設定')
+@section('content')
+<form method="POST" action="/password/setting">
     @csrf
+    <input type="hidden" name="access_key" value="{{$access_key}}" />
     <div class="row">
       <div class="col-12">
         <div class="form-group">
@@ -25,13 +29,8 @@
           <button type="submit" class="btn btn-primary btn-block">
               設定する
           </button>
-          @if(isset($error_message))
-            <span class="invalid-feedback d-block ml-2 " role="alert">
-                <strong>{{$error_message}}</strong>
-            </span>
-          @endif
       </div>
-
     </div>
   </div>
 </form>
+@endsection

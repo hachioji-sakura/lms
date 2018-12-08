@@ -15,9 +15,14 @@ Auth::routes();
 Route::redirect('/', '/login', 301);
 
 Route::get('auth','AuthController@auth');
+Route::get('test','AuthController@test');
 Route::get('users/email/{email}','UserController@email_check');
+Route::get('forget','AuthController@forget');
+Route::post('forget','AuthController@reset_mail');
 Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
+Route::get('password/setting','AuthController@password_setting');
+Route::post('password/setting','AuthController@password_settinged');
 
 Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
@@ -55,3 +60,9 @@ Route::get('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationControlle
 Route::post('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('/examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('/examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+
+
+// 送信メール本文のプレビュー
+Route::get('sample/mailable/preview', function () {
+  return new App\Mail\SampleNotification();
+});

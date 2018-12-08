@@ -1,5 +1,5 @@
 <h3>
-    <a href="{{ config('app.url') }}"></a>
+    <a href="{{ config('app.url') }}">{{ config('app.name') }}</a>
 </h3>
 <p>
     以下のURLより、パスワードを再設定してください<br>

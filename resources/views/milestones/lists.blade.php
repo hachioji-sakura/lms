@@ -11,6 +11,7 @@
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
     </a>
   </li>
+
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -20,6 +21,10 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
+      <li class="nav-item hr-1">
+        @component('components.search_word', ['search_word' => $search_word])
+        @endcomponent
+      </li>
       @foreach(config('attribute.milestone_type') as $index => $name)
       <li class="nav-item">
          <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">

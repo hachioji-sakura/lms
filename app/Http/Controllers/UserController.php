@@ -65,14 +65,14 @@ class UserController extends Controller
   protected function save_redirect($res, $param, $success_message, $redirect_url=''){
    if(empty($redirect_url)) $redirect_url ='/'.$this->domain;
    if($this->is_success_responce($res)){
-     $_param['success_message'] = $success_message;
+     $param['success_message'] = $success_message;
      return redirect($redirect_url)
-      ->with($_param);
+      ->with($param);
    }
    else {
-     $_param['error_message'] = $res['message'];
-     $_param['error_message_description'] = $res['description'];
-     return back()->with($_param);
+     $param['error_message'] = $res['message'];
+     $param['error_message_description'] = $res['description'];
+     return back()->with($param);
    }
   }
 
@@ -123,7 +123,6 @@ class UserController extends Controller
       ]);
     }
     else {
-      return view($this->domain.'.create', ["error_message" => $res["description"]]);
       return back()->with([
         'error_message' => $res["message"],
         'error_message_description' => $res["description"]
