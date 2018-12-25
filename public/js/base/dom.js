@@ -322,7 +322,7 @@
 	};
 	/**
 	* 日付入力フォーム設定
-	* uitype:datepickerに対し、jqueryUI.datepickerを設定する
+	* uitype:datepickerに対し、datepickerを設定する
 	* @method setCalenderForm
 	* @param formId {String}
 	* @return {void} return nothing
@@ -334,7 +334,11 @@
 			var min = $(this).attr("minvalue");
 			var inputtype = $(this).attr("inputtype");
 			var defaultDate = $(this).attr("defaultDate");
-			var option = {};
+			var option = {
+				format: "yyyy年mm月dd日",
+				language: 'ja',
+				autoclose: true
+			};
 			if(!util.isEmpty(val)){
 				if(val.indexOf(",")>=0){
 					var dateparam = val.split(",");
@@ -373,6 +377,7 @@
 			if(util.isDate(val)) $(this).val(val);
 		});
 	};
+
 	/**
 	* JSON変数からフォームを作成する
 	* @method paramPageLoad

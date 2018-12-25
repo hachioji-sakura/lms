@@ -27,13 +27,13 @@ class UserController extends Controller
           'status' => $form['status'],
           'password' => Hash::make($form['password']),
       ]);
-      return $this->api_responce(200, "", "", $user);
+      return $this->api_response(200, "", "", $user);
     }
     catch (\Illuminate\Database\QueryException $e) {
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   protected function _search_pagenation(Request $request, $items)
@@ -64,7 +64,7 @@ class UserController extends Controller
   }
   protected function save_redirect($res, $param, $success_message, $redirect_url=''){
    if(empty($redirect_url)) $redirect_url ='/'.$this->domain;
-   if($this->is_success_responce($res)){
+   if($this->is_success_response($res)){
      $param['success_message'] = $success_message;
      return redirect($redirect_url)
       ->with($param);
@@ -88,7 +88,7 @@ class UserController extends Controller
     }
     $item = User::where('email', $email)->first();
     if(isset($item)){
-      $json = $this->api_responce(200,"","",["email"=>$email]);
+      $json = $this->api_response(200,"","",["email"=>$email]);
       return $this->send_json_response($json);
     }
     return $this->send_json_response($this->notfound());
@@ -117,7 +117,7 @@ class UserController extends Controller
     }
     $form = $request->all();
     $res = $this->update_user_password($user->user_id, $form['password']);
-    if($this->is_success_responce($res)){
+    if($this->is_success_response($res)){
       return back()->with([
         'success_message' => 'パスワード更新しました。'
       ]);
@@ -207,16 +207,16 @@ class UserController extends Controller
       DB::beginTransaction();
       User::where('id', $user_id)->update(['image_id' => $image_id]);
       DB::commit();
-      return $this->api_responce(200, "", "");
+      return $this->api_response(200, "", "");
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         echo $e->getMessage();
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   /**
@@ -233,16 +233,16 @@ class UserController extends Controller
       DB::beginTransaction();
       User::where('id', $user_id)->update(['password' => Hash::make($password)]);
       DB::commit();
-      return $this->api_responce(200, "", "");
+      return $this->api_response(200, "", "");
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         echo $e->getMessage();
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
 

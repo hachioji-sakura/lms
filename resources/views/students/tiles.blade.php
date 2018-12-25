@@ -25,10 +25,17 @@
         @endcomponent
       </li>
       <li class="nav-item">
-        <a href="" class="nav-link">
+        <a href="/{{$domain}}" class="nav-link">
+          <i class="fa fa-user-friends nav-icon"></i>担当生徒
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?filter=all" class="nav-link">
           <i class="fa fa-users nav-icon"></i>すべて
         </a>
       </li>
+      {--
+      --}
     </ul>
   </li>
 </ul>

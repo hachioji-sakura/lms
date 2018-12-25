@@ -25,4 +25,7 @@ class Teacher extends Model
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
   }
+  public function chargeStudents(){
+    return $this->hasMany('App\Models\ChargeStudent');
+  }
 }

@@ -1,5 +1,7 @@
 <div id="{{$domain}}_delete">
-  @if($_del)
+  @if(isset($page_message))
+  <h6>{{$page_message}}</h6>
+  @elseif($_del)
   <h6>以下の項目を削除してもよろしいですか？</h6>
   @endif
   @foreach($fields as $key=>$field)
@@ -14,6 +16,9 @@
       </div>
     </div>
   @endforeach
+  @if(isset($forms))
+    {{$forms}}
+  @else
   <form method="POST" action="/{{$domain}}/{{$item['id']}}">
     @csrf
   @if(isset($_page_origin))
@@ -41,4 +46,5 @@
     @endif
   </div>
   </form>
+  @endif
 </div>

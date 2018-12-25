@@ -5,9 +5,9 @@
 
 @include('dashboard.widget.comments')
 @include('dashboard.widget.milestones')
+@include('students.calendar')
 
 {{--まだ対応しない
-@include('dashboard.widget.milestones')
 @include('dashboard.widget.events')
 @include('dashboard.widget.tasks')
 --}}
@@ -52,18 +52,60 @@
         @endcomponent
 			</div>
 			<div class="col-md-8">
-        @yield('comments')
+        @yield('milestones')
 			</div>
 		</div>
 	</div>
 </section>
 
-{{--まだ対応しない
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @yield('milestones')
+        @component('components.calendar', ['user_id' => $item->user_id,'domain' => $domain])
+          @slot('set_calendar')
+          service.getAjax(false, '/api_calendars/{{$item->user_id}}/'+start_time+'/'+end_time, null,
+            function(result, st, xhr) {
+              if(result['status']===200){
+                var events = [];
+                $.each(result['data'], function(index, value) {
+                  var _type = 'study';
+                  if(value['status']==='cancel'){
+                    _type = 'cancel';
+                  }
+                  else if(value['exchanged_calendar_id']>0){
+                    _type = "exchange";
+                  }
+                  var title = value['teacher_name']+'('+value['subject']+')<br>'+value['start']+'-'+value['end'];
+                  events.push({
+                    // イベント情報をセット
+                    id: value['id'],
+                    title: title,
+                    description: value['teacher_name'],
+                    start: value['start_time'],
+                    end: value['end_time'],
+                    type : _type
+                  });
+                });
+                callback(events);
+              }
+            },
+            function(xhr, st, err) {
+                alert("カレンダー取得エラー");
+                messageCode = "error";
+                messageParam= "validate/querycheck\n"+err.message+"\n"+xhr.responseText;
+            }
+          );
+          @endslot
+          @slot('event_click')
+          eventClick: function(event, jsEvent, view) {
+            $calendar.fullCalendar('unselect');
+            if(event.type==="study"){
+              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/cancel?_page_origin={{$domain}}_{{$item->user_id}}");
+            }
+          },
+          @endslot
+        @endcomponent
 			</div>
 			<div class="col-12 col-lg-6 col-md-6">
 				@yield('events')
@@ -71,7 +113,6 @@
 		</div>
 	</div>
 </section>
---}}
 
 {{--まだ対応しない
 <section class="content">
@@ -80,16 +121,15 @@
 --}}
 @endsection
 
+
+
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-user-graduate"></i>
+      <a href="{{$domain}}/{{$item->id}}" class="nav-link">
+      <i class="nav-icon fa fa-user"></i>
       <p>
-        <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
-        </ruby>
+        学習管理
         <i class="right fa fa-angle-left"></i>
       </p>
       </a>
@@ -106,9 +146,30 @@
         </li>
       </ul>
     </li>
+
+    <li class="nav-item has-treeview menu-open">
+      <a href="{{$domain}}/{{$item->id}}/calendar" class="nav-link">
+      <i class="nav-icon fa fa-clock"></i>
+      <p>
+        予定管理
+        <i class="right fa fa-angle-left"></i>
+      </p>
+      </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar">
+            <i class="fa fa-calendar-check nav-icon"></i>カレンダー
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);"  page_form="footer_form" page_url="/calendars/create?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="目標登録">
+            <i class="fa fa-times nav-icon"></i>授業追加
+          </a>
+        </li>
+      </ul>
+    </li>
 </ul>
 @endsection
-
 @section('page_footer')
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="footer_form" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="コメント登録">

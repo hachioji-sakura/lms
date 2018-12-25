@@ -11,12 +11,16 @@ class ChargeStudent extends Model
 
   public static $rules = array(
       'student_id' => 'required',
-      'teacher_id' => 'required'
+      'teacher_id' => 'required',
+      'lecture_id' => 'required',
   );
   public function student(){
-    return $this->hasOne('App\Models\Student');
+    return $this->belongsTo('App\Models\Student');
   }
   public function teacher(){
-    return $this->hasOne('App\Models\Teacher');
+    return $this->belongsTo('App\Models\Teacher');
+  }
+  public function lecture(){
+    return $this->belongsTo('App\Models\Lecture');
   }
 }

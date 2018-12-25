@@ -11,6 +11,12 @@
 	var _loading = null;
 	var _requestCache = {};
 	var _cache = {};
+	_cache["userSetting"] = {
+		"loadingStart" : 300,
+		"requestCacheTime" : 300000,
+		"requestCacheSize" : 30
+	};
+
 	//list_table用のIF
 	var _isDebug = false;
 	var public_method = {
@@ -74,11 +80,6 @@
     */
 	function startProc(){
 		var data = util.getLocalData("userSetting");
-		_cache["userSetting"] = {
-			"loadingStart" : 300,
-			"requestCacheTime" : 300000,
-			"requestCacheSize" : 30
-		};
 		if(!util.isEmpty(data)){
 			for(var key in _cache["userSetting"]){
 				if(!util.isEmpty(data[key])) continue;

@@ -80,7 +80,7 @@ class GeneralAttributeController extends UserController
     {
       //ID 検索
       if(isset($request->id)){
-        $items = $items->where('id','=', $request->id);
+        $items = $items->where('id',$request->id);
       }
       //検索ワード
       if(isset($request->search_word)){
@@ -123,7 +123,7 @@ class GeneralAttributeController extends UserController
     public function _store(Request $request)
     {
       $res = $this->save_validate($request);
-      if(!$this->is_success_responce($res)){
+      if(!$this->is_success_response($res)){
         return $res;
       }
       $form = $request->all();
@@ -135,15 +135,15 @@ class GeneralAttributeController extends UserController
         unset($form['key']);
         $_item = GeneralAttribute::create($form);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
     public function save_validate(Request $request)
@@ -154,14 +154,14 @@ class GeneralAttributeController extends UserController
       }
       if(!empty($form['attribute_value_org']) && $form['attribute_value']===$form['attribute_value_org']){
         //更新時に属性値の変更なし
-        return $this->api_responce(200, "", "");
+        return $this->api_response(200, "", "");
       }
       $_isExist = GeneralAttribute::findKey($form['attribute_key'])->findVal($form['attribute_value'])->first();
       if($_isExist){
-        return $this->error_responce('この属性は登録済みです',
+        return $this->error_response('この属性は登録済みです',
           '属性キー「'.$form['attribute_key'].'」、属性値「'.$form['attribute_value'].'」の重複登録はできません');
       }
-      return $this->api_responce(200, "", "");
+      return $this->api_response(200, "", "");
     }
 
     /**
@@ -254,7 +254,7 @@ class GeneralAttributeController extends UserController
     public function _update(Request $request, $id)
     {
       $res = $this->save_validate($request);
-      if(!$this->is_success_responce($res)){
+      if(!$this->is_success_response($res)){
         return $res;
       }
       $form = $request->all();
@@ -267,15 +267,15 @@ class GeneralAttributeController extends UserController
           'attribute_value' => $form['attribute_value'],
         ]);
         DB::commit();
-        return $this->api_responce(200, "", "", $item);
+        return $this->api_response(200, "", "", $item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 
@@ -302,15 +302,15 @@ class GeneralAttributeController extends UserController
         $user = $this->login_details();
         $items = GeneralAttribute::findId($id)->delete();
         DB::commit();
-        return $this->api_responce(200, "", "", $items);
+        return $this->api_response(200, "", "", $items);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 }

@@ -58,6 +58,23 @@ class TextbookController extends MilestoneController
 
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
+      if(isset($items)){
+        foreach($items as $item){
+          $chapter = $item->chapters;
+          if(isset($item->publisher)){
+            $item->kana = '出版：'.$item->publisher->name;
+          }
+          else {
+            $item->kana = '出版：不明';
+          }
+          $icon = asset('svg/folder_in_file.svg');
+          if($item->image && !empty($item->image->s3_url)){
+            $icon = $item->image->s3_url;
+          }
+          $item->icon = $icon;
+          $item->chapter_count = count($chapter);
+        }
+      }
       $fields = [
         'id' => [
           'label' => 'ID',
@@ -67,16 +84,6 @@ class TextbookController extends MilestoneController
           'link' => 'show',
         ],
       ];
-      foreach($items as $item){
-        $chapter = $item->chapters;
-        $item->kana = '出版：'.$item->publisher->name;
-        $icon = asset('svg/folder_in_file.svg');
-        if($item->image && !empty($item->image->s3_url)){
-          $icon = $item->image->s3_url;
-        }
-        $item->icon = $icon;
-        $item->chapter_count = count($chapter);
-      }
       return ['items' => $items->toArray(), 'fields' => $fields];
     }
     /**
@@ -90,7 +97,7 @@ class TextbookController extends MilestoneController
     {
       //ID 検索
       if(isset($request->id)){
-        $items = $items->where('id','=', $request->id);
+        $items = $items->where('id',$request->id);
       }
       //検索ワード
       if(isset($request->search_word)){

@@ -84,8 +84,8 @@ class TeacherController extends StudentController
   public function search(Request $request)
   {
    $items = DB::table($this->table)
-    ->join('users', 'users.id', '=', $this->table.'.user_id')
-    ->join('images', 'images.id', '=', 'users.image_id');
+    ->join('users', 'users.id',$this->table.'.user_id')
+    ->join('images', 'images.id','users.image_id');
 
    $items = $this->_search_scope($request, $items);
 
@@ -93,13 +93,13 @@ class TeacherController extends StudentController
 
    $items = $this->_search_sort($request, $items);
 
-   $select_row = <<<EOT
+   $select_raw = <<<EOT
     $this->table.id,
     $this->table.name,
     $this->table.kana,
     images.s3_url as icon
 EOT;
-   $items = $items->selectRaw($select_row)->get();
+   $items = $items->selectRaw($select_raw)->get();
    return ["items" => $items->toArray()];
   }
   /**
@@ -113,7 +113,7 @@ EOT;
   {
    //ID 検索
    if(isset($request->id)){
-    $items = $items->where($this->table.'.id','=', $request->id);
+    $items = $items->where($this->table.'.id',$request->id);
    }
    //検索ワード
    if(isset($request->search_word)){
@@ -138,7 +138,7 @@ EOT;
     DB::beginTransaction();
     $form["image_id"] = $this->default_image_id;
     $res = $this->user_create($form);
-    if($this->is_success_responce($res)){
+    if($this->is_success_response($res)){
       $form['user_id'] = $res["data"]->id;
       $user = $this->login_details();
       $form["create_user_id"] = $user->user_id;
@@ -149,17 +149,17 @@ EOT;
       unset($form['password-confirm']);
       $_item = $this->model()->create($form);
       DB::commit();
-      return $this->api_responce(200, "", "", $_item);
+      return $this->api_response(200, "", "", $_item);
     }
     return $res;
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();
-      return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
    }
    catch(\Exception $e){
       DB::rollBack();
-      return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
    }
   }
   /**

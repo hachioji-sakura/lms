@@ -38,4 +38,8 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', 'course')->findVal($val);
   }
+  public function scopePlace($query, $val)
+  {
+      return $query->where('attribute_key', 'place')->findVal($val);
+  }
 }

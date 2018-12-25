@@ -54,7 +54,15 @@ class GeneralAttributesSeeder extends Seeder
             'attribute_name' => '難易度',
             'sort_no' => 11,
             'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'keys',
+            'attribute_value' => 'place',
+            'attribute_name' => '場所',
+            'sort_no' => 21,
+            'create_user_id' => 1,
         ]
+
       ];
       foreach($_add_items as $_add_item){
         $_item = GeneralAttribute::findKey($_add_item['attribute_key'])->findVal($_add_item['attribute_value']);

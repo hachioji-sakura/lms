@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use App\Models\Image;
+use App\Models\chargeStudent;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,6 +29,10 @@ class Student extends Model
   public function kana()
   {
       return $this->kana_last . ' ' .$this->kana_first;
+  }
+  public function chargeTeachers()
+  {
+      return $this->hasMany('App\Models\ChargeStudent');
   }
   public function gender()
   {

@@ -39,7 +39,7 @@ class AuthController extends UserController
     */
    public function reset_mail(Request $request){
      $email = trim($request->email);
-     $_user = User::where('email', '=', $email);
+     $_user = User::where('email',$email);
      if($_user->count() < 1){
        return back()->with(['error_message' => 'メールアドレスが間違っています']);
      }
@@ -67,7 +67,7 @@ class AuthController extends UserController
      if(!$this->is_enable_token($access_key)){
        abort(403);
      }
-     $user = User::where('access_key', '=', $access_key);
+     $user = User::where('access_key',$access_key);
      if($user->count() < 1){
        abort(404);
      }
@@ -84,7 +84,7 @@ class AuthController extends UserController
     */
    public function password_settinged(Request $request){
      $access_key = $request->access_key;
-     $user = User::where('access_key', '=', $access_key);
+     $user = User::where('access_key',$access_key);
      if($user->count() < 1){
        abort(403);
      }
@@ -123,8 +123,5 @@ class AuthController extends UserController
       }
       return false;
     }
-    public function test(){
-      $this->send_slack('テストダヨ', 'error');
-      return "hello";
-    }
+
 }

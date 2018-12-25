@@ -13,7 +13,7 @@ class TextbookTag extends Model
       'tag_key' => 'required',
       'tag_value' => 'required'
   );
-  public function user(){
-    return $this->belongsTo('App\User');
+  public function create_user(){
+    return $this->belongsTo('App\User', 'create_user_id');
   }
 }

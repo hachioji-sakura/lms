@@ -78,9 +78,9 @@ class StudentController extends UserController
    */
   public function search(Request $request)
   {
-   $items = DB::table($this->table)
-     ->join('users', 'users.id', '=', $this->table.'.user_id')
-     ->join('images', 'images.id', '=', 'users.image_id');
+    $items = DB::table($this->table)
+       ->join('users', 'users.id',$this->table.'.user_id')
+       ->join('images', 'images.id','users.image_id');
 
    $items = $this->_search_scope($request, $items);
 
@@ -88,7 +88,7 @@ class StudentController extends UserController
 
    $items = $this->_search_sort($request, $items);
 
-   $select_row = <<<EOT
+   $select_raw = <<<EOT
      $this->table.id,
      concat($this->table.name_last, '', $this->table.name_first) as name,
      concat($this->table.kana_last, '', $this->table.kana_first) as kana,
@@ -96,7 +96,7 @@ class StudentController extends UserController
      $this->table.gender,
      $this->table.birth_day
 EOT;
-   $items = $items->selectRaw($select_row)->get();
+   $items = $items->selectRaw($select_raw)->get();
    return ["items" => $items->toArray()];
   }
   /**
@@ -108,13 +108,22 @@ EOT;
    */
   public function _search_scope(Request $request, $items)
   {
+    $user = $this->login_details();
+    if($this->is_teacher($user->role)){
+      if(!isset($request->filter) || $request->filter!=='all'){
+        //filterにall指定がない
+        $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)',[$user->id]);
+      }
+      //講師は削除された生徒は表示しない
+      $items = $items->where('users.status', '!=', 9);
+    }
    //ID 検索
    if(isset($request->id)){
-     $items = $items->where($this->table.'.id','=', $request->id);
+     $items = $items->where($this->table.'.id',$request->id);
    }
    //性別 検索
    if(isset($request->gender)){
-     $items = $items->where($this->table.'.gender','=', $request->gender);
+     $items = $items->where($this->table.'.gender',$request->gender);
    }
    //検索ワード
    if(isset($request->search_word)){
@@ -175,7 +184,7 @@ EOT;
       //デフォルトのアイコンは性別と一緒にしておく
       $form["image_id"] = $form['gender'];
       $res = $this->user_create($form);
-      if($this->is_success_responce($res)){
+      if($this->is_success_response($res)){
         $form['user_id'] = $res["data"]->id;
         $user = $this->login_details();
         $form["create_user_id"] = $user->user_id;
@@ -187,17 +196,17 @@ EOT;
         unset($form['password-confirm']);
         $_item = $this->model()->create($form);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       return $res;
      }
      catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
      }
      catch(\Exception $e){
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
      }
    }
    /**
@@ -208,7 +217,7 @@ EOT;
    public function save_validate(Request $request)
    {
      //保存時にパラメータをチェック
-     return $this->api_responce(200, '', '');
+     return $this->api_response(200, '', '');
    }
    /**
     * 詳細画面表示
@@ -245,6 +254,21 @@ EOT;
    ])->with($param);
   }
   /**
+   * 詳細画面表示
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+ public function calendar(Request $request, $id)
+ {
+  $param = $this->get_param($request, $id);
+  $model = $this->model()->find($id)->user;
+  $item = $model->details();
+  return view($this->domain.'.calendar', [
+    'item' => $item,
+  ])->with($param);
+ }
+  /**
    * Show the form for editing the specified resource.
    *
    * @param  int  $id
@@ -274,7 +298,7 @@ EOT;
   public function _update(Request $request, $id)
   {
    $res = $this->save_validate($request);
-   if(!$this->is_success_responce($res)){
+   if(!$this->is_success_response($res)){
      return $res;
    }
    $form = $request->all();
@@ -284,15 +308,15 @@ EOT;
      $form = $request->all();
      $item = Student::find($id)->update($form);
      DB::commit();
-     return $this->api_responce(200, '', '', $item);
+     return $this->api_response(200, '', '', $item);
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();
-      return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
    catch(\Exception $e){
       DB::rollBack();
-      return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
   }
   /**
@@ -316,15 +340,15 @@ EOT;
      DB::beginTransaction();
      $items = Student::find($id)->delete();
      DB::commit();
-     return $this->api_responce(200, '', '', $items);
+     return $this->api_response(200, '', '', $items);
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();
-      return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
    catch(\Exception $e){
       DB::rollBack();
-      return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
   }
 }
