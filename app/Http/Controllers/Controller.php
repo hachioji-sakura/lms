@@ -112,7 +112,9 @@ class Controller extends BaseController
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 証明書の検証を行わない
         //POSTの場合は、http_build_queryが不要、PUTは必要
         //curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($POST_DATA));
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-token:'.$this->token));
+        if(!empty($this->token)){
+          curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-token:'.$this->token));
+        }
         $result = curl_exec($curl);
         curl_close($curl);
         return json_decode($result,true);
