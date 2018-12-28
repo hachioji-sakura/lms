@@ -70,13 +70,9 @@ class ImageController extends UserController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function icon_change(Request $request, $student_id)
+    public function icon_change(Request $request)
     {
       $user = $this->login_details();
-      if($this->is_student($user->role)===true){
-        //生徒は、自分（生徒）の内容しか見れない
-        $student_id = $user->id;
-      }
       $this->validate($request, [
           'image' => [
               // アップロードされたファイルであること
@@ -119,8 +115,7 @@ class ImageController extends UserController
         }
       }
       if(!empty($image_id)){
-        $student = Student::find($student_id)->user->details();
-        $res = $this->update_user_image($student->user_id, $image_id);
+        $res = $this->update_user_image($user->user_id, $image_id);
         if($this->is_success_response($res)){
           return back()->with([
             'success_message' => 'アイコンを変更しました。',
