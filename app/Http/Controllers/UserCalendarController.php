@@ -98,9 +98,19 @@ class UserCalendarController extends MilestoneController
      */
     public function index(Request $request)
     {
+      /*
       $param = $this->get_param($request);
-      $_table = $this->search($request);
+      */
+      /*
+      $items = $this->model()->first();
+      $items = UserCalendar::all();
+      */
+      $items = DB::table($this->table)->get();
+      return $items->toArray();
+/*
+      $_table = $this->search($request, 309);
       return $_table;
+*/
     }
     /**
      * Display a listing of the resource.
@@ -142,12 +152,6 @@ class UserCalendarController extends MilestoneController
      */
     public function search(Request $request, $user_id=0)
     {
-      /*
-
-      $items = DB::table($this->table)
-         ->join('user_calendar_members as m', 'm.calendar_id',$this->table.'.id')
-         ->where('m.user_id', $user_id);
-       */
       $items = $this->model();
       $where_raw = <<<EOT
         $this->table.id in (select calendar_id from user_calendar_members where user_id=?)
@@ -157,9 +161,8 @@ EOT;
 
       $items = $this->_search_scope($request, $items);
       $items = $items->get();
-
       foreach($items as $item){
-        $item = $this->get_details($item);
+        $item = $item->details();
       }
 
       return $items->toArray();
@@ -215,6 +218,10 @@ EOT;
       //ステータス 検索
       if(isset($request->search_status)){
         $items = $items->where('status',$request->search_status);
+      }
+      //更新取得
+      if(isset($request->update)){
+        $items = $items->where('updated_at','>',$request->update);
       }
       //日付検索
       if(isset($request->from_date)){
@@ -287,12 +294,6 @@ EOT;
     public function cancel_page(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $datetime = $param['item']['date'].' '.$param['item']['start'].'～'.$param['item']['end'];
-      $param['item']['datetime'] = $datetime;
-      $detail = '';
-      $detail .= $param['item']['place'].'/';
-      $detail .= $param['item']['subject'].'';
-      $param['item']['detail'] = $detail;
       $fields = [
         'datetime' => [
           'label' => '日時',
@@ -307,10 +308,19 @@ EOT;
           'label' => '生徒',
         ],
       ];
-      return view('calendars.cancel', [
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-        'fields'=>$fields])
-        ->with($param);
+      if(isset($param['item'])){
+        $datetime = $param['item']['date'].' '.$param['item']['start'].'～'.$param['item']['end'];
+        $param['item']['datetime'] = $datetime;
+        $detail = '';
+        $detail .= $param['item']['place'].'/';
+        $detail .= $param['item']['subject'].'';
+        $param['item']['detail'] = $detail;
+        return view('calendars.cancel', [
+          '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
+          'fields'=>$fields])
+          ->with($param);
+      }
+      return abort(404);
     }
     /**
      * カレンダーキャンセル連絡
@@ -371,7 +381,8 @@ EOT;
       $members = UserCalendarMember::where('calendar_id', $item->id)->get();
       foreach($members as $member){
         $user = $member->user;
-        $email = $user['email'];
+        //$email = $user['email'];
+        $email = "yasui.hideo+".$user['id']."@gmail.com";
         $user = $member->user->details();
         if($is_student && $this->is_student($user->role)){
           //生徒は生徒あてにメールは出さない（事務・講師あてにメールを出す）
@@ -416,7 +427,6 @@ EOT;
         $items = ChargeStudent::where('teacher_id', $param['user']->id)->get();
         foreach($items as $item){
           $student = $item->student;
-          $item['id'] = $student['user_id'];
           $item['name'] = $student['name_last'].' '.$student['name_first'];
         }
       }
@@ -426,9 +436,6 @@ EOT;
       $items = [];
       if($this->is_manager($param['user']->role)){
         $items = Teacher::whereRaw('teachers.user_id in (select id from users where status=0)')->get();
-        foreach($items as $item){
-          $item['id'] = $item['user_id'];
-        }
       }
       return $items;
     }

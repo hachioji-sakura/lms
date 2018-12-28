@@ -6,12 +6,15 @@
   <li class="nav-item">
     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
   </li>
-  @if($user->role==="manager" || $user->role==="teacher")
   <li class="nav-item">
-    <a href="/students" class="nav-link">生徒一覧</a>
+    <a href="/" class="nav-link">HOME</a>
   </li>
+  @if($user->role==="manager" || $user->role==="teacher")
   @endif
   @if($user->role==="manager")
+    <li class="nav-item">
+      <a href="/students" class="nav-link">生徒一覧</a>
+    </li>
     <li class="nav-item d-none d-sm-inline-block">
       <a href="/teachers" class="nav-link">講師一覧</a>
     </li>
@@ -68,6 +71,4 @@
 </ul>
 </nav>
 <!-- /.Navbar -->
-@component('components.action_message', [])
-@endcomponent
 @endsection

@@ -40,5 +40,39 @@ class UserCalendar extends Model
     }
     return "";
   }
+  public function details(){
+    $item = $this;
+    $item['status_name'] = $this->status_name();
+    $item['place'] = $this->place();
+    $item['date'] = date('Y/m/d',  strtotime($this->start_time));
+    $item['start'] = date('H:i',  strtotime($this->start_time));
+    $item['end'] = date('H:i',  strtotime($this->end_time));
 
+    $lecture = $this->lecture->details();
+    $item['subject'] = $lecture['subject']->attribute_name;
+    $item['lesson'] = $lecture['lesson']->attribute_name;
+    $item['course'] = $lecture['course']->attribute_name;
+
+    $teacher_name = "";
+    $student_name = "";
+    $other_name = "";
+    foreach($this->members as $member){
+      $_member = $member->user->details();
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+      }
+      else if($_member->role === 'teacher'){
+        $teacher_name.=$_member['name'].',';
+      }
+      else {
+        $other_name.=$_member['name'].',';
+      }
+    }
+    unset($item['members']);
+    unset($item['lecture']);
+    $item['student_name'] = trim($student_name,',');
+    $item['teacher_name'] = trim($teacher_name,',');
+    $item['other_name'] = trim($other_name,',');
+    return $item;
+  }
 }

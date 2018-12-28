@@ -29,17 +29,20 @@ Route::get('auth/mail','AuthController@mail_send');
 Route::get('logout','Auth\LoginController@logout');
 
 Route::resource('images','ImageController');
-//Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 'store', 'destroy']]);
+Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 'store', 'destroy']]);
 Route::get('import/{object?}','ImportController@index');
 Route::post('import/{object?}','ImportController@import');
 
 Route::resource('attributes','GeneralAttributeController');
 Route::resource('milestones','MilestoneController');
 Route::resource('comments','CommentController');
-Route::resource('calendars','UserCalendarController');
-Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
+
+Route::get('calendars/cancel','UserCalendarController@cancel_page');
+Route::put('calendars/cancel','UserCalendarController@cancel');
 Route::get('calendars/{id}/cancel','UserCalendarController@cancel_page');
 Route::put('calendars/{id}/cancel','UserCalendarController@cancel');
+Route::resource('calendars','UserCalendarController');
+Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
 
 /*
 Route::resource('publisher','PublisherController');
@@ -50,12 +53,11 @@ Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');
 Route::resource('comments','CommentController');
 Route::resource('user_examinations','UserExaminationController');
+Route::post('icon','ImageController@icon_change');
 
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');
-Route::post('students/{id}/icon','ImageController@icon_change');
-Route::post('students/{student_id}/icon','ImageController@icon_change');
 Route::get('students/{id}/calendar','StudentController@calendar');
-
+Route::get('teachers/{id}/calendar','TeacherController@calendar');
 
 
 Route::get('/home', 'HomeController@index')->name('home');

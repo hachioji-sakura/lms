@@ -13,4 +13,14 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="loading" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body content-sub-body page_contents">
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection

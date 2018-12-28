@@ -52,6 +52,7 @@ class StudentController extends UserController
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
        'user' => $user,
+       'mode'=>$request->mode,
        'search_word'=>$request->search_word
     ];
     if(is_numeric($id) && $id > 0){
@@ -230,7 +231,9 @@ EOT;
    $param = $this->get_param($request, $id);
    $model = $this->model()->find($id)->user;
    $item = $model->details();
+   $item['tags'] = $model->tags();
    $user = $param['user'];
+
    //コメントデータ取得
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
@@ -261,12 +264,32 @@ EOT;
    */
  public function calendar(Request $request, $id)
  {
-  $param = $this->get_param($request, $id);
-  $model = $this->model()->find($id)->user;
-  $item = $model->details();
-  return view($this->domain.'.calendar', [
-    'item' => $item,
-  ])->with($param);
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->find($id)->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+
+   //目標データ取得
+   $milestones = $model->target_milestones;
+
+   $use_icons = DB::table('images')
+     ->where('create_user_id','=',$user->user_id)
+     ->orWhere('publiced_at','<=', date('Y-m-d'))
+     ->get(['id', 'alias', 's3_url']);
+
+   if($param["mode"]==="list"){
+     $res = $this->call_api($request, url('/api_calendars/'.$user->user_id.'/'.date('Y-m-d', strtotime("1 day"))));
+     if($this->is_success_response($res)){
+       $param["calendars"] = $res["data"];
+     }
+   }
+
+   return view($this->domain.'.calendar', [
+     'item' => $item,
+     'milestones'=>$milestones,
+     'use_icons'=>$use_icons,
+   ])->with($param);
  }
   /**
    * Show the form for editing the specified resource.

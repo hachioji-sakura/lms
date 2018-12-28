@@ -5125,6 +5125,8 @@ button.close, button.mailbox-attachment-close {
 	right: 0;
 	bottom: 0;
 	left: 0;
+  /* yasui サイドメニューの上にしたい
+  */
 	z-index: 1040;
 	background-color: #000;
 }
@@ -13317,6 +13319,11 @@ iframe.map {
 .hr-1{
 	border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 }
-
+.bd-light{
+	border-color: rgba(255, 255, 255, 0.5);
+}
+.bd-dark{
+	border-color: rgba(0, 0, 0, 0.5);
+}
 .fc-sun { color: red; }  /* 日曜日 */
 .fc-sat { color: blue; } /* 土曜日 */

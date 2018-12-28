@@ -40,7 +40,7 @@
     @else
       <div class="col-12 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
-              戻る
+              閉じる
           </button>
       </div>
     @endif

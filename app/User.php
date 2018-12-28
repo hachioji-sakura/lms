@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Manager;
+use App\Models\UserTag;
 use App\Models\Image;
 use App\Notifications\CustomPasswordReset;
 class User extends Authenticatable
@@ -31,6 +32,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    public function tags(){
+      return UserTag::where('user_id', $this->id)->get();
+      //return $this->hasMany('App\Models\UserTag');
+    }
     public function student(){
       return $this->hasOne('App\Models\Student');
     }

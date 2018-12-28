@@ -13,6 +13,8 @@
 	@yield('sidemenu')
   <div class="content-wrapper">
 		<section id="main" class="content">
+			@component('components.action_message', [])
+			@endcomponent
 		  <div class="container-fluid">
 		    <div class="row">
 					<div class="col-12">

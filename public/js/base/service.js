@@ -86,9 +86,7 @@
 				_cache["userSetting"][key] = data[key];
 			}
 		}
-		//loadRequestCache();
-		//setQueryParam();
-		//setGroupCode();
+		loadRequestCache();
 	}
 	/**
 	* ローディング開始
@@ -111,13 +109,11 @@
     * @return {void} return nothing
     */
 	function loadStop (){
-		/*
 		if(_loadTimer!=null){
 			clearTimeout(_loadTimer);
 			_loadTimer = null;
 		}
 		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
-		*/
 	}
 	/**
 	* ローディングダイアログを閉じる
@@ -130,6 +126,8 @@
 		if(util.isEmpty(_loading)) return;
 		_loading.dialog("close");
 		*/
+		$("#loading").modal('hide');
+
 	}
 	/**
 	* ローディングダイアログを表示する
@@ -138,6 +136,8 @@
     * @return {void} return nothing
     */
 	function loadOpen (){
+		$("#loading").modal('show');
+
 		/*
 		if(util.isEmpty(_loading)) {
 			if($("#loading")[0] && _loading==null){
@@ -374,9 +374,7 @@
 	}
 	/**
 	* メッセージデータ取得
-	* 汎用グループ[SYS_MSG]からmsgCodeよりタイトル、本文を取得する
-	* 本文はparamを埋め込む
-    * @method getMessage
+	  * @method getMessage
 	* @param msgCode {String}
 	* @param [param] {String}
     * @return {JSON} {"title" : "messageTitle", "body" : "messageBody"}
@@ -760,6 +758,7 @@
 		util.setLocalData("_requestCache" , "");
 		_requestCache = {};
 	}
+	startProc();
 	root.service = $.extend({}, root.service, public_method);
 
 })(this);

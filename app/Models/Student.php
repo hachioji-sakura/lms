@@ -30,10 +30,6 @@ class Student extends Model
   {
       return $this->kana_last . ' ' .$this->kana_first;
   }
-  public function chargeTeachers()
-  {
-      return $this->hasMany('App\Models\ChargeStudent');
-  }
   public function gender()
   {
     if($this->gender===1) return "男性";
