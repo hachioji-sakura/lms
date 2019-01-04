@@ -17,7 +17,7 @@ class CreateUserCalendarMembersTable extends Migration
             $table->increments('id');
             $table->integer('calendar_id')->nullable(false)->index('index_calendar_id')->comment('ユーザーID');
             $table->integer('user_id')->nullable(false)->index('index_user_id')->comment('対象ユーザーID');
-            $table->string('status')->default('new')->comment('登録:new / 承認:fix / キャンセル：cancel');
+            $table->string('status')->default('new')->comment('新規登録:new / 確定:fix / キャンセル:cancel / 休み: rest / 出席 : presence / 欠席 : absence');
             $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
         });

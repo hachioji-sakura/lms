@@ -11,6 +11,7 @@ use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use DB;
+use View;
 class UserCalendarController extends MilestoneController
 {
   public $domain = 'calendars';
@@ -286,13 +287,16 @@ EOT;
         ->with($param);
     }
     /**
-     * カレンダーキャンセルページ
+     * 授業休み連絡ページ
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function cancel_page(Request $request, $id)
+    public function status_update_page(Request $request, $id, $status)
     {
+      if (!View::exists('calendars.'.$status)) {
+          abort(404);
+      }
       $param = $this->get_param($request, $id);
       $fields = [
         'datetime' => [
@@ -315,7 +319,7 @@ EOT;
         $detail .= $param['item']['place'].'/';
         $detail .= $param['item']['subject'].'';
         $param['item']['detail'] = $detail;
-        return view('calendars.cancel', [
+        return view('calendars.'.$status, [
           '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
           'fields'=>$fields])
           ->with($param);
@@ -323,37 +327,51 @@ EOT;
       return abort(404);
     }
     /**
-     * カレンダーキャンセル連絡
+     * カレンダー休み連絡
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function cancel(Request $request, $id)
+    public function status_update(Request $request, $id, $status)
     {
       $param = $this->get_param($request, $id);
       $item = $param['item'];
-      $res = $this->_cancel($request, $id);
+      $res = $this->_status_update($request, $id, $status);
       $slack_type = 'エラー';
       $slack_message = '更新エラー';
+
+      $status_update_message = [
+        'rest' => 'お休み連絡をしました。',
+        'presence' => '授業予定を出席に更新しました。',
+        'absence' => '授業予定を欠席に更新しました。',
+      ];
+
       if($this->is_success_response($res)){
-        $slack_type = 'warning';
-        $slack_message = '';
-        $this->cancel_mail($param);
+        $slack_type = 'info';
+        $slack_message = $status_update_message[$status];
+        if($status==="rest"){
+          $this->rest_mail($param);
+        }
       }
-      $this->send_slack('予定キャンセル'.$slack_message.' / id['.$item['id'].']開始日時['.$item['start_time'].']終了日時['.$item['end_time'].']生徒['.$item['student_name'].']講師['.$item['teacher_name'].']', 'warning', '予定キャンセル');
-      //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, '予定をキャンセルしました', str_replace('_', '/', $request->get('_page_origin')));
+      $this->send_slack('カレンダーステータス更新['.$status.']:'.$slack_message.' / id['.$item['id'].']開始日時['.$item['start_time'].']終了日時['.$item['end_time'].']生徒['.$item['student_name'].']講師['.$item['teacher_name'].']', 'info', 'カレンダーステータス更新');
+      if($status==="rest"){
+        $this->rest_mail($param);
+      }
+
+      return $this->save_redirect($res, $param, $status_update_message[$status], str_replace('_', '/', $request->get('_page_origin')));
     }
-    private function _cancel(Request $request, $id){
+    private function _status_update(Request $request, $id, $status){
       $param = $this->get_param($request, $id);
       $item = $param['item'];
       try {
         DB::beginTransaction();
-        //カレンダーをキャンセルステータスに変更
-        $this->model()->where('id', $id)->update(['status'=>'cancel']);
-        //カレンダーメンバーをキャンセルステータスに変更
-        UserCalendarMember::where('calendar_id', $item['id'])->where('user_id', $param['user']->user_id)->update(['status'=>'cancel']);
+        //カレンダーステータス変更
+        $this->model()->where('id', $id)->update(['status'=>$status]);
+        //カレンダーメンバーステータス変更
+        UserCalendarMember::where('calendar_id', $id)
+            ->where('user_id', $param['user']->user_id)
+            ->update(['status'=>$status]);
         DB::commit();
         return $this->api_response(200, '', '', $item);
       }
@@ -368,12 +386,27 @@ EOT;
     }
 
     /**
-     * キャンセル通知メール送信
+     * 休み連絡通知メール送信
+     * @param  Array  $param
+     * @return boolean
+     */
+    private function rest_mail($param){
+      return  $this->_mail($param,
+               'お休み連絡',
+               'calendar_rest');
+
+    }
+    /**
+     * 予定確認メール送信
+     * カレンダーの対象者に確認メールを送信する
+     * send_type: 生徒あて=student | 講師あて=teacher
+     * template : emails\[template)_text.blade.phpを指定する
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  string  $title
+     * @param  string  $template
      * @return view
      */
-    private function cancel_mail($param){
+    private function _mail($param, $title, $template){
       $item = $param['item'];
       $login_user = $param['user'];
       $is_student = $this->is_student($login_user->role);
@@ -381,10 +414,14 @@ EOT;
       $members = UserCalendarMember::where('calendar_id', $item->id)->get();
       foreach($members as $member){
         $user = $member->user;
-        //$email = $user['email'];
-        $email = "yasui.hideo+".$user['id']."@gmail.com";
+        $email = $user['email'];
         $user = $member->user->details();
-        if($is_student && $this->is_student($user->role)){
+        $send_type = 'teacher';
+        if($is_student && $user->user_id===$login_user->user_id){
+          //生徒本人宛に確認メール
+          $send_type = 'student';
+        }
+        else if($is_student && $this->is_student($user->role)){
           //生徒は生徒あてにメールは出さない（事務・講師あてにメールを出す）
           continue;
         }
@@ -392,28 +429,19 @@ EOT;
           //講師・事務の場合は自分あてにメールはださない（生徒・自分以外の講師あてにメールを出す）
           continue;
         }
-        $send_type = 'teacher';
-        if($this->is_student($user->role)){
-          $send_type='student';
-        }
         $this->send_mail($email,
-         'カレンダーキャンセル通知',
+         $title,
          [
          'user_name' => $user['name'],
          'send_type' => $send_type,
          'item' => $item
          ],
          'text',
-         'calendar_cancel');
+         $template);
       }
       return true;
     }
-    /**
-     * 事務管理システムAPI - import（POST）
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $object | 対象データ
-     * @return Json
-     */
+
     private function get_students($param){
       $items = [];
       if($this->is_manager($param['user']->role)){

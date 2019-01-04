@@ -591,7 +591,7 @@ class ImportController extends UserController
       $remark.='[course='.$item['course'].']';
       $remark.='[subject='.$item['subject'].']';
       $exchanged_calendar_id = 0;
-      //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:cancel
+      //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:rest
       $status= 'fix';
       if(!empty($item['yasumi'])){
         //TODO :以下の項目をどうにかしたい

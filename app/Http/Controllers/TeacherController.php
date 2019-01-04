@@ -166,22 +166,29 @@ EOT;
     $sql = <<<EOT
     select
      A.id,
+     A.icon,
      A.name,
      A.kana,
      uc.id as calendar_id,
-     uc.start_time as current_schedule,
+     uc.status as status,
+     uc.start_time as start_time,
+     uc.end_time as end_time,
+     date_format(uc.start_time, '%m/%d') as current_schedule,
+     date_format(uc.start_time, '%H:%i') as current_schedule_from,
+     date_format(uc.end_time, '%H:%i') as current_schedule_to,
      lesson.attribute_name as lesson,
      course.attribute_name as course,
      subject.attribute_name as subject
     from (
     select
+      i.s3_url as icon,
       s.id as id,
       concat(s.name_last,' ', s.name_first)as name,
       concat(s.kana_last,' ', s.kana_first)as kana,
       (select
         uc.id
        from user_calendars uc
-        where uc.start_time > current_timestamp
+        where date(uc.start_time) >= current_date
          and uc.id in (
            select calendar_id from user_calendar_members
            where user_id= s.user_id
@@ -191,11 +198,12 @@ EOT;
        ) as current_calendar_id
     from students as s
     inner join users u on u.id = s.user_id and u.status < 9
+    inner join images i on u.image_id = i.id
     and s.id in (
       select cs.student_id from charge_students cs
       where teacher_id = ?
      )) as A
-     left join user_calendars uc on uc.id = A.current_calendar_id
+     left join user_calendars uc on uc.id = A.current_calendar_id and exists(select id from user_calendar_members where calendar_id = uc.id and user_id = (select user_id from teachers where id= ?))
       left join lectures l on l.id = uc.lecture_id
       left join general_attributes lesson on lesson.attribute_key = 'lesson' and lesson.attribute_value = l.lesson
       left join general_attributes subject on subject.attribute_key = 'subject' and subject.attribute_value = l.subject
@@ -213,8 +221,8 @@ EOT;
       $where_string =' where '.trim($where_string, ' OR');
     }
     $sql .= $where_string;
-    $sql .= " order by uc.start_time is null asc, uc.start_time asc";
-    $items = DB::select($sql, [$id]);
+    $sql .= " order by uc.start_time is null asc, uc.start_time asc, uc.updated_at";
+    $items = DB::select($sql, [$id, $id]);
     return $items;
   }
   /**

@@ -279,7 +279,7 @@ EOT;
      ->get(['id', 'alias', 's3_url']);
 
    if($param["mode"]==="list"){
-     $res = $this->call_api($request, url('/api_calendars/'.$user->user_id.'/'.date('Y-m-d', strtotime("1 day"))));
+     $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
      if($this->is_success_response($res)){
        $param["calendars"] = $res["data"];
      }

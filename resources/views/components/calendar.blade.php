@@ -77,7 +77,7 @@
       //defaultView: 'agendaWeek',
       scrollTime: first_scroll_time,
       // 最小時間
-      minTime: "10:00:00",
+      minTime: "08:00:00",
       // 最大時間
       maxTime: "22:00:00",
       // 月名称

@@ -2,9 +2,8 @@
   {{$domain_name}}ダッシュボード
 @endsection
 @extends('dashboard.common')
+@include($domain.'.menu')
 @include('dashboard.widget.milestones')
-
-
 
 @section('contents')
 <section id="member" class="content-header">
@@ -61,33 +60,35 @@
           <table class="table table-hover">
             <tbody>
               <tr>
-                <th>日付</th>
-                <th>時間</th>
+                <th>詳細</th>
+                <th>日時</th>
                 <th>講師</th>
                 <th>内容</th>
+                <th>欠席連絡</th>
               </tr>
               @foreach($calendars as $calendar)
               <tr>
-                <td>{{$calendar["date"]}}</td>
                 <td>
-                  {{$calendar["start"]}}～{{$calendar["end"]}}
+                  <a href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-secondary btn-sm float-left mr-1">
+                    <i class="fa fa-minus-circle mr-1"></i>詳細
+                  </a>
                 </td>
-                <td>{{$calendar["teacher_name"]}}</td>
                 <td>
-                  <small class="badge badge-secondary mt-1 mr-1">
-                    {{$calendar["lesson"]}}
-                  </small>
-                  <small class="badge badge-secondary mt-1 mr-1">
-                    {{$calendar["course"]}}
-                  </small>
+                  <i class="fa fa-clock mr-2"></i>
+                  {{$calendar["date"]}} {{$calendar["start"]}}～{{$calendar["end"]}}
+                </td>
+                <td>
+                  <i class="fa fa-user-tie mr-2"></i>
+                  {{$calendar["teacher_name"]}}</td>
+                <td>
                   <small class="badge badge-primary mt-1 mr-1">
                     {{$calendar["subject"]}}
                   </small>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-danger btn-sm float-left">
-                    <i class="fa fa-minus-circle mr-2"></i>欠席連絡
-                  </button>
+                  <a href="javascript:void(0);" page_title="お休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mr-1">
+                    <i class="fa fa-minus-circle mr-1"></i>お休み連絡する
+                  </a>
                 </td>
               </tr>
               @endforeach
@@ -115,7 +116,7 @@
                 var events = [];
                 $.each(result['data'], function(index, value) {
                   var _type = 'study';
-                  if(value['status']==='cancel'){
+                  if(value['status']==='cancel' || value['status']==='rest'){
                     _type = 'cancel';
                   }
                   else if(value['exchanged_calendar_id']>0){
@@ -146,7 +147,10 @@
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
             if(event.type==="study"){
-              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/cancel?_page_origin={{$domain}}_{{$item->user_id}}");
+              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar");
+            }
+            else {
+              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar");
             }
           },
           @endslot
@@ -157,50 +161,5 @@
 	</div>
 </section>
 @endif
-
-@endsection
-
-
-
-
-@section('page_sidemenu')
-<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-    <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-user"></i>
-      <p>
-        <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
-        </ruby>
-        <i class="right fa fa-angle-left"></i>
-      </p>
-      </a>
-      <ul class="nav nav-treeview">
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/" >
-            <i class="fa fa-home nav-icon"></i>HOME
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar" >
-            <i class="fa fa-calendar nav-icon"></i>授業予定
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar?mode=list" >
-            <i class="fa fa-calendar nav-icon"></i>欠席連絡
-          </a>
-        </li>
-      </ul>
-    </li>
-</ul>
-@endsection
-@section('page_footer')
-<dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/cancel?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="欠席連絡">
-    <i class="fa fa-comment-dots"></i>欠席連絡
-  </a>
-</dt>
 
 @endsection

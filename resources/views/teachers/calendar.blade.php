@@ -2,7 +2,7 @@
   {{$domain_name}}ダッシュボード
 @endsection
 @extends('dashboard.common')
-
+@include($domain.'.menu')
 
 
 @section('contents')
@@ -41,11 +41,9 @@
             function(result, st, xhr) {
               if(result['status']===200){
                 var events = [];
-                var i=0;
                 $.each(result['data'], function(index, value) {
-                  i++;
                   var _type = 'study';
-                  if(value['status']==='cancel'){
+                  if(value['status']==='cancel' || value['status']==='rest'){
                     _type = 'cancel';
                   }
                   else if(value['exchanged_calendar_id']>0){
@@ -62,7 +60,6 @@
                     type : _type
                   });
                 });
-                console.log(i);
                 callback(events);
               }
             },
@@ -77,7 +74,6 @@
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
             if(event.type==="study"){
-              //base.showPage('dialog', "subDialog", "休暇申請", "/calendars/"+event.id+"/cancel?_page_origin={{$domain}}_{{$item->user_id}}");
               base.showPage('dialog', "subDialog", "詳細", "/calendars/"+event.id);
             }
           },
@@ -87,37 +83,4 @@
 		</div>
 	</div>
 </section>
-@endsection
-
-@section('page_sidemenu')
-<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-    <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-user"></i>
-      <p>
-        <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
-        </ruby>
-        <i class="right fa fa-angle-left"></i>
-      </p>
-      </a>
-      <ul class="nav nav-treeview">
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/" >
-            <i class="fa fa-home nav-icon"></i>HOME
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar" >
-            <i class="fa fa-calendar nav-icon"></i>授業予定
-          </a>
-        </li>
-      </ul>
-    </li>
-</ul>
-@endsection
-
-@section('page_footer')
-
 @endsection

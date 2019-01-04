@@ -33,10 +33,16 @@ class UserCalendar extends Model
     switch($this->status){
       case "new":
         return "仮登録";
+      case "rest":
+        return "休み";
       case "cancel":
         return "キャンセル";
+      case "absence":
+        return "欠席";
+      case "presence":
+        return "出席済み";
       case "fix":
-        return "確定";
+        return "予定確定";
     }
     return "";
   }

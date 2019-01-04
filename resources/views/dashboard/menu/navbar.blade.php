@@ -7,11 +7,26 @@
     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
   </li>
   <li class="nav-item">
-    <a href="/" class="nav-link">HOME</a>
+    <a href="/" class="nav-link">
+      <i class="fa fa-home"></i>
+      <span class="d-none d-sm-inline-block">トップ</span>
+    </a>
   </li>
-  @if($user->role==="manager" || $user->role==="teacher")
-  @endif
-  @if($user->role==="manager")
+  @if($user->role==="student")
+  <li class="nav-item">
+    <a href="/students/{{$user->id}}/calendar" class="nav-link">
+      <i class="fa fa-calendar-alt"></i>
+      <span class="d-none d-sm-inline-block">カレンダー</span>
+    </a>
+  </li>
+  @elseif($user->role==="teacher")
+    <li class="nav-item">
+      <a href="/teachers/{{$user->id}}/calendar" class="nav-link">
+        <i class="fa fa-calendar-alt"></i>
+        <span class="d-none d-sm-inline-block">カレンダー</span>
+      </a>
+    </li>
+  @elseif($user->role==="manager")
     <li class="nav-item">
       <a href="/students" class="nav-link">生徒一覧</a>
     </li>

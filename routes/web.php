@@ -37,10 +37,9 @@ Route::resource('attributes','GeneralAttributeController');
 Route::resource('milestones','MilestoneController');
 Route::resource('comments','CommentController');
 
-Route::get('calendars/cancel','UserCalendarController@cancel_page');
-Route::put('calendars/cancel','UserCalendarController@cancel');
-Route::get('calendars/{id}/cancel','UserCalendarController@cancel_page');
-Route::put('calendars/{id}/cancel','UserCalendarController@cancel');
+Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
+Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
+
 Route::resource('calendars','UserCalendarController');
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
 
