@@ -44,8 +44,13 @@ class Controller extends BaseController
     }
     protected function send_mail($to, $title, $param, $type, $template)
     {
+      if(config('app.debug')){
+        //開発環境の場合、本来の送信先は使わない
+        $to = config('app.debug_mail');
+      }
       $title = '【'.config('app.name').'】'.$title;
       $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
+      $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       return "mail_send";
     }
     protected function send_slack($message, $msg_type, $username=null, $channel=null) {
