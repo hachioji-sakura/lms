@@ -5125,6 +5125,8 @@ button.close, button.mailbox-attachment-close {
 	right: 0;
 	bottom: 0;
 	left: 0;
+  /* yasui サイドメニューの上にしたい
+  */
 	z-index: 1040;
 	background-color: #000;
 }
@@ -6930,16 +6932,26 @@ button.bg-dark:focus {
 	box-shadow: none !important;
 }
 
+.w-20 {
+	width: 20% !important;
+}
+
 .w-25 {
 	width: 25% !important;
 }
-
+.w-40 {
+	width: 40% !important;
+}
 .w-50 {
 	width: 50% !important;
 }
 
 .w-75 {
 	width: 75% !important;
+}
+
+.w-80 {
+	width: 80% !important;
 }
 
 .w-100 {
@@ -7031,10 +7043,19 @@ button.bg-dark:focus {
 .mx-1 {
 	margin-right: 0.25rem !important;
 }
+.mr--1,
+.mx--1 {
+	margin-right: -0.25rem !important;
+}
 
 .mb-1,
 .my-1 {
 	margin-bottom: 0.25rem !important;
+}
+
+.ml--1,
+.mx--1 {
+	margin-left: -0.25rem !important;
 }
 
 .ml-1,
@@ -13298,3 +13319,11 @@ iframe.map {
 .hr-1{
 	border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 }
+.bd-light{
+	border-color: rgba(255, 255, 255, 0.5);
+}
+.bd-dark{
+	border-color: rgba(0, 0, 0, 0.5);
+}
+.fc-sun { color: red; }  /* 日曜日 */
+.fc-sat { color: blue; } /* 土曜日 */

@@ -27,13 +27,13 @@ class UserController extends Controller
           'status' => $form['status'],
           'password' => Hash::make($form['password']),
       ]);
-      return $this->api_responce(200, "", "", $user);
+      return $this->api_response(200, "", "", $user);
     }
     catch (\Illuminate\Database\QueryException $e) {
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   protected function _search_pagenation(Request $request, $items)
@@ -64,15 +64,15 @@ class UserController extends Controller
   }
   protected function save_redirect($res, $param, $success_message, $redirect_url=''){
    if(empty($redirect_url)) $redirect_url ='/'.$this->domain;
-   if($this->is_success_responce($res)){
-     $_param['success_message'] = $success_message;
+   if($this->is_success_response($res)){
+     $param['success_message'] = $success_message;
      return redirect($redirect_url)
-      ->with($_param);
+      ->with($param);
    }
    else {
-     $_param['error_message'] = $res['message'];
-     $_param['error_message_description'] = $res['description'];
-     return back()->with($_param);
+     $param['error_message'] = $res['message'];
+     $param['error_message_description'] = $res['description'];
+     return back()->with($param);
    }
   }
 
@@ -88,7 +88,7 @@ class UserController extends Controller
     }
     $item = User::where('email', $email)->first();
     if(isset($item)){
-      $json = $this->api_responce(200,"","",["email"=>$email]);
+      $json = $this->api_response(200,"","",["email"=>$email]);
       return $this->send_json_response($json);
     }
     return $this->send_json_response($this->notfound());
@@ -117,13 +117,12 @@ class UserController extends Controller
     }
     $form = $request->all();
     $res = $this->update_user_password($user->user_id, $form['password']);
-    if($this->is_success_responce($res)){
+    if($this->is_success_response($res)){
       return back()->with([
         'success_message' => 'パスワード更新しました。'
       ]);
     }
     else {
-      return view($this->domain.'.create', ["error_message" => $res["description"]]);
       return back()->with([
         'error_message' => $res["message"],
         'error_message_description' => $res["description"]
@@ -183,6 +182,30 @@ class UserController extends Controller
     return false;
   }
   /**
+    * roleが生徒または保護者の場合 true
+    * @param string role
+    * @return boolean
+  */
+  protected function is_student_or_parent($role)
+  {
+    if($role==="student" || $role==="parent"){
+      return true;
+    }
+    return false;
+  }
+  /**
+    * roleが保護者の場合 true
+    * @param string role
+    * @return boolean
+  */
+  protected function is_parent($role)
+  {
+    if($role==="parent"){
+      return true;
+    }
+    return false;
+  }
+  /**
     * roleが事務、もしくは講師の場合 true
     * @param string role
     * @return boolean
@@ -208,16 +231,16 @@ class UserController extends Controller
       DB::beginTransaction();
       User::where('id', $user_id)->update(['image_id' => $image_id]);
       DB::commit();
-      return $this->api_responce(200, "", "");
+      return $this->api_response(200, "", "");
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         echo $e->getMessage();
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
   /**
@@ -234,16 +257,16 @@ class UserController extends Controller
       DB::beginTransaction();
       User::where('id', $user_id)->update(['password' => Hash::make($password)]);
       DB::commit();
-      return $this->api_responce(200, "", "");
+      return $this->api_response(200, "", "");
     }
     catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
     catch(\Exception $e){
         echo $e->getMessage();
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
 

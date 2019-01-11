@@ -608,7 +608,7 @@
 			return /(msie|trident|edge)/i.test(navigator.userAgent);
 		},
 		/**
-		* セッションストレージにデータを保存
+		* Webストレージにデータを保存
 		* 30000文字を単位に分割保存する
 		* 保存時は、文字列圧縮する
 		* @method setLocalData
@@ -653,7 +653,7 @@
 			return false;
 		},
 		/**
-		* セッションストレージからデータを取得
+		* Webストレージからデータを取得
 		* 圧縮文字列を解凍し、分割保存状態を連結し返却
 		* @method getLocalData
 		* @param name {String}    保存時のkey
@@ -690,14 +690,14 @@
 			return null;
 		},
 		/**
-		* セッションストレージをクリア
+		* Webストレージをクリア
 		* @method clearLocalData
 		* @return {Boolean} true(success) or false(failed)
 		*/
 		clearLocalData: function() {
 			try {
 				sessionStorage.clear();
-				localStorage.clear();
+				sessionStorage.clear();
 			}
 			catch(e){
 				return false;

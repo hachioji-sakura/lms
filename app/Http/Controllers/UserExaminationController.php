@@ -55,13 +55,13 @@ class UserExaminationController extends TextbookChapterController
     public function examination(Request $request, $textbook_id, $chapter_id){
 
       //受講中の状況取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       if(!isset($current_examination)){
         //受講中の状況がない=新規登録・・・？
         $res = $this->create_examination($request, $textbook_id, $chapter_id);
-        if($this->is_success_responce($res)){
+        if($this->is_success_response($res)){
           $current_examination = $res["data"];
         }
         else {
@@ -85,7 +85,7 @@ class UserExaminationController extends TextbookChapterController
         }
         else {
           //次の問題あり
-          $next_question = TextbookQuestion::where('id', '=', $next_question_id)->first();
+          $next_question = TextbookQuestion::where('id',$next_question_id)->first();
           $question = $next_question->toArray();
         }
       }
@@ -101,7 +101,7 @@ class UserExaminationController extends TextbookChapterController
         'item' => $question,
         'result' => $result,
       ])
-      ->with($_param);
+      ->with($param);
     }
     /**
      * textbook>chapterの新規受講を登録し、問題ページを表示
@@ -113,7 +113,7 @@ class UserExaminationController extends TextbookChapterController
      */
     public function start_examination(Request $request, $textbook_id, $chapter_id){
       $res = $this->create_examination($request, $textbook_id, $chapter_id);
-      if($this->is_success_responce($res)){
+      if($this->is_success_response($res)){
         return $this->examination($request, $textbook_id, $chapter_id);
       }
       else {
@@ -124,7 +124,7 @@ class UserExaminationController extends TextbookChapterController
     }
     protected function get_result($user_examination_id){
       $next_question_id = $this->get_next_question_id($user_examination_id);
-      $next_question = TextbookQuestion::where('id', '=', $next_question_id)->first();
+      $next_question = TextbookQuestion::where('id',$next_question_id)->first();
       $result = null;
       if(!isset($next_question)){
         //章問題についてすべて終了した場合、結果を設定
@@ -151,8 +151,8 @@ class UserExaminationController extends TextbookChapterController
         $retry = 1;
       }
       //受講中の状況を取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       if(!isset($current_examination) || $this->is_result($current_examination)){
         //受講中の状況がないor 受講終了の場合、新規登録
@@ -160,7 +160,7 @@ class UserExaminationController extends TextbookChapterController
         if($retry === 1 && $this->is_result($current_examination)){
           //リトライ指定があり、直近の試験が完了している場合、
           //完了している試験を親IDとする
-          $miss_answer_count  = $current_examination->answers->where('judge', '=', 0)->count();
+          $miss_answer_count  = $current_examination->answers->where('judge',0)->count();
           if($miss_answer_count > 0){
             //間違えた問題がある場合（なければ新規扱い）
             $parent_examination_id = $current_examination->id;
@@ -176,7 +176,7 @@ class UserExaminationController extends TextbookChapterController
         $res = $this->_store($request);
         return $res;
       }
-      return $this->error_responce('試験途中の状態が残っている場合は、新規登録はできません');
+      return $this->error_response('試験途中の状態が残っている場合は、新規登録はできません');
     }
     /**
      * 受講状況が完了している場合true
@@ -219,15 +219,15 @@ class UserExaminationController extends TextbookChapterController
           'current_question_id' => $form['question_id'],
         ]);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 
@@ -242,15 +242,15 @@ class UserExaminationController extends TextbookChapterController
           'current_question_id' => $form['question_id']
         ]);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 

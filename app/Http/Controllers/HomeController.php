@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\StudentParent;
+
 class HomeController extends Controller
 {
     /**
@@ -24,19 +26,25 @@ class HomeController extends Controller
     public function index()
     {
       $user = Auth::user()->details();
-
       if(isset($user)){
-        //ログイン済みであれば自動ログイン
-        switch($user->role){
-          case "manager" :
-            return redirect('/managers/'.$user->id);
-            break;
-          case "teacher" :
-            return redirect('/teachers/'.$user->id);
-            break;
-          case "student" :
-            return redirect('/students/'.$user->id);
-            break;
+        if($user->status===1){
+        }
+        else {
+          //ログイン済みであれば自動ログイン
+          switch($user->role){
+            case "manager" :
+              return redirect('/managers/'.$user->id);
+              break;
+            case "teacher" :
+              return redirect('/teachers/'.$user->id);
+              break;
+            case "parent" :
+              return redirect('/students');
+              break;
+            case "student" :
+              return redirect('/students/'.$user->id);
+              break;
+          }
         }
       }
       else {

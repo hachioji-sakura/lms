@@ -2,6 +2,8 @@
 
 namespace App\Models;
 use App\Models\Image;
+use App\Models\StudentRelation;
+use App\Models\StudentParent;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,5 +40,16 @@ class Student extends Model
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
   }
-
+  public function parents(){
+    $items = StudentRelation::where('student_id', $this->id)->get();
+    $parents = [];
+    foreach($items as $item){
+      $parent = StudentParent::where('id', $item->student_parent_id)->first();
+      $parents[] =User::where('id', $parent->user_id)->first();
+    }
+    return $parents;
+  }
+  public function relations(){
+    return $this->hasMany('App\Models\StudentRelations');
+  }
 }

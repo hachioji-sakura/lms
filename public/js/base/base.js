@@ -45,24 +45,24 @@
 	//画面表示系～
 	//---------------------------------------------------
 	//ページ設定後処理：各フォームUIのロード
-	function pageSettinged(formId, formData){
-		_currentForm = formId;
-		$("input[type=file]", $("#"+formId)).each(function(){
+	function pageSettinged(form_id, formData){
+		_currentForm = form_id;
+		$("input[type=file]", $("#"+form_id)).each(function(){
 			var name = $(this).attr("name");
 			if(util.isEmpty(name)) return;
-			$("img[alt="+name+"][accesskey=preview]", $("#"+formId)).hide();
+			$("img[alt="+name+"][accesskey=preview]", $("#"+form_id)).hide();
 			_cache["_fileUI"][name] = $(this).fileUI({
-				"formId" : formId,
+				"form_id" : form_id,
 				"dragdrop" : ".dragdropupload",
 				"onChange" : function(element, fileData){
 					var name = $(element).attr("name");
 					var accesskey = $(element).attr("accesskey");
 					var filename = fileData["name"];
 					if(util.isEmpty(filename)) filename = "ファイルが指定されていません";
-					$("img[alt="+name+"][accesskey=preview]", $("#"+formId)).hide();
-					$("*[alt="+name+"][accesskey=filename]", $("#"+formId)).html(filename);
-					$("*[alt="+name+"][accesskey=filesize]", $("#"+formId)).html(fileData["size"]);
-					$("*[alt="+name+"][accesskey=filetype]", $("#"+formId)).html(fileData["type"]);
+					$("img[alt="+name+"][accesskey=preview]", $("#"+form_id)).hide();
+					$("*[alt="+name+"][accesskey=filename]", $("#"+form_id)).html(filename);
+					$("*[alt="+name+"][accesskey=filesize]", $("#"+form_id)).html(fileData["size"]);
+					$("*[alt="+name+"][accesskey=filetype]", $("#"+form_id)).html(fileData["type"]);
 					if(fileData["file"]===null) return false;
 					switch(accesskey){
 						case "upload":
@@ -70,7 +70,7 @@
 							break;
 						case "auto_upload":
 							_fileUpload(name, _currentRequest["query_code"], function(result){
-								dom.setFileForm(formId, name, result["data"]["fileid"]);
+								dom.setFileForm(form_id, name, result["data"]["fileid"]);
 							});
 							break;
 						case "import":
@@ -80,16 +80,16 @@
 				}
 			});
 		});
-		$("select[accesskey]", $("#"+formId)).each(function(i){
+		$("select[accesskey]", $("#"+form_id)).each(function(i){
 			var _defaultSelect = $(this).attr("defaultSelect");
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, null, formData);
 		});
-		$("div[uitype=radio]", $("#"+formId)).each(function(i){
+		$("div[uitype=radio]", $("#"+form_id)).each(function(i){
 			var _defaultSelect = $(this).attr("defaultSelect");
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, $(this).html(), formData);
 		});
-		$("select.select2", $("#"+formId)).select2({
-			dropdownParent: $("#"+formId)
+		$("select.select2", $("#"+form_id)).select2({
+			dropdownParent: $("#"+form_id)
 		});
 		//Flat red color scheme for iCheck
 		$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
@@ -99,16 +99,16 @@
 
 		/*
 		//郵便番号入力
-		dom.setPostnoForm(formId);
-		//日付入力
-		dom.setCalenderForm(formId);
+		dom.setPostnoForm(form_id);
 		//数値入力
-		dom.setNumberForm(formId);
+		dom.setNumberForm(form_id);
 		*/
+		//日付入力
+		dom.setCalenderForm(form_id);
 		//値自動調整
-		front.setInputAdjust(formId);
-		dom.setEditForm(formData, formId, _isUpdate);
-		$("textarea", $("#"+formId)).each(function(){
+		front.setInputAdjust(form_id);
+		dom.setEditForm(formData, form_id, _isUpdate);
+		$("textarea", $("#"+form_id)).each(function(){
 			var val = ($(this).val()+"\n").split("\n");
 			var len = val.length;
 			if(len > 15) len = 15;
@@ -372,13 +372,13 @@
 		var fsize  = fileData["sizeVal"];
 		var fname = fileData["name"];
 		var _req  = new FormData();
-		_req.append("formid", fileid);
+		_req.append("form_id", fileid);
 		_req.append(formname,  fval);
 		_req.append("filename", fname);
 		_req.append("remark", remark);
 		service.uploadAjax("/upload", _req,
 			function(result, st, xhr) {
-				result["formid"] = fileid;
+				result["form_id"] = fileid;
 				result["filename"] = fname;
 				result["remark"] = remark;
 				result["fsize"] = fsize;
@@ -406,7 +406,7 @@
 			for(var key in _current){
 				_req.append(key, _current[key]);
 			}
-			_req.append("formid", fileid);
+			_req.append("form_id", fileid);
 			_req.append(formname,  fval);
 			_req.append("filename", fname);
 			_req.append("remark", _currentRequest["query_code"]);
@@ -428,24 +428,36 @@
 			);
 		});
 	}
-	//サブページ表示処理
-	function showPage(formId, pagecode, formData, callback, windowName){
-		if(!util.isEmpty(formId)) _currentForm = formId;
-		if(util.isEmpty(pagecode)) return;
-		var async = true;
-		if(!util.isEmpty(windowName)) async = false;
-		service.getAjax(async, "/getpage/"+pagecode, {},
-			function(result, st, xhr) {
-				if(util.isEmpty(_currentRequest)) _currentRequest = {"query_code" : pagecode};
-				var param = result["data"][0];
-				paramPageLoad(formId, param, formData, callback);
-			},
-			function(xhr, st, err) {
-				service.error("showPage\n"+err.message+"\n"+xhr.responseText);
+	//ダイアログ表示
+	function showPage(type, form_id, page_title, page_url){
+		$("#"+form_id+" .page_title").html(page_title);
+    $("#"+form_id+" .page_contents").load(page_url, function(){
+      base.pageSettinged(form_id+' form', null);
+      //サブページ内のsubmit
+      $("#"+form_id+" .btn[type=submit][accesskey]").on("click", function(){
+        var form = form_id+" .page_contents form";
+        if(!front.validateFormValue(form)) return false;
+        $("#"+form).submit();
+      });
+      //サブページ内のreset
+      $("#"+form_id+" .btn[type=reset]").on("click", function(){
+				if(type==="dialog"){
+        	$("#"+form_id).modal('hide');
+				}
+				else {
+					$("#"+form_id).collapse('hide');
+				}
+      });
+			if(type==="dialog"){
+      	$("#"+form_id).modal('show');
 			}
-		);
+			else{
+				$("#"+form_id).collapse('show');
+			}
+    });
 	}
-	function paramPageLoad(formId, param, formData, callback){
+
+	function paramPageLoad(form_id, param, formData, callback){
 		var title = param["NAME"];
 		var p = $("<p></p>");
 		p.html(param["OPTION_STRING"]);
@@ -458,17 +470,17 @@
 			if(option["title"] && !util.isEmpty(option["title"])) title = option["title"];
 			//更新モードの場合、OPTION_STRING.edit_title設定があれば、優先的に使う
 			if(_isUpdate && option["edit_title"] && !util.isEmpty(option["edit_title"])) title = option["edit_title"];
-			var type=$("#"+formId).attr("type");
-			$(".content-sub-title", $("#"+formId)).html(title);
+			var type=$("#"+form_id).attr("type");
+			$(".content-sub-title", $("#"+form_id)).html(title);
 			switch(param["TYPE"]){
 				case "param":
 					var _pageContents = dom.paramPageLoad(option["form"],option["button"],_listTable["listTable"]);
-					$(".content-sub-body", $("#"+formId)).html(_pageContents);
+					$(".content-sub-body", $("#"+form_id)).html(_pageContents);
 					break;
 				case "url":
 					break;
 			}
-			pageSettinged(formId, formData);
+			pageSettinged(form_id, formData);
 			buttonControl(option);
 			if(callback && $.type(callback)=="function") callback(option);
 		}
@@ -750,17 +762,17 @@
 		}
 	}
 	//編集画面表示
-	function showEditPage(formId, pagecode, querycode, data, isEdit){
+	function showEditPage(form_id, pagecode, querycode, data, isEdit){
 		//編集値取得→編集画面表示→フォームセット
 		var _req = service.extendRequestJson({}, data);
 		_cache["_url"]["showPage"] = {};
-		_cache["_url"]["showPage"]["sf"] = formId;
+		_cache["_url"]["showPage"]["sf"] = form_id;
 		_cache["_url"]["showPage"]["sp"] = pagecode;
 		 _cache["_url"]["showPage"]["su"] = "";
 		if(isEdit) _cache["_url"]["showPage"]["su"] ="1";
 		_isUpdate = isEdit;
 		if(util.isEmpty(querycode) || util.isEmpty(_req["ID"])){
-			showPage(formId, pagecode, data, function(){
+			showPage(form_id, pagecode, data, function(){
 				pageOpen();
 			});
 		}
@@ -768,7 +780,7 @@
 			service.getAjax(true, "/getedit/"+querycode+"/"+_req["ID"], {},
 				function(result, st, xhr) {
 					var data =  result["data"][0];
-					showPage(formId, pagecode, data, function(){
+					showPage(form_id, pagecode, data, function(){
 						pageOpen();
 						autoSave();
 					});
@@ -785,8 +797,8 @@
 					var data =  result["data"][0];
 					var page =  result["page"][0];
 					_isUpdate = isEdit;
-					paramPageLoad(formId, page, function(){
-						dom.setEditForm(data, formId, _isUpdate);
+					paramPageLoad(form_id, page, function(){
+						dom.setEditForm(data, form_id, _isUpdate);
 						pageOpen();
 						autoSave();
 					});
@@ -799,33 +811,33 @@
 		*/
 	}
 
-	function pageOpen(formId){
-		if(util.isEmpty(formId)) formId = _currentForm;
-		if($("#"+formId).hasClass("modal")){
-			$("#"+formId).on('hidden.bs.modal', function () {
-				pageClose(formId);
+	function pageOpen(form_id){
+		if(util.isEmpty(form_id)) form_id = _currentForm;
+		if($("#"+form_id).hasClass("modal")){
+			$("#"+form_id).on('hidden.bs.modal', function () {
+				pageClose(form_id);
 			});
-			$("#"+formId).modal('show');
+			$("#"+form_id).modal('show');
 		}
 		else {
-			$("#"+formId).show();
+			$("#"+form_id).show();
 			$("#main").hide();
 		}
 		$(':focus').blur();
 	}
-	function pageClose(formId){
-		if(util.isEmpty(formId)) formId = _currentForm;
-		if(util.isEmpty(formId)) return;
-		if(formId=="main") return;
+	function pageClose(form_id){
+		if(util.isEmpty(form_id)) form_id = _currentForm;
+		if(util.isEmpty(form_id)) return;
+		if(form_id=="main") return;
 		delete _cache["_url"]["showPage"];
-		if($("#"+formId).hasClass("modal")){
-			$("#"+formId).modal('hide');
+		if($("#"+form_id).hasClass("modal")){
+			$("#"+form_id).modal('hide');
 		}
-		else if($("#"+formId).hasClass("collapse")){
+		else if($("#"+form_id).hasClass("collapse")){
 
 		}
 		else {
-			$("#"+formId).hide();
+			$("#"+form_id).hide();
 			$("#main").show();
 		}
 	}

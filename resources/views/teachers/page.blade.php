@@ -2,7 +2,7 @@
   {{$domain_name}}ダッシュボード
 @endsection
 @extends('dashboard.common')
-
+@include($domain.'.menu')
 @include('dashboard.widget.comments')
 
 {{--まだ対応しない
@@ -19,7 +19,15 @@
         @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
+
             @slot('alias')
+              <h6 class="widget-user-desc">
+                @foreach($item["tags"] as $tag)
+                <small class="badge badge-secondary mt-1 mr-1">
+                  {{$tag->name()}}
+                </small>
+                @endforeach
+              </h6>
             @endslot
         @endcomponent
 			</div>
@@ -29,7 +37,6 @@
 		</div>
 	</div>
 </section>
-{{-- 担当生徒一覧　（まだ対応しない）
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">
@@ -40,59 +47,94 @@
             担当生徒
           </h3>
           <div class="card-tools">
-            <div class="input-group input-group-sm" style="width: 150px;">
-              <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-              <div class="input-group-append">
-                <button type="submit" class="btn btn-default">
-                  <i class="fa fa-search"></i>
-                </button>
-              </div>
-            </div>
+            @component('components.search_word', ['search_word' => $search_word])
+            @endcomponent
           </div>
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <tbody>
-              <tr>
-                <th>ID</th>
-                <th>名前</th>
-                <th>次回レッスン</th>
-                <th>-</th>
-              </tr>
-              <tr>
-                <td>183</td>
-                <td>
-                  <ruby style="ruby-overhang: none">
-                    <rb>山田　太郎</rb>
-                    <rt>ヤマダ　タロウ</rt>
-                  </ruby>
-                </td>
-                <td>
-                  <i class="fa fa-calendar mr-1"></i>
-                  2000/11/11
-                </td>
-                <td>
-                  <button type="button" class="btn btn-danger btn-sm float-left">
-                    <i class="fa fa-minus-circle mr-2"></i>外す
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          @if(count($charge_students) > 0)
+          <ul class="mailbox-attachments clearfix row">
+            @foreach($charge_students as $charge_student)
+            <li class="col-lg-3 col-md-4 col-12" accesskey="" target="">
+              <div class="row">
+                <div class="col-6 text-center">
+                  <a href="/students/{{$charge_student->id}}">
+                    <img src="{{$charge_student->icon}}" class="img-circle mw-64px w-50">
+                    <br>
+                    <ruby style="ruby-overhang: none">
+                      <rb>{{$charge_student->name}}</rb>
+                      <rt>{{$charge_student->kana}}</rt>
+                    </ruby>
+                  </a>
+                </div>
+                <div class="col-6 text-sm">
+                  @if(!empty($charge_student->current_schedule))
+                      <i class="fa fa-calendar mr-1"></i>{{$charge_student->current_schedule}}
+                      <br>
+                      <i class="fa fa-clock mr-1"></i>{{$charge_student->current_schedule_from}}～{{$charge_student->current_schedule_to}}
+                      <br>
+                      <small class="badge badge-info mt-1 mr-1">
+                        {{$charge_student->subject}}
+                      </small>
+                  @else
+                  -
+                  @endif
+                </div>
+                <div class="col-12 text-sm">
+                  @if(!empty($charge_student->current_schedule))
+                    @if($charge_student->status==="fix" && date('Ymd', strtotime($charge_student->start_time)) === date('Ymd'))
+                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                        <i class="fa fa-user-check mr-1"></i>
+                        出欠確認
+                      </a>
+                    @elseif($charge_student->status==="presence")
+                      {{-- 出席済み --}}
+                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                        <i class="fa fa-check-circle mr-1"></i>
+                        出席済み
+                      </a>
+                    @else
+                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        @if($charge_student->status==="absence")
+                          <i class="fa fa-times-circle mr-1"></i>
+                          欠席
+                        @elseif($charge_student->status==="rest")
+                          <i class="fa fa-ban mr-1"></i>
+                          休み
+                        @elseif($charge_student->status==="cancel")
+                          <i class="fa fa-ban mr-1"></i>
+                          キャンセル
+                        @else
+                          <i class="fa fa-clock mr-1"></i>
+                          予定詳細
+                        @endif
+                      </a>
+                    @endif
+                  @endif
+                </div>
+            </li>
+            @endforeach
+          </ul>
+          @else
+          <div class="alert">
+            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+          </div>
+          @endif
         </div>
+      {{--
         <!-- /.card-body -->
         <div class="card-footer clearfix">
           <button type="button" class="btn btn-info btn-sm float-left">
             <i class="fa fa-plus mr-2"></i>追加
           </button>
         </div>
+        --}}
       </div>
       <!-- /.card -->
     </div>
   </div>
 </section>
---}
 
 {{--まだ対応しない
 <section class="content-header">
@@ -111,51 +153,5 @@
 <section class="content">
 	@yield('tasks')
 </section>
---}}
-@endsection
-
-@section('page_sidemenu')
-<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-    <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-user-graduate"></i>
-      <p>
-        <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
-        </ruby>
-        <i class="right fa fa-angle-left"></i>
-      </p>
-      </a>
-      <ul class="nav nav-treeview">
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="footer_form" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
-            <i class="fa fa-comment-dots nav-icon"></i>コメント登録
-          </a>
-        </li>
-        {{--
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="footer_form" page_url="/milestones/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
-            <i class="fa fa-flag nav-icon"></i>目標登録
-          </a>
-        </li>
-        --}}
-      </ul>
-    </li>
-</ul>
-@endsection
-
-@section('page_footer')
-<dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="footer_form" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
-    <i class="fa fa-comment-dots"></i>コメント登録
-  </a>
-</dt>
-{{-- まだ対応しない
-  <dt>
-    <a class="btn btn-app" href="javascript:void(0);"  page_form="footer_form" page_url="/milestones/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
-      <i class="fa fa-flag"></i>目標登録
-    </a>
-  </dt>
 --}}
 @endsection

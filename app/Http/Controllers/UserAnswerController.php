@@ -33,11 +33,11 @@ class UserAnswerController extends UserExaminationController
       $answer_text = $request->get('answer_text');
 
       //受講中の状況取得
-      $_param = $this->get_param($request, $chapter_id);
-      $current_examination = $_param['current_examination'];
+      $param = $this->get_param($request, $chapter_id);
+      $current_examination = $param['current_examination'];
 
       //受講中の問題-直近の回答を取得
-      $current_answer = $current_examination->answers->where('question_id','=', $question_id)
+      $current_answer = $current_examination->answers->where('question_id',$question_id)
                           ->sortByDesc('created_at')->first();
       if(isset($current_answer)){
         //直近の回答が間違いの場合、練習モードとする
@@ -51,8 +51,8 @@ class UserAnswerController extends UserExaminationController
       }
 
       //問題・回答を取得
-      $question = TextbookQuestion::where('chapter_id', '=', $chapter_id)
-          ->where('id', '=', $question_id)->first();
+      $question = TextbookQuestion::where('chapter_id',$chapter_id)
+          ->where('id',$question_id)->first();
       $chapter = $question->chapter;
       $chapter_title = $chapter->title;
 
@@ -84,7 +84,7 @@ class UserAnswerController extends UserExaminationController
           'score' => $question->score
         ]);
         $res = $this->save_answer($request);
-        if(!$this->is_success_responce($res)){
+        if(!$this->is_success_response($res)){
           //abort(500);
           return $res;
         }
@@ -105,7 +105,10 @@ class UserAnswerController extends UserExaminationController
         'result'=>$result,
         'answer_text'=>$answer_text
       ])
-      ->with($_param);
+      ->with($param);
+    }
+    private function answer_judge($input, $answer){
+      
     }
     /**
      * 回答を保存する（採点も行う）
@@ -145,15 +148,15 @@ class UserAnswerController extends UserExaminationController
         ]);
 
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
     public function _store(Request $request)
@@ -164,15 +167,15 @@ class UserAnswerController extends UserExaminationController
         $user = $this->login_details();
         $_item = $this->model()->create($form);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 }

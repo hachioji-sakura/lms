@@ -8,7 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Manager;
+use App\Models\UserTag;
 use App\Models\Image;
+use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
 class User extends Authenticatable
 {
@@ -31,6 +33,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    public function tags(){
+      return UserTag::where('user_id', $this->id)->get();
+      //return $this->hasMany('App\Models\UserTag');
+    }
     public function student(){
       return $this->hasOne('App\Models\Student');
     }
@@ -72,6 +78,15 @@ class User extends Authenticatable
       if(isset($item)){
         $item['teacher_id'] = $item['id'];
         $item['role'] = 'teacher';
+        $item['icon'] = $s3_url;
+        return $item;
+      }
+      $item = StudentParent::where('user_id', $this->id)->first();
+      if(isset($item)){
+        $item['role'] = 'parent';
+        $item['student_parent_id'] = $item['id'];
+        $item['name'] = $item->name_last.' '.$item->name_first;
+        $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
         return $item;
       }

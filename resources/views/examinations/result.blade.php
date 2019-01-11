@@ -69,6 +69,12 @@
 @endsection
 
 @section('page_sidemenu')
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <li class="nav-item hr-1">
+    @component('components.search_word', ['search_word' => $search_word])
+    @endcomponent
+  </li>
+</ul>
 @endsection
 
 @section('page_footer')

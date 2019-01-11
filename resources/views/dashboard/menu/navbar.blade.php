@@ -6,12 +6,30 @@
   <li class="nav-item">
     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
   </li>
-  @if($user->role==="manager" || $user->role==="teacher")
   <li class="nav-item">
-    <a href="/students" class="nav-link">生徒一覧</a>
+    <a href="/" class="nav-link">
+      <i class="fa fa-home"></i>
+      <span class="d-none d-sm-inline-block">トップ</span>
+    </a>
   </li>
-  @endif
-  @if($user->role==="manager")
+  @if($user->role==="student")
+  <li class="nav-item">
+    <a href="/students/{{$user->id}}/calendar" class="nav-link">
+      <i class="fa fa-calendar-alt"></i>
+      <span class="d-none d-sm-inline-block">カレンダー</span>
+    </a>
+  </li>
+  @elseif($user->role==="teacher")
+    <li class="nav-item">
+      <a href="/teachers/{{$user->id}}/calendar" class="nav-link">
+        <i class="fa fa-calendar-alt"></i>
+        <span class="d-none d-sm-inline-block">カレンダー</span>
+      </a>
+    </li>
+  @elseif($user->role==="manager")
+    <li class="nav-item">
+      <a href="/students" class="nav-link">生徒一覧</a>
+    </li>
     <li class="nav-item d-none d-sm-inline-block">
       <a href="/teachers" class="nav-link">講師一覧</a>
     </li>
@@ -56,7 +74,7 @@
       <i class="fa fa-user-alt"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-      <a href="/password" class="dropdown-item">
+      <a href="javascript:void(0);" class="dropdown-item"  page_title="パスワード設定" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>
       <div class="dropdown-divider"></div>

@@ -70,13 +70,9 @@ class ImageController extends UserController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function icon_change(Request $request, $student_id)
+    public function icon_change(Request $request)
     {
       $user = $this->login_details();
-      if($this->is_student($user->role)===true){
-        //生徒は、自分（生徒）の内容しか見れない
-        $student_id = $user->id;
-      }
       $this->validate($request, [
           'image' => [
               // アップロードされたファイルであること
@@ -100,7 +96,7 @@ class ImageController extends UserController
       if($request->hasFile('image')){
         if ($request->file('image')->isValid([])) {
           $res = $this->save_image($request->file('image'), "9999-12-31", "", env("AWS_S3_ICON_FOLDER"));
-          if($this->is_success_responce($res)){
+          if($this->is_success_response($res)){
             $image_id = $res["data"]->id;
             $_message .= "画像アップロードしました(".$image_id.")";
           }
@@ -119,9 +115,8 @@ class ImageController extends UserController
         }
       }
       if(!empty($image_id)){
-        $student = Student::find($student_id)->user->details();
-        $res = $this->update_user_image($student->user_id, $image_id);
-        if($this->is_success_responce($res)){
+        $res = $this->update_user_image($user->user_id, $image_id);
+        if($this->is_success_response($res)){
           return back()->with([
             'success_message' => 'アイコンを変更しました。',
             'success_message_description' => $_message."/user()"
@@ -217,16 +212,16 @@ class ImageController extends UserController
           $message .= "s3_path:".$s3_url."\n";
           $message .= "path:".$path."\n";
           */
-          return $this->api_responce(200, "", "", $image);
+          return $this->api_response(200, "", "", $image);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
       catch(\Exception $e){
           echo $e->getMessage();
           DB::rollBack();
-          return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
       }
     }
 

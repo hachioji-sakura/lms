@@ -40,6 +40,7 @@ return [
     */
 
     'debug' => env('APP_DEBUG', false),
+    'debug_mail' => env('APP_DEBUG_MAIL', false),
 
     /*
     |--------------------------------------------------------------------------

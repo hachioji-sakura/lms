@@ -51,7 +51,7 @@ class ImagesTableSeeder extends Seeder
         ],
       ];
       foreach($_add_items as $_add_item){
-        $_item = Image::where('name', '=', $_add_item['name']);
+        $_item = Image::where('name',$_add_item['name']);
         if($_item->count()<1){
           $_item = Image::create($_add_item);
         }

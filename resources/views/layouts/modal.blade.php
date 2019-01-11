@@ -6,11 +6,21 @@
         <button type="button" class="close" data-dismiss="modal">
           <i class="fa fa-times"></i>
         </button>
-        <h4 class="modal-title content-sub-title"></h4>
+        <h4 class="modal-title content-sub-title page_title"></h4>
       </div>
-      <div class="modal-body content-sub-body">
+      <div class="modal-body content-sub-body page_contents">
       </div>
     </div>
   </div>
 </div>
+<div class="modal fade" id="loading" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body content-sub-body page_contents">
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection

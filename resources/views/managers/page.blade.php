@@ -29,20 +29,105 @@
 		</div>
 	</div>
 </section>
-{{--まだ対応しない
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-12 col-lg-6 col-md-6">
-				@yield('milestones')
-			</div>
-			<div class="col-12 col-lg-6 col-md-6">
-				@yield('events')
-			</div>
-		</div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/parents">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fa fa-user-friends"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">保護者一覧</b>
+            <span class="text-sm">生徒保護者の登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/students">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fa fa-user-graduate"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">生徒一覧</b>
+            <span class="text-sm">生徒の登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/managers">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-address-card"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">事務一覧</b>
+            <span class="text-sm">事務員の登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/teachers">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-user-tie"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">講師一覧</b>
+            <span class="text-sm">講師の登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/comments">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-comments"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">コメント一覧</b>
+            <span class="text-sm">コメントの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/events">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-calendar-check"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">イベント一覧</b>
+            <span class="text-sm">イベントの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/attributes">
+        <div class="info-box">
+          <span class="info-box-icon bg-warning">
+            <i class="fa fa-tags"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">属性一覧</b>
+            <span class="text-sm">定義項目の追加・編集</span>
+          </div>
+        </div>
+        </a>
+      </div>
+    </div>
 	</div>
 </section>
 
+{{--まだ対応しない
 <section class="content">
 	@yield('tasks')
 </section>
@@ -64,17 +149,10 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="footer_form" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&manager_id={{$item->id}}" page_title="目標登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
         </li>
-        {{--
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="footer_form" page_url="/milestones/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
-            <i class="fa fa-flag nav-icon"></i>目標登録
-          </a>
-        </li>
-        --}}
       </ul>
     </li>
 </ul>
@@ -82,15 +160,8 @@
 
 @section('page_footer')
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="footer_form" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&manager_id={{$item->id}}" page_title="コメント登録">
     <i class="fa fa-comment-dots"></i>コメント登録
   </a>
 </dt>
-{{-- まだ対応しない
-  <dt>
-    <a class="btn btn-app" href="javascript:void(0);"  page_form="footer_form" page_url="/milestones/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
-      <i class="fa fa-flag"></i>目標登録
-    </a>
-  </dt>
---}}
 @endsection

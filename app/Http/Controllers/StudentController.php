@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Models\Student;
+use App\Models\StudentParent;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,10 +35,10 @@ class StudentController extends UserController
    */
   public function index(Request $request)
   {
-   $_param = $this->get_param($request);
+   $param = $this->get_param($request);
    $_table = $this->search($request);
    return view($this->domain.'.tiles', $_table)
-     ->with($_param);
+     ->with($param);
   }
   /**
    * 共通パラメータ取得
@@ -52,18 +54,30 @@ class StudentController extends UserController
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
        'user' => $user,
+       'mode'=>$request->mode,
        'search_word'=>$request->search_word
     ];
+
     if(is_numeric($id) && $id > 0){
      //id指定がある
      if($this->is_student($user->role) && $id!==$user->id){
       //生徒は自分のidしか閲覧できない
       abort(404);
      }
+     else if($this->is_parent($user->role)){
+      //保護者は自分の家族のidしか閲覧できない
+      /*
+      if(!Student::where('id', $id)->parent_check($user->id)){
+        abort(404);
+      }
+      */
+     }
     }
     else {
      //id指定がない、かつ、講師・事務以外はNG
-     if($this->is_manager_or_teacher($user->role)!==true){
+     if($this->is_parent($user->role)===true){
+     }
+     else if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
      }
     }
@@ -78,9 +92,9 @@ class StudentController extends UserController
    */
   public function search(Request $request)
   {
-   $items = DB::table($this->table)
-     ->join('users', 'users.id', '=', $this->table.'.user_id')
-     ->join('images', 'images.id', '=', 'users.image_id');
+    $items = DB::table($this->table)
+       ->join('users', 'users.id',$this->table.'.user_id')
+       ->join('images', 'images.id','users.image_id');
 
    $items = $this->_search_scope($request, $items);
 
@@ -88,7 +102,7 @@ class StudentController extends UserController
 
    $items = $this->_search_sort($request, $items);
 
-   $select_row = <<<EOT
+   $select_raw = <<<EOT
      $this->table.id,
      concat($this->table.name_last, '', $this->table.name_first) as name,
      concat($this->table.kana_last, '', $this->table.kana_first) as kana,
@@ -96,7 +110,7 @@ class StudentController extends UserController
      $this->table.gender,
      $this->table.birth_day
 EOT;
-   $items = $items->selectRaw($select_row)->get();
+   $items = $items->selectRaw($select_raw)->get();
    return ["items" => $items->toArray()];
   }
   /**
@@ -108,13 +122,14 @@ EOT;
    */
   public function _search_scope(Request $request, $items)
   {
+    $user = $this->login_details();
    //ID 検索
    if(isset($request->id)){
-     $items = $items->where($this->table.'.id','=', $request->id);
+     $items = $items->where($this->table.'.id',$request->id);
    }
    //性別 検索
    if(isset($request->gender)){
-     $items = $items->where($this->table.'.gender','=', $request->gender);
+     $items = $items->where($this->table.'.gender',$request->gender);
    }
    //検索ワード
    if(isset($request->search_word)){
@@ -133,6 +148,18 @@ EOT;
      $_like = '%'.$request->email.'%';
      $items = $items->where('users.email','like', $_like);
    }
+   if($this->is_parent($user->role)){
+     //自分の子供のみ閲覧可能
+     $items = $items->whereRaw('students.id in (select student_id from student_relations where student_parent_id=?)',[$user->id]);
+   }
+   else if($this->is_teacher($user->role)){
+     if(!isset($request->filter) || $request->filter!=='all'){
+       //filterにall指定がない
+       $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)',[$user->id]);
+     }
+     //講師は削除された生徒は表示しない
+     $items = $items->where('users.status', '!=', 9);
+   }
 
    return $items;
   }
@@ -143,10 +170,10 @@ EOT;
    */
   public function create(Request $request)
   {
-    $_param = $this->get_param($request);
+    $param = $this->get_param($request);
     return view($this->domain.'.create',
       ['error_message' => ''])
-      ->with($_param);
+      ->with($param);
    }
    /**
     * 新規登録
@@ -155,11 +182,11 @@ EOT;
     */
    public function store(Request $request)
    {
-    $_param = $this->get_param($request);
+    $param = $this->get_param($request);
 
     $res = $this->_store($request);
     //生徒詳細からもCALLされる
-    return $this->save_redirect($res, $_param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+    return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
    }
    /**
     * 新規登録ロジック
@@ -175,7 +202,7 @@ EOT;
       //デフォルトのアイコンは性別と一緒にしておく
       $form["image_id"] = $form['gender'];
       $res = $this->user_create($form);
-      if($this->is_success_responce($res)){
+      if($this->is_success_response($res)){
         $form['user_id'] = $res["data"]->id;
         $user = $this->login_details();
         $form["create_user_id"] = $user->user_id;
@@ -187,17 +214,17 @@ EOT;
         unset($form['password-confirm']);
         $_item = $this->model()->create($form);
         DB::commit();
-        return $this->api_responce(200, "", "", $_item);
+        return $this->api_response(200, "", "", $_item);
       }
       return $res;
      }
      catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();
-        return $this->error_responce("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
      }
      catch(\Exception $e){
         DB::rollBack();
-        return $this->error_responce("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
      }
    }
    /**
@@ -208,7 +235,7 @@ EOT;
    public function save_validate(Request $request)
    {
      //保存時にパラメータをチェック
-     return $this->api_responce(200, '', '');
+     return $this->api_response(200, '', '');
    }
    /**
     * 詳細画面表示
@@ -218,10 +245,12 @@ EOT;
     */
   public function show(Request $request, $id)
   {
-   $_param = $this->get_param($request, $id);
+   $param = $this->get_param($request, $id);
    $model = $this->model()->find($id)->user;
    $item = $model->details();
-   $user = $_param['user'];
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+
    //コメントデータ取得
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
@@ -242,8 +271,48 @@ EOT;
      'comments'=>$comments,
      'milestones'=>$milestones,
      'use_icons'=>$use_icons,
-   ])->with($_param);
+   ])->with($param);
   }
+  /**
+   * 詳細画面表示
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+ public function calendar(Request $request, $id)
+ {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->find($id)->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+
+   //目標データ取得
+   $milestones = $model->target_milestones;
+
+   $use_icons = DB::table('images')
+     ->where('create_user_id','=',$user->user_id)
+     ->orWhere('publiced_at','<=', date('Y-m-d'))
+     ->get(['id', 'alias', 's3_url']);
+
+   $view = "calendar";
+   if($param["mode"]==="list"){
+     $view = "schedule";
+     $request->merge([
+       '_sort' => 'start_time',
+     ]);
+     $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
+     if($this->is_success_response($res)){
+       $param["calendars"] = $res["data"];
+     }
+   }
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'milestones'=>$milestones,
+     'use_icons'=>$use_icons,
+   ])->with($param);
+ }
   /**
    * Show the form for editing the specified resource.
    *
@@ -252,10 +321,10 @@ EOT;
    */
   public function edit(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
     return view($this->domain.'.create', [
       '_edit' => true])
-      ->with($_param);
+      ->with($param);
   }
   /**
    * Update the specified resource in storage.
@@ -266,15 +335,15 @@ EOT;
    */
   public function update(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
     $res = $this->_update($request, $id);
-    return $this->save_redirect($res, $_param, $this->domain_name.'を更新しました');
+    return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
   }
 
   public function _update(Request $request, $id)
   {
    $res = $this->save_validate($request);
-   if(!$this->is_success_responce($res)){
+   if(!$this->is_success_response($res)){
      return $res;
    }
    $form = $request->all();
@@ -284,15 +353,15 @@ EOT;
      $form = $request->all();
      $item = Student::find($id)->update($form);
      DB::commit();
-     return $this->api_responce(200, '', '', $item);
+     return $this->api_response(200, '', '', $item);
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();
-      return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
    catch(\Exception $e){
       DB::rollBack();
-      return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
   }
   /**
@@ -303,10 +372,10 @@ EOT;
    */
   public function destroy(Request $request, $id)
   {
-    $_param = $this->get_param($request, $id);
+    $param = $this->get_param($request, $id);
 
     $res = $this->_delete($request, $id);
-    return $this->save_redirect($res, $_param, $this->domain_name.'を削除しました');
+    return $this->save_redirect($res, $param, $this->domain_name.'を削除しました');
   }
 
   public function _delete(Request $request, $id)
@@ -316,15 +385,15 @@ EOT;
      DB::beginTransaction();
      $items = Student::find($id)->delete();
      DB::commit();
-     return $this->api_responce(200, '', '', $items);
+     return $this->api_response(200, '', '', $items);
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();
-      return $this->error_responce('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
    catch(\Exception $e){
       DB::rollBack();
-      return $this->error_responce('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
   }
 }

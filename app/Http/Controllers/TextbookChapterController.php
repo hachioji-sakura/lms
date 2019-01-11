@@ -47,8 +47,8 @@ class TextbookChapterController extends TextbookController
     }
 
     public function examination_chapter(Request $request, $textbook_id){
-      $_param = $this->get_param($request, $textbook_id);
-      $_param['domain'] = "examinations";
+      $param = $this->get_param($request, $textbook_id);
+      $param['domain'] = "examinations";
       if(!$request->has('textbook_id')){
         $request->merge([
           'textbook_id' => $textbook_id,
@@ -56,7 +56,7 @@ class TextbookChapterController extends TextbookController
       }
       $_table = $this->search($request);
       return view('examinations.chapters',   $_table)
-        ->with($_param);
+        ->with($param);
     }
     /**
      * 検索～一覧
@@ -119,11 +119,11 @@ class TextbookChapterController extends TextbookController
     {
       //ID 検索
       if(isset($request->id)){
-        $items = $items->where('id','=', $request->id);
+        $items = $items->where('id',$request->id);
       }
       //textbook_id 検索
       if(isset($request->textbook_id)){
-        $items = $items->where('textbook_id','=', $request->textbook_id);
+        $items = $items->where('textbook_id',$request->textbook_id);
       }
       //検索ワード
       if(isset($request->search_word)){
@@ -147,8 +147,8 @@ class TextbookChapterController extends TextbookController
      * @return boolean
      */
     protected function get_examintaions($user_id, $chapter_id){
-      return $current_examination = UserExamination::where('user_id', '=', $user_id)
-        ->where('chapter_id', '=', $chapter_id)
+      return $current_examination = UserExamination::where('user_id',$user_id)
+        ->where('chapter_id',$chapter_id)
         ->orderBy('created_at', 'desc')
         ->get();
     }
@@ -160,8 +160,8 @@ class TextbookChapterController extends TextbookController
      * @return boolean
      */
     protected function get_examintaion($user_id, $chapter_id){
-      return $current_examination = UserExamination::where('user_id', '=', $user_id)
-        ->where('chapter_id', '=', $chapter_id)
+      return $current_examination = UserExamination::where('user_id',$user_id)
+        ->where('chapter_id',$chapter_id)
         ->orderBy('created_at', 'desc')
         ->first();
     }
@@ -173,7 +173,7 @@ class TextbookChapterController extends TextbookController
      */
     protected function get_questions($user_examination_id){
       //カレントの試験状態
-      $current_examination = UserExamination::where('id', '=', $user_examination_id)->first();
+      $current_examination = UserExamination::where('id',$user_examination_id)->first();
       if($current_examination->parent_id > 0){
         //リトライ対象の問題=前回間違えたことがある問題
         $sql =<<<EOT
@@ -223,7 +223,7 @@ EOT;
      */
     protected function get_next_question_id($user_examination_id){
       //カレントの試験状態
-      $current_examination = UserExamination::where('id', '=', $user_examination_id)->first();
+      $current_examination = UserExamination::where('id',$user_examination_id)->first();
       if($current_examination->parent_id > 0){
         //リトライ対象の問題=前回間違えたことがある問題かつ、今回正解がない問題
         $sql =<<<EOT
@@ -249,7 +249,7 @@ EOT;
       }
       $sort_no = -1;
       if($current_examination->current_question_id > 0){
-        $current_question = TextbookQuestion::where('id', '=', $current_examination->current_question_id)->first();
+        $current_question = TextbookQuestion::where('id',$current_examination->current_question_id)->first();
         if(isset($current_question)){
           $sort_no = $current_question->sort_no;
         }
