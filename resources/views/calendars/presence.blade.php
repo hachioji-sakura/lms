@@ -16,6 +16,9 @@
       <div class="col-12 col-lg-6 col-md-6 mb-1">
         <form method="POST" action="/calendars/{{$item['id']}}/presence">
           @csrf
+          @if(isset($student_id))
+            <input type="hidden" value="{{$student_id}}" name="student_id" />
+          @endif
           @if(isset($_page_origin))
             <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
           @endif

@@ -32,7 +32,7 @@ class UserCalendar extends Model
     $status_name = "";
     switch($this->status){
       case "new":
-        return "仮登録";
+        return "予定確認中";
       case "rest":
         return "休み";
       case "cancel":
@@ -42,7 +42,7 @@ class UserCalendar extends Model
       case "presence":
         return "出席済み";
       case "fix":
-        return "予定確定";
+        return "授業予定";
     }
     return "";
   }

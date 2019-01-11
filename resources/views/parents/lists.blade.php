@@ -7,7 +7,7 @@
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
+    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create?key={{$select_key}}" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
     </a>
   </li>
@@ -24,15 +24,10 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
+      @foreach($keys as $index => $item)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_type=private" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
-           <i class="fa fa-lock nav-icon"></i>未公開
-         </a>
-       </li>
-      @foreach(config('attribute.comment_type') as $index => $name)
-      <li class="nav-item">
-         <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
-           <i class="fa fa-list-alt nav-icon"></i>{{$name}}
+         <a href="/{{$domain}}?key={{$item['attribute_value']}}" class="nav-link @if($item['attribute_value']===$select_key) active @endif">
+           <i class="fa fa-list-alt nav-icon"></i>{{$item['attribute_name']}}
          </a>
        </li>
        @endforeach
@@ -43,7 +38,7 @@
 
 @section('page_footer')
   <dt>
-    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create">
+    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create?key={{$select_key}}">
       <i class="fa fa-plus"></i>{{$domain_name}}登録
     </a>
   </dt>

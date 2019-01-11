@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Models\Student;
+use App\Models\StudentParent;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -55,16 +57,27 @@ class StudentController extends UserController
        'mode'=>$request->mode,
        'search_word'=>$request->search_word
     ];
+
     if(is_numeric($id) && $id > 0){
      //id指定がある
      if($this->is_student($user->role) && $id!==$user->id){
       //生徒は自分のidしか閲覧できない
       abort(404);
      }
+     else if($this->is_parent($user->role)){
+      //保護者は自分の家族のidしか閲覧できない
+      /*
+      if(!Student::where('id', $id)->parent_check($user->id)){
+        abort(404);
+      }
+      */
+     }
     }
     else {
      //id指定がない、かつ、講師・事務以外はNG
-     if($this->is_manager_or_teacher($user->role)!==true){
+     if($this->is_parent($user->role)===true){
+     }
+     else if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
      }
     }
@@ -110,14 +123,6 @@ EOT;
   public function _search_scope(Request $request, $items)
   {
     $user = $this->login_details();
-    if($this->is_teacher($user->role)){
-      if(!isset($request->filter) || $request->filter!=='all'){
-        //filterにall指定がない
-        $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)',[$user->id]);
-      }
-      //講師は削除された生徒は表示しない
-      $items = $items->where('users.status', '!=', 9);
-    }
    //ID 検索
    if(isset($request->id)){
      $items = $items->where($this->table.'.id',$request->id);
@@ -142,6 +147,18 @@ EOT;
    if(isset($request->email)){
      $_like = '%'.$request->email.'%';
      $items = $items->where('users.email','like', $_like);
+   }
+   if($this->is_parent($user->role)){
+     //自分の子供のみ閲覧可能
+     $items = $items->whereRaw('students.id in (select student_id from student_relations where student_parent_id=?)',[$user->id]);
+   }
+   else if($this->is_teacher($user->role)){
+     if(!isset($request->filter) || $request->filter!=='all'){
+       //filterにall指定がない
+       $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)',[$user->id]);
+     }
+     //講師は削除された生徒は表示しない
+     $items = $items->where('users.status', '!=', 9);
    }
 
    return $items;
@@ -278,14 +295,19 @@ EOT;
      ->orWhere('publiced_at','<=', date('Y-m-d'))
      ->get(['id', 'alias', 's3_url']);
 
+   $view = "calendar";
    if($param["mode"]==="list"){
+     $view = "schedule";
+     $request->merge([
+       '_sort' => 'start_time',
+     ]);
      $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
      if($this->is_success_response($res)){
        $param["calendars"] = $res["data"];
      }
    }
 
-   return view($this->domain.'.calendar', [
+   return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones,
      'use_icons'=>$use_icons,

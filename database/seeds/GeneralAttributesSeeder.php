@@ -62,6 +62,48 @@ class GeneralAttributesSeeder extends Seeder
             'sort_no' => 21,
             'create_user_id' => 1,
         ]
+        [
+            'attribute_key' => 'keys',
+            'attribute_value' => 'absence_type',
+            'attribute_name' => '休み種別',
+            'sort_no' => 22,
+            'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'keys',
+            'attribute_value' => 'jyukensei',
+            'attribute_name' => '受験生フラグ',
+            'sort_no' => 30,
+            'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'keys',
+            'attribute_value' => 'fee_free',
+            'attribute_name' => '受講料無料フラグ',
+            'sort_no' => 90,
+            'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'keys',
+            'attribute_value' => 'grade_adj',
+            'attribute_name' => '学年調整値(留年など)',
+            'sort_no' => 91,
+            'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'jyukensei',
+            'attribute_value' => '1',
+            'attribute_name' => '受験生',
+            'sort_no' => 90,
+            'create_user_id' => 1,
+        ],
+        [
+            'attribute_key' => 'fee_free',
+            'attribute_value' => '1',
+            'attribute_name' => '受講料無料',
+            'sort_no' => 90,
+            'create_user_id' => 1,
+        ],
 
       ];
       foreach($_add_items as $_add_item){

@@ -182,6 +182,30 @@ class UserController extends Controller
     return false;
   }
   /**
+    * roleが生徒または保護者の場合 true
+    * @param string role
+    * @return boolean
+  */
+  protected function is_student_or_parent($role)
+  {
+    if($role==="student" || $role==="parent"){
+      return true;
+    }
+    return false;
+  }
+  /**
+    * roleが保護者の場合 true
+    * @param string role
+    * @return boolean
+  */
+  protected function is_parent($role)
+  {
+    if($role==="parent"){
+      return true;
+    }
+    return false;
+  }
+  /**
     * roleが事務、もしくは講師の場合 true
     * @param string role
     * @return boolean

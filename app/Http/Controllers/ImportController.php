@@ -12,6 +12,8 @@ use App\Models\Supplier;
 use App\Models\TextbookSale;
 
 use App\Models\Student;
+use App\Models\StudentRelation;
+use App\Models\StudentParent;
 use App\Models\Teacher;
 use App\Models\UserTag;
 use App\Models\ChargeStudent;
@@ -359,7 +361,7 @@ class ImportController extends UserController
       if(empty($item['email'])) $item['email'] = $item['teacher_no'];
       $item['image_id'] = 3;
       $item['password'] = 'sakusaku';
-      $item['status'] = 0; //インポートしただけで、アカウント通知が必要な状況
+      $item['status'] = 1; //インポートしただけで、アカウント通知が必要な状況
       if(intval($item['del_flag'])===2){
         $item['status'] = 9;
       }
@@ -418,8 +420,8 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_student($item){
-      $item['email'] = 'student_'.$item['student_no'];
-      if(!isset($item['gender'])){
+      $item['email'] = $item['mail_address'];
+      if(!is_numeric($item['gender'])){
         $item['image_id'] = 4;
         $item['gender'] = 3;
       }
@@ -432,13 +434,23 @@ class ImportController extends UserController
         $item['_birth_day'] = $item['birth_year'].'-'.$item['birth_month'].'-'.$item['birth_day'];
       }
       else {
+        //仮の生年月日
         $item['_birth_day'] = '1900-01-01';
       }
 
-      $item['status'] = 0; //インポートしただけで、アカウント通知が必要な状況
+      $item['status'] = 1; //インポートしただけで、アカウント通知が必要な状況
       if(intval($item['del_flag'])===2){
         $item['status'] = 9;
       }
+
+      if(empty($item['email'])){
+        if($item['status']!==9){
+          //削除してない生徒で、メールアドレスがない場合は通知
+          $this->send_slack("事務管理システム:no=".$item['student_no']."メールアドレス設定なし", 'error', $this->logic_name);
+        }
+        $item['email'] = 'email_'.$item['student_no'];
+      }
+
       $item['password'] = 'sakusaku';
       $kana = $item['student_furigana'];
       $item['kana_last'] = '';
@@ -449,31 +461,29 @@ class ImportController extends UserController
           $item['kana_first'] = $kanas[1];
       }
 
-      $user = User::where('email', $item['email'])->first();
-      $user_id = 0;
-      if(!isset($user)){
-        //認証情報登録
+      $parent_user = User::where('email', $item['email'])->first();
+      $parent = null;
+      if(!isset($parent_user)){
+        //認証情報登録(保護者として登録）
         $res = $this->user_create([
-          'name' => $item['student_no'],
+          'name' => $item['family_name'].'様',
           'password' => $item['password'],
           'email' => $item['email'],
-          'image_id' => $item['image_id'],
+          'image_id' => 4,
           'status' => $item['status'],
         ]);
         if($this->is_success_response($res)){
-          //生徒情報登録
-          $Student = new Student;
-          $_item = $Student->create([
+          //保護者情報登録
+          $parent_user = $res['data'];
+          $StudentParent = new StudentParent;
+          $parent = $StudentParent->create([
             'name_last' => $item['family_name'],
             'name_first' => $item['first_name'],
             'kana_last' => $item['kana_last'],
             'kana_first' => $item['kana_first'],
-            'birth_day' => $item['_birth_day'],
-            'gender' => $item['gender'],
-            'user_id' => $res['data']->id,
+            'user_id' => $parent_user->id,
             'create_user_id' => 1,
           ]);
-          $user_id = $res['data']->id;
         }
         else {
           $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
@@ -481,8 +491,60 @@ class ImportController extends UserController
         }
       }
       else {
-        $user_id = $user->id;
-        $student = Student::where('user_id', $user_id)->first();
+        $parent = StudentParent::where('user_id', $parent_user->id)->first();
+        //認証情報存在：既存更新
+       if(!isset($parent)){
+         $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 保護者情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+         return false;
+       }
+       $parent->update([
+         'name_last' => $item['family_name'],
+         'name_first' => $item['first_name'],
+         'kana_last' => $item['kana_last'],
+         'kana_first' => $item['kana_first'],
+       ]);
+       if($item['status']===9){
+         //削除時のみ更新
+         $parent_user->update([
+           'status' => $item['status'],
+         ]);
+       }
+      }
+
+      $user = User::where('name', $item['student_no'])->first();
+      $student = null;
+      if(!isset($user)){
+        //認証情報なし：新規登録
+        $res = $this->user_create([
+          'name' => $item['student_no'],
+          'password' => $item['password'],
+          'email' => $item['student_no'],
+          'image_id' => $item['image_id'],
+          'status' => $item['status'],
+        ]);
+        if($this->is_success_response($res)){
+          //生徒情報登録
+          $user = $res['data'];
+          $Student = new Student;
+          $student = $Student->create([
+            'name_last' => $item['family_name'],
+            'name_first' => $item['first_name'],
+            'kana_last' => $item['kana_last'],
+            'kana_first' => $item['kana_first'],
+            'birth_day' => $item['_birth_day'],
+            'gender' => $item['gender'],
+            'user_id' => $user->id,
+            'create_user_id' => 1,
+          ]);
+        }
+        else {
+          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          return false;
+        }
+      }
+      else {
+         //認証情報存在：既存更新
+        $student = Student::where('user_id', $user->id)->first();
         if(!isset($student)){
           $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 生徒情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
@@ -495,19 +557,31 @@ class ImportController extends UserController
           'birth_day' => $item['_birth_day'],
           'gender' => $item['gender'],
         ]);
-        $user->update([
-          'status' => $item['status'],
-        ]);
+        if($item['status']===9){
+          //削除時のみ更新
+          $user->update([
+            'status' => $item['status'],
+          ]);
+        }
       }
 
-      UserTag::where('user_id',$user_id)->delete();
-
+      //$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);
+      //家族情報（関連性）の登録
+      StudentRelation::where('student_id',$student->id)->delete();
+      $StudentRelation = new StudentRelation;
+      $StudentRelation->create([
+        'student_id' => $student->id,
+        'student_parent_id' => $parent->id,
+        'create_user_id' => 1,
+      ]);
       //生徒属性登録
-      $this->store_user_tag($user_id, 'student_kind', $item['student_kind']);
-      $this->store_user_tag($user_id, 'grade', $item['grade']);
-      $this->store_user_tag($user_id, 'grade_adj', $item['grade_adj']);
-      $this->store_user_tag($user_id, 'fee_free', $item['fee_free']);
-      $this->store_user_tag($user_id, 'jyukensei', $item['jyukensei']);
+      UserTag::where('user_id', $user->id)->delete();
+      //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
+      //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
+      $this->store_user_tag($user->id, 'grade', $item['grade']);
+      $this->store_user_tag($user->id, 'grade_adj', $item['grade_adj']);
+      $this->store_user_tag($user->id, 'fee_free', $item['fee_free']);
+      $this->store_user_tag($user->id, 'jyukensei', $item['jyukensei']);
       return true;
     }
     /**
@@ -562,7 +636,6 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_calendar($item){
-      if(empty($item['teacher_no']) || intval($item['teacher_no'])==0) return false;
       $student = User::where('name', $item['student_no'])->first();
       if(!isset($student)){
         $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
@@ -591,11 +664,11 @@ class ImportController extends UserController
       $remark.='[course='.$item['course'].']';
       $remark.='[subject='.$item['subject'].']';
       $exchanged_calendar_id = 0;
-      //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:rest
+      //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:rest / 4.出席 : presence 5.欠席:absence
       $status= 'fix';
       if(!empty($item['yasumi'])){
         //TODO :以下の項目をどうにかしたい
-        $_attr = $this->get_save_general_attribute('yasumi', '', $item['yasumi']);
+        $_attr = $this->get_save_general_attribute('absence_type', '', $item['yasumi']);
         $yasumi = $_attr->attribute_value;
         $remark.='[yasumi='.$item['yasumi'].']';
         if($item['yasumi']=='休み1' || $item['yasumi']=='休み2'){
@@ -686,6 +759,17 @@ class ImportController extends UserController
       }
       return true;
     }
+    /**
+     * カレンダーアーカイブ登録
+     * @param array $item
+     * @return boolean
+     */
+    public function archive_calendar($item){
+      DB::statement('alter table users auto_increment = 1');
+
+      return true;
+    }
+
     /**
      * ユーザータグ登録
      * @param array $item

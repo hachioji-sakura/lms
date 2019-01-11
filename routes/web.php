@@ -35,11 +35,13 @@ Route::post('import/{object?}','ImportController@import');
 
 Route::resource('attributes','GeneralAttributeController');
 Route::resource('milestones','MilestoneController');
+Route::get('comments/{id}/publiced','CommentController@publiced_page');
+Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
+Route::resource('parents','StudentParentController');
 
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
-
 Route::resource('calendars','UserCalendarController');
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
 
@@ -59,17 +61,17 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home');
 
 //教科書を選択する画面
-Route::get('/examinations', 'TextbookController@examination_textbook');
+Route::get('examinations', 'TextbookController@examination_textbook');
 //目次を選択する画面
-Route::get('/examinations/{textbook_id}', 'TextbookChapterController@examination_chapter');
+Route::get('examinations/{textbook_id}', 'TextbookChapterController@examination_chapter');
 //問題ページを表示する画面(question_idがない場合はカレントの問題を表示）
-Route::get('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@examination');
-Route::post('/examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
-//Route::redirect('/examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
-Route::post('/examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@examination');
+Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
+//Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
+Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
 
 
 // 送信メール本文のプレビュー

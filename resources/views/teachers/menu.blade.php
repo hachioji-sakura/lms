@@ -22,6 +22,11 @@
             <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
           </a>
         </li>
+        <li class="nav-item hr-1 bd-light">
+          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar?mode=list" >
+            <i class="fa fa-clock nav-icon"></i>授業予定
+          </a>
+        </li>
       </ul>
       <ul class="nav nav-treeview">
         <li class="nav-item">

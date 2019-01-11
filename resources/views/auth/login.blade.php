@@ -6,9 +6,9 @@
     <div class="form-group row mb-3">
       <div class="input-group">
 				<div class="input-group-prepend">
-					<span class="input-group-text"><i class="fa fa-envelope"></i></span>
+					<span class="input-group-text"><i class="fa fa-user-alt"></i></span>
 				</div>
-        <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="メールアドレス" minlength="3" maxlength="32" inputtype="email">
+        <input id="email" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="ログインID またはメールアドレス" minlength="3" maxlength="32" inputtype="hankaku">
         @if ($errors->has('email'))
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $errors->first('email') }}</strong>

@@ -43,67 +43,6 @@
 	</div>
 </section>
 
-@if($mode==="list")
-<section class="content mb-2">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title" id="charge_students">
-            <i class="fa fa-calendar mr-1"></i>
-            授業予定
-          </h3>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body table-responsive p-0">
-          @if(isset($calendars))
-          <table class="table table-hover">
-            <tbody>
-              <tr>
-                <th>詳細</th>
-                <th>日時</th>
-                <th>講師</th>
-                <th>内容</th>
-                <th>欠席連絡</th>
-              </tr>
-              @foreach($calendars as $calendar)
-              <tr>
-                <td>
-                  <a href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-secondary btn-sm float-left mr-1">
-                    <i class="fa fa-minus-circle mr-1"></i>詳細
-                  </a>
-                </td>
-                <td>
-                  <i class="fa fa-clock mr-2"></i>
-                  {{$calendar["date"]}} {{$calendar["start"]}}～{{$calendar["end"]}}
-                </td>
-                <td>
-                  <i class="fa fa-user-tie mr-2"></i>
-                  {{$calendar["teacher_name"]}}</td>
-                <td>
-                  <small class="badge badge-primary mt-1 mr-1">
-                    {{$calendar["subject"]}}
-                  </small>
-                </td>
-                <td>
-                  <a href="javascript:void(0);" page_title="お休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mr-1">
-                    <i class="fa fa-minus-circle mr-1"></i>お休み連絡する
-                  </a>
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-          @else
-          授業予定はありません
-          @endif
-        </div>
-      </div>
-      <!-- /.card -->
-    </div>
-  </div>
-</section>
-@else
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
@@ -147,10 +86,10 @@
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
             if(event.type==="study"){
-              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar");
+              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
             }
             else {
-              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar");
+              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
             }
           },
           @endslot
@@ -160,6 +99,5 @@
 		</div>
 	</div>
 </section>
-@endif
 
 @endsection

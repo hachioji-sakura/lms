@@ -54,6 +54,7 @@ class TeacherController extends StudentController
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
       'user' => $user,
+      'mode'=>$request->mode,
       'search_word'=>$request->search_word
     ];
     //講師・事務以外はNG
@@ -203,7 +204,8 @@ EOT;
       select cs.student_id from charge_students cs
       where teacher_id = ?
      )) as A
-     left join user_calendars uc on uc.id = A.current_calendar_id and exists(select id from user_calendar_members where calendar_id = uc.id and user_id = (select user_id from teachers where id= ?))
+     left join user_calendars uc on uc.id = A.current_calendar_id
+      and exists(select id from user_calendar_members where calendar_id = uc.id and user_id = (select user_id from teachers where id= ?))
       left join lectures l on l.id = uc.lecture_id
       left join general_attributes lesson on lesson.attribute_key = 'lesson' and lesson.attribute_value = l.lesson
       left join general_attributes subject on subject.attribute_key = 'subject' and subject.attribute_value = l.subject
@@ -286,7 +288,20 @@ EOT;
       ->where('create_user_id','=',$user->user_id)
       ->orWhere('publiced_at','<=', date('Y-m-d'))
       ->get(['id', 'alias', 's3_url']);
-    return view($this->domain.'.calendar', [
+
+      $view = "calendar";
+      if($param["mode"]==="list"){
+        $view = "schedule";
+        $request->merge([
+          '_sort' => 'start_time',
+        ]);
+        $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
+        if($this->is_success_response($res)){
+          $param["calendars"] = $res["data"];
+        }
+      }
+
+      return view($this->domain.'.'.$view, [
       'item' => $item,
       'use_icons'=>$use_icons,
     ])->with($param);

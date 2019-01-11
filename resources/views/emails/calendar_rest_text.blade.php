@@ -3,6 +3,8 @@
 
 @if($send_type==='student')
 {{$user_name}}様
+{{$user_name}} 保護者様
+
 以下の授業の欠席連絡を承りました。
 
 @elseif($send_type==='teacher')

@@ -41,11 +41,6 @@ class UserCalendarController extends MilestoneController
     ];
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
-      if($this->is_student($user->role) &&
-        $item['create_user_id'] !== $user->user_id){
-          //生徒は自分の起票したものしか編集できない
-          abort(404);
-      }
       $ret['item'] = $this->get_details($item);
     }
 
@@ -71,10 +66,22 @@ class UserCalendarController extends MilestoneController
         return $this->notfound();
       }
       $target_user = $target_user->details();
-      if($this->is_teacher($user->role)===true){
+
+      if($this->is_parent($user->role)===true){
+        if(!$this->is_student($target_user->role)===true){
+          //保護者の場合は、生徒のカレンダーしか見れない
+          return $this->forbidden("is not student");
+        }
+        $relation = StudentRelation::where('student_id', $target_user->id)->where('student_parent_id', $user->id)->first();
+        if(!isset($relation)){
+          //保護者の場合は自分の家族以外はNG
+          return $this->forbidden("is not family");
+        }
+      }
+      else if($this->is_teacher($user->role)===true){
         if(!$this->is_student($target_user->role)===true){
           //講師の場合は、生徒のカレンダーしか見れない
-          return $this->forbidden("is teacher");
+          return $this->forbidden("is not student");
         }
         $charge_student = ChargeStudent::where('teacher_id', $user->id)
           ->where('student_id', $target_user->id)->first();
@@ -161,6 +168,7 @@ EOT;
       $items = $items->whereRaw($where_raw,[$user_id]);
 
       $items = $this->_search_scope($request, $items);
+      $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $item){
         $item = $item->details();
@@ -287,9 +295,10 @@ EOT;
         ->with($param);
     }
     /**
-     * 授業休み連絡ページ
+     * カレンダーステータス更新ページ
      *
      * @param  int  $id
+     * @param  string  $status
      * @return \Illuminate\Http\Response
      */
     public function status_update_page(Request $request, $id, $status)
@@ -298,6 +307,16 @@ EOT;
           abort(404);
       }
       $param = $this->get_param($request, $id);
+
+      //生徒・親の場合は、対象生徒指定があり、かつ、関係者である場合操作可能
+      if($this->is_student_or_parent($param['user']->role)){
+        $student = Student::where('id', $param['student_id'])->first();
+        $res = $this->check_role($student->user_id);
+        if(!$this->is_success_response($res)){
+          abort(403);
+        }
+      }
+
       $fields = [
         'datetime' => [
           'label' => '日時',
@@ -319,6 +338,7 @@ EOT;
         $detail .= $param['item']['place'].'/';
         $detail .= $param['item']['subject'].'';
         $param['item']['detail'] = $detail;
+
         return view('calendars.'.$status, [
           '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
           'fields'=>$fields])
@@ -327,22 +347,33 @@ EOT;
       return abort(404);
     }
     /**
-     * カレンダー休み連絡
+     * カレンダーステータス更新
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
+     * @param  string  $status
      * @return \Illuminate\Http\Response
      */
     public function status_update(Request $request, $id, $status)
     {
       $param = $this->get_param($request, $id);
+
+      //生徒・親の場合は、対象生徒指定があり、かつ、関係者である場合操作可能
+      if($this->is_student_or_parent($param['user']->role)){
+        $student = Student::where('id', $param['student_id'])->first();
+        $res = $this->check_role($student->user_id);
+        if(!$this->is_success_response($res)){
+          abort(403);
+        }
+      }
+
       $item = $param['item'];
-      $res = $this->_status_update($request, $id, $status);
+      $res = $this->_status_update($param, $status);
       $slack_type = 'エラー';
       $slack_message = '更新エラー';
 
       $status_update_message = [
-        'rest' => 'お休み連絡をしました。',
+        'rest' => '休み連絡をしました。',
         'presence' => '授業予定を出席に更新しました。',
         'absence' => '授業予定を欠席に更新しました。',
       ];
@@ -361,15 +392,14 @@ EOT;
 
       return $this->save_redirect($res, $param, $status_update_message[$status], str_replace('_', '/', $request->get('_page_origin')));
     }
-    private function _status_update(Request $request, $id, $status){
-      $param = $this->get_param($request, $id);
+    private function _status_update($param, $status){
       $item = $param['item'];
       try {
         DB::beginTransaction();
         //カレンダーステータス変更
-        $this->model()->where('id', $id)->update(['status'=>$status]);
+        $this->model()->where('id', $item->id)->update(['status'=>$status]);
         //カレンダーメンバーステータス変更
-        UserCalendarMember::where('calendar_id', $id)
+        UserCalendarMember::where('calendar_id', $item->id)
             ->where('user_id', $param['user']->user_id)
             ->update(['status'=>$status]);
         DB::commit();
@@ -410,29 +440,48 @@ EOT;
       $item = $param['item'];
       $login_user = $param['user'];
       $is_student = $this->is_student($login_user->role);
+      $is_student_or_parent = $this->is_student_or_parent($login_user->role);
+      $target_student_id = $param['student_id'];
       $role = $login_user->role;
+      if($this->is_student_or_parent($login_user->role)){
+        if(!is_numeric($target_student_id)){
+          //生徒・保護者は対象の生徒設定がない場合NG
+          return false;
+        }
+      }
       $members = UserCalendarMember::where('calendar_id', $item->id)->get();
       foreach($members as $member){
         $user = $member->user;
         $email = $user['email'];
         $user = $member->user->details();
         $send_type = 'teacher';
-        if($is_student && $user->user_id===$login_user->user_id){
-          //生徒本人宛に確認メール
-          $send_type = 'student';
+        $user_name = $user['name'];
+        if($is_student_or_parent){
+          if($this->is_student($user->role)){
+            //生徒または保護者の操作、かつ、カレンダー対象者＝生徒の場合
+            //確認用メールを送信
+            if($target_student_id === $user->id){
+              $send_type = "student";
+              $parents = Student::where('id', $user->id)->first()->parents();
+              $email = '';
+              foreach($parents as $parent){
+                $email = $parent->email.';';
+              }
+            }
+            else {
+              //それ以外の生徒にはメールしない
+              continue;
+            }
+          }
         }
-        else if($is_student && $this->is_student($user->role)){
-          //生徒は生徒あてにメールは出さない（事務・講師あてにメールを出す）
-          continue;
-        }
-        if(!$is_student && $user->user_id===$login_user->user_id){
+        else if(!$is_student_or_parent && $user->user_id===$login_user->user_id){
           //講師・事務の場合は自分あてにメールはださない（生徒・自分以外の講師あてにメールを出す）
           continue;
         }
         $this->send_mail($email,
          $title,
          [
-         'user_name' => $user['name'],
+         'user_name' => $user_name,
          'send_type' => $send_type,
          'item' => $item
          ],
@@ -441,7 +490,6 @@ EOT;
       }
       return true;
     }
-
     private function get_students($param){
       $items = [];
       if($this->is_manager($param['user']->role)){

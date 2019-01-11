@@ -74,6 +74,10 @@ class MilestoneController extends UserController
     public function index(Request $request)
     {
       $param = $this->get_param($request);
+      if(!$this->is_manager($user->role)){
+        //事務以外 一覧表示は不可能
+        abort(403);
+      }
       $_table = $this->search($request);
       return view($this->domain.'.lists', $_table)
         ->with($param);
@@ -104,6 +108,11 @@ class MilestoneController extends UserController
             //生徒は自分の起票したものしか編集できない
             abort(404);
         }
+        $create_user = $item->create_user->details();
+        $item->create_user_name = $create_user->name;
+        unset($item->create_user);
+        $item->_type_name = $item->type_name();
+
         $target_user = $item->target_user->details();
         $item->target_user_name = $target_user->name;
         unset($item->target_user);

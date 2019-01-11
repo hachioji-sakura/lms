@@ -84,21 +84,16 @@
                 <div class="col-12 text-sm">
                   @if(!empty($charge_student->current_schedule))
                     @if($charge_student->status==="fix" && date('Ymd', strtotime($charge_student->start_time)) === date('Ymd'))
-                        @if(strtotime($charge_student->end_time) >= strtotime('-15 minute'))
-                        {{-- 当日開始15分前～終了15分後までの表示 --}}
-                        @elseif(strtotime($charge_student->end_time) < strtotime('15 minute'))
-                        {{-- <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}/presence?_page_origin={{$domain}}_{{$item->id}}" role="button" class="btn btn-danger btn-sm w-100 mt-1"> --}}
-                        @endif
-                        <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}/presence?_page_origin={{$domain}}_{{$item->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
-                          <i class="fa fa-user-check mr-1"></i>
-                          出欠確認
-                        </a>
+                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                        <i class="fa fa-user-check mr-1"></i>
+                        出欠確認
+                      </a>
                     @elseif($charge_student->status==="presence")
-                        {{-- 出席済み --}}
-                        <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
-                          <i class="fa fa-check-circle mr-1"></i>
-                          出席済み
-                        </a>
+                      {{-- 出席済み --}}
+                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                        <i class="fa fa-check-circle mr-1"></i>
+                        出席済み
+                      </a>
                     @else
                       <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         @if($charge_student->status==="absence")
@@ -106,7 +101,7 @@
                           欠席
                         @elseif($charge_student->status==="rest")
                           <i class="fa fa-ban mr-1"></i>
-                          お休み
+                          休み
                         @elseif($charge_student->status==="cancel")
                           <i class="fa fa-ban mr-1"></i>
                           キャンセル
@@ -122,10 +117,10 @@
             @endforeach
           </ul>
           @else
-          データがありません。
+          <div class="alert">
+            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+          </div>
           @endif
-
-
         </div>
       {{--
         <!-- /.card-body -->

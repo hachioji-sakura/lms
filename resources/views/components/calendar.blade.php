@@ -51,11 +51,15 @@
           week:     '週',
           day:      '日'
       },
+      nowIndicator : true,
       editable  : false,
       droppable : false, // this allows things to be dropped onto the calendar !!!
       // 選択可
       selectable: false,
       dayClick: function(date, allDay, jsEvent, view) {
+        console.log('dayClick'+date);
+        $calendar.fullCalendar('gotoDate', date);
+        //$calendar.fullCalendar('select',date,date);
       },
       select: function(start, end, jsEvent, view , resource){
         var _lesson_time = end.diff(start, 'minutes');
@@ -123,7 +127,7 @@
           .css('cursor', 'pointer')
           .html('<div class="p-1 text-center">'+icon+'<span class="d-none d-sm-inline-block">'+title+'</span></div>');
 
-          /*
+        /*
       	if(events.img){
     	    $(element[0])
       	    .css("border-color", "transparent")
