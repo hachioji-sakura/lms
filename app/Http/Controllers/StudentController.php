@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\GeneralAttribute;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -175,6 +176,20 @@ EOT;
       ['error_message' => ''])
       ->with($param);
    }
+   /**
+    * 体験授業申し込みページ
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function entry(Request $request)
+   {
+     $param = [];
+     $param['grade'] = GeneralAttribute::findKey('grade')->orderBy('sort_no', 'asc')->get();
+     return view($this->domain.'.entry',
+       ['error_message' => ''])
+       ->with($param);
+    }
+
    /**
     * 新規登録
     *

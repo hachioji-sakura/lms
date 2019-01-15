@@ -53,7 +53,7 @@
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">
-            目標詳細
+            詳細
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
           <textarea type="text" id="body" name="body" class="form-control" required="true"  maxlength=500

@@ -55,7 +55,7 @@
       editable  : false,
       droppable : false, // this allows things to be dropped onto the calendar !!!
       // 選択可
-      selectable: false,
+      selectable: true,
       dayClick: function(date, allDay, jsEvent, view) {
         console.log('dayClick'+date);
         $calendar.fullCalendar('gotoDate', date);

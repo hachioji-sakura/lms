@@ -30,7 +30,7 @@
       </ul>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
         </li>

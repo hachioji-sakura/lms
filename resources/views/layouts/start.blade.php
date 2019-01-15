@@ -39,6 +39,14 @@
 
 <!-- Theme style -->
 <link rel="stylesheet" href="{{asset('dist/css/adminlte.css')}}">
+<!-- Ion Slider -->
+<link rel="stylesheet" href="{{asset('js/plugins/ionslider/ion.rangeSlider.css')}}">
+<!-- ion slider Nice -->
+<link rel="stylesheet" href="{{asset('js/plugins/ionslider/ion.rangeSlider.skinNice.css')}}">
+<!-- bootstrap slider -->
+<link rel="stylesheet" href="{{asset('js/plugins/bootstrap-slider/slider.css')}}">
+
+
 <!-- Google Font: Source Sans Pro -->
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 <!-- jQuery -->
@@ -70,6 +78,8 @@
 <!-- fullCalendar 2.2.5 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 <script src="{{asset('js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+<!-- Ion Slider -->
+<script src="{{asset('js/plugins/ionslider/ion.rangeSlider.min.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{asset('dist/js/adminlte.js')}}"></script>
 
