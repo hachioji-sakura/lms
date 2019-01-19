@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Restdata;
-use Illuminate\Http\Request;
-
+use App\Models\StudentParent;
+use Request;
+use DB;
 class RestController extends Controller
 {
     /**
@@ -14,8 +15,6 @@ class RestController extends Controller
      */
     public function index()
     {
-        $items = Restdata::all();
-        return $items->toArray();
     }
 
     /**

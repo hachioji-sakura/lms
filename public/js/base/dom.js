@@ -691,13 +691,7 @@
 				var inputtype = $(this).attr("inputtype");
 				if(_isUpdate) formControl = $(this).attr("edit");
 				var isset = true;
-				var val = null;
-				if(type == "checkbox" || type=="radio"){
-					val = $("input[name="+field+"]:checked").val();
-					if(!val && $(this).attr("defaultSelect")){
-							val = $(this).attr("defaultSelect");
-					}
-				}
+				var val = data[field];
 
 				if(!util.isEmpty(formControl)){
 					switch(formControl){
@@ -714,21 +708,23 @@
 					}
 				}
 
-				if(isset && field && field in data) {
-					var p = $("<p></p>");
-					p.html(data[field]);
-					val = p.text();
-				}
-
 				if(val !== null){
 					switch(type){
 						case "radio":
 						case "checkbox":
-							$(this).val([val]).change();
+							$(this).val(val);
+							if($(this).iCheck){
+								$(this).iCheck('update');
+								$(this).trigger('ifChanged');
+							}
+							else {
+								$(this).change();
+							}
 							break;
 						case "select":
 							$(this).val(val);
 							$(this).change();
+							break;
 						default:
 							$(this).val(val);
 					}

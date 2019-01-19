@@ -20,11 +20,13 @@ class UserController extends Controller
   {
     try {
       if(!isset($form['status'])) $form['status']=0;
+      if(!isset($form['access_key'])) $form['access_key']='';
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
           'image_id' => $form['image_id'],
           'status' => $form['status'],
+          'access_key' => $form['access_key'],
           'password' => Hash::make($form['password']),
       ]);
       return $this->api_response(200, "", "", $user);

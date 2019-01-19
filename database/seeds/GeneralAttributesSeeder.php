@@ -61,7 +61,7 @@ class GeneralAttributesSeeder extends Seeder
             'attribute_name' => '場所',
             'sort_no' => 21,
             'create_user_id' => 1,
-        ]
+        ],
         [
             'attribute_key' => 'keys',
             'attribute_value' => 'absence_type',

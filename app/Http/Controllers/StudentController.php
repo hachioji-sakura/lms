@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 
 use App\Http\Controllers\Controller;
@@ -186,9 +187,118 @@ EOT;
      $param = [];
      $param['grade'] = GeneralAttribute::findKey('grade')->orderBy('sort_no', 'asc')->get();
      return view($this->domain.'.entry',
-       ['error_message' => ''])
+       ['sended' => ''])
        ->with($param);
     }
+    /**
+     * 体験授業申し込みページ
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function entry_store(Request $request)
+    {
+      $result = '';
+      $form = $request->all();
+      $res = $this->api_response(200);
+      $access_key = $this->create_token();
+      $request->merge([
+        'access_key' => $access_key,
+      ]);
+
+      $user = User::where('email', $form['email'])->first();
+      $result = '';
+      if(!isset($user)){
+        $res = $this->_entry_store($request);
+        $result = 'success';
+      }
+      else {
+        if($user->status===1){
+          //すでにユーザーが仮登録されている場合は、tokenを更新
+          $user->update( ['access_key' => $access_key]);
+          $result = 'already';
+        }
+        else {
+          //本登録済み
+          $res = $this->error_response('このメールアドレスは本登録が完了しております。');
+        }
+      }
+      if($this->is_success_response($res)){
+        $this->send_mail($form['email'],
+          '入会お申込み仮受付完了', [
+          'user_name' => $form['name_last'].' '.$form['name_first'],
+          'access_key' => $access_key,
+        ], 'text', 'entry');
+        return view($this->domain.'.entry',
+          ['result' => $result]);
+      }
+      else {
+        return $this->save_redirect($res, [], '', $this->domain.'/entry');
+      }
+    }
+    public function _entry_store(Request $request)
+    {
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $form["password"] = 'sakusaku';
+        $items = StudentParent::entry($form);
+        DB::commit();
+        return $this->api_response(200, __FUNCTION__);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+        DB::rollBack();
+        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+    }
+    /**
+     * 本登録ページ
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+      $result = '';
+      $param = [];
+      $access_key = $request->get('key');
+      if(!$this->is_enable_token($access_key)){
+        $param['result'] = 'token_error';
+        return view($this->domain.'.register',$param);
+      }
+      $user = User::where('access_key',$access_key);
+      if($user->count() < 1){
+        abort(404);
+      }
+      $param['user'] = $user->first();
+      $param['parent'] = $param['user']->details();
+      $param['student'] = $param['parent']->relations->first()->student;
+      $param['access_key'] = $access_key;
+      $param['grade'] = GeneralAttribute::findKey('grade')->orderBy('sort_no', 'asc')->get();
+      return view($this->domain.'.register',$param);
+     }
+     /**
+      * 本登録処理
+      *
+      * @return \Illuminate\Http\Response
+      */
+     public function register_update(Request $request)
+     {
+       $access_key = $request->access_key;
+       if(!$this->is_enable_token($access_key)){
+         $param['result'] = 'token_error';
+         return view($this->domain.'.register',$param);
+       }
+
+       $user = User::where('access_key',$access_key);
+       if($user->count() < 1){
+         abort(403);
+       }
+
+       return $this->save_redirect($res, [], '仮登録メールを送信いたしました。', '');
+     }
 
    /**
     * 新規登録
@@ -213,10 +323,15 @@ EOT;
      $form = $request->all();
      try {
       DB::beginTransaction();
+      //保護者情報の登録
+      $access_key = $this->create_token();
       $form["name"] = $form['name_last'].' '.$form['name_first'];
-      //デフォルトのアイコンは性別と一緒にしておく
-      $form["image_id"] = $form['gender'];
+      $form["password"] = 'sakusaku';
+      $form["image_id"] = 4;
+      $form["access_key"] = $access_key;
+      $form["status"] = 1;
       $res = $this->user_create($form);
+
       if($this->is_success_response($res)){
         $form['user_id'] = $res["data"]->id;
         $user = $this->login_details();

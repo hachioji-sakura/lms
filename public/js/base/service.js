@@ -28,6 +28,8 @@
 		getMessage  : getMessage ,
 		getEncodeString : getEncodeString,
 		getDecodeString : getDecodeString,
+		loadStart : loadStart,
+		loadStop : loadStop,
 		logout : _logout,
 		getAjax  : getAjax,
 		postAjax : postAjax,

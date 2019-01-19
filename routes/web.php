@@ -52,7 +52,10 @@ Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
 Route::get('students/entry','StudentController@entry');
-Route::post('students/entry','StudentController@student_store');
+Route::post('students/entry','StudentController@entry_store');
+Route::get('students/register','StudentController@register');
+Route::post('students/register','StudentController@register_settinged');
+
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');

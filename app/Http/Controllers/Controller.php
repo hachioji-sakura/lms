@@ -50,7 +50,7 @@ class Controller extends BaseController
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
-      //$res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
+      $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
       return true;
     }
     protected function send_slack($message, $msg_type, $username=null, $channel=null) {
@@ -124,5 +124,30 @@ class Controller extends BaseController
         curl_close($curl);
         return json_decode($result,true);
     }
+    /**
+     * 期限付きtokenの生成
+     * デフォルトの期限は、24時間
+     * @param  int $limit_second
+     * @param  int $key_length
+     * @return string
+     */
+    protected function create_token($limit_second=86400, $key_length=32){
+      $key = str_random($key_length);
+      $expire = time() + $limit_second;
+      return $key.$expire;
+     }
+     /**
+      * 期限付きtokenの期限判定
+      * @param  string $token
+      * @param  int $key_length
+      * @return boolean
+      */
+     protected function is_enable_token($token, $key_length=32){
+       $expire = substr($token, $key_length);
+       if(intval($expire)-time() > 0){
+         return true;
+       }
+       return false;
+     }
 
 }

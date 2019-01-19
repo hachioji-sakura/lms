@@ -410,6 +410,7 @@ class ImportController extends UserController
       }
       UserTag::where('user_id',$user_id)->delete();
       //講師属性登録
+      $this->store_user_tag($user_id, 'teacher_no', $item['teacher_no']);
       if($item['lesson_id']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id']);
       if($item['lesson_id2']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id2']);
       return true;
@@ -511,7 +512,7 @@ class ImportController extends UserController
        }
       }
 
-      $user = User::where('name', $item['student_no'])->first();
+      $user = User::tag('student_no', $item['student_no'])->first();
       $student = null;
       if(!isset($user)){
         //認証情報なし：新規登録
@@ -578,6 +579,7 @@ class ImportController extends UserController
       UserTag::where('user_id', $user->id)->delete();
       //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
       //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
+      $this->store_user_tag($user->id, 'student_no', $item['student_no']);
       $this->store_user_tag($user->id, 'grade', $item['grade']);
       $this->store_user_tag($user->id, 'grade_adj', $item['grade_adj']);
       $this->store_user_tag($user->id, 'fee_free', $item['fee_free']);
@@ -593,14 +595,14 @@ class ImportController extends UserController
       if(empty($item['student_no']) || intval($item['student_no'])==0) return false;
       if(empty($item['teacher_no']) || intval($item['teacher_no'])==0) return false;
 
-      $student = User::where('name', $item['student_no'])->first();
+      $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
         $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
-      $teacher = User::where('name', $item['teacher_no'])->first();
+      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
         $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
@@ -636,14 +638,14 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_calendar($item){
-      $student = User::where('name', $item['student_no'])->first();
+      $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
         $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
-      $teacher = User::where('name', $item['teacher_no'])->first();
+      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
         $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;

@@ -22,7 +22,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'image_id', 'email', 'password', 'status',
+        'id', 'name', 'image_id', 'email', 'password', 'status', 'access_key'
     ];
 
     /**
@@ -34,7 +34,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
     public function tags(){
-      return UserTag::where('user_id', $this->id)->get();
+      return UserTag::where('user_id', $this->id)
+      ->where('tag_key', '!=', 'student_no')
+      ->where('tag_key', '!=', 'teacher_no')
+        ->get();
+
       //return $this->hasMany('App\Models\UserTag');
     }
     public function student(){
@@ -102,6 +106,15 @@ class User extends Authenticatable
       }
       return $this;
     }
+    public function scopeTag($query, $tagkey, $tagvalue)
+    {
+      $where_raw = <<<EOT
+        id in (select user_id from user_tags where tag_key=? and tag_value=?)
+EOT;
+
+      return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
+    }
+
     public function create_comments(){
       return $this->hasMany('App\Models\Comment', 'create_user_id');
     }
