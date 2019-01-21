@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\GeneralAttribute;
 class Milestone extends Model
 {
   protected $table = 'milestones';
@@ -16,8 +16,7 @@ class Milestone extends Model
   );
   public function type_name()
   {
-    $types = config('attribute.milestone_type');
-    return $types[$this->type];
+    return $this->attribute_name('milestone_type', $this->type);
   }
   public function scopeStatus($query, $val)
   {
@@ -28,5 +27,9 @@ class Milestone extends Model
   }
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
+  }
+  protected function attribute_name($key, $value){
+    $_attribute = GeneralAttribute::where('attribute_key', $key)->where('attribute_value', $value)->first();
+    return $_attribute['attribute_name'];
   }
 }

@@ -12,6 +12,7 @@ use App\Models\UserTag;
 use App\Models\Image;
 use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
+use Hash;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -64,6 +65,12 @@ class User extends Authenticatable
     {
         $this->notify(new CustomPasswordReset($token));
     }
+    public function set_password($password){
+      $this->update([
+        'access_key' => '',
+        'password' => Hash::make($password)
+      ]);
+    }
     public function details(){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = Image::where('id', $this->image_id)->first();
@@ -76,6 +83,7 @@ class User extends Authenticatable
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = Teacher::where('user_id', $this->id)->first();
@@ -83,6 +91,7 @@ class User extends Authenticatable
         $item['teacher_id'] = $item['id'];
         $item['role'] = 'teacher';
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = StudentParent::where('user_id', $this->id)->first();
@@ -92,6 +101,7 @@ class User extends Authenticatable
         $item['name'] = $item->name_last.' '.$item->name_first;
         $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = Student::where('user_id', $this->id)->first();
@@ -102,6 +112,7 @@ class User extends Authenticatable
         $item['name'] = $item->name_last.' '.$item->name_first;
         $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       return $this;

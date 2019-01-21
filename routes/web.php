@@ -54,7 +54,7 @@ Route::resource('textbooks','TextbookController');
 Route::get('students/entry','StudentController@entry');
 Route::post('students/entry','StudentController@entry_store');
 Route::get('students/register','StudentController@register');
-Route::post('students/register','StudentController@register_settinged');
+Route::post('students/register','StudentController@register_update');
 
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');

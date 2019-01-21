@@ -6,10 +6,10 @@
   <h4 class="bg-success p-3 text-sm">
     @if($result==='success')
       仮登録完了メールを送信しました。<br>
-      送信したメールにて、本登録ページより本登録を進めてください。
+      送信したメールにて、24時間以内にユーザー登録を進めてください。<br>
     @elseif($result==='already')
       仮登録中の情報が残っています。<br>
-      再送信したメールにて、本登録ページより本登録を進めてください。
+      再送信したメールにて、24時間以内にユーザー登録を進めてください。
     @elseif($result==='exist')
       このメールはユーザー登録が完了しています。
     @endif
@@ -88,7 +88,7 @@
     <div class="row">
       <div class="col-12 mb-1">
           <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
-              お申込み
+            <i class="fa fa-envelope mr-1"></i>お申込み
           </button>
           @if(isset($error_message))
             <span class="invalid-feedback d-block ml-2 " role="alert">

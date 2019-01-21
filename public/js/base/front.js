@@ -70,7 +70,7 @@
 		}
 		if(!util.isEmpty(type) && (type == "checkbox" || type == "radio")){
 			val = [];
-			$("input[name="+field+"]:checked").each(function() {
+			$("input[name='"+field+"']:checked").each(function() {
         val.push($(this).val());
       });
 		}
@@ -218,7 +218,7 @@
 		}
 
 		if((type=="radio" || type=="checkbox") && !util.isEmpty(required)){
-			if($("input[name="+name+"]:checked").length==0){
+			if($("input[name='"+name+"']:checked").length==0){
 				_isSuccess = false;
 				messageCode = "REQ";
 			}
@@ -372,26 +372,26 @@
  		}
  		if(messageCode!="") messageCode = ""+messageCode;
  		if(_isSuccess){
- 			if(!util.isEmpty(equal) && !util.isEmpty($("[name="+equal+"]", $("#"+formId)).val())
- 				 && val != $("[name="+equal+"]", $("#"+formId)).val()){
+ 			if(!util.isEmpty(equal) && !util.isEmpty($("[name='"+equal+"']", $("#"+formId)).val())
+ 				 && val != $("[name='"+equal+"']", $("#"+formId)).val()){
  				//値が一致するかチェック、対象値と一致しない場合エラーとする
  				_isSuccess = false;
  				messageCode = equal_error;
- 				messageParam=val+"|"+ $("[name="+equal+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+equal+"']", $("#"+formId)).val();
  			}
- 			if(!util.isEmpty(less) && !util.isEmpty($("[name="+less+"]", $("#"+formId)).val())
- 				 && util.diffVal(val, $("[name="+less+"]", $("#"+formId)).val())>0){
+ 			if(!util.isEmpty(less) && !util.isEmpty($("[name='"+less+"']", $("#"+formId)).val())
+ 				 && util.diffVal(val, $("[name='"+less+"']", $("#"+formId)).val())>0){
  				//値が小さいかチェック、対象値より大きい場合エラーとする
  				_isSuccess = false;
  				messageCode = less_error;
- 				messageParam=val+"|"+ $("[name="+less+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+less+"']", $("#"+formId)).val();
  			}
- 			if(!util.isEmpty(greater) && !util.isEmpty($("[name="+greater+"]", $("#"+formId)).val())
- 				 && util.diffVal(val, $("[name="+greater+"]", $("#"+formId)).val())<0){
+ 			if(!util.isEmpty(greater) && !util.isEmpty($("[name='"+greater+"']", $("#"+formId)).val())
+ 				 && util.diffVal(val, $("[name='"+greater+"']", $("#"+formId)).val())<0){
  				//値が大きいかチェック、対象値より小さい場合エラーとする
  				_isSuccess = false;
  				messageCode = greater_error;
- 				messageParam=val+"|"+ $("[name="+greater+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+greater+"']", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(query_check)){
 				var _isExists = false;
@@ -450,6 +450,7 @@
 	*/
 	function _showValidateError(selecter, error_message){
 		var field = $(selecter).attr("name");
+		field = field.replace_all('[]', '');
 		var tag = $(selecter).prop("tagName");
 		var type = $(selecter).attr("type");
 		var _errTemplate = '<div class="row m-2 error_message" id="error'+field+'"><p class="small text-danger">#message#</p></div>';

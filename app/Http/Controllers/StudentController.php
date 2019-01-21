@@ -57,31 +57,10 @@ class StudentController extends UserController
        'domain_name' => $this->domain_name,
        'user' => $user,
        'mode'=>$request->mode,
-       'search_word'=>$request->search_word
+       'search_word'=>$request->search_word,
+       'attributes' => $this->attributes(),
     ];
-
     if(is_numeric($id) && $id > 0){
-     //id指定がある
-     if($this->is_student($user->role) && $id!==$user->id){
-      //生徒は自分のidしか閲覧できない
-      abort(404);
-     }
-     else if($this->is_parent($user->role)){
-      //保護者は自分の家族のidしか閲覧できない
-      /*
-      if(!Student::where('id', $id)->parent_check($user->id)){
-        abort(404);
-      }
-      */
-     }
-    }
-    else {
-     //id指定がない、かつ、講師・事務以外はNG
-     if($this->is_parent($user->role)===true){
-     }
-     else if($this->is_manager_or_teacher($user->role)!==true){
-      abort(403);
-     }
     }
     return $ret;
   }
@@ -262,21 +241,29 @@ EOT;
     public function register(Request $request)
     {
       $result = '';
-      $param = [];
-      $access_key = $request->get('key');
-      if(!$this->is_enable_token($access_key)){
-        $param['result'] = 'token_error';
-        return view($this->domain.'.register',$param);
+      $param = $this->get_param($request);
+      if(!empty($param['user'])){
+         if(!$this->is_parent($param['user']->role)){
+           //親以外、ここからの生徒追加はできない
+           abort(403);
+         }
+         $param['parent'] = $param['user'];
       }
-      $user = User::where('access_key',$access_key);
-      if($user->count() < 1){
-        abort(404);
+      else {
+        $access_key = $request->get('key');
+        if(!$this->is_enable_token($access_key)){
+          $param['result'] = 'token_error';
+          return view($this->domain.'.register',$param);
+        }
+        $user = User::where('access_key',$access_key);
+        if($user->count() < 1){
+          abort(404);
+        }
+        $param['user'] = $user->first();
+        $param['parent'] = $param['user']->details();
+        $param['student'] = $param['parent']->relations->first()->student;
+        $param['access_key'] = $access_key;
       }
-      $param['user'] = $user->first();
-      $param['parent'] = $param['user']->details();
-      $param['student'] = $param['parent']->relations->first()->student;
-      $param['access_key'] = $access_key;
-      $param['grade'] = GeneralAttribute::findKey('grade')->orderBy('sort_no', 'asc')->get();
       return view($this->domain.'.register',$param);
      }
      /**
@@ -286,18 +273,114 @@ EOT;
       */
      public function register_update(Request $request)
      {
-       $access_key = $request->access_key;
-       if(!$this->is_enable_token($access_key)){
-         $param['result'] = 'token_error';
-         return view($this->domain.'.register',$param);
+       $result = "success";
+       $param = $this->get_param($request);
+       $email = "";
+       $password = "";
+       $form = $request->all();
+       if(!empty($param['user'])){
+          if(!$this->is_parent($param['user']->role)){
+            //親以外、ここからの生徒追加はできない
+            abort(403);
+          }
+          $param['parent'] = $param['user'];
+          $res = $this->_brother_add($request);
+          $user = User::where('id', $param['user']->user_id)->first();
+          $email = $user->email;
+          $password = $user->password;
+          $form['parent_name_last'] = $param['user']->name_last;
+          $form['parent_name_first'] = $param['user']->name_first;
+       }
+       else {
+         $access_key = $request->access_key;
+         if(!$this->is_enable_token($access_key)){
+           $result = "token_error";
+           return view($this->domain.'.register',
+             ['result' => $result]
+           );
+         }
+         $res = $this->_register_update($request);
+         $email = $form['email'];
+         $password = $form['password'];
        }
 
-       $user = User::where('access_key',$access_key);
+       if($this->is_success_response($res)){
+         if(empty($param['user'])){
+           $this->send_mail($email, '生徒情報登録完了', $form, 'text', 'register');
+           if (!Auth::attempt(['email' => $email, 'password' => $password]))
+           {
+             abort(500);
+           }
+         }
+         return $this->save_redirect($res, $param, '生徒情報登録完了しました。', '/home');
+       }
+       return $this->save_redirect($res, $param, '', $this->domain.'/register');
+     }
+     public function _register_update($form)
+     {
+       $user = User::where('access_key',$form['access_key']);
        if($user->count() < 1){
          abort(403);
        }
-
-       return $this->save_redirect($res, [], '仮登録メールを送信いたしました。', '');
+       try {
+         $user = $user->first();
+         DB::beginTransaction();
+         StudentParent::where('id', $form['parent_id'])->first()->profile_update([
+           'name_last' => $form['parent_name_last'],
+           'name_first' => $form['parent_name_first'],
+           'kana_last' => $form['parent_kana_last'],
+           'kana_first' => $form['parent_kana_first'],
+           'phone_no' => $form['phone_no'],
+           'howto' => $form['howto'],
+           'howto_word' => $form['howto_word'],
+           'create_user_id' => $user->id,
+         ]);
+         Student::where('id', $form['student_id'])->first()->profile_update([
+           'name_last' => $form['name_last'],
+           'name_first' => $form['name_first'],
+           'kana_last' => $form['kana_last'],
+           'kana_first' => $form['kana_first'],
+           'grade' => $form['grade'],
+           'birth_day' => $form['birth_day'],
+           'school_name' => $form['school_name'],
+           'lesson_subject' => $form['lesson_subject'],
+           'lesson_place' => $form['lesson_place'],
+           'lesson_week' => $form['lesson_week'],
+           'lesson_time' => $form['lesson_time'],
+           'lesson_time_holiday' => $form['lesson_time_holiday'],
+           'create_user_id' => $user->id,
+         ]);
+         $user->set_password($form['password']);
+         DB::commit();
+         return $this->api_response(200, __FUNCTION__);
+       }
+       catch (\Illuminate\Database\QueryException $e) {
+         DB::rollBack();
+         return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+       }
+       catch(\Exception $e){
+         DB::rollBack();
+         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+       }
+     }
+     public function _brother_add($form)
+     {
+       try {
+         DB::beginTransaction();
+         $form["password"] = 'sakusaku';
+         $user = $this->login_details();
+         $items = StudentParent::where('id', $user->id)->first()->brother_add($form);
+         DB::commit();
+         return $this->api_response(200, __FUNCTION__);
+       }
+       catch (\Illuminate\Database\QueryException $e) {
+         DB::rollBack();
+         return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+       }
+       catch(\Exception $e){
+         DB::rollBack();
+         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+       }
      }
 
    /**

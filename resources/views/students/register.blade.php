@@ -15,7 +15,7 @@
         氏
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" value="{{$student->name_last}}">
+      <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_last}}" @endisset>
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
@@ -24,7 +24,7 @@
         名
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku" value="{{$student->name_first}}">
+      <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_first}}" @endisset>
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
@@ -51,7 +51,7 @@
         生年月日
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input id="birth_day" type="text" class="form-control" name="birth_day"  inputtype="date" plaeholder="例：2000/01/01" required="true">
+      <input id="birth_day" type="text" class="form-control" name="birth_day"  inputtype="date" placeholder="例：2000/01/01" required="true">
     </div>
   </div>
   <div class="col-12 col-lg-6 col-md-6">
@@ -62,13 +62,13 @@
       </label>
       <div class="input-group">
         <div class="form-check">
-            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_2" value="2" required="true" @if($student->gender===2) checked @endif>
+            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_2" value="2" required="true" @if(isset($student) && $student->gender===2) checked @endif>
             <label class="form-check-label" for="gender_2">
                 女性
             </label>
         </div>
         <div class="form-check ml-2">
-            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_1" value="1" required="true" @if($student->gender===1) checked @endif>
+            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_1" value="1" required="true" @if(isset($student) && $student->gender===1) checked @endif>
             <label class="form-check-label" for="gender_1">
                 男性
             </label>
@@ -76,7 +76,7 @@
       </div>
     </div>
   </div>
-  <div class="col-12 p-3">
+  <div class="col-12">
     <div class="form-group">
       <label for="school_name" class="w-100">
         学校名
@@ -91,18 +91,12 @@
         学年
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-  {{--
-    @foreach($grade as $item)
-      <label class="mx-2">
-        <input type="radio" name="grade" class="flat-red"  value="{{ $item->attribute_value }}" >{{$item->attribute_name}}
-      </label>
-    @endforeach
-  --}}
-    <select name="grade" class="form-control" placeholder="学年" required="true">
-      @foreach($grade as $item)
-         <option value="{{ $item->attribute_value }}">{{$item->attribute_name}}</option>
-      @endforeach
-    </select>
+      <select name="grade" class="form-control" placeholder="学年" required="true">
+        <option value="">(選択してください)</option>
+        @foreach($attributes['grade'] as $index => $name)
+          <option value="{{$index}}">{{$name}}</option>
+        @endforeach
+      </select>
     </div>
   </div>
 </div>
@@ -120,7 +114,7 @@
       <label for="email">
         メールアドレス
       </label>
-      <h5>{{$user->email}}</h5>
+      <h5>@isset($user) {{$user->email}} @endisset</h5>
     </div>
   </div>
   <div class="col-12">
@@ -163,7 +157,7 @@
         氏
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="parent_name_last" name="parent_name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" value="{{$student->name_last}}">
+      <input type="text" id="parent_name_last" name="parent_name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku">
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
@@ -219,9 +213,9 @@
         科目
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      @foreach(config('survey.subject') as $index => $name)
+      @foreach($attributes['lesson_subject'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="subject" class="flat-red"  value="{{ $index }}" required="true">{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="lesson_subject[]" class="flat-red"  required="true">{{$name}}
       </label>
       @endforeach
     </div>
@@ -232,9 +226,9 @@
         レッスン可能曜日
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      @foreach(config('survey.lesson_week') as $index => $name)
+      @foreach($attributes['lesson_week'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="lesson_week" class="flat-red"  value="{{ $index }}" required="true">{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="lesson_week[]" class="flat-red" required="true">{{$name}}
       </label>
       @endforeach
     </div>
@@ -245,9 +239,9 @@
         レッスン可能時間
         <span class="right badge badge-info ml-1">平日</span>
       </label>
-      @foreach(config('survey.lesson_time') as $index => $name)
+      @foreach($attributes['lesson_time'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="lesson_time" class="flat-red"  value="{{ $index }}" >{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="lesson_time[]" class="flat-red" >{{$name}}
       </label>
       @endforeach
     </div>
@@ -258,9 +252,9 @@
         レッスン可能時間
         <span class="right badge badge-warning ml-1">土日・祝日</span>
       </label>
-      @foreach(config('survey.lesson_time') as $index => $name)
+      @foreach($attributes['lesson_time'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="lesson_time_holiday" class="flat-red"  value="{{ $index }}" >{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="lesson_time_holiday[]" class="flat-red" >{{$name}}
       </label>
       @endforeach
     </div>
@@ -270,33 +264,35 @@
       <label for="lesson" class="w-100">
         希望校舎
       </label>
-      @foreach(config('survey.lesson_place') as $index => $name)
+      @foreach($attributes['lesson_place'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="lesson_place" class="flat-red"  value="{{ $index }}" >{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="lesson_place[]" class="flat-red">{{$name}}
       </label>
       @endforeach
     </div>
   </div>
+@if(!isset($user->role))
   <div class="col-12">
     <div class="form-group">
       <label for="howto" class="w-100">
         当塾をお知りになった方法は何でしょうか？
       </label>
-      @foreach(config('survey.howto') as $index => $name)
+      @foreach($attributes['howto'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" name="howto" class="flat-red"  value="{{ $index }}" >{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="howto[]" class="flat-red"  >{{$name}}
       </label>
       @endforeach
     </div>
   </div>
-  <div id="survey_howto_word_form" class="col-12 collapse">
+  <div id="howto_word_form" class="col-12 collapse">
     <div class="form-group">
-      <label for="survey_howto_word" class="w-100">
+      <label for="howto_word" class="w-100">
         Google検索 / Yahoo検索をお答えの方、検索ワードを教えてください。
       </label>
-      <input type="text" id="survey_howto_word" name="survey_howto_word" class="form-control" placeholder="例：八王子 学習塾" >
+      <input type="text" id="howto_word" name="howto_word" class="form-control" placeholder="例：八王子 学習塾" >
     </div>
   </div>
+@endif
 </div>
 @endsection
 @section('confirm_form')
@@ -321,38 +317,40 @@
   <div class="col-6 p-3 font-weight-bold" >学年</div>
   <div class="col-6 p-3"><span id="grade_name"></span></div>
 </div>
-<div class="row">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-key mr-1"></i>
-    ログイン情報
+@if(!isset($user->role))
+  <div class="row">
+    <div class="col-12 bg-info p-2 pl-4">
+      <i class="fa fa-key mr-1"></i>
+      ログイン情報
+    </div>
+    <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
+    <div class="col-6 p-3"><span id="email"></span></div>
+    <div class="col-6 p-3 font-weight-bold" >パスワード</div>
+    <div class="col-6 p-3" >●●●●●●●●</div>
   </div>
-  <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
-  <div class="col-6 p-3"><span id="email"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >パスワード</div>
-  <div class="col-6 p-3" >●●●●●●●●</div>
-</div>
-<div class="row">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-user-friends mr-1"></i>
-    保護者様情報
+  <div class="row">
+    <div class="col-12 bg-info p-2 pl-4">
+      <i class="fa fa-user-friends mr-1"></i>
+      保護者様情報
+    </div>
+    <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+    <div class="col-6 p-3">
+    <ruby style="ruby-overhang: none">
+    <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
+    <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
+    </ruby>
+    </div>
+    <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>
+    <div class="col-6 p-3"><span id="phone_no"></span></div>
   </div>
-  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
-  <div class="col-6 p-3">
-  <ruby style="ruby-overhang: none">
-  <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
-  <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
-  </ruby>
-  </div>
-  <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>
-  <div class="col-6 p-3"><span id="phone_no"></span></div>
-</div>
+@endif
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-chalkboard-teacher mr-1"></i>
     ご希望のレッスン
   </div>
   <div class="col-6 p-3 font-weight-bold" >科目</div>
-  <div class="col-6 p-3"><span id="subject_name"></span></div>
+  <div class="col-6 p-3"><span id="lesson_subject_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >レッスン可能曜日</div>
   <div class="col-6 p-3"><span id="lesson_week_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >平日・レッスン可能時間</div>
@@ -361,12 +359,16 @@
   <div class="col-6 p-3"><span id="lesson_time_holiday_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >希望校舎</div>
   <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
+@if(!isset($user->role))
   <div class="col-6 p-3 font-weight-bold" >当塾をお知りになった方法は何でしょうか？</div>
   <div class="col-6 p-3"><span id="howto_name"></span></div>
+  <div id="howto_word_confirm" class="col-6 p-3 font-weight-bold" >検索ワードをお答えください</div>
+  <div class="col-6 p-3"><span id="howto_word"></span></div>
+@endif
 </div>
 @endsection
 @section('content')
-<div id="students_register">
+<div id="students_register" class="direct-chat-msg">
 @if(!empty($result))
     @if($result==='token_error')
     <div class="row">
@@ -381,22 +383,36 @@
       <div class="col-12">
         <p class="my-2">
           <a href="/students/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
-            <i class="fa fa-edit"></i>入会お申込みはこちら
+            入会お申込みはこちら
           </a>
         </p>
+    </div>
+  </div>
+  @elseif($result==='success')
+  <div class="row">
+    <div class="col-12">
+      <h4 class="bg-success p-3 text-sm">
+        ユーザー登録が完了しました。<br>
+        ログイン後、システムをご利用ください。
+      </h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p class="my-2">
+        <a href="/login" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
+          ログイン
+        </a>
+      </p>
     </div>
   </div>
   @endif
 @else
 <form method="POST"  action="/students/register">
     @csrf
-    <input type="hidden" name="access_key" value="{{$access_key}}" />
-    <input type="hidden" name="email" value="{{$user->email}}" />
-    <input type="hidden" name="student_id" value="{{$student->id}}" />
-    <input type="hidden" name="parent_id" value="{{$parent->id}}" />
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
-        <div class="carousel-item">
+        <div class="carousel-item active">
           @yield('student_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -404,8 +420,20 @@
                 次へ
               </a>
             </div>
+            @if(isset($user->role))
+            <div class="col-12 mb-1">
+              <a href="/" role="button" class="btn btn-secondary btn-block btn-sm float-left mr-1">
+                キャンセル
+              </a>
+            </div>
+            @endif
           </div>
         </div>
+      @if(!isset($user->role))
+        <input type="hidden" name="access_key" value="{{$access_key}}" />
+        <input type="hidden" name="email" value="{{$user->email}}" />
+        <input type="hidden" name="student_id" value="{{$student->id}}" />
+        <input type="hidden" name="parent_id" value="{{$parent->id}}" />
         <div class="carousel-item">
           @yield('account_form')
           <div class="row">
@@ -436,7 +464,8 @@
             </div>
           </div>
         </div>
-        <div class="carousel-item active">
+      @endif
+        <div class="carousel-item">
           @yield('survey_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -449,6 +478,13 @@
                 戻る
               </a>
             </div>
+            @if(isset($user->role))
+            <div class="col-12 mb-1">
+              <a href="/" role="button" class="btn btn-secondary btn-block btn-sm float-left mr-1">
+                キャンセル
+              </a>
+            </div>
+            @endif
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
@@ -456,7 +492,7 @@
           <div class="row">
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
-                    お申込み
+                    入力内容を登録する
                 </button>
             </div>
             <div class="col-12 mb-1">
@@ -464,6 +500,14 @@
                 戻る
               </a>
             </div>
+            @if(isset($user->role))
+            <div class="col-12 mb-1">
+              <a href="/" role="button" class="btn btn-secondary btn-block btn-sm float-left mr-1">
+                キャンセル
+              </a>
+            </div>
+            @endif
+
           </div>
         </div>
       </div>
@@ -474,19 +518,23 @@
 
 $(function(){
   var form_data = util.getLocalData('register_form');
+
+  base.pageSettinged("register_form", form_data);
   //Google検索・Yahoo検索と答えた場合、検索ワードフォームを表示
-  $('input[type="checkbox"][name="howto"]').on('ifChanged', function(e){
-    var is_google = $('input[type="checkbox"][name="howto"][value="google"]').prop("checked");
-    var is_yahoo = $('input[type="checkbox"][name="howto"][value="yahoo"]').prop("checked");
+  $('input[type="checkbox"][name="howto[]"]').on('ifChanged', function(e){
+    var is_google = $('input[type="checkbox"][name="howto[]"][value="google"]').prop("checked");
+    var is_yahoo = $('input[type="checkbox"][name="howto[]"][value="yahoo"]').prop("checked");
     if(is_google || is_yahoo){
-      $("#survey_howto_word_form").collapse("show");
+      $("#howto_word_form").collapse("show");
+      $("#howto_word_confirm").collapse("show");
     }
     else {
-      $("#survey_howto_word_form").collapse("hide");
+      $("#howto_word_form").collapse("hide");
+      $("#howto_word_confirm").collapse("hide");
     }
   });
-  base.pageSettinged("register_form", form_data);
 
+  //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('register_form .carousel-item.active')){
@@ -515,11 +563,11 @@ $(function(){
     if(form_data["grade"]){
       form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
     }
-    var _names = ["subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
+    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
-      if(form_data[value]){
-        $("input[name='"+value+"']:checked").each(function() {
+      if(form_data[value+'[]']){
+        $("input[name='"+value+'[]'+"']:checked").each(function() {
           form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
         });
       }

@@ -15,7 +15,7 @@
         </a>
         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 40px, 0px); top: 0px; left: 0px; will-change: transform;">
           <a class="dropdown-item" tabindex="all" href="#comments_tab_all" data-toggle="tab">すべて</a>
-          @foreach(config('attribute.comment_type') as $index => $name)
+          @foreach($attributes['comment_type'] as $index => $name)
              <a class="dropdown-item" tabindex="{{ $index }}" href="#comments_tab_{{ $index }}" data-toggle="tab">{{$name}}</a>
            @endforeach
         </div>

@@ -26,7 +26,7 @@
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
           <select name="type" class="form-control" placeholder="種別" required="true">
-            @foreach(config('attribute.comment_type') as $index => $name)
+            @foreach($attributes['comment_type'] as $index => $name)
                <option value="{{ $index }}" @if(isset($_edit) && $item['type'] == $index) selected @endif>{{$name}}</option>
             @endforeach
           </select>

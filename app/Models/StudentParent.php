@@ -45,45 +45,53 @@ class StudentParent extends Model
       'user_id' => $parent_user->id,
       'create_user_id' => 1,
     ]);
-    $student_no = UserTag::where('tag_key', 'student_no')->max('tag_value');
-    $student_no = intval(ltrim($student_no, '0'))+1;
-    $student_no = sprintf('%06d', $student_no);
-    $user = User::create([
-      'name' => $form['name_last'].' '.$form['name_first'],
-      'password' => $form['password'],
-      'email' => $student_no,
-      'image_id' => $form['gender'],
-      'status' => 1,
-    ]);
-    $student = Student::create([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => '',
-      'kana_first' => '',
-      'birth_day' => '9999-12-31',
-      'gender' => $form['gender'],
-      'user_id' => $user->id,
-      'create_user_id' => 1,
-    ]);
+    $student = Student::entry($form);
     StudentRelation::create([
       'student_id' => $student->id,
       'student_parent_id' => $parent->id,
-      'create_user_id' => 1,
+      'create_user_id' => $parent_user->id,
     ]);
-    UserTag::create([
-      'user_id' => $user->id,
-      'tag_key' => 'student_no',
-      'tag_value' => $student_no,
-      'create_user_id' => 1,
-    ]);
-    $ret['parent'] = $parent;
-    $ret['parent']['user'] = $parent_user;
-    $ret['student'] = $student;
-    $ret['student']['user'] = $user;
-    $ret['student']['student_no'] = $student_no;
-    return $ret;
+    return $parent;
   }
+  public function brother_add($form){
+    $ret = [];
+    $form['create_user_id'] = $this->user_id;
+    $student = Student::entry($form);
+    StudentRelation::create([
+      'student_id' => $student->id,
+      'student_parent_id' => $this->id,
+      'create_user_id' => $this->user_id,
+    ]);
+    $student->profile_update($form);
+    return $student;
+  }
+  public function profile_update($form){
+    $this->update([
+      'name_last' => $form['name_last'],
+      'name_first' => $form['name_first'],
+      'kana_last' => $form['kana_last'],
+      'kana_first' => $form['kana_first'],
+    ]);
+    $this->update([
+      'name_last' => $form['name_last'],
+      'name_first' => $form['name_first'],
+      'kana_last' => $form['kana_last'],
+      'kana_first' => $form['kana_first'],
+    ]);
+    $tag_names = ['phone_no', 'howto_word'];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
+    $tag_names = ['howto'];
+    foreach($tag_names as $tag_name){
+	    if(!empty($form[$tag_name])){
+        UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
 
+  }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
   }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Image;
 use App\Models\Student;
+use App\Models\GeneralAttribute;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,23 @@ class UserController extends Controller
   public $domain = "users";
   public $domain_name = "ユーザー";
   protected $pagenation_line = 20;
+  public function __construct()
+  {
+  }
+  protected function attributes()
+  {
+    $attributes = [];
+    $_attributes = GeneralAttribute::where('attribute_key', '!=', 'keys')
+    ->orderBy('attribute_key', 'asc')
+    ->orderBy('sort_no', 'asc')->get();
+    foreach($_attributes as $_attribute){
+      if(!isset($attributes[$_attribute['attribute_key']])){
+        $attributes[$_attribute['attribute_key']] = [];
+      }
+      $attributes[$_attribute['attribute_key']][$_attribute['attribute_value']] = $_attribute['attribute_name'];
+    }
+    return $attributes;
+  }
   protected function user_create($form)
   {
     try {
@@ -141,8 +159,7 @@ class UserController extends Controller
   {
     $user = Auth::user();
     if(!isset($user)){
-      abort(403);
-      return "";
+      return null;
     }
     return $user->details();
   }
@@ -257,7 +274,7 @@ class UserController extends Controller
     }
     try {
       DB::beginTransaction();
-      User::where('id', $user_id)->update(['password' => Hash::make($password)]);
+      User::where('id', $user_id)->set_password($password);
       DB::commit();
       return $this->api_response(200, "", "");
     }

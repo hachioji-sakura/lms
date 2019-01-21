@@ -99,7 +99,8 @@ class MilestoneController extends UserController
         'manager_id' => $request->manager_id,
         'student_id' => $request->student_id,
         'search_word'=>$request->search_word,
-        'search_status'=>$request->status
+        'search_status'=>$request->status,
+        'attributes' => $this->attributes(),
       ];
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
