@@ -66,7 +66,6 @@ class Student extends Model
       'tag_value' => $student_no,
       'create_user_id' => $user->id,
     ]);
-    $student->profile_update($form);
     return $student;
   }
   public function profile_update($form){
@@ -78,6 +77,7 @@ class Student extends Model
       'birth_day' => $form['birth_day'],
     ]);
     $tag_names = ['school_name', 'grade'];
+
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
 	      UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);

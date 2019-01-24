@@ -210,25 +210,6 @@ class StudentParentController extends StudentController
         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
     }
-    public function _brother_add($form)
-    {
-      try {
-        DB::beginTransaction();
-        $form["password"] = 'sakusaku';
-        $user = $this->login_details();
-        $items = StudentParent::where('id', $user->id)->first()->brother_add($form);
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-    }
 
     /**
      * Display a listing of the resource.

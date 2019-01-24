@@ -25,33 +25,22 @@ class UserTag extends Model
     if(empty($item)) return null;
     return $item;
   }
+  //1 key = 1tagの場合利用する
   public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
-    if(!isset($this)){
-      $item = UserTag::create([
+    UserTag::where('user_id', $user_id)
+      ->where('tag_key' , $tag_key)->delete();
+    $item = UserTag::create([
         'user_id' => $user_id,
         'tag_key' => $tag_key,
         'tag_value' => $tag_value,
         'create_user_id' => $create_user_id,
       ]);
       return $item;
-    }
-    else {
-      if(empty($tag_value)){
-        $this->delete();
-        return null;
-      }
-      else {
-        $this->update([
-          'tag_value' => $tag_value,
-        ]);
-      }
-    }
-    return $this;
   }
+  //1 key = n tagの場合利用する
   public static function setTags($user_id, $tag_key, $tag_values, $create_user_id){
-    if(isset($this)){
-      $this->delete();
-    }
+    UserTag::where('user_id', $user_id)
+      ->where('tag_key' , $tag_key)->delete();
     foreach($tag_values as $tag_value){
       $item = UserTag::create([
         'user_id' => $user_id,
