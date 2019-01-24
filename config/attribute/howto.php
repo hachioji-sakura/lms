@@ -6,5 +6,6 @@ return array(
   'newspaper' => '新聞折込チラシ',
   'flyer' => '投函チラシ',
   'dm' => 'ダイレクトメール',
+  'introduce' => '生徒からの紹介',
 );
 ?>

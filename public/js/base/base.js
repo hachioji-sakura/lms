@@ -109,7 +109,9 @@
 			checkboxClass: 'icheckbox_flat-green mr-1',
 			radioClass   : 'iradio_flat-green mr-1'
 		})
-
+		$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').on('ifChanged', function (e) {
+			$(this).trigger("change", e);
+		});
 		/*
 		//郵便番号入力
 		dom.setPostnoForm(form_id);

@@ -197,7 +197,7 @@ $(function(){
       </label>
       @foreach($attributes['howto'] as $index => $name)
       <label class="mx-2">
-        <input type="checkbox" value="{{ $index }}" name="howto[]" class="flat-red"  >{{$name}}
+        <input type="checkbox" value="{{ $index }}" name="howto[]" class="flat-red"  onChange="howto_checkbox_change(this)">{{$name}}
       </label>
       @endforeach
     </div>
@@ -211,21 +211,19 @@ $(function(){
     </div>
   </div>
   <script>
-  $(function(){
+  function howto_checkbox_change(obj){
     //Google検索・Yahoo検索と答えた場合、検索ワードフォームを表示
-    $('input[type="checkbox"][name="howto[]"]').on('ifChanged', function(e){
-      var is_google = $('input[type="checkbox"][name="howto[]"][value="google"]').prop("checked");
-      var is_yahoo = $('input[type="checkbox"][name="howto[]"][value="yahoo"]').prop("checked");
-      if(is_google || is_yahoo){
-        $("#howto_word_form").collapse("show");
-        $("#howto_word_confirm").collapse("show");
-      }
-      else {
-        $("#howto_word_form").collapse("hide");
-        $("#howto_word_confirm").collapse("hide");
-      }
-    });
-  });
+    var is_google = $('input[type="checkbox"][name="howto[]"][value="google"]').prop("checked");
+    var is_yahoo = $('input[type="checkbox"][name="howto[]"][value="yahoo"]').prop("checked");
+    if(is_google || is_yahoo){
+      $("#howto_word_form").collapse("show");
+      $("#howto_word_confirm").collapse("show");
+    }
+    else {
+      $("#howto_word_form").collapse("hide");
+      $("#howto_word_confirm").collapse("hide");
+    }
+  }
   </script>
 @endif
 </div>
