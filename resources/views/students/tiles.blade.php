@@ -8,7 +8,7 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   @if($user->role=="parent")
   <li class="nav-item hr-1">
-    <a href="/{{$domain}}/register" class="nav-link">
+    <a href="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
     </a>
   </li>
@@ -46,7 +46,7 @@
 @section('page_footer')
 <dt>
   @if($user->role=="parent")
-    <a href="/{{$domain}}/register" class="btn btn-app" >
+    <a href="/{{$domain}}/create" class="btn btn-app" >
       <i class="fa fa-plus"></i>{{$domain_name}}登録
     </a>
   @endif

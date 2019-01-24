@@ -198,7 +198,7 @@
 		var _form = "";
 		if(!noEmpty){
 			_form = template;
-			_form = textFormat(_form , {"ID" :  id, "VAL" :  "", "NAME" :  "(選択無し)"});
+			_form = textFormat(_form , {"ID" :  id, "VAL" :  "", "NAME" :  "(選択)"});
 			form += _form;
 		}
 		if(codes){
@@ -692,6 +692,7 @@
 				if(_isUpdate) formControl = $(this).attr("edit");
 				var isset = true;
 				var val = data[field];
+				if(tag.toUpperCase()==="SELECT") type="select";
 
 				if(!util.isEmpty(formControl)){
 					switch(formControl){

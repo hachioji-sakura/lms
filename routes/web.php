@@ -51,11 +51,12 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
-Route::get('students/entry','StudentController@entry');
-Route::post('students/entry','StudentController@entry_store');
-Route::get('students/register','StudentController@register');
-Route::post('students/register','StudentController@register_update');
+Route::get('entry','StudentParentController@entry');
+Route::post('entry','StudentParentController@entry_store');
+Route::get('register','StudentParentController@register');
+Route::post('register','StudentParentController@register_update');
 
+Route::resource('parents','StudentParentController');
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');

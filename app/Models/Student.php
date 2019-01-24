@@ -45,7 +45,7 @@ class Student extends Model
     $student_no = sprintf('%06d', $student_no);
     $user = User::create([
       'name' => $form['name_last'].' '.$form['name_first'],
-      'password' => $form['password'],
+      'password' => '-',
       'email' => $student_no,
       'image_id' => $form['gender'],
       'status' => 1,
@@ -53,9 +53,9 @@ class Student extends Model
     $student = Student::create([
       'name_last' => $form['name_last'],
       'name_first' => $form['name_first'],
-      'kana_last' => '',
-      'kana_first' => '',
-      'birth_day' => '9999-12-31',
+      'kana_last' => $form['kana_last'],
+      'kana_first' => $form['kana_first'],
+      'birth_day' => $form['birth_day'],
       'gender' => $form['gender'],
       'user_id' => $user->id,
       'create_user_id' => $user->id,
@@ -66,9 +66,11 @@ class Student extends Model
       'tag_value' => $student_no,
       'create_user_id' => $user->id,
     ]);
+    $student->profile_update($form);
     return $student;
   }
   public function profile_update($form){
+    /*
     $this->update([
       'name_last' => $form['name_last'],
       'name_first' => $form['name_first'],
@@ -76,6 +78,7 @@ class Student extends Model
       'kana_first' => $form['kana_first'],
       'birth_day' => $form['birth_day'],
     ]);
+    */
     $tag_names = ['school_name', 'grade'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){

@@ -88,8 +88,20 @@
 			var _defaultSelect = $(this).attr("defaultSelect");
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, $(this).html(), formData);
 		});
-		$("select.select2", $("#"+form_id)).select2({
-			dropdownParent: $("#"+form_id)
+		$("select.select2", $("#"+form_id)).each(function(e){
+			var _parent_id = $(this).attr("parent_id");
+			var _width = $(this).attr("width");
+			if(util.isEmpty(_parent_id)){
+				_parent_id = "body";
+			}
+			else {
+				_parent_id = "#"+_parent_id;
+			}
+			$(this).select2({
+				width: _width,
+				placeholder: '選択してください',
+				dropdownParent: $(_parent_id)
+			});
 		});
 		//Flat red color scheme for iCheck
 		$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({

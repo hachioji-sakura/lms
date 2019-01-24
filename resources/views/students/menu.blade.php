@@ -28,13 +28,18 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="目標登録">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="コメント登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="目標登録">
             <i class="fa fa-flag nav-icon"></i>目標登録
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="目標登録">
+            <i class="fa fa-user-edit nav-icon"></i>プロフィール編集
           </a>
         </li>
       </ul>

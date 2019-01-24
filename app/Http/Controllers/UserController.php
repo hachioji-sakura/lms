@@ -274,7 +274,7 @@ class UserController extends Controller
     }
     try {
       DB::beginTransaction();
-      User::where('id', $user_id)->set_password($password);
+      User::where('id', $user_id)->first()->set_password($password);
       DB::commit();
       return $this->api_response(200, "", "");
     }

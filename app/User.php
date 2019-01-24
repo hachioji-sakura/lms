@@ -36,9 +36,11 @@ class User extends Authenticatable
     ];
     public function tags(){
       return UserTag::where('user_id', $this->id)
+      ->get();
+      /*
       ->where('tag_key', '!=', 'student_no')
       ->where('tag_key', '!=', 'teacher_no')
-        ->get();
+      */
 
       //return $this->hasMany('App\Models\UserTag');
     }

@@ -30,26 +30,20 @@ class StudentParent extends Model
   static protected function entry($form){
     $ret = [];
     $parent_user = User::create([
-        'name' => $form['name_last'].' '.$form['name_first'].' 保護者様',
+        'name' => $form['name_last'].' '.$form['name_first'],
         'email' => $form['email'],
         'image_id' => 4,
         'status' => 1,
         'access_key' => $form['access_key'],
-        'password' => $form['password'],
+        'password' => '-',
     ]);
     $parent = StudentParent::create([
       'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'].' 保護者様',
+      'name_first' => $form['name_first'],
       'kana_last' => '',
       'kana_first' => '',
       'user_id' => $parent_user->id,
       'create_user_id' => 1,
-    ]);
-    $student = Student::entry($form);
-    StudentRelation::create([
-      'student_id' => $student->id,
-      'student_parent_id' => $parent->id,
-      'create_user_id' => $parent_user->id,
     ]);
     return $parent;
   }
@@ -90,7 +84,7 @@ class StudentParent extends Model
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-
+    $this->user->update(['status'=> 0]);
   }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');

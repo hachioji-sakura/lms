@@ -78,7 +78,7 @@
       {{$event_click}}
       allDayText:'終日',
       axisFormat: 'H(:mm)',
-      //defaultView: 'agendaWeek',
+      defaultView: 'agendaWeek',
       scrollTime: first_scroll_time,
       // 最小時間
       minTime: "08:00:00",

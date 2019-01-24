@@ -6939,6 +6939,9 @@ button.bg-dark:focus {
 .w-25 {
 	width: 25% !important;
 }
+.w-30 {
+	width: 30% !important;
+}
 .w-40 {
 	width: 40% !important;
 }
@@ -12259,7 +12262,6 @@ label:not(.form-check-label):not(.custom-file-label) {
 	border-left: 5px solid #eee;
 	border-radius: 0.25rem;
 	*/
-	border-color: #AAA !important;
 	color: #666;
 }
 .mailbox-attachments li.active {

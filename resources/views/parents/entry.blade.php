@@ -1,5 +1,5 @@
 @extends('layouts.loginbox')
-@section('title', '新規ご入会お申込み')
+@section('title', '仮登録ページ')
 @section('content')
 <div id="students_entry">
 @if(!empty($result))
@@ -17,19 +17,13 @@
 @else
 <form method="POST"  action="/students/entry">
     @csrf
-    <div class="col-12">
-      <h6 class="text-sm p-1 pl-2 mb-4" >
-        入力いただいたメールアドレスに、本登録するURLを送信いたします。
-      </h6>
-    </div>
     <div class="row">
       <div class="col-12">
-        <h5 class="bg-info p-2 pl-3 mb-4">
-          生徒様情報
-        </h5>
+        <h3 class="text-lg p-2 mb-4 bg-danger text-center" >
+          <i class="fa fa-exclamation-triangle mr-1"></i>
+          ご契約いただく方の情報をご入力ください
+        </h3>
       </div>
-    </div>
-    <div class="row">
       <div class="col-6 col-lg-6 col-md-6">
         <div class="form-group">
           <label for="name_last">
@@ -48,47 +42,26 @@
           <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku">
         </div>
       </div>
-      <div class="col-12 col-lg-12 col-md-12">
-        <div class="form-group">
-          <label for="password-confirm">
-            性別
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <div class="input-group">
-            <div class="form-check">
-                <input class="form-check-input flat-red" type="radio" name="gender" id="gender_2" {{ old('gender') ? 'checked' : '' }} value="2" required="true">
-                <label class="form-check-label" for="gender_2">
-                    女性
-                </label>
-            </div>
-            <div class="form-check ml-2">
-                <input class="form-check-input flat-red" type="radio" name="gender" id="gender_1" {{ old('gender') ? 'checked' : '' }} value="1" required="true">
-                <label class="form-check-label" for="gender_1">
-                    男性
-                </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12">
-        <h6 class="text-sm p-1 pl-2 mb-4 text-danger" >
-          ※ご兄弟での申し込みについては、本登録完了後にてお願いいたします。
-        </h6>
-      </div>
       <div class="col-12">
         <div class="form-group">
           <label for="email">
             メールアドレス
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです">
+          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email">
         </div>
       </div>
+    </div>
+    <div class="col-12">
+      <h6 class="text-sm p-2 pl-2 mb-4" >
+        入力いただいたメールアドレスに、<br>
+        本登録用のURLを送信いたします。
+      </h6>
     </div>
     <div class="row">
       <div class="col-12 mb-1">
           <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
-            <i class="fa fa-envelope mr-1"></i>お申込み
+            <i class="fa fa-envelope mr-1"></i>仮登録を進める
           </button>
           @if(isset($error_message))
             <span class="invalid-feedback d-block ml-2 " role="alert">
@@ -97,23 +70,29 @@
           @endif
       </div>
     </div>
+    <div class="row">
+      <div class="col-12 mb-1">
+        <a href="/login" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          ログイン画面へ戻る
+        </a>
+      </div>
+    </div>
+
   </form>
 </div>
 <script>
 
 $(function(){
   base.pageSettinged("students_entry", null);
-  //Google検索・Yahoo検索と答えた場合、検索ワードフォームを表示
-  $('input[type="checkbox"]').on('ifChanged', function(e){
-    var is_google = $('input[type="checkbox"][value="google"]').prop("checked");
-    var is_yahoo = $('input[type="checkbox"][value="yahoo"]').prop("checked");
-    if(is_google || is_yahoo){
-      $("#search_word_question").collapse("show");
-    }
-    else {
-      $("#search_word_question").collapse("hide");
+  //submit
+  $("button[type='submit']").on('click', function(e){
+    e.preventDefault();
+    if(front.validateFormValue('students_entry')){
+      $("form").submit();
     }
   });
+
+
 });
 </script>
 @endif

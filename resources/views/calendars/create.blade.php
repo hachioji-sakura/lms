@@ -10,7 +10,7 @@
     <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
   @endif
   <div class="row">
-    <div class="col-12">
+    <div class="col-12 col-lg-6 col-md-6">
       <div class="form-group">
         <label for="start_date" class="w-100">
           日付
@@ -31,7 +31,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-12">
+    <div class="col-12 col-lg-6 col-md-6">
       <div class="form-group">
         <label for="start_hours" class="w-100">
           時刻
@@ -67,6 +67,7 @@
           <span class="right badge badge-danger ml-1">必須</span>
         </label>
         <select name="student_id" class="form-control" placeholder="担当生徒" required="true">
+          <option value="">(選択)</option>
           @foreach($students as $student)
              <option value="{{ $student['id'] }}" @if(isset($_edit) && $item['student_id'] == $student['id']) selected @endif>{{$student['name']}}</option>
           @endforeach

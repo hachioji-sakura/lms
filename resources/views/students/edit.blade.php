@@ -1,10 +1,4 @@
-@extends('layouts.simplepage')
-@section('title', '生徒登録')
 @include($domain.'.create')
-@include('parents.create')
-
-
-@section('content')
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/register">
     @csrf
@@ -13,14 +7,12 @@
         <div class="carousel-item active">
           @yield('student_form')
           <div class="row">
-            @if(isset($user->role))
             <div class="col-12 mb-1">
               <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
                 キャンセル
               </a>
             </div>
-            @endif
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
@@ -75,8 +67,8 @@
     </div>
   </form>
 </div>
-<script>
 
+<script>
 $(function(){
   var form_data = util.getLocalData('register_form');
   base.pageSettinged("register_form", form_data);
@@ -124,5 +116,3 @@ $(function(){
   }
 });
 </script>
-@endif
-@endsection

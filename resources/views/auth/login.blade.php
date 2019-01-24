@@ -55,8 +55,8 @@
 </h6>
 <hr class="my-3">
 <p class="my-2">
-  <a href="/students/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
-    <i class="fa fa-sign-in-alt mr-1"></i>入会お申込みはこちら
+  <a href="/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
+    <i class="fa fa-sign-in-alt mr-1"></i>入会・登録はこちら
   </a>
 </p>
 @endsection
