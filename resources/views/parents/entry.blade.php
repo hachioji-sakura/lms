@@ -15,7 +15,7 @@
     @endif
   </h4>
 @else
-<form method="POST"  action="/students/entry">
+<form method="POST"  action="/entry">
     @csrf
     <div class="row">
       <div class="col-12">
