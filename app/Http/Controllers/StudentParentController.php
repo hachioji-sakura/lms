@@ -101,11 +101,8 @@ class StudentParentController extends StudentController
      $result = '';
      $param = $this->get_param($request);
      if(!empty($param['user'])){
-        if(!$this->is_parent($param['user']->role)){
-          //親以外、ここからの生徒追加はできない
-          abort(403);
-        }
-        $param['parent'] = $param['user'];
+       $param['result'] = 'logout';
+       return view($this->domain.'.register',$param);
      }
      else {
        $access_key = $request->get('key');
@@ -181,22 +178,8 @@ class StudentParentController extends StudentController
           'howto_word' => $form['howto_word'],
           'create_user_id' => $user->id,
         ]);
-        $parent->brother_add([
-          'name_last' => $form['name_last'],
-          'name_first' => $form['name_first'],
-          'kana_last' => $form['kana_last'],
-          'kana_first' => $form['kana_first'],
-          'grade' => $form['grade'],
-          'birth_day' => $form['birth_day'],
-          'gender' => $form['gender'],
-          'school_name' => $form['school_name'],
-          'lesson_subject' => $form['lesson_subject'],
-          'lesson_place' => $form['lesson_place'],
-          'lesson_week' => $form['lesson_week'],
-          'lesson_time' => $form['lesson_time'],
-          'lesson_time_holiday' => $form['lesson_time_holiday'],
-          'create_user_id' => $user->id,
-        ]);
+        $form['create_user_id'] = $user->id;
+        $parent->brother_add($form);
         $user->set_password($form['password']);
         DB::commit();
         return $this->api_response(200, __FUNCTION__);

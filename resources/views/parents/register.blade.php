@@ -1,7 +1,10 @@
 @extends('layouts.simplepage')
 @section('title', 'ユーザー登録')
+
+@if(empty($result))
 @include('students.create_form')
 @include('parents.create_form')
+@endif
 
 
 @section('content')
@@ -25,29 +28,29 @@
         </p>
     </div>
   </div>
-  @elseif($result==='success')
-  <div class="row">
-    <div class="col-12">
-      <h4 class="bg-success p-3 text-sm">
-        ユーザー登録が完了しました。<br>
-        ログイン後、システムをご利用ください。
-      </h4>
+  @elseif($result==='logout')
+    <div class="row">
+      <div class="col-12">
+        <h4 class="bg-danger p-3 text-sm">
+          ログイン状態が残っています。<br>
+          ログアウトしてください。
+        </h4>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-12">
-      <p class="my-2">
-        <a href="/login" role="button" class="btn btn-outline-success btn-block float-left mr-1">
-          ログイン
-        </a>
-      </p>
+    <div class="row">
+      <div class="col-12">
+        <p class="my-2">
+          <a href="/logout" role="button" class="btn btn-secondary btn-block float-left mr-1">
+            ログアウトする
+          </a>
+        </p>
     </div>
   </div>
   @endif
 @else
   <form method="POST"  action="/register">
     @csrf
-    <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="parents_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="parent_id" value="{{$parent->id}}" />
       <div class="carousel-inner">
@@ -137,29 +140,30 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", form_data);
+  var form_data = util.getLocalData('parents_add_form');
+  base.pageSettinged("parents_add_form", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('register_form .carousel-item.active')){
+    if(front.validateFormValue('parents_add_form .carousel-item.active')){
+      util.setLocalData('parents_add_form', "");
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      var form_data = front.getFormValue('register_form');
-      util.setLocalData('register_form', form_data);
+    if(front.validateFormValue('parents_add_form .carousel-item.active')){
+      var form_data = front.getFormValue('parents_add_form');
+      util.setLocalData('parents_add_form', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#register_form').carousel('next');
+      $('#parents_add_form').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#register_form').carousel('prev');
+    $('#parents_add_form').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

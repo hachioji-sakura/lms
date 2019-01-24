@@ -173,23 +173,8 @@ EOT;
      }
      $form = $request->all();
      $parent = StudentParent::where('id', $param['user']->id)->first();
-
-     $parent->brother_add([
-       'name_last' => $form['name_last'],
-       'name_first' => $form['name_first'],
-       'kana_last' => $form['kana_last'],
-       'kana_first' => $form['kana_first'],
-       'grade' => $form['grade'],
-       'birth_day' => $form['birth_day'],
-       'gender' => $form['gender'],
-       'school_name' => $form['school_name'],
-       'lesson_subject' => $form['lesson_subject'],
-       'lesson_place' => $form['lesson_place'],
-       'lesson_week' => $form['lesson_week'],
-       'lesson_time' => $form['lesson_time'],
-       'lesson_time_holiday' => $form['lesson_time_holiday'],
-       'create_user_id' => $param['user']->user_id,
-     ]);
+     $form['create_user_id'] = $param['user']->user_id;
+     $parent->brother_add($form);
      $form['parent_name_first'] = $param['user']->name_first;
      $form['parent_name_last'] = $param['user']->name_last;
      $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
@@ -205,42 +190,6 @@ EOT;
     */
    public function _store(Request $request)
    {
-     $form = $request->all();
-     try {
-      DB::beginTransaction();
-      //保護者情報の登録
-      $access_key = $this->create_token();
-      $form["name"] = $form['name_last'].' '.$form['name_first'];
-      $form["password"] = 'sakusaku';
-      $form["image_id"] = 4;
-      $form["access_key"] = $access_key;
-      $form["status"] = 1;
-      $res = $this->user_create($form);
-
-      if($this->is_success_response($res)){
-        $form['user_id'] = $res["data"]->id;
-        $user = $this->login_details();
-        $form["create_user_id"] = $user->user_id;
-        unset($form['name']);
-        unset($form['image_id']);
-        unset($form['_token']);
-        unset($form['password']);
-        unset($form['email']);
-        unset($form['password-confirm']);
-        $_item = $this->model()->create($form);
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      return $res;
-     }
-     catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-     }
-     catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-     }
    }
    /**
     * データ更新時のパラメータチェック
