@@ -30,8 +30,13 @@
       </ul>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="目標登録">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
+            <i class="fa fa-chalkboard-teacher nav-icon"></i>授業追加
           </a>
         </li>
       </ul>
@@ -43,6 +48,11 @@
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
     <i class="fa fa-comment-dots"></i>コメント登録
+  </a>
+</dt>
+<dt>
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?_page_origin={{$domain}}_{{$item->id}}&teacher_id={{$item->id}}" page_title="コメント登録">
+    <i class="fa fa-chalkboard-teacher"></i>授業追加
   </a>
 </dt>
 

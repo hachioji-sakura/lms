@@ -29,7 +29,7 @@
            <i class="fa fa-lock nav-icon"></i>未公開
          </a>
        </li>
-      @foreach(config('attribute.comment_type') as $index => $name)
+       @foreach($attributes['comment_type'] as $index => $name)
       <li class="nav-item">
          <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$name}}

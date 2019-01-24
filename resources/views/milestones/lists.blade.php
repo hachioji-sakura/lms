@@ -25,7 +25,7 @@
         @component('components.search_word', ['search_word' => $search_word])
         @endcomponent
       </li>
-      @foreach(config('attribute.milestone_type') as $index => $name)
+      @foreach($attributes['milestone_type'] as $index => $name)
       <li class="nav-item">
          <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$name}}

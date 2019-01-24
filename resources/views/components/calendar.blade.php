@@ -55,7 +55,7 @@
       editable  : false,
       droppable : false, // this allows things to be dropped onto the calendar !!!
       // 選択可
-      selectable: false,
+      selectable: true,
       dayClick: function(date, allDay, jsEvent, view) {
         console.log('dayClick'+date);
         $calendar.fullCalendar('gotoDate', date);
@@ -78,7 +78,7 @@
       {{$event_click}}
       allDayText:'終日',
       axisFormat: 'H(:mm)',
-      //defaultView: 'agendaWeek',
+      defaultView: 'agendaWeek',
       scrollTime: first_scroll_time,
       // 最小時間
       minTime: "08:00:00",

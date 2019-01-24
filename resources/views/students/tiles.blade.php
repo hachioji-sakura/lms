@@ -6,13 +6,13 @@
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  {{--
+  @if($user->role=="parent")
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
+    <a href="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
     </a>
   </li>
-  --}}
+  @endif
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -38,8 +38,6 @@
         </a>
       </li>
       @endif
-      {--
-      --}
     </ul>
   </li>
 </ul>
@@ -47,8 +45,10 @@
 
 @section('page_footer')
 <dt>
-  <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create">
-    <i class="fa fa-plus"></i>{{$domain_name}}登録
-  </a>
+  @if($user->role=="parent")
+    <a href="/{{$domain}}/create" class="btn btn-app" >
+      <i class="fa fa-plus"></i>{{$domain_name}}登録
+    </a>
+  @endif
 </dt>
 @endsection

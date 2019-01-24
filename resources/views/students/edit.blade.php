@@ -1,11 +1,6 @@
-@extends('layouts.simplepage')
-@section('title', '生徒登録')
-@include('students.create_form')
-
-
-@section('content')
+@include($domain.'.create_form')
 <div id="students_register" class="direct-chat-msg">
-  <form method="POST"  action="/students">
+  <form method="POST"  action="/students/{{$item->id}}">
     @csrf
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
@@ -52,12 +47,14 @@
                 戻る
               </a>
             </div>
+            @if(isset($user->role))
             <div class="col-12 mb-1">
               <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
                 キャンセル
               </a>
             </div>
+            @endif
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-plus-circle mr-1"></i>
@@ -70,8 +67,8 @@
     </div>
   </form>
 </div>
-<script>
 
+<script>
 $(function(){
   var form_data = util.getLocalData('register_form');
   base.pageSettinged("register_form", form_data);
@@ -119,4 +116,3 @@ $(function(){
   }
 });
 </script>
-@endsection

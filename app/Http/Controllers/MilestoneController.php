@@ -91,6 +91,9 @@ class MilestoneController extends UserController
      */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details();
+      if(!isset($user)) {
+        abort(403);
+      }
       $ret = [
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
@@ -99,7 +102,8 @@ class MilestoneController extends UserController
         'manager_id' => $request->manager_id,
         'student_id' => $request->student_id,
         'search_word'=>$request->search_word,
-        'search_status'=>$request->status
+        'search_status'=>$request->status,
+        'attributes' => $this->attributes(),
       ];
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();

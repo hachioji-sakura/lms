@@ -12,6 +12,7 @@ use App\Models\UserTag;
 use App\Models\Image;
 use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
+use Hash;
 class User extends Authenticatable
 {
     use Notifiable;
@@ -22,7 +23,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'image_id', 'email', 'password', 'status',
+        'id', 'name', 'image_id', 'email', 'password', 'status', 'access_key'
     ];
 
     /**
@@ -34,7 +35,13 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
     public function tags(){
-      return UserTag::where('user_id', $this->id)->get();
+      return UserTag::where('user_id', $this->id)
+      ->get();
+      /*
+      ->where('tag_key', '!=', 'student_no')
+      ->where('tag_key', '!=', 'teacher_no')
+      */
+
       //return $this->hasMany('App\Models\UserTag');
     }
     public function student(){
@@ -60,6 +67,12 @@ class User extends Authenticatable
     {
         $this->notify(new CustomPasswordReset($token));
     }
+    public function set_password($password){
+      $this->update([
+        'access_key' => '',
+        'password' => Hash::make($password)
+      ]);
+    }
     public function details(){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = Image::where('id', $this->image_id)->first();
@@ -72,6 +85,7 @@ class User extends Authenticatable
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = Teacher::where('user_id', $this->id)->first();
@@ -79,6 +93,7 @@ class User extends Authenticatable
         $item['teacher_id'] = $item['id'];
         $item['role'] = 'teacher';
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = StudentParent::where('user_id', $this->id)->first();
@@ -88,6 +103,7 @@ class User extends Authenticatable
         $item['name'] = $item->name_last.' '.$item->name_first;
         $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       $item = Student::where('user_id', $this->id)->first();
@@ -98,10 +114,20 @@ class User extends Authenticatable
         $item['name'] = $item->name_last.' '.$item->name_first;
         $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
         return $item;
       }
       return $this;
     }
+    public function scopeTag($query, $tagkey, $tagvalue)
+    {
+      $where_raw = <<<EOT
+        id in (select user_id from user_tags where tag_key=? and tag_value=?)
+EOT;
+
+      return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
+    }
+
     public function create_comments(){
       return $this->hasMany('App\Models\Comment', 'create_user_id');
     }

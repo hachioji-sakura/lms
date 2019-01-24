@@ -1,23 +1,26 @@
 @extends('layouts.simplepage')
 @section('title', '生徒登録')
-@include('students.create_form')
+@include($domain.'.create')
+@include('parents.create')
 
 
 @section('content')
 <div id="students_register" class="direct-chat-msg">
-  <form method="POST"  action="/students">
+  <form method="POST"  action="/students/register">
     @csrf
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('student_form')
           <div class="row">
+            @if(isset($user->role))
             <div class="col-12 mb-1">
               <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
                 キャンセル
               </a>
             </div>
+            @endif
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
@@ -52,12 +55,14 @@
                 戻る
               </a>
             </div>
+            @if(isset($user->role))
             <div class="col-12 mb-1">
               <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
                 キャンセル
               </a>
             </div>
+            @endif
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-plus-circle mr-1"></i>
@@ -119,4 +124,5 @@ $(function(){
   }
 });
 </script>
+@endif
 @endsection

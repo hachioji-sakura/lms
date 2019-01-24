@@ -33,6 +33,7 @@ Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 
 Route::get('import/{object?}','ImportController@index');
 Route::post('import/{object?}','ImportController@import');
 
+Route::get('api_attributes/{select_key?}','GeneralAttributeController@api_index');
 Route::resource('attributes','GeneralAttributeController');
 Route::resource('milestones','MilestoneController');
 Route::get('comments/{id}/publiced','CommentController@publiced_page');
@@ -44,17 +45,25 @@ Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page'
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
 Route::resource('calendars','UserCalendarController');
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
+Route::resource('lectures','LectureController');
 
 /*
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
+Route::get('entry','StudentParentController@entry');
+Route::post('entry','StudentParentController@entry_store');
+Route::get('register','StudentParentController@register');
+Route::post('register','StudentParentController@register_update');
+
+Route::resource('parents','StudentParentController');
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');
 Route::resource('comments','CommentController');
 Route::resource('user_examinations','UserExaminationController');
 Route::post('icon','ImageController@icon_change');
+
 
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');
 Route::get('students/{id}/calendar','StudentController@calendar');

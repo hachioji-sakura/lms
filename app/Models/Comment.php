@@ -16,8 +16,7 @@ class Comment extends Milestone
   );
   public function type_name()
   {
-    $types = config('attribute.comment_type');
-    return $types[$this->type];
+    return $this->attribute_name('comment_type', $this->type);
   }
   /*
   public function scopeStatus($query, $val)

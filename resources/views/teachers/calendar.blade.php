@@ -64,9 +64,9 @@
               }
             },
             function(xhr, st, err) {
-                alert("カレンダー取得エラー");
                 messageCode = "error";
-                messageParam= "validate/querycheck\n"+err.message+"\n"+xhr.responseText;
+                messageParam= "\n"+err.message+"\n"+xhr.responseText;
+                alert("カレンダー取得エラー"+messageParam);
             }
           );
           @endslot

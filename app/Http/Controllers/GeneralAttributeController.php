@@ -22,13 +22,36 @@ class GeneralAttributeController extends UserController
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function api_index(Request $request, $select_key="")
+    {
+      $_table = $this->search($request, $select_key);
+      $ret = [];
+      foreach($_table['items'] as $row){
+        if(!array_key_exists($row['attribute_key'], $ret)){
+          $ret[$row['attribute_key']] = [];
+        }
+        $ret[$row['attribute_key']][] = [
+          'value' => $row['attribute_value'],
+          'name' => $row['attribute_name'],
+        ];
+      }
+      return $_table['items'];
+    }
     private function get_param(Request $request, $attribute_key='keys'){
       $user = $this->login_details();
-      if(!empty($request->get('key'))){
-        $attribute_key = $request->get('key');
+      if(!isset($user)) {
+        abort(403);
       }
       if($this->is_manager_or_teacher($user->role)!==true){
         abort(403);
+      }
+      if(!empty($request->get('key'))){
+        $attribute_key = $request->get('key');
       }
       $select_key = GeneralAttribute::findKey('keys')->findVal($attribute_key)->first();
       if(!isset($select_key)){
@@ -47,7 +70,12 @@ class GeneralAttributeController extends UserController
     }
     private function search(Request $request, $attribute_key)
     {
-      $items = GeneralAttribute::findKey($attribute_key);
+      if(empty($attribute_key)){
+        $items = GeneralAttribute::query();
+      }
+      else {
+        $items = GeneralAttribute::findKey($attribute_key);
+      }
       $items = $this->_search_scope($request, $items);
 
       $items = $this->_search_pagenation($request, $items);

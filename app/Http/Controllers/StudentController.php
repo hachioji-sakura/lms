@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\StudentRelation;
+use App\Models\GeneralAttribute;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -55,31 +57,10 @@ class StudentController extends UserController
        'domain_name' => $this->domain_name,
        'user' => $user,
        'mode'=>$request->mode,
-       'search_word'=>$request->search_word
+       'search_word'=>$request->search_word,
+       'attributes' => $this->attributes(),
     ];
-
     if(is_numeric($id) && $id > 0){
-     //id指定がある
-     if($this->is_student($user->role) && $id!==$user->id){
-      //生徒は自分のidしか閲覧できない
-      abort(404);
-     }
-     else if($this->is_parent($user->role)){
-      //保護者は自分の家族のidしか閲覧できない
-      /*
-      if(!Student::where('id', $id)->parent_check($user->id)){
-        abort(404);
-      }
-      */
-     }
-    }
-    else {
-     //id指定がない、かつ、講師・事務以外はNG
-     if($this->is_parent($user->role)===true){
-     }
-     else if($this->is_manager_or_teacher($user->role)!==true){
-      abort(403);
-     }
     }
     return $ret;
   }
@@ -171,10 +152,14 @@ EOT;
   public function create(Request $request)
   {
     $param = $this->get_param($request);
+    if(!$this->is_parent($param['user']->role)){
+      abort(403);
+    }
     return view($this->domain.'.create',
       ['error_message' => ''])
       ->with($param);
    }
+
    /**
     * 新規登録
     *
@@ -182,11 +167,36 @@ EOT;
     */
    public function store(Request $request)
    {
-    $param = $this->get_param($request);
+     $param = $this->get_param($request);
+     if(!$this->is_parent($param['user']->role)){
+       abort(403);
+     }
+     $form = $request->all();
+     $parent = StudentParent::where('id', $param['user']->id)->first();
 
-    $res = $this->_store($request);
-    //生徒詳細からもCALLされる
-    return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+     $parent->brother_add([
+       'name_last' => $form['name_last'],
+       'name_first' => $form['name_first'],
+       'kana_last' => $form['kana_last'],
+       'kana_first' => $form['kana_first'],
+       'grade' => $form['grade'],
+       'birth_day' => $form['birth_day'],
+       'gender' => $form['gender'],
+       'school_name' => $form['school_name'],
+       'lesson_subject' => $form['lesson_subject'],
+       'lesson_place' => $form['lesson_place'],
+       'lesson_week' => $form['lesson_week'],
+       'lesson_time' => $form['lesson_time'],
+       'lesson_time_holiday' => $form['lesson_time_holiday'],
+       'create_user_id' => $param['user']->user_id,
+     ]);
+     $form['parent_name_first'] = $param['user']->name_first;
+     $form['parent_name_last'] = $param['user']->name_last;
+     $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
+     $param['success_message'] = '生徒情報登録完了しました。';
+     return redirect('/home')
+      ->with($param);
+
    }
    /**
     * 新規登録ロジック
@@ -198,10 +208,15 @@ EOT;
      $form = $request->all();
      try {
       DB::beginTransaction();
+      //保護者情報の登録
+      $access_key = $this->create_token();
       $form["name"] = $form['name_last'].' '.$form['name_first'];
-      //デフォルトのアイコンは性別と一緒にしておく
-      $form["image_id"] = $form['gender'];
+      $form["password"] = 'sakusaku';
+      $form["image_id"] = 4;
+      $form["access_key"] = $access_key;
+      $form["status"] = 1;
       $res = $this->user_create($form);
+
       if($this->is_success_response($res)){
         $form['user_id'] = $res["data"]->id;
         $user = $this->login_details();
@@ -246,10 +261,17 @@ EOT;
   public function show(Request $request, $id)
   {
    $param = $this->get_param($request, $id);
-   $model = $this->model()->find($id)->user;
+   $model = $this->model()->find($id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->user;
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
+   if(!isset($user)) {
+     abort(403, 'sessionTimeout');
+   }
 
    //コメントデータ取得
    $comments = $model->target_comments;
@@ -321,10 +343,22 @@ EOT;
    */
   public function edit(Request $request, $id)
   {
-    $param = $this->get_param($request, $id);
-    return view($this->domain.'.create', [
-      '_edit' => true])
-      ->with($param);
+    $result = '';
+    $param = $this->get_param($request);
+    $param['_edit'] = true;
+    if(!empty($param['user'])){
+       if(!$this->is_parent($param['user']->role)){
+         //親以外、ここからの生徒編集はできない
+         abort(403);
+       }
+       $param['parent'] = $param['user'];
+       $param['item'] = Student::where('id', $id)->first();
+    }
+    else {
+      abort(403);
+    }
+    return view($this->domain.'.edit',$param);
+
   }
   /**
    * Update the specified resource in storage.
@@ -351,7 +385,7 @@ EOT;
      DB::beginTransaction();
      $user = $this->login_details();
      $form = $request->all();
-     $item = Student::find($id)->update($form);
+     $item = Student::find($id)->profile_update($form);
      DB::commit();
      return $this->api_response(200, '', '', $item);
    }

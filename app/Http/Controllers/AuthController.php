@@ -84,6 +84,10 @@ class AuthController extends UserController
     */
    public function password_settinged(Request $request){
      $access_key = $request->access_key;
+     if(!$this->is_enable_token($access_key)){
+       abort(403);
+     }
+
      $user = User::where('access_key',$access_key);
      if($user->count() < 1){
        abort(403);
@@ -98,30 +102,5 @@ class AuthController extends UserController
      abort(500);
    }
 
-   /**
-    * 期限付きtokenの生成
-    * デフォルトの期限は、24時間
-    * @param  int $limit_second
-    * @param  int $key_length
-    * @return string
-    */
-   public function create_token($limit_second=86400, $key_length=32){
-     $key = str_random($key_length);
-     $expire = time() + $limit_second;
-     return $key.$expire;
-    }
-    /**
-     * 期限付きtokenの期限判定
-     * @param  string $token
-     * @param  int $key_length
-     * @return boolean
-     */
-    public function is_enable_token($token, $key_length=32){
-      $expire = substr($token, $key_length);
-      if(intval($expire)-time() > 0){
-        return true;
-      }
-      return false;
-    }
 
 }

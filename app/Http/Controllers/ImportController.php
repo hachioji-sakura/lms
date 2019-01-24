@@ -410,6 +410,7 @@ class ImportController extends UserController
       }
       UserTag::where('user_id',$user_id)->delete();
       //講師属性登録
+      $this->store_user_tag($user_id, 'teacher_no', $item['teacher_no'], false);
       if($item['lesson_id']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id']);
       if($item['lesson_id2']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id2']);
       return true;
@@ -421,6 +422,19 @@ class ImportController extends UserController
      */
     private function store_student($item){
       $item['email'] = $item['mail_address'];
+      if(is_numeric($item['jyukensei']) && $item['jyukensei']=='1'){
+        $item['jyukensei'] = 'jyuken';
+      }
+      else {
+        $item['jyukensei'] = '';
+      }
+      if(is_numeric($item['fee_free']) && $item['fee_free']=='1'){
+        $item['fee_free'] = 'fee_free';
+      }
+      else {
+        $item['fee_free'] = '';
+      }
+
       if(!is_numeric($item['gender'])){
         $item['image_id'] = 4;
         $item['gender'] = 3;
@@ -511,7 +525,7 @@ class ImportController extends UserController
        }
       }
 
-      $user = User::where('name', $item['student_no'])->first();
+      $user = User::tag('student_no', $item['student_no'])->first();
       $student = null;
       if(!isset($user)){
         //認証情報なし：新規登録
@@ -578,10 +592,11 @@ class ImportController extends UserController
       UserTag::where('user_id', $user->id)->delete();
       //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
       //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
+      $this->store_user_tag($user->id, 'student_no', $item['student_no'], false);
       $this->store_user_tag($user->id, 'grade', $item['grade']);
       $this->store_user_tag($user->id, 'grade_adj', $item['grade_adj']);
-      $this->store_user_tag($user->id, 'fee_free', $item['fee_free']);
-      $this->store_user_tag($user->id, 'jyukensei', $item['jyukensei']);
+      $this->store_user_tag($user->id, 'student_type', $item['fee_free']);
+      $this->store_user_tag($user->id, 'student_type', $item['jyukensei']);
       return true;
     }
     /**
@@ -593,14 +608,14 @@ class ImportController extends UserController
       if(empty($item['student_no']) || intval($item['student_no'])==0) return false;
       if(empty($item['teacher_no']) || intval($item['teacher_no'])==0) return false;
 
-      $student = User::where('name', $item['student_no'])->first();
+      $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
         $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
-      $teacher = User::where('name', $item['teacher_no'])->first();
+      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
         $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
@@ -636,14 +651,14 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_calendar($item){
-      $student = User::where('name', $item['student_no'])->first();
+      $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
         $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
-      $teacher = User::where('name', $item['teacher_no'])->first();
+      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
         $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
@@ -775,13 +790,14 @@ class ImportController extends UserController
      * @param array $item
      * @return boolean
      */
-    private function store_user_tag($user_id, $key, $val){
+    private function store_user_tag($user_id, $key, $val, $add_attribute=true){
       if(empty($user_id)) return false;
       if(empty($key)) return false;
       if(empty($val)) return false;
-      //汎用属性に登録
-      $this->store_general_attribute($key, $val, $val);
-
+      if($add_attribute===true){
+        //汎用属性に登録
+        $this->store_general_attribute($key, $val, $val);
+      }
       $items = UserTag::where('user_id', $user_id)
         ->where('tag_key', $key)
         ->where('tag_value', $val)->first();

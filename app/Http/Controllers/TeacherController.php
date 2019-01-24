@@ -55,7 +55,8 @@ class TeacherController extends StudentController
       'domain_name' => $this->domain_name,
       'user' => $user,
       'mode'=>$request->mode,
-      'search_word'=>$request->search_word
+      'search_word'=>$request->search_word,
+      'attributes' => $this->attributes(),
     ];
     //講師・事務以外はNG
     if($this->is_manager_or_teacher($user->role)!==true){

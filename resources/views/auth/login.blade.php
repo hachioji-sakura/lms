@@ -53,10 +53,10 @@
 <h6 class="my-2">
 	<a href="/forget" class="small">パスワード忘れた方</a>
 </h6>
-{{-- まだ対応しない
 <hr class="my-3">
 <p class="my-2">
-	<button type="button" class="btn btn-outline-success btn-block">新規登録する</button>
+  <a href="/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
+    <i class="fa fa-sign-in-alt mr-1"></i>入会・登録はこちら
+  </a>
 </p>
---}}
 @endsection

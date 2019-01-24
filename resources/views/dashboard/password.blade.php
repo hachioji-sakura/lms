@@ -16,7 +16,7 @@
             パスワード（確認）
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
-          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true" equal="password" equal‗error="パスワードが一致しません">
+          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true" equal="password" equal_error="パスワードが一致しません">
         </div>
       </div>
     </div>

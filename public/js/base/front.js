@@ -63,13 +63,16 @@
 		var val = $(selecter).val();
 		if(!util.isEmpty(multiple) && val.indexOf("|")>=0){
 			var rows = val.split("|");
-			var val = [];
+			val = [];
 			for(var i=0,n=rows.length;i<n;i++){
 				if(rows[i].indexOf(",")>=0) val.push(rows[i].split(","));
 			}
 		}
 		if(!util.isEmpty(type) && (type == "checkbox" || type == "radio")){
-			val = $("input[name="+field+"]:checked").val();
+			val = [];
+			$("input[name='"+field+"']:checked").each(function() {
+        val.push($(this).val());
+      });
 		}
 		if(!util.isEmpty(multiple) && val.indexOf(",")>=0) val = val.split(",");
 		return val;
@@ -101,6 +104,9 @@
 			var ret = validate(this, formId);
 			if(!ret) _isSuccess=false;
 		});
+		if(!_isSuccess){
+			$("html,body").animate({scrollTop:$('.error_message').parent().offset().top});
+		}
 		return _isSuccess;
 	}
 	/**
@@ -183,7 +189,6 @@
 		var required = $(selecter).attr("required");
 		var inputtype= $(selecter).attr("inputtype");
 		var accesskey= $(selecter).attr("accesskey");
-		var groupname= $(selecter).attr("groupname");
 		var equal= $(selecter).attr("equal");
 		var equal_error= $(selecter).attr("equal_error");
 		var less= $(selecter).attr("less");
@@ -212,21 +217,10 @@
 			}
 		}
 
-		if(type=="radio" && !util.isEmpty(required)){
-			if(!$.isNumeric($("input[name="+name+"]:checked").val())){
+		if((type=="radio" || type=="checkbox") && !util.isEmpty(required)){
+			if($("input[name='"+name+"']:checked").length==0){
 				_isSuccess = false;
 				messageCode = "REQ";
-			}
-		}
-
-		if(type=="checkbox"){
-			if (groupname) {
-				if(!$.isNumeric($("input[groupname="+groupname+"]:checked").val())){
-					if(!$('.form__required').length){
-						_isSuccess = false;
-						messageCode = "REQ";
-					}
-				}
 			}
 		}
 
@@ -378,26 +372,26 @@
  		}
  		if(messageCode!="") messageCode = ""+messageCode;
  		if(_isSuccess){
- 			if(!util.isEmpty(equal) && !util.isEmpty($("[name="+equal+"]", $("#"+formId)).val())
- 				 && val != $("[name="+equal+"]", $("#"+formId)).val()){
+ 			if(!util.isEmpty(equal) && !util.isEmpty($("[name='"+equal+"']", $("#"+formId)).val())
+ 				 && val != $("[name='"+equal+"']", $("#"+formId)).val()){
  				//値が一致するかチェック、対象値と一致しない場合エラーとする
  				_isSuccess = false;
  				messageCode = equal_error;
- 				messageParam=val+"|"+ $("[name="+equal+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+equal+"']", $("#"+formId)).val();
  			}
- 			if(!util.isEmpty(less) && !util.isEmpty($("[name="+less+"]", $("#"+formId)).val())
- 				 && util.diffVal(val, $("[name="+less+"]", $("#"+formId)).val())>0){
+ 			if(!util.isEmpty(less) && !util.isEmpty($("[name='"+less+"']", $("#"+formId)).val())
+ 				 && util.diffVal(val, $("[name='"+less+"']", $("#"+formId)).val())>0){
  				//値が小さいかチェック、対象値より大きい場合エラーとする
  				_isSuccess = false;
  				messageCode = less_error;
- 				messageParam=val+"|"+ $("[name="+less+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+less+"']", $("#"+formId)).val();
  			}
- 			if(!util.isEmpty(greater) && !util.isEmpty($("[name="+greater+"]", $("#"+formId)).val())
- 				 && util.diffVal(val, $("[name="+greater+"]", $("#"+formId)).val())<0){
+ 			if(!util.isEmpty(greater) && !util.isEmpty($("[name='"+greater+"']", $("#"+formId)).val())
+ 				 && util.diffVal(val, $("[name='"+greater+"']", $("#"+formId)).val())<0){
  				//値が大きいかチェック、対象値より小さい場合エラーとする
  				_isSuccess = false;
  				messageCode = greater_error;
- 				messageParam=val+"|"+ $("[name="+greater+"]", $("#"+formId)).val();
+ 				messageParam=val+"|"+ $("[name='"+greater+"']", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(query_check)){
 				var _isExists = false;
@@ -456,11 +450,18 @@
 	*/
 	function _showValidateError(selecter, error_message){
 		var field = $(selecter).attr("name");
+		field = field.replace_all('[]', '');
 		var tag = $(selecter).prop("tagName");
+		var type = $(selecter).attr("type");
 		var _errTemplate = '<div class="row m-2 error_message" id="error'+field+'"><p class="small text-danger">#message#</p></div>';
 		if($("#error"+field).length) return;
 		var message = _errTemplate.replace("#message#", error_message);
-		$(selecter).parent().parent().append(message);
+		if(type=="radio" || type=="checkbox"){
+			$(selecter).parent().parent().parent().append(message);
+		}
+		else {
+			$(selecter).parent().parent().append(message);
+		}
 	}
 	/**
 	* 対象フォームのエラーメッセージブロックをすべて除去する
