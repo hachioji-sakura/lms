@@ -70,7 +70,6 @@ class Student extends Model
     return $student;
   }
   public function profile_update($form){
-    /*
     $this->update([
       'name_last' => $form['name_last'],
       'name_first' => $form['name_first'],
@@ -78,7 +77,6 @@ class Student extends Model
       'kana_first' => $form['kana_first'],
       'birth_day' => $form['birth_day'],
     ]);
-    */
     $tag_names = ['school_name', 'grade'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){

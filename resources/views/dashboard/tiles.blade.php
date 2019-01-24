@@ -17,13 +17,22 @@
                 </a>
               </div>
             </div>
-            <div class="row mt-2">
+            <div class="row my-2">
               <div class="col-12 text-lg text-center">
                 <a href="./{{$domain}}/{{$item->id}}" role="button" class="btn btn-primary btn-block btn-lg float-left mr-1">
                     {{$item->name}}
                 </a>
               </div>
             </div>
+            {{--
+            <div class="mailbox-attachment-info">
+            	<span class="mailbox-attachment-size">
+                <a class="btn btn-default btn-sm float-right" href="javascript:void(0);" page_form="dialog" page_url="/students/{{$item->id}}/edit" page_title="生徒情報編集">
+                  <i class="fa fa-comment-dots"></i>プロフィール編集
+                </a>
+            	</span>
+            </div>
+            --}}
           </li>
           @endforeach
         </ul>

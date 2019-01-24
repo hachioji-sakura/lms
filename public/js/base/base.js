@@ -91,16 +91,17 @@
 		$("select.select2", $("#"+form_id)).each(function(e){
 			var _parent_id = $(this).attr("parent_id");
 			var _width = $(this).attr("width");
+			var _parent = $("body");
 			if(util.isEmpty(_parent_id)){
 				_parent_id = "body";
 			}
 			else {
-				_parent_id = "#"+_parent_id;
+				_parent = $(this).parent();
 			}
 			$(this).select2({
 				width: _width,
 				placeholder: '選択してください',
-				dropdownParent: $(_parent_id)
+				dropdownParent: _parent
 			});
 		});
 		//Flat red color scheme for iCheck
@@ -444,6 +445,7 @@
 	function showPage(type, form_id, page_title, page_url){
 		$("#"+form_id+" .page_title").html(page_title);
     $("#"+form_id+" .page_contents").load(page_url, function(){
+			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit
       $("#"+form_id+" .btn[type=submit][accesskey]").on("click", function(){

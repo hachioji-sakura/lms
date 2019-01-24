@@ -1,6 +1,6 @@
-@include($domain.'.create')
+@include($domain.'.create_form')
 <div id="students_register" class="direct-chat-msg">
-  <form method="POST"  action="/students/register">
+  <form method="POST"  action="/students/{{$item->id}}">
     @csrf
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">

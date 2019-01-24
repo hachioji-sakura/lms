@@ -269,6 +269,9 @@ EOT;
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
+   if(!isset($user)) {
+     abort(403, 'sessionTimeout');
+   }
 
    //コメントデータ取得
    $comments = $model->target_comments;
@@ -382,7 +385,7 @@ EOT;
      DB::beginTransaction();
      $user = $this->login_details();
      $form = $request->all();
-     $item = Student::find($id)->update($form);
+     $item = Student::find($id)->profile_update($form);
      DB::commit();
      return $this->api_response(200, '', '', $item);
    }

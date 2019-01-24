@@ -44,11 +44,14 @@ class GeneralAttributeController extends UserController
     }
     private function get_param(Request $request, $attribute_key='keys'){
       $user = $this->login_details();
-      if(!empty($request->get('key'))){
-        $attribute_key = $request->get('key');
+      if(!isset($user)) {
+        abort(403);
       }
       if($this->is_manager_or_teacher($user->role)!==true){
         abort(403);
+      }
+      if(!empty($request->get('key'))){
+        $attribute_key = $request->get('key');
       }
       $select_key = GeneralAttribute::findKey('keys')->findVal($attribute_key)->first();
       if(!isset($select_key)){

@@ -91,6 +91,9 @@ class MilestoneController extends UserController
      */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details();
+      if(!isset($user)) {
+        abort(403);
+      }
       $ret = [
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,

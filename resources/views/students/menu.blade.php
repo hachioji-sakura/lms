@@ -37,11 +37,6 @@
             <i class="fa fa-flag nav-icon"></i>目標登録
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit?_page_origin={{$domain}}_{{$item->id}}&student_id={{$item->id}}" page_title="目標登録">
-            <i class="fa fa-user-edit nav-icon"></i>プロフィール編集
-          </a>
-        </li>
       </ul>
     </li>
 </ul>
