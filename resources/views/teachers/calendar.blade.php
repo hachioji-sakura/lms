@@ -6,6 +6,7 @@
 
 
 @section('contents')
+{{--
 <section id="member" class="content-header">
 	<div class="container-fluid">
 		<div class="row">
@@ -30,52 +31,67 @@
 			</div>
 		</div>
 	</div>
-
+</section>
+--}}
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @component('components.calendar', ['user_id' => $item->user_id,'domain' => $domain])
-          @slot('set_calendar')
-          service.getAjax(false, '/api_calendars/{{$item->user_id}}/'+start_time+'/'+end_time, null,
-            function(result, st, xhr) {
-              if(result['status']===200){
-                var events = [];
-                $.each(result['data'], function(index, value) {
-                  var _type = 'study';
-                  if(value['status']==='cancel' || value['status']==='rest'){
-                    _type = 'cancel';
-                  }
-                  else if(value['exchanged_calendar_id']>0){
-                    _type = "exchange";
-                  }
-                  var title = value['student_name']+'('+value['subject']+')<br>'+value['start']+'-'+value['end'];
-                  events.push({
-                    // イベント情報をセット
-                    id: value['id'],
-                    title: title,
-                    description: value['teacher_name'],
-                    start: value['start_time'],
-                    end: value['end_time'],
-                    type : _type
-                  });
-                });
-                callback(events);
-              }
-            },
-            function(xhr, st, err) {
-                messageCode = "error";
-                messageParam= "\n"+err.message+"\n"+xhr.responseText;
-                alert("カレンダー取得エラー"+messageParam);
-            }
-          );
+        @component('components.calendar', ['user_id' => $item->user_id, 'teacher_id' => $item->id, 'domain' => $domain])
+          @slot('event_select')
+          // 選択可
+          selectable: true,
+          select: function(start, end, jsEvent, view , resource){
+            var _lesson_time = end.diff(start, 'minutes');
+            $calendar.fullCalendar('unselect');
+            $calendar.fullCalendar('addEventSource', [{
+              id:-1,
+              title: "授業追加",
+              start: start,
+              end : end,
+              status : "new",
+            }]);
+            var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
+            var param ="?_page_origin={{$domain}}_{{$item->id}}";
+            param += "&teacher_id={{$item->id}}";
+            param += "&start_date="+start_date;
+            param += "&start_hours="+start.hour();
+            param += "&start_minutes="+start.minute();
+            param += "&lesson_time="+_lesson_time;
+            base.showPage('dialog', "subDialog", "授業追加", "/calendars/create"+param, function(){
+              $calendar.fullCalendar("removeEvents", -1);
+            });
+          },
           @endslot
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            if(event.type==="study"){
-              base.showPage('dialog', "subDialog", "詳細", "/calendars/"+event.id);
+            switch(event.status){
+              case "new":
+                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/confirm");
+                break;
+              case "fix":
+                base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/presence");
+                break;
+              case "confirm":
+              case "rest":
+              case "cancel":
+              case "absence":
+              case "presence":
+              case "exchange":
+              default:
+                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+                break;
             }
+          },
+          @endslot
+          @slot('event_render')
+          eventRender: function(event, element) {
+            var title = '授業追加';
+            if(event['student_name']){
+              title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+            }
+            event_render(event, element, title);
           },
           @endslot
         @endcomponent
@@ -83,4 +99,5 @@
 		</div>
 	</div>
 </section>
+
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Teacher;
 use App\Models\ChargeStudent;
+use App\Models\UserCalendar;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -58,6 +59,10 @@ class TeacherController extends StudentController
       'search_word'=>$request->search_word,
       'attributes' => $this->attributes(),
     ];
+    if(empty($user)){
+      //ログインしていない
+      abort(419);
+    }
     //講師・事務以外はNG
     if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
@@ -237,7 +242,7 @@ EOT;
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    $model = $this->model()->find($id)->user;
+    $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
     $item['tags'] = $model->tags();
 
@@ -277,34 +282,52 @@ EOT;
   public function calendar(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    $model = $this->model()->find($id)->user;
+    $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
     $item['tags'] = $model->tags();
 
     $user = $param['user'];
     //コメントデータ取得
 
+    $use_icons = DB::table('images')
+      ->where('create_user_id','=',$user->user_id)
+      ->orWhere('publiced_at','<=', date('Y-m-d'))
+      ->get(['id', 'alias', 's3_url']);
+
+    $view = "calendar";
+    return view($this->domain.'.'.$view, [
+      'item' => $item,
+      'use_icons'=>$use_icons,
+    ])->with($param);
+  }
+  public function schedule(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $model = $this->model()->where('id',$id)->first()->user;
+    $item = $model->details();
+    $item['tags'] = $model->tags();
+
+    $user = $param['user'];
+    //コメントデータ取得
 
     $use_icons = DB::table('images')
       ->where('create_user_id','=',$user->user_id)
       ->orWhere('publiced_at','<=', date('Y-m-d'))
       ->get(['id', 'alias', 's3_url']);
 
-      $view = "calendar";
-      if($param["mode"]==="list"){
-        $view = "schedule";
-        $request->merge([
-          '_sort' => 'start_time',
-        ]);
-        $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
-        if($this->is_success_response($res)){
-          $param["calendars"] = $res["data"];
-        }
-      }
-
-      return view($this->domain.'.'.$view, [
+    $view = "schedule";
+    $request->merge([
+      '_sort' => 'start_time',
+    ]);
+    $calendars = UserCalendar::findUser($item->user_id)->rangeDate(date('Y-m-d'))->get();
+    foreach($calendars as $calendar){
+      $calendar = $calendar->details();
+    }
+    $param["calendars"] = $calendars;
+    return view($this->domain.'.'.$view, [
       'item' => $item,
       'use_icons'=>$use_icons,
     ])->with($param);
   }
+
 }

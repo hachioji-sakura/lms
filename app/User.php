@@ -40,9 +40,8 @@ class User extends Authenticatable
       /*
       ->where('tag_key', '!=', 'student_no')
       ->where('tag_key', '!=', 'teacher_no')
+      return $this->hasMany('App\Models\UserTag');
       */
-
-      //return $this->hasMany('App\Models\UserTag');
     }
     public function student(){
       return $this->hasOne('App\Models\Student');

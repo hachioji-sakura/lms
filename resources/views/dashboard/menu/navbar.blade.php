@@ -19,11 +19,23 @@
       <span class="d-none d-sm-inline-block">カレンダー</span>
     </a>
   </li>
+  <li class="nav-item">
+    <a href="/students/{{$user->id}}/schedule" class="nav-link">
+      <i class="fa fa-clock"></i>
+      <span class="d-none d-sm-inline-block">授業予定</span>
+    </a>
+  </li>
   @elseif($user->role==="teacher")
     <li class="nav-item">
       <a href="/teachers/{{$user->id}}/calendar" class="nav-link">
         <i class="fa fa-calendar-alt"></i>
         <span class="d-none d-sm-inline-block">カレンダー</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/teachers/{{$user->id}}/schedule" class="nav-link">
+        <i class="fa fa-clock"></i>
+        <span class="d-none d-sm-inline-block">授業予定</span>
       </a>
     </li>
   @elseif($user->role==="manager")
@@ -69,11 +81,47 @@
     </div>
   </li>
   --}}
+
   <li class="nav-item dropdown">
     <a class="nav-link" data-toggle="dropdown" href="#">
+      {{--
       <i class="fa fa-user-alt"></i>
+      --}}
+      <img src="{{$user->icon}}" class="img-size-32 mr-1 img-circle">
+              {{$user->name}}
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+      {{--
+      <a href="#" class="dropdown-item">
+        <div class="media">
+          <img src="{{$user->icon}}" class="img-size-50 mr-3 img-circle">
+          <div class="media-body">
+            <h3 class="dropdown-item-title">
+              {{$user->name}}
+            </h3>
+            <p class="text-sm">
+              @if($user->role==="manager")
+              <small class="badge badge-danger mt-1 mr-1">
+              事務
+              </small>
+              @elseif($user->role==="teacher")
+              <small class="badge badge-info mt-1 mr-1">
+              講師
+              </small>
+              @elseif($user->role==="parent")
+              <small class="badge badge-info mt-1 mr-1">
+              保護者
+              </small>
+              @elseif($user->role==="student")
+              <small class="badge badge-info mt-1 mr-1">
+              生徒
+              </small>
+              @endif
+            </p>
+          </div>
+        </div>
+      </a>
+      --}}
       <a href="javascript:void(0);" class="dropdown-item"  page_title="パスワード設定" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>

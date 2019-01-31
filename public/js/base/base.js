@@ -101,7 +101,7 @@
 			$(this).select2({
 				width: _width,
 				placeholder: '選択してください',
-				dropdownParent: _parent
+				//dropdownParent: _parent
 			});
 		});
 		//Flat red color scheme for iCheck
@@ -444,7 +444,7 @@
 		});
 	}
 	//ダイアログ表示
-	function showPage(type, form_id, page_title, page_url){
+	function showPage(type, form_id, page_title, page_url, callback){
 		$("#"+form_id+" .page_title").html(page_title);
     $("#"+form_id+" .page_contents").load(page_url, function(){
 			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
@@ -453,6 +453,7 @@
       $("#"+form_id+" .btn[type=submit][accesskey]").on("click", function(){
         var form = form_id+" .page_contents form";
         if(!front.validateFormValue(form)) return false;
+				util.clearLocalData();
         $("#"+form).submit();
       });
       //サブページ内のreset
@@ -463,6 +464,7 @@
 				else {
 					$("#"+form_id).collapse('hide');
 				}
+				if(util.isFunction(callback)) callback();
       });
 			if(type==="dialog"){
       	$("#"+form_id).modal('show');

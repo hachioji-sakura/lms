@@ -7,8 +7,83 @@
 
 <script>
   $(function () {
+    function event_render(events, element, title){
+      var bgcolor = "#666";
+      var textColor = "#fff";
+      var icon = '';
+      switch(events.status){
+        case "new":
+          icon = '<i class="fa fa-question-circle mr-1"></i>';
+          break;
+        case "confirm":
+          bgcolor = "#D66";
+          icon = '<i class="fa fa-question-circle mr-1"></i>';
+          break;
+        case "fix":
+          bgcolor = "#66D";
+          icon = '<i class="fa fa-chalkboard-teacher mr-1"></i>';
+          break;
+        case "rest":
+        case "cancel":
+          icon = '<i class="fa fa-calendar-times mr-1"></i>';
+          break;
+        case "absence":
+          bgcolor = "#CCC";
+          textColor = "#666";
+          icon = '<i class="fa fa-user-times mr-1"></i>';
+          break;
+        case "presence":
+          bgcolor = "#6D6";
+          icon = '<i class="fa fa-check-circle mr-1"></i>';
+          break;
+        case "exchange":
+          bgcolor = "#6D6";
+          icon = '<i class="fa fa-exchange-alt mr-1"></i>';
+          break;
+        default:
+          break;
+      }
+      //一文字分表示する
+      /*
+      var t1 = title.substring(0,20);
+      var t2 = title.substring(20,title.length);
+      */
+      var t1=title;
+      var t2="";
+      $(element[0])
+        .css('color', textColor)
+        .css('border-color', bgcolor)
+        .css('background-color', bgcolor)
+        .css('cursor', 'pointer')
+        .html('<div class="p-1 text-center">'+icon+t1+'<span class="d-none d-sm-inline-block">'+t2+'</span></div>');
+      /*
+      if(events.img){
+        $(element[0])
+          .css("border-color", "transparent")
+          .css("background-color", "transparent")
+          .html('<img class="photo"  src="'+events.img+'" width=32 height=32/>');
+      }
+      */
+    }
     function set_calendar(start_time, end_time, callback) {
-      {{$set_calendar}}
+      service.getAjax(false, '/api_calendars/{{$user_id}}/'+start_time+'/'+end_time, null,
+        function(result, st, xhr) {
+          if(result['status']===200){
+            var events = [];
+            $.each(result['data'], function(index, value) {
+              value["start"] = value['start_time'];
+              value["end"] = value['end_time'];
+              events.push(value);
+            });
+            callback(events);
+          }
+        },
+        function(xhr, st, err) {
+            messageCode = "error";
+            messageParam= "\n"+err.message+"\n"+xhr.responseText;
+            alert("カレンダー取得エラー"+messageParam);
+        }
+      ,true);
       return;
     }
 
@@ -30,8 +105,8 @@
       },
       columnFormat: {
         month: 'ddd', // 月
-        week: 'D[(]ddd[)]', // 7(月)
-        day: 'D[(]ddd[)]' // 7(月)
+        week: 'D[\n(]ddd[)]', // 7(月)
+        day: 'D[\n(]ddd[)]' // 7(月)
       },
       // タイトルの書式
       titleFormat: {
@@ -54,29 +129,18 @@
       nowIndicator : true,
       editable  : false,
       droppable : false, // this allows things to be dropped onto the calendar !!!
-      // 選択可
-      selectable: true,
       dayClick: function(date, allDay, jsEvent, view) {
         console.log('dayClick'+date);
         $calendar.fullCalendar('gotoDate', date);
         //$calendar.fullCalendar('select',date,date);
       },
-      select: function(start, end, jsEvent, view , resource){
-        var _lesson_time = end.diff(start, 'minutes');
-        $calendar.fullCalendar('unselect');
-        var param ="?_page_origin={{$domain}}_{{$user_id}}";
-        param += "&start_date="+start.year()+'-'+(start.month()+1)+'-'+start.day();
-        param += "&start_hours="+start.hours();
-        param += "&start_minutes="+start.minutes();
-        param += "&lesson_time="+_lesson_time;
-
-        base.showPage('dialog', "subDialog", "授業追加", "/calendars/create"+param);
-      },
+      {{$event_select}}
       eventDrop: function(event, delta, revertFunc) {
         console.log(event.title + " was dropped on " + event.start.format());s
       },
       {{$event_click}}
-      allDayText:'終日',
+      allDaySlot: false,
+      //allDayText:'終日',
       axisFormat: 'H(:mm)',
       defaultView: 'agendaWeek',
       scrollTime: first_scroll_time,
@@ -98,72 +162,10 @@
       unselectAuto: true,
       // 自動選択解除対象外の要素
       unselectCancel: '',
-      eventRender: function(events, element) {
-        console.log(events.type);
-        var bgcolor = "#66D";
-        var textColor = "#fff";
-        var icon = '';
-        var title = '予定追加';
-        if(!util.isEmpty(events.title)) title = events.title;
-        switch(events.type){
-          case "cancel":
-            bgcolor = "#666";
-            icon = '<i class="fa fa-times mr-1"></i>';
-            break;
-          case "exchange":
-            bgcolor = "#6D6";
-            icon = '<i class="fa fa-exchange-alt mr-1"></i>';
-            break;
-          case "study":
-          default:
-            bgcolor = "#66D";
-            icon = '<i class="fa fa-chalkboard-teacher mr-1"></i>';
-            break;
-        }
-        $(element[0])
-          .css('color', textColor)
-          .css('border-color', bgcolor)
-          .css('background-color', bgcolor)
-          .css('cursor', 'pointer')
-          .html('<div class="p-1 text-center">'+icon+'<span class="d-none d-sm-inline-block">'+title+'</span></div>');
-
-        /*
-      	if(events.img){
-    	    $(element[0])
-      	    .css("border-color", "transparent")
-      	    .css("background-color", "transparent")
-      	    .html('<img class="photo"  src="'+events.img+'" width=32 height=32/>');
-      	}
-        */
-      },
+      {{$event_render}}
       events: function(start, end, timezone, callback) {
         set_calendar(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), callback);
       },
-      drop      : function (date, allDay) {
-        console.log('drop');
-        // retrieve the dropped element's stored Event Object
-        var originalEventObject = $(this).data('eventObject')
-
-        // we need to copy it, so that multiple events don't have a reference to the same object
-        var copiedEventObject = $.extend({}, originalEventObject)
-
-        // assign it the date that was reported
-        copiedEventObject.start           = date
-        copiedEventObject.allDay          = allDay
-        copiedEventObject.backgroundColor = $(this).css('background-color')
-        copiedEventObject.borderColor     = $(this).css('border-color')
-
-        // render the event on the calendar
-        // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-        $('#calendar').fullCalendar('renderEvent', copiedEventObject, true)
-
-        // is the "remove after drop" checkbox checked?
-        if ($('#drop-remove').is(':checked')) {
-          // if so, remove the element from the "Draggable Events" list
-          $(this).remove()
-        }
-
-      }
     })
     // 動的にオプションを変更する
     $('#calendar').fullCalendar('option', 'height', 'auto');

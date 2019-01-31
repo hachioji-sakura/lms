@@ -486,8 +486,6 @@
 			var accesskey = $(this).attr("accesskey");
 			var isInputAdjust = true;
 			if(util.isEmpty(inputtype)) isInputAdjust = false;
-			if(!util.isEmpty(accesskey) && accesskey=="scan") isInputAdjust = false;
-			//scanでの利用の場合は、inputAdjustを実行しない
 			if(isInputAdjust){
 				$(this).unbind("blur");
 				$(this).on("blur", function(e){
@@ -555,56 +553,6 @@
 				break;
 			case "json" :
 				if(!util.isJson(val) && util.isJson("{"+val+"}")) val = "{"+val+"}";
-				break;
-			case "sql" :
-				val = val.replace_all("\n", " ");
-				val = val.replace_all("  ", " ");
-				val = val.replace_all(" limit ", " LIMIT ");
-				val = val.replace_all(" offset ", " OFFSET ");
-				val = val.replace_all(" where ", " WHERE ");
-				val = val.replace_all(" and ", " AND ");
-				val = val.replace_all(" or ", " OR ");
-				val = val.replace_all(" outer", " OUTER");
-				val = val.replace_all(" inner", " INNER");
-				val = val.replace_all(" on ", " ON ");
-				val = val.replace_all(" in ", " IN ");
-				val = val.replace_all(" is ", " IS ");
-				val = val.replace_all(" order ", " ORDER ");
-				val = val.replace_all(" by", " BY");
-				val = val.replace_all(" from", " FROM");
-				val = val.replace_all(" like", " LIKE");
-				val = val.replace_all(" set ", " SET ");
-				val = val.replace_all("values(", "VALUES(");
-				val = val.replace_all("select ", "SELECT ");
-				val = val.replace_all("update ", "UPDATE ");
-				val = val.replace_all("delete ", "DELETE ");
-				val = val.replace_all("case ", "CASE ");
-				val = val.replace_all("when ", "WHEN ");
-				val = val.replace_all(" then", " THEN");
-				val = val.replace_all(" join", " JOIN");
-				val = val.replace_all(" end", " END");
-				val = val.replace_all(" as", " AS");
-				val = val.replace_all(" else ", " ELSE ");
-				val = val.replace_all('/*if', "\n"+'/*if');
-				val = val.replace_all('*/', '*/'+"\n");
-				val = val.replace_all('/*end if*/', "\n"+'/*end if*/'+"\n");
-				val = val.replace_all("SELECT", "SELECT\n");
-				val = val.replace_all(" INNER", "\nINNER");
-				val = val.replace_all(" ELSE ", "\nELSE ");
-				val = val.replace_all(" OUTER", "\nOUTER");
-				val = val.replace_all(" WHEN", "\nWHEN");
-				val = val.replace_all("CASE\nWHEN", "CASE WHEN");
-				val = val.replace_all(" VALUES(", "\nVALUES(");
-				val = val.replace_all(" SET ", " SET\n");
-				val = val.replace_all("FROM ", "\nFROM ");
-				val = val.replace_all("ORDER ", "\nORDER ");
-				val = val.replace_all("WHERE ", "\nWHERE ");
-				val = val.replace_all("AND ", "\nAND ");
-				val = val.replace_all("OR ", "\nOR ");
-				val = val.replace_all(', ', ','+"\n");
-
-				val = val.replace_all("\n \n", "\n");
-				val = val.replace_all("\n\n", "\n");
 				break;
 		}
 		if(inputtype=="integer"){

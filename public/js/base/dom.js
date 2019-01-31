@@ -335,7 +335,7 @@
 			var inputtype = $(this).attr("inputtype");
 			var defaultDate = $(this).attr("defaultDate");
 			var option = {
-				format: "yyyy年mm月dd日",
+				format: "yyyy/mm/dd",
 				language: 'ja',
 				autoclose: true
 			};

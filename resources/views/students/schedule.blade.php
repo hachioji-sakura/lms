@@ -63,7 +63,7 @@
                 <div class="col-5 col-lg-4 col-md-4">
                   <i class="fa fa-calendar mr-1"></i>{{$calendar["date"]}}
                   <br>
-                  <i class="fa fa-clock mr-1"></i>{{$calendar["start"]}}～{{$calendar["end"]}}
+                  <i class="fa fa-clock mr-1"></i>{{$calendar["timezone"]}}
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   <i class="fa fa-user-tie mr-2"></i>
@@ -78,7 +78,7 @@
                     <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                   </a>
                   <br>
-                  @if($user->role!=="manager" && $calendar["status"]==="fix")
+                  @if($user->role!=="manager" && $user->role!=="teacher" && $calendar["status"]==="fix")
                   <a href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
                     <i class="fa fa-minus-circle mr-1"></i>休み連絡する
                   </a>

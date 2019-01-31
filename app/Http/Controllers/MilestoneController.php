@@ -40,13 +40,13 @@ class MilestoneController extends UserController
       }
       else {
         if($request->has('student_id')){
-          $u = Student::find($request->get('student_id'));
+          $u = Student::where('id',$request->get('student_id'));
         }
         else if($request->has('teacher_id')){
-          $u = Teacher::find($request->get('teacher_id'));
+          $u = Teacher::where('id',$request->get('teacher_id'));
         }
         else if($request->has('manager_id')){
-          $u = Manager::find($request->get('manager_id'));
+          $u = Manager::where('id',$request->get('manager_id'));
         }
         $form['target_user_id'] = $u->user_id;
       }
@@ -360,7 +360,7 @@ class MilestoneController extends UserController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        $item = $this->model()->find($id)->update($this->update_form($request));
+        $item = $this->model()->where('id',$id)->update($this->update_form($request));
         DB::commit();
         return $this->api_response(200, '', '', $item);
       }
@@ -395,7 +395,7 @@ class MilestoneController extends UserController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        $items = $this->model()->find($id)->delete();
+        $items = $this->model()->where('id',$id)->delete();
         DB::commit();
         return $this->api_response(200, '', '', $items);
       }
