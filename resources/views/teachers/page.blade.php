@@ -32,7 +32,6 @@
         @endcomponent
 			</div>
 			<div class="col-md-8">
-				@yield('comments')
 			</div>
 		</div>
 	</div>
@@ -59,56 +58,44 @@
             <li class="col-lg-3 col-md-4 col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
-                  <a href="/students/{{$charge_student->id}}">
-                    <img src="{{$charge_student->icon}}" class="img-circle mw-64px w-50">
+                  <a href="/students/{{$charge_student->student->id}}">
+                    <img src="{{$charge_student->student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">
-                      <rb>{{$charge_student->name}}</rb>
-                      <rt>{{$charge_student->kana}}</rt>
+                      <rb>{{$charge_student->student->name()}}</rb>
+                      <rt>{{$charge_student->student->kana()}}</rt>
                     </ruby>
                   </a>
                 </div>
                 <div class="col-6 text-sm">
-                  @if(!empty($charge_student->current_schedule))
-                      <i class="fa fa-calendar mr-1"></i>{{$charge_student->current_schedule}}
+                  @if(!empty($charge_student->current_calendar()))
+                      <i class="fa fa-calendar mr-1"></i>{{$charge_student->current_calendar()->details()->date}}
                       <br>
-                      <i class="fa fa-clock mr-1"></i>{{$charge_student->current_schedule_from}}～{{$charge_student->current_schedule_to}}
+                      <i class="fa fa-clock mr-1"></i>{{$charge_student->current_calendar()->details()->timezone}}
                       <br>
                       <small class="badge badge-info mt-1 mr-1">
-                        {{$charge_student->subject}}
+                        {{$charge_student->current_calendar()->details()->subject}}
                       </small>
                   @else
                   -
                   @endif
                 </div>
                 <div class="col-12 text-sm">
-                  @if(!empty($charge_student->current_schedule))
-                    @if($charge_student->status==="fix" && date('Ymd', strtotime($charge_student->start_time)) === date('Ymd'))
-                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                  @if(!empty($charge_student->current_calendar()))
+                    @if($charge_student->current_calendar()->details()->status==="fix" && date('Ymd', strtotime($charge_student->current_calendar()->details()->start_time)) === date('Ymd'))
+                      <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
-                        出欠確認
+                        {{$charge_student->current_calendar()->details()->status_name}}
                       </a>
-                    @elseif($charge_student->status==="presence")
+                    @elseif($charge_student->current_calendar()->details()->status==="presence")
                       {{-- 出席済み --}}
                       <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
                         <i class="fa fa-check-circle mr-1"></i>
-                        出席済み
+                        {{$charge_student->current_calendar()->details()->status_name}}
                       </a>
                     @else
-                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
-                        @if($charge_student->status==="absence")
-                          <i class="fa fa-times-circle mr-1"></i>
-                          欠席
-                        @elseif($charge_student->status==="rest")
-                          <i class="fa fa-ban mr-1"></i>
-                          休み
-                        @elseif($charge_student->status==="cancel")
-                          <i class="fa fa-ban mr-1"></i>
-                          キャンセル
-                        @else
-                          <i class="fa fa-clock mr-1"></i>
-                          予定詳細
-                        @endif
+                      <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        {{$charge_student->current_calendar()->details()->status_name}}
                       </a>
                     @endif
                   @endif

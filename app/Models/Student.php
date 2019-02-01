@@ -103,6 +103,6 @@ class Student extends Model
     return $parents;
   }
   public function relations(){
-    return $this->hasMany('App\Models\StudentRelations');
+    return $this->hasMany('App\Models\StudentRelation');
   }
 }

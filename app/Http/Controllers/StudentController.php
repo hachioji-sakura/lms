@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\UserCalendar;
 use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 
@@ -293,14 +294,11 @@ EOT;
      ->get(['id', 'alias', 's3_url']);
 
    $view = "schedule";
-   $request->merge([
-     '_sort' => 'start_time',
-   ]);
-   $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
-   if($this->is_success_response($res)){
-     $param["calendars"] = $res["data"];
+   $calendars = UserCalendar::findUser($item->user_id)->rangeDate(date('Y-m-d'))->get();
+   foreach($calendars as $calendar){
+     $calendar = $calendar->details();
    }
-
+   $param["calendars"] = $calendars;
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones,

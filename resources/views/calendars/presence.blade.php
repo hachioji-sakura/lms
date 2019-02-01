@@ -1,4 +1,4 @@
-@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
   @slot('page_message')
     @if(strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
       以下の授業予定の出欠をつけてください

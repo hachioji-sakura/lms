@@ -10,6 +10,7 @@ use App\Models\Lecture;
 
 class UserCalendar extends Model
 {
+  protected $pagenation_line = 20;
   protected $table = 'user_calendars';
   protected $guarded = array('id');
   public static $rules = array(
@@ -17,6 +18,23 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public function scopeSortStarttime($query, $sort){
+    if(empty($sort)) $sort = 'asc';
+    return $query->orderBy('start_time', $sort);
+  }
+  public function scopePagenation($query, $page, $line){
+    $_line = $this->pagenation_line;
+    if(is_numeric($line)){
+      $_line = $line;
+    }
+    $_page = 0;
+    if(is_numeric($page)){
+      $_page = $page;
+    }
+    $_offset = $_page*$_line;
+    if($_offset < 0) $_offset = 0;
+    return $query->offset($_offset)->limit($_line);
+  }
   public function scopeRangeDate($query, $from_date, $to_date=null)
   {
     //日付検索
@@ -86,6 +104,21 @@ EOT;
     if(isset($item)) return $item->attribute_name;
     return "";
   }
+  public function status_style(){
+    $status_name = "";
+    switch($this->status){
+      case "confirm":
+        return "warning";
+      case "fix":
+        return "primary";
+      case "rest":
+      case "absence":
+        return "danger";
+      case "presence":
+        return "success";
+    }
+    return "secondary";
+  }
   public function status_name(){
     $status_name = "";
     switch($this->status){
@@ -106,6 +139,24 @@ EOT;
     }
     return "";
   }
+  public function subject(){
+    $lecture = $this->lecture->details();
+    return $lecture['subject']->attribute_name;
+  }
+  public function lesson(){
+    $lecture = $this->lecture->details();
+    return $lecture['lesson']->attribute_name;
+  }
+  public function course(){
+    $lecture = $this->lecture->details();
+    return $lecture['course']->attribute_name;
+  }
+  public function timezone(){
+    $start_hour_minute = date('H:i',  strtotime($this->start_time));
+    $end_hour_minute = date('H:i',  strtotime($this->end_time));
+    return $start_hour_minute.'～'.$end_hour_minute;
+  }
+
   public function details(){
     $item = $this;
     $item['status_name'] = $this->status_name();
@@ -113,12 +164,11 @@ EOT;
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
-    $item['timezone'] = $item['start_hour_minute'].'～'.$item['end_hour_minute'];
+    $item['timezone'] = $this->timezone();
     $lecture = $this->lecture->details();
-    $item['subject'] = $lecture['subject']->attribute_name;
-    $item['lesson'] = $lecture['lesson']->attribute_name;
-    $item['course'] = $lecture['course']->attribute_name;
-
+    $item['lesson'] = $this->lesson();
+    $item['course'] = $this->course();
+    $item['subject'] = $this->subject();
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
@@ -139,6 +189,11 @@ EOT;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['other_name'] = trim($other_name,',');
+
+    $item['is_exchange'] = false;
+    if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
+      $item['is_exchange'] = true;
+    }
     return $item;
   }
   static protected function add($form){

@@ -12,6 +12,20 @@
   <div class="row">
     <div class="col-12">
       <div class="form-group">
+        <label for="title" class="w-100">
+          生徒
+          <span class="right badge badge-danger ml-1">必須</span>
+        </label>
+        <select name="student_user_id" class="form-control select2" width=100% placeholder="担当生徒" required="true">
+          <option value="">(選択)</option>
+          @foreach($students as $student)
+             <option value="{{ $student['user_id'] }}" @if(isset($_edit) && $item['student_user_id'] == $student['user_id']) selected @endif>{{$student['name']}}</option>
+          @endforeach
+        </select>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group">
         <label for="start_date" class="w-100">
           日付
           <span class="right badge badge-danger ml-1">必須</span>
@@ -61,20 +75,6 @@
         </select>
       </div>
     </div>
-    <div class="col-12">
-      <div class="form-group">
-        <label for="title" class="w-100">
-          生徒
-          <span class="right badge badge-danger ml-1">必須</span>
-        </label>
-        <select name="student_user_id" class="form-control select2" width=100% placeholder="担当生徒" required="true">
-          <option value="">(選択)</option>
-          @foreach($students as $student)
-             <option value="{{ $student['user_id'] }}" @if(isset($_edit) && $item['student_user_id'] == $student['user_id']) selected @endif>{{$student['name']}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
   @if(count($teachers) > 0)
   <div class="col-12">
     <div class="form-group">
@@ -109,6 +109,7 @@
       </select>
     </div>
   </div>
+
 </div>
 
 <div class="row">

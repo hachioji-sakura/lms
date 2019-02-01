@@ -71,6 +71,12 @@ class UserController extends Controller
 
     return $items;
   }
+  protected function get_image()
+  {
+    $user = $this->login_details();
+    return Image::findCreateUser($user->user_id)->publiced()->get();
+  }
+
   protected function _search_sort(Request $request, $items)
   {
     if(isset($request->_sort)){

@@ -4,28 +4,43 @@
   @elseif($_del)
   <h6>以下の項目を削除してもよろしいですか？</h6>
   @endif
-  @foreach($fields as $key=>$field)
-    <div class="row">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="{{$key}}" class="w-100">
-            {{$field['label']}}
-          </label>
-          {{$item[$key]}}
+  <div class="row">
+  @if(isset($field_logic))
+    {{$field_logic}}
+  @else
+    @foreach($fields as $key=>$field)
+        @if(isset($field['size']))
+        <div class="col-{{$field['size']}}">
+        @else
+        <div class="col-12">
+        @endif
+          <div class="form-group">
+            @isset($field['format'])
+            <label for="{{$key}}" class="w-100">
+              {{$field['label']}}
+            </label>
+            {!! sprintf($field['format'], $item[$key]) !!}
+            @else
+              <label for="{{$key}}" class="w-100">
+                {{$field['label']}}
+              </label>
+              {{$item[$key]}}
+            @endisset
+          </div>
         </div>
-      </div>
-    </div>
-  @endforeach
-  @if(isset($forms))
+    @endforeach
+  @endif
+  </div>
+  @if(!empty(trim($forms)))
     {{$forms}}
   @else
   <form method="POST" action="/{{$domain}}/{{$item['id']}}">
     @csrf
-  @if(isset($_page_origin))
-    <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
-  @endif
+    @if(isset($_page_origin))
+      <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
+    @endif
   <div class="row">
-    @if($_del)
+    @if(isset($_del) && $_del==true)
       @method('DELETE')
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_delete">

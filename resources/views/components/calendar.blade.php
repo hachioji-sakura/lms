@@ -8,11 +8,12 @@
 <script>
   $(function () {
     function event_render(events, element, title){
-      var bgcolor = "#666";
+      var bgcolor = "#AAA";
       var textColor = "#fff";
       var icon = '';
       switch(events.status){
         case "new":
+          var bgcolor = "#666";
           icon = '<i class="fa fa-question-circle mr-1"></i>';
           break;
         case "confirm":
@@ -25,6 +26,7 @@
           break;
         case "rest":
         case "cancel":
+          var bgcolor = "#666";
           icon = '<i class="fa fa-calendar-times mr-1"></i>';
           break;
         case "absence":

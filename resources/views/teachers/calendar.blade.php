@@ -43,6 +43,7 @@
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
             var _lesson_time = end.diff(start, 'minutes');
+            $calendar.fullCalendar("removeEvents", -1);
             $calendar.fullCalendar('unselect');
             $calendar.fullCalendar('addEventSource', [{
               id:-1,

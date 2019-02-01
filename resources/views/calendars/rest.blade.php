@@ -1,4 +1,4 @@
-@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
   @slot('page_message')
     @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"]).' 09:00:00')
       {{-- 授業当日9時を過ぎたら休み連絡はできない --}}

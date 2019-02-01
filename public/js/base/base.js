@@ -451,7 +451,8 @@
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit
       $("#"+form_id+" .btn[type=submit][accesskey]").on("click", function(){
-        var form = form_id+" .page_contents form";
+				var accesskey = $(this).attr("accesskey");
+        var form = form_id+" .page_contents #"+accesskey+" form";
         if(!front.validateFormValue(form)) return false;
 				util.clearLocalData();
         $("#"+form).submit();

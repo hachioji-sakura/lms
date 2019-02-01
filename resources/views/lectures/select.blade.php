@@ -31,11 +31,10 @@
   </div>
 </div>
 <script>
-var lessons = null;
-var courses = null;
+var lectures = null;
 var _defaultOption = '<option value="">(選択してください)</option>';
 function select_lesson_set(){
-  if(util.isEmpty(lessons) || util.isEmpty(courses)){
+  if(util.isEmpty(lectures)){
     get_lectures();
     return;
   }
@@ -45,7 +44,7 @@ function select_lesson_set(){
   $("select[name='course']").html(_defaultOption);
   $("select[name='subject']").html(_defaultOption);
   var c = 0;
-  $.each(lessons, function(id, val){
+  $.each(lectures, function(id, val){
     var _option = '<option value="'+id+'">'+val["name"]+'</option>';
     $("select[name='lesson']").append(_option);
     c++;
@@ -54,25 +53,24 @@ function select_lesson_set(){
   if(c==1) $("#select_lesson_form").css("display", "none");
 }
 function select_lesson_change(obj){
-  if(util.isEmpty(lessons)) return;
-  if(util.isEmpty(courses)) return;
+  if(util.isEmpty(lectures)) return;
   var _val = $(obj).val();
   if(util.isEmpty(_val)) return ;
-  var _items = lessons[_val]['courses'];
+  var _items = lectures[_val]['courses'];
   $("select[name='course']").html(_defaultOption);
   $("select[name='subject']").html(_defaultOption);
-  $.each(_items, function(id, name){
-    var _option = '<option value="'+id+'">'+name+'</option>';
+  $.each(_items, function(id, val){
+    var _option = '<option value="'+id+'">'+val["name"]+'</option>';
     $("select[name='course']").append(_option);
   });
 }
 function select_course_change(obj){
-  if(util.isEmpty(lessons)) return;
-  if(util.isEmpty(courses)) return;
+  var l = $("select[name='lesson']").val();
+  if(util.isEmpty(lectures)) return;
   var _val = $(obj).val();
   if(util.isEmpty(_val)) return ;
   $("select[name='subject']").html(_defaultOption);
-  var _items = courses[_val]['subjects'];
+  var _items = lectures[l]['courses'][_val]['subjects'];
   $.each(_items, function(id, name){
     var _option = '<option value="'+id+'">'+name+'</option>';
     $("select[name='subject']").append(_option);
@@ -81,40 +79,37 @@ function select_course_change(obj){
 function get_lectures(){
   console.log("get_lectures");
 
-  lessons = util.getLocalData('lessons');
-  courses = util.getLocalData('courses');
+  lectures = util.getLocalData('lectures');
 
-  if(!util.isEmpty(lessons) && !util.isEmpty(courses)){
+  if(!util.isEmpty(lectures)){
     select_lesson_set();
     return;
   }
   service.getAjax(false, '/api_lectures', null,
     function(result, st, xhr) {
-      var lessons = {};
-      var courses = {};
+      var lectures = {};
       if(result['status']===200){
         $.each(result['data'], function(index, value) {
           var l = value['lesson'];
           var c = value['course'];
           var s = value['subject'];
-          if(!lessons[l]){
-            lessons[l] = {
+          if(!lectures[l]){
+            lectures[l] = {
               "courses" : {},
               "name" : value['lesson_name']
             };
           }
-          lessons[l]["courses"][c] = value['course_name'];
-          if(!courses[c]){
-            courses[c] = {
+          if(!lectures[l]["courses"][c]){
+            lectures[l]["courses"][c] = {
               "subjects" : {},
               "name" : value['course_name']
             };
           }
-          courses[c]["subjects"][s] = value['subject_name'];
-
+          if(!lectures[l]["courses"][c]["subjects"][s]){
+            lectures[l]["courses"][c]["subjects"][s] = value['subject_name'];
+          }
         });
-        util.setLocalData('lessons', lessons);
-        util.setLocalData('courses', courses);
+        util.setLocalData('lectures', lectures);
         select_lesson_set();
       }
     },

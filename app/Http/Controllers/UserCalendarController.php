@@ -18,6 +18,36 @@ class UserCalendarController extends MilestoneController
   public $domain = 'calendars';
   public $table = 'user_calendars';
   public $domain_name = '授業予定';
+  private $show_fields = [
+    'date' => [
+      'label' => '日付',
+      'size' => 6,
+    ],
+    'timezone' => [
+      'label' => '時間',
+      'size' => 6,
+    ],
+    'status_name' => [
+      'label' => 'ステータス',
+    ],
+    'student_name' => [
+      'label' => '生徒',
+      'size' => 6,
+    ],
+    'teacher_name' => [
+      'label' => '講師',
+      'size' => 6,
+    ],
+    'place' => [
+      'label' => '場所',
+      'size' => 6,
+    ],
+    'subject' => [
+      'label' => '科目',
+      'size' => 6,
+    ],
+  ];
+
   public function model(){
     return UserCalendar::query();
   }
@@ -39,7 +69,7 @@ class UserCalendarController extends MilestoneController
       $form['start_date'] = $request->get('start_date');
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
-
+      $form['is_exchange'] = false;
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
       $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['lesson_time'].' minutes'));
       $form['start_time'] = $start_time;
@@ -249,35 +279,11 @@ class UserCalendarController extends MilestoneController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['item']['datetime'] = $param['item']['start_time'];
-      $fields = [
-        'date' => [
-          'label' => '日付',
-        ],
-        'timezone' => [
-          'label' => '時間',
-        ],
-        'status_name' => [
-          'label' => 'ステータス',
-        ],
-        'place' => [
-          'label' => '場所',
-        ],
-        'subject' => [
-          'label' => '科目',
-        ],
-        'teacher_name' => [
-          'label' => '講師',
-        ],
-        'student_name' => [
-          'label' => '生徒',
-        ],
-      ];
-
-      return view('components.page', [
+      $param['fields'] = $this->show_fields;
+      return view('calendars.page', [
         '_del' => $request->get('_del'),
         '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-        'fields'=>$fields])
+        ])
         ->with($param);
     }
     /**
@@ -293,35 +299,19 @@ class UserCalendarController extends MilestoneController
           abort(404);
       }
       $param = $this->get_param($request, $id);
+      $param['fields'] = $this->show_fields;
+      if(!isset($param['item'])) abort(404);
 
-      $fields = [
-        'datetime' => [
-          'label' => '日時',
-        ],
-        'detail' => [
-          'label' => '詳細',
-        ],
-        'teacher_name' => [
-          'label' => '講師',
-        ],
-        'student_name' => [
-          'label' => '生徒',
-        ],
-      ];
-      if(isset($param['item'])){
-        $datetime = $param['item']['date'].' '.$param['item']['start_hour_minute'].'～'.$param['item']['end_hour_minute'];
-        $param['item']['datetime'] = $datetime;
-        $detail = '';
-        $detail .= $param['item']['place'].'/';
-        $detail .= $param['item']['subject'].'';
-        $param['item']['detail'] = $detail;
+      $datetime = $param['item']['date'].' '.$param['item']['start_hour_minute'].'～'.$param['item']['end_hour_minute'];
+      $param['item']['datetime'] = $datetime;
+      $detail = '';
+      $detail .= $param['item']['place'].'/';
+      $detail .= $param['item']['subject'].'';
+      $param['item']['detail'] = $detail;
 
-        return view('calendars.'.$status, [
-          '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-          'fields'=>$fields])
-          ->with($param);
-      }
-      return abort(404);
+      return view('calendars.'.$status, [
+        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
+        ])->with($param);
     }
     /**
      * カレンダーステータス更新
@@ -341,27 +331,41 @@ class UserCalendarController extends MilestoneController
 
       $status_update_message = [
         'fix' => '授業予定に出席予定と確認しました。',
-        'confirm' => '授業予定を確定しました。',
+        'confirm' => '授業予定の確認連絡をしました。',
         'cancel' => '授業予定のキャンセル連絡をしました。',
         'rest' => '休み連絡をしました。',
-        'presence' => '授業予定を出席に更新しました。',
-        'absence' => '授業予定を欠席に更新しました。',
+        'presence' => '授業を出席に更新しました。',
+        'absence' => '授業を欠席に更新しました。',
       ];
 
       if($this->is_success_response($res)){
         $slack_type = 'info';
         $slack_message = $status_update_message[$status];
-        if($status==="rest"){
-          $this->rest_mail($param);
+        switch($status){
+          case "rest":
+            //お休み連絡メール通知
+            $this->rest_mail($param);
+            break;
+          case "confirm":
+            //授業追加確認メール通知
+            $this->confirm_mail($param);
+            break;
+          case "fix":
+            //授業追加確定メール通知
+            $this->fix_mail($param);
+            break;
         }
       }
       $this->send_slack('カレンダーステータス更新['.$status.']:'.$slack_message.' / id['.$item['id'].']開始日時['.$item['start_time'].']終了日時['.$item['end_time'].']生徒['.$item['student_name'].']講師['.$item['teacher_name'].']', 'info', 'カレンダーステータス更新');
-      if($status==="rest"){
-        $this->rest_mail($param);
-      }
-
       return $this->save_redirect($res, $param, $status_update_message[$status], str_replace('_', '/', $request->get('_page_origin')));
     }
+    /**
+     * カレンダーステータス更新
+     *
+     * @param  array  $param
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
     private function _status_update($param, $status){
       $item = $param['item'];
       try {
@@ -385,7 +389,6 @@ class UserCalendarController extends MilestoneController
           return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
     }
-
     /**
      * 休み連絡通知メール送信
      * @param  Array  $param
@@ -397,6 +400,19 @@ class UserCalendarController extends MilestoneController
                'calendar_rest');
 
     }
+    private function confirm_mail($param){
+      return  $this->_mail($param,
+               '授業予定のご確認',
+               'calendar_confirm');
+
+    }
+    private function fix_mail($param){
+      return  $this->_mail($param,
+               '授業予定確定のご連絡',
+               'calendar_fix');
+
+    }
+
     /**
      * 予定確認メール送信
      * カレンダーの対象者に確認メールを送信する
@@ -413,47 +429,45 @@ class UserCalendarController extends MilestoneController
       $is_student = $this->is_student($login_user->role);
       $is_student_or_parent = $this->is_student_or_parent($login_user->role);
       $target_student_id = $param['student_id'];
-      $role = $login_user->role;
-      if($this->is_student_or_parent($login_user->role)){
-        if(!is_numeric($target_student_id)){
-          //生徒・保護者は対象の生徒設定がない場合NG
-          return false;
-        }
-      }
-      $members = UserCalendarMember::where('calendar_id', $item->id)->get();
+      $members = $item->members;
       foreach($members as $member){
-        $user = $member->user;
-        $email = $user['email'];
+        $email = $member->user['email'];
         $user = $member->user->details();
-        $send_type = 'teacher';
+        $send_from = 'teacher';
+        $send_to = 'teacher';
         $user_name = $user['name'];
-        if($is_student_or_parent){
-          if($this->is_student($user->role)){
-            //生徒または保護者の操作、かつ、カレンダー対象者＝生徒の場合
-            //確認用メールを送信
-            if($target_student_id === $user->id){
-              $send_type = "student";
-              $parents = Student::where('id', $user->id)->first()->parents();
-              $email = '';
-              foreach($parents as $parent){
-                $email = $parent->email.';';
-              }
+        $is_child = false;
+        $is_own = false;
+        if($user->user_id===$login_user->user_id){
+          $is_own = true;
+        }
+        if($this->is_student($user->role)){
+          $send_to = "student";
+          $relations = $member->user->student->relations;
+          $email = '';
+          foreach($relations as $relation){
+            if($relation->parent->user_id === $login_user->user_id){
+              $is_child = true;
             }
-            else {
-              //それ以外の生徒にはメールしない
-              continue;
-            }
+            $email = $relation->parent->user->email.';';
           }
         }
-        else if(!$is_student_or_parent && $user->user_id===$login_user->user_id){
-          //講師・事務の場合は自分あてにメールはださない（生徒・自分以外の講師あてにメールを出す）
-          continue;
+        if($is_student_or_parent===true){
+          $send_from = "student";
+          //操作者が保護者または生徒
+          if($send_to==='student' && $is_own===false && $is_child===false){
+            //別の生徒にはメールを出さない(自身か、子であるべき）
+            continue;
+          }
         }
         $this->send_mail($email,
          $title,
          [
          'user_name' => $user_name,
-         'send_type' => $send_type,
+         'is_own' => $is_own,
+         'is_child' => $is_child,
+         'send_from' => $send_from,
+         'send_to' => $send_to,
          'item' => $item
          ],
          'text',
@@ -461,6 +475,12 @@ class UserCalendarController extends MilestoneController
       }
       return true;
     }
+    /**
+     * 生徒取得
+     *
+     * @param  array  $param
+     * @return array
+     */
     private function get_students($param){
       $items = Student::whereRaw('students.user_id in (select id from users where status=0)');
       if($this->is_teacher($param['user']->role)){
@@ -472,16 +492,15 @@ class UserCalendarController extends MilestoneController
       }
       return $items;
     }
+    /**
+     * 講師取得
+     *
+     * @param  array  $param
+     * @return array
+     */
     private function get_teachers($param){
       $items = Teacher::whereRaw('teachers.user_id in (select id from users where status!=9)')->get();
       return $items;
-    }
-    private function get_lectures(){
-      $res = $this->call_api($request, url('/api_lectures'));
-      if($this->is_success_response($res)){
-        return $res['data'];
-      }
-      return null;
     }
 
     /**
@@ -560,6 +579,11 @@ class UserCalendarController extends MilestoneController
           return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
     }
+    /**
+     * 授業予定削除処理
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function _delete(Request $request, $id)
     {
       $form = $request->all();
@@ -579,5 +603,25 @@ class UserCalendarController extends MilestoneController
           DB::rollBack();
           return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
+    }
+    public function test(Request $request, $status)
+    {
+      $param = $this->get_param($request, 2508);
+      switch($status){
+        case "rest":
+          //お休み連絡メール通知
+          $this->rest_mail($param);
+          break;
+        case "confirm":
+          //授業追加確認メール通知
+          $this->confirm_mail($param);
+          break;
+        case "fix":
+          //授業追加確定メール通知
+          echo $status;
+          $this->fix_mail($param);
+          break;
+      }
+      return "hello";
     }
 }
