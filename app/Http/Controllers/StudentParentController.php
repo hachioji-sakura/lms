@@ -202,7 +202,13 @@ class StudentParentController extends StudentController
      public function index(Request $request)
     {
         //
-        $items = StudentParent::all();
+        $parents = StudentParent::where('id', 999999)->first();
+        if(isset($parents)){
+          foreach ($parents->relations as $relation) {
+            echo '['.$relation->student->user_id.']';
+          }
+        }
+        return "hello";
         return $items->toArray();
     }
 

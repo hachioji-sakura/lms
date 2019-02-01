@@ -681,6 +681,9 @@ class ImportController extends UserController
       $exchanged_calendar_id = 0;
       //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:rest / 4.出席 : presence 5.欠席:absence
       $status= 'fix';
+      if(is_numeric($item['kari_flag']) && $item['kari_flag']=='1'){
+        $status= 'new';
+      }
       if(!empty($item['yasumi'])){
         //TODO :以下の項目をどうにかしたい
         $_attr = $this->get_save_general_attribute('absence_type', '', $item['yasumi']);

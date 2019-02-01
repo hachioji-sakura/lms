@@ -142,7 +142,7 @@ class UserAnswerController extends UserExaminationController
           //次の問題がなければ終了
           $status = 10;
         }
-        $_item = UserExamination::find($form['user_examination_id'])->update([
+        $_item = UserExamination::where('id',$form['user_examination_id'])->update([
           'status' => $status,
           'current_question_id' => $next_question_id
         ]);

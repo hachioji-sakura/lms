@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Restdata;
 use App\Models\StudentParent;
-use Request;
+
+use Illuminate\Http\Request;
 use DB;
 class RestController extends Controller
 {
@@ -33,14 +34,29 @@ class RestController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $restdata = new Restdata;
-        $form = $request->all();
-        unset($form['_token']);
-        $restdata->fill($form)->save();
-        return redirect('/rest');
-    }
+     public function store(Request $request)
+     {
+         $restdata = new Restdata;
+         $form = $request->all();
+         $form = $request->all();
+         unset($form['_token']);
+         $restdata->fill($form)->save();
+         return redirect('/rest');
+     }
+     public function test(Request $request)
+     {
+         $restdata = new Restdata;
+         $form = $request->all();
+         unset($form['_token']);
+         Restdata::create([
+           'name' => $form['name'],
+           'message' =>  $form['message'],
+         ]);
+         /*
+         Restdata::create($form);
+         */
+         return "saved";
+     }
 
     /**
      * Display the specified resource.
@@ -50,7 +66,7 @@ class RestController extends Controller
      */
     public function show($id)
     {
-        $items = Restdata::find($id);
+        $items = Restdata::where('id',$id);
         return $items->toArray();
     }
 
@@ -62,7 +78,7 @@ class RestController extends Controller
      */
     public function edit($id)
     {
-      $target = Restdata::find($id);
+      $target = Restdata::where('id',$id);
       return view('rest.create', ['form' => $target]);
 
     }
@@ -76,7 +92,7 @@ class RestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $items = Restdata::find($id);
+        $items = Restdata::where('id',$id);
         $form = $request->all();
         unset($form['_token']);
         $items->fill($form)->save();
@@ -91,7 +107,7 @@ class RestController extends Controller
      */
     public function destroy($id)
     {
-        $items = Restdata::find($id)->delete();
+        $items = Restdata::where('id',$id)->delete();
         return redirect('/rest');
     }
 }

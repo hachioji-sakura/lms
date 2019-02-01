@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Teacher;
 use App\Models\ChargeStudent;
+use App\Models\UserCalendar;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -50,14 +51,24 @@ class TeacherController extends StudentController
   public function get_param(Request $request, $id=null){
     $id = intval($id);
     $user = $this->login_details();
+    $pagenation = '';
     $ret = [
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
       'user' => $user,
       'mode'=>$request->mode,
-      'search_word'=>$request->search_word,
+      'search_word'=>$request->get('search_word'),
+      '_page' => $request->get('_page'),
+      '_line' => $request->get('_line'),
+      'list' => $request->get('list'),
       'attributes' => $this->attributes(),
     ];
+    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
+    if(empty($ret['_page'])) $ret['_page'] = 0;
+    if(empty($user)){
+      //ログインしていない
+      abort(419);
+    }
     //講師・事務以外はNG
     if($this->is_manager_or_teacher($user->role)!==true){
       abort(403);
@@ -164,70 +175,6 @@ EOT;
       return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
    }
   }
-  private function get_students(Request $request, $id){
-    $sql = <<<EOT
-    select
-     A.id,
-     A.icon,
-     A.name,
-     A.kana,
-     uc.id as calendar_id,
-     uc.status as status,
-     uc.start_time as start_time,
-     uc.end_time as end_time,
-     date_format(uc.start_time, '%m/%d') as current_schedule,
-     date_format(uc.start_time, '%H:%i') as current_schedule_from,
-     date_format(uc.end_time, '%H:%i') as current_schedule_to,
-     lesson.attribute_name as lesson,
-     course.attribute_name as course,
-     subject.attribute_name as subject
-    from (
-    select
-      i.s3_url as icon,
-      s.id as id,
-      concat(s.name_last,' ', s.name_first)as name,
-      concat(s.kana_last,' ', s.kana_first)as kana,
-      (select
-        uc.id
-       from user_calendars uc
-        where date(uc.start_time) >= current_date
-         and uc.id in (
-           select calendar_id from user_calendar_members
-           where user_id= s.user_id
-         )
-        order by uc.start_time
-         limit 1
-       ) as current_calendar_id
-    from students as s
-    inner join users u on u.id = s.user_id and u.status < 9
-    inner join images i on u.image_id = i.id
-    and s.id in (
-      select cs.student_id from charge_students cs
-      where teacher_id = ?
-     )) as A
-     left join user_calendars uc on uc.id = A.current_calendar_id
-      and exists(select id from user_calendar_members where calendar_id = uc.id and user_id = (select user_id from teachers where id= ?))
-      left join lectures l on l.id = uc.lecture_id
-      left join general_attributes lesson on lesson.attribute_key = 'lesson' and lesson.attribute_value = l.lesson
-      left join general_attributes subject on subject.attribute_key = 'subject' and subject.attribute_value = l.subject
-      left join general_attributes course on course.attribute_key = 'course' and course.attribute_value = l.course
-EOT;
-    $where_string = '';
-    //検索ワード
-    if(isset($request->search_word)){
-      $search_words = explode(' ', $request->search_word);
-      foreach($search_words as $_search_word){
-         $_like = "'%".$_search_word."%'";
-         $where_string .= " OR A.name like ".$_like;
-         $where_string .= " OR A.kana like ".$_like;
-      }
-      $where_string =' where '.trim($where_string, ' OR');
-    }
-    $sql .= $where_string;
-    $sql .= " order by uc.start_time is null asc, uc.start_time asc, uc.updated_at";
-    $items = DB::select($sql, [$id, $id]);
-    return $items;
-  }
   /**
   * Display the specified resource.
   *
@@ -237,7 +184,7 @@ EOT;
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    $model = $this->model()->find($id)->user;
+    $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
     $item['tags'] = $model->tags();
 
@@ -256,16 +203,12 @@ EOT;
       $comment->create_user_name = $create_user->name;
       $comment->create_user_icon = $create_user->icon;
     }
-    $use_icons = DB::table('images')
-      ->where('create_user_id','=',$user->user_id)
-      ->orWhere('publiced_at','<=', date('Y-m-d'))
-      ->get(['id', 'alias', 's3_url']);
     return view($this->domain.'.page', [
       'item' => $item,
       'comments'=>$comments,
       'milestones'=>$milestones,
       'charge_students'=>$charge_students,
-      'use_icons'=>$use_icons,
+      'use_icons'=> $this->get_image(),
     ])->with($param);
   }
   /**
@@ -277,34 +220,110 @@ EOT;
   public function calendar(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    $model = $this->model()->find($id)->user;
+    $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
     $item['tags'] = $model->tags();
 
     $user = $param['user'];
     //コメントデータ取得
+    $use_icons = $this->get_image();
 
-
-    $use_icons = DB::table('images')
-      ->where('create_user_id','=',$user->user_id)
-      ->orWhere('publiced_at','<=', date('Y-m-d'))
-      ->get(['id', 'alias', 's3_url']);
-
-      $view = "calendar";
-      if($param["mode"]==="list"){
-        $view = "schedule";
-        $request->merge([
-          '_sort' => 'start_time',
-        ]);
-        $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
-        if($this->is_success_response($res)){
-          $param["calendars"] = $res["data"];
-        }
-      }
-
-      return view($this->domain.'.'.$view, [
+    $view = "calendar";
+    return view($this->domain.'.'.$view, [
       'item' => $item,
       'use_icons'=>$use_icons,
     ])->with($param);
   }
+  public function schedule(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $model = $this->model()->where('id',$id)->first()->user;
+    $item = $model->details();
+    $item['tags'] = $model->tags();
+
+    $user = $param['user'];
+    //コメントデータ取得
+    $use_icons = $this->get_image();
+
+    $view = "schedule";
+    $request->merge([
+      '_sort' => 'start_time',
+    ]);
+    $calendars = $this->get_schedule($request, $item->user_id);
+    $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
+    $calendars = $calendars["data"];
+    foreach($calendars as $calendar){
+      $calendar = $calendar->details();
+    }
+    $param["calendars"] = $calendars;
+    $list_title = '授業予定';
+    switch($request->get('list')){
+      case "history":
+        //授業履歴
+        $list_title = '授業履歴';
+        break;
+      case "confirm":
+        //調整中予定
+        $list_title = '調整中予定';
+        break;
+      case "cancel":
+        $list_title = '休み';
+        break;
+    }
+    $param['list_title'] = $list_title;
+    return view($this->domain.'.'.$view, [
+      'item' => $item,
+      'use_icons'=>$use_icons,
+    ])->with($param);
+  }
+  private function get_students(Request $request, $teacher_id){
+    $students =  ChargeStudent::with('student')->findTeacher($teacher_id)
+      ->likeStudentName($request->search_word)
+      ->get();
+    foreach($students as $student){
+      $student['current_calendar_start_time'] = $student->current_calendar()['start_time'];
+      if(empty($student['current_calendar_start_time'])){
+        //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
+        $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
+      }
+    }
+    $students = $students->sortBy('current_calendar_start_time');
+    return $students;
+  }
+  private function get_schedule(Request $request, $user_id){
+    $calendars = UserCalendar::findUser($user_id);
+    $from_date = '';
+    $to_date = '';
+    $sort = 'asc';
+    //status: new > confirm > fix >rest, presence , absence
+    //other status : cancel
+    switch($request->get('list')){
+      case "history":
+        //履歴
+        $sort = 'desc';
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        break;
+      case "confirm":
+        //予定調整中
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        $calendars = $calendars->findStatuses(['new', 'confirm']);
+        break;
+      case "cancel":
+        //休み予定
+        $from_date = date('Y-m-d');
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        $calendars = $calendars->findStatuses(['cancel', 'rest']);
+        break;
+      default:
+        $from_date = date('Y-m-d');
+        $calendars = $calendars->findStatuses(['rest', 'fix', 'presence', 'absence']);
+        break;
+    }
+    $calendars = $calendars->rangeDate($from_date, $to_date);
+    $count = $calendars->count();
+    $calendars = $calendars->sortStarttime($sort)
+      ->pagenation($request->get('_page'), $request->get('_line'))->get();
+    return ["data" => $calendars, "count" => $count];
+  }
+
 }

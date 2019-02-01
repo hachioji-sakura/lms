@@ -30,7 +30,7 @@ class TextbookChapterController extends TextbookController
       if(!is_numeric($textbook_id) || $textbook_id <= 0){
         abort(500);
       }
-      $textbook = Textbook::find($textbook_id);
+      $textbook = Textbook::where('id',$textbook_id);
       if(!isset($textbook)){
         abort(404);
       }

@@ -23,7 +23,7 @@
           </a>
         </li>
         <li class="nav-item hr-1 bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar?mode=list" >
+          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/schedule" >
             <i class="fa fa-clock nav-icon"></i>授業予定
           </a>
         </li>

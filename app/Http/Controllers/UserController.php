@@ -71,6 +71,12 @@ class UserController extends Controller
 
     return $items;
   }
+  protected function get_image()
+  {
+    $user = $this->login_details();
+    return Image::findCreateUser($user->user_id)->publiced()->get();
+  }
+
   protected function _search_sort(Request $request, $items)
   {
     if(isset($request->_sort)){
@@ -83,17 +89,18 @@ class UserController extends Controller
     return $items;
   }
   protected function save_redirect($res, $param, $success_message, $redirect_url=''){
-   if(empty($redirect_url)) $redirect_url ='/'.$this->domain;
    if($this->is_success_response($res)){
      $param['success_message'] = $success_message;
-     return redirect($redirect_url)
-      ->with($param);
+     if(!empty($redirect_url)){
+       return redirect($redirect_url)
+        ->with($param);
+      }
    }
    else {
      $param['error_message'] = $res['message'];
      $param['error_message_description'] = $res['description'];
-     return back()->with($param);
    }
+   return back()->with($param);
   }
 
   /**

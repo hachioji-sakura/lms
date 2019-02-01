@@ -16,7 +16,7 @@
 			@component('components.action_message', [])
 			@endcomponent
 		  <div class="container-fluid">
-		    <div class="row">
+		    <div class="row p-1">
 					<div class="col-12">
 					  <div class="card">
 							@yield('contents')

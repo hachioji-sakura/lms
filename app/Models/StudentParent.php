@@ -87,7 +87,7 @@ class StudentParent extends Model
     $this->user->update(['status'=> 0]);
   }
   public function user(){
-    return $this->belongsTo('App\User', 'user_id');
+    return $this->belongsTo('App\User');
   }
   public function relations(){
     return $this->hasMany('App\Models\StudentRelation');

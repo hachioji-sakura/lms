@@ -1,16 +1,4 @@
 @section('end')
-<datalist id="_select_hours">
-  @for ($i = 0; $i < 24; $i++)
-    <option value="{{str_pad($i, 2, 0, STR_PAD_LEFT)}}">
-  @endfor
-</datalist>
-<datalist id="_select_minutes">
-  @for ($i = 0; $i < 6; $i++)
-  <option value="{{str_pad($i*10, 2, 0, STR_PAD_LEFT)}}">
-  @endfor
-</datalist>
-
-
 <!-- layouts.end start-->
 <script>
 $(function(){

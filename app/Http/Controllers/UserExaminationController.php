@@ -237,7 +237,7 @@ class UserExaminationController extends TextbookChapterController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        $_item = $this->model()::find($id)->update([
+        $_item = $this->model()::where('id',$id)->update([
           'status' => $form['status'],
           'current_question_id' => $form['question_id']
         ]);

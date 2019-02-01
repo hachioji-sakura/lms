@@ -8,6 +8,6 @@
   @if(empty($exception->getMessage()))
   このページへのアクセスはできません
   @else
-  $exception->getMessage()
+  {{$exception->getMessage()}}
   @endif
 @endsection

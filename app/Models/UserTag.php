@@ -25,6 +25,15 @@ class UserTag extends Model
     if(empty($item)) return null;
     return $item;
   }
+  public function scopeFindUser($query, $val)
+  {
+      return $query->where('user_id', $val);
+  }
+  public function scopeFindKey($query, $val)
+  {
+      return $query->where('tag_key', $val);
+  }
+
   //1 key = 1tagの場合利用する
   public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
     UserTag::where('user_id', $user_id)
@@ -53,6 +62,18 @@ class UserTag extends Model
   }
   public function name(){
     $item = $this->details();
+    if(empty($item)) return $this->tag_value;
+
+    return $item->attribute_name;
+  }
+  public function keyname(){
+    $key = $this->tag_key;
+    if($key==="lesson_time_holiday") $key = "lesson_time";
+    if($key==="teacher_no") return "No";
+    if($key==="student_no") return "No";
+    $item = GeneralAttribute::where('attribute_key', 'keys')
+    ->where('attribute_value', $key)->first();
+
     if(empty($item)) return $this->tag_value;
 
     return $item->attribute_name;

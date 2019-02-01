@@ -16,9 +16,12 @@ Route::redirect('/', '/login', 301);
 
 Route::get('auth','AuthController@auth');
 Route::get('test','AuthController@test');
+Route::post('rest/test2','RestController@test');
+
 Route::get('users/email/{email}','UserController@email_check');
 Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
+
 Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
 Route::get('password/setting','AuthController@password_setting');
@@ -41,10 +44,13 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+Route::get('calendars/test/{status}','UserCalendarController@test');
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
-Route::resource('calendars','UserCalendarController');
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
+Route::resource('calendars','UserCalendarController');
+
+Route::get('api_lectures','LectureController@api_index');
 Route::resource('lectures','LectureController');
 
 /*
@@ -67,7 +73,9 @@ Route::post('icon','ImageController@icon_change');
 
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');
 Route::get('students/{id}/calendar','StudentController@calendar');
+Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
+Route::get('teachers/{id}/schedule','TeacherController@schedule');
 
 
 Route::get('home', 'HomeController@index')->name('home');

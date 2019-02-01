@@ -47,50 +47,38 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @component('components.calendar', ['user_id' => $item->user_id,'domain' => $domain])
-          @slot('set_calendar')
-          service.getAjax(false, '/api_calendars/{{$item->user_id}}/'+start_time+'/'+end_time, null,
-            function(result, st, xhr) {
-              if(result['status']===200){
-                var events = [];
-                $.each(result['data'], function(index, value) {
-                  var _type = 'study';
-                  if(value['status']==='cancel' || value['status']==='rest'){
-                    _type = 'cancel';
-                  }
-                  else if(value['exchanged_calendar_id']>0){
-                    _type = "exchange";
-                  }
-                  var title = value['teacher_name']+'('+value['subject']+')<br>'+value['start']+'-'+value['end'];
-                  events.push({
-                    // イベント情報をセット
-                    id: value['id'],
-                    title: title,
-                    description: value['teacher_name'],
-                    start: value['start_time'],
-                    end: value['end_time'],
-                    type : _type
-                  });
-                });
-                callback(events);
-              }
-            },
-            function(xhr, st, err) {
-                alert("カレンダー取得エラー");
-                messageCode = "error";
-                messageParam= "validate/querycheck\n"+err.message+"\n"+xhr.responseText;
-            }
-          );
+        @component('components.calendar', ['user_id' => $item->user_id, 'student_id' => $item->id, 'domain' => $domain])
+          @slot('event_select')
           @endslot
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            if(event.type==="study"){
-              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+            switch(event.status){
+              case "confirm":
+                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/confirm");
+                break;
+              case "fix":
+                base.showPage('dialog', "subDialog", "欠席連絡", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+                break;
+              case "new":
+              case "rest":
+              case "cancel":
+              case "absence":
+              case "presence":
+              case "exchange":
+              default:
+                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+                break;
             }
-            else {
-              base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+          },
+          @endslot
+          @slot('event_render')
+          eventRender: function(event, element, view) {
+            var title = '授業追加';
+            if(event['student_name']){
+              title = event['teacher_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             }
+            event_render(event, element, title);
           },
           @endslot
         @endcomponent

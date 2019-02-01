@@ -140,7 +140,7 @@ class ImageController extends UserController
      */
     public function show(Request $request, $id)
     {
-      $items = Image::find($id);
+      $items = Image::where('id',$id);
       return $items->toArray();
     }
 
@@ -175,7 +175,7 @@ class ImageController extends UserController
      */
     public function destroy($id)
     {
-      $items = Image::find($id)->delete();
+      $items = Image::where('id',$id)->delete();
       return redirect('/images');
     }
 

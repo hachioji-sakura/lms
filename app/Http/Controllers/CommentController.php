@@ -128,13 +128,13 @@ class CommentController extends MilestoneController
       }
       else {
         if($request->has('student_id')){
-          $u = Student::find($request->get('student_id'));
+          $u = Student::where('id',$request->get('student_id'));
         }
         else if($request->has('teacher_id')){
-          $u = Teacher::find($request->get('teacher_id'));
+          $u = Teacher::where('id',$request->get('teacher_id'));
         }
         else if($request->has('manager_id')){
-          $u = Manager::find($request->get('manager_id'));
+          $u = Manager::where('id',$request->get('manager_id'));
         }
         $form['target_user_id'] = $u->user_id;
       }
@@ -252,7 +252,7 @@ class CommentController extends MilestoneController
         //事務以外アクセス不可
         abort(403);
       }
-      $this->model()->find($id)->update('publiced_at', date('Y-m-d'));
+      $this->model()->where('id',$id)->update('publiced_at', date('Y-m-d'));
       $update_message = "コメントを公開しました。";
       return $this->save_redirect($res, $param, $update_message, str_replace('_', '/', $request->get('_page_origin')));
     }

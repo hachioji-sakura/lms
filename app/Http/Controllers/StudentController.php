@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\UserCalendar;
 use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 
@@ -52,6 +53,11 @@ class StudentController extends UserController
   public function get_param(Request $request, $id=null){
     $id = intval($id);
     $user = $this->login_details();
+    if(empty($user)){
+      //ログインしていない
+      abort(419);
+    }
+
     $ret = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
@@ -210,17 +216,14 @@ EOT;
   public function show(Request $request, $id)
   {
    $param = $this->get_param($request, $id);
-   $model = $this->model()->find($id);
+   $model = $this->model()->where('id',$id);
    if(!isset($model)){
       abort(404);
    }
-   $model = $model->user;
+   $model = $model->first()->user;
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
-   if(!isset($user)) {
-     abort(403, 'sessionTimeout');
-   }
 
    //コメントデータ取得
    $comments = $model->target_comments;
@@ -253,7 +256,7 @@ EOT;
  public function calendar(Request $request, $id)
  {
    $param = $this->get_param($request, $id);
-   $model = $this->model()->find($id)->user;
+   $model = $this->model()->where('id',$id)->first()->user;
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
@@ -267,16 +270,6 @@ EOT;
      ->get(['id', 'alias', 's3_url']);
 
    $view = "calendar";
-   if($param["mode"]==="list"){
-     $view = "schedule";
-     $request->merge([
-       '_sort' => 'start_time',
-     ]);
-     $res = $this->call_api($request, url('/api_calendars/'.$item->user_id.'/'.date('Y-m-d')));
-     if($this->is_success_response($res)){
-       $param["calendars"] = $res["data"];
-     }
-   }
 
    return view($this->domain.'.'.$view, [
      'item' => $item,
@@ -284,6 +277,35 @@ EOT;
      'use_icons'=>$use_icons,
    ])->with($param);
  }
+ public function schedule(Request $request, $id)
+ {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+
+   //目標データ取得
+   $milestones = $model->target_milestones;
+
+   $use_icons = DB::table('images')
+     ->where('create_user_id','=',$user->user_id)
+     ->orWhere('publiced_at','<=', date('Y-m-d'))
+     ->get(['id', 'alias', 's3_url']);
+
+   $view = "schedule";
+   $calendars = UserCalendar::findUser($item->user_id)->rangeDate(date('Y-m-d'))->get();
+   foreach($calendars as $calendar){
+     $calendar = $calendar->details();
+   }
+   $param["calendars"] = $calendars;
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'milestones'=>$milestones,
+     'use_icons'=>$use_icons,
+   ])->with($param);
+ }
+
   /**
    * Show the form for editing the specified resource.
    *
@@ -334,7 +356,7 @@ EOT;
      DB::beginTransaction();
      $user = $this->login_details();
      $form = $request->all();
-     $item = Student::find($id)->profile_update($form);
+     $item = Student::where('id',$id)->profile_update($form);
      DB::commit();
      return $this->api_response(200, '', '', $item);
    }
@@ -366,7 +388,7 @@ EOT;
    $form = $request->all();
    try {
      DB::beginTransaction();
-     $items = Student::find($id)->delete();
+     $items = Student::where('id',$id)->delete();
      DB::commit();
      return $this->api_response(200, '', '', $items);
    }

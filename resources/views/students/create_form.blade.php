@@ -127,7 +127,7 @@ $(function(){
   </div>
   <div class="col-12">
     <div class="form-group">
-      <label for="lesson" class="w-100">
+      <label for="lesson_subject" class="w-100">
         科目
         <span class="right badge badge-danger ml-1">必須</span>
       </label>

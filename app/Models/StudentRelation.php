@@ -17,6 +17,6 @@ class StudentRelation extends Model
     return $this->belongsTo('App\Models\Student');
   }
   public function parent(){
-    return $this->belongsTo('App\Models\StudentParent');
+    return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
   }
 }
