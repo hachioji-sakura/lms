@@ -5,8 +5,8 @@
       <i class="nav-icon fa fa-user"></i>
       <p>
         <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
+          <rb>{{$item->name()}}</rb>
+          <rt>{{$item->kana()}}</rt>
         </ruby>
         <i class="right fa fa-angle-left"></i>
       </p>

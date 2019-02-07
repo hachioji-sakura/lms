@@ -366,6 +366,22 @@ class ImportController extends UserController
         $item['status'] = 9;
       }
 
+      $item['kana_last'] = '';
+      $item['kana_first'] = '';
+      if(!empty($item['teacher_furigana'])){
+          $kanas = explode(' ', $item['teacher_furigana'].' ');
+          $item['kana_last'] = $kanas[0];
+          $item['kana_first'] = $kanas[1];
+      }
+
+      $item['name_last'] = '';
+      $item['name_first'] = '';
+      if(!empty($item['teacher_name'])){
+          $names = explode(' ', $item['teacher_name'].' ');
+          $item['name_last'] = $names[0];
+          $item['name_first'] = $names[1];
+      }
+
       $user = User::where('email', $item['email'])->first();
       $user_id = 0;
       if(!isset($user)){
@@ -381,8 +397,10 @@ class ImportController extends UserController
           //講師情報登録
           $Teacher = new Teacher;
           $_item = $Teacher->create([
-            'name' => $item['teacher_name'],
-            'kana' => $item['teacher_furigana'],
+            'name_last' => $item['name_last'],
+            'name_first' => $item['name_first'],
+            'kana_last' => $item['kana_last'],
+            'kana_first' => $item['kana_first'],
             'user_id' => $res['data']->id,
             'create_user_id' => 1
           ]);
@@ -401,8 +419,10 @@ class ImportController extends UserController
           return false;
         }
         $teacher->update([
-          'name' => $item['teacher_name'],
-          'kana' => $item['teacher_furigana'],
+          'name_last' => $item['name_last'],
+          'name_first' => $item['name_first'],
+          'kana_last' => $item['kana_last'],
+          'kana_first' => $item['kana_first'],
         ]);
         $user->update([
           'status' => $item['status'],

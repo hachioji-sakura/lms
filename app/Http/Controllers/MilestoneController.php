@@ -315,7 +315,7 @@ class MilestoneController extends UserController
       ];
 
       return view('components.page', [
-        '_del' => $request->get('_del'),
+        'action' => $request->get('action'),
         '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         'fields'=>$fields])
         ->with($param);

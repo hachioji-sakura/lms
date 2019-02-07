@@ -26,7 +26,7 @@
         @component('components.search_word', ['search_word' => $search_word])
         @endcomponent
       </li>
-      @if($user->role!=="parent")
+      @if($user->role==="teacher")
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link">
           <i class="fa fa-user-friends nav-icon"></i>担当生徒
@@ -34,6 +34,27 @@
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}?filter=all" class="nav-link">
+          <i class="fa fa-users nav-icon"></i>すべて
+        </a>
+      </li>
+      @elseif($user->role==="manager")
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=0" class="nav-link">
+          <i class="fa fa-user-check nav-icon"></i>登録済み
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=1" class="nav-link">
+          <i class="fa fa-user-lock nav-icon"></i>仮登録
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=9" class="nav-link">
+          <i class="fa fa-user-times nav-icon"></i>削除済み
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}" class="nav-link">
           <i class="fa fa-users nav-icon"></i>すべて
         </a>
       </li>

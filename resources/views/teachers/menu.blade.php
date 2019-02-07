@@ -56,6 +56,11 @@
             <i class="fa fa-chalkboard-teacher nav-icon"></i>授業追加
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="講師設定">
+            <i class="fa fa-user-edit nav-icon"></i>講師設定
+          </a>
+        </li>
       </ul>
     </li>
 </ul>

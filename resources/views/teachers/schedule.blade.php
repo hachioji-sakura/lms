@@ -68,11 +68,23 @@
                     <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                   </a>
                   <br>
-                  @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
+                  @if($user->role==="teacher")
+                    @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
                     <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/presence?_page_origin={{$domain}}_{{$item->id}}_schedule" role="button" class="btn btn-success btn-sm w-100 mt-1">
                       <i class="fa fa-user-check mr-1"></i>
                       出欠確認
                     </a>
+                    @elseif($calendar["status"]==="new")
+                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/confirm?_page_origin={{$domain}}_{{$item->id}}_schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <i class="fa fa-user-check mr-1"></i>
+                      予定を確定する
+                    </a>
+                    @elseif($calendar["status"]==="confirm")
+                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡（再送）" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/confirm?_page_origin={{$domain}}_{{$item->id}}_schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <i class="fa fa-user-check mr-1"></i>
+                      予定連絡（再送）
+                    </a>
+                    @endif
                   @endif
                 </div>
             </li>

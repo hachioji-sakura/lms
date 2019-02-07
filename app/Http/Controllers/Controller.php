@@ -50,6 +50,9 @@ class Controller extends BaseController
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
+      if(config('app.env')==="local"){
+        return true;
+      }
       $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
       return true;
     }
@@ -94,6 +97,9 @@ class Controller extends BaseController
     			'verify_peer_name' => false
     		)
     	);
+      if(config('app.env')==="local"){
+        return true;
+      }
     	$response = file_get_contents($url, false, stream_context_create($options));
     	if($response === 'ok') return true;
     	return false;

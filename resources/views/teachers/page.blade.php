@@ -19,14 +19,15 @@
         @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
-
             @slot('alias')
               <h6 class="widget-user-desc">
-                @foreach($item["tags"] as $tag)
+                {{--
+                @foreach($item->user->tags as $tag)
                 <small class="badge badge-secondary mt-1 mr-1">
-                  {{$tag->name()}}
+                  {{$tag->keyname()}}{{$tag->name()}}
                 </small>
                 @endforeach
+                --}}
               </h6>
             @endslot
         @endcomponent
@@ -81,7 +82,7 @@
                   @endif
                 </div>
                 <div class="col-12 text-sm">
-                  @if(!empty($charge_student->current_calendar()))
+                  @if(!empty($charge_student->current_calendar()) && $user->role==="teacher")
                     @if($charge_student->current_calendar()->details()->status==="fix" && date('Ymd', strtotime($charge_student->current_calendar()->details()->start_time)) === date('Ymd'))
                       <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>

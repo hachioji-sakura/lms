@@ -65,14 +65,9 @@ class StudentParent extends Model
       'name_first' => $form['name_first'],
       'kana_last' => $form['kana_last'],
       'kana_first' => $form['kana_first'],
+      'phone_no' => $form['phone_no'],
     ]);
-    $this->update([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => $form['kana_last'],
-      'kana_first' => $form['kana_first'],
-    ]);
-    $tag_names = ['phone_no', 'howto_word'];
+    $tag_names = ['howto_word'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -84,7 +79,6 @@ class StudentParent extends Model
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $this->user->update(['status'=> 0]);
   }
   public function user(){
     return $this->belongsTo('App\User');

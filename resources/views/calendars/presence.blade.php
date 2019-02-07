@@ -23,7 +23,7 @@
             <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
           @endif
           @method('PUT')
-          <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_delete">
+          <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_action">
               <i class="fa fa-check-circle mr-1"></i>
               出席
           </button>
@@ -36,7 +36,7 @@
             <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
           @endif
           @method('PUT')
-          <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_delete">
+          <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_action">
             <i class="fa fa-times-circle mr-1"></i>
               欠席
           </button>

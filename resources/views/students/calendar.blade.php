@@ -58,7 +58,7 @@
                 base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/confirm");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "欠席連絡", "/calendars/"+event.id+"/rest?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+                base.showPage('dialog', "subDialog", "欠席連絡", "/calendars/"+event.id+"/rest");
                 break;
               case "new":
               case "rest":
@@ -67,7 +67,7 @@
               case "presence":
               case "exchange":
               default:
-                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?_page_origin={{$domain}}_{{$item->id}}_calendar&student_id={{$item->id}}");
+                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
                 break;
             }
           },

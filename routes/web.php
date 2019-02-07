@@ -62,6 +62,24 @@ Route::post('entry','StudentParentController@entry_store');
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
 
+Route::get('teachers/entry','TeacherController@entry');
+Route::post('teachers/entry','TeacherController@entry_store');
+Route::get('teachers/register','TeacherController@register');
+Route::post('teachers/register','TeacherController@register_update');
+Route::get('parents/{id}/delete','StudentParentController@delete_page');
+Route::get('students/{id}/delete','StudentController@delete_page');
+Route::get('managers/{id}/delete','ManagerController@delete_page');
+Route::get('teachers/{id}/delete','TeacherController@delete_page');
+Route::get('parents/{id}/remind','StudentParentController@remind_page');
+Route::get('students/{id}/remind','StudentController@remind_page');
+Route::get('managers/{id}/remind','ManagerController@remind_page');
+Route::get('teachers/{id}/remind','TeacherController@remind_page');
+Route::post('parents/{id}/remind','StudentParentController@remind');
+Route::post('students/{id}/remind','StudentController@remind');
+Route::post('managers/{id}/remind','ManagerController@remind');
+Route::post('teachers/{id}/remind','TeacherController@remind');
+
+
 Route::resource('parents','StudentParentController');
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');

@@ -22,7 +22,7 @@
                   <i class="fa fa-edit"></i>
                 </a>
                 @elseif($button==="delete")
-                <a href="javascript:void(0);" page_title="{{$domain_name}}削除" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?_del=1" role="button" class="btn btn-danger btn-sm float-left mr-1">
+                <a href="javascript:void(0);" page_title="{{$domain_name}}削除" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1">
                   <i class="fa fa-times"></i>
                 </a>
                 @endif

@@ -43,41 +43,12 @@
     </div>
   </div>
   <div class="col-12">
-    <div id="test" class="form-group">
-      <label for="birth_day" class="w-100">
-        生年月日
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="birth_day_year" class="form-control w-25 float-left mr-1" width="25%"  accessKey="year" placeholder="生年月日(年)" >
-      </select>
-      <select name="birth_day_month" class="form-control w-20 float-left mr-1" width="20%"  accessKey="month" placeholder="生年月日(月)" >
-      </select>
-      <select name="birth_day_day" class="form-control w-20 float-left" width="20%" accessKey="day" placeholder="生年月日(日)">
-      </select>
-      <input id="birth_day" type="hidden" class="form-control" name="birth_day"  inputtype="date" placeholder="例：2000/01/01" required="true">
-    </div>
+    @component('components.select_birthday', ['item' => $student])
+    @endcomponent
   </div>
   <div class="col-12">
-    <div class="form-group">
-      <label for="password-confirm">
-        性別
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <div class="input-group">
-        <div class="form-check">
-            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_2" value="2" required="true" @if(isset($student) && $student->gender===2) checked @endif>
-            <label class="form-check-label" for="gender_2">
-                女性
-            </label>
-        </div>
-        <div class="form-check ml-2">
-            <input class="form-check-input flat-red" type="radio" name="gender" id="gender_1" value="1" required="true" @if(isset($student) && $student->gender===1) checked @endif>
-            <label class="form-check-label" for="gender_1">
-                男性
-            </label>
-        </div>
-      </div>
-    </div>
+    @component('components.select_gender', ['item' => $student])
+    @endcomponent
   </div>
   <div class="col-12 col-lg-9 col-md-9">
     <div class="form-group">
@@ -103,18 +74,6 @@
     </div>
   </div>
 </div>
-
-<script>
-$(function(){
-  $('select[name="birth_day_year"],select[name="birth_day_month"],select[name="birth_day_day"]').on('change', function(e){
-    var year = $('select[name="birth_day_year"]').val();
-    var month = $('select[name="birth_day_month"]').val();
-    var day = $('select[name="birth_day_day"]').val();
-    var date = year+'/'+month+'/'+day;
-    $('input[name="birth_day"]').val(date);
-  });
-});
-</script>
 @endsection
 
 @section('survey_form')

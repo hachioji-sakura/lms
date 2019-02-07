@@ -1,29 +1,28 @@
 @extends('layouts.simplepage')
-@section('title', 'ユーザー登録')
+@section('title', '講師登録')
 
 @if(empty($result))
-@include('students.create_form')
-@include('parents.create_form')
+@include('teachers.create_form')
 @endif
 
 
 @section('content')
-<div id="students_register" class="direct-chat-msg">
+<div id="teachers_register" class="direct-chat-msg">
 @if(!empty($result))
     @if($result==='token_error')
     <div class="row">
       <div class="col-12">
         <h4 class="bg-danger p-3 text-sm">
           このページの有効期限が切れています。<br>
-          再度、申し混みページより仮登録を行ってください。
+          再度、講師仮登録ページより仮登録を行ってください。
         </h4>
       </div>
     </div>
     <div class="row">
       <div class="col-12">
         <p class="my-2">
-          <a href="/entry" role="button" class="btn btn-outline-success btn-block float-left mr-1">
-            入会お申込みはこちら
+          <a href="/teachers/entry" role="button" class="btn btn-outline-success btn-block float-left mr-1">
+            講師仮登録はこちら
           </a>
         </p>
     </div>
@@ -48,14 +47,14 @@
   </div>
   @endif
 @else
-  <form method="POST"  action="/register">
+  <form method="POST"  action="/teachers/register">
     @csrf
-    <div id="parents_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="teachers_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <input type="hidden" name="access_key" value="{{$access_key}}" />
-      <input type="hidden" name="parent_id" value="{{$parent->id}}" />
+      <input type="hidden" name="teacher_id" value="{{$item->id}}" />
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('parent_form')
+          @yield('teacher_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -83,7 +82,7 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('student_form')
+          @yield('lesson_week_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -100,7 +99,7 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('survey_form')
+          @yield('subject_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -109,24 +108,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                  <i class="fa fa-check-circle mr-1"></i>
-                  内容確認
-                </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item" id="confirm_form">
-          @yield('confirm_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="submit" class="btn btn-primary btn-block" accesskey="teachers_create">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -140,51 +122,30 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('parents_add_form');
-  base.pageSettinged("parents_add_form", form_data);
+  var form_data = util.getLocalData('teachers_add_form');
+  base.pageSettinged("teachers_add_form", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      util.setLocalData('parents_add_form', "");
+    if(front.validateFormValue('teachers_add_form .carousel-item.active')){
+      //util.setLocalData('teachers_add_form', "");
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      var form_data = front.getFormValue('parents_add_form');
-      util.setLocalData('parents_add_form', form_data);
-      base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#parents_add_form').carousel('next');
+    if(front.validateFormValue('teachers_add_form .carousel-item.active')){
+      var form_data = front.getFormValue('teachers_add_form');
+      util.setLocalData('teachers_add_form', form_data);
+      $('#teachers_add_form').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#parents_add_form').carousel('prev');
+    $('#teachers_add_form').carousel('prev');
   });
-  //確認画面用のパラメータ調整
-  function form_data_adjust(form_data){
-    form_data["email"] = $("input[name=email]").val();
-    if(form_data["gender"]){
-      form_data["gender_name"] = $("label[for='"+$("input[name='gender']:checked").attr("id")+"']").text().trim();
-    }
-    if(form_data["grade"]){
-      form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
-    }
-    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
-    $.each(_names, function(index, value) {
-      form_data[value+"_name"] = "";
-      if(form_data[value+'[]']){
-        $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
-        });
-      }
-    });
-    return form_data;
-  }
 });
 </script>
 @endif

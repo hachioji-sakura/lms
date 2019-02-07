@@ -281,7 +281,7 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields;
       return view('calendars.page', [
-        '_del' => $request->get('_del'),
+        'action' => $request->get('action'),
         '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         ])
         ->with($param);

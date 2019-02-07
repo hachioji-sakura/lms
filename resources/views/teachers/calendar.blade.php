@@ -71,10 +71,12 @@
               case "new":
                 base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/confirm");
                 break;
+              case "confirm":
+                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/confirm");
+                break;
               case "fix":
                 base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/presence");
                 break;
-              case "confirm":
               case "rest":
               case "cancel":
               case "absence":

@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Models\Teacher;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
-use App\User;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 /*
 */
@@ -79,6 +76,7 @@ class TeacherController extends StudentController
         //講師は自分のidしか閲覧できない
         abort(404);
       }
+      $ret['item'] = $this->model()->where('id',$id)->first()->user->details();
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -88,93 +86,37 @@ class TeacherController extends StudentController
     }
     return $ret;
   }
-  /**
-   * 検索～一覧
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return [Collection, field]
-   */
-  public function search(Request $request)
-  {
-   $items = DB::table($this->table)
-    ->join('users', 'users.id',$this->table.'.user_id')
-    ->join('images', 'images.id','users.image_id');
-
-   $items = $this->_search_scope($request, $items);
-
-   $items = $this->_search_pagenation($request, $items);
-
-   $items = $this->_search_sort($request, $items);
-
-   $select_raw = <<<EOT
-    $this->table.id,
-    $this->table.name,
-    $this->table.kana,
-    images.s3_url as icon
-EOT;
-   $items = $items->selectRaw($select_raw)->get();
-   return ["items" => $items->toArray()];
-  }
-  /**
-   * フィルタリングロジック
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  Collection $items
-   * @return Collection
-   */
   public function _search_scope(Request $request, $items)
   {
-   //ID 検索
-   if(isset($request->id)){
-    $items = $items->where($this->table.'.id',$request->id);
-   }
-   //検索ワード
-   if(isset($request->search_word)){
-    $search_words = explode(' ', $request->search_word);
-    foreach($search_words as $_search_word){
-      $_like = '%'.$_search_word.'%';
-      $items = $items->where($this->table.'.name','like', $_like)
-       ->orWhere($this->table.'.kana','like', $_like);
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where($this->table.'.id',$request->id);
     }
-   }
-   //メールアドレス検索
-   if(isset($request->email)){
-    $_like = '%'.$request->email.'%';
-    $items = $items->where('users.email','like', $_like);
-   }
-   return $items;
+
+    //検索ワード
+    if(isset($request->search_word)){
+      $items = $items->searchWord($request->search_word);
+    }
+    //ステータス
+    if(isset($request->status)){
+      $items = $items->findStatuses($request->status);
+    }
+    return $items;
   }
-  public function _store(Request $request)
+  /**
+   * 新規登録画面
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create(Request $request)
   {
-   $form = $request->all();
-   try {
-    DB::beginTransaction();
-    $form["image_id"] = $this->default_image_id;
-    $res = $this->user_create($form);
-    if($this->is_success_response($res)){
-      $form['user_id'] = $res["data"]->id;
-      $user = $this->login_details();
-      $form["create_user_id"] = $user->user_id;
-      unset($form['image_id']);
-      unset($form['_token']);
-      unset($form['password']);
-      unset($form['email']);
-      unset($form['password-confirm']);
-      $_item = $this->model()->create($form);
-      DB::commit();
-      return $this->api_response(200, "", "", $_item);
-    }
-    return $res;
+    $param = $this->get_param($request);
+
+    return view($this->domain.'.create',
+      ['error_message' => ''])
+      ->with($param);
    }
-   catch (\Illuminate\Database\QueryException $e) {
-      DB::rollBack();
-      return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-   }
-   catch(\Exception $e){
-      DB::rollBack();
-      return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-   }
-  }
+
   /**
   * Display the specified resource.
   *
@@ -184,17 +126,16 @@ EOT;
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
+    /*
     $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
     $item['tags'] = $model->tags();
-
+    */
     $user = $param['user'];
     //コメントデータ取得
-    $comments = $model->target_comments;
+    $comments = $param['item']->user->target_comments;
     $comments = $comments->sortByDesc('created_at');
 
-    //目標データ取得
-    $milestones = $model->target_milestones;
 
     $charge_students = $this->get_students($request, $id);
 
@@ -204,9 +145,7 @@ EOT;
       $comment->create_user_icon = $create_user->icon;
     }
     return view($this->domain.'.page', [
-      'item' => $item,
       'comments'=>$comments,
-      'milestones'=>$milestones,
       'charge_students'=>$charge_students,
       'use_icons'=> $this->get_image(),
     ])->with($param);
@@ -325,5 +264,186 @@ EOT;
       ->pagenation($request->get('_page'), $request->get('_line'))->get();
     return ["data" => $calendars, "count" => $count];
   }
+  /**
+   * 体験授業申し込みページ
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function entry(Request $request)
+  {
+    $param = [
+      'domain' => $this->domain,
+      'domain_name' => $this->domain_name,
+    ];
+    return view($this->domain.'.entry',
+      ['sended' => ''])
+      ->with($param);
+   }
+   /**
+    * 体験授業申し込みページ
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function entry_store(Request $request)
+   {
+     $result = '';
+     $form = $request->all();
+     $res = $this->api_response(200);
+     $access_key = $this->create_token();
+     $request->merge([
+       'access_key' => $access_key,
+     ]);
+
+     $user = User::where('email', $form['email'])->first();
+     $result = '';
+     if(!isset($user)){
+       $res = $this->_entry_store($request);
+       $result = 'success';
+     }
+     else {
+       if($user->status===1){
+         //すでにユーザーが仮登録されている場合は、tokenを更新
+         $user->update( ['access_key' => $access_key]);
+         $result = 'already';
+       }
+       else {
+         //本登録済み
+         $res = $this->error_response('このメールアドレスはすでにユーザー登録済みです。');
+       }
+     }
+     if($this->is_success_response($res)){
+       $this->send_mail($form['email'],
+         $this->domain_name.'仮登録完了', [
+         'user_name' => $form['name_last'].' '.$form['name_first'],
+         'access_key' => $access_key,
+         'send_to' => 'teacher',
+       ], 'text', 'entry');
+       return view($this->domain.'.entry',
+         ['result' => $result]);
+     }
+     else {
+       return $this->save_redirect($res, [], '仮登録メールを送信しました');
+     }
+   }
+   public function _entry_store(Request $request)
+   {
+     $form = $request->all();
+     try {
+       DB::beginTransaction();
+       $form["password"] = 'sakusaku';
+       $items = $this->model()->entry($form);
+       DB::commit();
+       return $this->api_response(200, __FUNCTION__);
+     }
+     catch (\Illuminate\Database\QueryException $e) {
+       DB::rollBack();
+       return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+     }
+     catch(\Exception $e){
+       DB::rollBack();
+       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+     }
+   }
+   /**
+    * 本登録ページ
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function register(Request $request)
+   {
+     $result = '';
+     $param = [
+       'user' => $this->login_details(),
+       'attributes' => $this->attributes(),
+     ];
+     if(!empty($param['user'])){
+       $param['result'] = 'logout';
+       return view($this->domain.'.register',$param);
+     }
+     else {
+       $access_key = $request->get('key');
+       if(!$this->is_enable_token($access_key)){
+         $param['result'] = 'token_error';
+         return view($this->domain.'.register',$param);
+       }
+       $user = User::where('access_key',$access_key);
+       if($user->count() < 1){
+         abort(404);
+       }
+       $param['item'] = $user->first()->details();
+       $param['access_key'] = $access_key;
+     }
+     return view($this->domain.'.register',$param);
+    }
+    /**
+     * 本登録処理
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register_update(Request $request)
+    {
+      $param = [
+        'user' => $this->login_details(),
+        'attributes' => $this->attributes(),
+      ];
+
+      $result = "success";
+      $email = "";
+      $password = "";
+      $form = $request->all();
+      if(!empty($param['user'])){
+        //ログインユーザーがある場合は、操作させない
+        abort(403);
+      }
+      $access_key = $request->access_key;
+      if(!$this->is_enable_token($access_key)){
+        $result = "token_error";
+        return view($this->domain.'.register',
+          ['result' => $result]
+        );
+      }
+      $res = $this->_register_update($request);
+      $email = $form['email'];
+      $password = $form['password'];
+
+      if($this->is_success_response($res)){
+        if(empty($param['user'])){
+          $form['send_to'] = 'teacher';
+          $this->send_mail($email, '講師登録完了', $form, 'text', 'register');
+          if (!Auth::attempt(['email' => $email, 'password' => $password]))
+          {
+            abort(500);
+          }
+        }
+        return $this->save_redirect($res, $param, '講師登録完了しました。', '/home');
+      }
+      return $this->save_redirect($res, $param, '', $this->domain.'/register');
+    }
+    public function _register_update($form)
+    {
+      $user = User::where('access_key',$form['access_key']);
+      if($user->count() < 1){
+        abort(403);
+      }
+      try {
+        $user = $user->first();
+        DB::beginTransaction();
+        $form['create_user_id'] = $user->id;
+        $teacher = $this->model()->where('user_id', $user->id)->first();
+        $teacher->profile_update($form);
+        $user->set_password($form['password']);
+        $user->update(['status' => 0]);
+        DB::commit();
+        return $this->api_response(200, __FUNCTION__);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+        DB::rollBack();
+        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+    }
 
 }

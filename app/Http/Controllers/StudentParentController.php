@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\User;
-
-use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\StudentParent;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
 use DB;
 
 class StudentParentController extends StudentController
@@ -64,6 +62,7 @@ class StudentParentController extends StudentController
          'お申込み仮受付完了', [
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
+         'send_to' => 'parent',
        ], 'text', 'entry');
        return view($this->domain.'.entry',
          ['result' => $result]);
@@ -99,7 +98,10 @@ class StudentParentController extends StudentController
    public function register(Request $request)
    {
      $result = '';
-     $param = $this->get_param($request);
+     $param = [
+       'user' => $this->login_details(),
+       'attributes' => $this->attributes(),
+     ];
      if(!empty($param['user'])){
        $param['result'] = 'logout';
        return view($this->domain.'.register',$param);
@@ -114,6 +116,7 @@ class StudentParentController extends StudentController
        if($user->count() < 1){
          abort(404);
        }
+       $param['student'] = null;
        $param['parent'] = $user->first()->details();
        $param['access_key'] = $access_key;
      }
@@ -126,8 +129,11 @@ class StudentParentController extends StudentController
      */
     public function register_update(Request $request)
     {
+      $param = [
+        'user' => $this->login_details(),
+        'attributes' => $this->attributes(),
+      ];
       $result = "success";
-      $param = $this->get_param($request);
       $email = "";
       $password = "";
       $form = $request->all();
@@ -148,6 +154,7 @@ class StudentParentController extends StudentController
 
       if($this->is_success_response($res)){
         if(empty($param['user'])){
+          $form['send_to'] = 'parent';
           $this->send_mail($email, '生徒情報登録完了', $form, 'text', 'register');
           if (!Auth::attempt(['email' => $email, 'password' => $password]))
           {
@@ -181,6 +188,7 @@ class StudentParentController extends StudentController
         $form['create_user_id'] = $user->id;
         $parent->brother_add($form);
         $user->set_password($form['password']);
+        $user->update(['status' => 0]);
         DB::commit();
         return $this->api_response(200, __FUNCTION__);
       }

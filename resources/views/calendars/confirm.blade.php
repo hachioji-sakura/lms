@@ -20,11 +20,11 @@
         </button>
       </form>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_del">
+    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_action">
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_del">
+        <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_action">
           <i class="fa fa-trash-alt mr-1"></i>
           予定削除
         </button>
