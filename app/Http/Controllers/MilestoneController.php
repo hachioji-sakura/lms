@@ -21,6 +21,41 @@ class MilestoneController extends UserController
     public function model(){
       return Milestone::query();
     }
+    public function get_target_user_id(Request $request){
+      $user = $this->login_details();
+      if($this->is_student($user->role)===true){
+        return $user->user_id;
+      }
+      /*
+      if($request->has('student_id')){
+        $u = Student::where('id',$request->get('student_id'));
+      }
+      else if($request->has('teacher_id')){
+        $u = Teacher::where('id',$request->get('teacher_id'));
+      }
+      else if($request->has('manager_id')){
+        $u = Manager::where('id',$request->get('manager_id'));
+      }
+      */
+
+      if($request->has('origin') && $request->has('item_id')){
+        switch($request->get('origin')){
+          case "students":
+            $u = Student::where('id',$request->get('item_id'))->first();
+            break;
+          case "teachers":
+            $u = Teacher::where('id',$request->get('item_id'))->first();
+            break;
+          case "managers":
+            $u = Manager::where('id',$request->get('item_id'))->first();
+            break;
+        }
+        if(isset($u)){
+          return $u->user_id;
+        }
+      }
+      return null;
+    }
     /**
      * 新規登録用フォーム
      *
@@ -34,22 +69,7 @@ class MilestoneController extends UserController
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
       $form['body'] = $request->get('body');
-      if($this->is_student($user->role)===true){
-        //生徒の場合は自分自身を対象とする
-        $form['target_user_id'] = $user->user_id;
-      }
-      else {
-        if($request->has('student_id')){
-          $u = Student::where('id',$request->get('student_id'));
-        }
-        else if($request->has('teacher_id')){
-          $u = Teacher::where('id',$request->get('teacher_id'));
-        }
-        else if($request->has('manager_id')){
-          $u = Manager::where('id',$request->get('manager_id'));
-        }
-        $form['target_user_id'] = $u->user_id;
-      }
+      $form['target_user_id'] = $this->get_target_user_id($request);
       return $form;
     }
     /**
@@ -74,6 +94,7 @@ class MilestoneController extends UserController
     public function index(Request $request)
     {
       $param = $this->get_param($request);
+      $user = $param['user'];
       if(!$this->is_manager($user->role)){
         //事務以外 一覧表示は不可能
         abort(403);
@@ -98,6 +119,8 @@ class MilestoneController extends UserController
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
         'user' => $user,
+        'origin' => $request->origin,
+        'item_id' => $request->item_id,
         'teacher_id' => $request->teacher_id,
         'manager_id' => $request->manager_id,
         'student_id' => $request->student_id,
@@ -135,8 +158,7 @@ class MilestoneController extends UserController
       $items = $this->model();
       $user = $this->login_details();
       if($this->is_manager_or_teacher($user->role)!==true){
-        //生徒の場合は自分自身を対象とする
-        $items = $items->where('target_user_id',$user->user_id);
+        $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
@@ -219,9 +241,7 @@ class MilestoneController extends UserController
    public function create(Request $request)
    {
       $param = $this->get_param($request);
-      return view($this->domain.'.create',
-        ['_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-         'error_message' => ''])
+      return view($this->domain.'.create',[])
         ->with($param);
     }
 
@@ -236,7 +256,7 @@ class MilestoneController extends UserController
 
       $res = $this->_store($request);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました');
     }
     /**
      * 新規登録ロジック
@@ -316,7 +336,6 @@ class MilestoneController extends UserController
 
       return view('components.page', [
         'action' => $request->get('action'),
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         'fields'=>$fields])
         ->with($param);
     }
@@ -331,7 +350,6 @@ class MilestoneController extends UserController
     {
       $param = $this->get_param($request, $id);
       return view($this->domain.'.create', [
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         '_edit' => true])
         ->with($param);
     }
@@ -348,7 +366,7 @@ class MilestoneController extends UserController
       $param = $this->get_param($request, $id);
       $res = $this->_update($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
     }
     public function _update(Request $request, $id)
     {
@@ -386,7 +404,7 @@ class MilestoneController extends UserController
 
       $res = $this->_delete($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました', str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました');
     }
 
     public function _delete(Request $request, $id)

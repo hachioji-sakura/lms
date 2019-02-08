@@ -1,5 +1,5 @@
 @section('entry_form')
-<div id="{{$domain}}_entry">
+<div id="teachers_entry">
 @if(!empty($result))
   <h4 class="bg-success p-3 text-sm">
     @if($result==='success')
@@ -13,7 +13,7 @@
     @endif
   </h4>
 @else
-<form method="POST"  action="/{{$domain}}/entry">
+<form method="POST"  action="/teachers/entry">
     @csrf
     <div class="row">
       <div class="col-6 col-lg-6 col-md-6">
@@ -54,11 +54,11 @@
 </div>
 <script>
 $(function(){
-  base.pageSettinged("{{$domain}}_entry", null);
+  base.pageSettinged("teachers_entry", null);
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('{{$domain}}_entry')){
+    if(front.validateFormValue('teachers_entry')){
       $("form").submit();
     }
   });

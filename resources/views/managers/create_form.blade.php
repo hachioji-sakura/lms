@@ -125,25 +125,8 @@
 <div class="row">
   <div class="col-12">
     <div class="form-group">
-      <label for="lesson" class="w-100">
-        担当教室
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      @foreach($attributes['lesson'] as $index => $name)
-      <label class="mx-2">
-        <input type="checkbox" value="{{ $index }}" name="lesson[]" class="flat-red" required="true"
-        @if(isset($_edit) && $item->user->has_tag('lesson', $index)===true)
-       checked
-        @endif
-        >{{$name}}
-      </label>
-      @endforeach
-    </div>
-  </div>
-  <div class="col-12">
-    <div class="form-group">
       <label for="subject_level" class="w-100">
-        授業スケジュール
+        スケジュール
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
       <table class="table table-condensed">
@@ -206,75 +189,6 @@
         }
       }
       </script>
-    </div>
-  </div>
-</div>
-@endsection
-
-@section('subject_form')
-<div class="row">
-  <div class="col-12">
-    <div class="form-group">
-      <label for="subject_level" class="w-100">
-        担当可能科目
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <table class="table table-condensed">
-      <tr class="bg-gray">
-        <th class="p-1">学年</th>
-        <th class="p-1">分類</th>
-        <th class="p-1">科目</th>
-        @foreach($attributes['charge_subject_level'] as $index => $name)
-        <th class="p-1">
-           {{$name}}
-        </th>
-        @endforeach
-      </tr>
-      @foreach(config('charge_subjects') as $grade => $subject_group)
-        @foreach($subject_group as $subject => $subject_data)
-          <?php $l1 = $loop->index; ?>
-          @isset($subject_data['items'])
-            @foreach($subject_data['items'] as $subject => $subject_name)
-              <tr>
-              @if($l1===0)
-              <th class="p-1 text-center bg-gray" rowspan=100>{{$grade}}</th>
-              @endif
-              @if($loop->index===0)
-              <th class="p-1 text-center bg-light" rowspan={{count($subject_data['items'])}}>{{$subject_data['name']}}</th>
-              @endif
-              <th class="p-1 text-center bg-light">{{$subject_name}}</th>
-              @foreach($attributes['charge_subject_level'] as $index => $name)
-              <td class="p-1 text-center">
-                <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="flat-red"  required="true"
-                @if($item->user->has_tag($subject.'_level', $index)===true || (!isset($_edit) && $loop->index == 0))
-                 checked
-                @endif
-                >
-              </td>
-              @endforeach
-            </tr>
-            @endforeach
-          @else
-            <tr>
-            @if($loop->index===0)
-            <th class="p-1 text-center bg-gray" rowspan={{count($subject_group)}}>{{$grade}}</th>
-            @endif
-            <th class="p-1 text-center bg-light">{{$subject_data['name']}}</th>
-            <th class="p-1 text-center bg-light">{{$subject_data['name']}}</th>
-            @foreach($attributes['charge_subject_level'] as $index => $name)
-            <td class="text-center">
-              <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="flat-red"  required="true"
-              @if((isset($_edit) && $item->user->has_tag($subject.'_level', $index)===true) || (!isset($_edit) && $loop->index == 0))
-               checked
-              @endif
-              >
-            </td>
-            @endforeach
-            </tr>
-          @endisset
-        @endforeach
-      @endforeach
-      </table>
     </div>
   </div>
 </div>

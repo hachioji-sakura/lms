@@ -6,11 +6,11 @@
 
 @if(isset($page_message))
   <h6>{{$page_message}}</h6>
-@elseif($action=='delete')
+@elseif(isset($action) && $action=='delete')
 <div class="col-12 col-lg-12 col-md-12 mb-1">
   <h4 class="text-danger">削除してもよろしいですか？</h4>
 </div>
-@elseif($action=='remind')
+@elseif(isset($action) && $action=='remind')
 <div class="col-12 col-lg-12 col-md-12 mb-1">
   <h4 class="text-success">本登録依頼メールを送信しますがよろしいですか？</h4>
 </div>
@@ -47,9 +47,6 @@
     {{$forms}}
   @else
     {{-- 共通formを利用する場合 --}}
-    @if(isset($_page_origin))
-      <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
-    @endif
     {{-- action=deleteのみ、mothod=DELETE --}}
     @if(isset($action) && $action!='delete')
       <form method="POST" action="/{{$domain}}/{{$item['id']}}/{{$action}}">
@@ -59,7 +56,7 @@
     @csrf
   <div class="row">
     {{-- 共通form用のボタン --}}
-    @if($action=='delete')
+    @if(isset($action) && $action=='delete')
       @method('DELETE')
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}">
@@ -73,7 +70,7 @@
           キャンセル
         </a>
       </div>
-    @elseif($action=='remind')
+    @elseif(isset($action) && $action=='remind')
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_{{$action}}">
             <i class="fa fa-envelope mr-1"></i>

@@ -1,11 +1,11 @@
 @include($domain.'.entry_form')
-<div id="teachers_entry">
-  <form method="POST"  action="/teachers/entry">
+<div id="{{$domain}}_entry">
+  <form method="POST"  action="/{{$domain}}/entry">
     @csrf
     @yield('entry_form')
     <div class="row">
       <div class="col-12 col-lg-6 col-md-6 mb-1">
-        <button type="submit" class="btn btn-primary btn-block" accesskey="teachers_create">
+        <button type="submit" class="btn btn-primary btn-block" accesskey="{{$domain}}_create">
           <i class="fa fa-envelope mr-1"></i>登録メールを送る
         </button>
       </div>

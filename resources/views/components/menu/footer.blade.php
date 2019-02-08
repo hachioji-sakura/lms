@@ -1,4 +1,3 @@
-@section('footer')
 <div id="footer_form" class="card card-primary card-outline collapse footer-form">
   <div class="card-header">
     <h3 class="card-title page_title"></h3>
@@ -7,7 +6,7 @@
   </div>
 </div>
 <dl class="btn-group">
-    @yield('page_footer')
+  {{$setting}}
 </dl>
 <script>
 $(function(){
@@ -31,4 +30,3 @@ $(function(){
   });
 });
 </script>
-@endsection

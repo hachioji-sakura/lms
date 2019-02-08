@@ -26,9 +26,9 @@ class CommentController extends MilestoneController
     {
       $items = $this->model();
       $user = $this->login_details();
-      if($this->i($user->role)!==true){
+      if($this->is_manager_or_teacher($user->role)!==true){
         //生徒の場合は自分自身を対象とする
-        $items = $items->where('target_user_id',$user->user_id);
+        $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
@@ -58,7 +58,6 @@ class CommentController extends MilestoneController
       $fields['create_user_name'] = [
         'label' => '起票者',
       ];
-
       $fields['publiced_at'] = [
         'label' => '公開日',
       ];
@@ -69,7 +68,7 @@ class CommentController extends MilestoneController
         'label' => '操作',
         'button' => ['edit', 'delete']
       ];
-      return ['items' => $items->toArray(), 'fields' => $fields];
+      return ['items' => $items, 'fields' => $fields];
     }
     /**
      * フィルタリングロジック
@@ -122,22 +121,7 @@ class CommentController extends MilestoneController
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
       $form['body'] = $request->get('body');
-      if($this->is_student($user->role)===true){
-        //生徒の場合は自分自身を対象とする
-        $form['target_user_id'] = $user->user_id;
-      }
-      else {
-        if($request->has('student_id')){
-          $u = Student::where('id',$request->get('student_id'));
-        }
-        else if($request->has('teacher_id')){
-          $u = Teacher::where('id',$request->get('teacher_id'));
-        }
-        else if($request->has('manager_id')){
-          $u = Manager::where('id',$request->get('manager_id'));
-        }
-        $form['target_user_id'] = $u->user_id;
-      }
+      $form['target_user_id'] = $this->get_target_user_id($request);
       return $form;
     }
     public function update_form(Request $request){
@@ -193,7 +177,6 @@ class CommentController extends MilestoneController
 
       return view('components.page', [
         'action' => $request->get('action'),
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
         'fields'=>$fields])
         ->with($param);
     }
@@ -254,7 +237,7 @@ class CommentController extends MilestoneController
       }
       $this->model()->where('id',$id)->update('publiced_at', date('Y-m-d'));
       $update_message = "コメントを公開しました。";
-      return $this->save_redirect($res, $param, $update_message, str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $update_message);
     }
 
 }

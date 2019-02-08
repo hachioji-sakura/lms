@@ -18,6 +18,10 @@ class Milestone extends Model
   {
     return $this->attribute_name('milestone_type', $this->type);
   }
+  public function scopeMydata($query, $val)
+  {
+      return $query->where('target_user_id', $val);
+  }
   public function scopeStatus($query, $val)
   {
       return $query->where('status', $val);

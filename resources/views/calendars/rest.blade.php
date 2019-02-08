@@ -16,9 +16,6 @@
     @if(isset($student_id))
       <input type="hidden" value="{{$student_id}}" name="student_id" />
     @endif
-    @if(isset($_page_origin))
-      <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
-    @endif
   <div class="row">
     @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"]).' 09:00:00')
     <div class="col-12 mb-1">

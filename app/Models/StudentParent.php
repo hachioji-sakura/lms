@@ -8,7 +8,7 @@ use App\Models\StudentParent;
 use App\Models\StudentRelation;
 
 use Illuminate\Database\Eloquent\Model;
-class StudentParent extends Model
+class StudentParent extends Teacher
 {
   protected $table = 'student_parents';
   protected $guarded = array('id');
@@ -19,6 +19,12 @@ class StudentParent extends Model
       'kana_last' => 'required',
       'kana_first' => 'required',
   );
+  public function user(){
+    return $this->belongsTo('App\User');
+  }
+  public function relations(){
+    return $this->belogsTo('App\Models\StudentRelation');
+  }
   public function name()
   {
       return $this->name_last . ' ' .$this->name_first;
@@ -27,7 +33,7 @@ class StudentParent extends Model
   {
       return $this->kana_last . ' ' .$this->kana_first;
   }
-  static protected function entry($form){
+  static public function entry($form){
     $ret = [];
     $parent_user = User::create([
         'name' => $form['name_last'].' '.$form['name_first'],
@@ -49,6 +55,14 @@ class StudentParent extends Model
   }
   public function brother_add($form){
     $ret = [];
+    $childs = Student::findChild($this->id)
+      ->where('name_last', $form['name_last'])
+      ->where('name_first', $form['name_first'])
+      ->first();
+    if(isset($childs)){
+      //すでに同姓同名の子供を登録済み
+      return null;
+    }
     $form['create_user_id'] = $this->user_id;
     $student = Student::entry($form);
     StudentRelation::create([
@@ -80,19 +94,8 @@ class StudentParent extends Model
 	    }
     }
   }
-  public function user(){
-    return $this->belongsTo('App\User');
-  }
-  public function relations(){
-    return $this->hasMany('App\Models\StudentRelation');
-  }
-  public function childs(){
+  public function relation(){
     $items = StudentRelation::where('student_parent_id', $this->id)->get();
-    $childs = [];
-    foreach($items as $item){
-      $child = Student::where('id', $item->student_id)->first();
-      $childs[] =$child;
-    }
-    return $childs;
+    return $items;
   }
 }

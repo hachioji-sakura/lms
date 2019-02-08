@@ -1,5 +1,3 @@
-@section('navbar')
-<!-- Navbar -->
 <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
 <!-- Left navbar links -->
 <ul class="navbar-nav">
@@ -39,21 +37,31 @@
       </a>
     </li>
   @elseif($user->role==="manager")
-    <li class="nav-item">
-      <a href="/students" class="nav-link">生徒一覧</a>
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fa fa-users"></i>
+        <span class="d-none d-sm-inline-block">アカウント</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left">
+        <a href="/students" class="dropdown-item">生徒一覧</a>
+        <a href="/parents" class="dropdown-item">契約者一覧</a>
+        <a href="/teachers" class="dropdown-item">講師一覧</a>
+        <a href="/managers" class="dropdown-item">事務一覧</a>
+      </div>
     </li>
-    <li class="nav-item d-none d-sm-inline-block">
-      <a href="/teachers" class="nav-link">講師一覧</a>
-    </li>
-    <li class="nav-item d-none d-sm-inline-block">
-      <a href="/managers" class="nav-link">事務一覧</a>
+    <li class="nav-item dropdown">
+      <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fa fa-database"></i>
+        <span class="d-none d-sm-inline-block">その他</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left">
+        <a href="/comments" class="dropdown-item">コメント一覧</a>
+        <a href="/milestones" class="dropdown-item">目標一覧</a>
+        <a href="/attriubtes" class="dropdown-item">属性一覧</a>
+        <a href="/events" class="dropdown-item">イベント一覧</a>
+      </div>
     </li>
   @endif
-  {{-- まだ対応しない
-    <li class="nav-item d-none d-sm-inline-block">
-      <a href="/events" class="nav-link">イベント一覧</a>
-    </li>
-  --}}
 </ul>
 
 <!-- Right navbar links -->
@@ -88,7 +96,7 @@
       <i class="fa fa-user-alt"></i>
       --}}
       <img src="{{$user->icon}}" class="img-size-32 mr-1 img-circle">
-              {{$user->name}}
+      {{$user->name}}
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
       {{--
@@ -133,5 +141,3 @@
   </li>
 </ul>
 </nav>
-<!-- /.Navbar -->
-@endsection

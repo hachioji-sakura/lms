@@ -281,9 +281,8 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields;
       return view('calendars.page', [
-        'action' => $request->get('action'),
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-        ])
+        'action' => $request->get('action')
+      ])
         ->with($param);
     }
     /**
@@ -309,9 +308,7 @@ class UserCalendarController extends MilestoneController
       $detail .= $param['item']['subject'].'';
       $param['item']['detail'] = $detail;
 
-      return view('calendars.'.$status, [
-        '_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-        ])->with($param);
+      return view('calendars.'.$status, [ ])->with($param);
     }
     /**
      * カレンダーステータス更新
@@ -357,7 +354,7 @@ class UserCalendarController extends MilestoneController
         }
       }
       $this->send_slack('カレンダーステータス更新['.$status.']:'.$slack_message.' / id['.$item['id'].']開始日時['.$item['start_time'].']終了日時['.$item['end_time'].']生徒['.$item['student_name'].']講師['.$item['teacher_name'].']', 'info', 'カレンダーステータス更新');
-      return $this->save_redirect($res, $param, $status_update_message[$status], str_replace('_', '/', $request->get('_page_origin')));
+      return $this->save_redirect($res, $param, $status_update_message[$status]);
     }
     /**
      * カレンダーステータス更新
@@ -482,14 +479,11 @@ class UserCalendarController extends MilestoneController
      * @return array
      */
     private function get_students($param){
-      $items = Student::whereRaw('students.user_id in (select id from users where status=0)');
+      $items = Student::whereRaw('students.user_id in (select id from users where status !=9)');
       if($this->is_teacher($param['user']->role)){
         $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $param['user']->id);
       }
       $items = $items->get();
-      foreach($items as $item){
-        $item['name'] = $item['name_last'].' '.$item['name_first'];
-      }
       return $items;
     }
     /**
@@ -534,8 +528,7 @@ class UserCalendarController extends MilestoneController
       }
 
       return view($this->domain.'.create',
-        ['_page_origin' => str_replace('_', '/', $request->get('_page_origin')),
-         'error_message' => ''])
+        [ 'error_message' => ''])
         ->with($param);
     }
     /**

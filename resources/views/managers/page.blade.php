@@ -15,16 +15,13 @@
 <section id="member" class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
+			<div class="col-md-12">
+        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
             @slot('alias')
             @endslot
         @endcomponent
-			</div>
-			<div class="col-md-8">
-				@yield('comments')
 			</div>
 		</div>
 	</div>
@@ -39,8 +36,8 @@
             <i class="fa fa-user-friends"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">保護者一覧</b>
-            <span class="text-sm">生徒保護者の登録</span>
+            <b class="info-box-text text-lg">契約者一覧</b>
+            <span class="text-sm">契約者（生徒保護者）管理</span>
           </div>
         </div>
         </a>
@@ -53,7 +50,7 @@
           </span>
           <div class="info-box-content text-dark">
             <b class="info-box-text text-lg">生徒一覧</b>
-            <span class="text-sm">生徒の登録</span>
+            <span class="text-sm">生徒の管理</span>
           </div>
         </div>
         </a>
@@ -61,7 +58,7 @@
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/managers">
         <div class="info-box">
-          <span class="info-box-icon bg-info">
+          <span class="info-box-icon bg-success">
             <i class="fa fa-address-card"></i>
           </span>
           <div class="info-box-content text-dark">
@@ -74,7 +71,7 @@
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/teachers">
         <div class="info-box">
-          <span class="info-box-icon bg-info">
+          <span class="info-box-icon bg-success">
             <i class="fa fa-user-tie"></i>
           </span>
           <div class="info-box-content text-dark">
@@ -93,6 +90,19 @@
           <div class="info-box-content text-dark">
             <b class="info-box-text text-lg">コメント一覧</b>
             <span class="text-sm">コメントの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/milestones">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-flag"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">目標一覧</b>
+            <span class="text-sm">生徒目標の管理</span>
           </div>
         </div>
         </a>
@@ -149,10 +159,17 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&manager_id={{$item->id}}" page_title="目標登録">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="講師設定">
+            <i class="fa fa-user-edit nav-icon"></i>事務設定
+          </a>
+        </li>
+        {{--
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
         </li>
+        --}}
       </ul>
     </li>
 </ul>
@@ -160,7 +177,7 @@
 
 @section('page_footer')
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?_page_origin={{$domain}}_{{$item->id}}&manager_id={{$item->id}}" page_title="コメント登録">
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create??origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
     <i class="fa fa-comment-dots"></i>コメント登録
   </a>
 </dt>

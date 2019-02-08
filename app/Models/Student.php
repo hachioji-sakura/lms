@@ -87,7 +87,7 @@ class Student extends Model
    *　リレーション：担当生徒（担当講師）
    */
   public function chargeStudents(){
-    return $this->hasMany('App\Models\ChargeStudent');
+    return $this->hasMany('App\Models\ChargeStudent', 'student_id');
   }
   /**
    *　リレーション：家族関係
@@ -149,12 +149,12 @@ EOT;
     $search_words = explode(' ', $word);
     foreach($search_words as $_search_word){
       $_like = '%'.$_search_word.'%';
-      $query = $query->orWhere('name_last','like', $_like)
+      $query = $query->where('name_last','like', $_like)
         ->orWhere('name_first','like', $_like)
         ->orWhere('kana_last','like', $_like)
         ->orWhere('kana_first','like', $_like);
     }
-    return $this->scopeFindEmail($query, $word);
+    return $query;
   }
 
   /**

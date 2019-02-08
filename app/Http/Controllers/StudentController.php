@@ -82,6 +82,16 @@ class StudentController extends UserController
   {
     $items = $this->model()->with('user.image');
 
+    $user = $this->login_details();
+    if($this->domain==="students" && $this->is_parent($user->role)){
+      //自分の子供のみ閲覧可能
+      $items = $items->findChild($user->id);
+    }
+    else if($this->domain==="students" && $this->is_teacher($user->role)){
+      //自分の担当生徒のみ閲覧可能
+      $items = $items->findChargeStudent($user->id);
+    }
+
     $items = $this->_search_scope($request, $items);
 
    $items = $this->_search_pagenation($request, $items);
@@ -100,19 +110,9 @@ class StudentController extends UserController
    */
   public function _search_scope(Request $request, $items)
   {
-    $user = $this->login_details();
-
     //ID 検索
     if(isset($request->id)){
       $items = $items->where($this->table.'.id',$request->id);
-    }
-    if($this->is_parent($user->role)){
-      //自分の子供のみ閲覧可能
-      $items = $items->findChild($user->id);
-    }
-    else if($this->is_teacher($user->role)){
-      //自分の担当生徒のみ閲覧可能
-      $items = $items->findChargeStudent($user->id);
     }
 
     //検索ワード
@@ -122,6 +122,9 @@ class StudentController extends UserController
     //ステータス
     if(isset($request->status)){
       $items = $items->findStatuses($request->status);
+    }
+    else {
+      $items = $items->findStatuses(0);
     }
     return $items;
   }
@@ -157,13 +160,17 @@ class StudentController extends UserController
      $form = $request->all();
      $parent = StudentParent::where('id', $param['user']->id)->first();
      $form['create_user_id'] = $param['user']->user_id;
-     $parent->brother_add($form);
-     $form['parent_name_first'] = $param['user']->name_first;
-     $form['parent_name_last'] = $param['user']->name_last;
-     $form['send_to'] = 'parent';
-     $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
-
-     $param['success_message'] = '生徒情報登録完了しました。';
+     $student = $parent->brother_add($form);
+     if(isset($student)){
+       $form['parent_name_first'] = $param['user']->name_first;
+       $form['parent_name_last'] = $param['user']->name_last;
+       $form['send_to'] = 'parent';
+       $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
+       $param['success_message'] = '生徒情報登録完了しました。';
+     }
+     else {
+       $param['error_message'] = '生徒登録に失敗しました。';
+     }
      return redirect('/home')
       ->with($param);
 
@@ -211,7 +218,6 @@ class StudentController extends UserController
      'item' => $item,
      'comments'=>$comments,
      'milestones'=>$milestones,
-     'use_icons'=>$this->get_image(),
    ])->with($param);
   }
   /**
@@ -263,8 +269,7 @@ class StudentController extends UserController
    $param["calendars"] = $calendars;
    return view($this->domain.'.'.$view, [
      'item' => $item,
-     'milestones'=>$milestones,
-     'use_icons'=> $this->get_image(),
+     'milestones'=>$milestones
    ])->with($param);
  }
 
@@ -280,19 +285,6 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
     $param['student'] = $param['item'];
-    /*
-    if(!empty($param['user'])){
-       if(!$this->is_parent($param['user']->role)){
-         //親以外、ここからの生徒編集はできない
-         abort(403);
-       }
-       $param['parent'] = $param['user'];
-       $param['item'] = Student::where('id', $id)->first();
-    }
-    else {
-      abort(403);
-    }
-    */
     return view($this->domain.'.edit',$param);
 
   }
@@ -319,7 +311,6 @@ class StudentController extends UserController
     ];
     return view('components.page', [
       'action' => 'delete',
-      '_page_origin' => $this->domain,
       'fields'=>$fields])
       ->with($param);
   }
@@ -337,7 +328,6 @@ class StudentController extends UserController
     ];
     return view('components.page', [
       'action' => 'remind',
-      '_page_origin' => $this->domain,
       'fields'=>$fields])
       ->with($param);
   }

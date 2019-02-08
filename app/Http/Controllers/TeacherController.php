@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Models\Teacher;
-use App\Models\ChargeStudent;
+use App\Models\Manager;
+use App\Models\Student;
 use App\Models\UserCalendar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -86,23 +87,6 @@ class TeacherController extends StudentController
     }
     return $ret;
   }
-  public function _search_scope(Request $request, $items)
-  {
-    //ID 検索
-    if(isset($request->id)){
-      $items = $items->where($this->table.'.id',$request->id);
-    }
-
-    //検索ワード
-    if(isset($request->search_word)){
-      $items = $items->searchWord($request->search_word);
-    }
-    //ステータス
-    if(isset($request->status)){
-      $items = $items->findStatuses($request->status);
-    }
-    return $items;
-  }
   /**
    * 新規登録画面
    *
@@ -111,7 +95,6 @@ class TeacherController extends StudentController
   public function create(Request $request)
   {
     $param = $this->get_param($request);
-
     return view($this->domain.'.create',
       ['error_message' => ''])
       ->with($param);
@@ -126,18 +109,10 @@ class TeacherController extends StudentController
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    /*
-    $model = $this->model()->where('id',$id)->first()->user;
-    $item = $model->details();
-    $item['tags'] = $model->tags();
-    */
     $user = $param['user'];
     //コメントデータ取得
     $comments = $param['item']->user->target_comments;
     $comments = $comments->sortByDesc('created_at');
-
-
-    $charge_students = $this->get_students($request, $id);
 
     foreach($comments as $comment){
       $create_user = $comment->create_user->details();
@@ -146,8 +121,7 @@ class TeacherController extends StudentController
     }
     return view($this->domain.'.page', [
       'comments'=>$comments,
-      'charge_students'=>$charge_students,
-      'use_icons'=> $this->get_image(),
+      'charge_students'=>$this->get_students($request, $id),
     ])->with($param);
   }
   /**
@@ -165,12 +139,10 @@ class TeacherController extends StudentController
 
     $user = $param['user'];
     //コメントデータ取得
-    $use_icons = $this->get_image();
 
     $view = "calendar";
     return view($this->domain.'.'.$view, [
       'item' => $item,
-      'use_icons'=>$use_icons,
     ])->with($param);
   }
   public function schedule(Request $request, $id)
@@ -182,8 +154,6 @@ class TeacherController extends StudentController
 
     $user = $param['user'];
     //コメントデータ取得
-    $use_icons = $this->get_image();
-
     $view = "schedule";
     $request->merge([
       '_sort' => 'start_time',
@@ -212,15 +182,22 @@ class TeacherController extends StudentController
     $param['list_title'] = $list_title;
     return view($this->domain.'.'.$view, [
       'item' => $item,
-      'use_icons'=>$use_icons,
     ])->with($param);
   }
   private function get_students(Request $request, $teacher_id){
-    $students =  ChargeStudent::with('student')->findTeacher($teacher_id)
-      ->likeStudentName($request->search_word)
-      ->get();
+    $students =  Student::findChargeStudent($teacher_id)
+      ->searchWord($request->search_word)->get();
+    $from_date = date('Y-m-d 00:00:00');
+    $teacher = Teacher::where('id', $teacher_id)->first();
     foreach($students as $student){
-      $student['current_calendar_start_time'] = $student->current_calendar()['start_time'];
+      $calendar = UserCalendar::findUser($teacher->user_id)->findUser($student->user_id)
+              ->rangeDate($from_date)
+              ->orderBy('start_time');
+        $calendar = $calendar->first();
+      if(isset($calendar)){
+        $student['current_calendar_start_time'] = $calendar['start_time'];
+        $student['current_calendar'] = $calendar;
+      }
       if(empty($student['current_calendar_start_time'])){
         //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
         $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
@@ -265,7 +242,7 @@ class TeacherController extends StudentController
     return ["data" => $calendars, "count" => $count];
   }
   /**
-   * 体験授業申し込みページ
+   * 仮登録ページ
    *
    * @return \Illuminate\Http\Response
    */
@@ -280,12 +257,19 @@ class TeacherController extends StudentController
       ->with($param);
    }
    /**
-    * 体験授業申し込みページ
+    * 仮登録処理
     *
     * @return \Illuminate\Http\Response
     */
    public function entry_store(Request $request)
    {
+     $param = [
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
+     ];
+     $send_to = "teacher";
+     if($this->domain==="managers") $send_to = "manager";
+
      $result = '';
      $form = $request->all();
      $res = $this->api_response(200);
@@ -316,14 +300,15 @@ class TeacherController extends StudentController
          $this->domain_name.'仮登録完了', [
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
-         'send_to' => 'teacher',
+         'send_to' => $send_to,
        ], 'text', 'entry');
-       return view($this->domain.'.entry',
-         ['result' => $result]);
+       $login_user = $this->login_details();
+       if(!isset($login_user)){
+         return view($this->domain.'.entry',
+           ['result' => $result])->with($param);
+       }
      }
-     else {
-       return $this->save_redirect($res, [], '仮登録メールを送信しました');
-     }
+     return $this->save_redirect($res, [], '仮登録メールを送信しました');
    }
    public function _entry_store(Request $request)
    {
@@ -331,9 +316,11 @@ class TeacherController extends StudentController
      try {
        DB::beginTransaction();
        $form["password"] = 'sakusaku';
-       $items = $this->model()->entry($form);
+       $item = null;
+       if($this->domain==="teachers") $item = Teacher::entry($form);
+       else $item = Manager::entry($form);
        DB::commit();
-       return $this->api_response(200, __FUNCTION__);
+       return $this->api_response(200, __FUNCTION__, __LINE__, $item);
      }
      catch (\Illuminate\Database\QueryException $e) {
        DB::rollBack();
@@ -353,10 +340,12 @@ class TeacherController extends StudentController
    {
      $result = '';
      $param = [
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
        'user' => $this->login_details(),
        'attributes' => $this->attributes(),
      ];
-     if(!empty($param['user'])){
+     if(isset($param['user'])){
        $param['result'] = 'logout';
        return view($this->domain.'.register',$param);
      }
@@ -371,6 +360,9 @@ class TeacherController extends StudentController
          abort(404);
        }
        $param['item'] = $user->first()->details();
+       if($param['item']->role.'s' != $this->domain){
+         abort(404);
+       }
        $param['access_key'] = $access_key;
      }
      return view($this->domain.'.register',$param);
@@ -407,15 +399,14 @@ class TeacherController extends StudentController
       $password = $form['password'];
 
       if($this->is_success_response($res)){
-        if(empty($param['user'])){
-          $form['send_to'] = 'teacher';
-          $this->send_mail($email, '講師登録完了', $form, 'text', 'register');
-          if (!Auth::attempt(['email' => $email, 'password' => $password]))
-          {
-            abort(500);
-          }
+        $create_user = $res['data']->user->details();
+        $form['send_to'] = $create_user->role;
+        $this->send_mail($email, $this->domain_name.'登録完了', $form, 'text', 'register');
+        if (!Auth::attempt(['email' => $email, 'password' => $password]))
+        {
+          abort(500);
         }
-        return $this->save_redirect($res, $param, '講師登録完了しました。', '/home');
+        return $this->save_redirect($res, $param, $this->domain_name.'登録完了しました。', '/home');
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
@@ -429,12 +420,12 @@ class TeacherController extends StudentController
         $user = $user->first();
         DB::beginTransaction();
         $form['create_user_id'] = $user->id;
-        $teacher = $this->model()->where('user_id', $user->id)->first();
-        $teacher->profile_update($form);
+        $item = $this->model()->where('user_id', $user->id)->first();
+        $item->profile_update($form);
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
         DB::commit();
-        return $this->api_response(200, __FUNCTION__);
+        return $this->api_response(200, __FUNCTION__, __LINE__, $item);
       }
       catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();

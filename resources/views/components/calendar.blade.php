@@ -38,7 +38,8 @@
           "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
         },
       };
-      return _ret[status];
+      if(_ret[status]) return _ret[status];
+      return _ret['new'];
     }
     function event_render(events, element, title){
       var _status_style = status_style(events.status);

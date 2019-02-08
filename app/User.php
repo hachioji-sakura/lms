@@ -12,6 +12,9 @@ use App\Models\UserTag;
 use App\Models\Image;
 use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
+use App\Models\UserCalendar;
+use App\Models\UserCalendarMember;
+
 use Hash;
 class User extends Authenticatable
 {
@@ -62,6 +65,18 @@ class User extends Authenticatable
     }
     public function image(){
       return $this->belongsTo('App\Models\Image');
+    }
+    public function create_comments(){
+      return $this->hasMany('App\Models\Comment', 'create_user_id');
+    }
+    public function target_comments(){
+      return $this->hasMany('App\Models\Comment', 'target_user_id');
+    }
+    public function target_milestones(){
+      return $this->hasMany('App\Models\Milestone', 'target_user_id');
+    }
+    public function aliases(){
+      return $this->hasMany('App\Models\UserTag');
     }
 
     /**
@@ -129,18 +144,5 @@ class User extends Authenticatable
 EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
-    }
-
-    public function create_comments(){
-      return $this->hasMany('App\Models\Comment', 'create_user_id');
-    }
-    public function target_comments(){
-      return $this->hasMany('App\Models\Comment', 'target_user_id');
-    }
-    public function target_milestones(){
-      return $this->hasMany('App\Models\Milestone', 'target_user_id');
-    }
-    public function aliases(){
-      return $this->hasMany('App\Models\UserTag');
     }
 }

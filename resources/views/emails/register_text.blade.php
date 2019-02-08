@@ -5,6 +5,11 @@
 
 講師登録が完了いたしました。
 引き続き、下記ログイン画面よりご利用ください。
+@elseif($send_to=="manager")
+{{$name_last}} {{$name_first}}さん
+
+事務登録が完了いたしました。
+引き続き、下記ログイン画面よりご利用ください。
 @else
 {{$parent_name_last}} {{$parent_name_first}}様
 

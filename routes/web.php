@@ -61,11 +61,16 @@ Route::get('entry','StudentParentController@entry');
 Route::post('entry','StudentParentController@entry_store');
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
-
 Route::get('teachers/entry','TeacherController@entry');
 Route::post('teachers/entry','TeacherController@entry_store');
 Route::get('teachers/register','TeacherController@register');
 Route::post('teachers/register','TeacherController@register_update');
+Route::get('managers/entry','ManagerController@entry');
+Route::post('managers/entry','ManagerController@entry_store');
+Route::get('managers/register','ManagerController@register');
+Route::post('managers/register','ManagerController@register_update');
+
+
 Route::get('parents/{id}/delete','StudentParentController@delete_page');
 Route::get('students/{id}/delete','StudentController@delete_page');
 Route::get('managers/{id}/delete','ManagerController@delete_page');
@@ -86,7 +91,8 @@ Route::resource('managers','ManagerController');
 Route::resource('teachers','TeacherController');
 Route::resource('comments','CommentController');
 Route::resource('user_examinations','UserExaminationController');
-Route::post('icon','ImageController@icon_change');
+Route::get('icon/change','ImageController@icon_change_page');
+Route::put('icon/change','ImageController@icon_change');
 
 
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');

@@ -6,8 +6,11 @@
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
   @csrf
-  @if(isset($_page_origin))
-    <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
+  @if(isset($origin))
+    <input type="hidden" value="{{$origin}}" name="origin" />
+  @endif
+  @if(isset($item_id))
+    <input type="hidden" value="{{$item_id}}" name="item_id" />
   @endif
   @if(isset($student_id))
     <input type="hidden" value="{{$student_id}}" name="student_id" />

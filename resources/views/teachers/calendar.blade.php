@@ -11,7 +11,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
 
@@ -53,7 +53,7 @@
               status : "new",
             }]);
             var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
-            var param ="?_page_origin={{$domain}}_{{$item->id}}";
+            var param ="?origin={{$domain}}&item_id={{$item->id}}";
             param += "&teacher_id={{$item->id}}";
             param += "&start_date="+start_date;
             param += "&start_hours="+start.hour();

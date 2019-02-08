@@ -67,24 +67,24 @@ EOT;
   }
 
   public function is_access($user_id){
-    $parent = StudentParent::where('user_id', $user_id);
-    if(isset($parents)){
+    $parent = StudentParent::where('user_id', $user_id)->first();
+    $ret = "";
+    if(isset($parent)){
       //保護者の場合
-      $relations = $parent->first()->relations->get();
-      foreach ($relations as $relation) {
-        if($this->_is_access($relation->student->user_id)===true){
-          return true;
+      foreach ($parent->relation() as $relation){
+        if($this->_is_access($relation->student->user_id)==true){
+          return $ret;
         }
       }
-      return false;
+      return $ret;
     }
     else {
       return $this->_is_access($user_id);
     }
   }
-  private function _is_access($user_id){
+  public function _is_access($user_id){
     foreach($this->members as $member){
-      if($user_id===$member->user_id){
+      if($user_id==$member->user_id){
         return true;
       }
     }

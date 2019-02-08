@@ -3,7 +3,7 @@
 @include($domain.'.entry_form')
 
 @section('content')
-<div id="teachers_entry">
+<div id="{{$domain}}_entry">
 @if(!empty($result))
   <h4 class="bg-success p-3 text-sm">
     @if($result==='success')
@@ -17,13 +17,13 @@
     @endif
   </h4>
 @else
-  <form method="POST"  action="/teachers/entry">
+  <form method="POST"  action="/{{$domain}}/entry">
     @csrf
     @yield('entry_form')
     <div class="row">
       <div class="col-12 mb-1">
-        <button type="submit" class="btn btn-primary btn-block" accesskey="teachers_create">
-          <i class="fa fa-envelope mr-1"></i>講師仮登録を進める
+        <button type="submit" class="btn btn-primary btn-block" accesskey="{{$domain}}_create">
+          <i class="fa fa-envelope mr-1"></i>{{$domain_name}}仮登録を進める
         </button>
       </div>
     </div>
