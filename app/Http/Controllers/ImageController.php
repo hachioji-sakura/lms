@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use App\Models\Image;
 use App\Models\Student;
@@ -9,6 +8,18 @@ use Illuminate\Support\Facades\Storage;
 use DB;
 class ImageController extends UserController
 {
+    public $domain = 'images';
+    public $table = 'images';
+    public $domain_name = '画像';
+    /**
+     * このdomainで管理するmodel
+     *
+     * @return model
+     */
+    public function model(){
+      return Image::query();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,6 +30,23 @@ class ImageController extends UserController
       $items = Image::all();
       return $items->toArray();
     }
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details();
+      if(!isset($user)) {
+        abort(403);
+      }
+      $ret = [
+        'domain' => $this->domain,
+        'domain_name' => $this->domain_name,
+        'user' => $user,
+        'use_icons' => $this->get_image(),
+        'user_id' => $request->user_id,
+        'search_word'=>$request->search_word,
+        'search_status'=>$request->status,
+        'attributes' => $this->attributes(),
+      ];
+      return $ret;
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -27,6 +55,12 @@ class ImageController extends UserController
     public function create()
     {
         return view('sample.create');
+    }
+    public function icon_change_page(Request $request){
+      $param = $this->get_param($request);
+      return view($this->domain.'.change',
+        ['error_message' => ''])
+        ->with($param);
     }
 
     /**
@@ -38,18 +72,18 @@ class ImageController extends UserController
     public function store(Request $request)
     {
       $this->validate($request, [
-          'image' => [
-              // 必須
-              'required',
-              // アップロードされたファイルであること
-              'file',
-              // 画像ファイルであること
-              'image',
-              // MIMEタイプを指定
-              'mimes:jpeg,png,gif,bmp,svg',
-              // 最小縦横120px 最大縦横400px
-              'dimensions:min_width=1,min_height=1,max_width=512,max_height=512',
-          ]
+        'image' => [
+            // 必須
+            'required',
+            // アップロードされたファイルであること
+            'file',
+            // 画像ファイルであること
+            'image',
+            // MIMEタイプを指定
+            'mimes:jpeg,png,gif,bmp,svg',
+            // 最小縦横120px 最大縦横400px
+            'dimensions:min_width=1,min_height=1,max_width=512,max_height=512',
+        ]
       ]);
       $form = $request->all();
       if ($request->file('image')->isValid([])) {
@@ -64,74 +98,55 @@ class ImageController extends UserController
             ->withErrors(['file' => '画像がアップロードされていないか不正なデータです。']);
       }
     }
+    public function icon_change(Request $request){
+      $param = $this->get_param($request);
+      $res = $this->_icon_change($request);
+      return $this->save_redirect($res, $param, $this->domain_name.'設定を更新しました');
+    }
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function icon_change(Request $request)
+    public function _icon_change(Request $request)
     {
       $user = $this->login_details();
-      $this->validate($request, [
-          'image' => [
-              // アップロードされたファイルであること
-              'file',
-              // 画像ファイルであること
-              'image',
-              // MIMEタイプを指定
-              'mimes:jpeg,png,gif,bmp,svg',
-              // 最小縦横120px 最大縦横400px
-              'dimensions:min_width=1,min_height=1,max_width=512,max_height=512',
-          ]
-      ]);
+      $res = $this->bad_request();
       $image_id = null;
       $form = $request->all();
-      $_message = "";
       if(empty($image_id) && isset($form["change_icon"])){
         $image_id = $form["change_icon"];
-        $_message .= "アイコンを選択した(".$image_id.")";
       }
-
+      $this->validate($request, [
+        'image' => [
+            // アップロードされたファイルであること
+            'file',
+            // 画像ファイルであること
+            'image',
+            // MIMEタイプを指定
+            'mimes:jpeg,png,gif,bmp,svg',
+            // 最小縦横120px 最大縦横400px
+            'dimensions:min_width=1,min_height=1,max_width=512,max_height=512',
+        ]
+      ]);
       if($request->hasFile('image')){
         if ($request->file('image')->isValid([])) {
           $res = $this->save_image($request->file('image'), "9999-12-31", "", env("AWS_S3_ICON_FOLDER"));
           if($this->is_success_response($res)){
             $image_id = $res["data"]->id;
-            $_message .= "画像アップロードしました(".$image_id.")";
-          }
-          else {
-            return back()->with([
-              'error_message' => $res["message"],
-              'error_message_description' => $res["description"]
-            ]);
           }
         }
         else {
-          return redirect()
-              ->back()
-              ->withInput()
-              ->withErrors(['file' => '画像がアップロードされていないか不正なデータです。']);
+          return $this->error_response('画像がアップロードされていないか不正なデータです');
         }
       }
       if(!empty($image_id)){
         $res = $this->update_user_image($user->user_id, $image_id);
-        if($this->is_success_response($res)){
-          return back()->with([
-            'success_message' => 'アイコンを変更しました。',
-            'success_message_description' => $_message."/user()"
-          ]);
-        }
-        else {
-          return back()->with([
-            'error_message' => $res["message"],
-            'error_message_description' => $res["description"]
-          ]);
-        }
       }
-
-      return back();
+      return $res;
     }
+
     /**
      * Display the specified resource.
      *
@@ -201,18 +216,17 @@ class ImageController extends UserController
           "alias" => $alias
         ];
         $image->fill($image_data)->save();
-          DB::commit();
-          /*
-          $message = "name:".basename($request_file)."\n";
-          $message .= "alias:".$request_file->getClientOriginalName()."\n";
-          $message .= "getClientSize:".$request_file->getClientSize()."\n";
-          $message .= "guessClientExtension:".$request_file->guessClientExtension()."\n";
-          $message .= "size:".filesize($request_file)."\n";
-          $message .= "type:".filetype($request_file)."\n";
-          $message .= "s3_path:".$s3_url."\n";
-          $message .= "path:".$path."\n";
-          */
-          return $this->api_response(200, "", "", $image);
+        DB::commit();
+        $message = "name:".basename($request_file)."\n";
+        $message .= "alias:".$request_file->getClientOriginalName()."\n";
+        $message .= "getClientSize:".$request_file->getClientSize()."\n";
+        $message .= "guessClientExtension:".$request_file->guessClientExtension()."\n";
+        $message .= "size:".filesize($request_file)."\n";
+        $message .= "type:".filetype($request_file)."\n";
+        $message .= "s3_path:".$s3_url."\n";
+        $message .= "path:".$path."\n";
+        $this->send_slack($message, 'info');
+        return $this->api_response(200, "", $message, $image);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();

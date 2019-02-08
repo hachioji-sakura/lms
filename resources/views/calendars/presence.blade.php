@@ -19,11 +19,8 @@
           @if(isset($student_id))
             <input type="hidden" value="{{$student_id}}" name="student_id" />
           @endif
-          @if(isset($_page_origin))
-            <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
-          @endif
           @method('PUT')
-          <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_delete">
+          <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_action">
               <i class="fa fa-check-circle mr-1"></i>
               出席
           </button>
@@ -32,11 +29,8 @@
       <div class="col-12 col-lg-6 col-md-6 mb-1">
         <form method="POST" action="/calendars/{{$item['id']}}/absence">
           @csrf
-          @if(isset($_page_origin))
-            <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
-          @endif
           @method('PUT')
-          <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_delete">
+          <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_action">
             <i class="fa fa-times-circle mr-1"></i>
               欠席
           </button>

@@ -6,6 +6,7 @@
   <form id="edit" method="POST" action="/{{$domain}}?key={{$select_key}}">
   @endif
   @csrf
+
     <div class="row">
       <div class="col-12">
         <div class="form-group">

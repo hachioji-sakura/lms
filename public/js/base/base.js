@@ -101,7 +101,6 @@
 			$(this).select2({
 				width: _width,
 				placeholder: '選択してください',
-				//dropdownParent: _parent
 			});
 		});
 		//Flat red color scheme for iCheck

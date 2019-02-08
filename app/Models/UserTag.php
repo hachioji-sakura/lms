@@ -17,13 +17,41 @@ class UserTag extends Model
   public function user(){
     return $this->belongsTo('App\User');
   }
+  public function keyname(){
+    $key = $this->tag_key;
+    if($key==="teacher_no") return "No";
+    if($key==="student_no") return "No";
+
+    if($key==="lesson_time_holiday") $key = "lesson_time";
+    $item = GeneralAttribute::where('attribute_key', 'keys')
+    ->where('attribute_value', $key)->first();
+
+    if(!empty($item)) return $item->attribute_name;
+
+    $item = $this->details();
+    if(isset($item->charge_subject_level_item)){
+      return $item->charge_subject_level_item->attribute_name;
+    }
+
+    return $this->tag_key;
+  }
   public function details(){
     $key = $this->tag_key;
     if($key==="lesson_time_holiday") $key = "lesson_time";
     $item = GeneralAttribute::where('attribute_key', $key)
       ->where('attribute_value', $this->tag_value)->first();
-    if(empty($item)) return null;
-    return $item;
+    if(!empty($item)) return $item;
+
+    $charge_subject_level_item = GeneralAttribute::where('attribute_key', 'charge_subject_level_item')
+        ->where('attribute_value', $this->tag_key)->first();
+    if(!empty($charge_subject_level_item)){
+      $item = GeneralAttribute::where('attribute_key', 'charge_subject_level')
+          ->where('attribute_value', $this->tag_value)->first();
+      $item['charge_subject_level_item'] = $charge_subject_level_item;
+    }
+    if(!empty($item)) return $item;
+
+    return null;
   }
   public function scopeFindUser($query, $val)
   {
@@ -34,7 +62,7 @@ class UserTag extends Model
       return $query->where('tag_key', $val);
   }
 
-  //1 key = 1tagの場合利用する
+  //1 key = 1tagの場合利用する(上書き差し替え）
   public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
     UserTag::where('user_id', $user_id)
       ->where('tag_key' , $tag_key)->delete();
@@ -46,7 +74,7 @@ class UserTag extends Model
       ]);
       return $item;
   }
-  //1 key = n tagの場合利用する
+  //1 key = n tagの場合利用する(上書き差し替え）
   public static function setTags($user_id, $tag_key, $tag_values, $create_user_id){
     UserTag::where('user_id', $user_id)
       ->where('tag_key' , $tag_key)->delete();
@@ -62,18 +90,6 @@ class UserTag extends Model
   }
   public function name(){
     $item = $this->details();
-    if(empty($item)) return $this->tag_value;
-
-    return $item->attribute_name;
-  }
-  public function keyname(){
-    $key = $this->tag_key;
-    if($key==="lesson_time_holiday") $key = "lesson_time";
-    if($key==="teacher_no") return "No";
-    if($key==="student_no") return "No";
-    $item = GeneralAttribute::where('attribute_key', 'keys')
-    ->where('attribute_value', $key)->first();
-
     if(empty($item)) return $this->tag_value;
 
     return $item->attribute_name;

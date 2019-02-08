@@ -222,7 +222,7 @@ class GeneralAttributeController extends UserController
         ]
       ];
       return view('components.page', [
-        "_del" => $request->get('_del'),
+        'action' => $request->get('action'),
         "item"=>$item,
         "fields"=>$fields])
         ->with($param);

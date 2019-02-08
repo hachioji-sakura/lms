@@ -17,13 +17,13 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             　様
             @endslot
             @slot('alias')
               <h6 class="widget-user-desc">
-                @foreach($item["tags"] as $tag)
+                @foreach($item->user->tags as $tag)
                 <small class="badge badge-secondary mt-1 mr-1">
                   {{$tag->name()}}
                 </small>

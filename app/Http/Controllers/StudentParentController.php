@@ -2,19 +2,59 @@
 
 namespace App\Http\Controllers;
 use App\User;
-
-use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\StudentRelation;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
 use DB;
 
-class StudentParentController extends StudentController
+class StudentParentController extends TeacherController
 {
   public $domain = "parents";
-  public $table = "parents";
+  public $table = "student_parents";
   public $domain_name = "ご契約者様";
+  public function model(){
+    return StudentParent::query();
+  }
+  /**
+  * Display the specified resource.
+  *
+  * @param  int  $id
+  * @return \Illuminate\Http\Response
+  */
+  public function show(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    /*
+    $model = $this->model()->where('id',$id)->first()->user;
+    $item = $model->details();
+    $item['tags'] = $model->tags();
+    */
+    $user = $param['user'];
+
+
+    $charge_students = $this->get_students($request, $id);
+
+    return view($this->domain.'.page', [
+      'charge_students'=>$charge_students,
+    ])->with($param);
+  }
+  private function get_students(Request $request, $parent_id){
+    $students =  StudentRelation::with('student')->findParent($parent_id)
+      ->likeStudentName($request->search_word)
+      ->get();
+    foreach($students as $student){
+      $student['current_calendar_start_time'] = $student->current_calendar()['start_time'];
+      if(empty($student['current_calendar_start_time'])){
+        //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
+        $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
+      }
+    }
+    $students = $students->sortBy('current_calendar_start_time');
+    return $students;
+  }
+
   /**
    * 体験授業申し込みページ
    *
@@ -64,6 +104,7 @@ class StudentParentController extends StudentController
          'お申込み仮受付完了', [
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
+         'send_to' => 'parent',
        ], 'text', 'entry');
        return view($this->domain.'.entry',
          ['result' => $result]);
@@ -99,7 +140,10 @@ class StudentParentController extends StudentController
    public function register(Request $request)
    {
      $result = '';
-     $param = $this->get_param($request);
+     $param = [
+       'user' => $this->login_details(),
+       'attributes' => $this->attributes(),
+     ];
      if(!empty($param['user'])){
        $param['result'] = 'logout';
        return view($this->domain.'.register',$param);
@@ -114,6 +158,7 @@ class StudentParentController extends StudentController
        if($user->count() < 1){
          abort(404);
        }
+       $param['student'] = null;
        $param['parent'] = $user->first()->details();
        $param['access_key'] = $access_key;
      }
@@ -126,8 +171,11 @@ class StudentParentController extends StudentController
      */
     public function register_update(Request $request)
     {
+      $param = [
+        'user' => $this->login_details(),
+        'attributes' => $this->attributes(),
+      ];
       $result = "success";
-      $param = $this->get_param($request);
       $email = "";
       $password = "";
       $form = $request->all();
@@ -148,6 +196,7 @@ class StudentParentController extends StudentController
 
       if($this->is_success_response($res)){
         if(empty($param['user'])){
+          $form['send_to'] = 'parent';
           $this->send_mail($email, '生徒情報登録完了', $form, 'text', 'register');
           if (!Auth::attempt(['email' => $email, 'password' => $password]))
           {
@@ -181,6 +230,7 @@ class StudentParentController extends StudentController
         $form['create_user_id'] = $user->id;
         $parent->brother_add($form);
         $user->set_password($form['password']);
+        $user->update(['status' => 0]);
         DB::commit();
         return $this->api_response(200, __FUNCTION__);
       }
@@ -192,24 +242,6 @@ class StudentParentController extends StudentController
         DB::rollBack();
         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-     public function index(Request $request)
-    {
-        //
-        $parents = StudentParent::where('id', 999999)->first();
-        if(isset($parents)){
-          foreach ($parents->relations as $relation) {
-            echo '['.$relation->student->user_id.']';
-          }
-        }
-        return "hello";
-        return $items->toArray();
     }
 
 }

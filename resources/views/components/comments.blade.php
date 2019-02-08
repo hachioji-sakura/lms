@@ -18,10 +18,10 @@
               </div>
               @if($user->user_id === $comment->create_user_id)
               <span class="float-right mr-1">
-                <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?_page_origin={{$domain}}_{{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
+                <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                   <i class="fa fa-edit"></i>
                 </a>
-                <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?_del=1&_page_origin={{$domain}}_{{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
+                <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                   <i class="fa fa-trash"></i>
                 </a>
               </span>

@@ -12,6 +12,9 @@ use App\Models\UserTag;
 use App\Models\Image;
 use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
+use App\Models\UserCalendar;
+use App\Models\UserCalendarMember;
+
 use Hash;
 class User extends Authenticatable
 {
@@ -35,13 +38,21 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
     public function tags(){
-      return UserTag::where('user_id', $this->id)
-      ->get();
-      /*
-      ->where('tag_key', '!=', 'student_no')
-      ->where('tag_key', '!=', 'teacher_no')
       return $this->hasMany('App\Models\UserTag');
-      */
+    }
+    public function has_tag($key, $val){
+      $tags = $this->tags;
+      foreach($tags as $tag){
+        if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+      }
+      return false;
+    }
+    public function get_tag($key){
+      $item = $this->tags->where('tag_key', $key)->first();
+      if(isset($item)){
+        return $item;
+      }
+      return "";
     }
     public function student(){
       return $this->hasOne('App\Models\Student');
@@ -52,8 +63,20 @@ class User extends Authenticatable
     public function manager(){
       return $this->hasOne('App\Models\Manager');
     }
-    public function Image(){
-      return $this->hasOne('App\Models\Image');
+    public function image(){
+      return $this->belongsTo('App\Models\Image');
+    }
+    public function create_comments(){
+      return $this->hasMany('App\Models\Comment', 'create_user_id');
+    }
+    public function target_comments(){
+      return $this->hasMany('App\Models\Comment', 'target_user_id');
+    }
+    public function target_milestones(){
+      return $this->hasMany('App\Models\Milestone', 'target_user_id');
+    }
+    public function aliases(){
+      return $this->hasMany('App\Models\UserTag');
     }
 
     /**
@@ -83,33 +106,29 @@ class User extends Authenticatable
       if(isset($item)){
         $item['manager_id'] = $item['id'];
         $item['role'] = 'manager';
-        $item['icon'] = $s3_url;
-        $item['email'] = $this->email;
-        return $item;
       }
-      $item = Teacher::where('user_id', $this->id)->first();
-      if(isset($item)){
-        $item['teacher_id'] = $item['id'];
-        $item['role'] = 'teacher';
-        $item['icon'] = $s3_url;
-        $item['email'] = $this->email;
-        return $item;
+      if(!isset($item)){
+        $item = Teacher::where('user_id', $this->id)->first();
+        if(isset($item)){
+          $item['teacher_id'] = $item['id'];
+          $item['role'] = 'teacher';
+        }
       }
-      $item = StudentParent::where('user_id', $this->id)->first();
-      if(isset($item)){
-        $item['role'] = 'parent';
-        $item['student_parent_id'] = $item['id'];
-        $item['name'] = $item->name_last.' '.$item->name_first;
-        $item['kana'] = $item->kana_last.' '.$item->kana_first;
-        $item['icon'] = $s3_url;
-        $item['email'] = $this->email;
-        return $item;
+      if(!isset($item)){
+        $item = StudentParent::where('user_id', $this->id)->first();
+        if(isset($item)){
+          $item['role'] = 'parent';
+          $item['student_parent_id'] = $item['id'];
+        }
       }
-      $item = Student::where('user_id', $this->id)->first();
+      if(!isset($item)){
+        $item = Student::where('user_id', $this->id)->first();
+        if(isset($item)){
+          $item['role'] = 'student';
+          $item['student_id'] = $item['id'];
+        }
+      }
       if(isset($item)){
-        $item['role'] = 'student';
-        $item['student_id'] = $item['id'];
-        $item['age'] = floor((date("Ymd") - str_replace("-", "", $item['birth_day']))/10000);
         $item['name'] = $item->name_last.' '.$item->name_first;
         $item['kana'] = $item->kana_last.' '.$item->kana_first;
         $item['icon'] = $s3_url;
@@ -125,18 +144,5 @@ class User extends Authenticatable
 EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
-    }
-
-    public function create_comments(){
-      return $this->hasMany('App\Models\Comment', 'create_user_id');
-    }
-    public function target_comments(){
-      return $this->hasMany('App\Models\Comment', 'target_user_id');
-    }
-    public function target_milestones(){
-      return $this->hasMany('App\Models\Milestone', 'target_user_id');
-    }
-    public function aliases(){
-      return $this->hasMany('App\Models\UserTag');
     }
 }

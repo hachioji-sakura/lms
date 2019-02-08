@@ -6,9 +6,19 @@
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
   @csrf
-  @if(isset($_page_origin))
-    <input type="hidden" value="{{$_page_origin}}" name="_page_origin" />
+  @if(isset($origin))
+    <input type="hidden" value="{{$origin}}" name="origin" />
   @endif
+  @if(isset($student_id))
+    <input type="hidden" value="{{$student_id}}" name="student_id" />
+  @endif
+  @if(isset($teacher_id))
+    <input type="hidden" value="{{$teacher_id}}" name="teacher_id" />
+  @endif
+  @if(isset($manager_id))
+    <input type="hidden" value="{{$manager_id}}" name="manager_id" />
+  @endif
+
   <div class="row">
     <div class="col-12">
       <div class="form-group">
@@ -19,7 +29,7 @@
         <select name="student_user_id" class="form-control select2" width=100% placeholder="担当生徒" required="true">
           <option value="">(選択)</option>
           @foreach($students as $student)
-             <option value="{{ $student['user_id'] }}" @if(isset($_edit) && $item['student_user_id'] == $student['user_id']) selected @endif>{{$student['name']}}</option>
+             <option value="{{ $student->user_id }}" @if(isset($_edit) && $item['student_user_id'] == $student->user_id) selected @endif>{{$student->name()}}</option>
           @endforeach
         </select>
       </div>
@@ -84,7 +94,7 @@
       </label>
       <select name="teacher_user_id" class="form-control" placeholder="担当講師" required="true">
         @foreach($teachers as $teacher)
-           <option value="{{ $teacher['user_id'] }}" @if(isset($_edit) && $item['teacher_user_id'] == $teacher['user_id']) selected @endif>{{$teacher['name']}}</option>
+           <option value="{{ $teacher->user_id }}" @if(isset($_edit) && $item['teacher_user_id'] == $teacher->user_id) selected @endif>{{$teacher->name()}}</option>
         @endforeach
       </select>
     </div>

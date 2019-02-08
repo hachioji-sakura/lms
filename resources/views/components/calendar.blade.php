@@ -7,44 +7,45 @@
 
 <script>
   $(function () {
+    function status_style(status){
+      var _ret = {
+        "new" : {
+          "color" : "#6c757d",
+          "icon" : "<i class='fa fa-question-circle mr-1'></i>",
+        },
+        "confirm" : {
+          "color" : "#ffc107",
+          "icon" : "<i class='fa fa-question-circle mr-1'></i>",
+        },
+        "fix" : {
+          "color" : "#007bff",
+          "icon" : "<i class='fa fa-chalkboard-teacher mr-1'></i>",
+        },
+        "cancel" : {
+          "color" : "#adb5bd",
+          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+        },
+        "absence" : {
+          "color" : "#dc354",
+          "icon" : "<i class='fa fa-user-times mr-1'></i>",
+        },
+        "presence" : {
+          "color" : "#adb5bd",
+          "icon" : "<i class='fa fa-check-circle mr-1'></i>",
+        },
+        "rest" : {
+          "color" : "#adb5bd",
+          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+        },
+      };
+      if(_ret[status]) return _ret[status];
+      return _ret['new'];
+    }
     function event_render(events, element, title){
-      var bgcolor = "#AAA";
-      var textColor = "#fff";
-      var icon = '';
-      switch(events.status){
-        case "new":
-          var bgcolor = "#666";
-          icon = '<i class="fa fa-question-circle mr-1"></i>';
-          break;
-        case "confirm":
-          bgcolor = "#D66";
-          icon = '<i class="fa fa-question-circle mr-1"></i>';
-          break;
-        case "fix":
-          bgcolor = "#66D";
-          icon = '<i class="fa fa-chalkboard-teacher mr-1"></i>';
-          break;
-        case "rest":
-        case "cancel":
-          var bgcolor = "#666";
-          icon = '<i class="fa fa-calendar-times mr-1"></i>';
-          break;
-        case "absence":
-          bgcolor = "#CCC";
-          textColor = "#666";
-          icon = '<i class="fa fa-user-times mr-1"></i>';
-          break;
-        case "presence":
-          bgcolor = "#6D6";
-          icon = '<i class="fa fa-check-circle mr-1"></i>';
-          break;
-        case "exchange":
-          bgcolor = "#6D6";
-          icon = '<i class="fa fa-exchange-alt mr-1"></i>';
-          break;
-        default:
-          break;
-      }
+      var _status_style = status_style(events.status);
+      var bgcolor = _status_style["color"];
+      var icon = _status_style["icon"];
+      var textColor  = "#FFF";
       //一文字分表示する
       /*
       var t1 = title.substring(0,20);

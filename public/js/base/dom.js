@@ -708,27 +708,24 @@
 							break;
 					}
 				}
-
-				if(val !== null){
-					switch(type){
-						case "radio":
-						case "checkbox":
-							$(this).val(val);
-							if($(this).iCheck){
-								$(this).iCheck('update');
-								$(this).trigger('ifChanged');
-							}
-							else {
-								$(this).change();
-							}
-							break;
-						case "select":
-							$(this).val(val);
+				switch(type){
+					case "radio":
+					case "checkbox":
+						$(this).val(val);
+						if($(this).iCheck){
+							$(this).iCheck('update');
+							$(this).trigger('ifChanged');
+						}
+						else {
 							$(this).change();
-							break;
-						default:
-							$(this).val(val);
-					}
+						}
+						break;
+					case "select":
+						$(this).val(val);
+						$(this).change();
+						break;
+					default:
+						$(this).val(val);
 				}
 				if(!util.isEmpty(inputtype)){
 					$(this).blur();

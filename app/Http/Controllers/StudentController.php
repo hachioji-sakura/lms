@@ -67,6 +67,7 @@ class StudentController extends UserController
        'attributes' => $this->attributes(),
     ];
     if(is_numeric($id) && $id > 0){
+      $ret['item'] = $this->model()->where('id', $id)->first()->user->details();
     }
     return $ret;
   }
@@ -79,26 +80,26 @@ class StudentController extends UserController
    */
   public function search(Request $request)
   {
-    $items = DB::table($this->table)
-       ->join('users', 'users.id',$this->table.'.user_id')
-       ->join('images', 'images.id','users.image_id');
+    $items = $this->model()->with('user.image');
 
-   $items = $this->_search_scope($request, $items);
+    $user = $this->login_details();
+    if($this->domain==="students" && $this->is_parent($user->role)){
+      //自分の子供のみ閲覧可能
+      $items = $items->findChild($user->id);
+    }
+    else if($this->domain==="students" && $this->is_teacher($user->role)){
+      //自分の担当生徒のみ閲覧可能
+      $items = $items->findChargeStudent($user->id);
+    }
+
+    $items = $this->_search_scope($request, $items);
 
    $items = $this->_search_pagenation($request, $items);
 
    $items = $this->_search_sort($request, $items);
 
-   $select_raw = <<<EOT
-     $this->table.id,
-     concat($this->table.name_last, '', $this->table.name_first) as name,
-     concat($this->table.kana_last, '', $this->table.kana_first) as kana,
-     images.s3_url as icon,
-     $this->table.gender,
-     $this->table.birth_day
-EOT;
-   $items = $items->selectRaw($select_raw)->get();
-   return ["items" => $items->toArray()];
+   $items = $items->get();
+   return ["items" => $items];
   }
   /**
    * フィルタリングロジック
@@ -109,46 +110,23 @@ EOT;
    */
   public function _search_scope(Request $request, $items)
   {
-    $user = $this->login_details();
-   //ID 検索
-   if(isset($request->id)){
-     $items = $items->where($this->table.'.id',$request->id);
-   }
-   //性別 検索
-   if(isset($request->gender)){
-     $items = $items->where($this->table.'.gender',$request->gender);
-   }
-   //検索ワード
-   if(isset($request->search_word)){
-     $search_words = explode(' ', $request->search_word);
-     foreach($search_words as $_search_word){
-      $_like = '%'.$_search_word.'%';
-      $items = $items->where($this->table.'.name_last','like', $_like)
-        ->orWhere($this->table.'.name_first','like', $_like)
-        ->orWhere($this->table.'.kana_last','like', $_like)
-        ->orWhere($this->table.'.kana_first','like', $_like);
-     }
-   }
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where($this->table.'.id',$request->id);
+    }
 
-   //メールアドレス検索
-   if(isset($request->email)){
-     $_like = '%'.$request->email.'%';
-     $items = $items->where('users.email','like', $_like);
-   }
-   if($this->is_parent($user->role)){
-     //自分の子供のみ閲覧可能
-     $items = $items->whereRaw('students.id in (select student_id from student_relations where student_parent_id=?)',[$user->id]);
-   }
-   else if($this->is_teacher($user->role)){
-     if(!isset($request->filter) || $request->filter!=='all'){
-       //filterにall指定がない
-       $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)',[$user->id]);
-     }
-     //講師は削除された生徒は表示しない
-     $items = $items->where('users.status', '!=', 9);
-   }
-
-   return $items;
+    //検索ワード
+    if(isset($request->search_word)){
+      $items = $items->searchWord($request->search_word);
+    }
+    //ステータス
+    if(isset($request->status)){
+      $items = $items->findStatuses($request->status);
+    }
+    else {
+      $items = $items->findStatuses(0);
+    }
+    return $items;
   }
   /**
    * 新規登録画面
@@ -161,6 +139,8 @@ EOT;
     if(!$this->is_parent($param['user']->role)){
       abort(403);
     }
+    $param['student'] = null;
+
     return view($this->domain.'.create',
       ['error_message' => ''])
       ->with($param);
@@ -180,22 +160,20 @@ EOT;
      $form = $request->all();
      $parent = StudentParent::where('id', $param['user']->id)->first();
      $form['create_user_id'] = $param['user']->user_id;
-     $parent->brother_add($form);
-     $form['parent_name_first'] = $param['user']->name_first;
-     $form['parent_name_last'] = $param['user']->name_last;
-     $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
-     $param['success_message'] = '生徒情報登録完了しました。';
+     $student = $parent->brother_add($form);
+     if(isset($student)){
+       $form['parent_name_first'] = $param['user']->name_first;
+       $form['parent_name_last'] = $param['user']->name_last;
+       $form['send_to'] = 'parent';
+       $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
+       $param['success_message'] = '生徒情報登録完了しました。';
+     }
+     else {
+       $param['error_message'] = '生徒登録に失敗しました。';
+     }
      return redirect('/home')
       ->with($param);
 
-   }
-   /**
-    * 新規登録ロジック
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function _store(Request $request)
-   {
    }
    /**
     * データ更新時のパラメータチェック
@@ -236,15 +214,10 @@ EOT;
    //目標データ取得
    $milestones = $model->target_milestones;
 
-   $use_icons = DB::table('images')
-     ->where('create_user_id','=',$user->user_id)
-     ->orWhere('publiced_at','<=', date('Y-m-d'))
-     ->get(['id', 'alias', 's3_url']);
    return view($this->domain.'.page', [
      'item' => $item,
      'comments'=>$comments,
      'milestones'=>$milestones,
-     'use_icons'=>$use_icons,
    ])->with($param);
   }
   /**
@@ -288,11 +261,6 @@ EOT;
    //目標データ取得
    $milestones = $model->target_milestones;
 
-   $use_icons = DB::table('images')
-     ->where('create_user_id','=',$user->user_id)
-     ->orWhere('publiced_at','<=', date('Y-m-d'))
-     ->get(['id', 'alias', 's3_url']);
-
    $view = "schedule";
    $calendars = UserCalendar::findUser($item->user_id)->rangeDate(date('Y-m-d'))->get();
    foreach($calendars as $calendar){
@@ -301,8 +269,7 @@ EOT;
    $param["calendars"] = $calendars;
    return view($this->domain.'.'.$view, [
      'item' => $item,
-     'milestones'=>$milestones,
-     'use_icons'=>$use_icons,
+     'milestones'=>$milestones
    ])->with($param);
  }
 
@@ -315,22 +282,86 @@ EOT;
   public function edit(Request $request, $id)
   {
     $result = '';
-    $param = $this->get_param($request);
+    $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    if(!empty($param['user'])){
-       if(!$this->is_parent($param['user']->role)){
-         //親以外、ここからの生徒編集はできない
-         abort(403);
-       }
-       $param['parent'] = $param['user'];
-       $param['item'] = Student::where('id', $id)->first();
-    }
-    else {
-      abort(403);
-    }
+    $param['student'] = $param['item'];
     return view($this->domain.'.edit',$param);
 
   }
+  public function delete_page(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $param['item']['name'] = $param['item']->name();
+    $param['item']['kana'] = $param['item']->kana();
+    $param['item']['birth_day'] = $param['item']->birth_day();
+    $param['item']['gender'] = $param['item']->gender();
+    $fields = [
+      'name' => [
+        'label' => '氏名',
+      ],
+      'kana' => [
+        'label' => 'フリガナ',
+      ],
+      'birth_day' => [
+        'label' => '生年月日',
+      ],
+      'gender' => [
+        'label' => '性別',
+      ],
+    ];
+    return view('components.page', [
+      'action' => 'delete',
+      'fields'=>$fields])
+      ->with($param);
+  }
+  public function remind_page(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $param['item']['name'] = $param['item']->name();
+    $fields = [
+      'id' => [
+        'label' => 'ID',
+      ],
+      'name' => [
+        'label' => '氏名',
+      ],
+    ];
+    return view('components.page', [
+      'action' => 'remind',
+      'fields'=>$fields])
+      ->with($param);
+  }
+
+  public function remind(Request $request, $id)
+  {
+    $result = '';
+    $form = $request->all();
+    $res = $this->api_response(200);
+    $access_key = $this->create_token();
+    $param = $this->get_param($request, $id);
+    $result = '';
+    if($param['item']->user->status===1){
+      //token更新
+      $param['item']->user->update( ['access_key' => $access_key]);
+      $result = 'success';
+    }
+    else if($param['item']->user->status===0){
+      //本登録済み
+      $res = $this->error_response('このメールアドレスは本登録が完了しております。');
+      $result = 'already';
+    }
+    if($this->is_success_response($res)){
+      $this->send_mail($param['item']['email'],
+        'ユーザー本登録のお願い（再送）', [
+        'user_name' => $param['item']['name'],
+        'access_key' => $access_key,
+        'remind' => true,
+        'send_to' => $param['item']->role,
+      ], 'text', 'entry');
+    }
+    return $this->save_redirect($res, $param, '本登録依頼メールを送信しました');
+  }
+
   /**
    * Update the specified resource in storage.
    *
@@ -342,7 +373,7 @@ EOT;
   {
     $param = $this->get_param($request, $id);
     $res = $this->_update($request, $id);
-    return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
+    return $this->save_redirect($res, $param, $this->domain_name.'設定を更新しました');
   }
 
   public function _update(Request $request, $id)
@@ -356,7 +387,9 @@ EOT;
      DB::beginTransaction();
      $user = $this->login_details();
      $form = $request->all();
-     $item = Student::where('id',$id)->profile_update($form);
+     $form['create_user_id'] = $user->user_id;
+     $item = $this->model()->where('id',$id)->first();
+     $item = $item->profile_update($form);
      DB::commit();
      return $this->api_response(200, '', '', $item);
    }
@@ -388,9 +421,9 @@ EOT;
    $form = $request->all();
    try {
      DB::beginTransaction();
-     $items = Student::where('id',$id)->delete();
+     $item = $this->model()->where('id', $id)->first()->user->update(['status' => 9]);
      DB::commit();
-     return $this->api_response(200, '', '', $items);
+     return $this->api_response(200, '', '', $item);
    }
    catch (\Illuminate\Database\QueryException $e) {
       DB::rollBack();

@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col-12">
         <p class="my-2">
-          <a href="/students/entry" role="button" class="btn btn-outline-success btn-block float-left mr-1">
+          <a href="/entry" role="button" class="btn btn-outline-success btn-block float-left mr-1">
             入会お申込みはこちら
           </a>
         </p>

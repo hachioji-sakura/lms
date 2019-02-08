@@ -16,17 +16,18 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'use_icons' => $use_icons, 'domain' => $domain, 'domain_name' => $domain_name])
+        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
-
             @slot('alias')
               <h6 class="widget-user-desc">
-                @foreach($item["tags"] as $tag)
+                {{--
+                @foreach($item->user->tags as $tag)
                 <small class="badge badge-secondary mt-1 mr-1">
-                  {{$tag->name()}}
+                  {{$tag->keyname()}}{{$tag->name()}}
                 </small>
                 @endforeach
+                --}}
               </h6>
             @endslot
         @endcomponent
@@ -54,48 +55,48 @@
         <div class="card-body table-responsive p-0">
           @if(count($charge_students) > 0)
           <ul class="mailbox-attachments clearfix row">
-            @foreach($charge_students as $charge_student)
+            @foreach($charge_students as $student)
             <li class="col-lg-3 col-md-4 col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
-                  <a href="/students/{{$charge_student->student->id}}">
-                    <img src="{{$charge_student->student->user->details()->icon}}" class="img-circle mw-64px w-50">
+                  <a href="/students/{{$student->id}}">
+                    <img src="{{$student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">
-                      <rb>{{$charge_student->student->name()}}</rb>
-                      <rt>{{$charge_student->student->kana()}}</rt>
+                      <rb>{{$student->name()}}</rb>
+                      <rt>{{$student->kana()}}</rt>
                     </ruby>
                   </a>
                 </div>
                 <div class="col-6 text-sm">
-                  @if(!empty($charge_student->current_calendar()))
-                      <i class="fa fa-calendar mr-1"></i>{{$charge_student->current_calendar()->details()->date}}
+                  @if(!empty($student->current_calendar))
+                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar->details()->date}}
                       <br>
-                      <i class="fa fa-clock mr-1"></i>{{$charge_student->current_calendar()->details()->timezone}}
+                      <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->details()->timezone}}
                       <br>
                       <small class="badge badge-info mt-1 mr-1">
-                        {{$charge_student->current_calendar()->details()->subject}}
+                        {{$student->current_calendar->details()->subject}}
                       </small>
                   @else
                   -
                   @endif
                 </div>
                 <div class="col-12 text-sm">
-                  @if(!empty($charge_student->current_calendar()))
-                    @if($charge_student->current_calendar()->details()->status==="fix" && date('Ymd', strtotime($charge_student->current_calendar()->details()->start_time)) === date('Ymd'))
-                      <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}/presence?_page_origin={{$domain}}_{{$item->id}}&student_id={{$charge_student->student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                  @if(isset($student->current_calendar))
+                    @if($student->current_calendar->details()->status==="fix" && date('Ymd', strtotime($student->current_calendar->details()->start_time)) === date('Ymd'))
+                      <a title="{{$student->current_calendar->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->details()->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
-                        {{$charge_student->current_calendar()->details()->status_name}}
+                        {{$student->current_calendar->details()->status_name}}
                       </a>
-                    @elseif($charge_student->current_calendar()->details()->status==="presence")
+                    @elseif($student->current_calendar->details()->status==="presence")
                       {{-- 出席済み --}}
-                      <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                      <a title="{{$student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
                         <i class="fa fa-check-circle mr-1"></i>
-                        {{$charge_student->current_calendar()->details()->status_name}}
+                        {{$student->current_calendar->details()->status_name}}
                       </a>
                     @else
-                      <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
-                        {{$charge_student->current_calendar()->details()->status_name}}
+                      <a title="{{$student->current_calendar->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->details()->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        {{$student->current_calendar->details()->status_name}}
                       </a>
                     @endif
                   @endif
