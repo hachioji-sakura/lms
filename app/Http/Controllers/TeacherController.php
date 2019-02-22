@@ -251,6 +251,7 @@ class TeacherController extends StudentController
     $param = [
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
+      'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
       ['sended' => ''])
@@ -266,6 +267,7 @@ class TeacherController extends StudentController
      $param = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
+       'attributes' => $this->attributes(),
      ];
      $send_to = "teacher";
      if($this->domain==="managers") $send_to = "manager";

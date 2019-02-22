@@ -23,7 +23,7 @@ class StudentParent extends Teacher
     return $this->belongsTo('App\User');
   }
   public function relations(){
-    return $this->belogsTo('App\Models\StudentRelation');
+    return $this->hasMany('App\Models\StudentRelation');
   }
   public function name()
   {
@@ -35,33 +35,45 @@ class StudentParent extends Teacher
   }
   static public function entry($form){
     $ret = [];
-    $parent_user = User::create([
-        'name' => $form['name_last'].' '.$form['name_first'],
-        'email' => $form['email'],
-        'image_id' => 4,
-        'status' => 1,
-        'access_key' => $form['access_key'],
-        'password' => '-',
-    ]);
-    $parent = StudentParent::create([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => '',
-      'kana_first' => '',
-      'user_id' => $parent_user->id,
-      'create_user_id' => 1,
-    ]);
+    $parent_user = User::where('email', $form['email'])->first();
+    $parent = null;
+    if(isset($parent_user)){
+      $parent = StudentParent::where('user_id', $parent_user->id)->first();
+    }
+    else {
+      $parent_user = User::create([
+          'name' => $form['name_last'].' '.$form['name_first'],
+          'email' => $form['email'],
+          'image_id' => 4,
+          'status' => 1,
+          'access_key' => $form['access_key'],
+          'password' => '-',
+      ]);
+      $parent = StudentParent::create([
+        'name_last' => $form['name_last'],
+        'name_first' => $form['name_first'],
+        'kana_last' => '',
+        'kana_first' => '',
+        'user_id' => $parent_user->id,
+        'create_user_id' => 1,
+      ]);
+    }
     return $parent;
   }
+
   public function brother_add($form){
     $ret = [];
-    $childs = Student::findChild($this->id)
-      ->where('name_last', $form['name_last'])
-      ->where('name_first', $form['name_first'])
-      ->first();
-    if(isset($childs)){
+    $student = null;
+    foreach($this->relation() as $relation){
+      $student = $relation->student;
+      if($student->name_last ==$form['name_last'] &&
+        $student->name_first == $form['name_first'] ){
+          break;
+      }
+    }
+    if(isset($student)){
       //すでに同姓同名の子供を登録済み
-      return null;
+      return $student;
     }
     $form['create_user_id'] = $this->user_id;
     $student = Student::entry($form);
@@ -93,6 +105,7 @@ class StudentParent extends Teacher
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+    return $this;
   }
   public function relation(){
     $items = StudentRelation::where('student_parent_id', $this->id)->get();

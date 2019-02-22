@@ -18,6 +18,33 @@ class StudentParentController extends TeacherController
     return StudentParent::query();
   }
   /**
+   * 検索～一覧
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return [Collection, field]
+   */
+  public function search(Request $request)
+  {
+    $items = $this->model()->with('user.image');
+    $user = $this->login_details();
+    if($this->domain==="students" && $this->is_parent($user->role)){
+      //自分の子供のみ閲覧可能
+      $items = $items->findChild($user->id);
+    }
+    else if($this->domain==="students" && $this->is_teacher($user->role)){
+      //自分の担当生徒のみ閲覧可能
+      $items = $items->findChargeStudent($user->id);
+    }
+    $items = $this->_search_scope($request, $items);
+
+   $items = $this->_search_pagenation($request, $items);
+
+   $items = $this->_search_sort($request, $items);
+   $items = $items->get();
+   return ["items" => $items];
+  }
+
+  /**
   * Display the specified resource.
   *
   * @param  int  $id
@@ -62,7 +89,11 @@ class StudentParentController extends TeacherController
    */
   public function entry(Request $request)
   {
-    $param = [];
+    $param = [
+      'domain' => $this->domain,
+      'domain_name' => $this->domain_name,
+      'attributes' => $this->attributes(),
+    ];
     return view($this->domain.'.entry',
       ['sended' => ''])
       ->with($param);
@@ -81,7 +112,6 @@ class StudentParentController extends TeacherController
      $request->merge([
        'access_key' => $access_key,
      ]);
-
      $user = User::where('email', $form['email'])->first();
      $result = '';
      if(!isset($user)){
@@ -141,6 +171,8 @@ class StudentParentController extends TeacherController
    {
      $result = '';
      $param = [
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
        'user' => $this->login_details(),
        'attributes' => $this->attributes(),
      ];

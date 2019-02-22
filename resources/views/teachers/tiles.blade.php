@@ -24,6 +24,8 @@
         @component('components.search_word', ['search_word' => $search_word])
         @endcomponent
       </li>
+      @if($mode==='trial')
+      @else
       <li class="nav-item">
         <a href="/{{$domain}}?status=0" class="nav-link">
           <i class="fa fa-user-check nav-icon"></i>登録済み
@@ -44,7 +46,13 @@
           <i class="fa fa-users nav-icon"></i>すべて
         </a>
       </li>
+      @endif
 </ul>
+<script>
+$(function(){
+  base.pageSettinged('sidemenu', null);
+});
+</script>
 @endsection
 
 @section('page_footer')

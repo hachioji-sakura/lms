@@ -147,7 +147,7 @@ $(function(){
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      util.setLocalData('parents_add_form', "");
+      util.removeLocalData('parents_add_form');
       $("form").submit();
     }
   });

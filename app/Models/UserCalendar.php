@@ -37,30 +37,41 @@ class UserCalendar extends Model
   }
   public function scopeRangeDate($query, $from_date, $to_date=null)
   {
+    $field = 'start_time';
     //日付検索
     if(!empty($from_date)){
-      $query = $query->where('start_time', '>=', $from_date);
+      $query = $query->where($field, '>=', $from_date);
     }
     if(!empty($to_date)){
-      $query = $query->where('start_time', '<', $to_date);
+      $query = $query->where($field, '<', $to_date);
     }
     return $query;
   }
+  public function scopeSearchDate($query, $from_date, $to_date)
+  {
+    $where_raw = <<<EOT
+      ((user_calendars.start_time >= '$from_date'
+       AND user_calendars.start_time < '$to_date'
+      )
+      OR (user_calendars.end_time >= '$from_date'
+        AND user_calendars.end_time < '$to_date'
+      ))
+EOT;
+
+    return $query->whereRaw($where_raw,[$from_date, $to_date]);
+
+  }
   public function scopeFindStatuses($query, $statuses)
   {
-    $query = $query->where(function($query)use($statuses){
-      foreach($statuses as $status){
-        if(empty($status)) continue;
-        $query->orWhere('status','=', $status);
-      }
-    });
+    $query = $query->whereIn('status', $statuses);
+
     return $query;
   }
 
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
-      $this->table.id in (select calendar_id from user_calendar_members where user_id=?)
+      user_calendars.id in (select calendar_id from user_calendar_members where user_id=$user_id)
 EOT;
 
     return $query->whereRaw($where_raw,[$user_id]);

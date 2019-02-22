@@ -653,6 +653,19 @@
 			return false;
 		},
 		/**
+		* 保存したWebStorageデータを削除する
+		* @method removeLocalData
+		* @param name {String}    保存時のkey
+		* @return {Boolean} true(success) or false(failed)
+		*/
+		removeLocalData: function(name) {
+			if(this.isEmpty(name)) {
+				return false;
+			}
+			sessionStorage.removeItem(name);
+			return true;
+		},
+		/**
 		* Webストレージからデータを取得
 		* 圧縮文字列を解凍し、分割保存状態を連結し返却
 		* @method getLocalData

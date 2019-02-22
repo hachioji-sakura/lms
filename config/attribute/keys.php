@@ -18,7 +18,9 @@ return array(
   'howto' => '当塾をお知りになった方法は何でしょうか',
   'lesson_place' => '希望校舎',
   'lesson_subject' => 'レッスン希望科目',
+  'lesson_subject_level' => '科目希望対応',
   'lesson_week' => 'レッスン可能曜日',
   'lesson_time' => 'レッスン可能時間',
+  'matching_decide' => 'マッチング決定理由',
 );
 ?>

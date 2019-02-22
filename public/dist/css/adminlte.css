@@ -606,6 +606,8 @@ pre code {
 	flex-wrap: wrap;
 	margin-right: -7.5px;
 	margin-left: -7.5px;
+	/*2019/02/14*/
+	clear:both;
 }
 
 .no-gutters {
@@ -6932,6 +6934,10 @@ button.bg-dark:focus {
 	box-shadow: none !important;
 }
 
+.w-10 {
+	width: 10% !important;
+}
+
 .w-20 {
 	width: 20% !important;
 }
@@ -6941,6 +6947,9 @@ button.bg-dark:focus {
 }
 .w-30 {
 	width: 30% !important;
+}
+.w-35 {
+	width: 35% !important;
 }
 .w-40 {
 	width: 40% !important;
@@ -13326,6 +13335,15 @@ iframe.map {
 /*border 2018/11/17*/
 .hr-1{
 	border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+.bd-l {
+	border-left:1px solid;
+}
+.bd-t {
+	border-top:1px solid;
+}
+.bd-r {
+	border-right:1px solid;
 }
 .bd-light{
 	border-color: rgba(255, 255, 255, 0.5);

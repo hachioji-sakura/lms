@@ -15,33 +15,15 @@
   <h4 class="text-success">本登録依頼メールを送信しますがよろしいですか？</h4>
 </div>
 @endif
-  <div class="row">
+  {{-- 詳細表示項目を羅列する --}}
   @if(isset($field_logic))
     {{$field_logic}}
   @else
-    @foreach($fields as $key=>$field)
-        @if(isset($field['size']))
-        <div class="col-{{$field['size']}}">
-        @else
-        <div class="col-12">
-        @endif
-          <div class="form-group">
-            @isset($field['format'])
-            <label for="{{$key}}" class="w-100">
-              {{$field['label']}}
-            </label>
-            {!! sprintf($field['format'], $item[$key]) !!}
-            @else
-              <label for="{{$key}}" class="w-100">
-                {{$field['label']}}
-              </label>
-              {{$item[$key]}}
-            @endisset
-          </div>
-        </div>
-    @endforeach
+    @component('components.page_item', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+    @endcomponent
   @endif
-  </div>
+
+
   @if(isset($forms) && !empty(trim($forms)))
     {{-- 独自formを利用する場合 --}}
     {{$forms}}

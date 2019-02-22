@@ -25,6 +25,10 @@ class ManagersTableSeeder extends Seeder
       ]);
     }
     private function create_user($item){
+      $_user = User::where('email', $item['email'])->first();
+      if(isset($_user)){
+        return;
+      }
       $_user = User::create([
           'name' => $item['name_last'],
           'email' => $item['email'],

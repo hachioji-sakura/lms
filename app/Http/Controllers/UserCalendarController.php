@@ -151,8 +151,10 @@ class UserCalendarController extends MilestoneController
     ];
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
-      if($item->is_access($user->user_id)===false){
-        abort(403);
+      if($this->is_manager($user->role)===false){
+        if($item->is_access($user->user_id)===false){
+          abort(403);
+        }
       }
       $ret['item'] = $item->details();
     }
@@ -280,7 +282,7 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields;
-      return view('calendars.page', [
+      return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])
         ->with($param);
@@ -294,7 +296,7 @@ class UserCalendarController extends MilestoneController
      */
     public function status_update_page(Request $request, $id, $status)
     {
-      if (!View::exists('calendars.'.$status)) {
+      if (!View::exists($this->domain.'.'.$status)) {
           abort(404);
       }
       $param = $this->get_param($request, $id);
@@ -308,7 +310,7 @@ class UserCalendarController extends MilestoneController
       $detail .= $param['item']['subject'].'';
       $param['item']['detail'] = $detail;
 
-      return view('calendars.'.$status, [ ])->with($param);
+      return view($this->domain.'.'.$status, [ ])->with($param);
     }
     /**
      * カレンダーステータス更新

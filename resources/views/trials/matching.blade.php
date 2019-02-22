@@ -1,8 +1,7 @@
-@include($domain.'.create_form')
+@include($domain.'.matching_form')
 <div class="direct-chat-msg">
-  <form method="POST"  action="/{{$domain}}/{{$item->id}}">
+  <form method="POST"  action="/{{$domain}}/{{$item->id}}/matching">
     @csrf
-    @method('PUT')
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -70,13 +69,12 @@
 <script>
 $(function(){
   var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", null);
+  base.pageSettinged("register_form", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('register_form .carousel-item.active')){
-      util.removeLocalData('register_form');
       $("form").submit();
     }
   });

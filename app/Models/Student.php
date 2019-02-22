@@ -78,6 +78,15 @@ class Student extends Model
     return $parents;
   }
   /**
+   *　プロパティ：タグ取得
+   */
+  public function get_tag($key)
+  {
+    $tag = $this->user->get_tag($key);
+    return ["name" => $tag->name(), "key" => $tag->keyname()];
+  }
+
+  /**
    *　リレーション：ユーザー（認証アカウント）
    */
   public function user(){
@@ -112,7 +121,7 @@ EOT;
   public function scopeFindChargeStudent($query, $id)
   {
     $where_raw = <<<EOT
-      $this->table.id in (select student_id from charge_students where teacher_id=?)
+      students.id in (select student_id from charge_students where teacher_id=?)
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
     return $this->scopeFindStatuses($query, "0,1");
@@ -124,7 +133,7 @@ EOT;
   public function scopeFindChild($query, $id)
   {
     $where_raw = <<<EOT
-    $this->table.id in (select student_id from student_relations where student_parent_id=?)
+    students.id in (select student_id from student_relations where student_parent_id=?)
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
     return $this->scopeFindStatuses($query, "0,1");
@@ -147,13 +156,15 @@ EOT;
   public function scopeSearchWord($query, $word)
   {
     $search_words = explode(' ', $word);
-    foreach($search_words as $_search_word){
-      $_like = '%'.$_search_word.'%';
-      $query = $query->where('name_last','like', $_like)
-        ->orWhere('name_first','like', $_like)
-        ->orWhere('kana_last','like', $_like)
-        ->orWhere('kana_first','like', $_like);
-    }
+    $query = $query->where(function($query)use($search_words){
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhere('name_last','like', $_like)
+          ->orWhere('name_first','like', $_like)
+          ->orWhere('kana_last','like', $_like)
+          ->orWhere('kana_first','like', $_like);
+      }
+    });
     return $query;
   }
 

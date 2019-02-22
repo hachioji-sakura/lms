@@ -31,6 +31,20 @@ EOT;
   {
     return $query;
   }
+  public function scopeChargeSubject($query, $subjects)
+  {
+    $where_raw = "";
+    foreach($subjects as $subject){
+      $key = $subject->tag_key;
+      $value = intval($subject->tag_value);
+      $_where_raw = <<<EOT
+        $this->table.user_id in (select user_id from user_tags where tag_key='$key' and tag_value >= $value)
+EOT;
+      $where_raw .= 'OR ('.$_where_raw.')';
+    }
+    $where_raw = '('.trim($where_raw,'OR').')';
+    return $query->whereRaw($where_raw,[]);
+  }
 
   static public function entry($form){
     $ret = [];
@@ -91,5 +105,19 @@ EOT;
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+  }
+  public function get_charge_subject(){
+    //担当科目を取得
+    $subjects = [];
+    $tags = $this->user->tags;
+    foreach($this->user->tags as $tag){
+      $tag_data = $tag->details();
+      if(isset($tag_data['charge_subject_level_item'])){
+        if(intval($tag->tag_value) > 1){
+          $subjects[$tag->tag_key] = intval($tag->tag_value);
+        }
+      }
+    }
+    return $subjects;
   }
 }

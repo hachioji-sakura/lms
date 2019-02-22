@@ -188,6 +188,7 @@
         var _checked = $(obj).prop("checked");
         console.log(_name+":"*_checked)
         if(_checked){
+          //個別時間帯をすべてdisabled
           $('input[type="checkbox"][name="'+_name+'"]').each(function(i, e){
             if($(e).attr("value") !== "disabled") {
               $(this).prop('disabled', true);
@@ -199,6 +200,7 @@
         else {
           $('input[type="checkbox"][name="'+_name+'"]').each(function(i, e){
             if($(e).attr("value") !== "disabled"){
+              $(this).parent().removeClass('disabled');
               $(this).prop('disabled', false);
               $(this).iCheck('enable');
             }

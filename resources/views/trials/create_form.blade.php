@@ -119,20 +119,20 @@
   </div>
   <div class="col-6 col-lg-6 col-md-6">
     <div class="form-group">
-      <label for="name_last">
+      <label for="student_name_last">
         氏
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="student_name_last" name="student_name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_last}}" @endisset>
+      <input type="text" name="student_name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_last}}" @endisset>
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
     <div class="form-group">
-      <label for="name_first">
+      <label for="student_name_first">
         名
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="student_name_first" name="student_name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_first}}" @endisset>
+      <input type="text" name="student_name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku" @isset($student) value="{{$student->name_first}}" @endisset>
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
@@ -141,7 +141,7 @@
         氏（カナ）
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="student_kana_last" name="student_kana_last" class="form-control" placeholder="例：ハチオウジ" required="true" inputtype="zenkakukana">
+      <input type="text" name="student_kana_last" class="form-control" placeholder="例：ハチオウジ" required="true" inputtype="zenkakukana">
     </div>
   </div>
   <div class="col-6 col-lg-6 col-md-6">
@@ -150,7 +150,7 @@
         名（カナ）
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" id="student_kana_first" name="student_kana_first" class="form-control" placeholder="例：タロウ" required="true" inputtype="zenkakukana">
+      <input type="text" name="student_kana_first" class="form-control" placeholder="例：タロウ" required="true" inputtype="zenkakukana">
     </div>
   </div>
   <div class="col-12">
@@ -181,7 +181,7 @@
         学校名
         <span class="right badge badge-secondary ml-1">任意</span>
       </label>
-      <input type="text" id="school_name" name="school_name" class="form-control" placeholder="例：八王子市立サクラ中学校" >
+      <input type="text" name="school_name" class="form-control" placeholder="例：八王子市立サクラ中学校" >
     </div>
   </div>
   <script>
@@ -218,7 +218,7 @@
 <div class="row">
   <div class="col-12">
     <div class="form-group">
-      <label for="remark" class="w-100">
+      <label for="howto" class="w-100">
         ご質問・お問い合わせ
         <span class="right badge badge-secondary ml-1">任意</span>
       </label>
@@ -274,38 +274,58 @@
     体験授業・ご希望内容
   </div>
   <div class="row form-group p-2">
-    <div class="col-6">
+    <div class="col-12 mt-2 col-md-4">
         <label for="start_date" class="w-100">
-          第１希望日時
+          第１希望日
           <span class="right badge badge-danger ml-1">必須</span>
         </label>
         <input type="text" name="trial_date1" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
     </div>
-    <div class="col-6">
-      <label for="trial_time1" class="w-100">　</label>
-      <select name="trial_time1" class="form-control" placeholder="時間帯" required="true">
+    <div class="col-12 mt-2 col-md-8">
+      <label for="start_date" class="w-100">
+        時間帯
+        <span class="right badge badge-danger ml-1">必須</span>
+      </label>
+      <select name="trial_start_time1" class="form-control float-left mr-1 w-40" required="true">
         <option value="">(選択してください)</option>
-        @foreach($attributes['lesson_time'] as $index => $name)
-          <option value="{{$index}}">{{$name}}</option>
-        @endforeach
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
+      </select>
+      <div class="w-10 text-center float-left mx-2">～</div>
+      <select name="trial_end_time1" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time1" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time1" not_equal_error="時間帯範囲が間違っています" >
+        <option value="">(選択してください)</option>
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
       </select>
     </div>
   </div>
   <div class="row form-group p-2">
-    <div class="col-6">
+    <div class="col-12 mt-2 col-md-4">
+        <label for="start_date" class="w-100">
+          第２希望日
+          <span class="right badge badge-danger ml-1">必須</span>
+        </label>
+        <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+    </div>
+    <div class="col-12 mt-2 col-md-8">
       <label for="start_date" class="w-100">
-        第２希望日時
+        時間帯
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
-    </div>
-    <div class="col-6">
-      <label for="trial_time2" class="w-100">　</label>
-      <select name="trial_time2" class="form-control" placeholder="時間帯" required="true">
+      <select name="trial_start_time2" class="form-control float-left mr-1 w-40" required="true">
         <option value="">(選択してください)</option>
-        @foreach($attributes['lesson_time'] as $index => $name)
-          <option value="{{$index}}">{{$name}}</option>
-        @endforeach
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
+      </select>
+      <div class="w-10 text-center float-left mx-2">～</div>
+      <select name="trial_end_time2" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time2" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time2" not_equal_error="時間帯範囲が間違っています" >
+        <option value="">(選択してください)</option>
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
       </select>
     </div>
   </div>
@@ -455,10 +475,7 @@
               <th class="p-1 text-center bg-gray bd-light bd-r" rowspan={{count($subject_data['items'])}}>{{$subject_data['name']}}</th>
               @endif
               <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
-              @foreach($attributes['charge_subject_level'] as $index => $name)
-                @if($loop->index >= 3)
-                  @break
-                @endif
+              @foreach($attributes['lesson_subject_level'] as $index => $name)
                 <td class="p-1 text-center">
                 <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="flat-red subject_level"  required="true"
                 @if(isset($item) && isset($item->user) && $item->user->has_tag($subject.'_level', $index)===true || (!isset($_edit) && $loop->index == 0))
@@ -476,10 +493,7 @@
             @endif
             <th class="p-1 text-center bg-gray bd-light bd-r">{{$subject_data['name']}}</th>
             <th class="p-1 text-center bg-gray subject_name">{{$subject_data['name']}}</th>
-            @foreach($attributes['charge_subject_level'] as $index => $name)
-              @if($loop->index >= 3)
-                @break
-              @endif
+            @foreach($attributes['lesson_subject_level'] as $index => $name)
               <td class="text-center">
               <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="flat-red subject_level"  required="true"
               @if((isset($_edit) && isset($item) && isset($item->user) && $item->user->has_tag($subject.'_level', $index)===true) || (!isset($_edit) && $loop->index == 0))
@@ -507,8 +521,8 @@
   <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
   <div class="col-6 p-3">
     <ruby style="ruby-overhang: none">
-      <rb><span id="name_last"></span>&nbsp;<span id="name_first"></span></rb>
-      <rt><span id="kana_last"></span>&nbsp;<span id="kana_first"></span></rt>
+      <rb><span id="student_name_last"></span>&nbsp;<span id="student_name_first"></span></rb>
+      <rt><span id="student_kana_last"></span>&nbsp;<span id="student_kana_first"></span></rt>
     </ruby>
   </div>
   <div class="col-6 p-3 font-weight-bold" >性別</div>
@@ -549,7 +563,7 @@
   <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
   <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望のレッスン</div>
-  <div class="col-6 p-3"><span id="lesson_subject_name"></span></div>
+  <div class="col-6 p-3"><span id="lesson_name"></span></div>
   {{--
   <div class="col-12 p-3 font-weight-bold">
     ご希望の曜日・時間帯
@@ -605,11 +619,9 @@
               <th class="p-1 text-center bg-gray" rowspan={{count($subject_data['items'])}}>{{$subject_data['name']}}</th>
               @endif
               <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
-              @foreach($attributes['charge_subject_level'] as $index => $name)
+              @foreach($attributes['lesson_subject_level'] as $index => $name)
                 @if($loop->index == 0)
                   @continue
-                @elseif($loop->index >= 3)
-                  @break
                 @endif
                 <td class="text-center" id="{{$subject}}_level_{{$index}}_name">
                   -
@@ -622,11 +634,9 @@
             <tr class="grade-subject" alt="{{$grade}}">
             <th class="p-1 text-center bg-gray">{{$subject_data['name']}}</th>
             <th class="p-1 text-center bg-gray subject_name">{{$subject_data['name']}}</th>
-            @foreach($attributes['charge_subject_level'] as $index => $name)
+            @foreach($attributes['lesson_subject_level'] as $index => $name)
               @if($loop->index == 0)
                 @continue
-              @elseif($loop->index >= 3)
-                @break
               @endif
               <td class="text-center" id="{{$subject}}_level_{{$index}}_name">
                 -

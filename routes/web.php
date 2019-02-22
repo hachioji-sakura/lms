@@ -50,6 +50,14 @@ Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
 Route::resource('calendars','UserCalendarController');
 
+
+Route::get('trials/{id}/{status}','TrialController@status_update_page');
+Route::put('trials/{id}/{status}','TrialController@status_update');
+Route::resource('trials','TrialController');
+Route::get('trial','TrialController@trial');
+Route::post('trial','TrialController@trial_store');
+
+
 Route::get('api_lectures','LectureController@api_index');
 Route::resource('lectures','LectureController');
 
@@ -57,8 +65,6 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
-Route::get('entry','StudentParentController@entry');
-Route::post('entry','StudentParentController@entry_store');
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
 Route::get('teachers/entry','TeacherController@entry');

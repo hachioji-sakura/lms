@@ -129,7 +129,7 @@ $(function(){
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('_add_form .carousel-item.active')){
-      //util.setLocalData('_add_form', "");
+      //util.removeLocalData('_add_form');
       $("form").submit();
     }
   });
