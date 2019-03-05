@@ -2,9 +2,21 @@
 @section('title', $domain_name.'登録')
 
 @if(empty($result))
-@include($domain.'.create_form')
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input" class="is-current">ご入力</li>
+    <li id="step_complete">完了</li>
+  </ol>
+  @endsection
+  @include($domain.'.create_form')
+@else
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input">ご入力</li>
+    <li id="step_complete" class="is-current">完了</li>
+  </ol>
+  @endsection
 @endif
-
 
 @section('content')
 <div id="{{$domain}}_register" class="direct-chat-msg">
@@ -129,7 +141,7 @@ $(function(){
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('_add_form .carousel-item.active')){
-      //util.removeLocalData('_add_form');
+      util.removeLocalData('_add_form');
       $("form").submit();
     }
   });

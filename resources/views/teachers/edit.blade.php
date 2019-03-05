@@ -70,7 +70,7 @@
 <script>
 $(function(){
   var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", null);
+  base.pageSettinged("register_form", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){

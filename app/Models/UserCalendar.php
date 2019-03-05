@@ -57,14 +57,17 @@ class UserCalendar extends Model
         AND user_calendars.end_time < '$to_date'
       ))
 EOT;
-
     return $query->whereRaw($where_raw,[$from_date, $to_date]);
 
   }
-  public function scopeFindStatuses($query, $statuses)
+  public function scopeFindStatuses($query, $statuses, $is_not=false)
   {
-    $query = $query->whereIn('status', $statuses);
-
+    if($is_not===true){
+      $query = $query->whereNotIn('status', $statuses);
+    }
+    else {
+      $query = $query->whereIn('status', $statuses);
+    }
     return $query;
   }
 
@@ -151,14 +154,18 @@ EOT;
     return "";
   }
   public function subject(){
+    if($this->trial_id > 0) return "体験授業";
+    if(!isset($this->lecture)) return "";
     $lecture = $this->lecture->details();
     return $lecture['subject']->attribute_name;
   }
   public function lesson(){
+    if(!isset($this->lecture)) return "";
     $lecture = $this->lecture->details();
     return $lecture['lesson']->attribute_name;
   }
   public function course(){
+    if(!isset($this->lecture)) return "";
     $lecture = $this->lecture->details();
     return $lecture['course']->attribute_name;
   }
@@ -176,7 +183,10 @@ EOT;
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
     $item['timezone'] = $this->timezone();
-    $lecture = $this->lecture->details();
+    $item['datetime'] = date('m月d日 H:i',  strtotime($this->start_time)).'～'.$item['end_hour_minute'];
+    if($this->lecture_id > 0){
+      $lecture = $this->lecture->details();
+    }
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();
@@ -209,10 +219,15 @@ EOT;
   }
   static protected function add($form){
     $ret = [];
+    $trial_id = 0;
+    if(isset($form['trial_id'])){
+      $trial_id = $form['trial_id'];
+    }
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
       'lecture_id' => 0,
+      'trial_id' => $trial_id,
       'place' => '',
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
@@ -220,29 +235,40 @@ EOT;
       'status' => 'new'
     ]);
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id']);
-    $calendar->change($form['lesson'], $form['course'], $form['subject'], $form['place']);
+    $calendar->change($form);
     return $calendar;
   }
-  protected function change($lesson, $course, $subject, $place){
-    $lecture = Lecture::where('lesson' , $lesson)
-      ->where('course' , $course)
-      ->where('subject' , $subject);
-    if(isset($lecture)){
-      $lecture = $lecture->first();
+  protected function change($form){
+    $lecture_id = 0;
+    if(isset($form['lesson']) && isset($form['subject']) && isset($form['course'])){
+      $lecture = Lecture::where('lesson' , $form['lesson'])
+        ->where('course' , $form['course'])
+        ->where('subject' , $form['subject'])->first();
+        if(isset($lecture)){
+          $lecture_id = $lecture->id;
+        }
+        else {
+          //レクチャがなければ追加
+          $lecture = Lecture::create([
+            'lesson' => $form['lesson'],
+            'course' => $form['course'],
+            'subject' => $form['subject'],
+          ]);
+          $lecture_id = $lecture->id;
+        }
     }
-    else {
-      //レクチャがなければ追加
-      $lecture = Lecture::create([
-        'lesson' => $form['lesson'],
-        'course' => $form['course'],
-        'subject' => $form['subject'],
-        'create_user_id' => $form['create_user_id']
-      ]);
+    $update_fields = [
+      'start_time', 'end_time', 'remark', 'place'
+    ];
+    $data = [
+      'lecture_id' => $lecture_id,
+    ];
+    foreach($update_fields as $field){
+      if(!isset($form[$field])) continue;
+      $data[$field] = $form[$field];
     }
-    $this->update([
-      'place' => $place,
-      'lecture_id' => $lecture->id,
-    ]);
+    $this->update($data);
+    return $this;
   }
   public function memberAdd($user_id, $create_user_id, $status='new'){
     if(empty($user_id) || $user_id < 1) return null;
@@ -253,5 +279,13 @@ EOT;
         'create_user_id' => $create_user_id,
     ]);
     return $member;
+  }
+  public function is_member($user_id){
+    foreach($this->members as $member){
+      if($member->user_id === $user_id){
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -39,7 +39,14 @@ class HomeController extends Controller
               return redirect('/teachers/'.$user->id);
               break;
             case "parent" :
-              return redirect('/students');
+            /*
+              if(count($user->relations)===1){
+                //子供が一人の場合は、その子の詳細を表示
+                $relation = $user->relations->first();
+                return redirect('/students/'.$relation->student_id);
+              }
+            */
+              return redirect('/parents/'.$user->id);
               break;
             case "student" :
               return redirect('/students/'.$user->id);

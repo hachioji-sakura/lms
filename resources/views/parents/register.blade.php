@@ -1,9 +1,23 @@
 @extends('layouts.simplepage')
-@section('title', 'ユーザー登録')
+@section('title', '入会お申込み')
 
 @if(empty($result))
-@include('students.create_form')
-@include('parents.create_form')
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input" class="is-current">ご入力</li>
+    <li id="step_confirm">ご確認</li>
+    <li id="step_complete">完了</li>
+  </ol>
+  @endsection
+  @include($domain.'.create_form')
+@else
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input">ご入力</li>
+    <li id="step_confirm">ご確認</li>
+    <li id="step_complete" class="is-current">完了</li>
+  </ol>
+  @endsection
 @endif
 
 
@@ -51,29 +65,15 @@
   <form method="POST"  action="/register">
     @csrf
     <div id="parents_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+      <input type="hidden" name="email" value="{{$parent->email}}" />
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="parent_id" value="{{$parent->id}}" />
+      <input type="hidden" name="trial_id" value="{{$trial->id}}" />
+      <input type="hidden" name="student_id" value="{{$student->id}}" />
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
           <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          @yield('account_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('survey_form')
+          @yield('subject_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -109,7 +109,24 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-right mr-1"></i>
+                次へ
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          @yield('lesson_week_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
                   <i class="fa fa-check-circle mr-1"></i>
                   内容確認
                 </a>
@@ -155,11 +172,19 @@ $(function(){
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('parents_add_form .carousel-item.active')){
+      $('#parents_add_form').carousel('next');
+    }
+    $("ol.step li").removeClass("is-current");
+    if($(this).hasClass('btn-confirm')){
       var form_data = front.getFormValue('parents_add_form');
       util.setLocalData('parents_add_form', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#parents_add_form').carousel('next');
+      $("ol.step #step_confirm").addClass("is-current");
     }
+    else {
+      $("ol.step #step_input").addClass("is-current");
+    }
+
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
@@ -167,14 +192,13 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
+
     form_data["email"] = $("input[name=email]").val();
-    if(form_data["gender"]){
-      form_data["gender_name"] = $("label[for='"+$("input[name='gender']:checked").attr("id")+"']").text().trim();
-    }
     if(form_data["grade"]){
       form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
     }
-    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
+
+    var _names = ["lesson", "lesson_place", "howto",];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -182,6 +206,28 @@ $(function(){
           form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
         });
       }
+    });
+    _names = ["english_teacher", "piano_level"];
+    $.each(_names, function(index, value) {
+      form_data[value+"_name"] = "";
+      if(form_data[value]){
+        $("input[name='"+value+"']:checked").each(function() {
+          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+        });
+      }
+    });
+    $("input.lesson_week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      name = name.replace('[]', '');
+      form_data[name+"_"+val+"_name"] = "〇";
+    });
+    form_data["subject_level_name"] = "";
+    $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      name = name.replace('[]', '');
+      form_data[name+"_"+val+"_name"] = "〇";
     });
     return form_data;
   }

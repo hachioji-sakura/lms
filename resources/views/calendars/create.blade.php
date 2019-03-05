@@ -104,7 +104,7 @@
     <input type="hidden" name="teacher_user_id" value="{{$item['teacher_user_id']}}" />
     @endisset
   @endif
-  @component('lectures.select', [])
+  @component('lectures.select', ['attributes' => $attributes])
   @endcomponent
   <div class="col-12">
     <div class="form-group">

@@ -2,26 +2,57 @@
 @section('title', '体験授業お申し込フォーム')
 
 @if(empty($result))
-@include('trials.create_form')
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input" class="is-current">ご入力</li>
+    <li id="step_confirm">ご確認</li>
+    <li id="step_complete">完了</li>
+  </ol>
+  @endsection
+  @include('trials.create_form')
+@else
+  @section('title_header')
+  <ol class="step">
+    <li id="step_input">ご入力</li>
+    <li id="step_confirm">ご確認</li>
+    <li id="step_complete" class="is-current">完了</li>
+  </ol>
+  @endsection
 @endif
-
 
 @section('content')
 <div id="students_register" class="direct-chat-msg">
   @if(!empty($result))
     <h4 class="bg-success p-3 text-sm">
+      @if($result==="success")
       体験授業をお申し込みいただきまして、<br>
       誠にありがとうございます。<br><br>
       ２営業日以内に、当塾よりご連絡いたしますので、<br>
       何卒宜しくお願い致します。
+      @else
+      体験授業をお申し込みいただきまして、<br>
+      誠にありがとうございます。<br><br>
+      ２営業日以内に、当塾よりご連絡いたしますので、<br>
+      何卒宜しくお願い致します。
+      @endif
     </h4>
   @else
-  <form method="POST"  action="/trial">
+  <form method="POST"  action="/entry">
     @csrf
     <div id="trial_form" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('parent_form')
+          @yield('trial_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-right mr-1"></i>
+                次へ
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
           @yield('student_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -39,7 +70,6 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('trial_form')
           @yield('subject_form')
           @yield('survey_form')
           <div class="row">
@@ -50,7 +80,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
                   <i class="fa fa-check-circle mr-1"></i>
                   内容確認
                 </a>
@@ -95,13 +125,20 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    var form_data = front.getFormValue('trial_form');
-    form_data = form_data_adjust(form_data);
     if(front.validateFormValue('trial_form .carousel-item.active')){
-      util.setLocalData('trial_form', form_data);
-      base.pageSettinged("confirm_form", form_data);
       $('body, html').scrollTop(0);
       $('#trial_form').carousel('next');
+    }
+
+    $("ol.step li").removeClass("is-current");
+    if($(this).hasClass('btn-confirm')){
+      var form_data = front.getFormValue('trial_form');
+      util.setLocalData('trial_form', form_data);
+      base.pageSettinged("confirm_form", form_data_adjust(form_data));
+      $("ol.step #step_confirm").addClass("is-current");
+    }
+    else {
+      $("ol.step #step_input").addClass("is-current");
     }
   });
   //戻る
@@ -129,7 +166,7 @@ $(function(){
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
       form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
     }
-    var _names = ["lesson_place", "howto", "lesson"];
+    var _names = ["lesson", "lesson_place", "howto",];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -138,12 +175,14 @@ $(function(){
         });
       }
     });
-
-    $("input.lesson_week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
-      var val = $(this).val();
-      var name = $(this).attr("name");
-      name = name.replace('[]', '');
-      form_data[name+"_"+val+"_name"] = "〇";
+    _names = ["english_teacher", "piano_level"];
+    $.each(_names, function(index, value) {
+      form_data[value+"_name"] = "";
+      if(form_data[value]){
+        $("input[name='"+value+"']:checked").each(function() {
+          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+        });
+      }
     });
     form_data["subject_level_name"] = "";
     $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){

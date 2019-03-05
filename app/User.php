@@ -52,7 +52,14 @@ class User extends Authenticatable
       if(isset($item)){
         return $item;
       }
-      return "";
+      return null;
+    }
+    public function get_tags($key){
+      $item = $this->tags->where('tag_key', $key);
+      if(isset($item)){
+        return $item;
+      }
+      return null;
     }
     public function student(){
       return $this->hasOne('App\Models\Student');

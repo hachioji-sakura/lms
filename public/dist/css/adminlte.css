@@ -13357,3 +13357,57 @@ iframe.map {
 span.select2-container{
 	z-index: 1100;
 }
+.step{
+  list-style-type: none;
+  display:table;
+  width:100%;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+}
+.step li{
+  display:table-cell;
+  position:relative;
+  background: #504944;
+  color: #fff;
+	padding: 1em 0.5em 1em 2em;
+
+}
+.step li:last-child{
+  padding-right: 1em;
+}
+.step li:last-child:before,
+.step li:last-child:after{
+  display:none;
+}
+.step li:before,
+.step li:after{
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  margin: auto;
+}
+.step li:before{
+  top:-15px;
+  right:-1em;
+  border-style: solid;
+  border-color: transparent transparent transparent #fff;
+  border-width: 40px 0 40px 1em;
+  z-index: 10;
+}
+.step li:after{
+  top:-15px;
+  right:-.8em;
+  border-style: solid;
+  border-color: transparent transparent transparent #504944;
+  border-width: 40px 0 40px 1em;
+  z-index: 10;
+}
+.step li.is-current{
+	background-color: #17a2b8 !important;
+  font-weight: bold;
+}
+.step li.is-current:after{
+  border-color: transparent transparent transparent #17a2b8 !important;
+}

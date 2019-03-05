@@ -6,6 +6,7 @@
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  {{--
   @if($user->role=="parent")
   <li class="nav-item hr-1">
     <a href="/{{$domain}}/create" class="nav-link">
@@ -13,6 +14,7 @@
     </a>
   </li>
   @endif
+  --}}
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -65,6 +67,7 @@
 @endsection
 
 @section('page_footer')
+{{--
 <dt>
   @if($user->role=="parent")
     <a href="/{{$domain}}/create" class="btn btn-app" >
@@ -72,4 +75,5 @@
     </a>
   @endif
 </dt>
+--}}
 @endsection

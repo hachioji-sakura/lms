@@ -67,15 +67,11 @@ class TeacherController extends StudentController
       //ログインしていない
       abort(419);
     }
-    //講師・事務以外はNG
-    if($this->is_manager_or_teacher($user->role)!==true){
-      abort(403);
-    }
     if(is_numeric($id) && $id > 0){
       //id指定がある
-      if($this->is_teacher($user->role) && $id!==$user->id){
+      if(!$this->is_manager($user->role) && $id!==$user->id){
         //講師は自分のidしか閲覧できない
-        abort(404);
+        abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details();
     }
@@ -168,15 +164,13 @@ class TeacherController extends StudentController
     $list_title = '授業予定';
     switch($request->get('list')){
       case "history":
-        //授業履歴
         $list_title = '授業履歴';
         break;
       case "confirm":
-        //調整中予定
-        $list_title = '調整中予定';
+        $list_title = '予定調整中';
         break;
       case "cancel":
-        $list_title = '休み';
+        $list_title = '休み・キャンセル';
         break;
     }
     $param['list_title'] = $list_title;
@@ -188,15 +182,20 @@ class TeacherController extends StudentController
     $students =  Student::findChargeStudent($teacher_id)
       ->searchWord($request->search_word)->get();
     $from_date = date('Y-m-d 00:00:00');
+    //TODO:暫定で14日先の予定を表示する
+    $to_date = date('Y-m-d 23:59:59', strtotime('+14 day'));
     $teacher = Teacher::where('id', $teacher_id)->first();
+    $calendars = UserCalendar::rangeDate($from_date,$to_date)
+                  ->findUser($teacher->user_id)
+                  ->orderBy('start_time')
+                  ->get();
     foreach($students as $student){
-      $calendar = UserCalendar::findUser($teacher->user_id)->findUser($student->user_id)
-              ->rangeDate($from_date)
-              ->orderBy('start_time');
-        $calendar = $calendar->first();
-      if(isset($calendar)){
-        $student['current_calendar_start_time'] = $calendar['start_time'];
-        $student['current_calendar'] = $calendar;
+      foreach($calendars as $calendar){
+        if($calendar->is_member($student->user_id)){
+          $student['current_calendar_start_time'] = $calendar['start_time'];
+          $student['current_calendar'] = $calendar->details();
+          break;
+        }
       }
       if(empty($student['current_calendar_start_time'])){
         //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
@@ -205,41 +204,6 @@ class TeacherController extends StudentController
     }
     $students = $students->sortBy('current_calendar_start_time');
     return $students;
-  }
-  private function get_schedule(Request $request, $user_id){
-    $calendars = UserCalendar::findUser($user_id);
-    $from_date = '';
-    $to_date = '';
-    $sort = 'asc';
-    //status: new > confirm > fix >rest, presence , absence
-    //other status : cancel
-    switch($request->get('list')){
-      case "history":
-        //履歴
-        $sort = 'desc';
-        $to_date = date('Y-m-d', strtotime("+1 month"));
-        break;
-      case "confirm":
-        //予定調整中
-        $to_date = date('Y-m-d', strtotime("+1 month"));
-        $calendars = $calendars->findStatuses(['new', 'confirm']);
-        break;
-      case "cancel":
-        //休み予定
-        $from_date = date('Y-m-d');
-        $to_date = date('Y-m-d', strtotime("+1 month"));
-        $calendars = $calendars->findStatuses(['cancel', 'rest']);
-        break;
-      default:
-        $from_date = date('Y-m-d');
-        $calendars = $calendars->findStatuses(['rest', 'fix', 'presence', 'absence']);
-        break;
-    }
-    $calendars = $calendars->rangeDate($from_date, $to_date);
-    $count = $calendars->count();
-    $calendars = $calendars->sortStarttime($sort)
-      ->pagenation($request->get('_page'), $request->get('_line'))->get();
-    return ["data" => $calendars, "count" => $count];
   }
   /**
    * 仮登録ページ
@@ -415,19 +379,19 @@ class TeacherController extends StudentController
     public function _register_update($form)
     {
       $user = User::where('access_key',$form['access_key']);
+      $user = $user->first();
+      DB::beginTransaction();
+      $form['create_user_id'] = $user->id;
+      $item = $this->model()->where('user_id', $user->id)->first();
+      $item->profile_update($form);
+      $user->set_password($form['password']);
+      $user->update(['status' => 0]);
+      DB::commit();
+      return $this->api_response(200, __FUNCTION__, __LINE__, $item);
       if($user->count() < 1){
         abort(403);
       }
       try {
-        $user = $user->first();
-        DB::beginTransaction();
-        $form['create_user_id'] = $user->id;
-        $item = $this->model()->where('user_id', $user->id)->first();
-        $item->profile_update($form);
-        $user->set_password($form['password']);
-        $user->update(['status' => 0]);
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, __LINE__, $item);
       }
       catch (\Illuminate\Database\QueryException $e) {
         DB::rollBack();

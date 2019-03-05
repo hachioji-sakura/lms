@@ -1,5 +1,6 @@
 @extends('layouts.loginbox')
 @section('title', $domain_name.'仮登録')
+@section('title_header', $domain_name.'仮登録')
 @include($domain.'.entry_form')
 
 @section('content')

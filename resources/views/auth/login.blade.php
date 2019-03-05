@@ -1,5 +1,6 @@
 @extends('layouts.loginbox')
 @section('title', 'ログイン')
+@section('title_header', 'ログイン')
 @section('content')
 <form id="login_form" method="POST" action="{{ route('login') }}">
     @csrf

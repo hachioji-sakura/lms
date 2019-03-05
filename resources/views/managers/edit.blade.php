@@ -59,6 +59,7 @@ $(function(){
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('register_form .carousel-item.active')){
+      util.removeLocalData('register_form');
       $("form").submit();
     }
   });

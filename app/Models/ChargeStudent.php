@@ -59,4 +59,26 @@ class ChargeStudent extends Model
   public function lecture(){
     return $this->belongsTo('App\Models\Lecture');
   }
+  static public function add($teacher_id, $student_id, $create_user_id){
+    $charge_student = ChargeStudent::where('teacher_id', $teacher_id)
+      ->where('student_id', $student_id)
+      ->first();
+    if(isset($charge_student)){
+      return $charge_student;
+    }
+    $teacher = Teacher::where('id', $teacher_id)->first();
+    if(!isset($teacher)){
+      return null;
+    }
+    $student = Student::where('id', $student_id)->first();
+    if(!isset($student)){
+      return null;
+    }
+    $charge_student = ChargeStudent::create([
+      'teacher_id' => $teacher->id,
+      'student_id' => $student->id,
+      'create_user_id' => $create_user_id,
+    ]);
+    return $charge_student;
+  }
 }

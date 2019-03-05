@@ -44,7 +44,11 @@
                       <i class="fa fa-clock mr-1"></i>{{$charge_student->current_calendar()->details()->timezone}}
                       <br>
                       <small class="badge badge-info mt-1 mr-1">
-                        {{$charge_student->current_calendar()->details()->subject}}
+                        @if(!empty($charge_student->current_calendar()->details()->subject))
+                          {{$charge_student->current_calendar()->details()->subject}}
+                        @else
+                          体験授業
+                        @endif
                       </small>
                   @else
                   -
@@ -68,6 +72,11 @@
                         {{$charge_student->current_calendar()->details()->status_name}}
                       </a>
                     @endif
+                  @endif
+                  @if($user->role==="parent")
+                  <a title="生徒情報" href="javascript:void(0);" page_title="お申込み内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm w-100 mt-1">
+                    <i class="fa fa-address-card mr-1"></i>お申込み内容
+                  </a>
                   @endif
                 </div>
             </li>

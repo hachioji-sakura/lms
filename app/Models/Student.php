@@ -21,7 +21,6 @@ class Student extends Model
       'kana_last' => 'required',
       'kana_first' => 'required',
       'gender' => 'required',
-      'birth_day' => 'required',
   );
   /**
    *　プロパティ：年齢
@@ -66,6 +65,54 @@ class Student extends Model
     return "-";
   }
   /**
+   *　プロパティ：学年
+   */
+  public function grade()
+  {
+    return $this->tag_name('grade');
+  }
+  /**
+   *　プロパティ：学校名
+   */
+  public function school_name()
+  {
+    return $this->tag_name('school_name');
+  }
+  /**
+   *　プロパティ：希望レッスン場所
+   */
+  public function lesson_place()
+  {
+    return $this->tags_name('lesson_place');
+  }
+  /**
+   *　プロパティ：希望レッスン
+   */
+  public function lesson()
+  {
+    return $this->tags_name('lesson');
+  }
+  public function tag_name($key)
+  {
+    $tag = $this->get_tag($key);
+    if(isset($tag)){
+      return $tag['name'];
+    }
+    return "";
+  }
+  public function tags_name($key)
+  {
+    $tags = $this->get_tags($key);
+    $ret = "";
+    if(isset($tags)){
+      foreach($tags as $tag){
+        $ret .= $tag['name'].',';
+      }
+      return trim($ret, ',');
+    }
+    return "";
+  }
+  /**
    *　プロパティ：親（複数）
    */
   public function parents(){
@@ -83,7 +130,26 @@ class Student extends Model
   public function get_tag($key)
   {
     $tag = $this->user->get_tag($key);
-    return ["name" => $tag->name(), "key" => $tag->keyname()];
+    if(isset($tag)){
+      return ["name" => $tag->name(), "key" => $tag->keyname(), "value" => $tag->tag_value];
+    }
+    return ["name" => '-', "key" => $key, "value" => ''];
+  }
+  /**
+   *　プロパティ：タグ取得
+   */
+  public function get_tags($key)
+  {
+    $tags = $this->user->get_tags($key);
+    $ret = null;
+    if(isset($tags)){
+      $ret = [];
+      foreach($tags as $tag){
+        $ret[] = ["name" => $tag->name(), "key" => $tag->keyname(), "value" => $tag->tag_value];
+      }
+      return $ret;
+    }
+    return null;
   }
 
   /**
@@ -184,6 +250,9 @@ EOT;
       'image_id' => $form['gender'],
       'status' => 0,
     ]);
+    if(!isset($form['birth_day']) || empty($form['birth_day'])){
+      $form['birth_day'] = '9999-12-31';
+    }
     $student = Student::create([
       'name_last' => $form['name_last'],
       'name_first' => $form['name_first'],
@@ -207,26 +276,44 @@ EOT;
    * @param  Collection $form
    */
   public function profile_update($form){
-    $this->update([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => $form['kana_last'],
-      'kana_first' => $form['kana_first'],
-      'birth_day' => $form['birth_day'],
-      'gender' => $form['gender'],
-    ]);
-    $tag_names = ['school_name', 'grade'];
-
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-	      UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+    $update_form = [
+      'name_last' => "",
+      'name_first' => "",
+      'kana_last' => "",
+      'kana_first' => "",
+      'birth_day' => "9999-12-31",
+      'gender' => "",
+    ];
+    foreach($update_form as $key => $val){
+      if(isset($form[$key])){
+        $update_form[$key] = $form[$key];
+      }
     }
-    $tag_names = ['lesson_subject', 'lesson_week', 'lesson_place', 'lesson_time', 'lesson_time_holiday'];
+    $this->update($update_form);
+    //1:nタグ
+    $tag_names = ['lesson_place'];
+    //通塾可能曜日・時間帯タグ
+    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+    foreach($lesson_weeks as $lesson_week){
+      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    }
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+    //1:1タグ
+    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade'];
+    //科目タグ
+    $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
+    foreach($charge_subject_level_items as $charge_subject_level_item){
+      $tag_names[] = $charge_subject_level_item['attribute_value'];
+    }
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
+
   }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
 use App\Models\StudentParent;
+use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
 
 class Trial extends Model
@@ -34,6 +35,10 @@ class Trial extends Model
   }
   public function student(){
     return $this->belongsTo('App\Models\Student');
+  }
+  public function calendars(){
+    //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
+    return $this->hasMany('App\Models\UserCalendar');
   }
   public function parent(){
     return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
@@ -74,23 +79,31 @@ EOT;
   static public function entry($form){
     $form["accesskey"] = '';
     $form["password"] = 'sakusaku';
+    /*
     $form["name_last"] = $form["parent_name_last"];
     $form["name_first"] = $form["parent_name_first"];
     $form["kana_last"] = $form["parent_kana_last"];
     $form["kana_first"] = $form["parent_kana_first"];
+    */
+    $form["name_last"] = $form["student_name_last"];
+    $form["name_first"] = "保護者様";
+    $form["kana_last"] = "";
+    $form["kana_first"] = "";
     //保護者情報登録
     //同じ送信内容の場合は登録しない
     $parent = StudentParent::entry($form);
     $form["create_user_id"] = $parent->user_id;
     $parent = $parent->profile_update($form);
-    $form["name_last"] = $form["student_name_last"];
+    /*
     $form["name_first"] = $form["student_name_first"];
     $form["kana_last"] = $form["student_kana_last"];
     $form["kana_first"] = $form["student_kana_first"];
-
+    */
+    $form["name_last"] = $form["student_name_last"];
+    $form["name_first"] = $form["student_name_first"];
     //生徒情報登録
     //同じ送信内容の場合は登録しない
-    $student = $parent->brother_add($form);
+    $student = $parent->brother_add($form, 1);
     $ret = [];
 
     //申し込み情報登録
@@ -115,7 +128,7 @@ EOT;
     $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
     $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
     $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
-
+    if(!isset($form['remark']) || empty($form['remark'])) $form['remark'] = '';
     $this->update([
       'remark' => $form['remark'],
       'trial_start_time1' => $form['trial_start_time1'],
@@ -123,7 +136,8 @@ EOT;
       'trial_start_time2' => $form['trial_start_time2'],
       'trial_end_time2' => $form['trial_end_time2'],
     ]);
-    $tag_names = ['howto_word'];
+    $tag_names = ['howto_word', 'piano_level', 'english_teacher'];
+    //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
       $tag_names[] = $charge_subject_level_item['attribute_value'];
@@ -134,15 +148,50 @@ EOT;
 	    }
     }
     $tag_names = ['lesson_place', 'howto', 'lesson'];
-    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
-    foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+  }
+  public function get_calendar(){
+    $calendar = UserCalendar::where('trial_id', $this->id)->findStatuses(['cancel'], true)->first();
+    return $calendar;
+  }
+  public function trial_to_calendar($form){
+    $teacher = Teacher::where('id', $form['teacher_id'])->first();
+    $student = Student::where('id', $this->student_id)->first();
+    //希望日時1か2を取得
+    $start_time = $this->trial_start_time1;
+    $end_time = $this->trial_end_time1;
+    if($form['priority_datetime']===2){
+      $start_time = $this->trial_start_time2;
+      $end_time = $this->trial_end_time2;
     }
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+    $calendar = $this->get_calendar();
+    if(!isset($calendar)){
+      //cancelの場合か、存在しない場合に、授業予定を登録
+      $calendar = UserCalendar::add([
+        'start_time' => $start_time,
+        'end_time' => $end_time,
+        'trial_id' => $this->id,
+        'place' => $form['place'],
+        'remark' => $this->remark,
+        'teacher_user_id' => $teacher->user_id,
+        'create_user_id' => $form['create_user_id'],
+      ]);
+      $calendar->memberAdd($student->user_id, $form['create_user_id']);
+      $tag_names = ['matching_decide_word'];
+      foreach($tag_names as $tag_name){
+        if(!empty($form[$tag_name])){
+          TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+  	    }
+      }
+      $tag_names = ['matching_decide'];
+      foreach($tag_names as $tag_name){
+        if(!empty($form[$tag_name])){
+          TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        }
+      }
+      ChargeStudent::add($teacher->id, $this->student_id, $form['create_user_id']);
     }
+
+    return $calendar;
   }
   public function status_style(){
     $status_name = "";
@@ -158,11 +207,19 @@ EOT;
     $status_name = "";
     switch($this->status){
       case "new":
-        return "申込";
+        return "未対応";
+      case "confirm":
+        return "予定確認中";
       case "fix":
-        return "体験授業確定";
+        return "授業予定";
       case "cancel":
         return "キャンセル";
+      case "rest":
+        return "休み";
+      case "absence":
+        return "欠席";
+      case "presence":
+        return "出席済み";
     }
     return "";
   }
@@ -185,7 +242,7 @@ EOT;
     $item['parent_email'] =  $this->parent->user->email;
     $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
     $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
-    $item['grade'] = $this->student->get_tag('grade')['name'];
+    $item['grade'] = $this->student->grade();
     $item['school_name'] = $this->student->get_tag('school_name')['name'];
     $item['subject1'] = "";
     $item['subject2'] = "";

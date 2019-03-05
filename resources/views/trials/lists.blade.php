@@ -2,7 +2,15 @@
   {{$domain_name}}一覧
 @endsection
 @extends('dashboard.common')
-@include('dashboard.lists')
+@section('contents')
+<div class="card-header">
+  <h3 class="card-title">@yield('title')</h3>
+</div>
+<div class="card-body table-responsive p-0">
+  @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
+  @endcomponent
+</div>
+@endsection
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -25,13 +33,23 @@
         </a>
       </li>
       <li class="nav-item">
+        <a href="/{{$domain}}?status=confirm" class="nav-link">
+          <i class="fa fa-check-circle nav-icon"></i>予定確認中
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="/{{$domain}}?status=fix" class="nav-link">
-          <i class="fa fa-check-circle nav-icon"></i>対応済み
+          <i class="fa fa-calendar-alt nav-icon"></i>授業予定
         </a>
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=cancel" class="nav-link">
           <i class="fa fa-ban nav-icon"></i>キャンセル
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=rest,absence,presence" class="nav-link">
+          <i class="fa fa-history nav-icon"></i>履歴
         </a>
       </li>
       <li class="nav-item">

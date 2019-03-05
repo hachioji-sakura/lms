@@ -1,4 +1,4 @@
-<div class="row"　id="page_item" >
+<div class="row">
 @if(isset($field_logic))
   {{$field_logic}}
 @else

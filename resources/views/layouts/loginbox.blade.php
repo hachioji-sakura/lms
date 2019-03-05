@@ -3,19 +3,18 @@
 @yield('start')
 
 <body class="hold-transition login-page">
+@component('components.action_message', [])
+@endcomponent
 <div class="login-box">
 	<div class="login-logo">
-	<a href="./"><b>学習管理システム</b></a>
+	<a href="./"><b>{{config('app.name')}}</b></a>
 	</div>
 	<div class="card">
 		<div class="card-header">
-			<h3 class="card-title">@yield('title')</h3>
+			<h3 class="card-title">@yield('title_header')</h3>
 		</div>
 		<div class="card-body login-card-body">
       @yield('content')
-			@component('components.action_message', [])
-			@endcomponent
-
 		</div>
   </div>
 </div>

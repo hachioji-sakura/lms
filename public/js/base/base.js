@@ -103,12 +103,14 @@
 				placeholder: '選択してください',
 			});
 		});
-		//Flat red color scheme for iCheck
-		$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-			checkboxClass: 'icheckbox_flat-green mr-1',
-			radioClass   : 'iradio_flat-green mr-1'
-		})
-		$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').on('ifChanged', function (e) {
+		var colors = ['green', 'aero', 'red', 'blue', 'grey'];
+		$.each(colors, function(i,color){
+			$('input[type="checkbox"].icheck.flat-'+color+', input[type="radio"].icheck.flat-'+color).iCheck({
+				checkboxClass: 'icheckbox_flat-'+color+' mr-1',
+				radioClass   : 'iradio_flat-'+color+' mr-1'
+			})
+		});
+		$('input[type="checkbox"].icheck, input[type="radio"].icheck').on('ifChanged', function (e) {
 			$(this).trigger("change", e);
 		});
 		/*

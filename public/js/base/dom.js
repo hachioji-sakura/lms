@@ -63,6 +63,7 @@
 		var suggest = $(self).attr("suggest");
 		var form = "";
 		var val = null;
+		var title = "";
 		switch(accesskey){
 			case "m_query":
 				var query = $(self).attr("query");
@@ -136,7 +137,7 @@
 						data.unshift([_year, _year+"年 "]);
 						_maxlength--;
 					}
-					form = getOptionString(name, data, 0, 1, template, required);
+					form = getOptionString(name, data, 0, 1, template, false);
 					break;
 				case "month":
 					var data = [];
@@ -146,7 +147,7 @@
 						data.push([i,  _text]);
 					}
 					val = "";
-					form = getOptionString(name, data, 0, 1, template, required);
+					form = getOptionString(name, data, 0, 1, template, false);
 					break;
 				case "day":
 					var data = [];
@@ -156,16 +157,17 @@
 						data.push([i,  _text]);
 					}
 					val = "";
-					form = getOptionString(name, data, 0, 1, template, required);
+					form = getOptionString(name, data, 0, 1, template, false);
 					break;
 				default:
-					var val = $(self).attr("value");
-					var title = $(self).attr("title");
+					val = $(self).attr("value");
+					title = $(self).attr("title");
+				/* TODO 不要？
 					form = getOptionString(name, [[val, title]], 0, 1, template, required);
+				*/
 					break;
 		}
-
-		$(self).html(form);
+		if(form!="") $(self).html(form);
 		if(!util.isEmpty(selectValue)) val = selectValue;
 		if(required && val != null){
 			if(util.isEmpty(template)){
@@ -417,7 +419,7 @@
 			"select" : '<select class="form-control select2" #attr# style="width:100%;"></select>',
 			"radio" : [
 				'<label class="mr-2">',
-				'<input type="radio" class="flat-red mr-1" name="#ID#" id="#ID##VAL#" value="#VAL#"">',
+				'<input type="radio" class="icheck flat-green mr-1" name="#ID#" id="#ID##VAL#" value="#VAL#"">',
 				'#NAME#',
 				'</label>'
 				].join("")
@@ -708,24 +710,26 @@
 							break;
 					}
 				}
-				switch(type){
-					case "radio":
-					case "checkbox":
-						$(this).val(val);
-						if($(this).iCheck){
-							$(this).iCheck('update');
-							$(this).trigger('ifChanged');
-						}
-						else {
+				if(!util.isEmpty(val)){
+					switch(type){
+						case "radio":
+						case "checkbox":
+							$(this).val(val);
+							if($(this).iCheck){
+								$(this).iCheck('update');
+								$(this).trigger('ifChanged');
+							}
+							else {
+								$(this).change();
+							}
+							break;
+						case "select":
+							$(this).val(val);
 							$(this).change();
-						}
-						break;
-					case "select":
-						$(this).val(val);
-						$(this).change();
-						break;
-					default:
-						$(this).val(val);
+							break;
+						default:
+							$(this).val(val);
+					}
 				}
 				if(!util.isEmpty(inputtype)){
 					$(this).blur();
