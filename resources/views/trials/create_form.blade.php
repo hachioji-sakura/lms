@@ -114,7 +114,7 @@
     @component('components.select_gender', ['item' => []])
     @endcomponent
   </div>
-  @component('students.forms.school', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.school', ['item' => [], 'attributes' => $attributes]) @endcomponent
 
   <div class="col-12">
     <div class="form-group">
