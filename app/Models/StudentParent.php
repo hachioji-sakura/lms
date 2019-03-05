@@ -45,7 +45,7 @@ class StudentParent extends Teacher
           'name' => $form['name_last'].' '.$form['name_first'],
           'email' => $form['email'],
           'image_id' => 4,
-          'status' => $form['status'],
+          'status' => 1,
           'access_key' => $form['access_key'],
           'password' => '-',
       ]);

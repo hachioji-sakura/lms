@@ -248,7 +248,7 @@ EOT;
       'password' => '-',
       'email' => $student_no,
       'image_id' => $form['gender'],
-      'status' => 0,
+      'status' => $form['status'],
     ]);
     if(!isset($form['birth_day']) || empty($form['birth_day'])){
       $form['birth_day'] = '9999-12-31';
