@@ -82,6 +82,19 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/trials">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-envelope-open-text"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">体験申し込み</b>
+            <span class="text-sm">体験申し込みの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/comments">
         <div class="info-box">
           <span class="info-box-icon bg-info">

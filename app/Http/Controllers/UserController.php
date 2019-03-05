@@ -89,18 +89,18 @@ class UserController extends Controller
     return $items;
   }
   protected function save_redirect($res, $param, $success_message, $redirect_url=''){
-   if($this->is_success_response($res)){
-     $param['success_message'] = $success_message;
-     if(!empty($redirect_url)){
-       return redirect($redirect_url)
+    if($this->is_success_response($res)){
+      $param['success_message'] = $success_message;
+      if(!empty($redirect_url)){
+        return redirect($redirect_url)
         ->with($param);
       }
-   }
-   else {
-     $param['error_message'] = $res['message'];
-     $param['error_message_description'] = $res['description'];
-   }
-   return back()->with($param);
+    }
+    else {
+      $param['error_message'] = $res['message'];
+      $param['error_message_description'] = $res['description'];
+    }
+    return back()->with($param);
   }
 
   /**

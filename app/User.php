@@ -52,7 +52,14 @@ class User extends Authenticatable
       if(isset($item)){
         return $item;
       }
-      return "";
+      return null;
+    }
+    public function get_tags($key){
+      $item = $this->tags->where('tag_key', $key);
+      if(isset($item)){
+        return $item;
+      }
+      return null;
     }
     public function student(){
       return $this->hasOne('App\Models\Student');
@@ -75,8 +82,8 @@ class User extends Authenticatable
     public function target_milestones(){
       return $this->hasMany('App\Models\Milestone', 'target_user_id');
     }
-    public function aliases(){
-      return $this->hasMany('App\Models\UserTag');
+    public function calendar_member(){
+      return $this->hasMany('App\Models\UserCalendarMember');
     }
 
     /**

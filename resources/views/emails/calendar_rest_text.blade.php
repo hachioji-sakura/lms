@@ -1,9 +1,7 @@
 @include('emails.common')
-@yield('mail_title')
 
-@if($send_to==='student' && ($is_child===true || $is_own===true))
+@if($send_to==='student')
 {{$user_name}}様
-{{$user_name}} 保護者様
 
 以下の授業の欠席連絡を承りました。
 

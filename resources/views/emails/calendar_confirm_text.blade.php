@@ -1,20 +1,18 @@
 @include('emails.common')
-@yield('mail_title')
 
-@if($send_to==='student' && ($is_child===true || $is_own===true))
+@if($send_to==='student')
 {{$user_name}}様
-{{$user_name}} 保護者様
 
-以下の授業予定を追加いたしました。
+@if($item['trial_id'] > 0)
+この度は、体験授業のお申込み、誠にありがとうございます。
+@endif
+以下のURLより、授業予定のご確認をお願いいたします。
+{{config('app.url')}}/calendars/{{$item['id']}}/fix?key={{$token}}&user={{$user_id}}
 
-学習管理システムにて、
-授業予定のご確認をお願いいたします。
+ご不明な点等ございましたら、下記までお問い合わせください。　
+
 @elseif($send_to==='teacher')
 以下の授業予定を追加いたしました。
-
-生徒様から授業予定の確定操作後に、
-予定は確定となります。
-@endif
 
 …………………………………………………………………………………………
 開始日時：{{$item['start_time']}}
@@ -26,10 +24,9 @@
 科目：{{$item['subject']}}
 …………………………………………………………………………………………
 
-@if($send_to==='student')
-ご不明な点等ございましたら、下記までお問い合わせください。　
-@elseif($send_to==='teacher')
-ご確認いただきますよう、宜しくお願い致します。
+生徒様から授業予定の確定操作後に、
+予定は確定となります。
 @endif
+
 
 @yield('signature')

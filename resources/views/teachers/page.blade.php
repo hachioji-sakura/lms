@@ -3,8 +3,8 @@
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
-@include('dashboard.widget.comments')
 
+@include('dashboard.widget.comments')
 {{--まだ対応しない
 @include('dashboard.widget.milestones')
 @include('dashboard.widget.events')
@@ -70,12 +70,12 @@
                 </div>
                 <div class="col-6 text-sm">
                   @if(!empty($student->current_calendar))
-                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar->details()->date}}
+                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar->date}}
                       <br>
-                      <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->details()->timezone}}
+                      <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->timezone}}
                       <br>
                       <small class="badge badge-info mt-1 mr-1">
-                        {{$student->current_calendar->details()->subject}}
+                        {{$student->current_calendar->subject}}
                       </small>
                   @else
                   -
@@ -83,20 +83,34 @@
                 </div>
                 <div class="col-12 text-sm">
                   @if(isset($student->current_calendar))
-                    @if($student->current_calendar->details()->status==="fix" && date('Ymd', strtotime($student->current_calendar->details()->start_time)) === date('Ymd'))
-                      <a title="{{$student->current_calendar->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->details()->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                    @if($student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
-                        {{$student->current_calendar->details()->status_name}}
+                        {{$student->current_calendar->status_name}}
                       </a>
-                    @elseif($student->current_calendar->details()->status==="presence")
+                    @elseif($student->current_calendar->status==="confirm")
+                    {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
+                      {{-- 予定下書き --}}
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        <i class="fa fa-envelope mr-1"></i>
+                        {{$student->current_calendar->status_name}}
+                      </a>
+                    @elseif($student->current_calendar->status==="presence")
                       {{-- 出席済み --}}
-                      <a title="{{$student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
                         <i class="fa fa-check-circle mr-1"></i>
-                        {{$student->current_calendar->details()->status_name}}
+                        {{$student->current_calendar->status_name}}
+                      </a>
+                    @elseif($student->current_calendar->status==="new")
+                      {{-- 予定下書き --}}
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/confirm" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                        <i class="fa fa-calendar-check mr-1"></i>
+                        {{$student->current_calendar->status_name}}
                       </a>
                     @else
-                      <a title="{{$student->current_calendar->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->details()->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
-                        {{$student->current_calendar->details()->status_name}}
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        <i class="fa fa-file-alt mr-1"></i>
+                        {{$student->current_calendar->status_name}}
                       </a>
                     @endif
                   @endif

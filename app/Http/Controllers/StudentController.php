@@ -57,15 +57,19 @@ class StudentController extends UserController
       //ログインしていない
       abort(419);
     }
-
     $ret = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
        'user' => $user,
        'mode'=>$request->mode,
-       'search_word'=>$request->search_word,
+       'search_word'=>$request->get('search_word'),
+       '_page' => $request->get('_page'),
+       '_line' => $request->get('_line'),
+       'list' => $request->get('list'),
        'attributes' => $this->attributes(),
-    ];
+     ];
+     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
+     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details();
     }
@@ -153,6 +157,8 @@ class StudentController extends UserController
     */
    public function store(Request $request)
    {
+     /*
+     TODO: 申し込みベースで生徒を追加するので、不要
      $param = $this->get_param($request);
      if(!$this->is_parent($param['user']->role)){
        abort(403);
@@ -173,7 +179,7 @@ class StudentController extends UserController
      }
      return redirect('/home')
       ->with($param);
-
+      */
    }
    /**
     * データ更新時のパラメータチェック
@@ -237,17 +243,11 @@ class StudentController extends UserController
    //目標データ取得
    $milestones = $model->target_milestones;
 
-   $use_icons = DB::table('images')
-     ->where('create_user_id','=',$user->user_id)
-     ->orWhere('publiced_at','<=', date('Y-m-d'))
-     ->get(['id', 'alias', 's3_url']);
-
    $view = "calendar";
 
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones,
-     'use_icons'=>$use_icons,
    ])->with($param);
  }
  public function schedule(Request $request, $id)
@@ -262,15 +262,46 @@ class StudentController extends UserController
    $milestones = $model->target_milestones;
 
    $view = "schedule";
-   $calendars = UserCalendar::findUser($item->user_id)->rangeDate(date('Y-m-d'))->get();
+   $calendars = $this->get_schedule($request, $item->user_id);
+   $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
+   $calendars = $calendars["data"];
    foreach($calendars as $calendar){
      $calendar = $calendar->details();
    }
    $param["calendars"] = $calendars;
+   $list_title = '授業予定';
+   switch($request->get('list')){
+     case "history":
+       $list_title = '授業履歴';
+       break;
+     case "confirm":
+       $list_title = '予定調整中';
+       break;
+     case "cancel":
+       $list_title = '休み・キャンセル';
+       break;
+   }
+   $param['list_title'] = $list_title;
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones
    ])->with($param);
+ }
+ /**
+  * Show the form for agreement the specified resource.
+  *
+  * @param  int  $id
+  * @return \Illuminate\Http\Response
+  */
+ public function agreement_page(Request $request, $id)
+ {
+   $result = '';
+   $param = $this->get_param($request, $id);
+   $param['fields'] = [];
+   $param['_edit'] = true;
+   $param['student'] = $param['item'];
+   return view($this->domain.'.agreement',$param);
+
  }
 
   /**
@@ -352,7 +383,7 @@ class StudentController extends UserController
     }
     if($this->is_success_response($res)){
       $this->send_mail($param['item']['email'],
-        'ユーザー本登録のお願い（再送）', [
+        'ユーザー本登録のお願い', [
         'user_name' => $param['item']['name'],
         'access_key' => $access_key,
         'remind' => true,
@@ -433,5 +464,45 @@ class StudentController extends UserController
       DB::rollBack();
       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
+  }
+  public function get_schedule(Request $request, $user_id){
+    $from_date = '';
+    $to_date = '';
+    $statuses = [];
+    $sort = 'asc';
+    //status: new > confirm > fix >rest, presence , absence
+    //other status : cancel
+    switch($request->get('list')){
+      case "history":
+        //履歴
+        $sort = 'desc';
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        break;
+      case "confirm":
+        //予定調整中
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        $statuses = ['new', 'confirm'];
+        break;
+      case "cancel":
+        //休み予定
+        $from_date = date('Y-m-d');
+        $to_date = date('Y-m-d', strtotime("+1 month"));
+        $statuses = ['cancel','rest'];
+        break;
+      default:
+        $from_date = date('Y-m-d');
+        $statuses = ['rest', 'fix', 'presence', 'absence'];
+        break;
+    }
+    $calendars = UserCalendar::rangeDate($from_date, $to_date)
+      ->findUser($user_id);
+    if($request->get('list')!=='history'){
+      $calendars = $calendars->findStatuses($statuses);
+    }
+    //var_dump($calendars->toSql());
+    $count = $calendars->count();
+    $calendars = $calendars->sortStarttime($sort)
+      ->pagenation($request->get('_page'), $request->get('_line'))->get();
+    return ["data" => $calendars, "count" => $count];
   }
 }

@@ -21,6 +21,7 @@ class UserTag extends Model
     $key = $this->tag_key;
     if($key==="teacher_no") return "No";
     if($key==="student_no") return "No";
+    if($key==="howto_word") return "検索時のキーワード";
 
     if($key==="lesson_time_holiday") $key = "lesson_time";
     $item = GeneralAttribute::where('attribute_key', 'keys')
@@ -45,12 +46,18 @@ class UserTag extends Model
     $charge_subject_level_item = GeneralAttribute::where('attribute_key', 'charge_subject_level_item')
         ->where('attribute_value', $this->tag_key)->first();
     if(!empty($charge_subject_level_item)){
-      $item = GeneralAttribute::where('attribute_key', 'charge_subject_level')
+      $key = 'lesson_subject_level';
+      if($this->table === 'user_tags'){
+        //ユーザータグ＝人につくので、charge_subject_level
+        $key = 'charge_subject_level';
+      }
+      $item = GeneralAttribute::where('attribute_key', $key)
           ->where('attribute_value', $this->tag_value)->first();
       $item['charge_subject_level_item'] = $charge_subject_level_item;
     }
-    if(!empty($item)) return $item;
-
+    if(!empty($item)){
+      return $item;
+    }
     return null;
   }
   public function scopeFindUser($query, $val)

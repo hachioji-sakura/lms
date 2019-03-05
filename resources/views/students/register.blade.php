@@ -84,7 +84,7 @@ $(function(){
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    util.setLocalData('students_add_form', "");
+    util.removeLocalData('students_add_form');
     if(front.validateFormValue('students_add_form .carousel-item.active')){
       $("form").submit();
     }

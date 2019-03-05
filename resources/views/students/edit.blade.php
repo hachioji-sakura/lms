@@ -1,4 +1,4 @@
-@include($domain.'.create_form')
+@include('parents.create_form')
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
@@ -22,7 +22,24 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('survey_form')
+          @yield('subject_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-right mr-1"></i>
+                次へ
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          @yield('lesson_week_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -57,8 +74,8 @@
             @endif
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
-                  <i class="fa fa-plus-circle mr-1"></i>
-                    登録する
+                  <i class="fa fa-edit mr-1"></i>
+                    更新する
                 </button>
             </div>
           </div>

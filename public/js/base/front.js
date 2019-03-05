@@ -191,6 +191,8 @@
 		var accesskey= $(selecter).attr("accesskey");
 		var equal= $(selecter).attr("equal");
 		var equal_error= $(selecter).attr("equal_error");
+		var not_equal= $(selecter).attr("not_equal");
+		var not_equal_error= $(selecter).attr("not_equal_error");
 		var less= $(selecter).attr("less");
 		var less_error= $(selecter).attr("less_error");
 		var greater= $(selecter).attr("greater");
@@ -284,26 +286,6 @@
  					messageParam=minlength+"|"+maxlength;
  				}
  			}
- 			else if(!util.isEmpty(minvalue)  && $.isNumeric(val) && util.diffVal(val, minvalue)<0){
- 				//数値未満
- 				_isSuccess = false;
- 				messageCode = "MINV";
- 				messageParam=minvalue;
- 				if(!util.isEmpty(maxvalue)){
- 					messageCode = "RNGV";
- 					messageParam=minvalue+"|"+maxvalue;
- 				}
- 			}
- 			else if(!util.isEmpty(maxvalue)  && $.isNumeric(val) && util.diffVal(val, maxvalue)>0){
- 				//数値超過
- 				_isSuccess = false;
- 				messageCode = "MAXV";
- 				messageParam=maxvalue;
- 				if(!util.isEmpty(minvalue)){
- 					messageCode = "RNGV";
- 					messageParam=minvalue+"|"+maxvalue;
- 				}
- 			}
  			else if(!util.isEmpty(uitype) && uitype=="datepicker" && !util.isDate(val)){
  				//日付チェック
  				_isSuccess = false;
@@ -369,6 +351,37 @@
  				_isSuccess = false;
  				messageCode = "JSON";
  			}
+
+			if(!util.isEmpty(minvalue) && util.diffVal(val, minvalue)<0){
+ 				//数値未満
+ 				_isSuccess = false;
+				if(util.isDate(val)){
+					messageCode = "MINDV";
+				}
+				else {
+					messageCode = "MINV";
+				}
+ 				messageParam=minvalue;
+ 				if(!util.isEmpty(maxvalue)){
+ 					messageCode = "RNGV";
+ 					messageParam=minvalue+"|"+maxvalue;
+ 				}
+ 			}
+ 			else if(!util.isEmpty(maxvalue)  && util.diffVal(val, maxvalue)>0){
+ 				//数値超過
+ 				_isSuccess = false;
+				if(util.isDate(val)){
+					messageCode = "MAXDV";
+				}
+				else {
+					messageCode = "MAXV";
+				}
+ 				messageParam=maxvalue;
+ 				if(!util.isEmpty(minvalue)){
+ 					messageCode = "RNGV";
+ 					messageParam=minvalue+"|"+maxvalue;
+ 				}
+ 			}
  		}
  		if(messageCode!="") messageCode = ""+messageCode;
  		if(_isSuccess){
@@ -378,6 +391,13 @@
  				_isSuccess = false;
  				messageCode = equal_error;
  				messageParam=val+"|"+ $("[name='"+equal+"']", $("#"+formId)).val();
+ 			}
+			if(!util.isEmpty(not_equal) && !util.isEmpty($("[name='"+not_equal+"']", $("#"+formId)).val())
+ 				 && val == $("[name='"+not_equal+"']", $("#"+formId)).val()){
+ 				//値が一致するかチェック、対象値と一致する場合エラーとする
+ 				_isSuccess = false;
+ 				messageCode = not_equal_error;
+ 				messageParam=val+"|"+ $("[name='"+not_equal+"']", $("#"+formId)).val();
  			}
  			if(!util.isEmpty(less) && !util.isEmpty($("[name='"+less+"']", $("#"+formId)).val())
  				 && util.diffVal(val, $("[name='"+less+"']", $("#"+formId)).val())>0){

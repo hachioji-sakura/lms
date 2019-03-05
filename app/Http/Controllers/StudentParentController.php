@@ -5,6 +5,8 @@ use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
 use App\Models\StudentRelation;
+use App\Models\Trial;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use DB;
@@ -17,6 +19,33 @@ class StudentParentController extends TeacherController
   public function model(){
     return StudentParent::query();
   }
+  /**
+   * 検索～一覧
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return [Collection, field]
+   */
+  public function search(Request $request)
+  {
+    $items = $this->model()->with('user.image');
+    $user = $this->login_details();
+    if($this->domain==="students" && $this->is_parent($user->role)){
+      //自分の子供のみ閲覧可能
+      $items = $items->findChild($user->id);
+    }
+    else if($this->domain==="students" && $this->is_teacher($user->role)){
+      //自分の担当生徒のみ閲覧可能
+      $items = $items->findChargeStudent($user->id);
+    }
+    $items = $this->_search_scope($request, $items);
+
+   $items = $this->_search_pagenation($request, $items);
+
+   $items = $this->_search_sort($request, $items);
+   $items = $items->get();
+   return ["items" => $items];
+  }
+
   /**
   * Display the specified resource.
   *
@@ -62,7 +91,11 @@ class StudentParentController extends TeacherController
    */
   public function entry(Request $request)
   {
-    $param = [];
+    $param = [
+      'domain' => $this->domain,
+      'domain_name' => $this->domain_name,
+      'attributes' => $this->attributes(),
+    ];
     return view($this->domain.'.entry',
       ['sended' => ''])
       ->with($param);
@@ -81,7 +114,6 @@ class StudentParentController extends TeacherController
      $request->merge([
        'access_key' => $access_key,
      ]);
-
      $user = User::where('email', $form['email'])->first();
      $result = '';
      if(!isset($user)){
@@ -141,6 +173,8 @@ class StudentParentController extends TeacherController
    {
      $result = '';
      $param = [
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
        'user' => $this->login_details(),
        'attributes' => $this->attributes(),
      ];
@@ -158,8 +192,10 @@ class StudentParentController extends TeacherController
        if($user->count() < 1){
          abort(404);
        }
-       $param['student'] = null;
        $param['parent'] = $user->first()->details();
+       $student = Student::findChild($param['parent']->id)->orderBy('id', 'desc')->first();
+       $param['trial'] = Trial::where('student_id', $student->id)->where('student_parent_id', $param['parent']->id)->first()->details();
+       $param['student'] = $student;
        $param['access_key'] = $access_key;
      }
      return view($this->domain.'.register',$param);
@@ -193,17 +229,16 @@ class StudentParentController extends TeacherController
       $res = $this->_register_update($request);
       $email = $form['email'];
       $password = $form['password'];
-
       if($this->is_success_response($res)){
         if(empty($param['user'])){
           $form['send_to'] = 'parent';
-          $this->send_mail($email, '生徒情報登録完了', $form, 'text', 'register');
+          $this->send_mail($email, 'ご入会お申込みありがとうございます', $form, 'text', 'register');
           if (!Auth::attempt(['email' => $email, 'password' => $password]))
           {
             abort(500);
           }
         }
-        return $this->save_redirect($res, $param, '生徒情報登録完了しました。', '/home');
+        return $this->save_redirect($res, $param, 'ご入会お申込みありがとうございます', '/home');
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
@@ -216,21 +251,42 @@ class StudentParentController extends TeacherController
       try {
         $user = $user->first();
         DB::beginTransaction();
-        $parent = StudentParent::where('user_id', $user->id)->first();
+        $form['create_user_id'] = $user->id;
+
+        $parent = StudentParent::where('id', $form['parent_id'])->first();
         $parent->profile_update([
           'name_last' => $form['parent_name_last'],
           'name_first' => $form['parent_name_first'],
           'kana_last' => $form['parent_kana_last'],
           'kana_first' => $form['parent_kana_first'],
           'phone_no' => $form['phone_no'],
-          'howto' => $form['howto'],
-          'howto_word' => $form['howto_word'],
-          'create_user_id' => $user->id,
+          'create_user_id' => $form['create_user_id'],
         ]);
-        $form['create_user_id'] = $user->id;
-        $parent->brother_add($form);
+
+        $student = Student::where('id', $form['student_id'])->first();
+        $student->profile_update([
+          'name_last' => $student->name_last,
+          'name_first' => $student->name_first,
+          'gender' => $student->gender,
+          'kana_last' => $form['student_kana_last'],
+          'kana_first' => $form['student_kana_first'],
+          'phone_no' => $form['phone_no'],
+          'create_user_id' => $form['create_user_id'],
+        ]);
+        $student->user->update(['status' => 0]);
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
+        if(!empty($form['remark'])){
+          Comment::create([
+            'title' => '入会時・ご要望',
+            'body' => $form['remark'],
+            'type' => 'study',
+            'status' => 'new',
+            'publiced_at' => date('Y-m-d'),
+            'target_user_id' => $student->user_id,
+            'create_user_id' => $form['create_user_id'],
+          ]);
+        }
         DB::commit();
         return $this->api_response(200, __FUNCTION__);
       }

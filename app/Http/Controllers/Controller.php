@@ -110,25 +110,28 @@ class Controller extends BaseController
      * @param string $url
      * @return json
      */
-    protected function call_api(Request $request, string $url) {
-        //$form = $request->all();
-        $curl = curl_init();
-        $query_string = http_build_query($request->query());
-        if(!empty($query_string)){
-          $url .= '?'.$query_string;
-        }
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 証明書の検証を行わない
-        //POSTの場合は、http_build_queryが不要、PUTは必要
-        //curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($POST_DATA));
-        if(!empty($this->token)){
-          curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-token:'.$this->token));
-        }
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return json_decode($result,true);
+    protected function call_api(Request $request, string $url, string $type="GET", $data=null) {
+      //$form = $request->all();
+      $curl = curl_init();
+      $query_string = http_build_query($request->query());
+      if(!empty($query_string)){
+        $url .= '?'.$query_string;
+      }
+      curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $type);
+      if($type!=="GET" && isset($data)){
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(json_encode($data)));
+      }
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 証明書の検証を行わない
+      //POSTの場合は、http_build_queryが不要、PUTは必要
+      //curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($POST_DATA));
+      if(!empty($this->token)){
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-token:'.$this->token));
+      }
+      $result = curl_exec($curl);
+      curl_close($curl);
+      return json_decode($result,true);
     }
     /**
      * 期限付きtokenの生成

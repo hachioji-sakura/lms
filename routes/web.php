@@ -44,11 +44,22 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
-Route::get('calendars/test/{status}','UserCalendarController@test');
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
+/*
+Route::get('calendars/{id}/{status}/{user_id}','UserCalendarController@status_update_page_no_login');
+Route::put('calendars/{id}/{status}/{user_id}','UserCalendarController@status_update_no_login');
+*/
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
 Route::resource('calendars','UserCalendarController');
+
+
+Route::get('trials/{id}/{status}','TrialController@status_update_page');
+Route::put('trials/{id}/{status}','TrialController@status_update');
+Route::resource('trials','TrialController');
+Route::get('entry','TrialController@trial');
+Route::post('entry','TrialController@trial_store');
+
 
 Route::get('api_lectures','LectureController@api_index');
 Route::resource('lectures','LectureController');
@@ -57,8 +68,6 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
-Route::get('entry','StudentParentController@entry');
-Route::post('entry','StudentParentController@entry_store');
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
 Route::get('teachers/entry','TeacherController@entry');
@@ -71,6 +80,7 @@ Route::get('managers/register','ManagerController@register');
 Route::post('managers/register','ManagerController@register_update');
 
 
+Route::get('students/{id}/agreement','StudentController@agreement_page');
 Route::get('parents/{id}/delete','StudentParentController@delete_page');
 Route::get('students/{id}/delete','StudentController@delete_page');
 Route::get('managers/{id}/delete','ManagerController@delete_page');

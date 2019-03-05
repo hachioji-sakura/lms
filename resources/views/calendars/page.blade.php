@@ -18,17 +18,7 @@
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            @if($item['status']==="presence")
-              <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
-            @elseif($item['status']==="absence" || $item['status']==="rest")
-              <small class="badge badge-danger mt-1 mr-1">{{$item[$key]}}</small>
-            @elseif($item['status']==="fix")
-              <small class="badge badge-primary mt-1 mr-1">{{$item[$key]}}</small>
-            @elseif($item['status']==="confirm")
-              <small class="badge badge-warning mt-1 mr-1">{{$item[$key]}}</small>
-            @else
-              <small class="badge badge-secondary mt-1 mr-1">{{$item[$key]}}</small>
-            @endif
+            <small class="badge badge-{{$item->status_style()}} mt-1 mr-1">{{$item[$key]}}</small>
           @elseif($key==="student_name")
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}

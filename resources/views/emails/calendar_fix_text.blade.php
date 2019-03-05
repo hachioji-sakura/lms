@@ -1,19 +1,17 @@
 @include('emails.common')
-@yield('mail_title')
 
-@if($send_to==='student' && ($is_child===true || $is_own===true))
+@if($send_to==='student')
 {{$user_name}}様
-{{$user_name}} 保護者様
 
 以下の授業予定を確定いたしました。
 授業当時、忘れずにお越しください。
 
 …………………………………………………………………………………………
-休み連絡について
-{{config('app.url')}}/faq
+授業をお休みする場合は、以下の画面よりご連絡ください。
+{{config('app.url')}}/calendars/{{$item['id']}}/rest?user={{$user_id}}
 
 予定変更について
-{{config('app.url')}}/faq
+{{config('app.url')}}/faq2
 …………………………………………………………………………………………
 
 @elseif($send_to==='teacher')

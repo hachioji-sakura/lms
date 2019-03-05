@@ -9,7 +9,7 @@
 		</div>
 		<div class="lockscreen-name">
 			<p>@yield('error_description')</p>
-			<a href="/home"><button class="btn btn-primary"><i class="text-muted"></i>トップへ戻る</button></a>
+			@yield('return_button')
 		</div>
 		<div class="help-block text-center mt-2">
 			@yield('message')

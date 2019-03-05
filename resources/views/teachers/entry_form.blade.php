@@ -16,33 +16,8 @@
 <form method="POST"  action="/{{$domain}}/entry">
     @csrf
     <div class="row">
-      <div class="col-6 col-lg-6 col-md-6">
-        <div class="form-group">
-          <label for="name_last">
-            氏
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <input type="text" id="name_last" name="name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku">
-        </div>
-      </div>
-      <div class="col-6 col-lg-6 col-md-6">
-        <div class="form-group">
-          <label for="name_first">
-            名
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku">
-        </div>
-      </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="email">
-            メールアドレス
-            <span class="right badge badge-danger ml-1">必須</span>
-          </label>
-          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email">
-        </div>
-      </div>
+      @component('students.forms.name', ['attributes' => $attributes, 'prefix'=>'']) @endcomponent
+      @component('students.forms.email', [ 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
     </div>
     <div class="col-12">
       <h6 class="text-sm p-2 pl-2 mb-4" >

@@ -18,7 +18,7 @@
             $calendar.fullCalendar('unselect');
             switch(event.status){
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/confirm");
+                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix");
                 break;
               case "fix":
                 base.showPage('dialog', "subDialog", "欠席連絡", "/calendars/"+event.id+"/rest");
