@@ -35,6 +35,7 @@ Route::resource('images','ImageController');
 Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 'store', 'destroy']]);
 Route::get('import/{object?}','ImportController@index');
 Route::post('import/{object?}','ImportController@import');
+Route::put('sync/{object?}','ImportController@sync');
 
 Route::get('api_attributes/{select_key?}','GeneralAttributeController@api_index');
 Route::resource('attributes','GeneralAttributeController');

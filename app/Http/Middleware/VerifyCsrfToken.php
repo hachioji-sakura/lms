@@ -23,5 +23,6 @@ class VerifyCsrfToken extends Middleware
       'calendars/*/remind',
       'trials/*/remind',
       'import/*',
+      'export/*',
     ];
 }

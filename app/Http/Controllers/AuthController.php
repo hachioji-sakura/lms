@@ -101,6 +101,4 @@ class AuthController extends UserController
      }
      abort(500);
    }
-
-
 }

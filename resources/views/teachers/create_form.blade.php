@@ -44,6 +44,6 @@
 
 @section('subject_form')
 <div class="row">
-  @component('students.forms.subject', ['title' => '担当可能科目', 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.subject', ['title' => '担当可能科目', 'attributes' => $attributes, 'category_display' => true, 'grade_display' => true]) @endcomponent
 </div>
 @endsection

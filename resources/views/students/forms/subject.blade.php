@@ -10,8 +10,12 @@
     </label>
     <table class="table table-striped">
     <tr class="bg-gray">
-      <!-- th class="p-1">学年</th -->
+      @if($grade_display===true)
+      <th class="p-1">学年</th>
+      @endif
+      @if($category_display===true)
       <th class="p-1 text-sm text-center">分類</th>
+      @endif
       <th class="p-1 text-sm text-center">科目</th>
       <th class="p-1 text-sm text-center">
         希望しない
@@ -29,10 +33,10 @@
         @isset($subject_data['items'])
           @foreach($subject_data['items'] as $subject => $subject_name)
             <tr class="grade-subject" alt="{{$grade}}">
-            @if($l1===0)
-            <!-- th class="p-1 text-center bg-gray" rowspan=100>{{$grade}}</th -->
+            @if($l1===0 && $grade_display===true)
+            <th class="p-1 text-center bg-gray" rowspan=100>{{$grade}}</th>
             @endif
-            @if($loop->index===0)
+            @if($loop->index===0 && $category_display===true)
             <th class="p-1 text-center bg-gray bd-light bd-r" rowspan={{count($subject_data['items'])}}>{{$subject_data['name']}}</th>
             @endif
             <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
@@ -55,10 +59,12 @@
           @endforeach
         @else
           <tr class="grade-subject" alt="{{$grade}}">
-          @if($loop->index===0)
-          <!-- th class="p-1 text-center bg-gray" rowspan={{count($subject_group)}}>{{$grade}}</th -->
+          @if($loop->index===0 && $grade_display===true)
+          <th class="p-1 text-center bg-gray" rowspan={{count($subject_group)}}>{{$grade}}</th>
           @endif
+          @if($category_display===true)
           <th class="p-1 text-center bg-gray bd-light bd-r">{{$subject_data['name']}}</th>
+          @endif
           <th class="p-1 text-center bg-gray subject_name">{{$subject_data['name']}}</th>
           @foreach($attributes['lesson_subject_level'] as $index => $name)
             <td class="text-center">

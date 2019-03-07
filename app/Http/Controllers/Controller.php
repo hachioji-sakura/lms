@@ -54,7 +54,7 @@ class Controller extends BaseController
         return true;
       }
       $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
-      return true;
+      return $res;
     }
     protected function send_slack($message, $msg_type, $username=null, $channel=null) {
       if(empty($message)) return false;
@@ -117,10 +117,11 @@ class Controller extends BaseController
       if(!empty($query_string)){
         $url .= '?'.$query_string;
       }
+      echo $url;
       curl_setopt($curl, CURLOPT_URL, $url);
       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $type);
       if($type!=="GET" && isset($data)){
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(json_encode($data)));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, ($data));
       }
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 証明書の検証を行わない

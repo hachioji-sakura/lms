@@ -46,8 +46,8 @@
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
                 次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
               </a>
             </div>
           </div>
@@ -63,8 +63,8 @@
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
                 次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
               </a>
             </div>
           </div>
@@ -81,7 +81,7 @@
             </div>
             <div class="col-12 mb-1">
                 <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
-                  <i class="fa fa-check-circle mr-1"></i>
+                  <i class="fa fa-file-alt mr-1"></i>
                   内容確認
                 </a>
             </div>
@@ -98,8 +98,8 @@
             </div>
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
-                  <i class="fa fa-plus-circle mr-1"></i>
-                    登録する
+                    この内容でお申込み
+                    <i class="fa fa-caret-right ml-1"></i>
                 </button>
             </div>
           </div>

@@ -41,6 +41,9 @@ class ImportController extends UserController
       'calendars' => 'api_get_calendar',
       'schedules' => 'api_get_onetime_schedule',
     ];
+    public $api_update_endpoint = [
+      'schedules' => 'api_update_onetime_schedule',
+    ];
     //API auth token
     public $token = '7511a32c7b6fd3d085f7c6cbe66049e7';
 
@@ -58,6 +61,27 @@ class ImportController extends UserController
       }
       $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
       $res = $this->call_api($request, $url);
+      return $res;
+    }
+    /**
+     * 事務管理システムAPI（PUT）
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $object
+     * @return Json
+     */
+    public function sync(Request $request, $object)
+    {
+      if(!array_key_exists($object, $this->api_endpoint)){
+        return $this->bad_request();
+      }
+      $url = $this->api_domain.'/'.$this->api_update_endpoint[$object].'.php';
+      $res = $this->call_api($request, $url, 'POST', [
+        'starttime' => '16:30:00',
+        'id' => '24',
+        'ymd' => '2019-02-27',
+        'cancel' => 'c',
+        'updateuser' => 1,
+      ]);
       return $res;
     }
     /**
@@ -136,8 +160,10 @@ class ImportController extends UserController
         $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
         $this->send_slack('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
+        var_dump( $res );
+        exit;
         if(!$this->is_success_response($res)){
-          return $this->error_response('api error['.$res['message'].']', $url);
+          return $this->error_response('api error['.$res.']', $url);
         }
         $items = $res['data'];
         switch($object){
@@ -845,11 +871,11 @@ class ImportController extends UserController
       }
       $teacher = $teacher->teacher;
 
-      $lecture = Lecture::where('id',$item['lecture'])
+      $lecture = Lecture::where('id',$item['lecture_id'])
         ->first();
       if(!isset($lecture)){
         //存在しないレクチャー
-        $this->send_slack("事務管理システム:lesson=".$item['lesson']."/course=".$item['course']."/subject=".$item['subject']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        $this->send_slack("事務管理システム:lecture_id=".$item['lecture_id'], 'error', $this->logic_name);
         return false;
       }
       $remark = $item['comment'];
@@ -874,6 +900,8 @@ class ImportController extends UserController
       }
       if(!empty(trim($item['cancel']))){
         //TODO :以下の項目をどうにかしたい
+        //c = すべからずcancel
+        //それ以外、何等か休暇(a :休暇、a1:休み1、休み2）。
         $_attr = $this->get_save_general_attribute('absence_type', '', $item['cancel']);
         $yasumi = $_attr->attribute_value;
         $remark.='[cancel='.$item['cancel'].']';
@@ -884,15 +912,11 @@ class ImportController extends UserController
       if(is_numeric($item['altschedid'])){
         $exchanged_calendar_id = intval($item['altschedid']);
       }
-      //TODO trial_idが欠落なんらか体験ということは分かる
-      if(!empty(trim($item['trial']))){
-        $item['trial_id'] = -1;
-      }
-      //TODO placeのコードが不明
+      //TODO placeのコードが不明 / あとで定義される
       $_attr = $this->get_save_general_attribute('place', '', $item['place']);
       $place = $_attr->attribute_value;
 
-      //TODO workのコードが不明/workは保持しない
+      //TODO workのコードが不明/workは保持しない / あとで定義される
       $_attr = $this->get_save_general_attribute('work', '', $item['work']);
       $work = $_attr->attribute_value;
 
@@ -923,6 +947,7 @@ class ImportController extends UserController
         ]);
         $calendar_id = $items->id;
       }
+      //いったんすべて参加者を削除
       UserCalendarMember::where('calendar_id',$calendar_id)->delete();
 
       /*誰の休みか？
@@ -934,6 +959,7 @@ class ImportController extends UserController
         休み２：ほぼ生徒
       course=3 / ファミリー（マンツーと同じ？）
       */
+      //TODO : 休みに関し、生徒起因か、講師起因かがわからない
       $teacher_status = $status;
       $student_status = $status;
       /*
@@ -950,20 +976,21 @@ class ImportController extends UserController
         }
       }
       */
+      //講師をカレンダーに追加
       UserCalendarMember::create([
         'calendar_id' => $calendar_id,
         'status' => $teacher_status,
         'user_id' => $teacher->user_id,
         'create_user_id' => 1
       ]);
-
+      //生徒をカレンダーに追加
       UserCalendarMember::create([
         'calendar_id' => $calendar_id,
         'user_id' => $student->user_id,
         'status' => $student_status,
         'create_user_id' => 1
       ]);
-
+      //TODO : 担任：担当生徒という考え方は存在しない。
       $charge_student = ChargeStudent::where('student_id',$student->id)
         ->where('teacher_id' ,$teacher->id)
         ->where('lecture_id' ,$lecture->id)->first();

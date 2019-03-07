@@ -5,10 +5,8 @@
     <i class="fa fa-user-friends mr-1"></i>
     お客様情報
   </div>
-  @component('students.forms.name', ['item' => $parent, 'prefix' => 'parent_'])
-  @endcomponent
-  @component('students.forms.kana', ['item' => $parent, 'prefix' => 'parent_'])
-  @endcomponent
+  @component('students.forms.name', ['item' => $parent, 'prefix' => 'parent_']) @endcomponent
+  @component('students.forms.kana', ['item' => $parent, 'prefix' => 'parent_']) @endcomponent
 
   <div class="col-12 col-lg-6 col-md-6">
     <div class="form-group">
@@ -66,7 +64,7 @@
     お申込み内容
   </div>
   @component('students.forms.lesson', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.subject', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.subject', ['item' => $student, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
   @component('students.forms.english_teacher', ['item' => $student, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['item' => $student, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.remark', ['item' => $student, 'attributes' => $attributes]) @endcomponent
