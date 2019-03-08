@@ -303,7 +303,7 @@ EOT;
 	    }
     }
     //1:1タグ
-    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade'];
+    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){

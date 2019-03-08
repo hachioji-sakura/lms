@@ -85,8 +85,8 @@ EOT;
     $form["kana_last"] = $form["parent_kana_last"];
     $form["kana_first"] = $form["parent_kana_first"];
     */
-    $form["name_last"] = $form["student_name_last"];
-    $form["name_first"] = "保護者様";
+    $form["name_last"] = "";
+    $form["name_first"] = "";
     $form["kana_last"] = "";
     $form["kana_first"] = "";
     //保護者情報登録
@@ -156,19 +156,12 @@ EOT;
   public function trial_to_calendar($form){
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     $student = Student::where('id', $this->student_id)->first();
-    //希望日時1か2を取得
-    $start_time = $this->trial_start_time1;
-    $end_time = $this->trial_end_time1;
-    if($form['priority_datetime']===2){
-      $start_time = $this->trial_start_time2;
-      $end_time = $this->trial_end_time2;
-    }
     $calendar = $this->get_calendar();
     if(!isset($calendar)){
       //cancelの場合か、存在しない場合に、授業予定を登録
       $calendar = UserCalendar::add([
-        'start_time' => $start_time,
-        'end_time' => $end_time,
+        'start_time' =>  $form["start_time"],
+        'end_time' =>  $form["end_time"],
         'trial_id' => $this->id,
         'place' => $form['place'],
         'remark' => $this->remark,
@@ -266,7 +259,7 @@ EOT;
     return $item;
   }
   public function candidate_teachers(){
-
+    $detail = $this->details();
     //体験希望科目を取得
     $subjects_def = [];
     foreach($this->tags as $tag){
@@ -279,11 +272,42 @@ EOT;
     }
     //在籍する講師を取得
     $teachers = Teacher::findStatuses('0,1')->chargeSubject($subjects_def)->get();
+    $start_hour1 = date('H',  strtotime($this->trial_start_time1));
+    $end_hour1 = date('H',  strtotime($this->trial_end_time1));
+    $start_hour2 = date('H',  strtotime($this->trial_start_time2));
+    $end_hour2 = date('H',  strtotime($this->trial_end_time2));
+    $time_list1 = [];
+    for($i=$start_hour1;$i<$end_hour1;$i++){
+      $_start = $detail['trial_date1'].' '.$i.':00:00';
+      $_end = $detail['trial_date1'].' '.($i+1).':00:00';
+      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+      $time_list1[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
+      if($i==$end_hour1-2){
+        $_start = $detail['trial_date1'].' '.$i.':30:00';
+        $_end = $detail['trial_date1'].' '.($i+1).':30:00';
+        $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+        $time_list1[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
+      }
+    }
+    for($i=$start_hour2;$i<$end_hour2;$i++){
+      $_start = $detail['trial_date2'].' '.$i.':00:00';
+      $_end = $detail['trial_date2'].' '.($i+1).':00:00';
+      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+      $time_list2[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
+      if($i==$end_hour2-2){
+        $_start = $detail['trial_date2'].' '.$i.':30:00';
+        $_end = $detail['trial_date2'].' '.($i+1).':30:00';
+        $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+        $time_list2[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
+      }
+    }
+
 
     $ret = [];
     foreach($teachers as $teacher){
       $subjects = $teacher->get_charge_subject();
-      $subject_point = 0;
+      $enable_point = 0;
+      $disable_point = 0;
       $disable_subject = [];
       $enable_subject = [];
 
@@ -298,7 +322,7 @@ EOT;
               "name" => $tag_name,
               "style" => "primary",
             ];
-            $subject_point +=2;
+            $enable_point +=2;
           }
           else if($tag_val == intval($subjects[$tag_key])){
             $enable_subject[$tag_key] = [
@@ -306,7 +330,7 @@ EOT;
               "name" => $tag_name,
               "style" => "secondary",
             ];
-            $subject_point +=1;
+            $enable_point +=1;
           }
           else {
             $disable_subject[$tag_key] = [
@@ -314,6 +338,7 @@ EOT;
               "name" => $tag_name,
               "style" => "secondary",
             ];
+            $disable_point +=1;
           }
         }
         else {
@@ -322,25 +347,47 @@ EOT;
             "name" => $tag_name,
             "style" => "danger",
           ];
+          $disable_point +=1;
         }
       }
-      if($subject_point > 0){
-        $trial1_check = UserCalendar::findUser($teacher->user_id)
+      if($enable_point > 0){
+        $now_calendars = UserCalendar::findUser($teacher->user_id)
                         ->findStatuses(['fix', 'confirm'])
-                        ->searchDate($this->trial_start_time1, $this->trial_end_time1)
-                        ->first();
-        if(isset($trial1_check)){
-          $teacher->trial1 = $trial1_check->details();
-        }
-        $trial2_check = UserCalendar::findUser($teacher->user_id)
-                        ->findStatuses(['fix', 'confirm'])
-                        ->searchDate($this->trial_start_time2, $this->trial_end_time2)
-                        ->first();
-        if(isset($trial2_check)){
-          $teacher->trial2 = $trial2_check->details();
+                        ->searchDate($detail['trial_date1'].' 00:00:00', $detail['trial_date1'].' 23:59:59')
+                        ->get();
+        $teacher_trial1 = $time_list1;
+        if(isset($now_calendars)){
+          foreach($now_calendars as $now_calendar){
+            foreach($teacher_trial1 as $i => $_time){
+              if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
+                $teacher_trial1[$i]['free'] = false;
+                $teacher_trial1[$i]['calendar_id'] = $now_calendar->id;
+              }
+            }
+          }
         }
 
-        $teacher->subject_point = $subject_point;
+        $now_calendars = UserCalendar::findUser($teacher->user_id)
+                        ->findStatuses(['fix', 'confirm'])
+                        ->searchDate($detail['trial_date2'].' 00:00:00', $detail['trial_date2'].' 23:59:59')
+                        ->get();
+        $teacher_trial2 = $time_list2;
+        if(isset($now_calendars)){
+          foreach($now_calendars as $now_calendar){
+            foreach($teacher_trial2 as $i => $_time){
+              if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
+                $teacher_trial2[$i]['free'] = false;
+                $teacher_trial2[$i]['calendar_id'] = $now_calendar->id;
+              }
+            }
+          }
+        }
+        $teacher->trial1 = $teacher_trial1;
+        $teacher->trial2 = $teacher_trial2;
+        $teacher->enable_point = $enable_point;
+        $teacher->disable_point = $disable_point;
+        $teacher->subject_review = 'part';
+        if($disable_point < 1) $teacher->subject_review = 'all';
         $teacher->enable_subject = $enable_subject;
         $teacher->disable_subject = $disable_subject;
         $ret[] = $teacher;

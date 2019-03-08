@@ -4,9 +4,9 @@
     @csrf
     @method('PUT')
     <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
+      @yield('matching_form')
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('matching_form')
           @yield('teacher_select_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -106,17 +106,13 @@ $(function(){
     if(form_data["place"]){
       form_data["place_name"] = $('select[name=place] option:selected').text().trim();
     }
-    if(form_data["teacher_id"]){
-      form_data["teacher_name"] = $('input[name=teacher_id]:checked').attr('teacher_name');
-      var _alt = $('input[name=teacher_id]:checked').attr('alt');
-      if(_alt==="trial1"){
-        form_data["priority_datetime"] = 1;
-        form_data["trial_date_time"] = $('input[name=date1]').val();
-      }
-      else if(_alt==="trial2"){
-        form_data["priority_datetime"] = 2;
-        form_data["trial_date_time"] = $('input[name=date2]').val();
-      }
+    if(form_data["teacher_schedule"]){
+      var _teacher_schedule = $('input[name=teacher_schedule]:checked');
+      form_data["teacher_id"] = _teacher_schedule.attr('teacher_id');
+      form_data["teacher_name"] = _teacher_schedule.attr('teacher_name');
+      form_data["dulation"] = _teacher_schedule.attr('dulation');
+      form_data["start_time"] = _teacher_schedule.attr('start_time');
+      form_data["end_time"] = _teacher_schedule.attr('end_time');
     }
 
     var _names = ["matching_decide"];

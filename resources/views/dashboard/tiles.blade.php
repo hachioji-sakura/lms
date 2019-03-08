@@ -34,9 +34,9 @@
               </div>
               @elseif($domain!="students" && $item->user->status===1)
               <div class="col-6 col-md-6">
-                <a class="btn btn-primary btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="remind">
+                <a class="btn btn-primary btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
                   <i class="fa fa-envelope"></i>
-                  <span class="d-lg-block">Remind</span>
+                  <span class="d-lg-block text-sm">本登録依頼</span>
                 </a>
               </div>
               @endif

@@ -83,7 +83,7 @@
                 </div>
                 <div class="col-12 text-sm">
                   @if(isset($student->current_calendar))
-                    @if($student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
+                    @if($user->role==="teacher" && $student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
                         {{$student->current_calendar->status_name}}

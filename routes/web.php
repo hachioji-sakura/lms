@@ -55,6 +55,7 @@ Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarContr
 Route::resource('calendars','UserCalendarController');
 
 
+Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::get('trials/{id}/{status}','TrialController@status_update_page');
 Route::put('trials/{id}/{status}','TrialController@status_update');
 Route::resource('trials','TrialController');

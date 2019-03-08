@@ -117,7 +117,6 @@ class Controller extends BaseController
       if(!empty($query_string)){
         $url .= '?'.$query_string;
       }
-      echo $url;
       curl_setopt($curl, CURLOPT_URL, $url);
       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $type);
       if($type!=="GET" && isset($data)){

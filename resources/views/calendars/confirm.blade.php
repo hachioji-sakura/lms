@@ -2,6 +2,8 @@
   @slot('page_message')
     @if(isset($user) && $user->role==="teacher")
     以下の授業予定を確定し、生徒に連絡しますか？
+    @elseif(isset($user) && $user->role==="manager")
+    以下の授業予定の確認メールを送信しますか？
     @else
     以下の授業予定をご確認ください
     @endif
@@ -16,7 +18,7 @@
     @method('PUT')
     <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_confirm">
         <i class="fa fa-envelope mr-1"></i>
-          リマインド
+          送信する
     </button>
   </form>
 </div>

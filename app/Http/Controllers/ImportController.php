@@ -160,8 +160,6 @@ class ImportController extends UserController
         $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
         $this->send_slack('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
-        var_dump( $res );
-        exit;
         if(!$this->is_success_response($res)){
           return $this->error_response('api error['.$res.']', $url);
         }

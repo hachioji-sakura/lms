@@ -448,6 +448,7 @@ class TrialController extends UserCalendarController
     */
    public function status_update(Request $request, $id, $status)
    {
+     $form = $request->all();
      $param = $this->get_param($request, $id);
      $item = $param['item'];
      $res = $this->api_response();
@@ -543,6 +544,9 @@ class TrialController extends UserCalendarController
        $trial->update(['status'=>$status]);
        if($status==="confirm"){
          $calendar = $trial->trial_to_calendar($form);
+         if(!empty($form['remark'])){
+           $calendar['comment'] = $form['remark'];
+         }
          $this->confirm_mail($calendar->details());
        }
        $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');
@@ -560,4 +564,20 @@ class TrialController extends UserCalendarController
          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
      }
    }
+   /**
+    * 詳細画面表示
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+   public function to_calendar(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+     $trial = $param['item'];
+     $teachers = $trial->candidate_teachers();
+     //すべての科目を満たす講師を探す
+
+     return $teachers;
+   }
+
 }

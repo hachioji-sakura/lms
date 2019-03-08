@@ -288,4 +288,20 @@ EOT;
     }
     return false;
   }
+  public function is_conflict($start, $end){
+    $start = strtotime($start);
+    $end = strtotime($end);
+    $calendar_starttime = strtotime($this->start_time);
+    $calendar_endtime = strtotime($this->end_time);
+    if($start > $calendar_starttime && $start < $calendar_endtime){
+        return true;
+    }
+    if($end > $calendar_starttime && $end < $calendar_endtime){
+      return true;
+    }
+    if($start==$calendar_starttime && $end == $calendar_endtime){
+      return true;
+    }
+    return false;
+  }
 }

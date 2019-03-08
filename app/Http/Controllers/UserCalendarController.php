@@ -229,15 +229,16 @@ class UserCalendarController extends MilestoneController
     public function api_index(Request $request, $user_id=0, $from_date=null, $to_date=null)
     {
       $param = $this->get_param($request);
-
+      $user = $this->login_details();
+      if(!isset($user)) return $this->forbidden();
       if(!empty($from_date) && strlen($from_date)===8){
-        $from_date = date('Y-m-d 00:00:00', strtotime($from_date));
+        $from_date = date('Y-m-d', strtotime($from_date));
         $request->merge([
           'from_date' => $from_date,
         ]);
       }
       if(!empty($to_date) && strlen($to_date)===8){
-        $to_date = date('Y-m-d 23:59:59', strtotime($to_date));
+        $to_date = date('Y-m-d', strtotime($to_date));
         $request->merge([
           'to_date' => $to_date,
         ]);
@@ -298,9 +299,11 @@ class UserCalendarController extends MilestoneController
       $to_date = "";
       if(isset($request->from_date)){
         $from_date = $request->from_date;
+        if(mb_strlen($from_date) < 11) $from_date .=' 00:00:00';
       }
       if(isset($request->to_date)){
         $to_date = $request->to_date;
+        if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
       }
       $items = $items->rangeDate($from_date, $to_date);
 
