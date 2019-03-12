@@ -11,8 +11,8 @@
     @foreach($attributes['lesson'] as $index => $name)
     <label class="mx-2">
       <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" required="true"
-      @if(isset($_edit) && $item->user->has_tag('lesson', $index)===true)
-     checked
+      @if(isset($item) && $item->user->has_tag('lesson', $index)===true)
+      checked
       @endif
       onChange="lesson_checkbox_change(this)">{{$name}}
     </label>

@@ -39,10 +39,10 @@
   @else
   <form method="POST"  action="/entry">
     @csrf
-    <div id="trial_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('trial_form')
+          @yield('trials_entry')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -111,29 +111,29 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('trial_form');
-  base.pageSettinged("trial_form", form_data);
+  var form_data = util.getLocalData('trials_entry');
+  base.pageSettinged("trials_entry", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('trial_form .carousel-item.active')){
-      //util.removeLocalData('trial_form');
+    if(front.validateFormValue('trials_entry .carousel-item.active')){
+      //util.removeLocalData('trials_entry');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('trial_form .carousel-item.active')){
+    if(front.validateFormValue('trials_entry .carousel-item.active')){
       $('body, html').scrollTop(0);
-      $('#trial_form').carousel('next');
+      $('#trials_entry').carousel('next');
     }
 
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
-      var form_data = front.getFormValue('trial_form');
-      util.setLocalData('trial_form', form_data);
+      var form_data = front.getFormValue('trials_entry');
+      util.setLocalData('trials_entry', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $("ol.step #step_confirm").addClass("is-current");
     }
@@ -144,7 +144,7 @@ $(function(){
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html').scrollTop(0);
-    $('#trial_form').carousel('prev');
+    $('#trials_entry').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

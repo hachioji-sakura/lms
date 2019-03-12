@@ -62,7 +62,7 @@
 @else
   <form method="POST"  action="/{{$domain}}/register">
     @csrf
-    <div id="_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="managers_register" class="carousel slide" data-ride="carousel" data-interval=false>
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="id" value="{{$item->id}}" />
       <div class="carousel-inner">
@@ -104,7 +104,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="_add_form">
+                <button type="submit" class="btn btn-primary btn-block" accesskey="managers_register">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -118,29 +118,29 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('_add_form');
-  base.pageSettinged("_add_form", form_data);
+  var form_data = util.getLocalData('managers_register');
+  base.pageSettinged("managers_register", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('_add_form .carousel-item.active')){
-      util.removeLocalData('_add_form');
+    if(front.validateFormValue('managers_register .carousel-item.active')){
+      util.removeLocalData('managers_register');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('_add_form .carousel-item.active')){
-      var form_data = front.getFormValue('_add_form');
-      util.setLocalData('_add_form', form_data);
-      $('#_add_form').carousel('next');
+    if(front.validateFormValue('managers_register .carousel-item.active')){
+      var form_data = front.getFormValue('managers_register');
+      util.setLocalData('managers_register', form_data);
+      $('#managers_register').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#_add_form').carousel('prev');
+    $('#managers_register').carousel('prev');
   });
 });
 </script>

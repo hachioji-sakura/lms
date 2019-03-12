@@ -30,6 +30,8 @@ class ImportController extends UserController
     public $logic_name = '事務管理システム-データ取り込み';
     public $api_domain = 'https://hachiojisakura.com/sakura-api';
     public $api_endpoint = [
+      'works' => 'api_get_work_explanation',
+      'places' =>  'api_get_place_name',
       'courses' =>  'api_get_course',
       'subjects' =>  'api_get_subject',
       'lessons' =>  'api_get_lesson',
@@ -94,7 +96,10 @@ class ImportController extends UserController
     {
       set_time_limit(600);
       if($object=="all"){
-        $objects = ['courses',
+        $objects = [
+          'works',
+          'places',
+          'courses',
           'lessons',
           'subjects',
           'lectures',
@@ -112,7 +117,10 @@ class ImportController extends UserController
         }
       }
       else if($object=="attributes"){
-        $objects = ['courses',
+        $objects = [
+          'works',
+          'places',
+          'courses',
           'lessons',
           'subjects',
           'lectures',
@@ -152,19 +160,25 @@ class ImportController extends UserController
      */
     private function _import(Request $request, $object)
     {
-        $this->send_slack('import start['.$object.']', 'info', $this->logic_name);
+        @$this->send_slack('import start['.$object.']', 'info', $this->logic_name);
 
         if(!array_key_exists($object, $this->api_endpoint)){
           return $this->bad_request();
         }
         $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
-        $this->send_slack('import call_api['.$url.']', 'info', $this->logic_name);
+        @$this->send_slack('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
         if(!$this->is_success_response($res)){
           return $this->error_response('api error['.$res.']', $url);
         }
         $items = $res['data'];
         switch($object){
+          case 'places':
+            $res = $this->general_attributes_import($items, 'place', 'id', 'name');
+            break;
+          case 'works':
+            $res = $this->general_attributes_import($items, 'work', 'id', 'explanation');
+            break;
           case 'courses':
             $res = $this->general_attributes_import($items, 'course', 'course_id', 'course_name');
             break;
@@ -197,14 +211,14 @@ class ImportController extends UserController
             break;
         }
         if(!$this->is_success_response($res)){
-          $this->send_slack($res['message'], 'error', $this->logic_name);
-          $this->send_slack($res['description'], 'error', $this->logic_name);
+          @$this->send_slack($res['message'], 'error', $this->logic_name);
+          @$this->send_slack($res['description'], 'error', $this->logic_name);
         }
         else {
-          $this->send_slack($res['message'], 'success', $this->logic_name);
-          $this->send_slack($res['description'], 'success', $this->logic_name);
+          @$this->send_slack($res['message'], 'success', $this->logic_name);
+          @$this->send_slack($res['description'], 'success', $this->logic_name);
         }
-        $this->send_slack('import end['.$object.']', 'info',  $this->logic_name);
+        @$this->send_slack('import end['.$object.']', 'info',  $this->logic_name);
 
         return $res;
     }
@@ -459,7 +473,7 @@ class ImportController extends UserController
           $user_id = $res['data']->id;
         }
         else {
-          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
       }
@@ -467,7 +481,7 @@ class ImportController extends UserController
         $user_id = $user->id;
         $teacher = Teacher::where('user_id', $user_id)->first();
         if(!isset($teacher)){
-          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."認証あり / 講師情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."認証あり / 講師情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
         $teacher->update([
@@ -532,7 +546,7 @@ class ImportController extends UserController
       if(empty($item['email'])){
         if($item['status']!==9){
           //削除してない生徒で、メールアドレスがない場合は通知
-          $this->send_slack("事務管理システム:no=".$item['student_no']."メールアドレス設定なし", 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:no=".$item['student_no']."メールアドレス設定なし", 'error', $this->logic_name);
         }
         $item['email'] = 'email_'.$item['student_no'];
       }
@@ -572,7 +586,7 @@ class ImportController extends UserController
           ]);
         }
         else {
-          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
       }
@@ -580,7 +594,7 @@ class ImportController extends UserController
         $parent = StudentParent::where('user_id', $parent_user->id)->first();
         //認証情報存在：既存更新
        if(!isset($parent)){
-         $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 保護者情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+         @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 保護者情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
          return false;
        }
        $parent->update([
@@ -624,7 +638,7 @@ class ImportController extends UserController
           ]);
         }
         else {
-          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
       }
@@ -632,7 +646,7 @@ class ImportController extends UserController
          //認証情報存在：既存更新
         $student = Student::where('user_id', $user->id)->first();
         if(!isset($student)){
-          $this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 生徒情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 生徒情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
         $student->update([
@@ -651,7 +665,7 @@ class ImportController extends UserController
         }
       }
 
-      //$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);
+      //@$this->send_slack("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);
       //家族情報（関連性）の登録
       StudentRelation::where('student_id',$student->id)->delete();
       $StudentRelation = new StudentRelation;
@@ -682,21 +696,21 @@ class ImportController extends UserController
 
       $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
-        $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
       $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
-        $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $teacher = $teacher->teacher;
 
       $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])->first();
       if(!isset($lecture)){
-        $this->send_slack("事務管理システム:lecture_id=".$item['lecture_id']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:lecture_id=".$item['lecture_id']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
 
@@ -725,14 +739,14 @@ class ImportController extends UserController
     private function store_calendar($item){
       $student = User::tag('student_no', $item['student_no'])->first();
       if(!isset($student)){
-        $this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $student = $student->student;
 
       $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
       if(!isset($teacher)){
-        $this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $teacher = $teacher->teacher;
@@ -744,7 +758,7 @@ class ImportController extends UserController
         ->first();
       if(!isset($lecture)){
         //存在しないレクチャー
-        $this->send_slack("事務管理システム:lesson=".$item['lesson']."/course=".$item['course']."/subject=".$item['subject']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:lesson=".$item['lesson']."/course=".$item['course']."/subject=".$item['subject']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
         return false;
       }
       $remark.='[lesson='.$item['lesson'].']';
@@ -845,7 +859,7 @@ class ImportController extends UserController
         ->where('lecture_id' ,$lecture->id)->first();
       if(!isset($charge_student)){
         //担当生徒データが存在しない
-        //$this->send_slack("カレンダーID[".$calendar_id."]  担当生徒データが存在しない / 講師[".$teacher->id."]生徒[".$student->id."]レクチャー[".$lecture->id."]", 'warning', $this->logic_name);
+        //@$this->send_slack("カレンダーID[".$calendar_id."]  担当生徒データが存在しない / 講師[".$teacher->id."]生徒[".$student->id."]レクチャー[".$lecture->id."]", 'warning', $this->logic_name);
       }
       return true;
     }
@@ -855,33 +869,48 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_schedule($item){
-      $student = User::tag('student_no', $item['student'])->first();
-      if(!isset($student)){
-        $this->send_slack("事務管理システム:student_no=".$item['student']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
+      $student = null;
+      if(!empty($item['student_no'])){
+        $student = User::tag('student_no', $item['student_no'])->first();
+        if(!isset($student)){
+          @$this->send_slack("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+          return false;
+        }
+        $student = $student->student;
       }
-      $student = $student->student;
 
-      $teacher = User::tag('teacher_no', $item['teacher'])->first();
-      if(!isset($teacher)){
-        $this->send_slack("事務管理システム:teacher_no=".$item['teacher']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
+      $teacher = null;
+      if(!empty($item['teacher_id'])){
+        $teacher = User::tag('teacher_no', $item['teacher_id'])->first();
+        if(!isset($teacher)){
+          @$this->send_slack("事務管理システム:teacher_id=".$item['teacher_id']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
+          return false;
+        }
+        $teacher = $teacher->teacher;
       }
-      $teacher = $teacher->teacher;
-
       $lecture = Lecture::where('id',$item['lecture_id'])
         ->first();
       if(!isset($lecture)){
         //存在しないレクチャー
-        $this->send_slack("事務管理システム:lecture_id=".$item['lecture_id'], 'error', $this->logic_name);
+        @$this->send_slack("事務管理システム:lecture_id=".$item['lecture_id'], 'error', $this->logic_name);
         return false;
       }
       $remark = $item['comment'];
-      $remark.='[work='.$item['work'].']';
       $remark.='[free='.$item['free'].']';
       $remark.='[repeattimes='.$item['repeattimes'].']';
       $exchanged_calendar_id = 0;
       $status= 'fix';
+      if(isset($student) && isset($teacher)){
+         if(strtotime($item['ymd']) > strtotime(date('Y-m-d'))){
+           //予定の場合は確認待ちとする
+           $status = 'confirm';
+         }
+      }
+      else {
+        //講師・生徒いずれかセットされていない
+        $status = 'new';
+      }
+
       if(is_numeric($item['temporary'])){
         switch(intval($item['temporary'])){
           case 0:
@@ -906,16 +935,13 @@ class ImportController extends UserController
         if($item['cancel']==='c')  $status = 'cancel';
         else $status = 'rest';
       }
-      //TODO フィールド間違っている可能性が・・
-      if(is_numeric($item['altschedid'])){
-        $exchanged_calendar_id = intval($item['altschedid']);
+      if(is_numeric($item['altsched_id'])){
+        $exchanged_calendar_id = intval($item['altsched_id']);
       }
-      //TODO placeのコードが不明 / あとで定義される
-      $_attr = $this->get_save_general_attribute('place', '', $item['place']);
+      $_attr = $this->get_save_general_attribute('place', $item['place_id'],'');
       $place = $_attr->attribute_value;
 
-      //TODO workのコードが不明/workは保持しない / あとで定義される
-      $_attr = $this->get_save_general_attribute('work', '', $item['work']);
+      $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
 
       $calendar_id = 0;
@@ -923,25 +949,31 @@ class ImportController extends UserController
       if(isset($items)){
         //すでに存在する場合は更新する
         $items->update([
-          'start_time' => $item['ymd'].' '.$item['start'],
-          'end_time' => $item['ymd'].' '.$item['end'],
-          'lecture_id' => $lecture->id,
-          'remark' => $remark,
-          'status' => $status,
-          'place' => $place,
-        ]);
-        $calendar_id = $items->id;
-      }
-      else {
-        $items = UserCalendar::create([
-          'start_time' => $item['ymd'].' '.$item['start'],
-          'end_time' => $item['ymd'].' '.$item['end'],
+          'start_time' => $item['ymd'].' '.$item['starttime'],
+          'end_time' => $item['ymd'].' '.$item['endtime'],
           'user_id' => $teacher->user_id,
           'lecture_id' => $lecture->id,
           'remark' => $remark,
           'status' => $status,
           'place' => $place,
-          'create_user_id' => 1
+          'work' => $work,
+          'updated_at' => $item['updatetime'],
+        ]);
+        $calendar_id = $items->id;
+      }
+      else {
+        $items = UserCalendar::create([
+          'schedule_id' => $item['id'],
+          'start_time' => $item['ymd'].' '.$item['starttime'],
+          'end_time' => $item['ymd'].' '.$item['endtime'],
+          'user_id' => $teacher->user_id,
+          'lecture_id' => $lecture->id,
+          'remark' => $remark,
+          'status' => $status,
+          'place' => $place,
+          'work' => $work,
+          'create_user_id' => 1,
+          'updated_at' => $item['updatetime'],
         ]);
         $calendar_id = $items->id;
       }
@@ -975,26 +1007,32 @@ class ImportController extends UserController
       }
       */
       //講師をカレンダーに追加
-      UserCalendarMember::create([
-        'calendar_id' => $calendar_id,
-        'status' => $teacher_status,
-        'user_id' => $teacher->user_id,
-        'create_user_id' => 1
-      ]);
+      if(isset($teacher)){
+        UserCalendarMember::create([
+          'calendar_id' => $calendar_id,
+          'status' => $teacher_status,
+          'user_id' => $teacher->user_id,
+          'create_user_id' => 1
+        ]);
+      }
       //生徒をカレンダーに追加
-      UserCalendarMember::create([
-        'calendar_id' => $calendar_id,
-        'user_id' => $student->user_id,
-        'status' => $student_status,
-        'create_user_id' => 1
-      ]);
+      if(isset($student)){
+        UserCalendarMember::create([
+          'calendar_id' => $calendar_id,
+          'user_id' => $student->user_id,
+          'status' => $student_status,
+          'create_user_id' => 1
+        ]);
+      }
       //TODO : 担任：担当生徒という考え方は存在しない。
-      $charge_student = ChargeStudent::where('student_id',$student->id)
-        ->where('teacher_id' ,$teacher->id)
-        ->where('lecture_id' ,$lecture->id)->first();
-      if(!isset($charge_student)){
-        //担当生徒データが存在しない
-        //$this->send_slack("カレンダーID[".$calendar_id."]  担当生徒データが存在しない / 講師[".$teacher->id."]生徒[".$student->id."]レクチャー[".$lecture->id."]", 'warning', $this->logic_name);
+      if(isset($student) && isset($teacher)){
+        $charge_student = ChargeStudent::where('student_id',$student->id)
+          ->where('teacher_id' ,$teacher->id)
+          ->where('lecture_id' ,$lecture->id)->first();
+        if(!isset($charge_student)){
+          //担当生徒データが存在しない
+          //@$this->send_slack("カレンダーID[".$calendar_id."]  担当生徒データが存在しない / 講師[".$teacher->id."]生徒[".$student->id."]レクチャー[".$lecture->id."]", 'warning', $this->logic_name);
+        }
       }
       return true;
     }

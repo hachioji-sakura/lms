@@ -26,6 +26,7 @@ class Controller extends BaseController
       return $json;
     }
     protected function is_success_response($json){
+      if($json["status"]==="0") return true;
       if($json["status"]===200) return true;
       if($json["status"]==="success") return true;
       return false;

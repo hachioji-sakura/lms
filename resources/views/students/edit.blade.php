@@ -2,7 +2,7 @@
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
-    <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="students_edit" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('student_form')
@@ -87,29 +87,29 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", form_data);
+  var form_data = util.getLocalData('students_edit');
+  base.pageSettinged("students_edit", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('register_form .carousel-item.active')){
+    if(front.validateFormValue('students_edit .carousel-item.active')){
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      var form_data = front.getFormValue('register_form');
-      util.setLocalData('register_form', form_data);
+    if(front.validateFormValue('students_edit .carousel-item.active')){
+      var form_data = front.getFormValue('students_edit');
+      util.setLocalData('students_edit', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#register_form').carousel('next');
+      $('#students_edit').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#register_form').carousel('prev');
+    $('#students_edit').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

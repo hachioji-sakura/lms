@@ -350,8 +350,21 @@ class UserCalendarController extends MilestoneController
             abort(404, 'ページがみつかりません(2)');
         }
       }
+      if($request->has('user') && !$request->has('key')){
+          abort(404, 'ページがみつかりません(3)');
+      }
+      if($request->has('user') && $request->has('key')){
+        if(!$this->is_enable_token($request->get('key'))){
+          abort(403, '有効期限が切れています(3)');
+        }
+      }
       $param = $this->get_param($request, $id);
 
+      if($request->has('user') && $request->has('key')){
+        if($param['item']['access_key'] != $request->get('key')){
+          abort(403, '有効期限が切れています(4)');
+        }
+      }
 
       $param['fields'] = $this->show_fields;
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(3)');
@@ -507,10 +520,8 @@ class UserCalendarController extends MilestoneController
           'status'=>$status,
           'access_key' => '',
         ];
-        if($status=="confirm"){
-          //生徒確認待ちの場合認証なしで、確認できるようにする
-          $update_form['access_key'] = $param['token'];
-        }
+        //生徒確認待ちの場合認証なしで、確認できるようにする
+        $update_form['access_key'] = $param['token'];
         UserCalendar::where('id', $item->id)->update($update_form);
         if($item->trial_id > 0){
           //体験授業予定の場合、体験授業のステータスも更新する
@@ -582,7 +593,7 @@ class UserCalendarController extends MilestoneController
       }
       $members = $item->members;
       if($param['remind']===true){
-        $title .= '【再送】';
+        //$title .= '【再送】';
       }
       foreach($members as $member){
         $email = $member->user['email'];
@@ -709,15 +720,6 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
-      $form = $this->create_form($request);
-      $calendar = UserCalendar::add($form);
-      //生徒をカレンダーメンバーに追加
-      if(!empty($form['student_user_id'])){
-        $calendar->memberAdd($form['student_user_id'], $form['create_user_id']);
-      }
-      $calendar = $calendar->details();
-      $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
-      return $this->api_response(200, '', '', $calendar);
       try {
         DB::beginTransaction();
         $calendar = UserCalendar::add($form);
@@ -725,6 +727,7 @@ class UserCalendarController extends MilestoneController
         if(!empty($form['student_user_id'])){
           $calendar->memberAdd($form['student_user_id'], $form['create_user_id']);
         }
+        $this->api($request, "POST", $calendar);
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         DB::commit();
@@ -750,8 +753,11 @@ class UserCalendarController extends MilestoneController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
+        $item = $this->model()->where('id',$id)->first();
+        $this->api($request, "DELETE", $item);
         UserCalendarMember::where('calendar_id', $id)->delete();
-        $items = $this->model()->where('id',$id)->delete();
+        $item->delete();
+        //$this->api($request, "DELETE", $items['schedule_id']);
         DB::commit();
         return $this->api_response(200, '', '', $items);
       }
@@ -765,12 +771,58 @@ class UserCalendarController extends MilestoneController
       }
     }
 
-    public function api($method){
+    public function api($request, $method, $calendar){
       $url = [
         "GET" =>  "https://hachiojisakura.com/sakura-api/api_get_onetime_schedule.php",
         "PUT" =>  "https://hachiojisakura.com/sakura-api/api_update_onetime_schedule.php",
         "POST" =>  "https://hachiojisakura.com/sakura-api/api_insert_onetime_schedule.php",
         "DELETE" =>  "https://hachiojisakura.com/sakura-api/api_delete_onetime_schedule.php",
       ];
+      //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
+      $_method = "GET";
+      if($method!=="GET") $_method = "POST";
+      $_url = $url[$method];
+
+      $postdata =[];
+      switch($method){
+        case "PUT":
+        case "POST":
+          $postdata = [
+            "ymd" => date('Y-m-d', strtotime($calendar->starttime)),
+            "starttime" => date('H:i:s', strtotime($calendar->starttime)),
+            "endtime" => date('H:i:s', strtotime($calendar->endtime)),
+            "lecture_id" => $calendar->lecture_id,
+            "work_id" => $calendar->work,
+            "place_id" => $calendar->place,
+            "altsched_id" => $calendar->exchanged_calendar_id,
+          ];
+          break;
+      }
+      if($method==="PUT" || $method==="DELETE"){
+        $postdata['id'] = $calendar->schedule_id;
+      }
+      $_url = "";
+      switch($calendar->status){
+        case "cancel":
+          //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
+          $postdata['cancel'] = 'c';
+          break;
+        case "rest":
+          //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
+          $postdata['cancel'] = 'a';
+          break;
+        case "absence":
+          //3.12確認：欠席＝a2にする
+          $postdata['cancel'] = 'a2';
+          break;
+        case "presence":
+          //3.12確認：出席にする
+          //TODO: 出席のAPI実行
+          break;
+      }
+      $res = $this->call_api($request, $_url, $_method, $postdata);
+      if($rest["status"] != 0){
+        @$this->send_slack("事務システムAPIエラー:".$_url, 'warning', "事務システムAPIエラー");
+      }
     }
 }

@@ -229,6 +229,7 @@ EOT;
       'lecture_id' => 0,
       'trial_id' => $trial_id,
       'place' => '',
+      'work' => '',
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
       'create_user_id' => $form['create_user_id'],
@@ -258,7 +259,7 @@ EOT;
         }
     }
     $update_fields = [
-      'start_time', 'end_time', 'remark', 'place'
+      'start_time', 'end_time', 'remark', 'place', 'work'
     ];
     $data = [
       'lecture_id' => $lecture_id,

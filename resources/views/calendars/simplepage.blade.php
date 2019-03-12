@@ -26,8 +26,10 @@
         @if($item['status']==="fix" && $subpage==="rest")
           @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
             {{-- 授業当日9時を過ぎたら休み連絡はできない --}}
-            <div class="col-12 col-lg-12 col-md-12 mb-1">
-              <h4 class="text-danger">授業当日AM9:00以降の休み連絡はできません。</h4>
+            <div class="col-12 col-lg-12 col-md-12 mb-1 bg-warning p-4">
+              <i class="fa fa-exclamation-triangle mr-2"></i>この休み連絡は、振替対象外となります。
+              <br>
+              <span class="text-sm">※授業当日のAM9:00以降の連絡</span>
             </div>
           @else
             この授業予定をお休みしますか？
@@ -105,7 +107,15 @@
             <input type="hidden" value="rest" name="status" />
           <div class="row">
             @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
-            @else
+            <div class="col-12 mt-2 mb-1">
+              <div class="form-group">
+                <input class="form-check-input icheck flat-green" type="checkbox" id="agreement" name="agreement" value="1" required="true" >
+                <label class="form-check-label" for="agreement">
+                  振替対象外となることを確認しました。
+                </label>
+              </div>
+            </div>
+            @endif
             <div class="col-12" id="cancel_reason">
               <div class="form-group">
                 <label for="howto" class="w-100">
@@ -121,8 +131,6 @@
                     休み連絡
                 </button>
             </div>
-            @endif
-          </div>
         @endif
       </form>
       @endif
