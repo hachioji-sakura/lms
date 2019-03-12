@@ -2,6 +2,9 @@
 return array(
   'keys' => '定義項目',
   'lesson' => 'レッスン',
+  'kids_lesson' => '習い事',
+  'course_minutes' => '授業時間',
+  'course_type' => '授業形式',
   'subject' => '科目',
   'charge_grade' => '担当学年',
   'charge_subject' => '担当科目',

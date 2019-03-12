@@ -93,7 +93,9 @@
 <div class="row">
   @component('students.forms.subject', ['attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
   @component('students.forms.english_teacher', ['attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_type', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['attributes' => $attributes]) @endcomponent
+  @component('students.forms.kids_lesson', ['attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 

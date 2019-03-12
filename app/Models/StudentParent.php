@@ -23,11 +23,15 @@ class StudentParent extends Teacher
     return $this->belongsTo('App\User');
   }
   public function relations(){
-    return $this->hasMany('App\Models\StudentRelation');
+    return $this->hasMany('App\Models\StudentRelation', 'student_parent_id');
   }
   public function name()
   {
-      return $this->name_last . ' ' .$this->name_first;
+    $name = $this->name_last . ' ' .$this->name_first;
+    if(empty(trim($name))){
+      $name = $this->relation()->first()->student->name();
+    }
+    return $name;
   }
   public function kana()
   {

@@ -136,8 +136,8 @@ class User extends Authenticatable
         }
       }
       if(isset($item)){
-        $item['name'] = $item->name_last.' '.$item->name_first;
-        $item['kana'] = $item->kana_last.' '.$item->kana_first;
+        $item['name'] = $item->name();
+        $item['kana'] = $item->kana();
         $item['icon'] = $s3_url;
         $item['email'] = $this->email;
         return $item;
