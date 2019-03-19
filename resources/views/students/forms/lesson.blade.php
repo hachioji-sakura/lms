@@ -37,13 +37,13 @@ function lesson_checkbox_change(obj){
     $(".english_form").show();
     $(".english_confirm").show();
     $(".course_type_form").show();
-    $(".course_type_form_confirm").show();
+    $(".course_type_confirm").show();
   }
   else {
     $(".english_form").hide();
     $(".english_confirm").hide();
     $(".course_type_form").hide();
-    $(".course_type_form_confirm").hide();
+    $(".course_type_confirm").hide();
   }
   if(is_piano){
     $(".piano_form").show();
@@ -57,13 +57,13 @@ function lesson_checkbox_change(obj){
     $(".kids_lesson_form").show();
     $(".kids_lesson_confirm").show();
     $(".course_type_form").show();
-    $(".course_type_form_confirm").show();
+    $(".course_type_confirm").show();
   }
   else {
     $(".kids_lesson_form").hide();
     $(".kids_lesson_confirm").hide();
     $(".course_type_form").hide();
-    $(".course_type_form_confirm").hide();
+    $(".course_type_confirm").hide();
   }
   //grade_select_change();
 }

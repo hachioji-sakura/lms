@@ -24,24 +24,31 @@
             @slot('alias')
               <h6 class="widget-user-desc">
                 @if(!empty($item->user->status===1))
-                <small class="badge badge-warning mt-1 mr-1">
+                <small class="badge badge-danger mt-1 mr-1">
                   体験授業
                 </small>
                 @endif
-                <small class="badge badge-secondary mt-1 mr-1">
+                <small class="badge badge-info mt-1 mr-1">
                   {{$item->tag_name('student_no')}}
                 </small>
-                <small class="badge badge-secondary mt-1 mr-1">
+                <small class="badge badge-primary mt-1 mr-1">
                   {{$item->gender()}}
                 </small>
-                <small class="badge badge-secondary mt-1 mr-1">
+                <small class="badge badge-primary mt-1 mr-1">
                   {{$item->grade()}}
                 </small>
                 @if(!empty($item->school_name()))
-                <small class="badge badge-secondary mt-1 mr-1">
+                <small class="badge badge-primary mt-1 mr-1">
                   {{$item->school_name()}}
                 </small>
                 @endif
+                @foreach($item->user->tags as $tag)
+                @if($user->role==="manager" && $tag->tag_key=="student_character")
+                  <small class="badge badge-warning mt-1 mr-1">
+                    {{$tag->name()}}
+                  </small>
+                @endif
+                @endforeach
               </h6>
               <div class="card-footer p-0">
                 <ul class="nav flex-column">

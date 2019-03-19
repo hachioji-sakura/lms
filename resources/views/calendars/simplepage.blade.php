@@ -104,6 +104,7 @@
             @csrf
             @method('PUT')
             <input type="hidden" value="{{$user->user_id}}" name="user" />
+            <input type="hidden" value="{{$token}}" name="access_key" />
             <input type="hidden" value="rest" name="status" />
           <div class="row">
             @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
@@ -142,6 +143,8 @@
           </a>
         </div>
       </div>
+      @else
+      　
       @endif
     @endslot
   @endcomponent

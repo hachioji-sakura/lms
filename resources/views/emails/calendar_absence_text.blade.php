@@ -2,15 +2,8 @@
 
 @if($send_to==='student')
 {{$user_name}}様
-
-以下の授業のお休み連絡を承りました。
-
-@elseif($send_to==='teacher')
-{{$user_name}}先生
-生徒様よりご連絡があり、
-以下の 授業予定はお休みとなりました。
-
 @endif
+以下の授業は欠席となりました。
 
 …………………………………………………………………………………………
 開始日時：{{$item['start_time']}}
@@ -25,8 +18,6 @@
 
 @if($send_to==='student')
 ご不明な点等ございましたら、下記までお問い合わせください。　
-@elseif($send_to==='teacher')
-ご確認いただきますよう、宜しくお願い致します。
 @endif
 
 @yield('signature')

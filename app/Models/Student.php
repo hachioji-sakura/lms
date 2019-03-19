@@ -276,7 +276,7 @@ EOT;
    * @param  Collection $form
    */
   public function profile_update($form){
-    $update_form = [
+    $update_field = [
       'name_last' => "",
       'name_first' => "",
       'kana_last' => "",
@@ -284,14 +284,15 @@ EOT;
       'birth_day' => "9999-12-31",
       'gender' => "",
     ];
-    foreach($update_form as $key => $val){
+    $update_form = [];
+    foreach($update_field as $key => $val){
       if(isset($form[$key])){
         $update_form[$key] = $form[$key];
       }
     }
     $this->update($update_form);
     //1:nタグ
-    $tag_names = ['lesson_place'];
+    $tag_names = ['lesson_place', 'kids_lesson', 'student_character'];
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
@@ -303,7 +304,7 @@ EOT;
 	    }
     }
     //1:1タグ
-    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count'];
+    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count', 'course_type', 'course_minutes'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){

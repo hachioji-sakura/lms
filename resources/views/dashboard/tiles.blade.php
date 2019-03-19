@@ -25,14 +25,7 @@
               </div>
             </div>
             <div class="row my-2">
-              @if($item->user->status===0 && !($domain=="managers" && $item->id===1))
-              <div class="col-6 col-md-6">
-                <a class="btn btn-success btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
-                  <i class="fa fa-edit"></i>
-                  <span class="d-lg-block">編集</span>
-                </a>
-              </div>
-              @elseif($domain!="students" && $item->user->status===1)
+              @if($domain!="students" && $item->user->status===1)
               <div class="col-6 col-md-6">
                 <a class="btn btn-primary btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
                   <i class="fa fa-envelope"></i>
@@ -40,7 +33,15 @@
                 </a>
               </div>
               @endif
-              @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9)
+              @if($item->user->status===0 && !($domain=="managers" && $item->id===1))
+              <div class="col-6 col-md-6">
+                <a class="btn btn-success btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
+                  <i class="fa fa-edit"></i>
+                  <span class="d-lg-block">編集</span>
+                </a>
+              </div>
+              @endif
+              @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9 && $item->user->status!==1)
               <div class="col-6 col-md-6">
                 <a class="btn btn-danger btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
                   <i class="fa fa-trash-alt"></i>

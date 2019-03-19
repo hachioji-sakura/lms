@@ -79,10 +79,10 @@
                       <i class="fa fa-user-check mr-1"></i>
                       予定を確定する
                     </a>
-                    @elseif($calendar["status"]==="confirm" || $calendar["status"]==="fix")
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡（再送）" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                    @elseif($calendar["status"]==="confirm")
+                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                       <i class="fa fa-user-check mr-1"></i>
-                      予定連絡（再送）
+                      予定連絡
                     </a>
                     @endif
                   @endif

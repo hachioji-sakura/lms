@@ -27,5 +27,7 @@ return array(
   'english_teacher' => '英会話講師希望',
   'piano_level' => 'ピアノ経験',
   'matching_decide' => 'マッチング決定理由',
+  'teacher_character' => '講師特性',
+  'student_character' => '生徒特性',
 );
 ?>

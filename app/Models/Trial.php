@@ -108,9 +108,12 @@ EOT;
 
     //申し込み情報登録
     $trial = Trial::where('student_parent_id', $parent->id)
-      ->where('student_id', $student->id)
-      ->first();
-    //同じ送信内容の場合は登録しない
+    ->where('student_id', $student->id)
+    ->where('status', '!=' ,'cancel')
+    ->where('status', '!=' ,'rest')
+    ->first();
+
+    //同じ人からの内容の場合は(cancel以外)登録しない
     if(!isset($trial)){
       $trial = Trial::create([
         'student_parent_id' => $parent->id,
@@ -136,7 +139,7 @@ EOT;
       'trial_start_time2' => $form['trial_start_time2'],
       'trial_end_time2' => $form['trial_end_time2'],
     ]);
-    $tag_names = ['howto_word', 'piano_level', 'english_teacher'];
+    $tag_names = ['howto_word', 'piano_level', 'english_teacher', 'course_type', 'course_minutes'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -147,7 +150,13 @@ EOT;
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson_place', 'howto', 'lesson'];
+    $tag_names = ['lesson_place', 'howto', 'lesson', 'kids_lesson'];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
+
   }
   public function get_calendar(){
     $calendar = UserCalendar::where('trial_id', $this->id)->findStatuses(['cancel'], true)->first();
@@ -220,7 +229,8 @@ EOT;
   public function details(){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['create_date'] = date('Y年m月d日',  strtotime($this->created_at));
+    $item['status_style'] = $this->status_style();
+    $item['create_date'] = date('m月d日',  strtotime($this->created_at));
     $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
     $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));
     $item['trial_end1'] = date('H:i',  strtotime($this->trial_end_time1));
@@ -256,6 +266,8 @@ EOT;
         $item[$tag->tag_key] .= $tag->name().',';
       }
     }
+    $calendar = $this->get_calendar();
+    if(isset($calendar)) $item['calendar'] = $calendar->details();
     return $item;
   }
   public function candidate_teachers(){

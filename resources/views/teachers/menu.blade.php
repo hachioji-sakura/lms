@@ -61,6 +61,13 @@
             <i class="fa fa-user-edit nav-icon"></i>講師設定
           </a>
         </li>
+        @if($user->role==="manager")
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="タグ設定">
+            <i class="fa fa-tags nav-icon"></i>タグ設定
+          </a>
+        </li>
+        @endif
       </ul>
     </li>
 </ul>

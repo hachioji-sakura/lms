@@ -39,52 +39,60 @@
         第１希望日
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <input type="text" name="trial_date1" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+      <div class="input-group">
+        <input type="text" name="trial_date1" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+      </div>
   </div>
   <div class="col-12 mt-2 col-md-8">
     <label for="start_date" class="w-100">
       時間帯
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <select name="trial_start_time1" class="form-control float-left mr-1 w-40" required="true">
-      <option value="">(選択してください)</option>
-      @for ($i = 8; $i < 23; $i++)
-        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
-      @endfor
-    </select>
-    <div class="w-10 text-center float-left mx-2">～</div>
-    <select name="trial_end_time1" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time1" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time1" not_equal_error="時間帯範囲が間違っています" >
-      <option value="">(選択してください)</option>
+    <div class="input-group">
+      <select name="trial_start_time1" class="form-control float-left mr-1 w-40" required="true">
+        <option value="">(選択してください)</option>
         @for ($i = 8; $i < 23; $i++)
-        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
         @endfor
-    </select>
+      </select>
+      <div class="w-10 text-center float-left mx-2">～</div>
+      <select name="trial_end_time1" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time1" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time1" not_equal_error="時間帯範囲が間違っています" >
+        <option value="">(選択してください)</option>
+          @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+          @endfor
+      </select>
+    </div>
   </div>
   <div class="col-12 mt-2 col-md-4">
     <label for="start_date" class="w-100">
       第２希望日
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+    <div class="input-group">
+      <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+    </div>
   </div>
   <div class="col-12 mt-2 col-md-8 mb-1">
     <label for="start_date" class="w-100">
       時間帯
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <select name="trial_start_time2" class="form-control float-left mr-1 w-40" required="true">
-      <option value="">(選択してください)</option>
-      @for ($i = 8; $i < 23; $i++)
-        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
-      @endfor
-    </select>
-    <div class="w-10 text-center float-left mx-2">～</div>
-    <select name="trial_end_time2" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time2" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time2" not_equal_error="時間帯範囲が間違っています" >
-      <option value="">(選択してください)</option>
-      @for ($i = 8; $i < 23; $i++)
-        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
-      @endfor
-    </select>
+    <div class="input-group">
+      <select name="trial_start_time2" class="form-control float-left mr-1 w-40" required="true">
+        <option value="">(選択してください)</option>
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
+      </select>
+      <div class="w-10 text-center float-left mx-2">～</div>
+      <select name="trial_end_time2" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time2" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time2" not_equal_error="時間帯範囲が間違っています" >
+        <option value="">(選択してください)</option>
+        @for ($i = 8; $i < 23; $i++)
+          <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
+      </select>
+    </div>
   </div>
   @component('students.forms.lesson_place', ['attributes' => $attributes]) @endcomponent
 </div>
@@ -92,8 +100,9 @@
 @section('subject_form')
 <div class="row">
   @component('students.forms.subject', ['attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
-  @component('students.forms.english_teacher', ['attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.course_type', ['attributes' => $attributes]) @endcomponent
+  @component('students.forms.english_teacher', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.kids_lesson', ['attributes' => $attributes]) @endcomponent
 </div>
@@ -215,10 +224,16 @@
       </table>
     </div>
   </div>
+  <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
+  <div class="col-6 p-3"><span id="course_minutes_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold course_type_confirm" >授業形式のご希望をお知らせください</div>
+  <div class="col-6 p-3 course_type_confirm"><span id="course_type_name"></span></div>
   <div class="col-6 p-3 font-weight-bold english_confirm" >ご希望の英会話講師</div>
   <div class="col-6 p-3 english_confirm"><span id="english_teacher_name"></span></div>
   <div class="col-6 p-3 font-weight-bold piano_confirm" >ピアノのご経験について</div>
   <div class="col-6 p-3 piano_confirm"><span id="piano_level_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold kids_lesson_confirm" >ご希望の習い事についてお知らせください</div>
+  <div class="col-6 p-3 kids_lesson_confirm"><span id="kids_lesson_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご要望について</div>
   <div class="col-6 p-3"><span id="remark"></span></div>
   <div class="col-6 p-3 font-weight-bold" >当塾をお知りになった方法は何でしょうか？</div>

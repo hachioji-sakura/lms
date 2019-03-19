@@ -319,6 +319,21 @@ class StudentController extends UserController
     return view($this->domain.'.edit',$param);
 
   }
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function tag_page(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    $param['student'] = $param['item'];
+    return view($this->domain.'.tag',$param);
+
+  }
   public function delete_page(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
@@ -482,16 +497,16 @@ class StudentController extends UserController
         $sort = 'desc';
         $to_date = date('Y-m-d', strtotime("+1 month"));
         break;
-      case "confirm":
-        //予定調整中
-        $to_date = date('Y-m-d', strtotime("+1 month"));
-        $statuses = ['new', 'confirm'];
-        break;
       case "cancel":
         //休み予定
         $from_date = date('Y-m-d');
         $to_date = date('Y-m-d', strtotime("+1 month"));
         $statuses = ['cancel','rest'];
+        break;
+      case "confirm":
+        //予定調整中
+        $from_date = date('Y-m-d');
+        $statuses = ['new', 'confirm'];
         break;
       default:
         $from_date = date('Y-m-d');

@@ -27,7 +27,7 @@
       @if($result==="success")
       体験授業をお申し込みいただきまして、<br>
       誠にありがとうございます。<br><br>
-      ２営業日以内に、当塾よりご連絡いたしますので、<br>
+      1週間以内に当塾より授業予定のご連絡いたします。<br>
       何卒宜しくお願い致します。
       @else
       体験授業をお申し込みいただきまして、<br>
@@ -118,7 +118,7 @@ $(function(){
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('trials_entry .carousel-item.active')){
-      //util.removeLocalData('trials_entry');
+      util.removeLocalData('trials_entry');
       $("form").submit();
     }
   });
@@ -149,12 +149,9 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     form_data["email"] = $("input[name=email]").val();
-    if(form_data["gender"]){
-      form_data["gender_name"] = $("label[for='"+$("input[name='gender']:checked").attr("id")+"']").text().trim();
-    }
     if(form_data["grade"]){
-      var grade_name = $('select[name=grade] option:selected').text().trim();
-      form_data["grade_name"] = grade_name;
+      var _name = $('select[name=grade] option:selected').text().trim();
+      form_data["grade_name"] = _name;
     }
     if(form_data["trial_date1"] && form_data["trial_start_time1"] && form_data["trial_end_time1"]){
       var trial_start = $('select[name=trial_start_time1] option:selected').text().trim();
@@ -166,7 +163,7 @@ $(function(){
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
       form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
     }
-    var _names = ["lesson", "lesson_place", "howto",];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -175,7 +172,7 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level"];
+    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "gender"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){

@@ -1,4 +1,4 @@
-k<?php
+<?php
 return array(
   'abacus' => 'そろばん',
   'dance' => 'ダンス',

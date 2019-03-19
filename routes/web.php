@@ -45,6 +45,7 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+Route::get('calendars/{id}/api_test','UserCalendarController@api_test');
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
 /*
@@ -95,6 +96,10 @@ Route::post('parents/{id}/remind','StudentParentController@remind');
 Route::post('students/{id}/remind','StudentController@remind');
 Route::post('managers/{id}/remind','ManagerController@remind');
 Route::post('teachers/{id}/remind','TeacherController@remind');
+Route::get('students/{id}/tag','StudentController@tag_page');
+Route::post('students/{id}/tag','StudentController@update');
+Route::get('teachers/{id}/tag','TeacherController@tag_page');
+Route::post('teachers/{id}/tag','TeacherController@update');
 
 
 Route::resource('parents','StudentParentController');

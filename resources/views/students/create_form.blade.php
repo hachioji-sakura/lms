@@ -96,3 +96,8 @@ parents.create_formを使うので、利用しない
 @endif
 </div>
 @endsection
+@section('tag_form')
+<div class="row">
+  @component('students.forms.student_character', ['item'=>$item,'attributes' => $attributes]) @endcomponent
+</div>
+@endsection

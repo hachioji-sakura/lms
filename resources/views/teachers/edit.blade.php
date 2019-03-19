@@ -56,8 +56,8 @@
             </div>
             <div class="col-12 mb-1">
                 <button type="submit" class="btn btn-primary btn-block" accesskey="teachers_edit">
-                  <i class="fa fa-plus-circle mr-1"></i>
-                    登録する
+                  <i class="fa fa-edit mr-1"></i>
+                    更新する
                 </button>
             </div>
           </div>

@@ -21,13 +21,23 @@
             @endslot
             @slot('alias')
               <h6 class="widget-user-desc">
-                {{--
                 @foreach($item->user->tags as $tag)
-                <small class="badge badge-secondary mt-1 mr-1">
-                  {{$tag->keyname()}}{{$tag->name()}}
-                </small>
+                  @if($tag->tag_key=="teacher_no")
+                    <small class="badge badge-info mt-1 mr-1">
+                      {{$tag->keyname()}}{{$tag->name()}}
+                    </small>
+                  @endif
+                  @if($tag->tag_key=="lesson")
+                    <small class="badge badge-primary mt-1 mr-1">
+                      {{$tag->name()}}
+                    </small>
+                  @endif
+                  @if($user->role==="manager" && $tag->tag_key=="teacher_character")
+                    <small class="badge badge-warning mt-1 mr-1">
+                      {{$tag->name()}}
+                    </small>
+                  @endif
                 @endforeach
-                --}}
               </h6>
             @endslot
         @endcomponent

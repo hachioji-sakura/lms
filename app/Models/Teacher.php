@@ -77,15 +77,23 @@ EOT;
     return $teacher;
   }
   public function profile_update($form){
-    $this->update([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => $form['kana_last'],
-      'kana_first' => $form['kana_first'],
-      'birth_day' => $form['birth_day'],
-      'gender' => $form['gender'],
-      'phone_no' => $form['phone_no'],
-    ]);
+    $update_field = [
+      'name_last' => "",
+      'name_first' => "",
+      'kana_last' => "",
+      'kana_first' => "",
+      'birth_day' => "9999-12-31",
+      'gender' => "",
+      'phone_no' => "",
+    ];
+    $update_form = [];
+    foreach($update_field as $key => $val){
+      if(isset($form[$key])){
+        $update_form[$key] = $form[$key];
+      }
+    }
+    $this->update($update_form);
+
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
       $tag_names[] = $charge_subject_level_item['attribute_value'];
@@ -95,7 +103,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson'];
+    $tag_names = ['lesson', 'teacher_character'];
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
       $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';

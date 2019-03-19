@@ -13,48 +13,6 @@ class TrialController extends UserCalendarController
   public $table = "trials";
   public $domain_name = "体験授業申し込み";
   private $show_fields = [
-    'create_date' => [
-      'label' => '申込年月日',
-      'size' => 3
-    ],
-    'status_name' => [
-      'label' => 'ステータス',
-      'size' => 3,
-    ],
-    'date1' => [
-      'label' => '第１希望',
-      'size' => 3,
-    ],
-    'date2' => [
-      'label' => '第２希望',
-      'size' => 3,
-      'hr' => true
-    ],
-    'subject1' => [
-      'label' => '補習科目',
-      'size' => 3,
-    ],
-    'subject2' => [
-      'label' => '受験科目',
-      'size' => 3,
-    ],
-    'lesson_place' => [
-      'label' => '希望校舎',
-      'size' => 3,
-    ],
-    'english_teacher' => [
-      'label' => '英会話講師希望',
-      'size' => 3
-    ],
-    'piano_level' => [
-      'label' => 'ピアノ経験',
-      'size' => 3
-    ],
-    'remark' => [
-      'label' => '問い合わせ・質問',
-      'size' => 9,
-      'hr' => true,
-    ],
     'student_name' => [
       'label' => '生徒氏名',
       'size' => 3
@@ -71,6 +29,64 @@ class TrialController extends UserCalendarController
       'label' => '学校',
       'size' => 3,
       'hr' => true
+    ],
+    'create_date' => [
+      'label' => '申込年月日',
+      'size' => 3
+    ],
+    'status_name' => [
+      'label' => 'ステータス',
+      'size' => 3,
+    ],
+    'date1' => [
+      'label' => '第１希望',
+      'size' => 3,
+    ],
+    'date2' => [
+      'label' => '第２希望',
+      'size' => 3,
+    ],
+    'lesson' => [
+      'label' => '希望レッスン',
+      'size' => 3,
+    ],
+    'lesson_place' => [
+      'label' => '希望校舎',
+      'size' => 3,
+    ],
+    'course_minutes' => [
+      'label' => '希望授業時間',
+      'size' => 3
+    ],
+    'course_type' => [
+      'label' => '授業形式',
+      'size' => 3,
+      'hr' => true
+    ],
+    'subject1' => [
+      'label' => '補習科目',
+      'size' => 6,
+    ],
+    'subject2' => [
+      'label' => '受験科目',
+      'size' => 6,
+    ],
+    'english_teacher' => [
+      'label' => '講師希望',
+      'size' => 3
+    ],
+    'piano_level' => [
+      'label' => 'ピアノ経験',
+      'size' => 3
+    ],
+    'kids_lesson' => [
+      'label' => '習い事',
+      'size' => 3
+    ],
+    'remark' => [
+      'label' => '問い合わせ・質問',
+      'size' => 9,
+      'hr' => true,
     ],
   ];
 
@@ -105,27 +121,12 @@ class TrialController extends UserCalendarController
   public function get_param(Request $request, $id=null, $user_id=null){
     $user = $this->login_details();
     if(!isset($user)) {
-      /*
-      if(!empty($request->key)){
-         abort(403);
-      }
-      $user = User::where('access_key',$request->key);
-      if($user->count() < 1){
-        abort(403);
-      }
-      $user = $user->first()->details();
-      */
       abort(404);
     }
 
     if(!isset($user)) {
       abort(404);
     }
-/*
-    if($this->is_manager($user->role)!==true){
-      abort(403);
-    }
-*/
     $ret = [
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
@@ -241,14 +242,17 @@ class TrialController extends UserCalendarController
     }
     foreach($items as $item){
       $item = $item->details();
+      /*
       if(!empty($status) && $status==='confirm'){
         $calendar = $item->get_calendar();
         if(isset($calendar)){
           $calendar = $calendar->details();
+          $item->calendar_id = $calendar['id'];
           $item->teacher_name = $calendar['teacher_name'];
           $item->datetime = $calendar['datetime'];
         }
       }
+      */
     }
     return ['items' => $items->toArray(), 'fields' => $fields];
   }
@@ -344,11 +348,6 @@ class TrialController extends UserCalendarController
        'access_key' => $access_key,
      ]);
      $form = $request->all();
-     $user = User::where('email', $form['email'])->first();
-     if(isset($user)){
-       return view($this->domain.'.entry',
-         ['result' => "aleready"]);
-     }
      $res = $this->_trial_store($request);
      if($this->is_success_response($res)){
        $this->send_mail($form['email'],
@@ -543,10 +542,9 @@ class TrialController extends UserCalendarController
        $trial = Trial::where('id', $id)->first();
        $trial->update(['status'=>$status]);
        if($status==="confirm"){
+         //体験授業内容から、授業予定追加
          $calendar = $trial->trial_to_calendar($form);
-         if(!empty($form['remark'])){
-           $calendar['comment'] = $form['remark'];
-         }
+         $this->office_system_api($request, "POST", $calendar);
          $this->confirm_mail($calendar->details());
        }
        $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');
