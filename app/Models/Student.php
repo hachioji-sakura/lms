@@ -43,6 +43,13 @@ class Student extends Model
       return $this->kana_last . ' ' .$this->kana_first;
   }
   /**
+   *　プロパティ：アイコン
+   */
+  public function icon()
+  {
+      return $this->user->icon();
+  }
+  /**
    *　プロパティ：性別名称
    */
   public function gender()
@@ -242,7 +249,10 @@ EOT;
     $ret = [];
     $student_no = UserTag::where('tag_key', 'student_no')->max('tag_value');
     $student_no = intval(ltrim($student_no, '0'))+1;
+    //TODO : student_no (id?)は数値
+    /*
     $student_no = sprintf('%06d', $student_no);
+    */
     $user = User::create([
       'name' => $form['name_last'].' '.$form['name_first'],
       'password' => '-',

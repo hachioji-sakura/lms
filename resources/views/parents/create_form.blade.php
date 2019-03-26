@@ -16,8 +16,9 @@
       <span>{{$parent->email}}</span>
     </div>
   </div>
-  @component('students.forms.phoneno', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.password', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.password', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.phoneno', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.address', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
 
 </div>
 @endisset
@@ -35,7 +36,7 @@
   @endcomponent
 
   <div class="col-10">
-    @component('components.select_birthday', ['item' => []])
+    @component('components.select_birthday', ['item' => $student])
     @endcomponent
   </div>
   <div class="col-2 col-lg-2 col-md-2">
@@ -47,7 +48,6 @@
     </div>
   </div>
   @component('students.forms.school', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-
 </div>
 @endsection
 @section('lesson_week_form')

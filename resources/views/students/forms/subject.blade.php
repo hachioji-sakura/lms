@@ -28,10 +28,13 @@
       </th>
     </tr>
     @foreach(config('charge_subjects') as $grade => $subject_group)
+      {{-- 学年ごと --}}
       @foreach($subject_group as $subject => $subject_data)
+        {{-- 科目分類ごと --}}
         <?php $l1 = $loop->index; ?>
         @isset($subject_data['items'])
           @foreach($subject_data['items'] as $subject => $subject_name)
+            {{-- 科目ごと --}}
             <tr class="grade-subject" alt="{{$grade}}">
             @if($l1===0 && $grade_display===true)
             <th class="p-1 text-center bg-gray" rowspan=100>{{$grade}}</th>
@@ -41,6 +44,7 @@
             @endif
             <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
             @foreach($attributes['lesson_subject_level'] as $index => $name)
+              {{-- 科目レベルごと --}}
               <td class="p-1 text-center">
               <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="icheck
                 @if($loop->index===0)
@@ -67,6 +71,7 @@
           @endif
           <th class="p-1 text-center bg-gray subject_name">{{$subject_data['name']}}</th>
           @foreach($attributes['lesson_subject_level'] as $index => $name)
+            {{-- 科目レベルごと --}}
             <td class="text-center">
             <input type="radio" value="{{ $index }}" name="{{$subject}}_level" class="icheck
             @if($loop->index===0)

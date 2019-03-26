@@ -134,6 +134,7 @@ class TrialController extends UserCalendarController
       'origin' => $request->origin,
       'item_id' => $request->item_id,
       'search_word'=>$request->search_word,
+      '_status' => $request->get('status'),
       'search_status'=>$request->status,
       'access_key'=>$request->key,
       'attributes' => $this->attributes(),

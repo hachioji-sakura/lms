@@ -41,7 +41,7 @@
           <div class="w-100">
             @foreach($teacher->user->tags as $tag)
               @if($user->role==="manager" && $tag->tag_key=="teacher_character")
-                <small class="badge badge-warning mt-1 mr-1">
+                <small class="badge badge-info mt-1 mr-1">
                   {{$tag->name()}}
                 </small>
               @endif

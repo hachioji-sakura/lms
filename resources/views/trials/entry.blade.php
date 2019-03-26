@@ -70,7 +70,40 @@
           </div>
         </div>
         <div class="carousel-item">
+          @yield('lesson_week_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
           @yield('subject_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
           @yield('survey_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -125,15 +158,15 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+    var form_data = front.getFormValue('trials_entry');
     if(front.validateFormValue('trials_entry .carousel-item.active')){
+      util.setLocalData('trials_entry', form_data);
       $('body, html').scrollTop(0);
       $('#trials_entry').carousel('next');
     }
 
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
-      var form_data = front.getFormValue('trials_entry');
-      util.setLocalData('trials_entry', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $("ol.step #step_confirm").addClass("is-current");
     }
@@ -172,7 +205,7 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "gender"];
+    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "lesson_week_count", "gender"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){
@@ -180,6 +213,12 @@ $(function(){
           form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
         });
       }
+    });
+    $("input.lesson_week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      name = name.replace('[]', '');
+      form_data[name+"_"+val+"_name"] = "〇";
     });
     form_data["subject_level_name"] = "";
     $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){

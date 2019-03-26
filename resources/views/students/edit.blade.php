@@ -2,6 +2,7 @@
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
+    @method('PUT')
     <div id="students_edit" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -114,13 +115,10 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     form_data["email"] = $("input[name=email]").val();
-    if(form_data["gender"]){
-      form_data["gender_name"] = $("label[for='"+$("input[name='gender']:checked").attr("id")+"']").text().trim();
-    }
     if(form_data["grade"]){
       form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
     }
-    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -128,6 +126,22 @@ $(function(){
           form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
         });
       }
+    });
+    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "gender"];
+    $.each(_names, function(index, value) {
+      form_data[value+"_name"] = "";
+      if(form_data[value]){
+        $("input[name='"+value+"']:checked").each(function() {
+          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+        });
+      }
+    });
+    form_data["subject_level_name"] = "";
+    $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      name = name.replace('[]', '');
+      form_data[name+"_"+val+"_name"] = "〇";
     });
     return form_data;
   }

@@ -63,6 +63,7 @@ class StudentController extends UserController
        'user' => $user,
        'mode'=>$request->mode,
        'search_word'=>$request->get('search_word'),
+       '_status' => $request->get('status'),
        '_page' => $request->get('_page'),
        '_line' => $request->get('_line'),
        'list' => $request->get('list'),
@@ -219,8 +220,10 @@ class StudentController extends UserController
 
    //目標データ取得
    $milestones = $model->target_milestones;
+   $view = "page";
 
-   return view($this->domain.'.page', [
+   $param['view'] = $view;
+   return view($this->domain.'.'.$view, [
      'item' => $item,
      'comments'=>$comments,
      'milestones'=>$milestones,
@@ -244,7 +247,7 @@ class StudentController extends UserController
    $milestones = $model->target_milestones;
 
    $view = "calendar";
-
+   $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones,
@@ -282,6 +285,7 @@ class StudentController extends UserController
        break;
    }
    $param['list_title'] = $list_title;
+   $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'milestones'=>$milestones

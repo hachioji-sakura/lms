@@ -1,27 +1,3 @@
-@section('student_form')
-<div class="row">
-  <div class="col-12 bg-info p-2 pl-4 mb-4">
-    <i class="fa fa-user-graduate mr-1"></i>
-    生徒様情報
-  </div>
-  @component('students.forms.name', [ 'prefix' => 'student_']) @endcomponent
-  <div class="col-12 col-lg-6 col-md-6">
-    @component('components.select_gender', []) @endcomponent
-  </div>
-  @component('students.forms.school', [ 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.email', []) @endcomponent
-</div>
-@endsection
-
-@section('survey_form')
-<div class="row">
-  @component('students.forms.remark', ['attributes' => $attributes]) @endcomponent
-  @if(!isset($user->role))
-    @component('students.forms.howto', ['attributes' => $attributes]) @endcomponent
-  @endif
-</div>
-@endsection
-
 @section('trial_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
@@ -73,7 +49,7 @@
       <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
     </div>
   </div>
-  <div class="col-12 mt-2 col-md-8 mb-1">
+  <div class="col-12 mt-2 col-md-8 mb-4">
     <label for="start_date" class="w-100">
       時間帯
       <span class="right badge badge-danger ml-1">必須</span>
@@ -94,13 +70,46 @@
       </select>
     </div>
   </div>
-  @component('students.forms.lesson_place', ['attributes' => $attributes]) @endcomponent
 </div>
 @endsection
+
+@section('student_form')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-user-graduate mr-1"></i>
+    生徒様情報
+  </div>
+  @component('students.forms.name', [ 'prefix' => 'student_']) @endcomponent
+  <div class="col-12 col-lg-6 col-md-6">
+    @component('components.select_gender', []) @endcomponent
+  </div>
+  @component('students.forms.school', [ 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.email', []) @endcomponent
+  @component('students.forms.address', []) @endcomponent
+</div>
+@endsection
+
+
+@section('lesson_week_form')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-calendar-alt mr-1"></i>
+    通塾スケジュールについて
+  </div>
+  @component('students.forms.lesson_week_count', ['item' => [], 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_week', ['item' => [], 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_place', ['item' => [], 'attributes' => $attributes]) @endcomponent
+</div>
+@endsection
+
 @section('subject_form')
 <div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-pen-square mr-1"></i>
+    ご希望の授業内容について
+  </div>
   @component('students.forms.subject', ['attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
-  @component('students.forms.course_minutes', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.course_type', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.english_teacher', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['attributes' => $attributes]) @endcomponent
@@ -108,7 +117,50 @@
 </div>
 @endsection
 
+@section('survey_form')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-question-circle mr-1"></i>
+    サービス向上のためアンケートをご記入ください
+  </div>
+  @component('students.forms.remark', ['attributes' => $attributes]) @endcomponent
+  @if(!isset($user->role))
+    @component('students.forms.howto', ['attributes' => $attributes]) @endcomponent
+  @endif
+</div>
+@endsection
+
+
 @section('confirm_form')
+{{--
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-user-friends mr-1"></i>
+    保護者様情報
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+  <div class="col-6 p-3">
+  <ruby style="ruby-overhang: none">
+  <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
+  <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
+  </ruby>
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>
+  <div class="col-6 p-3"><span id="phone_no"></span></div>
+</div>
+--}}
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-file-invoice mr-1"></i>
+    体験授業お申込み内容
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >ご希望のレッスン</div>
+  <div class="col-6 p-3"><span id="lesson_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第１希望日時</div>
+  <div class="col-6 p-3"><span id="trial_date_time1"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第２希望日時</div>
+  <div class="col-6 p-3"><span id="trial_date_time2"></span></div>
+</div>
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-user-graduate mr-1"></i>
@@ -133,40 +185,52 @@
   <div class="col-6 p-3 school_name_confirm"><span id="school_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
   <div class="col-6 p-3"><span id="email"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >住所</div>
+  <div class="col-6 p-3"><span id="address"></span></div>
 </div>
-{{--
 <div class="row">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-user-friends mr-1"></i>
-    保護者様情報
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-calendar-alt mr-1"></i>
+    通塾スケジュールについて
   </div>
-  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
-  <div class="col-6 p-3">
-  <ruby style="ruby-overhang: none">
-  <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
-  <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
-  </ruby>
+  <div class="col-6 p-3 font-weight-bold" >ご希望の授業回数</div>
+  <div class="col-6 p-3">週<span id="lesson_week_count_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
+  <div class="col-6 p-3"><span id="course_minutes_name"></span></div>
+  <div class="col-12 p-3 font-weight-bold">
+    ご希望の曜日・時間帯
   </div>
-  <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>
-  <div class="col-6 p-3"><span id="phone_no"></span></div>
-</div>
---}}
-<div class="row">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-file-invoice mr-1"></i>
-    体験授業お申込み内容
+  <div class="col-12">
+    <div class="form-group">
+      <table class="table table-striped">
+      <tr class="bg-gray">
+        <th class="p-1 text-center">時間帯 / 曜日</th>
+        @foreach($attributes['lesson_week'] as $index => $name)
+        <th class="p-1 text-center lesson_week_label" atl="{{$index}}">
+           {{$name}}
+        </th>
+        @endforeach
+      </tr>
+      @foreach($attributes['lesson_time'] as $index => $name)
+      <tr class="">
+        <th class="p-1 text-center bg-gray text-sm lesson_week_time_label">{{$name}}</th>
+        @foreach($attributes['lesson_week'] as $week_code => $week_name)
+        <td class="p-1 text-center" id="lesson_{{$week_code}}_time_{{$index}}_name">
+          -
+        </td>
+        @endforeach
+      </tr>
+      @endforeach
+      </table>
+    </div>
   </div>
-  <div class="col-6 p-3 font-weight-bold" >第１希望日時</div>
-  <div class="col-6 p-3"><span id="trial_date_time1"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >第２希望日時</div>
-  <div class="col-6 p-3"><span id="trial_date_time2"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
   <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >ご希望のレッスン</div>
-  <div class="col-6 p-3"><span id="lesson_name"></span></div>
+</div>
+<div class="row">
   <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-chalkboard-teacher mr-1"></i>
-    授業に関するご要望について
+    <i class="fa fa-pen-square mr-1"></i>
+    ご希望の授業内容について
   </div>
   <div class="col-12 p-3 font-weight-bold subject_confirm">
     ご希望の科目
@@ -224,8 +288,6 @@
       </table>
     </div>
   </div>
-  <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
-  <div class="col-6 p-3"><span id="course_minutes_name"></span></div>
   <div class="col-6 p-3 font-weight-bold course_type_confirm" >授業形式のご希望をお知らせください</div>
   <div class="col-6 p-3 course_type_confirm"><span id="course_type_name"></span></div>
   <div class="col-6 p-3 font-weight-bold english_confirm" >ご希望の英会話講師</div>
@@ -236,6 +298,12 @@
   <div class="col-6 p-3 kids_lesson_confirm"><span id="kids_lesson_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご要望について</div>
   <div class="col-6 p-3"><span id="remark"></span></div>
+</div>
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-question-circle mr-1"></i>
+    アンケート
+  </div>
   <div class="col-6 p-3 font-weight-bold" >当塾をお知りになった方法は何でしょうか？</div>
   <div class="col-6 p-3"><span id="howto_name"></span></div>
   <div class="col-6 p-3 font-weight-bold howto_word_confirm" >検索ワードをお答えください</div>

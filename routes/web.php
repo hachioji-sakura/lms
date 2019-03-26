@@ -15,7 +15,7 @@ Auth::routes();
 Route::redirect('/', '/login', 301);
 
 Route::get('auth','AuthController@auth');
-Route::get('test','AuthController@test');
+Route::get('test','UserCalendarController@test');
 Route::post('rest/test2','RestController@test');
 
 Route::get('users/email/{email}','UserController@email_check');
@@ -117,7 +117,6 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
-
 
 Route::get('home', 'HomeController@index')->name('home');
 

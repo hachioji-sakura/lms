@@ -12,6 +12,7 @@ use App\Models\Trial;
 use App\Models\UserTag;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
+use App\Models\UserCalendarSetting;
 use DB;
 use View;
 class UserCalendarController extends MilestoneController
@@ -19,8 +20,6 @@ class UserCalendarController extends MilestoneController
   public $domain = 'calendars';
   public $table = 'user_calendars';
   public $domain_name = '授業予定';
-  //API auth token
-  public $token = '7511a32c7b6fd3d085f7c6cbe66049e7';
   private $status_update_message = [
           'fix' => '授業予定を出席予定としました。',
           'confirm' => '授業予定の確認連絡をしました。',
@@ -414,9 +413,11 @@ class UserCalendarController extends MilestoneController
         //remind以外はステータスの更新
         $res = $this->_status_update($param, $status);
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        /*
         if($this->is_success_response($res)){
           $this->office_system_api($request, "PUT", $param['item']);
         }
+        */
       }
 
       $slack_type = 'error';
@@ -516,7 +517,7 @@ class UserCalendarController extends MilestoneController
       try {
         DB::beginTransaction();
         $user = $this->login_details();
-        $item = $this->model()->where('id',$id)->update($this->update_form($request));
+        $item = $this->model()->where('id',$id)->change($this->update_form($request));
         DB::commit();
         return $this->api_response(200, '', '', $item);
       }
@@ -551,11 +552,13 @@ class UserCalendarController extends MilestoneController
         ];
         //生徒確認待ちの場合認証なしで、確認できるようにする
         $update_form['access_key'] = $param['token'];
-        UserCalendar::where('id', $item->id)->update($update_form);
+        UserCalendar::where('id', $item->id)->change($update_form);
+        /*
         if($item->trial_id > 0){
           //体験授業予定の場合、体験授業のステータスも更新する
           Trial::where('id', $item->trial_id)->first()->update(['status' => $status]);
         }
+        */
         //カレンダーメンバーステータス変更
         DB::commit();
         return $this->api_response(200, '', '', $item);
@@ -768,7 +771,6 @@ class UserCalendarController extends MilestoneController
         if(!empty($form['student_user_id'])){
           $calendar->memberAdd($form['student_user_id'], $form['create_user_id']);
         }
-        $this->office_system_api($request, "POST", $calendar);
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         DB::commit();
@@ -795,10 +797,11 @@ class UserCalendarController extends MilestoneController
         DB::beginTransaction();
         $user = $this->login_details();
         $item = $this->model()->where('id',$id)->first();
+        /*
         $this->office_system_api($request, "DELETE", $item);
         UserCalendarMember::where('calendar_id', $id)->delete();
-        $item->delete();
-        //$this->office_system_api($request, "DELETE", $items['schedule_id']);
+        */
+        $item->dispose();
         DB::commit();
         return $this->api_response(200, '', '', $items);
       }
@@ -812,104 +815,10 @@ class UserCalendarController extends MilestoneController
       }
     }
 
-    public function office_system_api($request, $method, $calendar){
-      $url = [
-        "GET" =>  "https://hachiojisakura.com/sakura-api/api_get_onetime_schedule.php",
-        "PUT" =>  "https://hachiojisakura.com/sakura-api/api_update_onetime_schedule.php",
-        "POST" =>  "https://hachiojisakura.com/sakura-api/api_insert_onetime_schedule.php",
-        "DELETE" =>  "https://hachiojisakura.com/sakura-api/api_delete_onetime_schedule.php",
-      ];
-      //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
-      $_method = "GET";
-      if($method!=="GET") $_method = "POST";
-      $_url = $url[$method];
-      $student_no = "";
-      $teacher_no = "";
-      $manager_no = "";
-      foreach($calendar->members as $member){
-          $user = $member->user->details();
-          if($user->role==="student"){
-            $student_no = $user->get_tag('student_no')["value"];
-          }
-          else if($user->role==="teacher"){
-            $teacher_no = $user->get_tag('teacher_no')["value"];
-          }
-          else if($user->role==="manager"){
-            $manager_no = $user->get_tag('manager_no')["value"];
-          }
-      }
-      $postdata =[];
-      switch($method){
-        case "PUT":
-        case "POST":
-          $postdata = [
-            "user_id" => $student_no,
-            "student_no" => $student_no,
-            "teacher_id" => $teacher_no,
-            "ymd" => date('Y-m-d', strtotime($calendar->start_time)),
-            "starttime" => date('H:i:s', strtotime($calendar->start_time)),
-            "endtime" => date('H:i:s', strtotime($calendar->end_time)),
-            "lecture_id" => $calendar->lecture_id,
-            "work_id" => $calendar->work,
-            "place_id" => $calendar->place,
-            "altsched_id" => $calendar->exchanged_calendar_id,
-          ];
-          break;
-      }
-      if($method==="PUT" || $method==="DELETE"){
-        $postdata['id'] = $calendar->schedule_id;
-      }
-      switch($calendar->status){
-        case "confirm":
-        case "new":
-          //生徒確定ではないので、空にする
-          $postdata["student_no"] = "";
-          $postdata["user_id"] = "";
-          $postdata['updateuser'] = $teacher_no;
-          break;
-        case "fix":
-          //生徒確定
-          $postdata['updateuser'] = $student_no;
-          break;
-        case "cancel":
-          //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
-          $postdata['cancel'] = 'c';
-          $postdata['updateuser'] = $student_no;
-          break;
-        case "rest":
-          //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
-          $postdata['cancel'] = 'a';
-          $postdata['updateuser'] = $student_no;
-          break;
-        case "absence":
-          //3.12確認：欠席＝a2にする
-          $postdata['cancel'] = 'a2';
-          $postdata['updateuser'] = $teacher_no;
-          break;
-        case "presence":
-          //3.12確認：出席にする
-          //TODO: 出席のAPI実行
-          $postdata['updateuser'] = $teacher_no;
-          break;
-      }
-      $message = "";
-      foreach($postdata as $key => $val){
-        $message .= '['.$key.':'.$val.']';
-      }
+    public function test(Request $request){
+      $setting = UserCalendarSetting::where('id', 258)->first();
       $res = $this->api_response();
-      $res = $this->call_api($request, $_url, $_method, $postdata);
-      @$this->send_slack("事務システムAPI:".$_url."\n".$message, 'warning', "事務システムAPI");
-      if($res["status"] != 0){
-        @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
-      }
-      if($method==="POST"){
-        //事務システム側のIDを更新
-        $calendar->update(['schedule_id'=>$res["id"]]);
-      }
-    }
-    public function api_test(Request $request, $id){
-      $calendar = UserCalendar::where('id', $id)->first();
-      $res = $this->office_system_api($request, "PUT", $calendar);
+      $res = $setting->setting_to_calendar();
       return $res;
     }
 

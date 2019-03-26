@@ -9150,8 +9150,12 @@ body,
 }
 
 .sidebar-dark-primary .nav-treeview > .nav-item > .nav-link.active, .sidebar-dark-primary .nav-treeview > .nav-item > .nav-link.active:hover {
+	/*
 	color: #343a40;
 	background-color: rgba(255, 255, 255, 0.9);
+	*/
+	color: #ffffff;
+	background-color: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar-light-primary {
@@ -12807,7 +12811,9 @@ a.text-muted:hover {
 .description-block {
 	display: block;
 	margin: 10px 0;
+  /*
 	text-align: center;
+  */
 }
 
 .description-block.margin-bottom {
@@ -12822,6 +12828,7 @@ a.text-muted:hover {
 }
 
 .description-block > .description-text {
+	text-align: center;
 	text-transform: uppercase;
 }
 

@@ -21,6 +21,7 @@
 </div>
 <script>
 function lesson_checkbox_change(obj){
+  console.log("lesson_checkbox_change");
   var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
   var is_english = $('input[type="checkbox"][name="lesson[]"][value="2"]').prop("checked");
   var is_piano = $('input[type="checkbox"][name="lesson[]"][value="3"]').prop("checked");

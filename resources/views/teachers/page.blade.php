@@ -23,7 +23,7 @@
               <h6 class="widget-user-desc">
                 @foreach($item->user->tags as $tag)
                   @if($tag->tag_key=="teacher_no")
-                    <small class="badge badge-info mt-1 mr-1">
+                    <small class="badge badge-dark mt-1 mr-1">
                       {{$tag->keyname()}}{{$tag->name()}}
                     </small>
                   @endif
@@ -33,7 +33,7 @@
                     </small>
                   @endif
                   @if($user->role==="manager" && $tag->tag_key=="teacher_character")
-                    <small class="badge badge-warning mt-1 mr-1">
+                    <small class="badge badge-info mt-1 mr-1">
                       {{$tag->name()}}
                     </small>
                   @endif
@@ -100,8 +100,8 @@
                       </a>
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
-                      {{-- 予定下書き --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                      {{-- 予定確認 --}}
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                         <i class="fa fa-envelope mr-1"></i>
                         {{$student->current_calendar->status_name}}
                       </a>
@@ -113,7 +113,7 @@
                       </a>
                     @elseif($student->current_calendar->status==="new")
                       {{-- 予定下書き --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/confirm" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-calendar-check mr-1"></i>
                         {{$student->current_calendar->status_name}}
                       </a>

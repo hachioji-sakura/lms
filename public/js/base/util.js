@@ -625,18 +625,15 @@
 				if(a == "object"){
 					val = JSON.stringify(val);
 				}
+				/*
 				if (val != "") {
 					val = utf16to8(val);
 					val = zip_deflate(val);
 				}
+				*/
 				var len = val.length;
 				var _savedVal = this.getLocalData(name);
 				if(_savedVal == null ) _savedVal = "";
-				/*
-				var size = sessionStorage.getItem("l");
-				size = this.toInt(size) + len - _savedVal.length;
-				sessionStorage.setItem("l", size);
-				*/
 				var _maxString = 30000;
 				for(var i=0;i<100;i++){
 					var _name = name+"["+i+"]";
@@ -689,8 +686,10 @@
 				}
 				if(result == "") return null;
 				try{
+					/*
 					result = zip_inflate(result);
 					result = utf8to16(result);
+					*/
 					result = JSON.parse(result);
 				}
 				catch(e){

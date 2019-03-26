@@ -1,6 +1,7 @@
 <?php
 return array(
   'keys' => '定義項目',
+  'schedule_method' => '定期カレンダー反映方法',
   'lesson' => 'レッスン',
   'kids_lesson' => '習い事',
   'course_minutes' => '授業時間',

@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
 use App\Models\StudentParent;
-use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\Lecture;
+use App\Models\Trial;
 
 class UserCalendar extends Model
 {
@@ -118,6 +121,11 @@ EOT;
     if(isset($item)) return $item->attribute_name;
     return "";
   }
+  public function work(){
+    $item = GeneralAttribute::work($this->work)->first();
+    if(isset($item)) return $item->attribute_name;
+    return "";
+  }
   public function status_style(){
     $status_name = "";
     switch($this->status){
@@ -179,6 +187,7 @@ EOT;
     $item = $this;
     $item['status_name'] = $this->status_name();
     $item['place'] = $this->place();
+    $item['work'] = $this->work();
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -217,9 +226,14 @@ EOT;
     }
     return $item;
   }
+  //本モデルはcreateではなくaddを使う
   static protected function add($form){
     $ret = [];
     $trial_id = 0;
+    $user_calendar_setting_id = 0;
+    if(isset($form['user_calendar_setting_id'])){
+      $user_calendar_setting_id = $form['user_calendar_setting_id'];
+    }
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
@@ -228,6 +242,7 @@ EOT;
       'end_time' => $form['end_time'],
       'lecture_id' => 0,
       'trial_id' => $trial_id,
+      'user_calendar_setting_id' => $user_calendar_setting_id,
       'place' => '',
       'work' => '',
       'remark' => '',
@@ -235,10 +250,20 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
-    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id']);
-    $calendar->change($form);
+    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new');
+    $calendar = $calendar->change($form);
+    //事務システムにも登録
+    $calendar->office_system_api("POST");
     return $calendar;
   }
+  //本モデルはdeleteではなくdisposeを使う
+  public function dispose(){
+    UserCalendarMember::where('calendar_id', $this->id)->delete();
+    $this->delete();
+    //事務システムも削除
+    $this->office_system_api("DELETE");
+  }
+  //本モデルはupdateではなくchangeを使う
   protected function change($form){
     $lecture_id = 0;
     if(isset($form['lesson']) && isset($form['subject']) && isset($form['course'])){
@@ -258,9 +283,22 @@ EOT;
           $lecture_id = $lecture->id;
         }
     }
+    if(isset($form['lecture_id'])){
+      $lecture_id = $form['lecture_id'];
+    }
     $update_fields = [
-      'start_time', 'end_time', 'remark', 'place', 'work'
+      'status',
+      'access_key',
+      'start_time',
+      'end_time',
+      'remark',
+      'place',
+      'work'
     ];
+    $status = $this->status;
+    if(isset($form['status'])){
+      $status = $form['status'];
+    }
     $data = [
       'lecture_id' => $lecture_id,
     ];
@@ -269,16 +307,29 @@ EOT;
       $data[$field] = $form[$field];
     }
     $this->update($data);
+    if($this->trial_id > 0 && isset($form['status'])){
+      //体験授業予定の場合、体験授業のステータスも更新する
+      Trial::where('id', $this->trial_id)->first()->update(['status' => $form['status']]);
+    }
+    //事務システムも更新
+    if($this->schedule_id > 0) $this->office_system_api("PUT");
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $status='new'){
     if(empty($user_id) || $user_id < 1) return null;
-    $member = UserCalendarMember::create([
-        'calendar_id' => $this->id,
-        'user_id' => $user_id,
-        'status' => $status,
-        'create_user_id' => $create_user_id,
-    ]);
+    $member = UserCalendarMember::where('calendar_id' , $this->id)
+      ->where('user_id', $user_id)->first();
+    if(isset($memeber)){
+      $member = $memeber->update(['status', $status]);
+    }
+    else {
+      $member = UserCalendarMember::create([
+          'calendar_id' => $this->id,
+          'user_id' => $user_id,
+          'status' => $status,
+          'create_user_id' => $create_user_id,
+      ]);
+    }
     return $member;
   }
   public function is_member($user_id){
@@ -304,5 +355,120 @@ EOT;
       return true;
     }
     return false;
+  }
+  public function office_system_api($method){
+    $url = [
+      "GET" =>  "https://hachiojisakura.com/sakura-api/api_get_onetime_schedule.php",
+      "PUT" =>  "https://hachiojisakura.com/sakura-api/api_update_onetime_schedule.php",
+      "POST" =>  "https://hachiojisakura.com/sakura-api/api_insert_onetime_schedule.php",
+      "DELETE" =>  "https://hachiojisakura.com/sakura-api/api_delete_onetime_schedule.php",
+    ];
+    $attend_api_url = "https://hachiojisakura.com/sakura-api/api_update_attend.php";
+    //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
+    $_method = "GET";
+    if($method!=="GET") $_method = "POST";
+    $_url = $url[$method];
+    $student_no = "";
+    $teacher_no = "";
+    $manager_no = "";
+    foreach($this->members as $member){
+        $user = $member->user->details();
+        if($user->role==="student"){
+          $student_no = $user->get_tag('student_no')["value"];
+        }
+        else if($user->role==="teacher"){
+          $teacher_no = $user->get_tag('teacher_no')["value"];
+        }
+        else if($user->role==="manager"){
+          $manager_no = $user->get_tag('manager_no')["value"];
+        }
+    }
+    $postdata =[];
+    switch($method){
+      case "PUT":
+      case "POST":
+        $postdata = [
+          "user_id" => $student_no,
+          "student_no" => $student_no,
+          "teacher_id" => $teacher_no,
+          "ymd" => date('Y-m-d', strtotime($this->start_time)),
+          "starttime" => date('H:i:s', strtotime($this->start_time)),
+          "endtime" => date('H:i:s', strtotime($this->end_time)),
+          "lecture_id" => $this->lecture_id,
+          "work_id" => $this->work,
+          "place_id" => $this->place,
+          "altsched_id" => $this->exchanged_calendar_id,
+        ];
+        break;
+    }
+    if($method==="PUT" || $method==="DELETE"){
+      $postdata['id'] = $this->schedule_id;
+    }
+    switch($this->status){
+      case "confirm":
+      case "new":
+        //生徒確定ではないので、空にする
+        $postdata["student_no"] = "";
+        $postdata["user_id"] = "";
+        $postdata['updateuser'] = $teacher_no;
+        break;
+      case "fix":
+        //生徒確定
+        $postdata['updateuser'] = $student_no;
+        break;
+      case "cancel":
+        //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
+        $postdata['cancel'] = 'c';
+        $postdata['updateuser'] = $student_no;
+        break;
+      case "rest":
+        //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
+        $postdata['cancel'] = 'a';
+        $postdata['updateuser'] = $student_no;
+        break;
+      case "absence":
+        //3.12確認：欠席＝a2にする
+        $postdata['cancel'] = 'a2';
+        $postdata['updateuser'] = $teacher_no;
+        break;
+      case "presence":
+        //3.12確認：出席にする
+        //3.23出席のAPI実行
+        $postdata['updateuser'] = $teacher_no;
+        $res = $this->call_api($attend_api_url, "POST", [
+          'schedule_id' => $postdata['id'],
+          'attend' => 'f',
+          'updateuser' => $postdata['updateuser'],
+        ]);
+        if($res["status"] != 0){
+          @$this->send_slack("事務システムAPIエラー:".$attend_api_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
+        }
+        break;
+    }
+    $message = "";
+    foreach($postdata as $key => $val){
+      $message .= '['.$key.':'.$val.']';
+    }
+    $res = $this->call_api($_url, $_method, $postdata);
+    @$this->send_slack("事務システムAPI:".$_url."\n".$message, 'warning', "事務システムAPI");
+    if($res["status"] != 0){
+      @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
+    }
+    if($method==="POST"){
+      //事務システム側のIDを更新
+      $this->update(['schedule_id'=>$res["id"]]);
+    }
+    return $res;
+  }
+  private function send_slack($message, $msg_type, $username=null, $channel=null) {
+    $controller = new Controller;
+    $res = $controller->send_slack($message, $msg_type, $username, $channel);
+    return $res;
+  }
+  private function call_api($url, $method, $data){
+    $controller = new Controller;
+    $req = new Request;
+    $res = $controller->call_api($req, $url, $method, $data);
+    return $res;
   }
 }

@@ -28,7 +28,7 @@
                   体験授業
                 </small>
                 @endif
-                <small class="badge badge-info mt-1 mr-1">
+                <small class="badge badge-dark mt-1 mr-1">
                   {{$item->tag_name('student_no')}}
                 </small>
                 <small class="badge badge-primary mt-1 mr-1">
@@ -44,12 +44,13 @@
                 @endif
                 @foreach($item->user->tags as $tag)
                 @if($user->role==="manager" && $tag->tag_key=="student_character")
-                  <small class="badge badge-warning mt-1 mr-1">
+                  <small class="badge badge-info mt-1 mr-1">
                     {{$tag->name()}}
                   </small>
                 @endif
                 @endforeach
               </h6>
+              {{--
               <div class="card-footer p-0">
                 <ul class="nav flex-column">
                   <li class="nav-item">
@@ -61,6 +62,7 @@
                   </li>
                 </ul>
               </div>
+              --}}
             @endslot
         @endcomponent
 			</div>

@@ -12,6 +12,9 @@ use Mail;
 
 class Controller extends BaseController
 {
+  //API auth token
+  public $token = '7511a32c7b6fd3d085f7c6cbe66049e7';
+
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     protected function send_json_response($json){
       return response($json, $json["status"])->header('Content-Type', 'application/json');
@@ -57,7 +60,7 @@ class Controller extends BaseController
       $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
       return $res;
     }
-    protected function send_slack($message, $msg_type, $username=null, $channel=null) {
+    public function send_slack($message, $msg_type, $username=null, $channel=null) {
       if(empty($message)) return false;
       $icon = ":speech_ballon";
       switch($msg_type){
@@ -111,7 +114,7 @@ class Controller extends BaseController
      * @param string $url
      * @return json
      */
-    protected function call_api(Request $request, string $url, string $type="GET", $data=null) {
+    public function call_api(Request $request, string $url, string $type="GET", $data=null) {
       //$form = $request->all();
       $curl = curl_init();
       $query_string = http_build_query($request->query());

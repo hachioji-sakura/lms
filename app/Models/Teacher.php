@@ -82,9 +82,10 @@ EOT;
       'name_first' => "",
       'kana_last' => "",
       'kana_first' => "",
-      'birth_day' => "9999-12-31",
+      'birth_day' => "",
       'gender' => "",
       'phone_no' => "",
+      'address' => "",
     ];
     $update_form = [];
     foreach($update_field as $key => $val){

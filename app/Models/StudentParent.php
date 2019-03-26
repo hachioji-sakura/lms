@@ -97,6 +97,7 @@ class StudentParent extends Teacher
       'kana_last' => "",
       'kana_first' => "",
       'phone_no' => "",
+      'address' => "",
     ];
     foreach($update_form as $key => $val){
       if(isset($form[$key])){
@@ -104,20 +105,6 @@ class StudentParent extends Teacher
       }
     }
     $this->update($update_form);
-    /*
-    $tag_names = ['howto_word'];
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
-    }
-    $tag_names = ['howto'];
-    foreach($tag_names as $tag_name){
-	    if(!empty($form[$tag_name])){
-        UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
-    }
-    */
     return $this;
   }
   public function relation(){

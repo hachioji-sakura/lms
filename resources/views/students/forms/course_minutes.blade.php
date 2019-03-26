@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="course_minutes" class="w-100">
       1回の授業時間は何分をご希望でしょうか？
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-danger ml-1">必須</span>
     </label>
     @foreach($attributes['course_minutes'] as $index => $name)
     <label class="mx-2">

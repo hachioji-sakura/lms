@@ -13,33 +13,33 @@
       </a>
       <ul class="nav nav-treeview hr-1 bd-light">
         <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/" >
+          <a href="/{{$domain}}/{{$item->id}}/" class="nav-link @if($view=="page") active @endif">
             <i class="fa fa-home nav-icon"></i>トップ
           </a>
         </li>
         <li class="nav-item hr-1 bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar" >
+          <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar") active @endif">
             <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
           </a>
         </li>
-        <li class="nav-item bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/schedule" >
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/schedule" class="nav-link @if($view=="schedule" && $list=="") active @endif">
             <i class="fa fa-calendar-check nav-icon"></i>授業予定
           </a>
         </li>
-        <li class="nav-item bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/schedule?list=confirm" >
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/schedule?list=confirm" class="nav-link  @if($view=="schedule" && $list=="confirm") active @endif">
             <i class="fa fa-hourglass nav-icon"></i>予定調整中
           </a>
         </li>
-        <li class="nav-item bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" >
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
             <i class="fa fa-calendar-times nav-icon"></i>休み予定
           </a>
         </li>
-        <li class="nav-item bd-light">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/schedule?list=history" >
-            <i class="fa fa-history nav-icon"></i>授業履歴
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
+            <i class="fa fa-history nav-icon "></i>授業履歴
           </a>
         </li>
       </ul>

@@ -27,7 +27,9 @@
                       <small class="badge badge-{{$item['status_style']}} mt-1 mr-1">
                         {{$item['status_name']}}
                       </small>
-                      <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="詳細" page_form="dialog" page_url="/trials/{{$item["id"]}}" role="button" class="">
+                      {{-- <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="詳細" page_form="dialog" page_url="/trials/{{$item["id"]}}" role="button" class="">
+                        --}}
+                      <a href="/trials/{{$item["id"]}}" class="">
                         詳細
                       </a>
                     </h3>
@@ -109,35 +111,37 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?status=new" class="nav-link">
+        <a href="/{{$domain}}?status=new" class="nav-link @if($_status=="new") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>未対応
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=confirm" class="nav-link">
+        <a href="/{{$domain}}?status=confirm" class="nav-link @if($_status=="confirm") active @endif">
           <i class="fa fa-check-circle nav-icon"></i>予定確認中
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=fix" class="nav-link">
+        <a href="/{{$domain}}?status=fix" class="nav-link @if($_status=="fix") active @endif">
           <i class="fa fa-calendar-alt nav-icon"></i>授業予定
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=rest,cancel" class="nav-link">
+        <a href="/{{$domain}}?status=rest,cancel" class="nav-link @if($_status=="rest,cancel") active @endif">
           <i class="fa fa-ban nav-icon"></i>キャンセル
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=absence,presence" class="nav-link">
+        <a href="/{{$domain}}?status=absence,presence" class="nav-link @if($_status=="absence,presence") active @endif">
           <i class="fa fa-history nav-icon"></i>履歴
         </a>
       </li>
+      {{--
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link">
           <i class="fa fa-list-alt nav-icon"></i>すべて
         </a>
       </li>
+      --}}
     </ul>
   </li>
 </ul>
