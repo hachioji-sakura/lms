@@ -23,11 +23,15 @@ class StudentParent extends Teacher
     return $this->belongsTo('App\User');
   }
   public function relations(){
-    return $this->hasMany('App\Models\StudentRelation');
+    return $this->hasMany('App\Models\StudentRelation', 'student_parent_id');
   }
   public function name()
   {
-      return $this->name_last . ' ' .$this->name_first;
+    $name = $this->name_last . ' ' .$this->name_first;
+    if(empty(trim($name))){
+      $name = $this->relation()->first()->student->name();
+    }
+    return $name;
   }
   public function kana()
   {
@@ -93,6 +97,7 @@ class StudentParent extends Teacher
       'kana_last' => "",
       'kana_first' => "",
       'phone_no' => "",
+      'address' => "",
     ];
     foreach($update_form as $key => $val){
       if(isset($form[$key])){
@@ -100,20 +105,6 @@ class StudentParent extends Teacher
       }
     }
     $this->update($update_form);
-    /*
-    $tag_names = ['howto_word'];
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
-    }
-    $tag_names = ['howto'];
-    foreach($tag_names as $tag_name){
-	    if(!empty($form[$tag_name])){
-        UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
-    }
-    */
     return $this;
   }
   public function relation(){

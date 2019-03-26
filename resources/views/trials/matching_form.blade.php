@@ -21,20 +21,17 @@
   <ul class="mailbox-attachments clearfix row">
     <li class="col-12 bg-light" accesskey="" target="">
       <div class="row">
-        <div class="col-4 col-lg-4 col-md-4">
+        <div class="col-8 col-lg-8 col-md-8">
           講師
         </div>
         <div class="col-4 col-lg-4 col-md-4">
-          希望日時1
-        </div>
-        <div class="col-4 col-lg-4 col-md-4">
-          希望日時２
+          授業予定
         </div>
     </li>
     @foreach($candidate_teachers as $teacher)
     <li class="col-12" accesskey="" target="">
       <div class="row">
-        <div class="col-4 col-lg-4 col-md-4">
+        <div class="col-8 col-lg-8 col-md-8">
           <div class="w-100">
             <a href="/teachers/{{$teacher->id}}/calendar" target="_blank">
               <i class="fa fa-calendar-alt mr-2"></i>
@@ -42,7 +39,17 @@
             </a>
           </div>
           <div class="w-100">
-            担当可能科目
+            @foreach($teacher->user->tags as $tag)
+              @if($user->role==="manager" && $tag->tag_key=="teacher_character")
+                <small class="badge badge-info mt-1 mr-1">
+                  {{$tag->name()}}
+                </small>
+              @endif
+            @endforeach
+          </div>
+          <div class="w-100">
+            <i class="fa fa-check-circle mr-1"></i>
+            担当可
           </div>
           <div class="w-100 my-1">
             @foreach($teacher->enable_subject as $subject)
@@ -52,17 +59,28 @@
             @endforeach
           </div>
           <div class="w-100">
-            担当不可科目
+            <i class="fa fa-times-circle mr-1"></i>
+            担当不可
           </div>
           <div class="w-100">
-            @foreach($teacher->disable_subject as $subject)
-            <small class="badge badge-{{$subject['style']}} mt-1 mr-1">
-              {{$subject["key"]}}
-            </small>
-            @endforeach
+            @if(count($teacher->disable_subject)<1)
+              <small class="badge badge-success mt-1 mr-1">
+                なし
+              </small>
+            @else
+              @foreach($teacher->disable_subject as $subject)
+              <small class="badge badge-{{$subject['style']}} mt-1 mr-1">
+                {{$subject["key"]}}
+              </small>
+              @endforeach
+            @endif
           </div>
         </div>
         <div class="col-4 col-lg-4 col-md-4">
+          <div class="w-100">
+            <i class="fa fa-calendar-check mr-1"></i>
+            希望日時1
+          </div>
           @foreach($teacher->trial1 as $i=>$_list)
             @if($_list['free'])
             <div class="form-check ml-2">
@@ -79,6 +97,7 @@
               </label>
             </div>
             @else
+            {{-- 空いてない --}}
             <div class="form-check ml-2">
               <label class="form-check-label" for="trial1_{{$teacher->id}}_{{$i}}">
                 <i class="fa fa-calendar-times mr-1"></i>
@@ -87,8 +106,10 @@
             </div>
             @endif
           @endforeach
-        </div>
-        <div class="col-4 col-lg-4 col-md-4">
+          <div class="w-100">
+            <i class="fa fa-calendar-check mr-1"></i>
+            希望日時2
+          </div>
           @foreach($teacher->trial2 as $i => $_list)
             @if($_list['free'])
             <div class="form-check ml-2">
@@ -105,6 +126,7 @@
               </label>
             </div>
             @else
+            {{-- 空いてない --}}
             <div class="form-check ml-2">
               <label class="form-check-label" for="trial2_{{$teacher->id}}_{{$i}}">
                 <i class="fa fa-calendar-times mr-1"></i>

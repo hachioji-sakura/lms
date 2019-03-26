@@ -31,6 +31,7 @@
     @component('components.select_gender', ['item' => $item])
     @endcomponent
   </div>
+
   @component('students.forms.phoneno', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
 </div>
 @endsection
@@ -44,6 +45,12 @@
 
 @section('subject_form')
 <div class="row">
-  @component('students.forms.subject', ['title' => '担当可能科目', 'attributes' => $attributes, 'category_display' => true, 'grade_display' => true]) @endcomponent
+  @component('students.forms.subject', ['item'=>$item,'title' => '担当可能科目', 'attributes' => $attributes, 'category_display' => true, 'grade_display' => true]) @endcomponent
+</div>
+@endsection
+
+@section('tag_form')
+<div class="row">
+  @component('students.forms.teacher_character', ['item'=>$item,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection

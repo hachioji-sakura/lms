@@ -3,7 +3,7 @@
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
     @csrf
     @method('PUT')
-    <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="trials_confirm" class="carousel slide" data-ride="carousel" data-interval=false>
       @yield('matching_form')
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -62,7 +62,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="register_form">
+                <button type="submit" class="btn btn-primary btn-block" accesskey="trials_confirm">
                   <i class="fa fa-envelope mr-1"></i>
                     体験授業予定を連絡する
                 </button>
@@ -76,30 +76,30 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", form_data);
+  var form_data = util.getLocalData('trials_confirm');
+  base.pageSettinged("trials_confirm", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      util.removeLocalData('register_form');
+    if(front.validateFormValue('trials_confirm .carousel-item.active')){
+      util.removeLocalData('trials_confirm');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      var form_data = front.getFormValue('register_form');
-      util.setLocalData('register_form', form_data);
+    if(front.validateFormValue('trials_confirm .carousel-item.active')){
+      var form_data = front.getFormValue('trials_confirm');
+      util.setLocalData('trials_confirm', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#register_form').carousel('next');
+      $('#trials_confirm').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#register_form').carousel('prev');
+    $('#trials_confirm').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

@@ -3,7 +3,7 @@
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
     @csrf
     @method('PUT')
-    <div id="register_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="managers_edit" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
@@ -38,7 +38,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="register_form">
+                <button type="submit" class="btn btn-primary btn-block" accesskey="managers_edit">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -52,29 +52,29 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('register_form');
-  base.pageSettinged("register_form", form_data);
+  var form_data = util.getLocalData('managers_edit');
+  base.pageSettinged("managers_edit", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      util.removeLocalData('register_form');
+    if(front.validateFormValue('managers_edit .carousel-item.active')){
+      util.removeLocalData('managers_edit');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('register_form .carousel-item.active')){
-      var form_data = front.getFormValue('register_form');
-      util.setLocalData('register_form', form_data);
-      $('#register_form').carousel('next');
+    if(front.validateFormValue('managers_edit .carousel-item.active')){
+      var form_data = front.getFormValue('managers_edit');
+      util.setLocalData('managers_edit', form_data);
+      $('#managers_edit').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#register_form').carousel('prev');
+    $('#managers_edit').carousel('prev');
   });
 });
 </script>

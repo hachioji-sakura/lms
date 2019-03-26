@@ -3,12 +3,12 @@
 @if($send_to==='student')
 {{$user_name}}様
 
-以下の授業の欠席連絡を承りました。
+以下の授業のお休み連絡を承りました。
 
 @elseif($send_to==='teacher')
 {{$user_name}}先生
 生徒様よりご連絡があり、
-以下の 授業予定は欠席となりました。
+以下の 授業予定はお休みとなりました。
 
 @endif
 
@@ -20,6 +20,7 @@
 レッスン：{{$item['lesson']}}
 コース：{{$item['course']}}
 科目：{{$item['subject']}}
+休み理由:{{$item['remark']}}
 …………………………………………………………………………………………
 
 @if($send_to==='student')

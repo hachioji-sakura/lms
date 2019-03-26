@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\GeneralAttribute;
-
 class GeneralAttributesSeeder extends Seeder
 {
     /**
@@ -104,5 +105,12 @@ class GeneralAttributesSeeder extends Seeder
           $_item = GeneralAttribute::create($_add_item);
         }
       }
+      $controller = new Controller;
+      $req = new Request;
+      $url = config('app.url').'/import/attributes';
+      $res = $controller->call_api($req, $url, 'POST');
+      $url = config('app.url').'/import/users';
+      $res = $controller->call_api($req, $url, 'POST');
+
     }
 }

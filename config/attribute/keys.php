@@ -1,7 +1,11 @@
 <?php
 return array(
   'keys' => '定義項目',
+  'schedule_method' => '定期カレンダー反映方法',
   'lesson' => 'レッスン',
+  'kids_lesson' => '習い事',
+  'course_minutes' => '授業時間',
+  'course_type' => '授業形式',
   'subject' => '科目',
   'charge_grade' => '担当学年',
   'charge_subject' => '担当科目',
@@ -24,5 +28,7 @@ return array(
   'english_teacher' => '英会話講師希望',
   'piano_level' => 'ピアノ経験',
   'matching_decide' => 'マッチング決定理由',
+  'teacher_character' => '講師特性',
+  'student_character' => '生徒特性',
 );
 ?>

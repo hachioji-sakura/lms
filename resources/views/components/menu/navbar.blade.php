@@ -55,6 +55,7 @@
         <span class="d-none d-sm-inline-block">その他</span>
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left">
+        <a href="/trials" class="dropdown-item">体験申込一覧</a>
         <a href="/comments" class="dropdown-item">コメント一覧</a>
         <a href="/milestones" class="dropdown-item">目標一覧</a>
         <a href="/attriubtes" class="dropdown-item">属性一覧</a>
@@ -130,9 +131,25 @@
         </div>
       </a>
       --}}
+      @if($user->role==="manager")
+      <a href="javascript:void(0);" class="dropdown-item"  page_title="アカウント設定" page_form="dialog" page_url="/managers/{{$user->id}}/edit" >
+        <i class="fa fa-user-edit mr-2"></i>アカウント設定
+      </a>
+      @elseif($user->role==="teacher")
+      <a href="javascript:void(0);" class="dropdown-item"  page_title="アカウント設定" page_form="dialog" page_url="/teachers/{{$user->id}}/edit" >
+        <i class="fa fa-user-edit mr-2"></i>アカウント設定
+      </a>
+      </small>
+      @elseif($user->role==="parent")
+      @elseif($user->role==="student")
+      <a href="javascript:void(0);" class="dropdown-item"  page_title="アカウント設定" page_form="dialog" page_url="/students/{{$user->id}}/edit" >
+        <i class="fa fa-user-edit mr-2"></i>アカウント設定
+      </a>
+      @endif
       <a href="javascript:void(0);" class="dropdown-item"  page_title="パスワード設定" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>
+
       <div class="dropdown-divider"></div>
       <a href="/logout" class="dropdown-item">
         <i class="fa fa-sign-out-alt mr-2"></i>ログアウト

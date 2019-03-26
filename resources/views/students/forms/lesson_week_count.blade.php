@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="lesson_week_count" class="w-100">
       週何回の授業をご希望ですか？
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-danger ml-1">必須</span>
     </label>
     @for($i=1;$i<6;$i++)
     <label class="mx-2">

@@ -56,6 +56,7 @@ class TeacherController extends StudentController
       'user' => $user,
       'mode'=>$request->mode,
       'search_word'=>$request->get('search_word'),
+      '_status' => $request->get('status'),
       '_page' => $request->get('_page'),
       '_line' => $request->get('_line'),
       'list' => $request->get('list'),
@@ -115,7 +116,10 @@ class TeacherController extends StudentController
       $comment->create_user_name = $create_user->name;
       $comment->create_user_icon = $create_user->icon;
     }
-    return view($this->domain.'.page', [
+    $view = "page";
+
+    $param['view'] = $view;
+    return view($this->domain.'.'.$view, [
       'comments'=>$comments,
       'charge_students'=>$this->get_students($request, $id),
     ])->with($param);
@@ -137,6 +141,7 @@ class TeacherController extends StudentController
     //コメントデータ取得
 
     $view = "calendar";
+    $param['view'] = $view;
     return view($this->domain.'.'.$view, [
       'item' => $item,
     ])->with($param);
@@ -174,6 +179,7 @@ class TeacherController extends StudentController
         break;
     }
     $param['list_title'] = $list_title;
+    $param['view'] = $view;
     return view($this->domain.'.'.$view, [
       'item' => $item,
     ])->with($param);

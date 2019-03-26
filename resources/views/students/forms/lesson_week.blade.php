@@ -59,6 +59,7 @@
           if($(e).attr("value") !== "disabled"){
             $(this).parent().removeClass('disabled');
             $(this).prop('disabled', false);
+            $(this).iCheck('check');
             $(this).iCheck('enable');
           }
         });

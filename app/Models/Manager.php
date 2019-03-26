@@ -44,6 +44,9 @@ class Manager extends Teacher
 
     return $manager;
   }
+  /*
+  TODO: 現状だと、teachersと同じフィールドを持ち、
+  担当科目定義は、入力フォームがなければユーザータグには追加されない
   public function profile_update($form){
     $this->update([
       'name_last' => $form['name_last'],
@@ -65,4 +68,5 @@ class Manager extends Teacher
       }
     }
   }
+  */
 }

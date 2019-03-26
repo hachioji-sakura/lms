@@ -11,8 +11,8 @@
     @foreach($attributes['lesson'] as $index => $name)
     <label class="mx-2">
       <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" required="true"
-      @if(isset($_edit) && $item->user->has_tag('lesson', $index)===true)
-     checked
+      @if(isset($item) && $item->user->has_tag('lesson', $index)===true)
+      checked
       @endif
       onChange="lesson_checkbox_change(this)">{{$name}}
     </label>
@@ -21,9 +21,11 @@
 </div>
 <script>
 function lesson_checkbox_change(obj){
+  console.log("lesson_checkbox_change");
   var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
   var is_english = $('input[type="checkbox"][name="lesson[]"][value="2"]').prop("checked");
   var is_piano = $('input[type="checkbox"][name="lesson[]"][value="3"]').prop("checked");
+  var is_kids_lesson = $('input[type="checkbox"][name="lesson[]"][value="4"]').prop("checked");
   if(is_school){
     $(".subject_form").show();
     $(".subject_confirm").show();
@@ -35,10 +37,14 @@ function lesson_checkbox_change(obj){
   if(is_english){
     $(".english_form").show();
     $(".english_confirm").show();
+    $(".course_type_form").show();
+    $(".course_type_confirm").show();
   }
   else {
     $(".english_form").hide();
     $(".english_confirm").hide();
+    $(".course_type_form").hide();
+    $(".course_type_confirm").hide();
   }
   if(is_piano){
     $(".piano_form").show();
@@ -47,6 +53,18 @@ function lesson_checkbox_change(obj){
   else {
     $(".piano_form").hide();
     $(".piano_confirm").hide();
+  }
+  if(is_kids_lesson){
+    $(".kids_lesson_form").show();
+    $(".kids_lesson_confirm").show();
+    $(".course_type_form").show();
+    $(".course_type_confirm").show();
+  }
+  else {
+    $(".kids_lesson_form").hide();
+    $(".kids_lesson_confirm").hide();
+    $(".course_type_form").hide();
+    $(".course_type_confirm").hide();
   }
   //grade_select_change();
 }

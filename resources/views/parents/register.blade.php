@@ -64,7 +64,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
-    <div id="parents_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="parents_register" class="carousel slide" data-ride="carousel" data-interval=false>
       <input type="hidden" name="email" value="{{$parent->email}}" />
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="parent_id" value="{{$parent->id}}" />
@@ -157,27 +157,27 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('parents_add_form');
-  base.pageSettinged("parents_add_form", form_data);
+  var form_data = util.getLocalData('parents_register');
+  base.pageSettinged("parents_register", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      util.removeLocalData('parents_add_form');
+    if(front.validateFormValue('parents_register .carousel-item.active')){
+      util.removeLocalData('parents_register');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      $('#parents_add_form').carousel('next');
+    if(front.validateFormValue('parents_register .carousel-item.active')){
+      $('#parents_register').carousel('next');
     }
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
-      var form_data = front.getFormValue('parents_add_form');
-      util.setLocalData('parents_add_form', form_data);
+      var form_data = front.getFormValue('parents_register');
+      util.setLocalData('parents_register', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $("ol.step #step_confirm").addClass("is-current");
     }
@@ -188,7 +188,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('#parents_add_form').carousel('prev');
+    $('#parents_register').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

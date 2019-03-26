@@ -42,4 +42,8 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', 'place')->findVal($val);
   }
+  public function scopeWork($query, $val)
+  {
+      return $query->where('attribute_key', 'work')->findVal($val);
+  }
 }

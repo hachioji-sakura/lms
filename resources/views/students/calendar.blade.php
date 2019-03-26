@@ -21,7 +21,7 @@
                 base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "欠席連絡", "/calendars/"+event.id+"/rest");
+                base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/rest");
                 break;
               case "new":
               case "rest":

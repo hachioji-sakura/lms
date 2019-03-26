@@ -27,7 +27,7 @@
       @if($result==="success")
       体験授業をお申し込みいただきまして、<br>
       誠にありがとうございます。<br><br>
-      ２営業日以内に、当塾よりご連絡いたしますので、<br>
+      1週間以内に当塾より授業予定のご連絡いたします。<br>
       何卒宜しくお願い致します。
       @else
       体験授業をお申し込みいただきまして、<br>
@@ -39,7 +39,7 @@
   @else
   <form method="POST"  action="/entry">
     @csrf
-    <div id="trial_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('trial_form')
@@ -70,7 +70,40 @@
           </div>
         </div>
         <div class="carousel-item">
+          @yield('lesson_week_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
           @yield('subject_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                戻る
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                次へ
+                <i class="fa fa-arrow-circle-right ml-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
           @yield('survey_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -111,29 +144,29 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('trial_form');
-  base.pageSettinged("trial_form", form_data);
+  var form_data = util.getLocalData('trials_entry');
+  base.pageSettinged("trials_entry", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('trial_form .carousel-item.active')){
-      //util.removeLocalData('trial_form');
+    if(front.validateFormValue('trials_entry .carousel-item.active')){
+      util.removeLocalData('trials_entry');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('trial_form .carousel-item.active')){
+    var form_data = front.getFormValue('trials_entry');
+    if(front.validateFormValue('trials_entry .carousel-item.active')){
+      util.setLocalData('trials_entry', form_data);
       $('body, html').scrollTop(0);
-      $('#trial_form').carousel('next');
+      $('#trials_entry').carousel('next');
     }
 
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
-      var form_data = front.getFormValue('trial_form');
-      util.setLocalData('trial_form', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $("ol.step #step_confirm").addClass("is-current");
     }
@@ -144,17 +177,14 @@ $(function(){
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html').scrollTop(0);
-    $('#trial_form').carousel('prev');
+    $('#trials_entry').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     form_data["email"] = $("input[name=email]").val();
-    if(form_data["gender"]){
-      form_data["gender_name"] = $("label[for='"+$("input[name='gender']:checked").attr("id")+"']").text().trim();
-    }
     if(form_data["grade"]){
-      var grade_name = $('select[name=grade] option:selected').text().trim();
-      form_data["grade_name"] = grade_name;
+      var _name = $('select[name=grade] option:selected').text().trim();
+      form_data["grade_name"] = _name;
     }
     if(form_data["trial_date1"] && form_data["trial_start_time1"] && form_data["trial_end_time1"]){
       var trial_start = $('select[name=trial_start_time1] option:selected').text().trim();
@@ -166,7 +196,7 @@ $(function(){
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
       form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
     }
-    var _names = ["lesson", "lesson_place", "howto",];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -175,7 +205,7 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level"];
+    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "lesson_week_count", "gender"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){
@@ -183,6 +213,12 @@ $(function(){
           form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
         });
       }
+    });
+    $("input.lesson_week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      name = name.replace('[]', '');
+      form_data[name+"_"+val+"_name"] = "〇";
     });
     form_data["subject_level_name"] = "";
     $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){

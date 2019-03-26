@@ -49,7 +49,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
-    <div id="parents_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="parents_entry" class="carousel slide" data-ride="carousel" data-interval=false>
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
@@ -112,33 +112,33 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('parents_add_form');
-  base.pageSettinged("parents_add_form", form_data);
+  var form_data = util.getLocalData('parents_entry');
+  base.pageSettinged("parents_entry", form_data);
 
   //submit
   $("button[type='submit']").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      util.removeLocalData('parents_add_form');
+    if(front.validateFormValue('parents_entry .carousel-item.active')){
+      util.removeLocalData('parents_entry');
       $("form").submit();
     }
   });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    var form_data = front.getFormValue('parents_add_form');
+    var form_data = front.getFormValue('parents_entry');
     form_data = form_data_adjust(form_data);
-    if(front.validateFormValue('parents_add_form .carousel-item.active')){
-      util.setLocalData('parents_add_form', form_data);
+    if(front.validateFormValue('parents_entry .carousel-item.active')){
+      util.setLocalData('parents_entry', form_data);
       base.pageSettinged("confirm_form", form_data);
       $('body, html').scrollTop(0);
-      $('#parents_add_form').carousel('next');
+      $('#parents_entry').carousel('next');
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html').scrollTop(0);
-    $('#parents_add_form').carousel('prev');
+    $('#parents_entry').carousel('prev');
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

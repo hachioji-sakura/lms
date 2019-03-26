@@ -61,6 +61,7 @@ class User extends Authenticatable
       }
       return null;
     }
+
     public function student(){
       return $this->hasOne('App\Models\Student');
     }
@@ -72,6 +73,9 @@ class User extends Authenticatable
     }
     public function image(){
       return $this->belongsTo('App\Models\Image');
+    }
+    public function icon(){
+      return $this->image->s3_url;
     }
     public function create_comments(){
       return $this->hasMany('App\Models\Comment', 'create_user_id');
@@ -136,10 +140,11 @@ class User extends Authenticatable
         }
       }
       if(isset($item)){
-        $item['name'] = $item->name_last.' '.$item->name_first;
-        $item['kana'] = $item->kana_last.' '.$item->kana_first;
+        $item['name'] = $item->name();
+        $item['kana'] = $item->kana();
         $item['icon'] = $s3_url;
         $item['email'] = $this->email;
+        if($item->birth_day == '9999-12-31') $item->birth_day = '';
         return $item;
       }
       return $this;

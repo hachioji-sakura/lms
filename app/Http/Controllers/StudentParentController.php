@@ -217,7 +217,8 @@ class StudentParentController extends TeacherController
       $form = $request->all();
       if(!empty($param['user'])){
         //ログインユーザーがある場合は、操作させない
-        abort(403);
+        //一度ログアウト
+        Auth::logout();
       }
       $access_key = $request->access_key;
       if(!$this->is_enable_token($access_key)){

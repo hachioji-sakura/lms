@@ -719,9 +719,7 @@
 								$(this).iCheck('update');
 								$(this).trigger('ifChanged');
 							}
-							else {
-								$(this).change();
-							}
+							$(this).change();
 							break;
 						case "select":
 							$(this).val(val);
