@@ -93,7 +93,7 @@
               </div>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-info btn-block"  accesskey="_form">
+                <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form">
                   <i class="fa fa-envelope mr-1"></i>
                   送信
                 </button>
@@ -127,7 +127,7 @@
               </div>
             </div>
             <div class="col-12">
-                <button type="submit" class="btn btn-danger btn-block"  accesskey="_form">
+                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form">
                   <i class="fa fa-envelope mr-1"></i>
                     休み連絡
                 </button>
@@ -152,7 +152,7 @@
   $(function(){
     base.pageSettinged("_form", null);
     //submit
-    $("button[type='submit']").on('click', function(e){
+    $("button.btn-submit").on('click', function(e){
       e.preventDefault();
       if(front.validateFormValue('_form')){
         $("form").submit();

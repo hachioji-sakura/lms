@@ -51,7 +51,7 @@
     <div class="row">
       <div class="col-12">
         <p class="my-2">
-          <a href="/logout" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          <a href="/logout?back=1" role="button" class="btn btn-secondary btn-block float-left mr-1">
             ログアウトする
           </a>
         </p>
@@ -61,7 +61,7 @@
 @else
   <form method="POST"  action="/{{$domain}}/register">
     @csrf
-    <div id="teachers_register" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="teachers_register" class="carousel slide" data-ride="carousel" data-interval="false">
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="id" value="{{$item->id}}" />
       <div class="carousel-inner">
@@ -120,7 +120,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="teachers_register">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_register">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -136,9 +136,10 @@
 $(function(){
   var form_data = util.getLocalData('teachers_register');
   base.pageSettinged("teachers_register", form_data);
+  $('#teachers_register').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('teachers_register .carousel-item.active')){
       util.removeLocalData('teachers_register');
@@ -152,11 +153,13 @@ $(function(){
       var form_data = front.getFormValue('teachers_register');
       util.setLocalData('teachers_register', form_data);
       $('#teachers_register').carousel('next');
+      $('#teachers_register').carousel({ interval : false});
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#teachers_register').carousel('prev');
+    $('#teachers_register').carousel({ interval : false});
   });
 });
 </script>

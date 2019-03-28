@@ -329,11 +329,11 @@ class TeacherController extends StudentController
        }
        $user = User::where('access_key',$access_key);
        if($user->count() < 1){
-         abort(404);
+         abort(404, 'hoge1');
        }
-       $param['item'] = $user->first()->details();
+       $param['item'] = $user->first()->details(true);
        if($param['item']->role.'s' != $this->domain){
-         abort(404);
+         abort(404, $param['item']->role.'s'.'!='.$this->domain);
        }
        $param['access_key'] = $access_key;
      }
@@ -371,12 +371,16 @@ class TeacherController extends StudentController
       $password = $form['password'];
 
       if($this->is_success_response($res)){
-        $create_user = $res['data']->user->details();
+        $create_user = $res['data']->user->details(true);
         $form['send_to'] = $create_user->role;
         $this->send_mail($email, $this->domain_name.'登録完了', $form, 'text', 'register');
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
         {
           abort(500);
+        }
+        if($this->domain==="managers"){
+          session()->regenerate();
+          session()->put('login_role', "manager");
         }
         return $this->save_redirect($res, $param, $this->domain_name.'登録完了しました。', '/home');
       }
@@ -407,6 +411,50 @@ class TeacherController extends StudentController
         DB::rollBack();
         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
+    }
+    protected function to_manager_page(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['item']['name'] = $param['item']->name();
+      $fields = [
+        'id' => [
+          'label' => 'ID',
+        ],
+        'name' => [
+          'label' => '氏名',
+        ],
+      ];
+      $manager = Manager::where('name_last', $param['item']->name_last)->where('name_first', $param['item']->name_first)->first();
+      return view('components.page', [
+        'action' => 'to_manager',
+        'manager' => $manager,
+        'fields'=>$fields])
+        ->with($param);
+    }
+    protected function to_manager(Request $request, $id)
+    {
+      $result = '';
+      $form = $request->all();
+      $res = $this->api_response(200);
+      $access_key = $this->create_token();
+      $param = $this->get_param($request, $id);
+      $result = '';
+      $email = $param['item']['email'];
+      $status = intval($param['item']->user->status);
+      $message = '事務登録依頼メールを送信しました';
+      $already_manager_id = 0;
+      if(isset($form['already_manager_id'])) $already_manager_id = $form['already_manager_id'];
+      $manager = $param['item']->to_manager($access_key, $already_manager_id);
+      if(isset($manager)){
+        $title = "事務兼務仮登録受付";
+        $this->send_mail($email,
+          $title, [
+          'user_name' => $param['item']['name'],
+          'access_key' => $access_key,
+          'send_to' => 'manager',
+        ], 'text', 'entry');
+      }
+      return $this->save_redirect($res, $param, $message);
     }
 
 }

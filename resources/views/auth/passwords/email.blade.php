@@ -25,7 +25,7 @@
     </div>
     <div class="form-group row mb-3">
         <div class="col-12">
-          <button type="submit" class="btn btn-primary btn-block">送信する</button>
+          <button type="button" class="btn btn-submit btn-primary btn-block">送信する</button>
         </div>
     </div>
 </form>

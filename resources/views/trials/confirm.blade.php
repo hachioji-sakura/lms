@@ -3,7 +3,7 @@
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
     @csrf
     @method('PUT')
-    <div id="trials_confirm" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="trials_confirm" class="carousel slide" data-ride="carousel" data-interval="false">
       @yield('matching_form')
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -62,7 +62,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="trials_confirm">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="trials_confirm">
                   <i class="fa fa-envelope mr-1"></i>
                     体験授業予定を連絡する
                 </button>
@@ -78,9 +78,9 @@
 $(function(){
   var form_data = util.getLocalData('trials_confirm');
   base.pageSettinged("trials_confirm", form_data);
-
+  $('#trials_confirm').carousel({ interval : false});
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('trials_confirm .carousel-item.active')){
       util.removeLocalData('trials_confirm');
@@ -95,11 +95,13 @@ $(function(){
       util.setLocalData('trials_confirm', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $('#trials_confirm').carousel('next');
+      $('#trials_confirm').carousel({ interval : false});
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#trials_confirm').carousel('prev');
+    $('#trials_confirm').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

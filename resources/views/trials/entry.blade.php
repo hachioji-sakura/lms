@@ -39,7 +39,7 @@
   @else
   <form method="POST"  action="/entry">
     @csrf
-    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('trial_form')
@@ -130,7 +130,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                     この内容でお申込み
                     <i class="fa fa-caret-right ml-1"></i>
                 </button>
@@ -146,9 +146,10 @@
 $(function(){
   var form_data = util.getLocalData('trials_entry');
   base.pageSettinged("trials_entry", form_data);
+  $('#trials_entry').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('trials_entry .carousel-item.active')){
       util.removeLocalData('trials_entry');
@@ -163,6 +164,7 @@ $(function(){
       util.setLocalData('trials_entry', form_data);
       $('body, html').scrollTop(0);
       $('#trials_entry').carousel('next');
+      $('#trials_entry').carousel({ interval : false});
     }
 
     $("ol.step li").removeClass("is-current");
@@ -178,6 +180,7 @@ $(function(){
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html').scrollTop(0);
     $('#trials_entry').carousel('prev');
+    $('#trials_entry').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

@@ -13,6 +13,7 @@
 Auth::routes();
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
+Route::get('managers/login','ManagerController@login');
 
 Route::get('auth','AuthController@auth');
 Route::get('test','UserCalendarController@test');
@@ -71,6 +72,9 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
+Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
+Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
+
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
 Route::get('teachers/entry','TeacherController@entry');

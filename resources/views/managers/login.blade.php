@@ -1,6 +1,6 @@
 @extends('layouts.loginbox')
-@section('title', 'ログイン')
-@section('title_header', 'ログイン')
+@section('title', '管理者ログイン')
+@section('title_header', '管理者ログイン')
 @section('content')
 <form id="login_form" method="POST" action="{{ route('login') }}">
     @csrf
@@ -45,7 +45,7 @@
 
     <div class="form-group row mb-3">
         <div class="col-12">
-            <button type="button" class="btn btn-submit btn-primary btn-block">
+            <button type="button" class="btn btn-submit btn-danger btn-block">
                 ログイン
             </button>
         </div>
@@ -55,15 +55,8 @@
   <h6 class="col-12">
   	<a href="/forget" class="small mr-2"><i class="fa fa-arrow-alt-circle-right mr-1"></i>パスワード忘れた方</a>
   </h6>
-</div>
-<div class="my-2 row">
-  <a href="/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
-    <i class="fa fa-sign-in-alt mr-1"></i>入会・登録はこちら
-  </a>
-</div>
-<div class="my-2 row">
   <h6 class="col-12">
-  <a href="/managers/login" class="float-right small mr-2"><i class="fa fa-user-lock mr-1"></i>管理ログインページへ</a>
+  <a href="/login" class="small mr-2"><i class="fa fa-user-lock mr-1"></i>講師ログインページへ</a>
   </h6>
 </div>
 

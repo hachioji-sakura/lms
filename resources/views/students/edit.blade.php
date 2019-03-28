@@ -3,7 +3,7 @@
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
     @method('PUT')
-    <div id="students_edit" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="students_edit" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('student_form')
@@ -74,7 +74,7 @@
             </div>
             @endif
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-edit mr-1"></i>
                     更新する
                 </button>
@@ -90,9 +90,10 @@
 $(function(){
   var form_data = util.getLocalData('students_edit');
   base.pageSettinged("students_edit", form_data);
+  $('#students_edit').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('students_edit .carousel-item.active')){
       $("form").submit();
@@ -106,11 +107,13 @@ $(function(){
       util.setLocalData('students_edit', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $('#students_edit').carousel('next');
+      $('#students_edit').carousel({ interval : false});
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#students_edit').carousel('prev');
+    $('#students_edit').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

@@ -17,7 +17,7 @@
     @endif
   <div class="row">
     <div class="col-12 col-lg-6 col-md-6 mb-1">
-        <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_action">
+        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
           <i class="fa fa-envelope mr-1"></i>
             再送する
         </button>

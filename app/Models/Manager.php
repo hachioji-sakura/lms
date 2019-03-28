@@ -18,15 +18,20 @@ class Manager extends Teacher
     $ret = [];
     $manager_no = UserTag::where('tag_key', 'manager_no')->max('tag_value');
     $manager_no = intval(ltrim($manager_no, '0'))+1;
-
-    $user = User::create([
-        'name' => $form['name_last'].' '.$form['name_first'],
-        'email' => $form['email'],
-        'image_id' => 4,
-        'status' => 1,
-        'access_key' => $form['access_key'],
-        'password' => '-',
-    ]);
+    $user = null;
+    if(isset($form['user_id']) && $form['user_id']>0){
+      $user = User::where('id', $form['user_id'])->first();
+    }
+    if(!isset($user)){
+      $user = User::create([
+          'name' => $form['name_last'].' '.$form['name_first'],
+          'email' => $form['email'],
+          'image_id' => 4,
+          'status' => 1,
+          'access_key' => $form['access_key'],
+          'password' => '-',
+      ]);
+    }
     $manager = Manager::create([
       'name_last' => $form['name_last'],
       'name_first' => $form['name_first'],

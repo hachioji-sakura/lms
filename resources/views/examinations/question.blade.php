@@ -24,9 +24,9 @@
     <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
       @csrf
       @if($result['success'] < $result['total'])
-      <button type="submit" class="btn btn-block btn-info btn-lg">まちがえた問題のみ解く</button>
+      <button type="button" class="btn btn-submit btn-block btn-info btn-lg">まちがえた問題のみ解く</button>
       @else
-      <button type="submit" class="btn btn-block btn-info btn-lg">もう一度問題を解く</button>
+      <button type="button" class="btn btn-submit btn-block btn-info btn-lg">もう一度問題を解く</button>
       @endif
     </form>
     </div>
@@ -55,7 +55,7 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <button type="submit" class="btn btn-block btn-info btn-lg">回答する</button>
+        <button type="button" class="btn btn-submit btn-block btn-info btn-lg">回答する</button>
       </div>
       <div class="col-6">
         <button type="reset" class="btn btn-block btn-secondary btn-lg">クリア</button>

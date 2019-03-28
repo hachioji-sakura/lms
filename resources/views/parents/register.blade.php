@@ -54,7 +54,7 @@
     <div class="row">
       <div class="col-12">
         <p class="my-2">
-          <a href="/logout" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          <a href="/logout?back=1" role="button" class="btn btn-secondary btn-block float-left mr-1">
             ログアウトする
           </a>
         </p>
@@ -64,7 +64,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
-    <div id="parents_register" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="parents_register" class="carousel slide" data-ride="carousel" data-interval="false">
       <input type="hidden" name="email" value="{{$parent->email}}" />
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="parent_id" value="{{$parent->id}}" />
@@ -143,7 +143,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -159,9 +159,9 @@
 $(function(){
   var form_data = util.getLocalData('parents_register');
   base.pageSettinged("parents_register", form_data);
-
+  $('#parents_register').carousel({ interval : false});
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('parents_register .carousel-item.active')){
       util.removeLocalData('parents_register');
@@ -173,6 +173,7 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('parents_register .carousel-item.active')){
       $('#parents_register').carousel('next');
+      $('#parents_register').carousel({ interval : false});
     }
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
@@ -184,11 +185,11 @@ $(function(){
     else {
       $("ol.step #step_input").addClass("is-current");
     }
-
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#parents_register').carousel('prev');
+    $('#parents_register').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

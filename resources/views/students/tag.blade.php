@@ -13,7 +13,7 @@
           </a>
         </div>
         <div class="col-12 mb-1">
-            <button type="submit" class="btn btn-primary btn-block" accesskey="tag_edit">
+            <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="tag_edit">
               <i class="fa fa-edit mr-1"></i>
                 更新する
             </button>
@@ -28,7 +28,7 @@ $(function(){
   base.pageSettinged("tag_edit", null);
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('tag_edit')){
       $("form").submit();
