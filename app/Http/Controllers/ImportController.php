@@ -122,6 +122,7 @@ class ImportController extends UserController
           'teachers',
           'managers',
           'repeat_schedules',
+          'schedules',
         ];
         foreach($objects as $_object){
           $res = $this->_import($request, $_object);
@@ -336,7 +337,6 @@ class ImportController extends UserController
       try {
         DB::beginTransaction();
         $c = 0;
-        echo 'count='.count($items).'\n';
         foreach($items as $item){
           if($this->store_charge_student($item)) $c++;
         }
@@ -361,7 +361,6 @@ class ImportController extends UserController
       try {
         DB::beginTransaction();
         $c = 0;
-        echo 'count='.count($items).'\n';
         foreach($items as $item){
           if($this->store_repeat_schedule($item)) $c++;
         }

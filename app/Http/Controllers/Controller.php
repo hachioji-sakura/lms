@@ -116,6 +116,10 @@ class Controller extends BaseController
      */
     public function call_api(Request $request, string $url, string $type="GET", $data=null) {
       //$form = $request->all();
+      if(config('app.env')==="local"){
+        return $this->api_response();
+      }
+
       $curl = curl_init();
       $query_string = http_build_query($request->query());
       if(!empty($query_string)){

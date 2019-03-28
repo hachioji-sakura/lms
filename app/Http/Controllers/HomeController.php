@@ -23,14 +23,13 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      $user = Auth::user()->details();
+      $user = Auth::user();
       if(isset($user)){
-        if($user->status===1){
-        }
-        else {
+        if($user->status==0){
           //ログイン済みであれば自動ログイン
+          $user = $user->details();
           switch($user->role){
             case "manager" :
               return redirect('/managers/'.$user->id);
@@ -53,6 +52,8 @@ class HomeController extends Controller
               break;
           }
         }
+        Auth::logout();
+        abort(403);
       }
       else {
         return redirect('/login');

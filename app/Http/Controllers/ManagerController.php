@@ -14,5 +14,7 @@ class ManagerController extends TeacherController
     public function model(){
       return Manager::query();
     }
-
+    public function login(){
+      return view('managers.login');
+    }
 }

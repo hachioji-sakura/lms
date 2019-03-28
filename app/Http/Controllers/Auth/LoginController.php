@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -34,7 +36,33 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+      $this->middleware('guest')->except('logout');
     }
-
+    protected function authenticated(Request $request, $user)
+    {
+      session()->regenerate();
+      session()->put('login_role', null);
+      if(strpos(url()->previous(), 'managers/login')){
+        //ログインモードを記録
+        session()->put('login_role', "manager");
+      }
+      // ログイン後のリダイレクト
+      return redirect()->intended($this->redirectPath());
+    }
+    public function logout(Request $request){
+      $is_manager = false;
+      if(session('login_role') == 'manager'){
+        $is_manager = true;
+      }
+      Auth::logout();
+      session()->flush();
+      session()->regenerate();
+      if($request->has('back')){
+        return back()->with([]);
+      }
+      if($is_manager){
+        return redirect('managers/login');
+      }
+      return redirect($this->redirectTo);
+    }
 }

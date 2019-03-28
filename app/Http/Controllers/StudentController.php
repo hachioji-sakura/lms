@@ -390,22 +390,55 @@ class StudentController extends UserController
     $access_key = $this->create_token();
     $param = $this->get_param($request, $id);
     $result = '';
-    if($param['item']->user->status===1){
+    $email = $param['item']['email'];
+    $status = $param['item']->user->status;
+    if(isset($form['email'])){
+      //入力値としてemailがある場合はそちらを優先する
+      $email = $form['email'];
+      $already_user = User::where(['email' => $email])->first();
+      if(isset($already_user)){
+        $_model = $this->model()->where('id', $id)->first();
+        $already_item = $already_user->details();
+        //既存のユーザーに同じメールアドレスが存在する場合、user_idを差し替え
+        $_model->update(['user_id' => $already_user->id]);
+        $_model->profile_update([
+          'kana_last' => $already_item->kana_last,
+          'kana_first' => $already_item->kana_first,
+          'birth_day' => $already_item->birth_day,
+          'gender' => $already_item->gender,
+          'phone_no' => $already_item->phone_no,
+          'address' => $already_item->address,
+        ]);
+        $param['item'] = $_model->user->details();
+        $already_user->update([
+          'access_key' => $access_key,
+          'status' => 1,
+          ]
+        );
+      }
+      else {
+        //既存のユーザーに同じメールアドレスが存在しない
+        $param['item']->user->update(['email' => $email]);
+      }
+    }
+    else if($status===1){
       //token更新
       $param['item']->user->update( ['access_key' => $access_key]);
       $result = 'success';
     }
-    else if($param['item']->user->status===0){
+    else if($status===0){
+      /*
       //本登録済み
       $res = $this->error_response('このメールアドレスは本登録が完了しております。');
       $result = 'already';
+      */
     }
     if($this->is_success_response($res)){
       $title = "ユーザー本登録のお願い";
       if($this->domain==="parents"){
         $title = "ご入会お申込みについてご連絡";
       }
-      $this->send_mail($param['item']['email'],
+      $this->send_mail($email,
         $title, [
         'user_name' => $param['item']['name'],
         'access_key' => $access_key,

@@ -107,7 +107,7 @@ EOT;
     $tag_names = ['lesson', 'teacher_character'];
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+      $tag_names[] = 'work_'.$lesson_week['attribute_value'].'_time';
     }
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
