@@ -451,7 +451,6 @@ class TeacherController extends StudentController
           $title, [
           'user_name' => $param['item']['name'],
           'access_key' => $access_key,
-          'remind' => true,
           'send_to' => 'manager',
         ], 'text', 'entry');
       }

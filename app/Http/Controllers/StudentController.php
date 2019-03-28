@@ -398,26 +398,7 @@ class StudentController extends UserController
       $email = $form['email'];
       $already_user = User::where(['email' => $email])->first();
       if(isset($already_user)){
-        $_model = $this->model()->where('id', $id)->first();
-        $already_item = $already_user->details();
-        //既存のユーザーに同じメールアドレスが存在する場合、user_idを差し替え
-        $param['item']->user->update(['status' => 9]);
-        $_model->update(['user_id' => $already_user->id]);
-        $_model->profile_update([
-          'kana_last' => $already_item->kana_last,
-          'kana_first' => $already_item->kana_first,
-          'birth_day' => $already_item->birth_day,
-          'gender' => $already_item->gender,
-          'phone_no' => $already_item->phone_no,
-          'address' => $already_item->address,
-        ]);
-        $param['item'] = $_model->user->details();
-        $already_user->update([
-          'access_key' => $access_key,
-          'status' => 1,
-          ]
-        );
-        $status = 9;
+        $res = $this->error_response('このメールアドレスはすでにユーザー登録済みです。');
       }
       else {
         //既存のユーザーに同じメールアドレスが存在しない
