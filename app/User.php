@@ -106,14 +106,14 @@ class User extends Authenticatable
         'password' => Hash::make($password)
       ]);
     }
-    public function details(){
+    public function details($is_force_get = false){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = Image::where('id', $this->image_id)->first();
       $s3_url = '';
       if(isset($image)){
         $s3_url = $image->s3_url;
       }
-      if(session('login_role') == 'manager'){
+      if(session('login_role') == 'manager' || $is_force_get===true){
         $item = Manager::where('user_id', $this->id)->first();
         if(isset($item)){
           $item['manager_id'] = $item['id'];

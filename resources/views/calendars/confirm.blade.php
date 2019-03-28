@@ -16,7 +16,7 @@
   <form method="POST" action="/calendars/{{$item['id']}}/remind">
     @csrf
     @method('PUT')
-    <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_confirm">
+    <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
         <i class="fa fa-envelope mr-1"></i>
           送信する
     </button>
@@ -28,7 +28,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}/confirm">
         @csrf
         @method('PUT')
-        <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_confirm">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
             <i class="fa fa-envelope mr-1"></i>
               予定連絡
         </button>
@@ -38,7 +38,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_action">
+        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
           <i class="fa fa-trash-alt mr-1"></i>
           予定削除
         </button>
@@ -49,7 +49,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}/confirm">
         @csrf
         @method('PUT')
-        <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_confirm">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
             <i class="fa fa-envelope mr-1"></i>
               予定連絡
         </button>

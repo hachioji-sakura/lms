@@ -10,7 +10,7 @@
       <form method="POST" action="/trials/{{$item['id']}}/remind">
         @csrf
         @method('PUT')
-        <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_fix">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_fix">
           <i class="fa fa-envelope mr-1"></i>
           確認連絡を送信する
         </button>

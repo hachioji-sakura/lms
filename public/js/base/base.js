@@ -47,6 +47,12 @@
 	//ページ設定後処理：各フォームUIのロード
 	function pageSettinged(form_id, formData){
 		_currentForm = form_id;
+		$("input[accesskey='enter']", $("#"+form_id)).on("keypress", function(e){
+			if(e.keyCode==13){
+				$("button.btn-submit").click();
+			}
+		});
+
 		$("input[type=file]", $("#"+form_id)).each(function(){
 			var name = $(this).attr("name");
 			if(util.isEmpty(name)) return;
@@ -451,7 +457,7 @@
 			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit
-      $("#"+form_id+" .btn[type=submit][accesskey]").on("click", function(){
+      $("#"+form_id+" .btn.btn-submit[accesskey]").on("click", function(){
 				var accesskey = $(this).attr("accesskey");
         var form = form_id+" .page_contents #"+accesskey+" form";
         if(!front.validateFormValue(form)) return false;

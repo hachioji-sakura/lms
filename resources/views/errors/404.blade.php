@@ -7,4 +7,10 @@
 <b class="text-xl text-warning">404</b>エラー
 @endsection
 @section('error_description', 'Page Not Found')
-@section('message', 'ページがみつかりません')
+@section('message')
+  @if(empty($exception->getMessage()))
+  ページがみつかりません
+  @else
+  {{$exception->getMessage()}}
+  @endif
+@endsection

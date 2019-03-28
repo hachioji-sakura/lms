@@ -39,7 +39,7 @@
 @section('lesson_week_form')
 <div class="row">
   @component('students.forms.lesson', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
-  @component('students.forms.lesson_week', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 

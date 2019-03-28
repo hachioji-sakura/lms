@@ -31,7 +31,7 @@
 $(function(){
   base.pageSettinged("{{$domain}}_entry", null);
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('{{$domain}}_entry')){
       $("form").submit();

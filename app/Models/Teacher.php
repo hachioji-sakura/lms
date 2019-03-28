@@ -129,4 +129,39 @@ EOT;
     }
     return $subjects;
   }
+  public function is_manager(){
+    $manager = Manager::where('user_id', $this->user_id)->first();
+    if(isset($manager)) return true;
+    return false;
+  }
+  public function to_manager($access_key, $already_manager_id=0){
+    $_create_form =[
+      'name_last' => $this->name_last,
+      'name_first' => $this->name_first,
+      'kana_last' => $this->kana_last,
+      'kana_first' => $this->kana_first,
+      'birth_day' => $this->birth_day,
+      'gender' => $this->gender,
+      'phone_no' => $this->phone_no,
+      'address' => $this->address,
+    ];
+    $manager = null;
+    if(isset($already_manager_id) && $already_manager_id > 0){
+      $manager = Manager::where('id', $already_manager_id)->first();
+      //既存マネージャーのuserを削除ステータス
+      User::where('id', $manager->user_id)->update(['status' => 9]);
+      //既存マネージャーのuser_idを差し替え
+      $manager->update(['user_id'=>$this->user_id]);
+      $manager->profile_update($_create_form);
+    }
+    else {
+      $_create_form['user_id'] = $this->user_id;
+      $manager = Manager::entry($_create_form);
+      $manager->profile_update($_create_form);
+    }
+    $this->user->update(['status' => 1,
+                          'access_key' => $access_key
+                        ]);
+    return $manager;
+  }
 }

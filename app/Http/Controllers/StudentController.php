@@ -391,7 +391,8 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
     $result = '';
     $email = $param['item']['email'];
-    $status = $param['item']->user->status;
+    $status = intval($param['item']->user->status);
+    $message = '本登録依頼メールを送信しました';
     if(isset($form['email'])){
       //入力値としてemailがある場合はそちらを優先する
       $email = $form['email'];
@@ -400,6 +401,7 @@ class StudentController extends UserController
         $_model = $this->model()->where('id', $id)->first();
         $already_item = $already_user->details();
         //既存のユーザーに同じメールアドレスが存在する場合、user_idを差し替え
+        $param['item']->user->update(['status' => 9]);
         $_model->update(['user_id' => $already_user->id]);
         $_model->profile_update([
           'kana_last' => $already_item->kana_last,
@@ -415,24 +417,19 @@ class StudentController extends UserController
           'status' => 1,
           ]
         );
+        $status = 9;
       }
       else {
         //既存のユーザーに同じメールアドレスが存在しない
         $param['item']->user->update(['email' => $email]);
       }
     }
-    else if($status===1){
+    if($status==1){
       //token更新
       $param['item']->user->update( ['access_key' => $access_key]);
       $result = 'success';
     }
-    else if($status===0){
-      /*
-      //本登録済み
-      $res = $this->error_response('このメールアドレスは本登録が完了しております。');
-      $result = 'already';
-      */
-    }
+
     if($this->is_success_response($res)){
       $title = "ユーザー本登録のお願い";
       if($this->domain==="parents"){
@@ -446,7 +443,7 @@ class StudentController extends UserController
         'send_to' => $param['item']->role,
       ], 'text', 'entry');
     }
-    return $this->save_redirect($res, $param, '本登録依頼メールを送信しました');
+    return $this->save_redirect($res, $param, $message);
   }
 
   /**

@@ -3,7 +3,7 @@
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
     @csrf
     @method('PUT')
-    <div id="managers_edit" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="managers_edit" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
@@ -38,7 +38,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="managers_edit">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="managers_edit">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -54,9 +54,10 @@
 $(function(){
   var form_data = util.getLocalData('managers_edit');
   base.pageSettinged("managers_edit", form_data);
+  $('#managers_edit').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('managers_edit .carousel-item.active')){
       util.removeLocalData('managers_edit');
@@ -69,12 +70,15 @@ $(function(){
     if(front.validateFormValue('managers_edit .carousel-item.active')){
       var form_data = front.getFormValue('managers_edit');
       util.setLocalData('managers_edit', form_data);
+      $('#managers_edit').carousel({ interval : false});
       $('#managers_edit').carousel('next');
+
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#managers_edit').carousel('prev');
+    $('#managers_edit').carousel({ interval : false});
   });
 });
 </script>

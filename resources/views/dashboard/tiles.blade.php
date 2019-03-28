@@ -7,7 +7,7 @@
         @if(count($items) > 0)
         <ul class="mailbox-attachments clearfix row">
           @foreach($items as $item)
-          <li class="col-lg-3 col-md-4 col-12 @if($item->user->status===9) bg-gray @endif" accesskey="" target="">
+          <li class="col-lg-4 col-md-4 col-12 @if($item->user->status===9) bg-gray @endif" accesskey="" target="">
             <input type="hidden" value="{{$loop->index}}" name="__index__" id="__index__">
             <input type="hidden" value="{{$item->id}}" name="id">
             <div class="row">
@@ -23,32 +23,38 @@
                     {{$item->name()}}
                 </a>
               </div>
+              {{--
+              <div class="col-12 text-sm">
+                <i class="fa fa-envelope mr-1"></i>{{$item->user->email}}
+              </div>
+              --}}
             </div>
             <div class="row my-2">
+              <div class="col-12">
               @if($domain!="students" && $item->user->status===1)
-              <div class="col-6 col-md-6">
-                <a class="btn btn-primary btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
-                  <i class="fa fa-envelope"></i>
-                  <span class="d-lg-block text-sm">本登録依頼</span>
+                <a class="btn btn-primary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
+                  <i class="fa fa-envelope mr-1"></i>登録依頼
                 </a>
-              </div>
               @endif
               @if($item->user->status===0 && !($domain=="managers" && $item->id===1))
-              <div class="col-6 col-md-6">
-                <a class="btn btn-success btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
+              {{--
+                <a class="btn btn-success btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
                   <i class="fa fa-edit"></i>
                   <span class="d-lg-block">編集</span>
                 </a>
-              </div>
+              --}}
               @endif
-              @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9 && $item->user->status!==1)
-              <div class="col-6 col-md-6">
-                <a class="btn btn-danger btn-sm w-100" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
-                  <i class="fa fa-trash-alt"></i>
-                  <span class="d-lg-block">削除</span>
+              @if($item->user->status===0 && $domain==="teachers" && $item->is_manager()===false)
+                <a class="btn my-1 btn-info btn-sm text-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/to_manager" page_title="事務兼務">
+                  <i class="fa fa-users-cog mr-1"></i>事務兼務
                 </a>
-              </div>
               @endif
+              @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9)
+                <a class="btn my-1 btn-danger btn-sm " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
+                  <i class="fa fa-trash-alt mr-1"></i>削除
+                </a>
+              @endif
+            </div>
             </div>
           </li>
           @endforeach

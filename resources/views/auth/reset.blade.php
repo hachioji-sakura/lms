@@ -26,7 +26,7 @@
     </div>
     <div class="row">
       <div class="col-12">
-          <button type="submit" class="btn btn-primary btn-block">
+          <button type="button" class="btn btn-submit btn-primary btn-block">
               設定する
           </button>
       </div>

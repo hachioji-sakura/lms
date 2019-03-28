@@ -8,7 +8,7 @@
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/register">
     @csrf
-    <div id="students_add_form" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="students_add_form" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('student_form')
@@ -64,7 +64,7 @@
             </div>
             @endif
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -80,9 +80,10 @@
 $(function(){
   var form_data = util.getLocalData('students_add_form');
   base.pageSettinged("students_add_form", form_data);
+  $('#students_add_form').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     util.removeLocalData('students_add_form');
     if(front.validateFormValue('students_add_form .carousel-item.active')){
@@ -97,11 +98,13 @@ $(function(){
       util.setLocalData('students_add_form', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $('#students_add_form').carousel('next');
+      $('#students_add_form').carousel({ interval : false});
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('#students_add_form').carousel('prev');
+    $('#students_add_form').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){

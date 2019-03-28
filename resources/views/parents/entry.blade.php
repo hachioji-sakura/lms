@@ -39,7 +39,7 @@
     <div class="row">
       <div class="col-12">
         <p class="my-2">
-          <a href="/logout" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          <a href="/logout?back=1" role="button" class="btn btn-secondary btn-block float-left mr-1">
             ログアウトする
           </a>
         </p>
@@ -49,7 +49,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
-    <div id="parents_entry" class="carousel slide" data-ride="carousel" data-interval=false>
+    <div id="parents_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
@@ -98,7 +98,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="submit" class="btn btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-plus-circle mr-1"></i>
                     登録する
                 </button>
@@ -114,9 +114,10 @@
 $(function(){
   var form_data = util.getLocalData('parents_entry');
   base.pageSettinged("parents_entry", form_data);
+  $('#parents_entry').carousel({ interval : false});
 
   //submit
-  $("button[type='submit']").on('click', function(e){
+  $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('parents_entry .carousel-item.active')){
       util.removeLocalData('parents_entry');
@@ -133,12 +134,14 @@ $(function(){
       base.pageSettinged("confirm_form", form_data);
       $('body, html').scrollTop(0);
       $('#parents_entry').carousel('next');
+      $('#parents_entry').carousel({ interval : false});
     }
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html').scrollTop(0);
     $('#parents_entry').carousel('prev');
+    $('#parents_entry').carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
