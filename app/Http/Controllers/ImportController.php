@@ -76,7 +76,11 @@ class ImportController extends UserController
     public function import(Request $request, $object)
     {
       set_time_limit(600);
-      if($object=='all'){
+      if($object==='concealment'){
+        $res = $this->concealment();
+        return $res;
+      }
+      else if($object=='all'){
         $objects = [
           'works',
           'places',
@@ -1667,5 +1671,32 @@ class ImportController extends UserController
       }
       if(empty($value)) return $is_null_value;
       return $value;
+    }
+    private function concealment(){
+      $ret = [];
+      if(config('app.env')!=="product"){
+        //本番でない場合、保護者あてのメールを隠す
+        $query = <<<EOT
+          update users set email=concat('yasui.hideo+p',id,'@gmail.com')
+           where id in (select user_id from student_parents)
+EOT;
+        $ret[] = DB::update($query, []);
+        @$this->remind("契約者のメールアドレスを秘匿", 'info', $this->logic_name);
+      }
+      if(config('app.env')!=="product" || config('app.env')!=="staging"){
+        //staging or productでない場合、講師あて、事務あてのメールを隠す
+        $query = <<<EOT
+          update users set email=concat('yasui.hideo+t',id,'@gmail.com')
+           where id in (select user_id from teachers)
+EOT;
+        $ret[] = DB::update($query, []);
+        $query = <<<EOT
+          update users set email=concat('yasui.hideo+m',id,'@gmail.com')
+           where id in (select user_id from managers)
+EOT;
+        $ret[] = DB::update($query, []);
+        @$this->remind("講師・事務のメールアドレスを秘匿", 'info', $this->logic_name);
+      }
+      return $ret;
     }
 }

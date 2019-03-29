@@ -111,6 +111,7 @@ class GeneralAttributesSeeder extends Seeder
       $res = $controller->call_api($req, $url, 'POST');
       $url = config('app.url').'/import/users';
       $res = $controller->call_api($req, $url, 'POST');
-
+      $url = config('app.url').'/import/concealment';
+      $res = $controller->call_api($req, $url, 'POST');
     }
 }
