@@ -273,12 +273,8 @@ EOT;
       'user_id' => $user->id,
       'create_user_id' => $user->id,
     ]);
-    UserTag::create([
-      'user_id' => $user->id,
-      'tag_key' => 'student_no',
-      'tag_value' => $student_no,
-      'create_user_id' => $user->id,
-    ]);
+    UserTag::setTag($user->id,'student_no',$student_no,$user->id);
+
     return $student;
   }
   /**

@@ -32,20 +32,18 @@ class Manager extends Teacher
           'password' => '-',
       ]);
     }
-    $manager = Manager::create([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => '',
-      'kana_first' => '',
-      'user_id' => $user->id,
-      'create_user_id' => 1,
-    ]);
-    UserTag::create([
-      'user_id' => $user->id,
-      'tag_key' => 'manager_no',
-      'tag_value' => $manager_no,
-      'create_user_id' => $user->id,
-    ]);
+    $manager = Manager::where('user_id', $user->id)->first();
+    if(!isset($manager)){
+      $manager = Manager::create([
+        'name_last' => $form['name_last'],
+        'name_first' => $form['name_first'],
+        'kana_last' => '',
+        'kana_first' => '',
+        'user_id' => $user->id,
+        'create_user_id' => $user->id,
+      ]);
+    }
+    UserTag::setTag($user->id,'manager_no',$manager_no,$user->id);
 
     return $manager;
   }

@@ -67,12 +67,7 @@ EOT;
       'user_id' => $user->id,
       'create_user_id' => 1,
     ]);
-    UserTag::create([
-      'user_id' => $user->id,
-      'tag_key' => 'teacher_no',
-      'tag_value' => $teacher_no,
-      'create_user_id' => $user->id,
-    ]);
+    UserTag::setTag($user->id,'teacher_no',$teacher_no,$user->id);
 
     return $teacher;
   }
