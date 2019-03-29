@@ -53,8 +53,14 @@
                 flat-green
                 @endif
                subject_level"  required="true"
-              @if(isset($item) && isset($item->user) && $item->user->has_tag($subject.'_level', $index)===true || (!isset($_edit) && $loop->index == 0))
-               checked
+              @if($_edit===true)
+                @if($item->user->has_tag($subject.'_level', $index)===true)
+                  checked
+                @endif
+              @else
+                @if($loop->index == 0)
+                  checked
+                @endif
               @endif
               >
             </td>
@@ -80,9 +86,15 @@
             flat-green
             @endif
              subject_level"  required="true"
-            @if((isset($_edit) && isset($item) && isset($item->user) && $item->user->has_tag($subject.'_level', $index)===true) || (!isset($_edit) && $loop->index == 0))
-             checked
-            @endif
+             @if($_edit===true)
+               @if($item->user->has_tag($subject.'_level', $index)===true)
+                 checked
+               @endif
+             @else
+               @if($loop->index == 0)
+                 checked
+               @endif
+             @endif
             >
           </td>
           @endforeach

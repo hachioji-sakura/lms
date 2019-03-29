@@ -1693,7 +1693,7 @@ EOT;
         $ret[] = DB::update($query, []);
         $query = <<<EOT
           update users set email=concat('yasui.hideo+m',id,'@gmail.com')
-           where id in (select user_id from managers)
+           where id in (select user_id from managers where id>1)
 EOT;
         $ret[] = DB::update($query, []);
         @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);

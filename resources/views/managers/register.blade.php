@@ -119,15 +119,13 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('managers_register');
-  base.pageSettinged("managers_register", form_data);
+  base.pageSettinged("managers_register", []);
   $('#managers_register').carousel({ interval : false});
 
   //submit
   $("#managers_register button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('managers_register .carousel-item.active')){
-      util.removeLocalData('managers_register');
       $("form").submit();
     }
   });
@@ -136,7 +134,6 @@ $(function(){
   $('#managers_register .carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('managers_register .carousel-item.active')){
       var form_data = front.getFormValue('managers_register');
-      util.setLocalData('managers_register', form_data);
       $('#managers_register').carousel('next');
       $('#managers_register').carousel({ interval : false});
     }

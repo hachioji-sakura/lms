@@ -69,15 +69,13 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('teachers_edit');
-  base.pageSettinged("teachers_edit", form_data);
+  base.pageSettinged("teachers_edit", []);
   $('#teachers_edit').carousel({ interval : false});
 
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('teachers_edit .carousel-item.active')){
-      util.removeLocalData('teachers_edit');
       $("form").submit();
     }
   });
@@ -86,7 +84,6 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('teachers_edit .carousel-item.active')){
       var form_data = front.getFormValue('teachers_edit');
-      util.setLocalData('teachers_edit', form_data);
       $('#teachers_edit').carousel('next');
       $('#teachers_edit').carousel({ interval : false});
     }

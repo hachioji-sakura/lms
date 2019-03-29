@@ -106,6 +106,11 @@ EOT;
     }
     $tag_names = ['lesson', 'teacher_character'];
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+    //講師用の希望シフト
+    foreach($lesson_weeks as $lesson_week){
+      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    }
+    //事務用の希望シフト
     foreach($lesson_weeks as $lesson_week){
       $tag_names[] = 'work_'.$lesson_week['attribute_value'].'_time';
     }

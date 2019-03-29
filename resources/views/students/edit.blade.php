@@ -88,8 +88,7 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('students_edit');
-  base.pageSettinged("students_edit", form_data);
+  base.pageSettinged("students_edit", []);
   $('#students_edit').carousel({ interval : false});
 
   //submit
@@ -104,7 +103,6 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('students_edit .carousel-item.active')){
       var form_data = front.getFormValue('students_edit');
-      util.setLocalData('students_edit', form_data);
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
       $('#students_edit').carousel('next');
       $('#students_edit').carousel({ interval : false});

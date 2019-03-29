@@ -134,15 +134,13 @@
 <script>
 
 $(function(){
-  var form_data = util.getLocalData('teachers_register');
-  base.pageSettinged("teachers_register", form_data);
+  base.pageSettinged("teachers_register", []);
   $('#teachers_register').carousel({ interval : false});
 
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('teachers_register .carousel-item.active')){
-      util.removeLocalData('teachers_register');
       $("form").submit();
     }
   });
@@ -151,7 +149,6 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('teachers_register .carousel-item.active')){
       var form_data = front.getFormValue('teachers_register');
-      util.setLocalData('teachers_register', form_data);
       $('#teachers_register').carousel('next');
       $('#teachers_register').carousel({ interval : false});
     }

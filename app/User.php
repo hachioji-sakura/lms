@@ -106,39 +106,48 @@ class User extends Authenticatable
         'password' => Hash::make($password)
       ]);
     }
-    public function details($is_force_get = false){
+    public function details($domain = ""){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = Image::where('id', $this->image_id)->first();
       $s3_url = '';
       if(isset($image)){
         $s3_url = $image->s3_url;
       }
-      if(session('login_role') == 'manager' || $is_force_get===true){
-        $item = Manager::where('user_id', $this->id)->first();
-        if(isset($item)){
-          $item['manager_id'] = $item['id'];
-          $item['role'] = 'manager';
+      if(session('login_role') == 'manager' || $domain=="managers"){
+        //TODO 事務でない権限で事務の情報を取得できない（例えば、事務からの通達など）
+        if(empty($domain) || $domain=="managers"){
+          $item = Manager::where('user_id', $this->id)->first();
+          if(isset($item)){
+            $item['manager_id'] = $item['id'];
+            $item['role'] = 'manager';
+          }
         }
       }
       if(!isset($item)){
+        if(empty($domain) || $domain=="teachers"){
         $item = Teacher::where('user_id', $this->id)->first();
-        if(isset($item)){
-          $item['teacher_id'] = $item['id'];
-          $item['role'] = 'teacher';
+          if(isset($item)){
+            $item['teacher_id'] = $item['id'];
+            $item['role'] = 'teacher';
+          }
         }
       }
       if(!isset($item)){
-        $item = StudentParent::where('user_id', $this->id)->first();
-        if(isset($item)){
-          $item['role'] = 'parent';
-          $item['student_parent_id'] = $item['id'];
+        if(empty($domain) || $domain=="student_parents"){
+          $item = StudentParent::where('user_id', $this->id)->first();
+          if(isset($item)){
+            $item['role'] = 'parent';
+            $item['student_parent_id'] = $item['id'];
+          }
         }
       }
       if(!isset($item)){
-        $item = Student::where('user_id', $this->id)->first();
-        if(isset($item)){
-          $item['role'] = 'student';
-          $item['student_id'] = $item['id'];
+        if(empty($domain) || $domain=="students"){
+          $item = Student::where('user_id', $this->id)->first();
+          if(isset($item)){
+            $item['role'] = 'student';
+            $item['student_id'] = $item['id'];
+          }
         }
       }
       if(isset($item)){

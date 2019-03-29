@@ -52,15 +52,13 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('managers_edit');
-  base.pageSettinged("managers_edit", form_data);
+  base.pageSettinged("managers_edit", []);
   $('#managers_edit').carousel({ interval : false});
 
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('managers_edit .carousel-item.active')){
-      util.removeLocalData('managers_edit');
       $("form").submit();
     }
   });
@@ -69,7 +67,6 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('managers_edit .carousel-item.active')){
       var form_data = front.getFormValue('managers_edit');
-      util.setLocalData('managers_edit', form_data);
       $('#managers_edit').carousel({ interval : false});
       $('#managers_edit').carousel('next');
 

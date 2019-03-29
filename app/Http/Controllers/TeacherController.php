@@ -74,7 +74,7 @@ class TeacherController extends StudentController
         //講師は自分のidしか閲覧できない
         abort(403);
       }
-      $ret['item'] = $this->model()->where('id',$id)->first()->user->details();
+      $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -331,12 +331,13 @@ class TeacherController extends StudentController
        if($user->count() < 1){
          abort(404);
        }
-       $param['item'] = $user->first()->details(true);
+       $param['item'] = $user->first()->details($this->domain);
        if($param['item']->role.'s' != $this->domain){
-         abort(404);
+         abort(403, 'このページの有効期限がきれています');
        }
        $param['access_key'] = $access_key;
      }
+     $param['_edit'] = false;
      return view($this->domain.'.register',$param);
     }
     /**
@@ -371,7 +372,7 @@ class TeacherController extends StudentController
       $password = $form['password'];
 
       if($this->is_success_response($res)){
-        $create_user = $res['data']->user->details(true);
+        $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
         $this->send_mail($email, $this->domain_name.'登録完了', $form, 'text', 'register');
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
