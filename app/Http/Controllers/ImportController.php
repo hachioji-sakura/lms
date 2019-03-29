@@ -1674,16 +1674,17 @@ class ImportController extends UserController
     }
     private function concealment(){
       $ret = [];
-      if(config('app.env')!=="product"){
+      $env = config('app.env');
+      if($env!=="product"){
         //本番でない場合、保護者あてのメールを隠す
         $query = <<<EOT
           update users set email=concat('yasui.hideo+p',id,'@gmail.com')
            where id in (select user_id from student_parents)
 EOT;
         $ret[] = DB::update($query, []);
-        @$this->remind("契約者のメールアドレスを秘匿", 'info', $this->logic_name);
+        @$this->remind("契約者のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
       }
-      if(config('app.env')!=="product" || config('app.env')!=="staging"){
+      if($env!=="product" && $env !== "staging"){
         //staging or productでない場合、講師あて、事務あてのメールを隠す
         $query = <<<EOT
           update users set email=concat('yasui.hideo+t',id,'@gmail.com')
@@ -1695,7 +1696,7 @@ EOT;
            where id in (select user_id from managers)
 EOT;
         $ret[] = DB::update($query, []);
-        @$this->remind("講師・事務のメールアドレスを秘匿", 'info', $this->logic_name);
+        @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
       }
       return $ret;
     }
