@@ -329,11 +329,11 @@ class TeacherController extends StudentController
        }
        $user = User::where('access_key',$access_key);
        if($user->count() < 1){
-         abort(404, 'hoge1');
+         abort(404);
        }
        $param['item'] = $user->first()->details(true);
        if($param['item']->role.'s' != $this->domain){
-         abort(404, $param['item']->role.'s'.'!='.$this->domain);
+         abort(404);
        }
        $param['access_key'] = $access_key;
      }
