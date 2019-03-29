@@ -20,6 +20,12 @@ $(function(){
       location.href = service.setQueryParam({"search_word" : ""});
     }
   });
+  $("input[name='search_word']").on("keypress", function(e){
+    if(e.keyCode==13){
+      //検索入力～Enterで、検索ボタン押下
+      $("#search_button").click();
+    }
+  });
   //ダイアログでサブページを開く場合、
   $("a[page_url][page_title][page_form=dialog]").on("click", function(e){
     base.showPage("dialog", "subDialog", $(this).attr("page_title"), $(this).attr("page_url"));

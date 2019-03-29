@@ -20,10 +20,6 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      <li class="nav-item hr-1">
-        @component('components.search_word', ['search_word' => $search_word])
-        @endcomponent
-      </li>
       @if($mode==='trial')
       @else
       <li class="nav-item">

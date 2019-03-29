@@ -3,7 +3,9 @@
       <h3 class="card-title">@yield('title')</h3>
     </div>
     <div class="card-body">
-      <div id="listTable" class="card-body card-list" alt="CardTable">
+      @component('components.search_word', ['search_word' => $search_word])
+      @endcomponent
+      <div id="listTable" class="card-body card-list mt-1" alt="CardTable">
         @if(count($items) > 0)
         <ul class="mailbox-attachments clearfix row">
           @foreach($items as $item)

@@ -24,10 +24,6 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      <li class="nav-item hr-1">
-        @component('components.search_word', ['search_word' => $search_word])
-        @endcomponent
-      </li>
       @if($user->role==="teacher")
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link">

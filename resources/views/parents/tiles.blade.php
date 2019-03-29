@@ -15,10 +15,6 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      <li class="nav-item hr-1">
-        @component('components.search_word', ['search_word' => $search_word])
-        @endcomponent
-      </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=0" class="nav-link @if($_status==0) active @endif">
           <i class="fa fa-user-check nav-icon"></i>登録済み

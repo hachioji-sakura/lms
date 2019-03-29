@@ -97,10 +97,6 @@
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  <li class="nav-item hr-1">
-    @component('components.search_word', ['search_word' => $search_word])
-    @endcomponent
-  </li>
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
