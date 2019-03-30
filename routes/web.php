@@ -72,6 +72,8 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
+Route::get('teachers/{id}/month_work/{target_moth?}','TeacherController@month_work');
+Route::post('teachers/{id}/month_work','TeacherController@month_work_confirm');
 Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
 Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
 

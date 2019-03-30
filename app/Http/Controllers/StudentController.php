@@ -499,9 +499,7 @@ class StudentController extends UserController
       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
   }
-  public function get_schedule(Request $request, $user_id){
-    $from_date = '';
-    $to_date = '';
+  public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
     $statuses = [];
     $sort = 'asc';
     //status: new > confirm > fix >rest, presence , absence
@@ -510,21 +508,21 @@ class StudentController extends UserController
       case "history":
         //履歴
         $sort = 'desc';
-        $to_date = date('Y-m-d', strtotime("+1 month"));
+        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+1 month"));
         break;
       case "cancel":
         //休み予定
-        $from_date = date('Y-m-d');
-        $to_date = date('Y-m-d', strtotime("+1 month"));
+        if(empty($from_date)) $from_date = date('Y-m-d');
+        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+1 month"));
         $statuses = ['cancel','rest'];
         break;
       case "confirm":
         //予定調整中
-        $from_date = date('Y-m-d');
+        if(empty($from_date)) $from_date = date('Y-m-d');
         $statuses = ['new', 'confirm'];
         break;
       default:
-        $from_date = date('Y-m-d');
+        if(empty($from_date)) $from_date = date('Y-m-d');
         $statuses = ['rest', 'fix', 'presence', 'absence'];
         break;
     }
@@ -535,8 +533,11 @@ class StudentController extends UserController
     }
     //var_dump($calendars->toSql());
     $count = $calendars->count();
-    $calendars = $calendars->sortStarttime($sort)
-      ->pagenation($request->get('_page'), $request->get('_line'))->get();
+    $calendars = $calendars->sortStarttime($sort);
+    if($request->has('_page') && $request->has('_line')){
+      $calendars = $calendars->pagenation($request->get('_page'), $request->get('_line'));
+    }
+    $calendars = $calendars->get();
     return ["data" => $calendars, "count" => $count];
   }
 }

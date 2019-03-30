@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}ダッシュボード
+  {{$domain_name}}授業スケジュール
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
