@@ -24,12 +24,12 @@
             @slot('alias')
               <h6 class="widget-user-desc">
                 @if(!empty($item->user->status===1))
-                <small class="badge badge-danger mt-1 mr-1">
-                  体験授業
+                <small class="badge badge-danger mt-1 mr-1" title="仮登録の場合表示されます">
+                  体験
                 </small>
                 @endif
                 <small class="badge badge-dark mt-1 mr-1">
-                  {{$item->tag_name('student_no')}}
+                  No.{{$item->tag_name('student_no')}}
                 </small>
                 <small class="badge badge-primary mt-1 mr-1">
                   {{$item->gender()}}

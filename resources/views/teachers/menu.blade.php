@@ -27,16 +27,16 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-item has-treeview menu-open">
       <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-chalkboard-teacher"></i>
+      <i class="nav-icon fa fa-clock"></i>
       <p>
-        授業スケジュール
+        授業予定
         <i class="right fa fa-angle-left"></i>
       </p>
       </a>
       <ul class="nav nav-treeview pl-2">
         <li class="nav-item">
           <a href="/{{$domain}}/{{$item->id}}/schedule" class="nav-link @if($view=="schedule" && $list=="") active @endif">
-            <i class="fa fa-calendar-check nav-icon"></i>授業予定
+            <i class="fa fa-calendar-check nav-icon"></i>直近予定
           </a>
         </li>
         <li class="nav-item">
@@ -78,8 +78,8 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="講師設定">
-            <i class="fa fa-user-edit nav-icon"></i>講師設定
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+            <i class="fa fa-user-edit nav-icon"></i>{{$domain_name}}設定
           </a>
         </li>
         @if($user->role==="manager")

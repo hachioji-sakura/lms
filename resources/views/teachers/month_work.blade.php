@@ -73,9 +73,9 @@
           <ul id="month_work_list" class="mailbox-attachments clearfix row">
             @foreach($calendars as $calendar)
             @if($__date != $calendar["date"])
-            <li class="col-12" accesskey="" target="">
+            <li class="col-12 p-0" accesskey="" target="">
               <div class="row">
-                <div class="col-12">
+                <div class="col-12 pl-3">
                   <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
                     <i class="fa fa-calendar-alt mr-1"></i>
                     {{date('m月d日', strtotime($calendar["date"]))}}
@@ -88,6 +88,8 @@
                   <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                   <div class="col-4">
                     {{$calendar["timezone"]}}
+                    <br>
+                    {{$calendar["place"]}}
                   </div>
                   <div class="col-4">
                     @foreach($calendar->members as $member)
@@ -99,7 +101,9 @@
                     @endforeach
                   </div>
                   <div class="col-4">
-                    <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{$calendar->status_style()}} btn-sm float-left mr-1 w-100">
+                    <span class="right badge badge-info ml-1">{{$calendar["subject"]}}</span>
+                    <br>
+                    <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{$calendar->status_style()}} btn-sm float-left mr-1 w-100 mt-1">
                       <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                     </a>
                   </div>

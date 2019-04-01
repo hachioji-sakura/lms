@@ -264,7 +264,7 @@ EOT;
     $this->office_system_api("DELETE");
   }
   //本モデルはupdateではなくchangeを使う
-  protected function change($form){
+  public function change($form){
     $lecture_id = 0;
     if(isset($form['lesson']) && isset($form['subject']) && isset($form['course'])){
       $lecture = Lecture::where('lesson' , $form['lesson'])
