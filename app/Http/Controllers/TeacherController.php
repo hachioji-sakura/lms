@@ -154,7 +154,6 @@ class TeacherController extends StudentController
     $item['tags'] = $model->tags();
 
     $user = $param['user'];
-    //コメントデータ取得
     $view = "schedule";
     $request->merge([
       '_sort' => 'start_time',
@@ -457,5 +456,94 @@ class TeacherController extends StudentController
       }
       return $this->save_redirect($res, $param, $message);
     }
+    public function month_work(Request $request, $id, $target_month=""){
+      if(empty($target_month)) $target_month = date('Y-m');
+      $param = $this->get_param($request, $id);
+      $model = $this->model()->where('id',$id)->first()->user;
+      $item = $model->details();
+      $item['tags'] = $model->tags();
 
+      $user = $param['user'];
+      $view = "month_work";
+      $request->merge([
+        '_sort' => 'start_time',
+      ]);
+      $from_date = $target_month.'-01';
+      $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
+      $calendars = $this->get_schedule($request, $item->user_id, $from_date, $to_date);
+      $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
+      $calendars = $calendars["data"];
+      $enable_confirm = true; //確認ボタン押せる場合 = true
+      $is_checked = true; //すべて確認済みの場合 = true
+      foreach($calendars as $calendar){
+        if($calendar->is_last_status()===false){
+            $enable_confirm = false;
+        }
+        if($calendar->is_checked()===false){
+            $is_checked = false;
+        }
+        $calendar = $calendar->details();
+      }
+      if($param['user']->user_id !== $param['item']->user_id){
+        $enable_confirm = false;
+      }
+      $param["calendars"] = $calendars;
+      $list_title = date('Y年m月 勤務実績', strtotime($from_date));
+      $param['list_title'] = $list_title;
+      $param['view'] = $view;
+      $param['is_checked'] = $is_checked;
+      $param['enable_confirm'] = $enable_confirm;
+      $param['target_month'] = $target_month;
+      $param['next_month'] = date("Y-m", strtotime("+1 month ".$from_date));;
+      $param['prev_month'] = date("Y-m", strtotime("-1 month ".$from_date));;
+      return view($this->domain.'.'.$view, [
+        'item' => $item,
+      ])->with($param);
+
+    }
+    public function month_work_confirm(Request $request, $id){
+      $param = $this->get_param($request, $id);
+      $form = $request->all();
+      $res = $this->api_response();
+      if($form['checked_at_type']==='fix'){
+        //確認済み
+        $res = $this->_month_work_confirm($request);
+        $message = '月次勤務実績を確認済みにしました';
+        $this->_mail('月次勤務実績 確認', $param['user'], $form, 'calendar_month_work');
+      }
+      else {
+        //訂正依頼
+        $message = 'カレンダーの訂正依頼を連絡しました';
+        $this->_mail('カレンダーの訂正依頼を受け付けました', $param['user'], $form, 'calendar_correction');
+      }
+      return $this->save_redirect($res, $param, $message);
+    }
+    public function _mail($title, $user, $form, $template){
+      $form['user'] = $user;
+      $res = $this->send_mail($user->email,
+       $title,
+       $form,
+       'text',
+       $template);
+    }
+    public function _month_work_confirm(Request $request){
+      $form = $request->all();
+      try {
+        DB::beginTransaction();
+        $check_date = date('Y-m-d H:i:s');
+        foreach($form['calendar_id'] as $calendar_id){
+          UserCalendar::where('id', $calendar_id)->first()->checked($check_date);
+        }
+        DB::commit();
+        return $this->api_response(200, '', '');
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+         DB::rollBack();
+         return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+         DB::rollBack();
+         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+    }
 }

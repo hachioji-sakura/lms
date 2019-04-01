@@ -413,11 +413,6 @@ class UserCalendarController extends MilestoneController
         //remind以外はステータスの更新
         $res = $this->_status_update($param, $status);
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
-        /*
-        if($this->is_success_response($res)){
-          $this->office_system_api($request, "PUT", $param['item']);
-        }
-        */
       }
 
       $slack_type = 'error';
@@ -539,11 +534,10 @@ class UserCalendarController extends MilestoneController
      * @return \Illuminate\Http\Response
      */
     private function _status_update($param, $status){
-      $item = $param['item'];
       try {
         DB::beginTransaction();
         //カレンダーステータス変更
-        UserCalendarMember::where('calendar_id', $item->id)
+        UserCalendarMember::where('calendar_id', $param['item']->id)
             ->where('user_id', $param['user']->user_id)
             ->update(['status'=>$status]);
         $update_form = [
@@ -552,16 +546,11 @@ class UserCalendarController extends MilestoneController
         ];
         //生徒確認待ちの場合認証なしで、確認できるようにする
         $update_form['access_key'] = $param['token'];
-        UserCalendar::where('id', $item->id)->change($update_form);
-        /*
-        if($item->trial_id > 0){
-          //体験授業予定の場合、体験授業のステータスも更新する
-          Trial::where('id', $item->trial_id)->first()->update(['status' => $status]);
-        }
-        */
+        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        $param['item'] = $param['item']->change($update_form);
         //カレンダーメンバーステータス変更
         DB::commit();
-        return $this->api_response(200, '', '', $item);
+        return $this->api_response(200, '', '', $param['item']);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
@@ -797,10 +786,6 @@ class UserCalendarController extends MilestoneController
         DB::beginTransaction();
         $user = $this->login_details();
         $item = $this->model()->where('id',$id)->first();
-        /*
-        $this->office_system_api($request, "DELETE", $item);
-        UserCalendarMember::where('calendar_id', $id)->delete();
-        */
         $item->dispose();
         DB::commit();
         return $this->api_response(200, '', '', $items);

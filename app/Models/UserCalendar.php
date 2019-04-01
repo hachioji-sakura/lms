@@ -264,7 +264,7 @@ EOT;
     $this->office_system_api("DELETE");
   }
   //本モデルはupdateではなくchangeを使う
-  protected function change($form){
+  public function change($form){
     $lecture_id = 0;
     if(isset($form['lesson']) && isset($form['subject']) && isset($form['course'])){
       $lecture = Lecture::where('lesson' , $form['lesson'])
@@ -331,6 +331,22 @@ EOT;
       ]);
     }
     return $member;
+  }
+  public function checked($check_date){
+    $this->update(['checked_at' => $check_date]);
+    return false;
+  }
+  public function is_last_status(){
+    if($this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
+      return true;
+    }
+    return false;
+  }
+  public function is_checked(){
+    if(!empty($this->checked_at)){
+      return true;
+    }
+    return false;
   }
   public function is_member($user_id){
     foreach($this->members as $member){
