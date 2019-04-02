@@ -334,7 +334,8 @@ class TrialController extends UserCalendarController
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
-      ['sended' => ''])
+      ['sended' => '',
+       '_edit' => false])
       ->with($param);
    }
    /**

@@ -66,7 +66,7 @@
   </div>
   @component('students.forms.lesson', ['item' => $student, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.course_minutes', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.subject', ['item' => $student, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit,'item' => $student, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
   @component('students.forms.course_type', ['item' => $student, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.english_teacher', ['item' => $student, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['item' => $student, 'attributes' => $attributes]) @endcomponent

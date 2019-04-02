@@ -686,6 +686,9 @@ class UserCalendarController extends MilestoneController
       if($this->is_teacher($param['user']->role)){
         $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $param['user']->id);
       }
+      else if($param['teacher_id'] > 0){
+        $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $param['teacher_id']);
+      }
       $items = $items->get();
       return $items;
     }
@@ -696,7 +699,14 @@ class UserCalendarController extends MilestoneController
      * @return array
      */
     private function get_teachers($param){
-      $items = Teacher::whereRaw('teachers.user_id in (select id from users where status!=9)')->get();
+      $items = Teacher::whereRaw('teachers.user_id in (select id from users where status!=9)');
+      if($this->is_teacher($param['user']->role)){
+        $items = $items->where('id',  $param['user']->id);
+      }
+      else if($param['teacher_id'] > 0){
+        $items = $items->where('id',  $param['teacher_id']);
+      }
+      $items = $items->get();
       return $items;
     }
 
@@ -723,11 +733,12 @@ class UserCalendarController extends MilestoneController
       if(!$request->has('teacher_id')){
         //teacher_id指定がない場合、講師は選択する
         $param['teachers'] = $this->get_teachers($param);
+        if(count($param['teachers'])==1){
+          $param['item']['teacher_id'] = $param['teachers'][0]['id'];
+        }
       }
       else {
-        //teacher_id指定がある場合、講師を確定させる
-        $teacher = Teacher::where('id', $request->get('teacher_id'))->first();
-        $param['item']['teacher_user_id'] = $teacher->user_id;
+        $param['item']['teacher_id'] = $request->get('teacher_id');
       }
 
       return view($this->domain.'.create',
@@ -753,12 +764,27 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
+      $form = $request->all();
+      $teacher = Teacher::where('id', $form['teacher_id'])->first();
+      $form['teacher_user_id'] = $teacher->user_id;
+      $calendar = UserCalendar::add($form);
+      //生徒をカレンダーメンバーに追加
+      if(!empty($form['student_id'])){
+        $student = Student::where('id', $form['student_id'])->first();
+        $calendar->memberAdd($sutdent->user_id, $form['create_user_id']);
+      }
+      $calendar = $calendar->details();
+      $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
+      return $this->api_response(200, '', '', $calendar);
       try {
         DB::beginTransaction();
+        $teacher = Teacher::where('id', $form['teacher_id'])->first();
+        $form['teacher_user_id'] = $teacher->user_id;
         $calendar = UserCalendar::add($form);
         //生徒をカレンダーメンバーに追加
-        if(!empty($form['student_user_id'])){
-          $calendar->memberAdd($form['student_user_id'], $form['create_user_id']);
+        if(!empty($form['student_id'])){
+          $student = Student::where('id', $form['student_id'])->first();
+          $calendar->memberAdd($sutdent->user_id, $form['create_user_id']);
         }
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');

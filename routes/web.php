@@ -66,6 +66,7 @@ Route::post('entry','TrialController@trial_store');
 
 
 Route::get('api_lectures','LectureController@api_index');
+Route::get('api_course','LectureController@api_index');
 Route::resource('lectures','LectureController');
 
 /*

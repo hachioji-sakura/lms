@@ -16,8 +16,14 @@ class Manager extends Teacher
   }
   static public function entry($form){
     $ret = [];
-    $manager_no = UserTag::where('tag_key', 'manager_no')->max('tag_value');
-    $manager_no = intval(ltrim($manager_no, '0'))+1;
+    $_nos = UserTag::where('tag_key', 'manager_no')->get();
+    $_no = 0;
+    foreach($_nos as $__no){
+      $__no = $__no['tag_value'];
+      $__no = intval(ltrim($__no, '0'));
+      if($_no < $__no) $_no = $__no;
+    }
+    $manager_no = $_no+1;
     $user = null;
     if(isset($form['user_id']) && $form['user_id']>0){
       $user = User::where('id', $form['user_id'])->first();
