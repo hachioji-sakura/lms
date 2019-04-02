@@ -190,7 +190,17 @@ EOT;
           TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
         }
       }
-      ChargeStudent::add($teacher->id, $this->student_id, $form['create_user_id']);
+      $charge_student_form = [
+        'schedule_method' => 'month',
+        'lesson_week_count' => 0,
+        'lesson_week' => '',
+        'teacher_id' => $teacher->id,
+        'student_id' => $this->student_id,
+        'create_user_id' => $form['create_user_id'],
+        'from_time_slot' => date('H:i:s', strtotime($form["start_time"])),
+        'to_time_slot' => date('H:i:s', strtotime($form["end_time"])),
+      ];
+      ChargeStudent::add($charge_student_form);
     }
 
     return $calendar;
