@@ -70,19 +70,6 @@
                 </div>
               </div>
             </div>
-            <script>
-            function status_radio_change(obj){
-              var is_cancel = $('input[type="radio"][name="status"][value="cancel"]').prop("checked");
-              if(is_cancel){
-                $("textarea[name='remark']").show();
-                $("#cancel_reason").collapse("show");
-              }
-              else {
-                $("textarea[name='remark']").hide();
-                $("#cancel_reason").collapse("hide");
-              }
-            }
-            </script>
             <div class="col-12 collapse" id="cancel_reason">
               <div class="form-group">
                 <label for="howto" class="w-100">
@@ -100,6 +87,19 @@
               </form>
             </div>
           </div>
+            <script>
+            function status_radio_change(obj){
+              var is_cancel = $('input[type="radio"][name="status"][value="cancel"]').prop("checked");
+              if(is_cancel){
+                $("textarea[name='remark']").show();
+                $("#cancel_reason").collapse("show");
+              }
+              else {
+                $("textarea[name='remark']").hide();
+                $("#cancel_reason").collapse("hide");
+              }
+            }
+            </script>
         @elseif($item['status']==="fix" && $subpage==="rest")
             @csrf
             @method('PUT')

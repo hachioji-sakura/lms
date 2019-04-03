@@ -43,7 +43,7 @@ class AuthController extends UserController
      if($_user->count() < 1){
        return back()->with(['error_message' => 'メールアドレスが間違っています']);
      }
-     $user = $_user->first()->details();
+     $user = $_user->first();
      $access_key = $this->create_token();
      $_user = $_user->update(['access_key' => $access_key]);
      $this->send_mail($email,
@@ -71,7 +71,7 @@ class AuthController extends UserController
      if($user->count() < 1){
        abort(404);
      }
-     $user = $user->first()->details();
+     $user = $user->first();
      return view('auth.reset',[
      'access_key' => $access_key
      ]);
@@ -87,18 +87,20 @@ class AuthController extends UserController
      if(!$this->is_enable_token($access_key)){
        abort(403);
      }
-
-     $user = User::where('access_key',$access_key);
-     if($user->count() < 1){
+     $user = User::where('access_key',$access_key)->first();
+     if(!isset($user)){
        abort(403);
      }
-     $user = $user->first()->details();
      $form = $request->all();
-     $res = $this->update_user_password($user->user_id, $form['password']);
-     if (Auth::attempt(['email' => $user->email, 'password' => $form['password']]))
-     {
-       return $this->save_redirect($res, [], 'パスワード更新しました。', '/home');
+     $res = $this->update_user_password($user->id, $form['password']);
+     $message = 'パスワード更新しました。';
+     if($this->is_success_response($res)){
+       if (Auth::attempt(['email' => $user->email, 'password' => $form['password']]))
+       {
+         return $this->save_redirect($res, [], $message, '/home');
+       }
      }
-     abort(500);
+     return $this->save_redirect($res, [], $message);
+
    }
 }

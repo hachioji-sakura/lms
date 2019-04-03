@@ -25,16 +25,18 @@
   </li>
   @elseif($user->role==="teacher")
     <li class="nav-item">
-      <a href="/teachers/{{$user->id}}/calendar" class="nav-link">
-        <i class="fa fa-calendar-alt"></i>
-        <span class="d-none d-sm-inline-block">カレンダー</span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a href="/teachers/{{$user->id}}/schedule" class="nav-link">
+      <a class="nav-link" data-toggle="dropdown" href="#">
         <i class="fa fa-clock"></i>
-        <span class="d-none d-sm-inline-block">授業予定</span>
+        <span class="d-none d-sm-inline-block">スケジュール</span>
       </a>
+      <div class="dropdown-menu dropdown-menu-lg">
+        <a href="/teachers/{{$user->id}}/calendar" class="dropdown-item">カレンダー</a>
+        <a href="/teachers/{{$user->id}}/schedule" class="dropdown-item">直近予定</a>
+        <a href="/teachers/{{$user->id}}/schedule?list=confirm" class="dropdown-item">予定調整中</a>
+        <a href="/teachers/{{$user->id}}/schedule?list=cancel" class="dropdown-item">休み予定</a>
+        <a href="/teachers/{{$user->id}}/schedule?list=history" class="dropdown-item">授業履歴</a>
+        <a class="dropdown-item" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?origin={{$domain}}&teacher_id={{$user->id}}" page_title="授業追加">授業追加</a>
+      </div>
     </li>
   @elseif($user->role==="manager")
     <li class="nav-item dropdown">
@@ -42,7 +44,7 @@
         <i class="fa fa-users"></i>
         <span class="d-none d-sm-inline-block">アカウント</span>
       </a>
-      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left">
+      <div class="dropdown-menu dropdown-menu-lg">
         <a href="/students" class="dropdown-item">生徒一覧</a>
         <a href="/parents" class="dropdown-item">契約者一覧</a>
         <a href="/teachers" class="dropdown-item">講師一覧</a>
@@ -54,7 +56,7 @@
         <i class="fa fa-database"></i>
         <span class="d-none d-sm-inline-block">その他</span>
       </a>
-      <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left">
+      <div class="dropdown-menu dropdown-menu-lg">
         <a href="/trials" class="dropdown-item">体験申込一覧</a>
         <a href="/comments" class="dropdown-item">コメント一覧</a>
         <a href="/milestones" class="dropdown-item">目標一覧</a>

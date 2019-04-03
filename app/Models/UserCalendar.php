@@ -79,8 +79,18 @@ EOT;
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id from user_calendar_members where user_id=$user_id)
 EOT;
-
     return $query->whereRaw($where_raw,[$user_id]);
+  }
+  public function scopeFindExchangeTarget($query)
+  {
+    $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
+    $to = date("Y-m-01", strtotime("+2 month ".$from));
+    $query = $this->scopeSearchDate($query, $from, $to);
+    $where_raw = <<<EOT
+      user_calendars.id not in (select exchanged_calendar_id from user_calendars)
+      and user_calendars.status = 'rest'
+EOT;
+    return $query->whereRaw($where_raw,[]);
   }
 
   public function is_access($user_id){
@@ -243,6 +253,7 @@ EOT;
       'lecture_id' => 0,
       'trial_id' => $trial_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
+      'exchanged_calendar_id' => $form['exchanged_calendar_id'],
       'place' => '',
       'work' => '',
       'remark' => '',
@@ -356,19 +367,28 @@ EOT;
     }
     return false;
   }
-  public function is_conflict($start, $end){
+  public function is_conflict($start, $end, $place=''){
     $start = strtotime($start);
     $end = strtotime($end);
     $calendar_starttime = strtotime($this->start_time);
     $calendar_endtime = strtotime($this->end_time);
     if($start > $calendar_starttime && $start < $calendar_endtime){
-        return true;
+      //開始時刻が、範囲内
+      return true;
     }
     if($end > $calendar_starttime && $end < $calendar_endtime){
+      //終了時刻が、範囲内
       return true;
     }
     if($start==$calendar_starttime && $end == $calendar_endtime){
+      //完全一致
       return true;
+    }
+    if(!empty($place)){
+      if($end == $calendar_starttime && $this->place!=$place){
+        //開始終了が一致したが、場所が違うので移動できない
+        return true;
+      }
     }
     return false;
   }

@@ -1,7 +1,8 @@
 @extends('layouts.loginbox')
 @section('title', 'パスワード再設定')
+@section('title_header', 'パスワード再設定')
 @section('content')
-<form method="POST" action="/password/setting">
+<form method="POST" action="/password/setting" id="reset_form">
     @csrf
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <div class="row">
@@ -33,4 +34,17 @@
     </div>
   </div>
 </form>
+<script>
+$(function(){
+  base.pageSettinged("reset_form", null);
+  //submit
+  $("button.btn-submit").on('click', function(e){
+    console.log("reset_form");
+    e.preventDefault();
+    if(front.validateFormValue('reset_form')){
+      $("form").submit();
+    }
+  });
+});
+</script>
 @endsection

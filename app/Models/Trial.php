@@ -174,6 +174,7 @@ EOT;
         'trial_id' => $this->id,
         'place' => $form['place'],
         'remark' => $this->remark,
+        'exchanged_calendar_id' => 0,
         'teacher_user_id' => $teacher->user_id,
         'create_user_id' => $form['create_user_id'],
       ]);
@@ -373,6 +374,7 @@ EOT;
         }
       }
       if($enable_point > 0){
+        //科目の句補があれば、
         $now_calendars = UserCalendar::findUser($teacher->user_id)
                         ->findStatuses(['fix', 'confirm'])
                         ->searchDate($detail['trial_date1'].' 00:00:00', $detail['trial_date1'].' 23:59:59')

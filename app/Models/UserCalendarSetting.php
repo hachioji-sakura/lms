@@ -119,6 +119,7 @@ EOT;
       'lecture_id' => $this->lecture_id,
       'place' => $this->place,
       'work' => $this->work,
+      'exchanged_calendar_id' => 0,
       'remark' => $this->remark,
       'teacher_user_id' => $this->user_id,
       'create_user_id' => 1,
