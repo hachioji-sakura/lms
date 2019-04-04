@@ -40,9 +40,10 @@ class User extends Authenticatable
     public function tags(){
       return $this->hasMany('App\Models\UserTag');
     }
-    public function has_tag($key, $val){
+    public function has_tag($key, $val=""){
       $tags = $this->tags;
       foreach($tags as $tag){
+        if(empty($val) && $tag->tag_key==$key) return true;
         if($tag->tag_key==$key && $tag->tag_value==$val) return true;
       }
       return false;
@@ -155,7 +156,7 @@ class User extends Authenticatable
         $item['kana'] = $item->kana();
         $item['icon'] = $s3_url;
         $item['email'] = $this->email;
-        if($item->birth_day == '9999-12-31') $item->birth_day = '';
+        if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
         return $item;
       }
       return $this;

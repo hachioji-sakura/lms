@@ -334,7 +334,8 @@ class TrialController extends UserCalendarController
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
-      ['sended' => ''])
+      ['sended' => '',
+       '_edit' => false])
       ->with($param);
    }
    /**
@@ -545,7 +546,6 @@ class TrialController extends UserCalendarController
        if($status==="confirm"){
          //体験授業内容から、授業予定追加
          $calendar = $trial->trial_to_calendar($form);
-         $this->office_system_api($request, "POST", $calendar);
          $this->confirm_mail($calendar->details());
        }
        $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');

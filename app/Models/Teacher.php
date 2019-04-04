@@ -48,8 +48,14 @@ EOT;
 
   static public function entry($form){
     $ret = [];
-    $teacher_no = UserTag::where('tag_key', 'teacher_no')->max('tag_value');
-    $teacher_no = intval(ltrim($teacher_no, '0'))+1;
+    $_nos = UserTag::where('tag_key', 'teacher_no')->get();
+    $_no = 0;
+    foreach($_nos as $__no){
+      $__no = $__no['tag_value'];
+      $__no = intval(ltrim($__no, '0'));
+      if($_no < $__no) $_no = $__no;
+    }
+    $teacher_no = $_no+1;
 
     $user = User::create([
         'name' => $form['name_last'].' '.$form['name_first'],

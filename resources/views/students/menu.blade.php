@@ -12,7 +12,7 @@
     </a>
   </div>
 </div>
-<div class="user-panel mb-5">
+<div class="user-panel mb-1">
   <div class="w-100 p-2 @if($view=="calendar")bg-light @endif">
     <a href="/{{$domain}}/{{$item->id}}/calendar" class="text-light">
       <i class="fa fa-calendar-alt mr-1"></i>カレンダー

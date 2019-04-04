@@ -117,36 +117,36 @@ class UserCalendarController extends MilestoneController
       abort(400);
     }
 
-    //TODO 生徒と講師の情報が予定追加時には必須としている
+    //生徒と講師の情報が予定追加時には必須としている
     //講師の指定
-    if($request->has('teacher_user_id')){
-      $form['teacher_user_id'] = $request->get('teacher_user_id');
+    if($request->has('teacher_id')){
+      $form['teacher_id'] = $request->get('teacher_id');
     }
     else if($this->is_teacher($user->role)){
       //ログインユーザーが講師の場合はteacher_id = 自分
-      $form['teacher_user_id'] = $user->user_id;
+      $form['teacher_id'] = $user->user_id;
     }
     else {
       abort(400, "講師指定なし");
     }
-    $teacher = Teacher::where('user_id', $form['teacher_user_id']);
+    $teacher = Teacher::where('id', $form['teacher_id'])->first();
     if(!isset($teacher)){
       //講師が存在しない
       abort(400, "存在しない講師");
     }
-    $teacher_lesson = UserTag::findUser($form['teacher_user_id'])->findKey('lesson');
+    $teacher_lesson = UserTag::findUser($teacher->user_id)->findKey('lesson');
     if(!isset($teacher_lesson)){
       abort(500, "講師のLessonが設定されていない");
     }
     //生徒の指定
-    if($request->has('student_user_id')){
-      $form['student_user_id'] = $request->get('student_user_id');
+    if($request->has('student_id')){
+      $form['student_id'] = $request->get('student_id');
     }
     else {
       abort(400, "生徒指定なし");
     }
-    $student = Teacher::where('user_id', $form['student_user_id']);
-    if(!isset($teacher)){
+    $student = Student::where('id', $form['student_id'])->first();
+    if(!isset($student)){
       //生徒が存在しない
       abort(400, "存在しない生徒");
     }
@@ -154,14 +154,26 @@ class UserCalendarController extends MilestoneController
     if($request->has('lesson')){
       $form['lesson'] = $request->get('lesson');
     }
+
     //内容の指定
     if($request->has('course') && $request->has('subject') && $request->has('place')){
       $form['course'] = $request->get('course');
       $form['subject'] = $request->get('subject');
       $form['place'] = $request->get('place');
+      $form['work'] = 6;
     }
     else {
       abort(400, "パラメータ指定エラー");
+    }
+    $form['exchanged_calendar_id'] = 0;
+    //内容の指定
+    if($request->has('add_type') && $request->get('add_type') == "exchange"){
+      if($request->has('exchanged_calendar_id') && $request->get('exchanged_calendar_id') > 0){
+        $form['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
+      }
+      else {
+        abort(400, "振替元IDの指定がない");
+      }
     }
 
     return $form;
@@ -277,13 +289,12 @@ class UserCalendarController extends MilestoneController
         $items = $items->where('status', '!=', 'new');
       }
       $items = $this->_search_scope($request, $items);
-      $items = $items->findUser($user_id);
+      if($user_id > 0)  $items = $items->findUser($user_id);
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $item){
         $item = $item->details();
       }
-
       return $items->toArray();
     }
     /**
@@ -304,6 +315,20 @@ class UserCalendarController extends MilestoneController
         $statuses = explode(',', $request->search_status.',');
         $items = $items->findStatuses($statuses);
       }
+      //振替元対象
+      if(isset($request->exchange_target)){
+        $items = $items->findExchangeTarget();
+      }
+      //講師ID
+      if(isset($request->teacher_id)){
+        $teacher = Teacher::where('id',$request->teacher_id)->first();
+        if(isset($teacher)) $items = $items->findUser($teacher->user_id);
+      }
+      //生徒ID
+      if(isset($request->student_id)){
+        $student = Student::where('id',$request->student_id)->first();
+        if(isset($student)) $items = $items->findUser($student->user_id);
+      }
       //更新取得
       if(isset($request->update)){
         $items = $items->where('updated_at','>',$request->update);
@@ -320,7 +345,6 @@ class UserCalendarController extends MilestoneController
         if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
       }
       $items = $items->rangeDate($from_date, $to_date);
-
       //検索ワード
       if(isset($request->search_word)){
         $search_words = explode(' ', $request->search_word);
@@ -409,12 +433,18 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $res = $this->api_response();
+      $is_send = true;
       if($status!=="remind"){
         //remind以外はステータスの更新
-        $res = $this->_status_update($param, $status);
-        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        if($param['item']->status != $status){
+          $res = $this->_status_update($param, $status);
+          $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        }
+        else {
+          //TODO: カレンダー更新が2重で動作することがある
+          $is_send = false;
+        }
       }
-
       $slack_type = 'error';
       $slack_message = '更新エラー';
 
@@ -425,23 +455,23 @@ class UserCalendarController extends MilestoneController
         switch($status){
           case "rest":
             //お休み連絡メール通知
-            $this->rest_mail($param);
+            if($is_send) $this->rest_mail($param);
             break;
           case "confirm":
             //授業追加確認メール通知
-            $this->confirm_mail($param);
+            if($is_send) $this->confirm_mail($param);
             break;
           case "cancel":
             //授業キャンセル連絡メール通知
-            $this->cancel_mail($param);
+            if($is_send) $this->cancel_mail($param);
             break;
           case "fix":
             //授業追加確定メール通知
-            $this->fix_mail($param);
+            if($is_send) $this->fix_mail($param);
             break;
           case "absence":
             //欠席メール通知
-            $this->absence_mail($param);
+            if($is_send) $this->absence_mail($param);
             break;
           case "remind":
             //メール通知の再送
@@ -462,7 +492,7 @@ class UserCalendarController extends MilestoneController
         $this->send_slack('カレンダーリマインド['.$param['item']['status'].']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーリマインド');
       }
       else {
-        $this->send_slack('カレンダーステータス更新['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーステータス更新');
+        $this->send_slack('カレンダーステータス更新[maile='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーステータス更新');
       }
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
@@ -686,6 +716,9 @@ class UserCalendarController extends MilestoneController
       if($this->is_teacher($param['user']->role)){
         $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $param['user']->id);
       }
+      else if($param['teacher_id'] > 0){
+        $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $param['teacher_id']);
+      }
       $items = $items->get();
       return $items;
     }
@@ -696,7 +729,14 @@ class UserCalendarController extends MilestoneController
      * @return array
      */
     private function get_teachers($param){
-      $items = Teacher::whereRaw('teachers.user_id in (select id from users where status!=9)')->get();
+      $items = Teacher::whereRaw('teachers.user_id in (select id from users where status!=9)');
+      if($this->is_teacher($param['user']->role)){
+        $items = $items->where('id',  $param['user']->id);
+      }
+      else if($param['teacher_id'] > 0){
+        $items = $items->where('id',  $param['teacher_id']);
+      }
+      $items = $items->get();
       return $items;
     }
 
@@ -723,11 +763,12 @@ class UserCalendarController extends MilestoneController
       if(!$request->has('teacher_id')){
         //teacher_id指定がない場合、講師は選択する
         $param['teachers'] = $this->get_teachers($param);
+        if(count($param['teachers'])==1){
+          $param['item']['teacher_id'] = $param['teachers'][0]['id'];
+        }
       }
       else {
-        //teacher_id指定がある場合、講師を確定させる
-        $teacher = Teacher::where('id', $request->get('teacher_id'))->first();
-        $param['item']['teacher_user_id'] = $teacher->user_id;
+        $param['item']['teacher_id'] = $request->get('teacher_id');
       }
 
       return view($this->domain.'.create',
@@ -753,12 +794,16 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
+      $form = $this->create_form($request);
       try {
         DB::beginTransaction();
+        $teacher = Teacher::where('id', $form['teacher_id'])->first();
+        $form['teacher_user_id'] = $teacher->user_id;
         $calendar = UserCalendar::add($form);
         //生徒をカレンダーメンバーに追加
-        if(!empty($form['student_user_id'])){
-          $calendar->memberAdd($form['student_user_id'], $form['create_user_id']);
+        if(!empty($form['student_id'])){
+          $student = Student::where('id', $form['student_id'])->first();
+          $calendar->memberAdd($student->user_id, $form['create_user_id']);
         }
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
@@ -788,7 +833,7 @@ class UserCalendarController extends MilestoneController
         $item = $this->model()->where('id',$id)->first();
         $item->dispose();
         DB::commit();
-        return $this->api_response(200, '', '', $items);
+        return $this->api_response(200, '', '', $item);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();

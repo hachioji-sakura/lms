@@ -17,8 +17,10 @@
       <th class="p-1 text-center work_week_time_label" alt="disabled">不可</th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
-        <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey lesson_week_time"  required="true"  onChange="work_week_disabled_change(this)"
+        <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey lesson_week_time"  onChange="work_week_disabled_change(this)"
           @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', 'disabled')===true)
+          checked
+          @elseif(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time')===false)
           checked
           @endif
          >
@@ -31,7 +33,7 @@
       <th class="p-1 text-center bg-gray text-sm work_week_time_label">{{$name}}</th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
-        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green lesson_week_time"  required="true"
+        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green lesson_week_time"
         @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
         @endif

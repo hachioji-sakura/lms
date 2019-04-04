@@ -247,8 +247,14 @@ EOT;
    */
   static public function entry($form){
     $ret = [];
-    $student_no = UserTag::where('tag_key', 'student_no')->max('tag_value');
-    $student_no = intval(ltrim($student_no, '0'))+1;
+    $_nos = UserTag::where('tag_key', 'student_no')->get();
+    $_no = 0;
+    foreach($_nos as $__no){
+      $__no = $__no['tag_value'];
+      $__no = intval(ltrim($__no, '0'));
+      if($_no < $__no) $_no = $__no;
+    }
+    $student_no = $_no+1;
     //TODO : student_no (id?)は数値
     /*
     $student_no = sprintf('%06d', $student_no);

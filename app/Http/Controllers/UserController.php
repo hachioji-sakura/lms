@@ -130,6 +130,7 @@ class UserController extends Controller
     if(!isset($user) || !is_numeric($user->user_id)){
       abort(403);
     }
+
     return view('dashboard.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
   }
   /**
@@ -143,6 +144,7 @@ class UserController extends Controller
       abort(403);
     }
     $form = $request->all();
+
     $res = $this->update_user_password($user->user_id, $form['password']);
     if($this->is_success_response($res)){
       return back()->with([
@@ -248,7 +250,7 @@ class UserController extends Controller
    *
    * @return resonse
   */
-  protected function update_user_image($user_id, $image_id)
+  public function update_user_image($user_id, $image_id)
   {
     if(!is_numeric($user_id) || !is_numeric($image_id)){
       return $this->bad_request("", "user_id($user_id),image_id($image_id)");
@@ -274,10 +276,10 @@ class UserController extends Controller
    *
    * @return resonse
   */
-  protected function update_user_password($user_id, $password)
+  public function update_user_password($user_id, $password)
   {
     if(!is_numeric($user_id) || empty($password)){
-      return $this->bad_request("", "user_id($user_id),image_id($image_id)");
+      return $this->bad_request("", "user_id($user_id)");
     }
     try {
       DB::beginTransaction();

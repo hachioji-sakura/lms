@@ -35,7 +35,7 @@
     <div class="form-group row mb-3">
       <div class="input-group">
           <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+              <input class="form-check-input icheck flat-green" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
               <label class="form-check-label" for="remember">
                   ログイン状態を維持する
               </label>
@@ -54,9 +54,7 @@
 <div class="my-2 row hr-1 bd-gray">
   <h6 class="col-12">
   	<a href="/forget" class="small mr-2"><i class="fa fa-arrow-alt-circle-right mr-1"></i>パスワード忘れた方</a>
-  </h6>
-  <h6 class="col-12">
-  <a href="/login" class="small mr-2"><i class="fa fa-user-lock mr-1"></i>講師ログインページへ</a>
+    <a href="/login" class="small mr-2 float-right "><i class="fa fa-user-tie mr-1"></i>講師ログインページへ</a>
   </h6>
 </div>
 

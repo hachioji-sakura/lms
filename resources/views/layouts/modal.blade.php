@@ -1,5 +1,6 @@
 @section('modal')
-<div class="modal fade" id="subDialog" tabindex="-1">
+{{-- <div class="modal fade" id="subDialog" tabindex="-1"> --}}
+<div class="modal fade" id="subDialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

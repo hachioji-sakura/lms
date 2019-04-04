@@ -1,5 +1,6 @@
 @extends('layouts.loginbox')
 @section('title', 'パスワードを忘れた方')
+@section('title_header', 'パスワードを忘れた方')
 @section('content')
 <form id="login_form" method="POST"  action="{{ route('password.update') }}">
     @csrf

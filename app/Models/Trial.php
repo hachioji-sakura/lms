@@ -174,6 +174,7 @@ EOT;
         'trial_id' => $this->id,
         'place' => $form['place'],
         'remark' => $this->remark,
+        'exchanged_calendar_id' => 0,
         'teacher_user_id' => $teacher->user_id,
         'create_user_id' => $form['create_user_id'],
       ]);
@@ -190,7 +191,17 @@ EOT;
           TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
         }
       }
-      ChargeStudent::add($teacher->id, $this->student_id, $form['create_user_id']);
+      $charge_student_form = [
+        'schedule_method' => 'month',
+        'lesson_week_count' => 0,
+        'lesson_week' => '',
+        'teacher_id' => $teacher->id,
+        'student_id' => $this->student_id,
+        'create_user_id' => $form['create_user_id'],
+        'from_time_slot' => date('H:i:s', strtotime($form["start_time"])),
+        'to_time_slot' => date('H:i:s', strtotime($form["end_time"])),
+      ];
+      ChargeStudent::add($charge_student_form);
     }
 
     return $calendar;
@@ -363,6 +374,7 @@ EOT;
         }
       }
       if($enable_point > 0){
+        //科目の句補があれば、
         $now_calendars = UserCalendar::findUser($teacher->user_id)
                         ->findStatuses(['fix', 'confirm'])
                         ->searchDate($detail['trial_date1'].' 00:00:00', $detail['trial_date1'].' 23:59:59')

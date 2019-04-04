@@ -35,7 +35,7 @@
     <div class="form-group row mb-3">
       <div class="input-group">
           <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+              <input class="form-check-input icheck flat-green" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
               <label class="form-check-label" for="remember">
                   ログイン状態を維持する
               </label>

@@ -109,7 +109,7 @@
     <i class="fa fa-pen-square mr-1"></i>
     ご希望の授業内容について
   </div>
-  @component('students.forms.subject', ['attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit,'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
   @component('students.forms.course_type', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.english_teacher', ['attributes' => $attributes]) @endcomponent
   @component('students.forms.piano_level', ['attributes' => $attributes]) @endcomponent

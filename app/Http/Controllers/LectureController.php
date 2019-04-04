@@ -17,7 +17,7 @@ class LectureController extends UserController
    * @return model
    */
   public function model(){
-    return Student::query();
+    return Lecture::query();
   }
 
   public function api_index(Request $request)
@@ -71,7 +71,7 @@ class LectureController extends UserController
    * @param  \Illuminate\Http\Request  $request
    * @return [Collection, field]
    */
-  public function search(Request $request)
+  public function search2(Request $request)
   {
     $param = $this->get_param($request);
     $sql = <<<EOT
@@ -95,6 +95,50 @@ EOT;
     $sql .= " order by lesson.sort_no, course.sort_no, subject.sort_no";
     $items = DB::select($sql, [$param['user']->user_id]);
     return $items;
+  }
+  public function search(Request $request)
+  {
+    $param = $this->get_param($request);
+    return $this->_search($request);
+  }
+  public function _search(Request $request)
+  {
+    $user = $this->login_details();
+    $teacher_id = 0;
+    $student_id = 0;
+    if($request->has('student_id')){
+      $student_id = $request->get('student_id');
+    }
+    if($request->has('teacher_id')){
+      $teacher_id = $request->get('teacher_id');
+    }
+
+    $items = $this->model();
+    if($this->is_student_or_parent($user->role) && $student_id === 0){
+      return $this->forbidden();
+    }
+
+    if($student_id > 0 && $teacher_id > 0){
+      $items = $items->findChargeStudentLesson($teacher_id, $student_id);
+    }
+    else if($teacher_id > 0){
+      $items = $items->findChargeLesson($teacher_id);
+    }
+
+    if($request->has('lesson')){
+      $items = $items->where('lesson' ,$request->get('lesson'));
+    }
+
+    if($request->has('course')){
+      $items = $items->where('course' ,$request->get('course'));
+    }
+
+    $items = $items->orderBy('lesson', 'asc')->orderBy('course', 'asc')->orderBy('subject', 'asc');
+    $items = $items->get();
+    foreach($items as $key => $item){
+      $items[$key] = $item->details();
+    }
+    return $items->toArray();
   }
 
     /**

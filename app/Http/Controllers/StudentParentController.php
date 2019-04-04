@@ -197,6 +197,7 @@ class StudentParentController extends TeacherController
        $param['trial'] = Trial::where('student_id', $student->id)->where('student_parent_id', $param['parent']->id)->first()->details();
        $param['student'] = $student;
        $param['access_key'] = $access_key;
+       $param['_edit'] = false;
      }
      return view($this->domain.'.register',$param);
     }
