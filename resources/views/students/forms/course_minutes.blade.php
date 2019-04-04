@@ -6,7 +6,7 @@
     </label>
     @foreach($attributes['course_minutes'] as $index => $name)
     <label class="mx-2">
-      <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green" >{{$name}}
+      <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green" required="true">{{$name}}
     </label>
     @endforeach
   </div>

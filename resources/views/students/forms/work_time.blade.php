@@ -1,41 +1,44 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="subject_level" class="w-100">
+    <label for="week_table" class="w-100">
       曜日・時間帯
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <table class="table table-striped">
+    <table class="table table-striped" id="week_table">
     <tr class="bg-gray">
       <th class="p-1 text-center">時間帯 / 曜日</th>
       @foreach($attributes['lesson_week'] as $index => $name)
-      <th class="p-1 text-center work_week_label" atl="{{$index}}">
+      <th class="p-1 text-center {{$prefix}}_week_label" atl="{{$index}}">
          {{$name}}
       </th>
       @endforeach
     </tr>
     <tr class="">
-      <th class="p-1 text-center work_week_time_label" alt="disabled">不可</th>
+      <th class="p-1 text-center week_time_label" alt="disabled">不可</th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
-        <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey lesson_week_time"  onChange="work_week_disabled_change(this)"
+        <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey week_time"  onChange="week_change(this)"  validate="week_validate()"
           @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', 'disabled')===true)
           checked
           @elseif(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time')===false)
           checked
+          @elseif(isset($item) && !isset($item->user))
+           checked
           @endif
          >
-         {{$item->user->has_tag('work_'.$week_code.'_time', $index)}}
       </td>
       @endforeach
     </tr>
-    @foreach($attributes['work_time'] as $index => $name)
+    @foreach($attributes[$prefix.'_time'] as $index => $name)
     <tr class="">
-      <th class="p-1 text-center bg-gray text-sm work_week_time_label">{{$name}}</th>
+      <th class="p-1 text-center bg-gray text-sm week_time_label">{{$name}}</th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
-        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green lesson_week_time"
+        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"
         @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
+       @elseif(isset($item) && !isset($item->user))
+        disabled = "disabled"
         @endif
         >
       </td>
@@ -44,12 +47,14 @@
     @endforeach
     </table>
     <script>
-    function work_week_disabled_change(obj){
+    function week_change(obj){
       var _name = $(obj).attr("name");
+      var _val = $(obj).val();
       var _checked = $(obj).prop("checked");
-      if(_checked){
+      console.log('week_change');
+      if(_checked && _val=='disabled'){
         //個別時間帯をすべてdisabled
-        $('input[type="checkbox"][name="'+_name+'"]').each(function(i, e){
+        $('input[type="checkbox"][name="'+_name+'"][value!="disabled"]').each(function(i, e){
           if($(e).attr("value") !== "disabled") {
             $(this).prop('disabled', true);
             $(this).iCheck('uncheck');
@@ -57,8 +62,8 @@
           }
         });
       }
-      else {
-        $('input[type="checkbox"][name="'+_name+'"]').each(function(i, e){
+      else if(!_checked && _val=='disabled'){
+        $('input[type="checkbox"][name="'+_name+'"][value!="disabled"]').each(function(i, e){
           if($(e).attr("value") !== "disabled"){
             $(this).parent().removeClass('disabled');
             $(this).prop('disabled', false);
@@ -67,6 +72,25 @@
           }
         });
       }
+    }
+    function week_validate(){
+      var _is_scceuss = false;
+      if( $("input.week_time[type='checkbox']", $(".carousel-item.active")).length > 0){
+        $("input.week_time[type='checkbox'][value!='disabled']:checked", $(".carousel-item.active")).each(function(index, value){
+          var val = $(this).val();
+          console.log(val);
+          if(val!='disabled'){
+            _is_scceuss = true;
+          }
+        });
+        if(!_is_scceuss){
+          front.showValidateError('#week_table', '希望の時間帯を１つ以上選択してください');
+        }
+      }
+      else {
+        return true;
+      }
+      return _is_scceuss;
     }
     </script>
   </div>

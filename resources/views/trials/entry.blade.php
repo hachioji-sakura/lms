@@ -217,7 +217,7 @@ $(function(){
         });
       }
     });
-    $("input.lesson_week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+    $("input.week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
       var val = $(this).val();
       var name = $(this).attr("name");
       name = name.replace('[]', '');
