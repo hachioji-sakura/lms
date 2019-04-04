@@ -444,6 +444,10 @@
  			}
  		}
 		if(!_isSuccess) showValidateError(selecter, messageCode, messageParam);
+		var validate = $(selecter).attr("validate");
+		if(!util.isEmpty(validate)){
+			return eval(validate);
+		}
 		return _isSuccess;
 	}
 	/**
@@ -470,7 +474,8 @@
 	*/
 	function _showValidateError(selecter, error_message){
 		var field = $(selecter).attr("name");
-		field = field.replace_all('[]', '');
+		if(field)	field = field.replace_all('[]', '');
+		else field = 'no_name';
 		var tag = $(selecter).prop("tagName");
 		var type = $(selecter).attr("type");
 		var _errTemplate = '<div class="row m-2 error_message" id="error'+field+'"><p class="small text-danger">#message#</p></div>';

@@ -6,7 +6,7 @@
     </label>
     @for($i=1;$i<6;$i++)
     <label class="mx-2">
-      <input type="radio" value="{{ $i }}" name="lesson_week_count" class="icheck flat-green">{{$i}}回
+      <input type="radio" value="{{ $i }}" name="lesson_week_count" class="icheck flat-green" required="true">{{$i}}回
     </label>
     @endfor
   </div>

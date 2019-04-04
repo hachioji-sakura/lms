@@ -396,11 +396,13 @@
 		else {
 			//メッセージコードではない場合
 			body = msgCode;
-			if(util.isZenkaku(param)) title = param;
+			title = "";
 		}
-		for(var i=0,n=p.length;i<n;i++){
-			if(body.indexOf("{%")<0) break;
-			body = body.replace("{%"+i+"}", p[i]);
+		if(p){
+			for(var i=0,n=p.length;i<n;i++){
+				if(body.indexOf("{%")<0) break;
+				body = body.replace("{%"+i+"}", p[i]);
+			}
 		}
 		return {"title":title, "body": body};
 	}
