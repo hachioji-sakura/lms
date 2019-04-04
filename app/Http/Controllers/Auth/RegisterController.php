@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\Manager;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -49,7 +52,6 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -63,10 +65,31 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
+        $user = User::create([
+            'name' => $data['name_last'].' '.$data['name_first'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+        return $user;
     }
+    private function create_student(array $data)
+    {
+        $user = User::create([
+            'name' => $data['name_last'].' '.$data['name_first'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+        if(isset($user)){
+          return Student::create([
+            'user_id' => $user['id'],
+            'name_last' => $data['name_last'],
+            'name_first' => $data['name_first'],
+            'kana_last' => $data['kana_last'],
+            'kana_first' => $data['kana_first'],
+            'gender' => $data['gender'],
+            'birth_day' => $data['birth_day'],
+          ]);
+        }
+    }
+
 }
