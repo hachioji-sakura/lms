@@ -1,9 +1,9 @@
 @include($domain.'.create_form')
-<div class="direct-chat-msg">
+<div id="managers_edit" class="direct-chat-msg">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
     @csrf
     @method('PUT')
-    <div id="managers_edit" class="carousel slide" data-ride="carousel" data-interval="false">
+    <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')

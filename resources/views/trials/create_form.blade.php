@@ -98,7 +98,7 @@
   </div>
   @component('students.forms.lesson_week_count', ['item' => [], 'attributes' => $attributes]) @endcomponent
   @component('students.forms.course_minutes', ['attributes' => $attributes]) @endcomponent
-  @component('students.forms.lesson_week', ['item' => [], 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['item' => [], 'prefix' => 'lesson', 'attributes' => $attributes]) @endcomponent
   @component('students.forms.lesson_place', ['item' => [], 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection

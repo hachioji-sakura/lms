@@ -53,7 +53,7 @@
 @section('lesson_week_form')
 <div class="row">
   @component('students.forms.lesson_week_count', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.lesson_week', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['item' => $student, 'prefix' => 'lesson', 'attributes' => $attributes]) @endcomponent
   @component('students.forms.lesson_place', ['item' => $student, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
