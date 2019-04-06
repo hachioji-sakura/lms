@@ -213,11 +213,12 @@ EOT;
     $student_name = "";
     $other_name = "";
     foreach($this->members as $member){
-      $_member = $member->user->details();
+      $_member = $member->user->details('students');
       if($_member->role === 'student'){
         $student_name.=$_member['name'].',';
       }
-      else if($_member->role === 'teacher'){
+      $_member = $member->user->details('teachers');
+      if($_member->role === 'teacher'){
         $teacher_name.=$_member['name'].',';
       }
       else {
@@ -229,7 +230,6 @@ EOT;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['other_name'] = trim($other_name,',');
-
     $item['is_exchange'] = false;
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;

@@ -14,6 +14,7 @@ use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
+use App\Models\UserCalendarSetting;
 
 use Hash;
 class User extends Authenticatable
@@ -89,6 +90,9 @@ class User extends Authenticatable
     }
     public function calendar_member(){
       return $this->hasMany('App\Models\UserCalendarMember');
+    }
+    public function calendar_member_setting(){
+      return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
 
     /**
@@ -168,5 +172,56 @@ class User extends Authenticatable
 EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
+    }
+    public function calendar_setting(){
+      $items = UserCalendarSetting::findUser($this->id)->get();
+      return $items;
+    }
+    public function get_week_calendar_setting()
+    {
+      $settings = $this->calendar_setting();
+      $week_setting = [];
+      foreach($settings as $index => $setting){
+        $base_date = '2000-01-01 '.$setting['from_time_slot'];
+        $diff = strtotime('2000-01-01 '.$setting['to_time_slot'])-strtotime($base_date);
+        $week_setting[$setting['lesson_week']] = [];
+        while($diff > 0){
+          $time = date('H:i', strtotime($base_date));
+          $week_setting[$setting['lesson_week']][$time] = true;
+          $base_date = date("Y-m-d H:i:s", strtotime("+30 minute ".$base_date));
+          $diff -= 1800;
+        }
+      }
+      return $week_setting;
+    }
+    public function get_work_times($prefix='work')
+    {
+      $weeks = config('attribute.lesson_week');
+      $ret = [];
+      foreach($weeks as $week_day => $val){
+        $key = $prefix.'_'.$week_day.'_time';
+        $tags = $this->get_tags($key);
+        $ret[$week_day]=[];
+        foreach($tags as $index => $tag){
+          $tag_value = $tag->tag_value;
+          if($tag_value=='am'){
+            $ret[$week_day][1000] = true;
+            $ret[$week_day][1030] = true;
+            $ret[$week_day][1100] = true;
+            $ret[$week_day][1130] = true;
+          }
+          else if(strlen($tag_value)==5){
+            //nn_nn形式
+            $time = intval(substr($tag_value,0,2));
+            $ret[$week_day][$time.'00'] = true;
+            $ret[$week_day][$time.'30'] = true;
+          }
+        }
+      }
+      return $ret;
+    }
+    public function get_lesson_times()
+    {
+      return $this->get_work_times('lesson');
     }
 }

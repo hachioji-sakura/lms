@@ -57,6 +57,9 @@
                 @if($item->user->has_tag($subject.'_level', $index)===true)
                   checked
                 @endif
+                @if($item->user->has_tag($subject.'_level')===false && $loop->index)
+                  checked
+                @endif
               @else
                 @if($loop->index == 0)
                   checked

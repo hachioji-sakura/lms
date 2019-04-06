@@ -19,7 +19,7 @@
               {{$field['label']}}
             </label>
             <small class="badge badge-{{$item->status_style()}} mt-1 mr-1">{{$item[$key]}}</small>
-          @elseif($key==="student_name")
+          @elseif($key==='student_name')
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>

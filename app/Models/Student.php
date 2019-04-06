@@ -304,7 +304,7 @@ EOT;
     }
     $this->update($update_form);
     //1:nタグ
-    $tag_names = ['lesson_place', 'kids_lesson', 'student_character'];
+    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'student_character'];
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
@@ -327,6 +327,5 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-
   }
 }

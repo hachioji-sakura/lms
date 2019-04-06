@@ -243,17 +243,6 @@ class TrialController extends UserCalendarController
     }
     foreach($items as $item){
       $item = $item->details();
-      /*
-      if(!empty($status) && $status==='confirm'){
-        $calendar = $item->get_calendar();
-        if(isset($calendar)){
-          $calendar = $calendar->details();
-          $item->calendar_id = $calendar['id'];
-          $item->teacher_name = $calendar['teacher_name'];
-          $item->datetime = $calendar['datetime'];
-        }
-      }
-      */
     }
     return ['items' => $items->toArray(), 'fields' => $fields];
   }
@@ -314,8 +303,8 @@ class TrialController extends UserCalendarController
         'size' => 6
       ],
     ]);
-
-    return view($this->domain.'.page', [
+    $param['view'] = 'page';
+    return view($this->domain.'.'.$param['view'], [
       'action' => $request->get('action'),
       'fields'=>$fields])
       ->with($param);
@@ -572,11 +561,33 @@ class TrialController extends UserCalendarController
    public function to_calendar(Request $request, $id)
    {
      $param = $this->get_param($request, $id);
-     $trial = $param['item'];
-     $teachers = $trial->candidate_teachers();
-     //すべての科目を満たす講師を探す
 
-     return $teachers;
+     $fields = array_merge($this->show_fields, [
+       'parent_email' => [
+         'label' => 'email',
+         'size' => 6
+       ],
+       /*
+       'parent_phone_no' => [
+         'label' => 'ご連絡先',
+         'size' => 3,
+       ],
+       */
+       'howto' => [
+         'label' => '当塾をお知りになった方法は何でしょうか？',
+         'size' => 6
+       ],
+       'howto_word' => [
+         'label' => '検索ワードを教えてください',
+         'size' => 6
+       ],
+     ]);
+     $param['candidate_teachers'] = $param['item']->candidate_teachers();
+     $param['view'] = 'to_calendar';
+     return view($this->domain.'.'.$param['view'], [
+       'action' => $request->get('action'),
+       'fields'=>$fields])
+       ->with($param);
    }
 
 }

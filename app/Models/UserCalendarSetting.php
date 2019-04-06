@@ -18,7 +18,7 @@ class UserCalendarSetting extends Model
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
-      user_calendar_settings.id in (select user_calendar_setting_id from user_calendar_setting_members where user_id=$user_id)
+      user_calendar_settings.id in (select user_calendar_setting_id from user_calendar_member_settings where user_id=$user_id)
 EOT;
 
     return $query->whereRaw($where_raw,[$user_id]);

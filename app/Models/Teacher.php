@@ -170,4 +170,5 @@ EOT;
                         ]);
     return $manager;
   }
+
 }

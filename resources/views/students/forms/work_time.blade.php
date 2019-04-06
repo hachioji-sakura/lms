@@ -8,7 +8,11 @@
     <tr class="bg-gray">
       <th class="p-1 text-center">時間帯 / 曜日</th>
       @foreach($attributes['lesson_week'] as $index => $name)
-      <th class="p-1 text-center {{$prefix}}_week_label" atl="{{$index}}">
+      <th class="p-1 text-center {{$prefix}}_week_label
+      @if($index==="sat") text-primary
+      @elseif($index==="sun") text-danger
+      @endif
+      " alt="{{$index}}">
          {{$name}}
       </th>
       @endforeach

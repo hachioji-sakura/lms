@@ -14,6 +14,7 @@ class UserTag extends Model
       'tag_key' => 'required',
       'tag_value' => 'required'
   );
+
   public function user(){
     return $this->belongsTo('App\User');
   }
@@ -68,7 +69,6 @@ class UserTag extends Model
   {
       return $query->where('tag_key', $val);
   }
-
   //1 key = 1tagの場合利用する(上書き差し替え）
   public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
     UserTag::where('user_id', $user_id)

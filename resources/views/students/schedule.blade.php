@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   <i class="fa fa-user-tie mr-2"></i>
-                  {{$calendar["teacher_name"]}}</td>
+                  {{$calendar['teacher_name']}}</td>
                   <br>
                   <small class="badge badge-primary mt-1 mr-1">
                     {{$calendar["subject"]}}
