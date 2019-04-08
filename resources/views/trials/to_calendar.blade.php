@@ -10,7 +10,11 @@
 
 <section id="member" class="content-header">
 	<div class="container-fluid">
+    @if($select_teacher_id > 0)
+      @yield('other_form')
+    @else
       @yield('teacher_select_form')
+    @endif
   </div>
 </section>
 <script>

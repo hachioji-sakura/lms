@@ -582,8 +582,13 @@ class TrialController extends UserCalendarController
          'size' => 6
        ],
      ]);
-     $param['candidate_teachers'] = $param['item']->candidate_teachers();
+     $teacher_id = 0;
+     if($request->has('teacher_id')){
+       $teacher_id = $request->get('teacher_id');
+     }
+     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id);
      $param['view'] = 'to_calendar';
+     $param['select_teacher_id'] = $teacher_id;
      return view($this->domain.'.'.$param['view'], [
        'action' => $request->get('action'),
        'fields'=>$fields])

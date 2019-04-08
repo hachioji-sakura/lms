@@ -286,7 +286,7 @@ EOT;
     $item['calendars'] = $calendars;
     return $item;
   }
-  public function candidate_teachers(){
+  public function candidate_teachers($teacher_id=0){
     $detail = $this->details();
     //体験希望科目を取得
     $subjects_def = [];
@@ -298,8 +298,14 @@ EOT;
         }
       }
     }
+    $teachers = Teacher::findStatuses('0,1')->chargeSubject($subjects_def);
     //在籍する講師を取得
-    $teachers = Teacher::findStatuses('0,1')->chargeSubject($subjects_def)->get();
+    if($teacher_id > 0){
+      //講師選択済みの場合
+      //対象選択条件は科目が担当可能なので、id指定は後から行う必要がある
+      $teachers = $teachers->where('id', $teacher_id);
+    }
+    $teachers = $teachers->get();
     $start_hour1 = date('H',  strtotime($this->trial_start_time1));
     $end_hour1 = date('H',  strtotime($this->trial_end_time1));
     $start_hour2 = date('H',  strtotime($this->trial_start_time2));
