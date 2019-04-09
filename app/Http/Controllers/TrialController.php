@@ -452,7 +452,10 @@ class TrialController extends UserCalendarController
        //リマインドはステータス更新なし
        $res = $this->_status_update($request, $id, $status);
      }
-
+     $redirect = "";
+     if($status==="confirm"){
+       $redirect = $this->domain.'/'.$id;
+     }
      if($status==="remind" || $status==="cancel"){
        $calendar = $item->get_calendar();
        if(isset($calendar)){
@@ -468,7 +471,7 @@ class TrialController extends UserCalendarController
        }
      }
 
-     return $this->save_redirect($res, $param, $message[$status]);
+     return $this->save_redirect($res, $param, $message[$status], $redirect);
    }
    /**
     * 体験授業予定連絡通知メール送信
@@ -594,5 +597,4 @@ class TrialController extends UserCalendarController
        'fields'=>$fields])
        ->with($param);
    }
-
 }

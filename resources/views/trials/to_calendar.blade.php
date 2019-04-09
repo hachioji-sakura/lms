@@ -8,10 +8,28 @@
 @include($domain.'.matching_form')
 
 
-<section id="member" class="content-header">
-	<div class="container-fluid">
+<section class="content-header">
+	<div class="container-fluid" id="trial_to_calendar">
     @if($select_teacher_id > 0)
+    <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
+      @csrf
+      @method('PUT')
       @yield('other_form')
+      <div class="row">
+        <div class="col-12 mb-1">
+          <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+            <i class="fa fa-arrow-circle-left mr-1"></i>
+            キャンセル
+          </a>
+        </div>
+        <div class="col-12 mb-1">
+            <button type="button" class="btn btn-submit btn-primary btn-block">
+              <i class="fa fa-check mr-1"></i>
+              体験授業予定を連絡する
+            </button>
+        </div>
+      </div>
+    </form>
     @else
       @yield('teacher_select_form')
     @endif
@@ -25,8 +43,7 @@ $(function(){
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('trials_confirm .carousel-item.active')){
-      util.removeLocalData('trials_confirm');
+    if(front.validateFormValue('trial_to_calendar')){
       $("form").submit();
     }
   });
@@ -53,9 +70,6 @@ $(function(){
     }
     if(form_data["teacher_schedule"]){
       var _teacher_schedule = $('input[name=teacher_schedule]:checked');
-      form_data["teacher_id"] = _teacher_schedule.attr('teacher_id');
-      form_data['teacher_name'] = _teacher_schedule.attr('teacher_name');
-      form_data["dulation"] = _teacher_schedule.attr('dulation');
       form_data["start_time"] = _teacher_schedule.attr('start_time');
       form_data["end_time"] = _teacher_schedule.attr('end_time');
     }

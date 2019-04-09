@@ -167,7 +167,7 @@ EOT;
   public function trial_to_calendar($form){
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     $student = Student::where('id', $this->student_id)->first();
-    $calendar = $this->get_calendar();
+    //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
     $calendar = UserCalendar::add([
       'start_time' =>  $form["start_time"],
@@ -180,16 +180,16 @@ EOT;
       'create_user_id' => $form['create_user_id'],
     ]);
     $calendar->memberAdd($student->user_id, $form['create_user_id']);
-    $tag_names = ['matching_decide_word'];
+    $tag_names = ['matching_decide_word', 'charge_subject'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
-        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        UserCalendarTag::setTag($calendar->id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
     $tag_names = ['matching_decide'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        UserCalendarTag::setTags($calendar->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
     $charge_student_form = [
@@ -289,16 +289,17 @@ EOT;
   public function candidate_teachers($teacher_id=0){
     $detail = $this->details();
     //体験希望科目を取得
-    $subjects_def = [];
+    $trial_subjects = [];
     foreach($this->tags as $tag){
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
         if(intval($tag->tag_value) > 1){
-          $subjects_def[$tag->tag_key] = $tag;
+          //希望科目のタグのみ集める
+          $trial_subjects[$tag->tag_key] = $tag;
         }
       }
     }
-    $teachers = Teacher::findStatuses('0,1')->chargeSubject($subjects_def);
+    $teachers = Teacher::findStatuses('0,1')->chargeSubject($trial_subjects);
     //在籍する講師を取得
     if($teacher_id > 0){
       //講師選択済みの場合
@@ -337,46 +338,54 @@ EOT;
     }
     $ret = [];
     foreach($teachers as $teacher){
-      $subjects = $teacher->get_charge_subject();
+      $charge_subjects = $teacher->get_charge_subject();
       $enable_point = 0;
       $disable_point = 0;
       $disable_subject = [];
       $enable_subject = [];
 
-      foreach($subjects_def as $tag_key  => $tag){
+      foreach($trial_subjects as $tag_key  => $tag){
         $tag_val = intval($tag->tag_value);
         $tag_keyname = $tag->keyname();
         $tag_name = $tag->name();
-        if(isset($subjects[$tag_key])){
-          if($tag_val < intval($subjects[$tag_key])){
+        if(isset($charge_subjects[$tag_key])){
+          if($tag_val < intval($charge_subjects[$tag_key])){
+            //対応可能、希望を上回る
             $enable_subject[$tag_key] = [
-              "key" => $tag_keyname,
-              "name" => $tag_name,
+              "subject_key" => str_replace('_level', '', $tag_key),
+              "subject_name" => $tag_keyname,  //科目名
+              "level_name" => $tag_name, //補習可能、受験可能など
               "style" => "primary",
             ];
             $enable_point +=2;
           }
-          else if($tag_val == intval($subjects[$tag_key])){
+          else if($tag_val == intval($charge_subjects[$tag_key])){
+            //対応可能
             $enable_subject[$tag_key] = [
-              "key" => $tag_keyname,
-              "name" => $tag_name,
+              "subject_key" => str_replace('_level', '', $tag_key),
+              "subject_name" => $tag_keyname,  //科目名
+              "level_name" => $tag_name, //補習可能、受験可能など
               "style" => "secondary",
             ];
             $enable_point +=1;
           }
           else {
+            //対応不可能：希望を下回る
             $disable_subject[$tag_key] = [
-              "key" => $tag_keyname,
-              "name" => $tag_name,
+              "subject_key" => str_replace('_level', '', $tag_key),
+              "subject_name" => $tag_keyname,  //科目名
+              "level_name" => $tag_name, //補習可能、受験可能など
               "style" => "secondary",
             ];
             $disable_point +=1;
           }
         }
         else {
+          //対応不可能
           $disable_subject[$tag_key] = [
-            "key" => $tag_keyname,
-            "name" => $tag_name,
+            "subject_key" => str_replace('_level', '', $tag_key),
+            "subject_name" => $tag_keyname,  //科目名
+            "level_name" => $tag_name, //補習可能、受験可能など
             "style" => "danger",
           ];
           $disable_point +=1;
@@ -447,35 +456,67 @@ EOT;
     $detail = [];
     $count = [];
     $all_count = 0;
+    $from_time = "";
     foreach($this->student_schedule as $week_day => $week_schedule){
       $detail[$week_day] = [];
       $count[$week_day] = 0;
       $_minute = $this->course_minutes;
+      $c = 0;
       foreach($week_schedule as $time => $val){
-        $detail[$week_day][$time] = false;
+        $is_free = false;
         if(isset($teacher_enable_schedule) && isset($teacher_enable_schedule[$week_day])
           && isset($teacher_enable_schedule[$week_day][$time])){
             //講師にも同じ曜日・時間の希望がある
-            $detail[$week_day][$time] = $teacher_enable_schedule[$week_day][$time];
+            $is_free = $teacher_enable_schedule[$week_day][$time];
         }
-        if($detail[$week_day][$time]==true){
+        if($is_free===true){
           //現状の講師のカレンダー設定とブッキングしたらfalse
           if(isset($teacher_current_schedule) && isset($teacher_current_schedule[$week_day])
             && isset($teacher_current_schedule[$week_day][$time]) && $teacher_current_schedule[$week_day][$time]==true){
               //講師にも同じ曜日・時間の希望がある
-              $detail[$week_day][$time] = false;
+              $is_free = false;
           }
         }
         //echo"[$week_day][$time]$_minute<br>";
-        if($detail[$week_day][$time]==true){
-          //可能なコマがある場合カウントアップ
-          $_minute -= 30;
-          if($_minute<1){
-            $count[$week_day]++;
-            $all_count++;
-            $_minute = $this->course_minutes;
+        if($is_free===true){
+          if(empty($from_time)){
+            $from_time = $time;
           }
+          $c+=30;
         }
+        else {
+          if(!empty($from_time)){
+            //可能なコマがある場合カウントアップ
+            $_slot = floor($c / $this->course_minutes);
+            if($_slot > 0){
+              $count[$week_day]+=$_slot;
+              $all_count+=$_slot;
+            }
+
+            //直前まで連続していた
+            $detail[$week_day][] = [
+              "from" => $from_time,
+              "to" => $time,
+              "slot" => $_slot
+            ];
+          }
+          $from_time = "";
+          $c = 0;
+          $_minute = $this->course_minutes;
+        }
+      }
+      if(!empty($from_time)){
+        $_slot = floor($c / $this->course_minutes);
+        if($_slot > 0){
+          $count[$week_day]+=$_slot;
+          $all_count+=$_slot;
+        }
+        $detail[$week_day][] = [
+          "from" => $from_time,
+          "to" => $time,
+          "slot" => $_slot
+        ];
+        $from_time = "";
       }
     }
     return ["all_count" => $all_count, "count"=>$count, "detail" => $detail];

@@ -20,6 +20,7 @@ use App\Models\UserTag;
 use App\Models\ChargeStudent;
 
 use App\Models\UserCalendar;
+use App\Models\UserCalendarTag;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;

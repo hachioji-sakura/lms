@@ -12,7 +12,7 @@ class UserCalendarMember extends Model
       'user_id' => 'required',
   );
   public function calendar(){
-    return $this->belongsTo('App\Models\Calendar', 'calendar_id');
+    return $this->belongsTo('App\Models\UserCalendar', 'calendar_id');
   }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');

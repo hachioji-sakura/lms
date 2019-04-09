@@ -19,23 +19,23 @@
         },
         "fix" : {
           "color" : "#007bff",
-          "icon" : "<i class='fa fa-chalkboard-teacher mr-1'></i>",
+          "icon" : "<i class='fa fa-clock mr-1'></i>",
         },
         "cancel" : {
-          "color" : "#adb5bd",
-          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+          "color" : "#6c757d",
+          "icon" : "<i class='fa fa-times mr-1'></i>",
         },
         "absence" : {
-          "color" : "#dc354",
+          "color" : "#dc3545",
           "icon" : "<i class='fa fa-user-times mr-1'></i>",
         },
         "presence" : {
-          "color" : "#adb5bd",
+          "color" : "#28a745",
           "icon" : "<i class='fa fa-check-circle mr-1'></i>",
         },
         "rest" : {
-          "color" : "#adb5bd",
-          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+          "color" : "#dc3545",
+          "icon" : "<i class='fa fa-user-times mr-1'></i>",
         },
       };
       if(_ret[status]) return _ret[status];

@@ -72,11 +72,11 @@
             </div>
             <div class="col-12 collapse" id="cancel_reason">
               <div class="form-group">
-                <label for="howto" class="w-100">
+                <label for="cancel_reason" class="w-100">
                   授業予定に参加できない理由をお知らせください
                   <span class="right badge badge-danger ml-1">必須</span>
                 </label>
-                <textarea type="text" name="remark" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
+                <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
               </div>
             </div>
             <div class="col-12 mb-1">
@@ -119,11 +119,11 @@
             @endif
             <div class="col-12" id="cancel_reason">
               <div class="form-group">
-                <label for="howto" class="w-100">
+                <label for="cancel_reason" class="w-100">
                   お休みの理由をお知らせください
                   <span class="right badge badge-danger ml-1">必須</span>
                 </label>
-                <textarea type="text" name="remark" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
+                <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
               </div>
             </div>
             <div class="col-12">

@@ -138,7 +138,7 @@ class User extends Authenticatable
         }
       }
       if(!isset($item)){
-        if(empty($domain) || $domain=="student_parents"){
+        if(empty($domain) || $domain=="parents"){
           $item = StudentParent::where('user_id', $this->id)->first();
           if(isset($item)){
             $item['role'] = 'parent';

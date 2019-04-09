@@ -77,9 +77,13 @@ function get_exchange_calendar(){
   );
 }
 function exchange_validate(){
-  var _exchanged_calendar_id = $('select[name=exchanged_calendar_id]').val()|0;
-  if(_exchanged_calendar_id > 0) return true;
-  front.showValidateError('#add_type_form', '振替対象の授業を選択してください');
-  return false;
+  var is_exchange = $('input[type="radio"][name="add_type"][value="exchange"]').prop("checked");
+  if(is_exchange){
+    var _exchanged_calendar_id = $('select[name=exchanged_calendar_id]').val()|0;
+    if(_exchanged_calendar_id > 0) return true;
+    front.showValidateError('#add_type_form', '振替対象の授業を選択してください');
+    return false;
+  }
+  return true;
 }
 </script>
