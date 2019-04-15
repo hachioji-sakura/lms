@@ -109,7 +109,6 @@
     </table>
     <script>
     function subject_validate(){
-      console.log($("input.subject_level[type='radio']", $(".carousel-item.active")).length);
       var _is_scceuss = false;
       var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
       if(!is_school) return true;

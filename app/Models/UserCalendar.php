@@ -233,21 +233,29 @@ EOT;
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
+    $teachers = [];
+    $students = [];
+    $item['managers'] = [];
     foreach($this->members as $member){
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
         $student_name.=$_member['name'].',';
+        $students[] = $_member;
       }
       $_member = $member->user->details('teachers');
       if($_member->role === 'teacher'){
         $teacher_name.=$_member['name'].',';
+        $teachers[] = $_member;
       }
-      else {
+      if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
+        $item['managers'][] = $_member;
       }
     }
     unset($item['members']);
     unset($item['lecture']);
+    $item['teachers'] = $teachers;
+    $item['students'] = $students;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['other_name'] = trim($other_name,',');

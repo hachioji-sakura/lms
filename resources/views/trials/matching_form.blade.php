@@ -268,14 +268,14 @@
         @else
           @foreach($candidate_teachers[0]->trial1 as $i=>$_list)
             @if($_list['free'])
-            <div class="form-check ml-2">
+            <div class="form-check ml-2" id="trial1_select">
               <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial1_{{$i}}"
-               required="true"
                value="{{$_list['start_time']}}_{{$_list['end_time']}}"
                dulation="{{$_list['dulation']}}"
                start_time="{{$_list['start_time']}}"
                end_time="{{$_list['end_time']}}"
-               onChange="teacher_schedule_change(this)">
+               onChange="teacher_schedule_change(this)"
+               validate="teacher_schedule_validate('#trial1_select')">
               <label class="form-check-label" for="trial1_{{$i}}">
                 {{$_list['dulation']}}
               </label>
@@ -306,14 +306,14 @@
         @else
           @foreach($candidate_teachers[0]->trial2 as $i=>$_list)
             @if($_list['free'])
-            <div class="form-check ml-2">
+            <div class="form-check ml-2" id="trial2_select">
               <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial2_{{$i}}"
-               required="true"
                value="{{$_list['start_time']}}_{{$_list['end_time']}}"
                dulation="{{$_list['dulation']}}"
                start_time="{{$_list['start_time']}}"
                end_time="{{$_list['end_time']}}"
-               onChange="teacher_schedule_change(this)">
+               onChange="teacher_schedule_change(this)"
+               validate="teacher_schedule_validate('#trial2_select')">
               <label class="form-check-label" for="trial2_{{$i}}">
                 {{$_list['dulation']}}
               </label>
@@ -337,6 +337,15 @@
     var _teacher_schedule = $('input[name=teacher_schedule]:checked');
     $('input[name=start_time]').val(_teacher_schedule.attr('start_time'));
     $('input[name=end_time]').val(_teacher_schedule.attr('end_time'));
+  }
+  function teacher_schedule_validate(obj){
+    var start_time = $('input[name=start_time]').val();
+    var end_time = $('input[name=end_time]').val();
+    console.log("teacher_schedule_validate"+start_time+":"+end_time);
+    var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
+    if(!util.isEmpty(start_time) && !util.isEmpty(end_time)) return true;
+    front.showValidateError(obj, '体験授業日時を指定してください');
+    return false;
   }
   </script>
   <div class="col-6 mt-2">
@@ -373,128 +382,21 @@
   function course_type_change(obj){
   }
   </script>
-  <div class="col-6 mt-2">
-    <div class="form-group">
-      {{-- TODO:lesson_place＝申し込み時に入力された、場所概要から、lesson_place_flooreを絞り込む --}}
-      <label for="lesson_place_floor" class="w-100">
-        教室
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="lesson_place_floor" class="form-control" placeholder="場所" required="true">
-        <option value="">(選択してください)</option>
-        @foreach($attributes['lesson_place_floor'] as $index => $name)
-          <option value="{{$index}}">{{$name}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
+  @component('trials.forms.lesson_place_floor', ['select_lesson' => $select_lesson, 'candidate_teachers' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
+  @component('trials.forms.charge_subject', ['select_lesson' => $select_lesson, 'candidate_teachers' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
 
-  @if($select_lesson==1)
-  <div class="col-12 mt-2">
-    <div class="form-group">
-      <label for="charge_subject" class="w-100">
-        担当
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="charge_subject[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
-        <option value="">(選択してください)</option>
-        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
-          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  @elseif($select_lesson==2)
-  <div class="col-12 mt-2">
-    <div class="form-group">
-      <label for="english_talk_lesson" class="w-100">
-        担当レッスン
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="english_talk_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
-        <option value="">(選択してください)</option>
-        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
-          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  @elseif($select_lesson==3)
-  <div class="col-12 mt-2">
-    <div class="form-group">
-      <label for="piano_lesson" class="w-100">
-        担当レッスン
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="piano_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
-        <option value="">(選択してください)</option>
-        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
-          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  @elseif($select_lesson==4)
-  <div class="col-12 mt-2">
-    <div class="form-group">
-      <label for="kids_lesson" class="w-100">
-        担当レッスン
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <select name="kids_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
-        <option value="">(選択してください)</option>
-        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
-          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  @endif
   <div class="col-12">
     <div class="form-group">
-      <label for="howto" class="w-100">
+      <label for="remark" class="w-100">
         その他、講師に連絡する内容につきまして
         <span class="right badge badge-secondary ml-1">任意</span>
       </label>
       <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：〇〇学校の受験希望をしている生徒様です。" ></textarea>
     </div>
   </div>
-  <div class="col-12">
-    <div class="form-group">
-      <label for="matching_decide" class="w-100">
-        講師を決めた理由は？
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      @foreach($attributes['matching_decide'] as $index => $name)
-      <label class="mx-2">
-        <input type="checkbox" value="{{ $index }}" name="matching_decide[]" class="icheck flat-green"  onChange="matching_decide_checkbox_change(this)" required="true">{{$name}}
-      </label>
-      @endforeach
-    </div>
-  </div>
-  <div class="col-12 collapse matching_decide_word_form">
-    <div class="form-group">
-      <label for="matching_decide_word" class="w-100">
-        その他の場合、理由を記述してください
-        <span class="right badge badge-danger ml-1">必須</span>
-      </label>
-      <input type="text" id="matching_decide_word" name="matching_decide_word" class="form-control" placeholder="例：数学の受験対策を希望していたため" >
-    </div>
-  </div>
-<input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
+
+  @component('trials.forms.matching_decide', ['select_lesson' => $select_lesson, 'candidate_teachers' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
+  <input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
 @endif
-<script>
-function matching_decide_checkbox_change(obj){
-  var is_other = $('input[type="checkbox"][name="matching_decide[]"][value="other"]').prop("checked");
-  if(is_other){
-    $(".matching_decide_word_form").collapse("show");
-    $(".matching_decide_word_confirm").collapse("show");
-  }
-  else {
-    $(".matching_decide_word_form").collapse("hide");
-    $(".matching_decide_word_confirm").collapse("hide");
-  }
-}
-</script>
 </div>
 @endsection

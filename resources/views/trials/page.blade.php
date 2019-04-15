@@ -329,8 +329,10 @@
                   <div class="description-block">
                     <h5 class="description-header">予定</h5>
                     <span class="description-text">
+                      <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
                       <i class="fa fa-clock mr-1"></i>
                       {{$calendar["datetime"]}}
+                      </a>
                     </span>
                   </div>
                 </div>
@@ -338,15 +340,29 @@
                   <div class="description-block">
                     <h5 class="description-header">講師</h5>
                     <span class="description-text">
+                    @foreach($calendar['teachers'] as $teacher)
+                      <a href='/teachers/{{$teacher['id']}}'>
                       <i class="fa fa-user-tie mr-1"></i>
-                      {{$calendar['teacher_name']}}
-                    </span>
+                      {{$teacher->name()}}
+                      </a>
+                    @endforeach
+                  </span>
                   </div>
                 </div>
                 <div class="col-sm-3 ">
                   <div class="description-block">
                     <h5 class="description-header">内容</h5>
                     <span class="description-text">
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$calendar['lesson']}}
+                        </small>
+                      </span>
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$calendar['course']}}
+                        </small>
+                      </span>
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">
                         <small class="badge badge-primary mt-1 mr-1">
