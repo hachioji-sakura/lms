@@ -21,7 +21,7 @@ class UserCalendarController extends MilestoneController
   public $table = 'user_calendars';
   public $domain_name = '授業予定';
   private $status_update_message = [
-          'fix' => '授業予定を出席予定としました。',
+          'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
           'rest' => '休み連絡をしました。',
@@ -71,6 +71,12 @@ class UserCalendarController extends MilestoneController
    */
   public function update_form(Request $request){
     $form = [];
+    if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
+      $form['rest_reason'] = $request->get('rest_reason');
+    }
+    if($request->has('cancel_reason') && !empty($request->get('cancel_reason'))) {
+      $form['cancel_reason'] = $request->get('cancel_reason');
+    }
     if($request->has('remark') && !empty($request->get('remark'))) {
       $form['remark'] = $request->get('remark');
     }
@@ -203,8 +209,11 @@ class UserCalendarController extends MilestoneController
       'access_key' => $request->key,
       'attributes' => $this->attributes(),
     ];
+    if($request->has('cancel_reason')){
+      $ret['cancel_reason'] = $request->get('cancel_reason');
+    }
     if($request->has('access_key')){
-      $ret['token'] = $request->access_key;
+      $ret['token'] = $request->get('access_key');
     }
     if(is_numeric($id) && $id > 0){
       $user_id = -1;
@@ -414,7 +423,7 @@ class UserCalendarController extends MilestoneController
       $param['item']['datetime'] = $datetime;
       $detail = '';
       $detail .= $param['item']['place'].'/';
-      $detail .= $param['item']['subject'].'';
+      //$detail .= $param['item']['subject'].'';
       $param['item']['detail'] = $detail;
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
@@ -434,10 +443,14 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $res = $this->api_response();
       $is_send = true;
-      if($status!=="remind"){
+      if($status=="remind"){
+        $calendar = UserCalendar::where('id', $id)->first();
+        $calendar->change(['access_key' => $param['token']]);
+      }
+      else {
         //remind以外はステータスの更新
         if($param['item']->status != $status){
-          $res = $this->_status_update($param, $status);
+          $res = $this->_status_update($param, $id, $status);
           $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
         }
         else {
@@ -505,6 +518,41 @@ class UserCalendarController extends MilestoneController
     }
 
     /**
+     * カレンダーステータス更新
+     *
+     * @param  array  $param
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    private function _status_update($param, $id, $status){
+      try {
+        DB::beginTransaction();
+        //カレンダーステータス変更
+        UserCalendarMember::where('calendar_id', $param['item']->id)
+            ->where('user_id', $param['user']->user_id)
+            ->update(['status'=>$status]);
+        $update_form = [
+          'status'=>$status,
+          'access_key' => '',
+        ];
+        $update_form['access_key'] = $param['token'];
+        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        $param['item'] = $param['item']->change($update_form);
+        //カレンダーメンバーステータス変更
+        DB::commit();
+        return $this->api_response(200, '', '', $param['item']);
+      }
+      catch (\Illuminate\Database\QueryException $e) {
+          DB::rollBack();
+          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+      catch(\Exception $e){
+          DB::rollBack();
+          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
+      }
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -545,42 +593,6 @@ class UserCalendarController extends MilestoneController
         $item = $this->model()->where('id',$id)->change($this->update_form($request));
         DB::commit();
         return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-    }
-
-    /**
-     * カレンダーステータス更新
-     *
-     * @param  array  $param
-     * @param  string  $status
-     * @return \Illuminate\Http\Response
-     */
-    private function _status_update($param, $status){
-      try {
-        DB::beginTransaction();
-        //カレンダーステータス変更
-        UserCalendarMember::where('calendar_id', $param['item']->id)
-            ->where('user_id', $param['user']->user_id)
-            ->update(['status'=>$status]);
-        $update_form = [
-          'status'=>$status,
-          'access_key' => '',
-        ];
-        //生徒確認待ちの場合認証なしで、確認できるようにする
-        $update_form['access_key'] = $param['token'];
-        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
-        $param['item'] = $param['item']->change($update_form);
-        //カレンダーメンバーステータス変更
-        DB::commit();
-        return $this->api_response(200, '', '', $param['item']);
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();

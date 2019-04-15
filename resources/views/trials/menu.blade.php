@@ -173,6 +173,31 @@
           なし
         </div>
         @endif
+        @if(isset($item["tagdata"]['english_talk_lesson']) && count($item["tagdata"]['english_talk_lesson']) > 0)
+          <div class="nav-link w-100">
+            英会話
+          </div>
+          @foreach($item["tagdata"]['english_talk_lesson'] as $label)
+          <span class="text-xs mx-2">
+            <small class="badge badge-info mt-1 mr-1">
+              {{$label}}
+            </small>
+          </span>
+          @endforeach
+        @endif
+      </li>
+        @if(isset($item["tagdata"]['kids_lesson']) && count($item["tagdata"]['kids_lesson']) > 0)
+          <div class="nav-link w-100">
+            習い事
+          </div>
+          @foreach($item["tagdata"]['kids_lesson'] as $label)
+          <span class="text-xs mx-2">
+            <small class="badge badge-info mt-1 mr-1">
+              {{$label}}
+            </small>
+          </span>
+          @endforeach
+        @endif
       </li>
     </ul>
   </li>

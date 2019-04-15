@@ -5,8 +5,8 @@
     <i class="fa fa-user-friends mr-1"></i>
     お客様情報
   </div>
-  @component('students.forms.name', ['item' => $parent, 'prefix' => 'parent_']) @endcomponent
-  @component('students.forms.kana', ['item' => $parent, 'prefix' => 'parent_']) @endcomponent
+  @component('students.forms.name', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
+  @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
 
   <div class="col-12 col-lg-6 col-md-6">
     <div class="form-group">
@@ -16,9 +16,9 @@
       <span>{{$parent->email}}</span>
     </div>
   </div>
-  @component('students.forms.password', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.phoneno', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.address', ['item' => $parents, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.password', ['_edit'=>$_edit, 'item' => $parents, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' => $parents, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.address', ['_edit'=>$_edit, 'item' => $parents, 'attributes' => $attributes]) @endcomponent
 
 </div>
 @endisset
@@ -30,13 +30,13 @@
     <i class="fa fa-user-graduate mr-1"></i>
     生徒様情報
   </div>
-  @component('students.forms.name', ['item' => $student, 'prefix' => 'student_', 'is_label' => true])
+  @component('students.forms.name', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'student_', 'is_label' => true])
   @endcomponent
-  @component('students.forms.kana', ['item' => $student, 'prefix' => 'student_'])
+  @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'student_'])
   @endcomponent
 
   <div class="col-10">
-    @component('components.select_birthday', ['item' => $student])
+    @component('components.select_birthday', ['_edit'=>$_edit, 'item' => $student])
     @endcomponent
   </div>
   <div class="col-2 col-lg-2 col-md-2">
@@ -47,14 +47,14 @@
       <span id="gender_name">{{$student->gender()}}</span>
     </div>
   </div>
-  @component('students.forms.school', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.school', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson_week_count', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.work_time', ['item' => $student, 'prefix' => 'lesson', 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.lesson_place', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -64,14 +64,15 @@
     <i class="fa fa-file-invoice mr-1"></i>
     お申込み内容
   </div>
-  @component('students.forms.lesson', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.course_minutes', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.subject', ['_edit'=>$_edit,'item' => $student, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
-  @component('students.forms.course_type', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.english_teacher', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.piano_level', ['item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.kids_lesson', ['attributes' => $attributes]) @endcomponent
-  @component('students.forms.remark', ['item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit,'item' => $student, '_teacher' => false, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  @component('students.forms.course_type', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.remark', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -212,11 +213,11 @@
       </table>
     </div>
   </div>
-  <div class="col-6 p-3 font-weight-bold english_confirm" >ご希望の英会話講師</div>
-  <div class="col-6 p-3 english_confirm"><span id="english_teacher_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold piano_confirm" >ピアノのご経験について</div>
+  <div class="col-6 p-3 font-weight-bold english_talk_confirm" >ご希望の英会話講師</div>
+  <div class="col-6 p-3 english_talk_confirm"><span id="english_teacher_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold piano_confirm" >ピアノのご経験につきまして</div>
   <div class="col-6 p-3 piano_confirm"><span id="piano_level_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >ご要望について</div>
+  <div class="col-6 p-3 font-weight-bold" >ご要望につきまして</div>
   <div class="col-6 p-3"><span id="remark"></span></div>
 </div>
 @endsection

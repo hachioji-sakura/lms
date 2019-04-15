@@ -170,6 +170,22 @@
                 </div>
               </div>
               @endisset
+              @isset($item["tagdata"]['english_talk_lesson'])
+              <div class="col-sm-6 border-right">
+                <div class="description-block">
+                  <h5 class="description-header">ご希望の英会話レッスン</h5>
+                  <span class="description-text">
+                    @foreach($item["tagdata"]['english_talk_lesson'] as $label)
+                    <span class="text-xs mx-2">
+                      <small class="badge badge-secondary mt-1 mr-1">
+                        {{$label}}
+                      </small>
+                    </span>
+                    @endforeach
+                  </span>
+                </div>
+              </div>
+              @endisset
               @isset($item["tagdata"]['course_type'])
               <div class="col-sm-6 border-right">
                 <div class="description-block">
@@ -227,10 +243,15 @@
                 </div>
               </div>
             </div>
-            <!-- /.row -->
+            <div class="row">
+              <div class="col-12">
+                <a role="button" class="btn btn-block btn-flat btn-danger float-right" href="javascript:void(0);" page_form="dialog" page_url="/trials/{{$item["id"]}}/register"  page_title="入会案内連絡">
+                  <i class="fa fa-envelope mr-1"></i>入塾のご案内を出す
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- /.widget-user -->
       </div>
 		</div>
 	</div>
@@ -326,13 +347,13 @@
                   <div class="description-block">
                     <h5 class="description-header">内容</h5>
                     <span class="description-text">
-                        <span class="text-xs mx-2">
-                          <small class="badge badge-primary mt-1 mr-1">
-                            {{$calendar["lesson"]}}
-                            {{$calendar["course"]}}
-                            {{$calendar["subject"]}}
-                          </small>
-                        </span>
+                      @foreach($calendar['subject'] as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
                     </span>
                   </div>
                 </div>

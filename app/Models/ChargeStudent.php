@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
+use App\Models\ChargeStudentTag;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -59,6 +60,9 @@ class ChargeStudent extends Model
   public function lecture(){
     return $this->belongsTo('App\Models\Lecture');
   }
+  public function tags(){
+    return $this->hasMany('App\Models\ChargeStudentTag', 'charge_student_id');
+  }
   static public function add($form){
     $charge_student = ChargeStudent::where('teacher_id', $form['teacher_id'])
       ->where('student_id', $form['student_id'])
@@ -74,7 +78,31 @@ class ChargeStudent extends Model
     if(!isset($student)){
       return null;
     }
-    $charge_student = ChargeStudent::create($form);
+    $create_fields = [
+      'schedule_method',
+      'lesson_week_count' ,
+      'lesson_week',
+      'teacher_id' ,
+      'student_id' ,
+      'create_user_id' ,
+      'from_time_slot' ,
+      'to_time_slot',
+    ];
+    $create_form = [];
+    foreach($create_fields as $field){
+      if(!empty($form[$field])){
+        $create_form[$field] = $form[$field];
+      }
+    }
+    $charge_student = ChargeStudent::create($create_form);
+
+    $tag_names = ['charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        ChargeStudentTag::setTags($charge_student->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+    }
+
     return $charge_student;
   }
 }

@@ -1,18 +1,19 @@
 @extends('layouts.loginbox')
 @section('title')
-@if($item->trial_id > 0)体験@endif
-@if($item['status']==="confirm")
-  のご確認
-@elseif($item['status']==="fix")
+@if($item->trial_id > 0)体験@endif授業予定
+@if($subpage==="rest")
   お休み連絡
+@elseif($item['status']==="confirm")
+  のご確認
 @endif
 @endsection
+
 @section('title_header')
   @if($item->trial_id > 0)体験@endif授業予定
-  @if($item['status']==="confirm")
-    のご確認
-  @elseif($item['status']==="fix" && $subpage==="rest")
+  @if($subpage==="rest")
     お休み連絡
+  @elseif($item['status']==="confirm")
+    のご確認
   @endif
 @endsection
 @section('content')
@@ -24,7 +25,7 @@
         </h4>
       @else
         @if($item['status']==="fix" && $subpage==="rest")
-          @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
+          @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00') && $item['trial_id'] == 0)
             {{-- 授業当日9時を過ぎたら休み連絡はできない --}}
             <div class="col-12 col-lg-12 col-md-12 mb-1 bg-warning p-4">
               <i class="fa fa-exclamation-triangle mr-2"></i>この休み連絡は、振替対象外となります。
@@ -107,7 +108,7 @@
             <input type="hidden" value="{{$token}}" name="access_key" />
             <input type="hidden" value="rest" name="status" />
           <div class="row">
-            @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
+            @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00') && $item['trial_id'] == 0)
             <div class="col-12 mt-2 mb-1">
               <div class="form-group">
                 <input class="form-check-input icheck flat-green" type="checkbox" id="agreement" name="agreement" value="1" required="true" >
@@ -119,11 +120,11 @@
             @endif
             <div class="col-12" id="cancel_reason">
               <div class="form-group">
-                <label for="cancel_reason" class="w-100">
+                <label for="rest_reason" class="w-100">
                   お休みの理由をお知らせください
                   <span class="right badge badge-danger ml-1">必須</span>
                 </label>
-                <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
+                <textarea type="text" name="rest_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
               </div>
             </div>
             <div class="col-12">

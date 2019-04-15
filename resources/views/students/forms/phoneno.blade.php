@@ -2,9 +2,11 @@
   <div class="form-group">
     <label for="phone_no">
       連絡先
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-danger ml-1">必須</span>
       <span class="text-sm">ハイフン(-)不要</span>
     </label>
-    <input type="text" id="phone_no" name="phone_no" class="form-control" placeholder="例：09011112222"  inputtype="number" value="{{$item->phone_no}}">
+    <input type="text" id="phone_no" name="phone_no" class="form-control" placeholder="例：09011112222" required="true" inputtype="number"
+      value="@if(isset($item) && isset($item['phone_no'])){{$item['phone_no']}}@endif"
+      >
   </div>
 </div>

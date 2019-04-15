@@ -22,6 +22,7 @@
 コース：{{$item['course']}}
 科目：{{$item['subject']}}
 @endif
+キャンセル理由:{{$item['cancel_reason']}}
 …………………………………………………………………………………………
 
 

@@ -10,7 +10,10 @@
 授業をお休みする場合は、以下の画面よりご連絡ください。
 {{config('app.url')}}/calendars/{{$item['id']}}/rest?key={{$token}}&user={{$user_id}}
 
-予定変更について
+詳細のご確認については、以下の画面をご利用ください
+{{config('app.url')}}/calendars/{{$item['id']}}?user={{$user_id}}
+
+予定変更につきまして
 {{config('app.url')}}/faq2
 …………………………………………………………………………………………
 
@@ -28,7 +31,7 @@
 講師：{{$item['teacher_name']}}
 レッスン：{{$item['lesson']}}
 コース：{{$item['course']}}
-科目：{{$item['subject']}}
+科目：{{implode(',', $item['subject'])}}
 …………………………………………………………………………………………
 
 @if($send_to==='student')

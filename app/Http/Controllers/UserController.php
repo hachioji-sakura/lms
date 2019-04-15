@@ -297,5 +297,22 @@ class UserController extends Controller
         return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
     }
   }
-
+  public function transaction($callback, $logic_name, $__file, $__function, $__line){
+    try {
+      DB::beginTransaction();
+      $result = $callback();
+      DB::commit();
+      return $this->api_response(200, '', '', $result);
+    }
+    catch (\Illuminate\Database\QueryException $e) {
+        DB::rollBack();
+        $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
+        return $this->error_response('Query Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
+    }
+    catch(\Exception $e){
+        DB::rollBack();
+        $this->send_slack($logic_name.'更新エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
+        return $this->error_response('DB Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
+    }
+  }
 }

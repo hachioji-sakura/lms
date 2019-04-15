@@ -106,8 +106,7 @@ class UserTag extends Model
   }
   public function name(){
     $item = $this->details();
-    if(empty($item)) return $this->tag_value;
-
+    if(!isset($item) || empty($item)) return $this->tag_value;
     return $item->attribute_name;
   }
 }

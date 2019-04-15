@@ -121,7 +121,7 @@
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
-          @yield('confirm_form')
+          @component('trials.forms.confirm_form', ['attributes' => $attributes]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -199,7 +199,7 @@ $(function(){
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
       form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
     }
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -208,7 +208,7 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "lesson_week_count", "gender"];
+    _names = ["english_teacher", "piano_level", "english_talk_course_type", "kids_lesson_course_type", "course_minutes", "lesson_week_count", "gender"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){

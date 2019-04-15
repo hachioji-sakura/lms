@@ -1,15 +1,16 @@
 
 @section('teacher_select_form')
-  @if(count($candidate_teachers) > 0)
+  @if(count($candidate_teachers) > 0 && $select_lesson<1)
+  @foreach($candidate_teachers as $lesson => $lesson_teachers)
   <ul class="mailbox-attachments clearfix row">
     <li class="col-12 bg-light" accesskey="" target="">
       <div class="row">
         <div class="col-12">
-          担当講師
+          {{$attributes['lesson'][$lesson]}}担当講師
         </div>
       </div>
     </li>
-    @foreach($candidate_teachers as $teacher)
+    @foreach($lesson_teachers as $teacher)
     <li class="col-6" accesskey="" target="">
       <div class="row">
         <div class="col-12 mb-2">
@@ -126,23 +127,25 @@
           </div>
         </div>
         <div class="col-12 mb-2">
-          <a href="/{{$domain}}/{{$item->id}}/to_calendar?teacher_id={{$teacher->id}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
+          <a href="/{{$domain}}/{{$item->id}}/to_calendar?teacher_id={{$teacher->id}}&lesson={{$lesson}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
         </div>
       </div>
     </li>
     @endforeach
   </ul>
+  @endforeach
   @else
   <div class="alert">
     <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
   </div>
   @endif
 @endsection
+
 @section('other_form')
 <input type="hidden" name="teacher_id" value="{{$select_teacher_id}}">
 <input type="hidden" name="start_time" value="">
 <input type="hidden" name="end_time" value="">
-
+@if($select_teacher_id > 0 && count($candidate_teachers) > 0)
 <div class="row">
   <div class="col-4">
     <div class="description-block">
@@ -154,7 +157,7 @@
         </a>
       </h5>
       <span class="description-text">
-        @foreach($teacher->user->tags as $tag)
+        @foreach($candidate_teachers[0]->user->tags as $tag)
           @if($user->role==="manager" && $tag->tag_key=="teacher_character")
             <small class="badge badge-info mt-1 mr-1">
               {{$tag->name()}}
@@ -260,30 +263,34 @@
         体験授業予定（希望日時１）
       </h5>
       <span class="description-text">
-        @foreach($candidate_teachers[0]->trial1 as $i=>$_list)
-          @if($_list['free'])
-          <div class="form-check ml-2">
-            <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial1_{{$i}}"
-             required="true"
-             value="{{$_list['start_time']}}_{{$_list['end_time']}}"
-             dulation="{{$_list['dulation']}}"
-             start_time="{{$_list['start_time']}}"
-             end_time="{{$_list['end_time']}}"
-             onChange="teacher_schedule_change(this)">
-            <label class="form-check-label" for="trial1_{{$i}}">
-              {{$_list['dulation']}}
-            </label>
-          </div>
-          @else
-          {{-- 空いてない --}}
-          <div class="form-check ml-2">
-            <label class="form-check-label" for="trial1_{{$i}}">
-              <i class="fa fa-calendar-times mr-1"></i>
-              {{$_list['dulation']}}
-            </label>
-          </div>
-          @endif
-        @endforeach
+        @if(count($candidate_teachers[0]->trial1) < 1)
+          希望日時１は空いていません
+        @else
+          @foreach($candidate_teachers[0]->trial1 as $i=>$_list)
+            @if($_list['free'])
+            <div class="form-check ml-2">
+              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial1_{{$i}}"
+               required="true"
+               value="{{$_list['start_time']}}_{{$_list['end_time']}}"
+               dulation="{{$_list['dulation']}}"
+               start_time="{{$_list['start_time']}}"
+               end_time="{{$_list['end_time']}}"
+               onChange="teacher_schedule_change(this)">
+              <label class="form-check-label" for="trial1_{{$i}}">
+                {{$_list['dulation']}}
+              </label>
+            </div>
+            @else
+            {{-- 空いてない --}}
+            <div class="form-check ml-2">
+              <label class="form-check-label" for="trial1_{{$i}}">
+                <i class="fa fa-calendar-times mr-1"></i>
+                {{$_list['dulation']}}
+              </label>
+            </div>
+            @endif
+          @endforeach
+        @endif
       </span>
     </div>
   </div>
@@ -294,30 +301,34 @@
         体験授業予定（希望日時2）
       </h5>
       <span class="description-text">
-        @foreach($candidate_teachers[0]->trial2 as $i=>$_list)
-          @if($_list['free'])
-          <div class="form-check ml-2">
-            <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial2_{{$i}}"
-             required="true"
-             value="{{$_list['start_time']}}_{{$_list['end_time']}}"
-             dulation="{{$_list['dulation']}}"
-             start_time="{{$_list['start_time']}}"
-             end_time="{{$_list['end_time']}}"
-             onChange="teacher_schedule_change(this)">
-            <label class="form-check-label" for="trial2_{{$i}}">
-              {{$_list['dulation']}}
-            </label>
-          </div>
-          @else
-          {{-- 空いてない --}}
-          <div class="form-check ml-2">
-            <label class="form-check-label" for="trial2_{{$i}}">
-              <i class="fa fa-calendar-times mr-1"></i>
-              {{$_list['dulation']}}
-            </label>
-          </div>
-          @endif
-        @endforeach
+        @if(count($candidate_teachers[0]->trial2) < 1)
+          希望日時２は空いていません
+        @else
+          @foreach($candidate_teachers[0]->trial2 as $i=>$_list)
+            @if($_list['free'])
+            <div class="form-check ml-2">
+              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial2_{{$i}}"
+               required="true"
+               value="{{$_list['start_time']}}_{{$_list['end_time']}}"
+               dulation="{{$_list['dulation']}}"
+               start_time="{{$_list['start_time']}}"
+               end_time="{{$_list['end_time']}}"
+               onChange="teacher_schedule_change(this)">
+              <label class="form-check-label" for="trial2_{{$i}}">
+                {{$_list['dulation']}}
+              </label>
+            </div>
+            @else
+            {{-- 空いてない --}}
+            <div class="form-check ml-2">
+              <label class="form-check-label" for="trial2_{{$i}}">
+                <i class="fa fa-calendar-times mr-1"></i>
+                {{$_list['dulation']}}
+              </label>
+            </div>
+            @endif
+          @endforeach
+        @endif
       </span>
     </div>
   </div>
@@ -328,13 +339,64 @@
     $('input[name=end_time]').val(_teacher_schedule.attr('end_time'));
   }
   </script>
+  <div class="col-6 mt-2">
+    <div class="form-group">
+      <label for="course_type" class="w-100">
+        授業形式
+        <span class="right badge badge-danger ml-1">必須</span>
+      </label>
+      <div class="input-group" id="course_type_form">
+        <div class="form-check">
+            <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true" onChange="course_type_change()">
+            <label class="form-check-label" for="course_type_single">
+                マンツーマン
+            </label>
+        </div>
+        <div class="form-check ml-2">
+            <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true" onChange="course_type_change()" >
+            <label class="form-check-label" for="course_type_group">
+                グループレッスン
+            </label>
+        </div>
+        @if(count($candidate_teachers[0]->brother_schedule)>0)
+        <div class="form-check ml-2">
+            <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_family" value="family" required="true" onChange="course_type_change()" >
+            <label class="form-check-label" for="course_type_family">
+                ファミリー
+            </label>
+        </div>
+        @endif
+      </div>
+    </div>
+  </div>
+  <script>
+  function course_type_change(obj){
+  }
+  </script>
+  <div class="col-6 mt-2">
+    <div class="form-group">
+      {{-- TODO:lesson_place＝申し込み時に入力された、場所概要から、lesson_place_flooreを絞り込む --}}
+      <label for="lesson_place_floor" class="w-100">
+        教室
+        <span class="right badge badge-danger ml-1">必須</span>
+      </label>
+      <select name="lesson_place_floor" class="form-control" placeholder="場所" required="true">
+        <option value="">(選択してください)</option>
+        @foreach($attributes['lesson_place_floor'] as $index => $name)
+          <option value="{{$index}}">{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+
+  @if($select_lesson==1)
   <div class="col-12 mt-2">
     <div class="form-group">
       <label for="charge_subject" class="w-100">
-        担当科目
+        担当
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <select name="charge_subject" class="form-control" placeholder="担当科目" required="true">
+      <select name="charge_subject[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
         <option value="">(選択してください)</option>
         @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
           <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
@@ -342,25 +404,56 @@
       </select>
     </div>
   </div>
+  @elseif($select_lesson==2)
   <div class="col-12 mt-2">
     <div class="form-group">
-      {{-- TODO:lesson_place＝申し込み時に入力された、場所概要から、placeを絞り込む --}}
-      <label for="place" class="w-100">
-        教室
+      <label for="english_talk_lesson" class="w-100">
+        担当レッスン
         <span class="right badge badge-danger ml-1">必須</span>
       </label>
-      <select name="place" class="form-control" placeholder="場所" required="true">
+      <select name="english_talk_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
         <option value="">(選択してください)</option>
-        @foreach($attributes['place'] as $index => $name)
-          <option value="{{$index}}">{{$name}}</option>
+        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
+          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
         @endforeach
       </select>
     </div>
   </div>
+  @elseif($select_lesson==3)
+  <div class="col-12 mt-2">
+    <div class="form-group">
+      <label for="piano_lesson" class="w-100">
+        担当レッスン
+        <span class="right badge badge-danger ml-1">必須</span>
+      </label>
+      <select name="piano_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
+        <option value="">(選択してください)</option>
+        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
+          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  @elseif($select_lesson==4)
+  <div class="col-12 mt-2">
+    <div class="form-group">
+      <label for="kids_lesson" class="w-100">
+        担当レッスン
+        <span class="right badge badge-danger ml-1">必須</span>
+      </label>
+      <select name="kids_lesson[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
+        <option value="">(選択してください)</option>
+        @foreach($candidate_teachers[0]->enable_subject as $index=>$subject)
+          <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  @endif
   <div class="col-12">
     <div class="form-group">
       <label for="howto" class="w-100">
-        その他、講師に連絡する内容について
+        その他、講師に連絡する内容につきまして
         <span class="right badge badge-secondary ml-1">任意</span>
       </label>
       <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：〇〇学校の受験希望をしている生徒様です。" ></textarea>
@@ -388,6 +481,8 @@
       <input type="text" id="matching_decide_word" name="matching_decide_word" class="form-control" placeholder="例：数学の受験対策を希望していたため" >
     </div>
   </div>
+<input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
+@endif
 <script>
 function matching_decide_checkbox_change(obj){
   var is_other = $('input[type="checkbox"][name="matching_decide[]"][value="other"]').prop("checked");
@@ -401,6 +496,5 @@ function matching_decide_checkbox_change(obj){
   }
 }
 </script>
-<input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
 </div>
 @endsection

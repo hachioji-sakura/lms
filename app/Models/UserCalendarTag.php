@@ -13,6 +13,15 @@ class UserCalendarTag extends UserTag
       'tag_key' => 'required',
       'tag_value' => 'required'
   );
+  public function scopeFindCalendar($query, $val)
+  {
+      return $query->where('calendar_id', $val);
+  }
+  public function scopeFindKey($query, $val)
+  {
+      return $query->where('tag_key', $val);
+  }
+
   public function calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'calendar_id');
   }

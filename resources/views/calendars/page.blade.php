@@ -31,6 +31,17 @@
                 </a>
               @endif
             @endforeach
+          @elseif(isset($item[$key]) && gettype($item[$key])=='array')
+            <label for="{{$key}}" class="w-100">
+              {{$field['label']}}
+            </label>
+            @foreach($item[$key] as $_item)
+            <span class="text-xs mx-2">
+              <small class="badge badge-primary mt-1 mr-1">
+                {{$_item}}
+              </small>
+            </span>
+            @endforeach
           @else
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}

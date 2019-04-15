@@ -37,55 +37,16 @@
 </section>
 <script>
 $(function(){
-  var form_data = util.getLocalData('trials_confirm');
-  base.pageSettinged("trials_confirm", form_data);
-  $('#trials_confirm').carousel({ interval : false});
+  base.pageSettinged("trial_to_calendar", null);
+  $('#trial_to_calendar').carousel({ interval : false});
   //submit
   $("button.btn-submit").on('click', function(e){
+    teacher_schedule_change();
     e.preventDefault();
     if(front.validateFormValue('trial_to_calendar')){
       $("form").submit();
     }
   });
-
-  //次へ
-  $('.carousel-item .btn-next').on('click', function(e){
-    if(front.validateFormValue('trials_confirm .carousel-item.active')){
-      var form_data = front.getFormValue('trials_confirm');
-      util.setLocalData('trials_confirm', form_data);
-      base.pageSettinged("confirm_form", form_data_adjust(form_data));
-      $('#trials_confirm').carousel('next');
-      $('#trials_confirm').carousel({ interval : false});
-    }
-  });
-  //戻る
-  $('.carousel-item .btn-prev').on('click', function(e){
-    $('#trials_confirm').carousel('prev');
-    $('#trials_confirm').carousel({ interval : false});
-  });
-  //確認画面用のパラメータ調整
-  function form_data_adjust(form_data){
-    if(form_data["place"]){
-      form_data["place_name"] = $('select[name=place] option:selected').text().trim();
-    }
-    if(form_data["teacher_schedule"]){
-      var _teacher_schedule = $('input[name=teacher_schedule]:checked');
-      form_data["start_time"] = _teacher_schedule.attr('start_time');
-      form_data["end_time"] = _teacher_schedule.attr('end_time');
-    }
-
-    var _names = ["matching_decide"];
-    $.each(_names, function(index, value) {
-      form_data[value+"_name"] = "";
-      if(form_data[value+'[]']){
-        $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
-        });
-      }
-    });
-    console.log(form_data);
-    return form_data;
-  }
 
 });
 </script>

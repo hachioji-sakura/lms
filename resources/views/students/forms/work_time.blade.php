@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="form-group">
     <label for="week_table" class="w-100">
-      曜日・時間帯
+      {{$title}}
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <table class="table table-striped" id="week_table">
@@ -41,7 +41,7 @@
         <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"
         @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
-       @elseif(isset($item) && !isset($item->user))
+       @elseif($_edit==false)
         disabled = "disabled"
         @endif
         >

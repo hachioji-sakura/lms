@@ -171,6 +171,7 @@
 	function validate(selecter, formId){
 		var _isSuccess = true;
 		var _isHidden = $(selecter).is(":hidden");
+		if(_isHidden) return _isSuccess;
 		var val = $(selecter).val();
 		if(selecter.tagName=="SELECT"){
 		 	if(util.isEmpty(val)) val = "";
@@ -206,7 +207,6 @@
 		var isfile = false;
 		var isscan = false;
 		var _filesize = 0;
-		if(type=="text" && _isHidden) return _isSuccess;
 		if(type=="file"){
 			if($(selecter).fileUI){
 				var _file = $(selecter).fileUI("getFile");

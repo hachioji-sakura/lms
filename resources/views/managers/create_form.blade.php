@@ -6,8 +6,8 @@
       ログイン情報
     </h5>
   </div>
-  @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
-  @component('students.forms.password', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.email', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+  @component('students.forms.password', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -21,23 +21,23 @@
       {{$domain_name}}情報
     </h5>
   </div>
-  @component('students.forms.name', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
-  @component('students.forms.kana', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
+  @component('students.forms.name', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
+  @component('students.forms.kana', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
   <div class="col-12 mb-2">
-    @component('components.select_birthday', ['item' => $item])
+    @component('components.select_birthday', ['_edit'=>$_edit, 'item'  => $item])
     @endcomponent
   </div>
   <div class="col-12 mb-2">
-    @component('components.select_gender', ['item' => $item])
+    @component('components.select_gender', ['_edit'=>$_edit, 'item'  => $item])
     @endcomponent
   </div>
-  @component('students.forms.phoneno', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
+  @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
 
 </div>
 @endsection
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.work_time', ['item'=>$item, 'prefix'=>'work', 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' =>$item, 'prefix'=>'work', 'attributes' => $attributes, 'title' => '勤務可能な曜日・時間帯']) @endcomponent
 </div>
 @endsection

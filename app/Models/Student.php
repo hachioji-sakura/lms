@@ -120,18 +120,6 @@ class Student extends Model
     return "";
   }
   /**
-   *　プロパティ：親（複数）
-   */
-  public function parents(){
-    $items = StudentRelation::where('student_id', $this->id)->get();
-    $parents = [];
-    foreach($items as $item){
-      $parent = StudentParent::where('id', $item->student_parent_id)->first();
-      $parents[] =User::where('id', $this->user_id)->first();
-    }
-    return $parents;
-  }
-  /**
    *　プロパティ：タグ取得
    */
   public function get_tag($key)
@@ -186,6 +174,26 @@ class Student extends Model
       $this->table.user_id in (select id from users where status in ($statuses))
 EOT;
     return $query->whereRaw($where_raw,[]);
+  }
+  /**
+   *　スコープ：タグを持っているか
+   */
+  public function scopeHasTag($query, $tag_key, $tag_value)
+  {
+    $where_raw = <<<EOT
+      $this->table.user_id in (select user_id from user_tags where tag_key=? and tag_value=?)
+EOT;
+    return $query->whereRaw($where_raw,[$tag_key, $tag_value]);
+  }
+  /**
+  *　スコープ：タグ複数値いずれかを持っているか
+   */
+  public function scopeHasTags($query, $tag_key, $tag_values)
+  {
+    $where_raw = <<<EOT
+      $this->table.user_id in (select user_id from user_tags where tag_key=? and tag_value in ($tag_values))
+EOT;
+    return $query->whereRaw($where_raw,[$tag_key]);
   }
   /**
    *　スコープ：担当生徒
@@ -304,7 +312,7 @@ EOT;
     }
     $this->update($update_form);
     //1:nタグ
-    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'student_character'];
+    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character'];
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
@@ -316,7 +324,7 @@ EOT;
 	    }
     }
     //1:1タグ
-    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count', 'course_type', 'course_minutes'];
+    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count', 'english_talk_course_type','kids_lesson_course_type', 'course_minutes'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -327,5 +335,21 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+  }
+  public function get_brother(){
+    $relations =StudentRelation::where('student_id', $this->id)->get();
+    $parent_ids = [];
+    foreach($relations as $relation){
+      $parent_ids[] = $relation->student_parent_id;
+    }
+    $relations = StudentRelation::findParents($parent_ids)->get();
+    $ret = [];
+
+    foreach($relations as $relation){
+      if($relation->student_id != $this->id){
+        $ret[$relation->student_id] = $relation->student;
+      }
+    }
+    return $ret;
   }
 }

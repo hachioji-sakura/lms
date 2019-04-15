@@ -128,7 +128,7 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "gender"];
+    _names = ["english_teacher", "piano_level", "english_talk_course_type", "kids_lesson_course_type", "course_minutes", "gender"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){

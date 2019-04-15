@@ -44,11 +44,9 @@ class ImportController extends UserController
       'teachers' =>  'api_get_teacher',
       'managers' =>  'api_get_staff',
       'textbooks' =>  'api_get_material',
-      'charge_students' =>  'api_get_teacherstudent', //TODO:使わなくなる
+      'charge_students' =>  'api_get_teacherstudent',
       'repeat_schedules' =>  'api_get_repeat_schedule',
-      'calendars' => 'api_get_calendar', //TODO:使わなくなる
       'schedules' => 'api_get_onetime_schedule',
-      'attends' => 'api_get_attend', //TODO:使わなくなる
     ];
     public $api_update_endpoint = [
       'schedules' => 'api_update_onetime_schedule',
@@ -95,7 +93,6 @@ class ImportController extends UserController
           'textbooks',
           'repeat_schedules',
           'schedules',
-          'attends',
         ];
         foreach($objects as $_object){
           $res = $this->_import($request, $_object);
@@ -211,17 +208,9 @@ class ImportController extends UserController
             $this->logic_name = "参考書データ取り込み";
             $res = $this->textbooks_import($items);
             break;
-          case 'calendars':
-            $this->logic_name = "カレンダーデータ取り込み";
-            $res = $this->calendars_import($items);
-            break;
           case 'schedules':
             $this->logic_name = "カレンダーデータ取り込み";
             $res = $this->schedules_import($items);
-            break;
-          case 'attends':
-            $this->logic_name = "出席データ取り込み";
-            $res = $this->attends_import($items);
             break;
         }
         if(!$this->is_success_response($res)){
@@ -243,23 +232,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function general_attributes_import($items, $key_name, $id_column, $idname_column){
-      try {
-        DB::beginTransaction();
-        $c=0;
-        foreach($items as $item){
-          if($this->store_general_attribute($key_name, $item[$id_column], $item[$idname_column])) $c++;
-        }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, $key_name.'['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $this->transaction(function() use ($items, $key_name, $id_column, $idname_column){
+          $c=0;
+          foreach($items as $item){
+            if($this->store_general_attribute($key_name, $item[$id_column], $item[$idname_column])) $c++;
+          }
+          return $key_name.'['.$c.']';
+        }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -267,23 +246,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function students_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_student($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -291,23 +260,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function teachers_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_teacher($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -315,23 +274,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function managers_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -339,23 +288,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function charge_students_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_charge_student($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -363,23 +302,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function repeat_schedules_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_repeat_schedule($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -387,47 +316,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function textbooks_import($items){
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_textbook($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-    }
-    /**
-     * 事務管理システムから取得したデータを取り込み
-     * @param array $items
-     * @return boolean
-     */
-    private function calendars_import($items){
-      try {
-        DB::beginTransaction();
-        $c = 0;
-        foreach($items as $item){
-          if($this->store_calendar($item)) $c++;
-        }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -435,52 +330,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function schedules_import($items){
-      $c = 0;
-      foreach($items as $item){
-        if($this->store_schedule($item)) $c++;
-      }
-      return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-    }
-    /**
-     * 事務管理システムから取得したデータを取り込み
-     * @param array $items
-     * @return boolean
-     */
-    private function attends_import($items){
-      try {
-        DB::beginTransaction();
-        $c = 0;
-        foreach($items as $item){
-          if($this->store_attend($item)) $c++;
-        }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -488,24 +344,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function lectures_import($items){
-      try {
-        DB::beginTransaction();
-        Lecture::truncate();
+      return $this->transaction(function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_lecture($item)) $c++;
         }
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__, 'count['.$c.']');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return 'count['.$c.']';
+      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務情報登録
@@ -1065,175 +910,6 @@ class ImportController extends UserController
       return true;
     }
     /**
-     * 出席データがある→授業予定を出席に更新
-     * @param array $item
-     * @return boolean
-     */
-    private function store_attend($item){
-      if(empty($item['schedule_id']) || !is_numeric($item['schedule_id'])) return false;
-
-      $calendar = UserCalendar::where('schedule_id', $item['schedule_id'])->first();
-      $status = $calendar->status;
-      switch(substr($item['attend'],0, 1)){
-        case 'a':
-          $status = 'rest';
-          if($item['attend']=='a2'){
-            //TODO:欠席=a2で判断できないので、振替先があるかチェック
-            $exchanged_calendar = UserCalendar::where('exchanged_calendar_id', $calendar->id)->first();
-            if(!isset($exchanged_calendar)){
-              //振替先がないa2=absence
-              $status = 'absence';
-            }
-          }
-          break;
-        case 'f':
-        case 'c':
-          //TODO:出席=f / (振替の出席=cは不要なはず)
-          $status = 'presence';
-          break;
-      }
-
-      if($status === $calendar->status){
-        //状態変化があれば更新する
-        $calendar->update([
-          'status' => $status,
-        ]);
-        //TODO : updateuser(おそらく講師限定）のUserCalendarMemberのstatusを更新すべき
-        $members = $calendar->members;
-        foreach($memebers as $member){
-          $user = $member->$user->details();
-          //TODO : 正しくは、updateuser=teacher_noのUserTagを持つかどうか
-          if($user->role==='teacher'){
-            $member->update(['status' => $status]);
-          }
-        }
-      }
-      return true;
-    }
-    /**
-     * カレンダー登録
-     * ※※※この処理は使わなくなった
-     * @param array $item
-     * @return boolean
-     */
-    private function store_calendar($item){
-      $student = User::tag('student_no', $item['student_no'])->first();
-      if(!isset($student)){
-        @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
-      }
-      $student = $student->student;
-
-      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
-      if(!isset($teacher)){
-        @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
-      }
-      $teacher = $teacher->teacher;
-
-      $remark = $item['comment'];
-      $lecture = Lecture::where('lesson',$item['lesson'])
-        ->where('course',$item['course'])
-        ->where('subject',$item['subject'])
-        ->first();
-      $lecture_id = 0;
-      if(isset($lecture)) $lecture_id = $lecture->id;
-
-      $remark.='[lesson='.$item['lesson'].']';
-      $remark.='[course='.$item['course'].']';
-      $remark.='[subject='.$item['subject'].']';
-      $exchanged_calendar_id = 0;
-      //status=1.仮付きの場合：new / 2.仮なし:fix / 3.休み1 or 休み2:rest / 4.出席 : presence 5.欠席:absence
-      $status= 'fix';
-      if(is_numeric($item['kari_flag']) && $item['kari_flag']=='1'){
-        $status= 'new';
-      }
-      if(!empty($item['yasumi'])){
-        //TODO :以下の項目をどうにかしたい
-        $_attr = $this->get_save_general_attribute('absence_type', '', $item['yasumi']);
-        $yasumi = $_attr->attribute_value;
-        $remark.='[yasumi='.$item['yasumi'].']';
-        if($item['yasumi']=='休み1' || $item['yasumi']=='休み2'){
-          $status = 'cancel';
-        }
-        else if($item['yasumi']=='振替'){
-          $exchanged_calendar_id = -1;
-        }
-      }
-
-      $_attr = $this->get_save_general_attribute('place', '', $item['calendar']);
-      $place = $_attr->attribute_value;
-
-      $calendar_id = 0;
-      $items = UserCalendar::where('start_time',$item['start'])
-        ->where('end_time',$item['end'])
-        ->where('user_id',$teacher->user_id)->first();
-      if(isset($items)){
-        //すでに存在する場合は更新する
-        $items->update([
-          'lecture_id' => $lecture_id,
-          'remark' => $remark,
-          'status' => $status,
-          'place' => $place,
-        ]);
-        $calendar_id = $items->id;
-      }
-      else {
-        $items = UserCalendar::create([
-          'start_time' => $item['start'],
-          'end_time' => $item['end'],
-          'user_id' => $teacher->user_id,
-          'lecture_id' => $lecture_id,
-          'remark' => $remark,
-          'status' => $status,
-          'place' => $place,
-          'create_user_id' => 1
-        ]);
-        $calendar_id = $items->id;
-      }
-      UserCalendarMember::where('calendar_id',$calendar_id)->delete();
-
-      /*誰の休みか？
-      course=1 / マンツー
-        休み１：月１の振替＝生徒起因 / それ以外講師
-        休み２：ほぼ生徒
-      course=2 / グループ
-        休み１：ほぼ生徒
-        休み２：ほぼ生徒
-      course=3 / ファミリー（マンツーと同じ？）
-      */
-      $teacher_status = $status;
-      $student_status = $status;
-      /*
-      if($item['course']=='1' || $item['course']=='3'){
-        if($item['yasumi']=='休み1'){
-        }
-        else if($item['yasumi']=='休み2'){
-        }
-      }
-      else if($item['course']=='2'){
-        if($item['yasumi']=='休み1'){
-        }
-        else if($item['yasumi']=='休み2'){
-        }
-      }
-      */
-      UserCalendarMember::create([
-        'calendar_id' => $calendar_id,
-        'status' => $teacher_status,
-        'user_id' => $teacher->user_id,
-        'create_user_id' => 1
-      ]);
-
-      UserCalendarMember::create([
-        'calendar_id' => $calendar_id,
-        'user_id' => $student->user_id,
-        'status' => $student_status,
-        'create_user_id' => 1
-      ]);
-      return true;
-    }
-    /**
      * カレンダー登録
      * @param array $item
      * @return boolean
@@ -1287,7 +963,7 @@ class ImportController extends UserController
         $user_id = $manager->user_id;
       }
 
-      $lecture = Lecture::where('id',$item['lecture_id'])
+      $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])
         ->first();
       $lecture_id = 0;
       if(isset($lecture)) $lecture_id = $lecture->id;
@@ -1325,19 +1001,29 @@ class ImportController extends UserController
       if(!empty(trim($item['cancel']))){
         //TODO :以下の項目をどうにかしたい
         //c = すべからずcancel
-        //それ以外、何等か休暇(a :休暇、a1:休み1、休み2）。
-        $_attr = $this->get_save_general_attribute('absence_type', '', $item['cancel']);
-        $yasumi = $_attr->attribute_value;
+        //それ以外、何等か休暇(a :休暇、a1:休み1、休み2, c:別の日時に変更された）。
+        //$_attr = $this->get_save_general_attribute('absence_type', '', $item['cancel']);
+        //$yasumi = $_attr->attribute_value;
         $remark.='[cancel='.$item['cancel'].']';
         if($item['cancel']==='c')  $status = 'cancel';
         else $status = 'rest';
+      }
+      if(!empty(trim($item['confirm']))){
+        //TODO :以下の項目をどうにかしたい
+        //出席もしくは出勤確認(confirm):“f”、休み:”a”、休み1:”a1”、休み2:”a2”、振替出席(change):”c”
+        $remark.='[confirm='.$item['confirm'].']';
+        if($item['confirm']==='f')  $status = 'presence';
+        if($item['confirm']==='c')  $status = 'presence';
+        if($item['confirm']==='a2')  $status = 'absence';
       }
       if(isset($item['altsched_id']) && $item['altsched_id']>0){
         $exchanged_calendar = UserCalendar::where('schedule_id',$item['altsched_id'])->first();
         $exchanged_calendar_id = $exchanged_calendar->id;
       }
-      $_attr = $this->get_save_general_attribute('place', $item['place_id'],'');
-      $place = $_attr->attribute_value;
+      $lesson_place_floor = config('replace.lesson_place_floor');
+      if(isset($lesson_place_floor[$item['place_id']])){
+        $place = $lesson_place_floor[$item['place_id']];
+      }
 
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
@@ -1381,20 +1067,6 @@ class ImportController extends UserController
       //TODO : 休みに関し、生徒起因か、講師起因かがわからない
       $teacher_status = $status;
       $student_status = $status;
-      /*
-      if($item['course']=='1' || $item['course']=='3'){
-        if($item['yasumi']=='休み1'){
-        }
-        else if($item['yasumi']=='休み2'){
-        }
-      }
-      else if($item['course']=='2'){
-        if($item['yasumi']=='休み1'){
-        }
-        else if($item['yasumi']=='休み2'){
-        }
-      }
-      */
       //講師 or 事務をカレンダーに追加
       UserCalendarMember::create([
         'calendar_id' => $calendar_id,
@@ -1410,6 +1082,10 @@ class ImportController extends UserController
           'status' => $student_status,
           'create_user_id' => 1
         ]);
+      }
+      //事務システムから取得した科目
+      if(!empty($item['subject_expr'])){
+        UserCalendarTag::setTag($calendar_id, 'subject_expr', $item['subject_expr'], 1);
       }
       return true;
     }
@@ -1496,7 +1172,7 @@ class ImportController extends UserController
       if(!empty($name)) $items = $items->where('attribute_name', $name);
       $items = $items->first();
 
-      if(isset($items) && !empty($items->attribute_value)){
+      if(isset($items)){
         //すでに存在する場合は保存しない
         return $items;
       }

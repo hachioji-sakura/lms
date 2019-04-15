@@ -59,9 +59,13 @@
                     @endif
                   @endforeach
                   <br>
-                  <small class="badge badge-primary mt-1 mr-1">
-                    {{$calendar["subject"]}}
-                  </small>
+                  @foreach($calendar['subject'] as $subject)
+                  <span class="text-xs mx-2">
+                    <small class="badge badge-primary mt-1 mr-1">
+                      {{$subject}}
+                    </small>
+                  </span>
+                  @endforeach
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
                   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{$calendar->status_style()}} btn-sm float-left mr-1 w-100">

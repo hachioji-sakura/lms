@@ -84,9 +84,13 @@
                       <br>
                       <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->timezone}}
                       <br>
-                      <small class="badge badge-info mt-1 mr-1">
-                        {{$student->current_calendar->subject}}
-                      </small>
+                      @foreach($student->current_calendar['subject'] as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
                   @else
                   -
                   @endif

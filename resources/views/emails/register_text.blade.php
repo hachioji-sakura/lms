@@ -24,7 +24,7 @@
 {{config('app.url')}}/login
 @endif
 
-ご利用方法について
+ご利用方法につきまして
 {{config('app.url')}}/manual
 
 その他ご質問等（FAQ）
