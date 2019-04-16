@@ -516,15 +516,14 @@ class TrialController extends UserCalendarController
    }
 
    /**
-    * トライアルステータス更新
+    * 体験授業ステータス更新
     *
     * @param  array  $param
     * @param  string  $status
     * @return \Illuminate\Http\Response
     */
    private function _status_update($request, $id, $status){
-     try {
-       DB::beginTransaction();
+     return $this->transaction(function() use ($request, $id, $status){
        $form = $request->all();
        $user = $this->login_details();
        $form['create_user_id'] = $user->user_id;
@@ -537,19 +536,8 @@ class TrialController extends UserCalendarController
          $this->confirm_mail($calendar->details());
        }
        $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');
-       DB::commit();
-       return $this->api_response(200, '', '', $calendar);
-     }
-     catch (\Illuminate\Database\QueryException $e) {
-         DB::rollBack();
-         $this->send_slack('体験授業ステータス更新エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
-         return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
-     catch(\Exception $e){
-         DB::rollBack();
-         $this->send_slack('体験授業ステータス更新エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
-         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
+       return $calendar;
+     }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
    }
    /**
     * 詳細画面表示

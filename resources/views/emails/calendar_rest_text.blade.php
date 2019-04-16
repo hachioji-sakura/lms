@@ -19,7 +19,7 @@
 講師：{{$item['teacher_name']}}
 レッスン：{{$item['lesson']}}
 コース：{{$item['course']}}
-科目：{{$item['subject']}}
+科目：{{implode(',', $item['subject'])}}
 休み理由:{{$item['rest_reason']}}
 …………………………………………………………………………………………
 

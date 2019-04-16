@@ -73,7 +73,6 @@ EOT;
     }
     return $query;
   }
-
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
@@ -129,6 +128,29 @@ EOT;
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
   }
+  public function has_tag($key, $val=""){
+    $tags = $this->tags;
+    foreach($tags as $tag){
+      if(empty($val) && $tag->tag_key==$key) return true;
+      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    }
+    return false;
+  }
+  public function get_tag($key){
+    $item = $this->tags->where('tag_key', $key)->first();
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+  public function get_tags($key){
+    $item = $this->tags->where('tag_key', $key);
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+
   public function place(){
     $item = GeneralAttribute::place($this->place)->first();
     if(isset($item)) return $item->attribute_name;
@@ -140,6 +162,7 @@ EOT;
     return "";
   }
   public function status_style(){
+    //TODO:メンバーステータスのスタイルとカレンダーのスタイルがかみ合わない
     $status_name = "";
     switch($this->status){
       case "confirm":
@@ -175,45 +198,59 @@ EOT;
     return "";
   }
   public function subject(){
-    $tags =  $this->tags->where('tag_key', 'charge_subject');
+    $tags =  $this->get_tags('charge_subject');
     $ret = [];
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->name();
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
     }
-    $tags =  $this->tags->where('tag_key', 'english_talk_lesson');
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->name();
+    $tags =  $this->get_tags('english_talk_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
     }
-    $tags =  $this->tags->where('tag_key', 'piano_lesson');
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->name();
+    $tags =  $this->get_tags('piano_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
     }
-    $tags =  $this->tags->where('tag_key', 'kids_lesson');
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->name();
+    $tags =  $this->get_tags('kids_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
     }
-    $tags =  $this->tags->where('tag_key', 'subject_expr');
+    $tags =  $this->get_tags('subject_expr');
     foreach($tags as $index => $tag){
       $ret[] = $tag->tag_value;
     }
     return $ret;
   }
   public function lesson(){
-    if(!isset($this->lecture)) return "";
-    $lecture = $this->lecture->details();
-    return $lecture['lesson']->attribute_name;
+    $tag =  $this->get_tag('lesson');
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
   }
   public function course(){
-    if(!isset($this->lecture)) return "";
-    $lecture = $this->lecture->details();
-    return $lecture['course']->attribute_name;
+    $tag =  $this->get_tag('course_type');
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
   }
   public function timezone(){
     $start_hour_minute = date('H:i',  strtotime($this->start_time));
     $end_hour_minute = date('H:i',  strtotime($this->end_time));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
-
+  public function get_member($user_id){
+    return $this->members->where('user_id', $user_id)->first();
+  }
   public function details(){
     $item = $this;
     $item['status_name'] = $this->status_name();
@@ -239,6 +276,7 @@ EOT;
     foreach($this->members as $member){
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
+        //TODO グループレッスンの場合ほかの生徒の氏名が表示される
         $student_name.=$_member['name'].',';
         $students[] = $_member;
       }
@@ -305,31 +343,6 @@ EOT;
   }
   //本モデルはupdateではなくchangeを使う
   public function change($form){
-    $lecture_id = 0;
-    //TODO : lectureは限界がある。
-    //科目で、lessonは分かる、 course - work 、subject=タグ
-    /*
-    if(isset($form['lesson']) && isset($form['subject']) && isset($form['course'])){
-      $lecture = Lecture::where('lesson' , $form['lesson'])
-        ->where('course' , $form['course'])
-        ->where('subject' , $form['subject'])->first();
-        if(isset($lecture)){
-          $lecture_id = $lecture->id;
-        }
-        else {
-          //レクチャがなければ追加
-          $lecture = Lecture::create([
-            'lesson' => $form['lesson'],
-            'course' => $form['course'],
-            'subject' => $form['subject'],
-          ]);
-          $lecture_id = $lecture->id;
-        }
-    }
-    if(isset($form['lecture_id'])){
-      $lecture_id = $form['lecture_id'];
-    }
-    */
 
     $update_fields = [
       'status',
@@ -342,22 +355,36 @@ EOT;
     ];
     $status = $this->status;
     if(isset($form['status'])){
-      $status = $form['status'];
+      $is_status_update = true;
+      if($form['status']=='rest' || $form['status']=='fix' || $form['status']=='cancel'){
+        //status=restは生徒全員が休みの場合
+        //status=fixは生徒全員が予定確認した場合
+        foreach($this->members as $member){
+          if($member->user->details('students')->role == "student"){
+            if($member->status != $form['status']){
+              $is_status_update = false;
+            }
+          }
+        }
+      }
+      if($is_status_update === true)  $status = $form['status'];
     }
+
     $data = [
-      'lecture_id' => $lecture_id,
+      'status' => $status,
+      'lecture_id' => 0,
     ];
     foreach($update_fields as $field){
+      if($field=='status') continue;
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
     $this->update($data);
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
-      Trial::where('id', $this->trial_id)->first()->update(['status' => $form['status']]);
+      Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
-
-    $tag_names = ['matching_decide_word'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -370,7 +397,7 @@ EOT;
       }
     }
     //事務システムも更新
-    if($this->schedule_id > 0) $this->office_system_api("PUT");
+    $this->office_system_api("PUT");
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $status='new'){
@@ -440,140 +467,10 @@ EOT;
     return false;
   }
   public function office_system_api($method){
-    $url = [
-      "GET" =>  "https://hachiojisakura.com/sakura-api/api_get_onetime_schedule.php",
-      "PUT" =>  "https://hachiojisakura.com/sakura-api/api_update_onetime_schedule.php",
-      "POST" =>  "https://hachiojisakura.com/sakura-api/api_insert_onetime_schedule.php",
-      "DELETE" =>  "https://hachiojisakura.com/sakura-api/api_delete_onetime_schedule.php",
-    ];
-    $attend_api_url = "https://hachiojisakura.com/sakura-api/api_update_attend.php";
-    //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
-    $_method = "GET";
-    if($method!=="GET") $_method = "POST";
-    $_url = $url[$method];
-    $student_no = "";
-    $teacher_no = "";
-    $manager_no = "";
-    //兼務の場合がある
-
+    $res = null;
     foreach($this->members as $member){
-        $user = $member->user->details();
-        if($user->role==="student"){
-          $student_no = $user->get_tag('student_no')["value"];
-        }
-        if($user->role==="teacher"){
-          $teacher_no = $user->get_tag('teacher_no')["value"];
-        }
-        if($user->role==="manager"){
-          $manager_no = $user->get_tag('manager_no')["value"];
-        }
+      $res = $member->office_system_api($method);
     }
-    //レクチャー取得できない場合
-    //TODO : lesson + courseからlectureを取得(subject=0)
-    $lecture_id_org = 0;
-    $lecture = Lecture::where('id', $this->lecture_id)->first();
-    if(isset($lecture)){
-      $lecture_id_org = $lecture->lecture_id_org;
-    }
-    else {
-      //TODO:レクチャが取得できない
-    }
-
-    $place = GeneralAttribute::place($this->place)->first();
-    $place_text = "";
-    if(isset($place)){
-      //場所の指定はidではなくあえてテキストを渡してみる
-      $place_text = $place->attribute_name;
-    }
-    $__user_id = $student_no;
-    switch($this->work){
-      case 9:
-        //事務のスケジュール
-        $__user_id = $manager_no;
-        $teacher_no = "";
-        $student_no = "";
-        break;
-    }
-
-    $postdata =[];
-    switch($method){
-      case "PUT":
-      case "POST":
-        $postdata = [
-          "user_id" => $__user_id,
-          "student_no" => $student_no,
-          "teacher_id" => $teacher_no,
-          "ymd" => date('Y-m-d', strtotime($this->start_time)),
-          "starttime" => date('H:i:s', strtotime($this->start_time)),
-          "endtime" => date('H:i:s', strtotime($this->end_time)),
-          "lecture_id" => $lecture_id_org,
-          "subject_expr" => implode (',', $this->subject()),
-          "work_id" => $this->work,
-          "place_id" => $place_text,
-          "altsched_id" => $this->exchanged_calendar_id,
-        ];
-        break;
-    }
-    if($method==="PUT" || $method==="DELETE"){
-      $postdata['id'] = $this->schedule_id;
-    }
-    switch($this->status){
-      case "confirm":
-      case "new":
-        //生徒確定ではないので、空にする
-        $postdata["student_no"] = "";
-        $postdata["user_id"] = "";
-        $postdata['updateuser'] = $teacher_no;
-        break;
-      case "fix":
-        //生徒確定
-        $postdata['updateuser'] = $student_no;
-        break;
-      case "cancel":
-        //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
-        $postdata['cancel'] = 'c';
-        $postdata['updateuser'] = $student_no;
-        break;
-      case "rest":
-        //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
-        $postdata['cancel'] = 'a';
-        $postdata['updateuser'] = $student_no;
-        break;
-      case "absence":
-        //3.12確認：欠席＝a2にする
-        $postdata['cancel'] = 'a2';
-        $postdata['updateuser'] = $teacher_no;
-        break;
-      case "presence":
-        $postdata['confirm'] = 'f';
-        $postdata['updateuser'] = $teacher_no;
-        break;
-    }
-    $message = "";
-    foreach($postdata as $key => $val){
-      $message .= '['.$key.':'.$val.']';
-    }
-    $res = $this->call_api($_url, $_method, $postdata);
-
-    @$this->send_slack("事務システムAPI:".$_url."\n".$message, 'warning', "事務システムAPI");
-    if($res["status"] != 0){
-      @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
-    }
-    if($method==="POST"){
-      //事務システム側のIDを更新
-      $this->update(['schedule_id'=>$res["id"]]);
-    }
-    return $res;
-  }
-  private function send_slack($message, $msg_type, $username=null, $channel=null) {
-    $controller = new Controller;
-    $res = $controller->send_slack($message, $msg_type, $username, $channel);
-    return $res;
-  }
-  private function call_api($url, $method, $data){
-    $controller = new Controller;
-    $req = new Request;
-    $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
 }

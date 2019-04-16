@@ -7,6 +7,7 @@
   @endslot
   {{-- 表示部分カスタマイズ --}}
   @slot('field_logic')
+  <div class="row">
   @foreach($fields as $key=>$field)
       @if(isset($field['size']))
       <div class="col-{{$field['size']}}">
@@ -51,6 +52,7 @@
         </div>
     </div>
   @endforeach
+  </div>
   @endslot
   {{-- フォーム部分カスタマイズ --}}
   @slot('forms')

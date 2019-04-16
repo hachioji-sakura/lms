@@ -16,12 +16,12 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.status){
+            switch(event.own_member.status){
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix");
+                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix?student_id={{$item->id}}");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/rest");
+                base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/rest?student_id={{$item->id}}");
                 break;
               case "new":
               case "rest":
@@ -30,7 +30,7 @@
               case "presence":
               case "exchange":
               default:
-                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?student_id={{$item->id}}");
                 break;
             }
           },

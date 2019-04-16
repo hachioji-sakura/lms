@@ -171,6 +171,8 @@ EOT;
       'end_time' =>  $form["end_time"],
       'trial_id' => $this->id,
       'place' => $form['lesson_place_floor'],
+      'lesson' => $form['lesson'],
+      'course_type' => $form['course_type'],
       'remark' => $this->remark,
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],

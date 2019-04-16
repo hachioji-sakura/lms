@@ -101,7 +101,6 @@
           @endif
         </div>
       </div>
-      <!-- /.card -->
     </div>
   </div>
 </section>

@@ -966,8 +966,9 @@ class ImportController extends UserController
       $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])
         ->first();
       $lecture_id = 0;
-      if(isset($lecture)) $lecture_id = $lecture->id;
-
+      if(isset($lecture)) {
+        $lecture_id = $lecture->id;
+      }
       $remark = $item['comment'];
       $remark.='[free='.$item['free'].']';
       $remark.='[repeattimes='.$item['repeattimes'].']';
@@ -1017,9 +1018,11 @@ class ImportController extends UserController
         if($item['confirm']==='a2')  $status = 'absence';
       }
       if(isset($item['altsched_id']) && $item['altsched_id']>0){
-        $exchanged_calendar = UserCalendar::where('schedule_id',$item['altsched_id'])->first();
-        $exchanged_calendar_id = $exchanged_calendar->id;
+        //事務システムの振替ID＝メンバーのIDを指している（メンバーとカレンダーが１：１だから）
+        $exchanged_calendar_member = UserCalendarMember::where('schedule_id',$item['altsched_id'])->first();
+        $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
       }
+      $place = "";
       $lesson_place_floor = config('replace.lesson_place_floor');
       if(isset($lesson_place_floor[$item['place_id']])){
         $place = $lesson_place_floor[$item['place_id']];
@@ -1029,7 +1032,18 @@ class ImportController extends UserController
       $work = $_attr->attribute_value;
 
       $calendar_id = 0;
-      $items = UserCalendar::where('schedule_id',$item['id'])->first();
+      $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();
+      $items = null;
+      if(isset($_member)) $items = UserCalendar::where('id', $_member->calendar_id)->first();
+      if(!isset($items)){
+        //おそらく同一のグループレッスンと思われる予定が見つかった
+        $items = UserCalendar::where('user_id', $user_id)
+          ->where('start_time', $item['ymd'].' '.$item['starttime'])
+          ->where('end_time' , $item['ymd'].' '.$item['endtime'])
+          ->where('work' , 7)
+          ->where('lecture_id' , $lecture_id)
+          ->first();
+      }
       $update_form = [
         'start_time' => $item['ymd'].' '.$item['starttime'],
         'end_time' => $item['ymd'].' '.$item['endtime'],
@@ -1047,13 +1061,12 @@ class ImportController extends UserController
         $calendar_id = $items->id;
       }
       else {
-        $update_form['schedule_id'] = $item['id'];
         $update_form['create_user_id'] = 1;
         $items = UserCalendar::create($update_form);
         $calendar_id = $items->id;
       }
       //いったんすべて参加者を削除
-      UserCalendarMember::where('calendar_id',$calendar_id)->delete();
+      //UserCalendarMember::where('calendar_id',$calendar_id)->delete();
 
       /*誰の休みか？
       course=1 / マンツー
@@ -1065,27 +1078,51 @@ class ImportController extends UserController
       course=3 / ファミリー（マンツーと同じ？）
       */
       //TODO : 休みに関し、生徒起因か、講師起因かがわからない
-      $teacher_status = $status;
       $student_status = $status;
-      //講師 or 事務をカレンダーに追加
-      UserCalendarMember::create([
-        'calendar_id' => $calendar_id,
-        'status' => $teacher_status,
-        'user_id' => $user_id,
-        'create_user_id' => 1
-      ]);
       //生徒をカレンダーに追加
       if(isset($student)){
+        $_member = UserCalendarMember::where('calendar_id' , $calendar_id)
+          ->where('user_id' , $student->user_id)
+          ->first();
+        if(!isset($_member)){
+          //生徒を追加
+          UserCalendarMember::create([
+            'calendar_id' => $calendar_id,
+            'user_id' => $student->user_id,
+            'status' => $student_status,
+            'schedule_id' => $item['id'],
+            'create_user_id' => 1
+          ]);
+        }
+      }
+      //講師 or 事務をカレンダーに追加
+      $teacher_status = $status;
+      $_member = UserCalendarMember::where('calendar_id' , $calendar_id)
+        ->where('user_id' , $user_id)
+        ->first();
+      if(!isset($_member)){
+        //講師を追加
         UserCalendarMember::create([
           'calendar_id' => $calendar_id,
-          'user_id' => $student->user_id,
-          'status' => $student_status,
+          'status' => $teacher_status,
+          'schedule_id' => $item['id'],
+          'user_id' => $user_id,
           'create_user_id' => 1
         ]);
       }
       //事務システムから取得した科目
       if(!empty($item['subject_expr'])){
         UserCalendarTag::setTag($calendar_id, 'subject_expr', $item['subject_expr'], 1);
+      }
+      if(isset($lecture)) {
+        $lecture_id = $lecture->id;
+        UserCalendarTag::setTag($calendar_id, 'lesson', $lecture->lesson, 1);
+        $replace_course_type = config('replace.course_type');
+        //single:1 / group:2 / family:3 に置き換え
+        $course = intval($lecture->course);
+        if(isset($replace_course_type[$course])){
+          UserCalendarTag::setTag($calendar_id, 'course_type', $replace_course_type[$course], 1);
+        }
       }
       return true;
     }
@@ -1273,6 +1310,7 @@ class ImportController extends UserController
       }
       TextbookTag::where('textbook_id', $textbook_id)->delete();
       //教科書タグの登録（科目、レベル、学年）
+      /*
       if(!empty($item['subject'])){
         $_attr = $this->get_save_general_attribute('subject', '', $item['subject']);
         $this->store_textbook_tag($textbook_id, 'subject', $_attr->attribute_value);
@@ -1285,7 +1323,7 @@ class ImportController extends UserController
         $_attr = $this->get_save_general_attribute('grade', '', $item['grade']);
         $this->store_textbook_tag($textbook_id, 'grade', $_attr->attribute_value);
       }
-
+      */
       return true;
     }
 
@@ -1295,7 +1333,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_lecture($item){
-      $subject = GeneralAttribute::subject($item['subject_id'])->first();
+      $subject = GeneralAttribute::where('attribute_key', 'subject')->where('attribute_value' , $item['subject_id'])->first();
       if(!isset($subject)){
         return false;
       }

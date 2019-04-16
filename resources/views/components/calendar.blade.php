@@ -42,7 +42,7 @@
       return _ret['new'];
     }
     function event_render(events, element, title){
-      var _status_style = status_style(events.status);
+      var _status_style = status_style(events.own_member.status);
       var bgcolor = _status_style["color"];
       var icon = _status_style["icon"];
       var textColor  = "#FFF";
