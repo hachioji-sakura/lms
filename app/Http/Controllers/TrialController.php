@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Trial;
+use App\Models\UserCalendar;
 use DB;
 use View;
 class TrialController extends UserCalendarController
@@ -130,11 +131,11 @@ class TrialController extends UserCalendarController
   public function get_param(Request $request, $id=null, $user_id=null){
     $user = $this->login_details();
     if(!isset($user)) {
-      abort(404);
+      abort(403);
     }
 
     if(!isset($user)) {
-      abort(404);
+      abort(403);
     }
     $ret = [
       'domain' => $this->domain,
@@ -167,7 +168,7 @@ class TrialController extends UserCalendarController
   public function search(Request $request, $user_id=0)
   {
     $items = $this->model();
-    $items->with('student', 'parent');
+    $items->with('parent');
     $user = $this->login_details();
     $items = $this->_search_scope($request, $items);
     $items = $this->_search_pagenation($request, $items);
@@ -253,7 +254,7 @@ class TrialController extends UserCalendarController
     foreach($items as $item){
       $item = $item->details();
     }
-    return ['items' => $items->toArray(), 'fields' => $fields];
+    return ['items' => $items, 'fields' => $fields];
   }
   /**
    * フィルタリングロジック
@@ -353,8 +354,11 @@ class TrialController extends UserCalendarController
        $form = $request->all();
        $form["accesskey"] = '';
        $form["password"] = 'sakusaku';
-       $parent = Trial::entry($form);
-       return $parent;
+       if(!empty($form['student2_name_last'])){
+         $form['course_type'] = 'family';
+       }
+       $trial = Trial::entry($form);
+       return $trial;
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
      if($this->is_success_response($res)){
@@ -463,7 +467,7 @@ class TrialController extends UserCalendarController
            $res = $this->api_response();
          }
          else {
-           $this->confirm_mail($calendar->details());
+           $this->confirm_mail($calendar->details($param['user']->user_id));
          }
        }
      }
@@ -493,6 +497,7 @@ class TrialController extends UserCalendarController
    protected function _mail($calendar, $title, $template){
      $login_user = $this->login_details();
      $members = $calendar->members;
+
      foreach($members as $member){
        $email = $member->user['email'];
        $user = $member->user->details();
@@ -533,7 +538,7 @@ class TrialController extends UserCalendarController
        if($status==="confirm"){
          //体験授業内容から、授業予定追加
          $calendar = $trial->trial_to_calendar($form);
-         $this->confirm_mail($calendar->details());
+         $this->confirm_mail($calendar->details($user->user_id));
        }
        $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');
        return $calendar;

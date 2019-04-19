@@ -27,6 +27,8 @@ class UserCalendarMember extends Model
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
+  public function add($form){
+  }
   public function status_style(){
     $status_name = "";
     switch($this->status){
@@ -94,7 +96,7 @@ class UserCalendarMember extends Model
         $manager_no = $user->get_tag('manager_no')["value"];
       }
     }
-    @$this->send_slack("事務システムAPI :".$student_no."\n".$teacher_no, 'warning', "事務システムAPI");
+    \Log::info("事務システムAPI :".$student_no."\n".$teacher_no);
 
     $user = $this->user->details('teachers');
     if($user->role==="teacher" && !empty($student_no)){
@@ -233,14 +235,15 @@ class UserCalendarMember extends Model
     }
     $res = $this->call_api($_url, $_method, $postdata);
     $str_res = json_encode($res);
-    @$this->send_slack("事務システムAPI Request:".$_url."\n".$message, 'warning', "事務システムAPI");
-    @$this->send_slack("事務システムAPI Response:".$_url."\n".$str_res, 'warning', "事務システムAPI");
+    \Log::info("事務システムAPI Request:".$_url."\n".$message);
+    \Log::info("事務システムAPI Response:".$_url."\n".$str_res);
     if($res["status"] != 0){
       @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
     }
-    if($method==="POST"){
+    if($method==="POST" && $this->schedule_id==0){
       //事務システム側のIDを更新
       $this->update(['schedule_id'=>$res["id"]]);
+      \Log::info("事務システムAPI ID更新:".$res["id"]);
     }
     return $res;
   }
@@ -255,5 +258,4 @@ class UserCalendarMember extends Model
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-
 }

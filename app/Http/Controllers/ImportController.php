@@ -523,8 +523,8 @@ class ImportController extends UserController
       UserTag::where('user_id',$user_id)->delete();
       //講師属性登録
       $this->store_user_tag($user_id, 'teacher_no', $item['teacher_no'], false);
-      if($item['lesson_id']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id']);
-      if($item['lesson_id2']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id2']);
+      if($item['lesson_id']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id'], false);
+      if($item['lesson_id2']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id2'], false);
       return true;
     }
     /**
@@ -1138,7 +1138,8 @@ class ImportController extends UserController
       if(empty($val)) return false;
       if($add_attribute===true){
         //汎用属性に登録
-        $this->store_general_attribute($key, $val, $val);
+        $attriubte = $this->get_save_general_attribute($key, "", $val);
+        $val = $attriubte->attribute_value;
       }
       $items = UserTag::where('user_id', $user_id)
         ->where('tag_key', $key)
@@ -1393,8 +1394,7 @@ class ImportController extends UserController
       if($env!=="product"){
         //本番でない場合、保護者あてのメールを隠す
         $query = <<<EOT
-          update users set email=concat('yasui.hideo+p',id,'@gmail.com')
-           where id in (select user_id from student_parents)
+        update users u inner join student_parents t on u.id = t.user_id set email=concat('yasui.hideo+p',t.id,'@gmail.com')
 EOT;
         $ret[] = DB::update($query, []);
         @$this->remind("契約者のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
@@ -1402,13 +1402,11 @@ EOT;
       if($env!=="product" && $env !== "staging"){
         //staging or productでない場合、講師あて、事務あてのメールを隠す
         $query = <<<EOT
-          update users set email=concat('yasui.hideo+t',id,'@gmail.com')
-           where id in (select user_id from teachers)
+          update users u inner join teachers t on u.id = t.user_id set email=concat('yasui.hideo+t',t.id,'@gmail.com')
 EOT;
         $ret[] = DB::update($query, []);
         $query = <<<EOT
-          update users set email=concat('yasui.hideo+m',id,'@gmail.com')
-           where id in (select user_id from managers where id>1)
+          update users u inner join managers t on u.id = t.user_id set email=concat('yasui.hideo+m',t.id,'@gmail.com')
 EOT;
         $ret[] = DB::update($query, []);
         @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);

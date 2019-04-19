@@ -1,26 +1,28 @@
 @section('page_sidemenu')
+@foreach($item->trial_students as $trial_student)
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="image mt-1">
-    <img src="{{$item->student->user->icon()}}" class="img-circle elevation-2" alt="User Image">
+    <img src="{{$trial_student->student->user->icon()}}" class="img-circle elevation-2" alt="User Image">
   </div>
   <div class="info">
     <a href="/{{$domain}}/{{$item->id}}/" class="d-block text-light">
       <ruby style="ruby-overhang: none">
-        <rb>{{$item->student->name()}}</rb>
-        <rt>{{$item->student->kana()}}</rt>
+        <rb>{{$trial_student->student->name()}}</rb>
+        <rt>{{$trial_student->student->kana()}}</rt>
       </ruby>
     </a>
     <small class="badge badge-info mx-2">
-      {{$item->student->gender()}}
+      {{$trial_student->student->gender()}}
     </small>
     <small class="badge badge-info mx-2">
-      {{$item->student->grade()}}
+      {{$trial_student->student->grade()}}
     </small><br>
     <small class="badge badge-info mx-2">
-      {{$item->student->school_name()}}
+      {{$trial_student->student->school_name()}}
     </small>
   </div>
 </div>
+@endforeach
 {{--
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="info text-light">
@@ -39,7 +41,7 @@
     <p>
       <i class="nav-icon fa fa-clock"></i>
       体験予定
-      <small class="badge badge-{{$calendar->status_style()}} mx-2">
+      <small class="badge badge-{{config('status_style')[$calendar->status]}} mx-2">
         {{$calendar["status_name"]}}
       </small>
       <i class="right fa fa-angle-left"></i>
@@ -107,12 +109,12 @@
           @endforeach
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              週{{$item->student->tag_name("lesson_week_count")}}回
+              週{{$item->trial_students->first()->student->tag_name("lesson_week_count")}}回
             </small>
           </span>
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              {{$item->student->tag_name("course_minutes")}}授業
+              {{$item->trial_students->first()->student->tag_name("course_minutes")}}授業
             </small>
           </span>
         </div>

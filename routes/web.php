@@ -46,9 +46,15 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+
+Route::resource('calendar_members','UserCalendarMemberController');
+
 Route::get('calendars/{id}/api_test','UserCalendarController@api_test');
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
+
+
+
 /*
 Route::get('calendars/{id}/{status}/{user_id}','UserCalendarController@status_update_page_no_login');
 Route::put('calendars/{id}/{status}/{user_id}','UserCalendarController@status_update_no_login');

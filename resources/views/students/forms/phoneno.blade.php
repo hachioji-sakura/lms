@@ -1,7 +1,7 @@
 <div class="col-12 col-lg-6 col-md-6">
   <div class="form-group">
     <label for="phone_no">
-      連絡先
+      電話番号
       <span class="right badge badge-danger ml-1">必須</span>
       <span class="text-sm">ハイフン(-)不要</span>
     </label>

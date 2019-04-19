@@ -2,7 +2,7 @@
 <div class="col-12 mt-2">
   <div class="form-group">
     <label for="charge_subject" class="w-100">
-      担当
+      担当科目
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <select name="charge_subject[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">

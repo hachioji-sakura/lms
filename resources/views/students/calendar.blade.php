@@ -19,9 +19,11 @@
             switch(event.own_member.status){
               case "confirm":
                 base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix?student_id={{$item->id}}");
+                console.log("/calendars/"+event.id+"/fix?student_id={{$item->id}}");
                 break;
               case "fix":
                 base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/rest?student_id={{$item->id}}");
+                console.log("/calendars/"+event.id+"/rest?student_id={{$item->id}}");
                 break;
               case "new":
               case "rest":
@@ -31,6 +33,7 @@
               case "exchange":
               default:
                 base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?student_id={{$item->id}}");
+                console.log("/calendars/"+event.id+"?student_id={{$item->id}}");
                 break;
             }
           },
@@ -38,9 +41,8 @@
           @slot('event_render')
           eventRender: function(event, element, view) {
             var title = '授業追加';
-            if(event['student_name']){
-              title = event['teacher_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-            }
+            console.log(event);
+            title = event['teacher_name']+'('+event['subject'].join('/')+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             event_render(event, element, title);
           },
           @endslot

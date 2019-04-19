@@ -28,7 +28,7 @@
     @endcomponent
   </div>
   <div class="col-12 mb-2">
-    @component('components.select_gender', ['_edit'=>$_edit, 'item' => $item])
+    @component('components.select_gender', ['_edit'=>$_edit, 'item' => $item, 'prefix'=>''])
     @endcomponent
   </div>
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent

@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   <i class="fa fa-user-tie mr-2"></i>
-                  {{$calendar['teacher_name']}}</td>
+                  {{$calendar['teacher_name']}}
                   <br>
                   @foreach($calendar['subject'] as $subject)
                   <span class="text-xs mx-2">
@@ -41,7 +41,7 @@
                   @endforeach
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
-                  <a href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?student_id={{$item->id}}" role="button" class="btn btn-{{$calendar->get_member($item->user_id)->status_style()}} btn-sm float-left mr-1 w-100">
+                  <a href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?student_id={{$item->id}}" role="button" class="btn btn-{{config('status_style')[$calendar->get_member($item->user_id)->status]}} btn-sm float-left mr-1 w-100">
                     <i class="fa fa-file-alt mr-1"></i>{{$calendar->get_member($item->user_id)->status_name()}}
                   </a>
                   <br>

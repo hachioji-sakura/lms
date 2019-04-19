@@ -20,7 +20,7 @@ class UserCalendarController extends MilestoneController
   public $domain = 'calendars';
   public $table = 'user_calendars';
   public $domain_name = '授業予定';
-  private $status_update_message = [
+  public $status_update_message = [
           'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
@@ -30,7 +30,7 @@ class UserCalendarController extends MilestoneController
           'remind' => '授業予定の確認連絡をしました。',
         ];
 
-  private function show_fields(){
+  public function show_fields(){
     $user = $this->login_details();
       $ret = [
       'datetime' => [
@@ -59,6 +59,10 @@ class UserCalendarController extends MilestoneController
       ],
       'subject' => [
         'label' => '科目',
+        'size' => 6,
+      ],
+      'student_name' => [
+        'label' => '生徒',
         'size' => 6,
       ],
     ];
@@ -211,22 +215,29 @@ class UserCalendarController extends MilestoneController
       'search_word'=>$request->search_word,
       'search_status'=>$request->status,
       'access_key' => $request->key,
+      'cancel_reason' => $request->cancel_reason,
+      'rest_reason' => $request->rest_reason,
       'attributes' => $this->attributes(),
     ];
-    if($request->has('cancel_reason')){
-      $ret['cancel_reason'] = $request->get('cancel_reason');
-    }
     if($request->has('access_key')){
       $ret['token'] = $request->get('access_key');
     }
+    if($request->has('rest_reason')){
+      $ret['rest_reason'] = $request->get('rest_reason');
+    }
+    if($request->has('cancel_reason')){
+      $ret['cancel_reason'] = $request->get('cancel_reason');
+    }
     if(is_numeric($id) && $id > 0){
       $user_id = -1;
-      if($request->has('user')) $user_id = $request->get('user');
-      $item = $this->model()->where('id','=',$id)->first();
+      if($request->has('user')){
+        $user_id = $request->get('user');
+      }
+      $item = $this->model()->where('id',$id)->first();
       if(!isset($item)){
         abort(404, 'ページがみつかりません(1)');
       }
-      if(!isset($user) && !empty($user_id)){
+      if($user_id>0){
         $user = User::where('id', $user_id)->first();
         if(!isset($user)){
           abort(403, '有効期限が切れています(4)');
@@ -244,11 +255,13 @@ class UserCalendarController extends MilestoneController
       else {
         abort(403, 'このページにはアクセスできません(2)');
       }
-      $ret['item'] = $item->details();
+
+      $ret['item'] = $item->details($user->user_id);
       if($request->has('student_id')){
         $student = Student::where('id', $request->get('student_id'))->first();
         if(isset($student)){
           $ret['item']->own_member = $ret['item']->get_member($student->user_id);
+          $ret['item']["status"] = $ret['item']->own_member->status;
           $ret['item']["status_name"] = $ret['item']->own_member->status_name();
           $ret['item']["student_name"] = $student->name();
         }
@@ -398,8 +411,7 @@ class UserCalendarController extends MilestoneController
       }
       return view($this->domain.'.page', [
         'action' => $request->get('action')
-      ])
-        ->with($param);
+      ])->with($param);
     }
     /**
      * カレンダーステータス更新ページ
@@ -540,9 +552,16 @@ class UserCalendarController extends MilestoneController
         //カレンダーステータス変更
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
         $members = $param['item']->members;
+        $_remark = '';
+        if($status==='cancel'){
+          $_remark = $request->get('cancel_reason');
+        }
+        else if($status==='rest'){
+          $_remark = $request->get('rest_reason');
+        }
         foreach($members as $member){
           if(!empty($form[$member->id.'_status'])){
-            $member->update(['status' => $form[$member->id.'_status']]);
+            $member->update(['status' => $form[$member->id.'_status'], 'remark' => $_remark]);
           }
         }
         $member_user_id = $param['user']->user_id;
@@ -550,9 +569,10 @@ class UserCalendarController extends MilestoneController
           $student = Student::where('id', $param['student_id'])->first();
           if(isset($student)) $member_user_id = $student->user_id;
         }
+        //保護者以外の場合
         UserCalendarMember::where('calendar_id', $param['item']->id)
             ->where('user_id', $member_user_id)
-            ->update(['status'=>$status]);
+            ->update(['status'=>$status, 'remark' => $_remark]);
 
         $update_form = [
           'status'=>$status,
@@ -686,59 +706,91 @@ class UserCalendarController extends MilestoneController
       if($param['remind']===true){
         //$title .= '【再送】';
       }
-      $sended = [];
+      $send_dataset = [];
       foreach($members as $member){
         $email = $member->user['email'];
+
         $user = $member->user->details();
+        $user_id = $user->user_id;
         $send_to = $user->role;
         $user_name = $user['name'];
-        $is_child = false;
+        $is_child_member = false;
         $is_own = false;
+        $student_id = 0;
         if($user->user_id===$login_user->user_id){
+          //メンバー＝操作者
           $is_own = true;
         }
         if($this->is_student($user->role)){
           //対象が生徒の場合、保護者のメールアドレスを取得
+          $student_id = $member->user->student->id;
           $relations = $member->user->student->relations;
           $email = '';
           foreach($relations as $relation){
             if($relation->parent->user_id === $login_user->user_id){
-              $is_child = true;
+              //メンバー＝操作者の子供
+              $is_child_member = true;
             }
+            //TODO 先にとれたユーザーを操作する親にする（修正したい）
+            $user_id = $relation->parent->user->id;
             $email = $relation->parent->user->email.';';
           }
         }
-        \Log::info("[".$user_name."][".$send_from."][".$send_to."][".$is_own."][".$is_child."]");
+        \Log::info("[".$user_name."][".$send_from."][".$send_to."][".$is_own."][".$is_child_member."][".$student_id."]");
         if($send_from==="student" && $send_to==='student'){
-          //操作者が保護者または生徒
-          if($is_own===false && $is_child===false){
+          //操作者が保護者または生徒で、送り先が生徒あての場合
+          if($is_own===false && $is_child_member===false){
             //別の生徒にはメールを出さない(自身か、子であるべき）
             \Log::warning("[メール送信しない]");
             continue;
           }
         }
+       $is_exist = false;
+       foreach($send_dataset as $i => $send_data){
+          if($email ===$send_data['email']){
+            //アドレス追加済み
+            $is_exist = true;
+            //$send_dataset[$i]['student_ids'][] = $student_id;
+            break;
+          }
+       }
+       $user = User::where('id', $user_id)->first();
+       if(isset($user)) $user = $user->details();
+       if($is_exist==false){
+         $_item = UserCalendar::where('id', $item->id)->first()->details($user_id);
+         if(!empty($param['cancel_reason'])){
+           $_item['cancel_reason'] = $param['cancel_reason'];
+         }
+         if(!empty($param['rest_reason'])){
+           $_item['rest_reason'] = $param['rest_reason'];
+         }
+         if($param['student_id'] > 0){
+           $_item['target_student'] = Student::where('id', $param['student_id'])->first();
+         }
+         $send_dataset[] = [
+           "email" => $email,
+           'send_to' => $send_to,
+           'item' => $_item,
+           'token' => $param['token'],
+           'user' => $user
+         ];
+       }
+      }
 
-        if(isset($sended[$user->user_id]) && $sended[$user->user_id]===true){
-          //2重送信防止
-          continue;
-        }
-        $this->send_mail($email,
+      foreach($send_dataset as $send_data){
+        $this->send_mail($send_data['email'],
          $title,
          [
-         'user_id' => $user->user_id,
-         'user_name' => $user_name,
-         'is_own' => $is_own,
-         'is_child' => $is_child,
-         'send_from' => $send_from,
-         'send_to' => $send_to,
-         'item' => $item,
-         'token' => $param['token'],
+         'user' => $send_data['user'],
+         'send_to' => $send_data['send_to'],
+         'item' =>$send_data['item'],
+         'token' => $send_data['token'],
+         'user_id' => $user_id,
          ],
          'text',
          $template);
-
-         $sended[$user->user_id] = true;
       }
+
       return true;
     }
     /**

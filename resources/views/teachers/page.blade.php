@@ -61,7 +61,6 @@
             @endcomponent
           </div>
         </div>
-        <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
           @if(count($charge_students) > 0)
           <ul class="mailbox-attachments clearfix row">

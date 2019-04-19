@@ -20,6 +20,51 @@ class StudentParentController extends TeacherController
     return StudentParent::query();
   }
   /**
+   * 共通パラメータ取得
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id　（this.domain.model.id)
+   * @return json
+   */
+  public function get_param(Request $request, $id=null){
+    $id = intval($id);
+    $user = $this->login_details();
+    $pagenation = '';
+    $ret = [
+      'domain' => $this->domain,
+      'domain_name' => $this->domain_name,
+      'user' => $user,
+      'mode'=>$request->mode,
+      'search_word'=>$request->get('search_word'),
+      '_status' => $request->get('status'),
+      '_page' => $request->get('_page'),
+      '_line' => $request->get('_line'),
+      'list' => $request->get('list'),
+      'attributes' => $this->attributes(),
+    ];
+    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
+    if(empty($ret['_page'])) $ret['_page'] = 0;
+    if(empty($user)){
+      //ログインしていない
+      abort(419);
+    }
+    if(is_numeric($id) && $id > 0){
+      //id指定がある
+      if(!($this->is_manager($user->role) || $this->is_manager($user->role)) && $id!==$user->id){
+        //講師事務以外は自分のidしか閲覧できない
+        abort(403);
+      }
+      $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+    }
+    else {
+      //id指定がない、かつ、事務以外はNG
+      if($this->is_manager($user->role)!==true){
+        abort(403);
+      }
+    }
+    return $ret;
+  }
+  /**
    * 検索～一覧
    *
    * @param  \Illuminate\Http\Request  $request

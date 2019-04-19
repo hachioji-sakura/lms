@@ -44,7 +44,7 @@
   <div class="col-12 col-lg-6 col-md-6">
     {{$item->student->gender()}}
   </div>
-  @component('students.forms.school', [ 'attributes' => $attributes, 'item' => $item->student]) @endcomponent
+  @component('students.forms.school', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item->student]) @endcomponent
   --}}
 </div>
 @endsection

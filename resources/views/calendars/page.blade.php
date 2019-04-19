@@ -19,18 +19,23 @@
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            <small class="badge badge-{{$item->status_style()}} mt-1 mr-1">{{$item[$key]}}</small>
+            <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
           @elseif($key==='student_name')
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            @foreach($item->members as $member)
-              @if($member->user->details()->role==="student")
-                {{$member->user->details()->name}}
-                <a target="_blank" href="/students/{{$member->user->details()->id}}" class="badge badge-primary ml-1">
-                  <i class="fa fa-arrow-right"></i>
-                </a>
-              @endif
+            @foreach($item->students as $member)
+              <a target="_blank" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+                @if($member->status==='cancel')
+                <i class="fa fa-ban mr-1"></i>
+                @elseif($member->status==='rest')
+                <i class="fa fa-calendar-times mr-1"></i>
+                @elseif($member->status==='fix')
+                <i class="fa fa-check-circle mr-1"></i>
+                @endif
+                {{$member->user->details('students')->name}}
+              </a>
+              <br>
             @endforeach
           @elseif(isset($item[$key]) && gettype($item[$key])=='array')
             <label for="{{$key}}" class="w-100">

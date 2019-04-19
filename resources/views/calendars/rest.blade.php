@@ -17,6 +17,12 @@
       @if(isset($student_id))
         <input type="hidden" value="{{$student_id}}" name="student_id" />
       @endif
+
+    <div class="row">
+      @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
+      @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest', 'student_id' => $student_id]) @endcomponent
+    </div>
+
     <div class="row">
       @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
       <div class="col-12 mb-1">

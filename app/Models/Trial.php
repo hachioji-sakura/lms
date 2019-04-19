@@ -35,8 +35,8 @@ class Trial extends Model
     }
     return "";
   }
-  public function student(){
-    return $this->belongsTo('App\Models\Student');
+  public function trial_students(){
+    return $this->hasMany('App\Models\TrialStudent', 'trial_id');
   }
   public function calendars(){
     //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
@@ -105,24 +105,66 @@ EOT;
     $student = $parent->brother_add($form, 1);
     $ret = [];
 
+    if(!empty($form['student2_name_last'])){
+      //兄弟2人目
+      $form["kana_last"] = $form["student2_kana_last"];
+      $form["kana_first"] = $form["student2_kana_first"];
+      $form["name_last"] = $form["student2_name_last"];
+      $form["name_first"] = $form["student2_name_first"];
+      $form["gender"] = $form["student2_gender"];
+      $form["grade"] = $form["student2_grade"];
+      $form["school_name"] = $form["student2_school_name"];
+      $student2 = $parent->brother_add($form, 1);
+    }
+    if(!empty($form['student3_name_last'])){
+      //兄弟３人目
+      $form["kana_last"] = $form["student3_kana_last"];
+      $form["kana_first"] = $form["student3_kana_first"];
+      $form["name_last"] = $form["student3_name_last"];
+      $form["name_first"] = $form["student3_name_first"];
+      $form["gender"] = $form["student3_gender"];
+      $form["grade"] = $form["student3_grade"];
+      $form["school_name"] = $form["student3_school_name"];
+      $student3 = $parent->brother_add($form, 1);
+    }
+
     //申し込み情報登録
     $trial = Trial::where('student_parent_id', $parent->id)
-    ->where('student_id', $student->id)
     ->where('status', '!=' ,'cancel')
     ->where('status', '!=' ,'rest')
     ->first();
 
     //同じ人からの内容の場合は(cancel以外)登録しない
     if(!isset($trial)){
-      $trial = Trial::create([
-        'student_parent_id' => $parent->id,
-        'student_id' => $student->id,
-        'create_user_id' => $form['create_user_id'],
+    }
+    else {
+      //同じ人からの申し込み
+    }
+    $trial = Trial::create([
+      'student_parent_id' => $parent->id,
+      'create_user_id' => $form['create_user_id'],
+    ]);
+
+    $trial_student = TrialStudent::create([
+      'trial_id' => $trial->id,
+      'student_id' => $student->id,
+    ]);
+    if(isset($student2)){
+      $trial_student2 = TrialStudent::create([
+        'trial_id' => $trial->id,
+        'student_id' => $student2->id,
+      ]);
+    }
+    if(isset($student3)){
+      $trial_student3 = TrialStudent::create([
+        'trial_id' => $trial->id,
+        'student_id' => $student3->id,
       ]);
     }
     //申し込み情報更新
     //同じ送信内容の場合は、申し込み情報のみ更新する
     $trial->trial_update($form);
+
     return $trial;
   }
   public function trial_update($form){
@@ -138,7 +180,7 @@ EOT;
       'trial_start_time2' => $form['trial_start_time2'],
       'trial_end_time2' => $form['trial_end_time2'],
     ]);
-    $tag_names = ['howto_word', 'piano_level', 'english_teacher', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'];
+    $tag_names = ['howto_word', 'course_type', 'piano_level', 'english_teacher', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -163,7 +205,6 @@ EOT;
   }
   public function trial_to_calendar($form){
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
-    $student = Student::where('id', $this->student_id)->first();
     //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
     $calendar_form = [
@@ -184,7 +225,6 @@ EOT;
       'lesson_week_count' => 0,
       'lesson_week' => '',
       'teacher_id' => $teacher->id,
-      'student_id' => $this->student_id,
       'from_time_slot' => date('H:i:s', strtotime($form["start_time"])),
       'to_time_slot' => date('H:i:s', strtotime($form["end_time"])),
     ];
@@ -196,8 +236,12 @@ EOT;
       }
     }
     $calendar = UserCalendar::add($calendar_form);
-    $calendar->memberAdd($student->user_id, $form['create_user_id']);
-    ChargeStudent::add($charge_student_form);
+    //体験同時申し込み生徒数だけ追加
+    foreach($this->trial_students as $trial_student){
+      $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
+      $charge_student_form['student_id'] = $trial_student->student->id;
+      ChargeStudent::add($charge_student_form);
+    }
 
     return $calendar;
   }
@@ -247,17 +291,12 @@ EOT;
     $item['trial_date2'] = date('Y/m/d',  strtotime($this->trial_start_time2));
     $item['trial_start2'] = date('H:i',  strtotime($this->trial_start_time2));
     $item['trial_end2'] = date('H:i',  strtotime($this->trial_end_time2));
-    $item['student_name'] = $this->student->name();
-    $item['student_gender'] = $this->student->gender();
-    $item['student_birth_day'] = $this->student->birth_day();
     $item['parent_name'] =  $this->parent->name();
     $item['parent_phone_no'] =  $this->parent->phone_no;
     $item['parent_address'] =  $this->parent->address;
     $item['parent_email'] =  $this->parent->user->email;
     $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
     $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
-    $item['grade'] = $this->student->grade();
-    $item['school_name'] = $this->student->get_tag('school_name')['name'];
     $subject1 = [];
     $subject2 = [];
     $tagdata = [];
@@ -302,7 +341,6 @@ EOT;
   }
   public function _candidate_teachers($teacher_id=0, $lesson=0){
     $detail = $this->details();
-    $brother = $this->student->get_brother();
     //体験希望科目を取得
     $trial_subjects = [];
     $kids_lesson = [];
@@ -509,7 +547,7 @@ EOT;
         }
         $match_schedule = $this->get_match_schedule($teacher);
         if($match_schedule['all_count'] >= 0){
-          $teacher->brother_schedule = $this->get_brother_schedule($teacher);
+          //$teacher->brother_schedule = $this->get_brother_schedule($teacher);
           $teacher->match_schedule = $match_schedule;
           $teacher->trial1 = $teacher_trial1;
           $teacher->trial2 = $teacher_trial2;
@@ -527,25 +565,25 @@ EOT;
     return $ret;
   }
   public function get_brother_schedule($teacher){
-    $students = $this->student->get_brother();
-    foreach($students as $i => $student){
+    $student = [];
+    foreach($this->trial_students as $i => $trial_student){
       $calendar = UserCalendar::searchDate(date('Y-m-d H:i:s'), date('Y-m-d H:i:s', strtotime('+14 day')))
         ->findUser($teacher->user_id)
-        ->findUser($student->user_id)
+        ->findUser($trial_student->student->user_id)
         ->where('trial_id', '>', 0)
         ->get();
-      $student->current_schedule = $calendar;
-      $students[$i] = $student;
+      $students[$i] = $trial_student->student;
+      $students[$i]->current_schedule = $calendar;
     }
     return $students;
   }
   public function get_match_schedule($teacher){
     if(empty($this->student_schedule)){
-      $student = Student::where('id', $this->student_id)->first();
+      $student = $this->trial_students->first()->student;
       $this->student_schedule = $student->user->get_lesson_times();
     }
     if($this->couser_minutes==0){
-      if(!isset($student)) $student = Student::where('id', $this->student_id)->first();
+      if(!isset($student)) $student = $this->trial_students->first()->student;
       $this->course_minutes = intval($student->user->get_tag('course_minutes')['tag_value']);
     }
     $teacher_enable_schedule = $teacher->user->get_lesson_times();

@@ -68,7 +68,7 @@
                   @endforeach
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{$calendar->status_style()}} btn-sm float-left mr-1 w-100">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100">
                     <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                   </a>
                   <br>

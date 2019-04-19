@@ -10,6 +10,7 @@ use App\Models\StudentParent;
 use App\Models\UserCalendarMember;
 use App\Models\Lecture;
 use App\Models\Trial;
+use App\User;
 
 class UserCalendar extends Model
 {
@@ -91,31 +92,57 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[]);
   }
+  public function get_access_member($user_id){
+    $user = User::where('id', $user_id)->first();
+    if(isset($user)) $user = $user->details();
+    $ret = [];
+    if($user->role=='parent'){
+      //保護者の場合
+      foreach ($user->relation() as $relation){
+        $member = $this->get_member($relation->student->user_id);
+        if(!empty($member)){
+          $ret[] = $member;
+        }
+      }
+    }
+    else if($user->role=='manager'){
+      return $this->members;
+    }
+    else {
+      $member = $this->get_member($user_id);
+
+      if(!empty($member)){
+        $ret[] = $member;
+        if($user->role=='teacher'){
+          return $this->members;
+        }
+        else {
+          return $member;
+        }
+      }
+    }
+    return $ret;
+  }
 
   public function is_access($user_id){
     $parent = StudentParent::where('user_id', $user_id)->first();
-    $ret = "";
     if(isset($parent)){
       //保護者の場合
       foreach ($parent->relation() as $relation){
-        if($this->_is_access($relation->student->user_id)==true){
-          return $ret;
+        if(!empty($this->get_member($relation->student->user_id))){
+          return true;
         }
       }
-      return $ret;
+      return false;
     }
     else {
-      return $this->_is_access($user_id);
-    }
-  }
-  public function _is_access($user_id){
-    foreach($this->members as $member){
-      if($user_id==$member->user_id){
+      if(!empty($this->get_member($user_id))){
         return true;
       }
+      return false;
     }
-    return false;
   }
+
   public function lecture(){
     return $this->belongsTo('App\Models\Lecture');
   }
@@ -251,7 +278,7 @@ EOT;
   public function get_member($user_id){
     return $this->members->where('user_id', $user_id)->first();
   }
-  public function details(){
+  public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
     $item['place'] = $this->place();
@@ -274,20 +301,25 @@ EOT;
     $students = [];
     $item['managers'] = [];
     foreach($this->members as $member){
-      $_member = $member->user->details('students');
-      if($_member->role === 'student'){
-        //TODO グループレッスンの場合ほかの生徒の氏名が表示される
-        $student_name.=$_member['name'].',';
-        $students[] = $_member;
-      }
       $_member = $member->user->details('teachers');
       if($_member->role === 'teacher'){
         $teacher_name.=$_member['name'].',';
-        $teachers[] = $_member;
+        $teachers[] = $member;
       }
       if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
-        $item['managers'][] = $_member;
+        $item['managers'][] = $member;
+      }
+    }
+    if($user_id > 0){
+      //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
+      foreach($this->get_access_member($user_id) as $member){
+        if(!isset($member->user)) continue;
+        $_member = $member->user->details('students');
+        if($_member->role === 'student'){
+          $student_name.=$_member['name'].',';
+          $students[] = $member;
+        }
       }
     }
     unset($item['members']);
@@ -330,8 +362,6 @@ EOT;
     ]);
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new');
     $calendar = $calendar->change($form);
-    //事務システムにも登録
-    $calendar->office_system_api("POST");
     return $calendar;
   }
   //本モデルはdeleteではなくdisposeを使う
@@ -414,6 +444,8 @@ EOT;
           'status' => $status,
           'create_user_id' => $create_user_id,
       ]);
+      //事務システムにも登録
+      $member->office_system_api("POST");
     }
     return $member;
   }

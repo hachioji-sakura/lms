@@ -14,76 +14,53 @@
       </div>
       <div id="trial_list" class="card-body table-responsive p-3">
         @if(count($items) > 0)
-          @foreach($items as $item)
-            <ul class="timeline timeline-inverse">
-                <li>
-                  <i class="fa fa-envelope bg-secondary"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock mx-1"></i>第1希望:{{$item['date1']}}</span>
-                    <span class="time"><i class="fa fa-clock mx-1"></i>第2希望:{{$item['date2']}}</span>
-                    <h3 class="timeline-header">
-                      <i class="fa fa-user mx-1"></i>{{$item['student_name']}}
-                      <i class="fa fa-school mx-1"></i>{{$item['grade']}}
-                      <small class="badge badge-{{$item['status_style']}} mt-1 mr-1">
-                        {{$item['status_name']}}
-                      </small>
-                      {{-- <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="詳細" page_form="dialog" page_url="/trials/{{$item["id"]}}" role="button" class="">
-                        --}}
-                      <a href="/trials/{{$item["id"]}}" class="">
-                        詳細
-                      </a>
-                    </h3>
-                    <div class="timeline-body">
-                      {{$item['remark']}}
-                    </div>
-                    <div class="timeline-footer">
-                      @if($item["status"]==="new")
-                      <a title="" href="javascript:void(0);" page_title="予定作成" page_form="dialog" page_url="/trials/{{$item['id']}}/confirm" role="button" class="btn btn-primary btn-sm w-100 mt-1">
-                        <i class="fa fa-user-check mr-1"></i>
-                        予定作成
-                      </a>
-                      @elseif($item["status"]==="confirm")
-                      <a title="" href="javascript:void(0);" page_title="予定作成" page_form="dialog" page_url="/trials/{{$item['id']}}/remind" role="button" class="btn btn-default btn-sm w-100 mt-1">
-                        <i class="fa fa-envelope mr-1"></i>
-                        確認メール
-                      </a>
-                      @endif
-                    </div>
-                  </div>
-                </li>
-                @if(isset($item['calendar']))
-                <li>
-                  <i class="fa fa-calendar-check bg-success"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock mx-1"></i>{{$item['calendar']['datetime']}}</span>
-                    <h3 class="timeline-header">
-                      <i class="fa fa-user-tie mx-1"></i>{{$item['calendar']['teacher_name']}}
-                      <i class="fa fa-map-marked mx-1"></i>{{$item['calendar']['place']}}
-                      <small class="badge badge-{{$item['calendar']->status_style()}} mt-1 mr-1">
-                        {{$item['calendar']['status_name']}}
-                      </small>
-                      <a href="javascript:void(0);" title="{{$item["calendar"]["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$item["calendar"]["id"]}}" role="button" class="">
-                        詳細
-                      </a>
-                    </h3>
-                    <div class="timeline-body">
-                      {{$item['calendar']['remark']}}
-                    </div>
-                    <div class="timeline-footer">
-                      @if($item["status"]==="cancel" || $item["status"]==="rest")
-                      {{--　TODO:cancel or restで、体験のフローは止まるので、何等か対策が必要
-                      <a title="" href="javascript:void(0);" page_title="予定作成" page_form="dialog" page_url="/trials/{{$item['id']}}/remake" role="button" class="btn btn-primary btn-sm w-100 mt-1">
-                        <i class="fa fa-user-check mr-1"></i>
-                        予定再作成
-                      </a>
-                      --}}
-                      @endif
-                    </div>
-                  </div>
-                </li>
-                @endif
-            </ul>
-          @endforeach
+          <ul class="mailbox-attachments clearfix row">
+            @foreach($items as $item)
+            <li class="col-12" accesskey="" target="">
+              <div class="row">
+                <div class="col-12">
+                <a href="trials/{{$item->id}}">
+                  <span class="time"><i class="fa fa-clock mx-1"></i>第1希望:{{$item['date1']}}</span>
+                  <span class="time"><i class="fa fa-clock mx-1"></i>第2希望:{{$item['date2']}}</span>
+                </a>
+                </div>
+                <div class="col-12">
+                  <span class="text-xs">
+                    <small class="badge badge-{{$item->status_style()}} p-1 mr-1">
+                      <i class="fa fa-file-alt mr-1"></i>{{$item['status_name']}}
+                    </small>
+                  </span>
+                  @foreach($item["tagdata"]["lesson"] as $label)
+                  <span class="text-xs">
+                    <small class="badge badge-primary p-1 mr-1">
+                      <i class="fa fa-chalkboard mr-1"></i>
+                      {{$label}}
+                    </small>
+                  </span>
+                  @endforeach
+                  @foreach($item["tagdata"]["lesson_place"] as $label)
+                  <span class="text-xs">
+                    <small class="badge badge-success p-1 mr-1">
+                      <i class="fa fa-map-marker mr-1"></i>
+                      {{$label}}
+                    </small>
+                  </span>
+                  @endforeach
+                </div>
+                <div class="col-12">
+                  @foreach($item->trial_students as $trial_student)
+                  <span class="text-xs">
+                    <small class="badge badge-info p-1 mr-1">
+                      <i class="fa fa-user mr-1"></i>
+                      {{$trial_student->student->name()}}
+                      （{{$trial_student->student->grade()}}）
+                    </small>
+                  </span>
+                  @endforeach
+                </div>
+            </li>
+            @endforeach
+          </ul>
         @else
         <div class="alert">
           <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>

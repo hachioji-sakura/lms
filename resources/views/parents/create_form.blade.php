@@ -47,7 +47,7 @@
       <span id="gender_name">{{$student->gender()}}</span>
     </div>
   </div>
-  @component('students.forms.school', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.school', ['_edit'=>$_edit, 'item' => $student, 'prefix'=>'', 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 @section('lesson_week_form')

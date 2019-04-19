@@ -32,6 +32,50 @@
   <div class="col-6 p-3"><span id="grade_name"></span></div>
   <div class="col-6 p-3 font-weight-bold school_name_confirm" >学校名</div>
   <div class="col-6 p-3 school_name_confirm"><span id="school_name"></span></div>
+</div>
+<div class="row collapse student2">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-user-graduate mr-1"></i>
+    生徒様情報(2)
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+  <div class="col-6 p-3">
+    <ruby style="ruby-overhang: none">
+      <rb><span id="student2_name_last"></span>&nbsp;<span id="student2_name_first"></span></rb>
+      <rt><span id="student2_kana_last"></span>&nbsp;<span id="student2_kana_first"></span></rt>
+    </ruby>
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >性別</div>
+  <div class="col-6 p-3"><span id="student2_gender_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >学年</div>
+  <div class="col-6 p-3"><span id="student2_grade_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold student2_school_name_confirm" >学校名</div>
+  <div class="col-6 p-3 school_name_confirm"><span id="student2_school_name"></span></div>
+</div>
+<div class="row collapse student3">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-user-graduate mr-1"></i>
+    生徒様情報(3)
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+  <div class="col-6 p-3">
+    <ruby style="ruby-overhang: none">
+      <rb><span id="student3_name_last"></span>&nbsp;<span id="student3_name_first"></span></rb>
+      <rt><span id="student3_kana_last"></span>&nbsp;<span id="student3_kana_first"></span></rt>
+    </ruby>
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >性別</div>
+  <div class="col-6 p-3"><span id="student3_gender_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >学年</div>
+  <div class="col-6 p-3"><span id="student3_grade_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold student3_school_name_confirm" >学校名</div>
+  <div class="col-6 p-3 school_name_confirm"><span id="student3_school_name"></span></div>
+</div>
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4">
+    <i class="fa fa-phone-square mr-1"></i>
+    ご連絡先
+  </div>
   <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
   <div class="col-6 p-3"><span id="email"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>

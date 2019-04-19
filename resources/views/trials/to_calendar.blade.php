@@ -5,16 +5,14 @@
 @include($domain.'.menu')
 
 @section('contents')
-@include($domain.'.matching_form')
-
-
 <section class="content-header">
 	<div class="container-fluid" id="trial_to_calendar">
     @if($select_teacher_id > 0)
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
       @csrf
       @method('PUT')
-      @yield('other_form')
+      @include('trials.forms.to_calendar_edit')
+      @yield('to_calendar_edit')
       <div class="row">
         <div class="col-12 mb-1">
           <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -31,6 +29,7 @@
       </div>
     </form>
     @else
+      @include('trials.forms.teacher_select')
       @yield('teacher_select_form')
     @endif
   </div>
