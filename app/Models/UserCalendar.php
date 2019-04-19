@@ -188,22 +188,6 @@ EOT;
     if(isset($item)) return $item->attribute_name;
     return "";
   }
-  public function status_style(){
-    //TODO:メンバーステータスのスタイルとカレンダーのスタイルがかみ合わない
-    $status_name = "";
-    switch($this->status){
-      case "confirm":
-        return "warning";
-      case "fix":
-        return "primary";
-      case "rest":
-      case "absence":
-        return "danger";
-      case "presence":
-        return "success";
-    }
-    return "secondary";
-  }
   public function status_name(){
     $status_name = "";
     switch($this->status){

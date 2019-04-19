@@ -27,7 +27,7 @@
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="info text-light">
     対応状況：
-    <small class="badge badge-{{$item["status_style"]}} mx-2">
+    <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
       {{$item["status_name"]}}
     </small>
   </div>
@@ -76,7 +76,7 @@
       <i class="nav-icon fa fa-envelope-open-text"></i>
       <p>
         対応状況
-        <small class="badge badge-{{$item["status_style"]}} mx-2">
+        <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
           {{$item["status_name"]}}
         </small>
         <i class="right fa fa-angle-left"></i>

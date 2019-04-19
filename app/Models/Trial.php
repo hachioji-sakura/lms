@@ -245,18 +245,6 @@ EOT;
 
     return $calendar;
   }
-  public function status_style(){
-    $status_name = "";
-    switch($this->status){
-      case "confirm":
-        return "warning";
-      case "fix":
-        return "primary";
-      case "complete":
-        return "success";
-    }
-    return "secondary";
-  }
   public function status_name(){
     $status_name = "";
     switch($this->status){
@@ -283,7 +271,6 @@ EOT;
   public function details(){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['status_style'] = $this->status_style();
     $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
     $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
     $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));

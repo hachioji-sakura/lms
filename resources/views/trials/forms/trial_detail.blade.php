@@ -11,7 +11,7 @@
         <div class="description-block">
           <h5 class="description-header">対応状況</h5>
           <span class="description-text">
-            <small class="badge badge-{{$item["status_style"]}} mx-2">
+            <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
               {{$item["status_name"]}}
             </small>
           </span>
@@ -72,6 +72,7 @@
           </span>
         </div>
       </div>
+      @isset($item["tagdata"]['lesson'][1])
       <div class="col-sm-6 border-right">
         <div class="description-block">
           <h5 class="description-header">希望科目（補習）</h5>
@@ -110,21 +111,24 @@
           </span>
         </div>
       </div>
-      @isset($item["tagdata"]['english_teacher'])
-      <div class="col-sm-6 border-right">
-        <div class="description-block">
-          <h5 class="description-header">英会話希望講師</h5>
-          <span class="description-text">
-            @foreach($item["tagdata"]['english_teacher'] as $label)
-            <span class="text-xs mx-2">
-              <small class="badge badge-secondary mt-1 mr-1">
-                {{$label}}
-              </small>
+      @endisset
+      @isset($item["tagdata"]['lesson'][2])
+        @isset($item["tagdata"]['english_teacher'])
+        <div class="col-sm-6 border-right">
+          <div class="description-block">
+            <h5 class="description-header">英会話希望講師</h5>
+            <span class="description-text">
+              @foreach($item["tagdata"]['english_teacher'] as $label)
+              <span class="text-xs mx-2">
+                <small class="badge badge-secondary mt-1 mr-1">
+                  {{$label}}
+                </small>
+              </span>
+              @endforeach
             </span>
-            @endforeach
-          </span>
+          </div>
         </div>
-      </div>
+        @endisset
         @isset($item["tagdata"]['english_talk_lesson'])
         <div class="col-sm-6 border-right">
           <div class="description-block">
@@ -150,7 +154,7 @@
               <span class="text-xs mx-2">
                 <small class="badge badge-secondary mt-1 mr-1">
                   {{$label}}
-                </small> 
+                </small>
               </span>
               @endforeach
             </span>
@@ -158,37 +162,41 @@
         </div>
         @endisset
       @endisset
-      @isset($item["tagdata"]['piano_level'])
-      <div class="col-sm-6 border-right">
-        <div class="description-block">
-          <h5 class="description-header">ピアノのご経験</h5>
-          <span class="description-text">
-            @foreach($item["tagdata"]['piano_level'] as $label)
-            <span class="text-xs mx-2">
-              <small class="badge badge-secondary mt-1 mr-1">
-                {{$label}}
-              </small>
+      @isset($item["tagdata"]['lesson'][3])
+        @isset($item["tagdata"]['piano_level'])
+        <div class="col-sm-6 border-right">
+          <div class="description-block">
+            <h5 class="description-header">ピアノのご経験</h5>
+            <span class="description-text">
+              @foreach($item["tagdata"]['piano_level'] as $label)
+              <span class="text-xs mx-2">
+                <small class="badge badge-secondary mt-1 mr-1">
+                  {{$label}}
+                </small>
+              </span>
+              @endforeach
             </span>
-            @endforeach
-          </span>
+          </div>
         </div>
-      </div>
+        @endisset
       @endisset
-      @isset($item["tagdata"]['kids_lesson'])
-      <div class="col-sm-6 border-right">
-        <div class="description-block">
-          <h5 class="description-header">ご希望の習い事</h5>
-          <span class="description-text">
-            @foreach($item["tagdata"]['kids_lesson'] as $label)
-            <span class="text-xs mx-2">
-              <small class="badge badge-secondary mt-1 mr-1">
-                {{$label}}
-              </small>
+      @isset($item["tagdata"]['lesson'][4])
+        @isset($item["tagdata"]['kids_lesson'])
+        <div class="col-sm-6 border-right">
+          <div class="description-block">
+            <h5 class="description-header">ご希望の習い事</h5>
+            <span class="description-text">
+              @foreach($item["tagdata"]['kids_lesson'] as $label)
+              <span class="text-xs mx-2">
+                <small class="badge badge-secondary mt-1 mr-1">
+                  {{$label}}
+                </small>
+              </span>
+              @endforeach
             </span>
-            @endforeach
-          </span>
+          </div>
         </div>
-      </div>
+        @endisset
         @isset($item["tagdata"]['kids_lesson_course_type'])
         <div class="col-sm-6 border-right">
           <div class="description-block">

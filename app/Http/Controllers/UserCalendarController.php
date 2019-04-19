@@ -8,7 +8,6 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Lecture;
 use App\Models\ChargeStudent;
-use App\Models\Trial;
 use App\Models\UserTag;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;

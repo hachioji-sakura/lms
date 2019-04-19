@@ -19,7 +19,7 @@
               <label for="{{$key}}" class="w-100">
                 {{$field['label']}}
               </label>
-              <small class="badge badge-{{$item->status_style()}} mt-1 mr-1">{{$item[$key]}}</small>
+              <small class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
             @elseif(isset($item[$key]) && gettype($item[$key])=='array')
               <label for="{{$key}}" class="w-100">
                 {{$field['label']}}
