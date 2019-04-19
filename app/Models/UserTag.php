@@ -40,9 +40,10 @@ class UserTag extends Model
   public function details(){
     $key = $this->tag_key;
 
-    //if($key==="lesson_time_holiday") $key = "lesson_time";
+    if($key==="kids_lesson_course_type") $key = "course_type";
+    if($key==="english_talk_course_type") $key = "course_type";
 
-    $item = GeneralAttribute::where('attribute_key', $this->tag_key)
+    $item = GeneralAttribute::where('attribute_key', $key)
       ->where('attribute_value', $this->tag_value)->first();
 
     //general_attributeのattribute_keyをtag_keyとして使っている場合
