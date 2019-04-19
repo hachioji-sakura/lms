@@ -147,10 +147,10 @@ $(function(){
   var form_data = util.getLocalData('trials_entry');
   base.pageSettinged("trials_entry", form_data);
   $('#trials_entry').carousel({ interval : false});
-  if(!util.isEmpty(form_data['student2_name_last'])){
+  if(form_data && !util.isEmpty(form_data['student2_name_last'])){
     $('.student2').collapse('show');
   }
-  if(!util.isEmpty(form_data['student3_name_last'])){
+  if(form_data && !util.isEmpty(form_data['student3_name_last'])){
     $('.student3').collapse('show');
   }
   //submit
