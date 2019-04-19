@@ -1,34 +1,31 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user_name}}様
+{{$user->name()}}様
 
 以下の授業予定を確定いたしました。
 授業当時、忘れずにお越しください。
 
 …………………………………………………………………………………………
 授業をお休みする場合は、以下の画面よりご連絡ください。
-{{config('app.url')}}/calendars/{{$item['id']}}/rest?key={{$token}}&user={{$user_id}}
+{{config('app.url')}}/calendars/{{$item['id']}}/rest?key={{$token}}&user={{$user->user_id}}
 
-予定変更について
+詳細のご確認については、以下の画面をご利用ください
+{{config('app.url')}}/calendars/{{$item['id']}}?user={{$user->user_id}}
+
+予定変更につきまして
 {{config('app.url')}}/faq2
 …………………………………………………………………………………………
 
 @elseif($send_to==='teacher')
-{{$user_name}}先生
+{{$user->name()}}先生
 生徒様よりご連絡があり、
 以下の 授業予定が確定となりました。
 
 @endif
 
 …………………………………………………………………………………………
-開始日時：{{$item['start_time']}}
-終了日時：{{$item['end_time']}}
-生徒：{{$item['student_name']}}
-講師：{{$item['teacher_name']}}
-レッスン：{{$item['lesson']}}
-コース：{{$item['course']}}
-科目：{{$item['subject']}}
+@component('emails.forms.calendar', ['item' => $item]) @endcomponent
 …………………………………………………………………………………………
 
 @if($send_to==='student')

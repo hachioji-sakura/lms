@@ -1,14 +1,14 @@
 <?php
 return array(
 '小学' => [
-  'e_english' => [
-    'name' => '英語',
+  'e_japanese' => [
+    'name' => '国語',
   ],
   'e_math' => [
     'name' => '算数',
   ],
-  'e_japanese' => [
-    'name' => '国語',
+  'e_english' => [
+    'name' => '英語',
   ],
   'e_science' => [
     'name' => '理科',
@@ -18,14 +18,14 @@ return array(
   ],
 ],
 '中学' => [
-  'j_english' => [
-    'name' => '英語',
+  'j_japanese' => [
+    'name' => '国語',
   ],
   'j_math' => [
     'name' => '数学',
   ],
-  'j_japanese' => [
-    'name' => '国語',
+  'j_english' => [
+    'name' => '英語',
   ],
   'j_science' => [
     'name' => '理科',
@@ -35,10 +35,13 @@ return array(
   ],
 ],
 '高校' => [
-  'h_english' => [
-    'name' => '英語',
+  'h_japanese' => [
+    'name' => '国語',
     'items' => [
-      'english1' => '英語',
+      'contemporary_japanese' => '現代文',
+      'classical_japanese' => '古文',
+      'classical_chinese' => '漢文',
+      'essay' => '小論文',
       ],
   ],
   'h_math' => [
@@ -49,13 +52,10 @@ return array(
       'math3' => '数Ⅲ',
       ],
   ],
-  'h_japanese' => [
-    'name' => '国語',
+  'h_english' => [
+    'name' => '英語',
     'items' => [
-      'contemporary_japanese' => '現代文',
-      'classical_japanese' => '古文',
-      'classical_chinese' => '漢文',
-      'essay' => '小論文',
+      'english1' => '英語',
       ],
   ],
   'h_science' => [
@@ -73,6 +73,7 @@ return array(
       'world_history' => '世界史',
       'japanese_history' => '日本史',
       'geography' => '地理',
+      'political_economy' => '政治経済',
       'contemporary_history' => '現代社会',
       ],
   ],

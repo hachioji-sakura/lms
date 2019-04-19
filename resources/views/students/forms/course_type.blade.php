@@ -1,12 +1,16 @@
-<div class="col-12 course_type_form">
+{{--
+$prefix = kids_lesson | english_talk
+$prefix_formで表示制御＋$prefix_course_typeにて、POST値を設定
+  --}}
+<div class="col-12 {{$prefix}}_form">
   <div class="form-group">
-    <label for="course_type" class="w-100">
+    <label for="{{$prefix}}_course_type" class="w-100">
       授業形式のご希望をお知らせください
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-danger ml-1">必須</span>
     </label>
     @foreach($attributes['course_type'] as $index => $name)
     <label class="mx-2">
-      <input type="radio" value="{{ $index }}" name="course_type" class="icheck flat-green" >{{$name}}
+      <input type="radio" value="{{ $index }}" name="{{$prefix}}_course_type" class="icheck flat-green" required="true">{{$name}}
     </label>
     @endforeach
   </div>

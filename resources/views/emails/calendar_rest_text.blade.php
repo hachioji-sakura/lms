@@ -1,32 +1,30 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user_name}}様
+{{$user->name()}}様
 
 以下の授業のお休み連絡を承りました。
 
 @elseif($send_to==='teacher')
-{{$user_name}}先生
-生徒様よりご連絡があり、
-以下の 授業予定はお休みとなりました。
+{{$user->name()}}先生
 
+{{$item['target_student']->name()}}様より、
+以下の 授業予定のお休み連絡をいただきました。
+
+@if($item['status'] =='rest')
+また、この授業予定はお休みとなりますので、
+何卒、よろしくお願いいたします。
+@else
+引き続き、出席予定の生徒様への授業をよろしくお願いいたします。
 @endif
 
+@endif
 …………………………………………………………………………………………
-開始日時：{{$item['start_time']}}
-終了日時：{{$item['end_time']}}
-生徒：{{$item['student_name']}}
-講師：{{$item['teacher_name']}}
-レッスン：{{$item['lesson']}}
-コース：{{$item['course']}}
-科目：{{$item['subject']}}
-休み理由:{{$item['remark']}}
+@component('emails.forms.calendar', ['item' => $item]) @endcomponent
 …………………………………………………………………………………………
 
 @if($send_to==='student')
 ご不明な点等ございましたら、下記までお問い合わせください。　
-@elseif($send_to==='teacher')
-ご確認いただきますよう、宜しくお願い致します。
 @endif
 
 @yield('signature')

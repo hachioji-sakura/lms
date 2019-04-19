@@ -127,7 +127,7 @@ class UserExaminationController extends TextbookChapterController
       $next_question = TextbookQuestion::where('id',$next_question_id)->first();
       $result = null;
       if(!isset($next_question)){
-        //章問題についてすべて終了した場合、結果を設定
+        //章問題につきましてすべて終了した場合、結果を設定
         $_total = count($this->get_questions($user_examination_id));
         $_success = $_total - count($this->get_miss_questions($user_examination_id));
         $result = [

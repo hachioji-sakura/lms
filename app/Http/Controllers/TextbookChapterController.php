@@ -101,7 +101,7 @@ class TextbookChapterController extends TextbookController
         $_examination = $this->get_examintaion($user->user_id, $item->id);
         if(isset($_examination)){
           $item->examination_status = $_examination->status;
-          //章問題についてすべて終了した場合、結果を設定
+          //章問題につきましてすべて終了した場合、結果を設定
           $item->question_count = count($this->get_questions($_examination->id));
           //$item->examination_success = $item->question_count - count($this->get_miss_questions($_examination->id));
         }

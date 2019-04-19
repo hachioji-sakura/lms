@@ -33,7 +33,7 @@
 本登録画面
 {{config('app.url')}}/register?key={{$access_key}}
 
-当塾のシステムについて
+当塾のシステムにつきまして
 {{config('app.url')}}/faq
 
 …………………………………………………………………………………………

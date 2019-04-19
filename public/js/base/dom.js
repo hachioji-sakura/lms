@@ -172,12 +172,12 @@
 		if(required && val != null){
 			if(util.isEmpty(template)){
 				//select
-				$(self).val(val).change();
+				$(self).val(val).change(self);
 			}
 			else  {
 				//checkbox,radio
 				//$("*[name="+name+"]", self).val([val]).change();
-				$("*[name="+name+"]", self).change();
+				$("*[name="+name+"]", self).change(self);
 			}
 		}
 	}

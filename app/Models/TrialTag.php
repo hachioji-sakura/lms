@@ -14,7 +14,7 @@ class TrialTag extends UserTag
       'tag_value' => 'required'
   );
   public function trial(){
-    return $this->belongsTo('App\Models/Trial');
+    return $this->belongsTo('App\Models/Trial', 'trial_id');
   }
   //1 key = 1tagの場合利用する(上書き差し替え）
   public static function setTag($trial_id, $tag_key, $tag_value , $create_user_id){

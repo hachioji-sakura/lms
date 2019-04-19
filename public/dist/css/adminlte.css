@@ -7001,7 +7001,9 @@ button.bg-dark:focus {
 .mw-100 {
 	max-width: 100% !important;
 }
-
+.mw-32px {
+	max-width: 32px !important;
+}
 .mw-64px {
 	max-width: 64px !important;
 }
@@ -8950,7 +8952,7 @@ body,
 .main-sidebar {
 	z-index: 1100;
 	height: 100vh;
-	overflow-y: hidden;
+	overflow-y: auto;
 }
 
 .sidebar {
@@ -10256,7 +10258,9 @@ body,
 	.sidebar-mini .nav-sidebar,
 	.sidebar-mini .nav-sidebar > .nav-header,
 	.sidebar-mini .nav-sidebar .nav-link {
+		/*2019/4/5 サイドメニューのラベルを折り返したい
 		white-space: nowrap;
+		*/
 		overflow: hidden;
 	}
 	.sidebar-mini.sidebar-collapse .d-hidden-mini {
@@ -11746,11 +11750,15 @@ label:not(.form-check-label):not(.custom-file-label) {
  * --------------
  */
 .nav-pills .nav-link {
-	color: #6c757d;
+	/*color: #6c757d;*/
+	color: #ffffff;
 }
 
 .nav-pills .nav-link:not(.active):hover {
+	/*
 	color: #007bff;
+	*/
+	color: #ffffff;
 }
 
 /*

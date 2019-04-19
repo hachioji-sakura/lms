@@ -1,0 +1,67 @@
+{{--
+<div class="col-12 mt-1">
+  <h6 class="text-sm text-danger" >
+    ※希望日時につきまして、ご指定いただいた時間帯の範囲にて、60分の授業を予定しております
+  </h6>
+</div>
+--}}
+<div class="col-12 mt-2 col-md-4">
+    <label for="start_date" class="w-100">
+      第１希望日
+      <span class="right badge badge-danger ml-1">必須</span>
+    </label>
+    <div class="input-group">
+      <input type="text" name="trial_date1" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+    </div>
+</div>
+<div class="col-12 mt-2 col-md-8">
+  <label for="start_date" class="w-100">
+    時間帯
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  <div class="input-group">
+    <select name="trial_start_time1" class="form-control float-left mr-1 w-40" required="true">
+      <option value="">(選択してください)</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+    <div class="w-10 text-center float-left mx-2">～</div>
+    <select name="trial_end_time1" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time1" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time1" not_equal_error="時間帯範囲が間違っています" >
+      <option value="">(選択してください)</option>
+        @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+        @endfor
+    </select>
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-4">
+  <label for="start_date" class="w-100">
+    第２希望日
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  <div class="input-group">
+    <input type="text" name="trial_date2" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-8 mb-4">
+  <label for="start_date" class="w-100">
+    時間帯
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  <div class="input-group">
+    <select name="trial_start_time2" class="form-control float-left mr-1 w-40" required="true">
+      <option value="">(選択してください)</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+    <div class="w-10 text-center float-left mx-2">～</div>
+    <select name="trial_end_time2" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time2" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time2" not_equal_error="時間帯範囲が間違っています" >
+      <option value="">(選択してください)</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}" >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+  </div>
+</div>

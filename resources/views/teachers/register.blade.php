@@ -136,7 +136,7 @@
 $(function(){
   base.pageSettinged("teachers_register", []);
   $('#teachers_register').carousel({ interval : false});
-
+  lesson_checkbox_change();
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();

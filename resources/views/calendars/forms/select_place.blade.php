@@ -5,7 +5,7 @@
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <select name="place" class="form-control" placeholder="場所" required="true">
-      @foreach($attributes['place'] as $index => $name)
+      @foreach($attributes['lesson_place_floor'] as $index => $name)
         <option value="{{ $index }}" @if(isset($_edit) && $item['place'] == $index) selected @endif>{{$name}}</option>
       @endforeach
     </select>

@@ -1,14 +1,18 @@
 <div class="col-12">
   <div class="form-group">
     <label for="week_table" class="w-100">
-      曜日・時間帯
+      {{$title}}
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <table class="table table-striped" id="week_table">
     <tr class="bg-gray">
       <th class="p-1 text-center">時間帯 / 曜日</th>
       @foreach($attributes['lesson_week'] as $index => $name)
-      <th class="p-1 text-center {{$prefix}}_week_label" atl="{{$index}}">
+      <th class="p-1 text-center {{$prefix}}_week_label
+      @if($index==="sat") text-primary
+      @elseif($index==="sun") text-danger
+      @endif
+      " alt="{{$index}}">
          {{$name}}
       </th>
       @endforeach
@@ -37,7 +41,7 @@
         <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"
         @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
-       @elseif(isset($item) && !isset($item->user))
+       @elseif($_edit==false)
         disabled = "disabled"
         @endif
         >

@@ -87,7 +87,7 @@ class ImageController extends UserController
       ]);
       $form = $request->all();
       if ($request->file('image')->isValid([])) {
-        $res = $this->save_image($request->file('image'), date('Y-m-d'), $form['alias'], env("AWS_S3_ICON_FOLDER"));
+        $res = $this->save_image($request->file('image'), date('Y-m-d'), $form['alias'], config('aws_s3.icon_folder'));
         return view('sample.create');
         //return redirect('/images/create')->with('success', "");
       }
@@ -132,7 +132,7 @@ class ImageController extends UserController
       ]);
       if($request->hasFile('image')){
         if ($request->file('image')->isValid([])) {
-          $res = $this->save_image($request->file('image'), "9999-12-31", "", env("AWS_S3_ICON_FOLDER"));
+          $res = $this->save_image($request->file('image'), "9999-12-31", "", config('aws_s3.icon_folder'));
           if($this->is_success_response($res)){
             $image_id = $res["data"]->id;
           }
@@ -202,7 +202,7 @@ class ImageController extends UserController
       try {
         DB::beginTransaction();
         $path = Storage::disk('s3')->putFile($save_folder, $request_file, 'public');
-        $s3_url = Storage::disk('s3')->url(env('AWS_S3_BUCKET')."/".$path);
+        $s3_url = Storage::disk('s3')->url(config('aws_s3.bucket')."/".$path);
         if(empty($alias)){
           $alias = $request_file->getClientOriginalName();
         }

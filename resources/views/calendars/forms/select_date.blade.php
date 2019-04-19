@@ -20,9 +20,9 @@
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <select name="lesson_time" class="form-control" placeholder="授業時間" required="true">
-      <option value="60" @if(isset($item) && $item['lesson_time'] < 90) selected @endif>60分</option>
-      <option value="90" @if(isset($item) && $item['lesson_time'] >= 90) selected @endif>90分</option>
-      <option value="120" @if(isset($item) && $item['lesson_time'] >= 120) selected @endif>120分</option>
+      @foreach($attributes['course_minutes'] as $index => $name)
+      <option value="{{$index}}" @if(isset($item) && $item['lesson_time'] < $index) selected @endif>{{$name}}</option>
+      @endforeach
     </select>
   </div>
 </div>

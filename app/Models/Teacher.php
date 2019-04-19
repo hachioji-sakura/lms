@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+//データセット
 use App\User;
-use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\UserTag;
+//他
 use App\Models\GeneralAttribute;
 
 class Teacher extends Student
@@ -33,6 +34,8 @@ EOT;
   }
   public function scopeChargeSubject($query, $subjects)
   {
+    if(!isset($subjects)) return $query;
+    if(count($subjects)<1) return $query;
     $where_raw = "";
     foreach($subjects as $subject){
       $key = $subject->tag_key;
@@ -105,7 +108,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson', 'teacher_character'];
+    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character',];
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     //講師用の希望シフト
     foreach($lesson_weeks as $lesson_week){
@@ -120,6 +123,13 @@ EOT;
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+    $tag_names = ['piano_level', 'english_teacher',];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
+
   }
   public function get_charge_subject(){
     //担当科目を取得
@@ -170,4 +180,5 @@ EOT;
                         ]);
     return $manager;
   }
+
 }

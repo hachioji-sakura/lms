@@ -126,11 +126,11 @@
         </table>
       </div>
     </div>
-    <div class="col-6 p-3 font-weight-bold english_confirm" >ご希望の英会話講師</div>
-    <div class="col-6 p-3 english_confirm"><span id="english_teacher_name"></span></div>
-    <div class="col-6 p-3 font-weight-bold piano_confirm" >ピアノのご経験について</div>
+    <div class="col-6 p-3 font-weight-bold english_talk_confirm" >ご希望の英会話講師</div>
+    <div class="col-6 p-3 english_talk_confirm"><span id="english_teacher_name"></span></div>
+    <div class="col-6 p-3 font-weight-bold piano_confirm" >ピアノのご経験につきまして</div>
     <div class="col-6 p-3 piano_confirm"><span id="piano_level_name"></span></div>
-    <div class="col-6 p-3 font-weight-bold" >ご要望について</div>
+    <div class="col-6 p-3 font-weight-bold" >ご要望につきまして</div>
     <div class="col-6 p-3"><span id="remark"></span></div>
   </div>
   @endslot

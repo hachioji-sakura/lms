@@ -32,7 +32,7 @@ class GeneralAttribute  extends Model
   }
   public function scopeSubject($query, $val)
   {
-      return $query->where('attribute_key', 'subject')->findVal($val);
+      return $query->where('attribute_key', 'charge_subject')->findVal($val);
   }
   public function scopeCourse($query, $val)
   {
@@ -40,7 +40,7 @@ class GeneralAttribute  extends Model
   }
   public function scopePlace($query, $val)
   {
-      return $query->where('attribute_key', 'place')->findVal($val);
+      return $query->where('attribute_key', 'lesson_place_floor')->findVal($val);
   }
   public function scopeWork($query, $val)
   {

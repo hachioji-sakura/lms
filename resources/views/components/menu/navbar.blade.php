@@ -60,7 +60,7 @@
         <a href="/trials" class="dropdown-item">体験申込一覧</a>
         <a href="/comments" class="dropdown-item">コメント一覧</a>
         <a href="/milestones" class="dropdown-item">目標一覧</a>
-        <a href="/attriubtes" class="dropdown-item">属性一覧</a>
+        <a href="/attributes" class="dropdown-item">属性一覧</a>
         <a href="/events" class="dropdown-item">イベント一覧</a>
       </div>
     </li>

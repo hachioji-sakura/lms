@@ -388,29 +388,18 @@ class TeacherController extends StudentController
     }
     public function _register_update($form)
     {
-      $user = User::where('access_key',$form['access_key']);
-      $user = $user->first();
-      DB::beginTransaction();
-      $form['create_user_id'] = $user->id;
-      $item = $this->model()->where('user_id', $user->id)->first();
-      $item->profile_update($form);
-      $user->set_password($form['password']);
-      $user->update(['status' => 0]);
-      DB::commit();
-      return $this->api_response(200, __FUNCTION__, __LINE__, $item);
-      if($user->count() < 1){
+      $user = User::where('access_key',$form['access_key'])->first();
+      if(!isset($user)){
         abort(403);
       }
-      try {
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+      return $this->transaction(function() use ($form, $user){
+        $form['create_user_id'] = $user->id;
+        $item = $this->model()->where('user_id', $user->id)->first();
+        $item->profile_update($form);
+        $user->set_password($form['password']);
+        $user->update(['status' => 0]);
+        return $item;
+      }, $this->domain_name.'本登録', __FILE__, __FUNCTION__, __LINE__ );
     }
     protected function to_manager_page(Request $request, $id)
     {
