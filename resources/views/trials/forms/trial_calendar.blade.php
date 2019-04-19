@@ -34,10 +34,10 @@
         <div class="description-block">
           <h5 class="description-header">講師</h5>
           <span class="description-text">
-          @foreach($calendar['teachers'] as $teacher)
-            <a href='/teachers/{{$teacher['id']}}'>
+          @foreach($calendar['teachers'] as $member)
+            <a href='/teachers/{{$member->user->teacher->id}}'>
             <i class="fa fa-user-tie mr-1"></i>
-            {{$teacher->name()}}
+            {{$member->user->teacher->name()}}
             </a>
           @endforeach
           </span>
