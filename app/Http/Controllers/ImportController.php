@@ -1094,6 +1094,9 @@ class ImportController extends UserController
             'create_user_id' => 1
           ]);
         }
+        else {
+          $_member->update(['status' => $student_status]);
+        }
       }
       //講師 or 事務をカレンダーに追加
       $teacher_status = $status;
@@ -1109,6 +1112,9 @@ class ImportController extends UserController
           'user_id' => $user_id,
           'create_user_id' => 1
         ]);
+      }
+      else {
+        $_member->update(['status' => $student_status]);
       }
       //事務システムから取得した科目
       if(!empty($item['subject_expr'])){
