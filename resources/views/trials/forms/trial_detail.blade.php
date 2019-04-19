@@ -150,7 +150,7 @@
               <span class="text-xs mx-2">
                 <small class="badge badge-secondary mt-1 mr-1">
                   {{$label}}
-                </small>
+                </small> 
               </span>
               @endforeach
             </span>
