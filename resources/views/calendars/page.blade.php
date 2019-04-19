@@ -26,19 +26,19 @@
             </label>
             @foreach($item->students as $member)
               <a target="_blank" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
-                @if($member->status==='new')
+                @if($member->status=='new')
                 <i class="fa fa-question-circle mr-1"></i>
-                @elseif($member->status==='confirm')
+                @elseif($member->status=='confirm')
                 <i class="fa fa-question-circle mr-1"></i>
-                @elseif($member->status==='fix')
-                <i class="fa fa-fa-clock mr-1"></i>
-                @elseif($member->status==='cancel')
+                @elseif($member->status=='fix')
+                <i class="fa fa-clock mr-1"></i>
+                @elseif($member->status=='cancel')
                 <i class="fa fa-ban mr-1"></i>
-                @elseif($member->status==='presence')
+                @elseif($member->status=='presence')
                 <i class="fa fa-check-circle mr-1"></i>
-                @elseif($member->status==='absence')
+                @elseif($member->status=='absence')
                 <i class="fa fa-calendar-times mr-1"></i>
-                @elseif($member->status==='rest')
+                @elseif($member->status=='rest')
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
