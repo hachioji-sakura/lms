@@ -23,15 +23,15 @@
         },
         "cancel" : {
           "color" : "#6c757d",
-          "icon" : "<i class='fa fa-times mr-1'></i>",
-        },
-        "absence" : {
-          "color" : "#dc3545",
-          "icon" : "<i class='fa fa-user-times mr-1'></i>",
+          "icon" : "<i class='fa fa-ban mr-1'></i>",
         },
         "presence" : {
           "color" : "#28a745",
           "icon" : "<i class='fa fa-check-circle mr-1'></i>",
+        },
+        "absence" : {
+          "color" : "#dc3545",
+          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
         },
         "rest" : {
           "color" : "#dc3545",

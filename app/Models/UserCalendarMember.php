@@ -29,21 +29,7 @@ class UserCalendarMember extends Model
   }
   public function add($form){
   }
-  public function status_style(){
-    $status_name = "";
-    switch($this->status){
-      case "confirm":
-        return "warning";
-      case "fix":
-        return "primary";
-      case "rest":
-      case "absence":
-        return "danger";
-      case "presence":
-        return "success";
-    }
-    return "secondary";
-  }
+
   public function status_name(){
     $status_name = "";
     switch($this->status){

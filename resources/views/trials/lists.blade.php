@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-12">
                   <span class="text-xs">
-                    <small class="badge badge-{{$item->status_style()}} p-1 mr-1">
+                    <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
                       <i class="fa fa-file-alt mr-1"></i>{{$item['status_name']}}
                     </small>
                   </span>
