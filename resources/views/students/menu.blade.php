@@ -59,6 +59,28 @@
     </ul>
   </li>
 </ul>
+@if($user->role==="manager" || $user->role==="teacher")
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-user-friends"></i>
+    <p>
+      ご契約者様
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      @foreach($item->relations as $relation)
+      <li class="nav-item">
+        <a class="nav-link" href="/parents/{{$relation->student_parent_id}}">
+          <i class="fa fa-user nav-icon"></i>{{$relation->parent->name()}}
+        </a>
+      </li>
+      @endforeach
+    </ul>
+  </li>
+</ul>
+@endif
 @endsection
 @section('page_footer')
 <dt>

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+//データセット
 use App\User;
 use App\Models\Student;
 use App\Models\UserTag;
@@ -56,6 +57,7 @@ class StudentParent extends Teacher
       $parent = StudentParent::create([
         'name_last' => $form['name_last'],
         'name_first' => $form['name_first'],
+        'phone_no' => $form['phone_no'],
         'kana_last' => '',
         'kana_first' => '',
         'user_id' => $parent_user->id,
@@ -69,9 +71,9 @@ class StudentParent extends Teacher
     $ret = [];
     $student = null;
     foreach($this->relation() as $relation){
-      $student = $relation->student;
-      if($student->name_last ==$form['name_last'] &&
-        $student->name_first == $form['name_first'] ){
+      if($relation->student->name_last ==$form['name_last'] &&
+        $relation->student->name_first == $form['name_first'] ){
+          $student = $relation->student;
           break;
       }
     }

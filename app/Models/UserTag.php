@@ -14,6 +14,7 @@ class UserTag extends Model
       'tag_key' => 'required',
       'tag_value' => 'required'
   );
+
   public function user(){
     return $this->belongsTo('App\User');
   }
@@ -38,17 +39,26 @@ class UserTag extends Model
   }
   public function details(){
     $key = $this->tag_key;
-    if($key==="lesson_time_holiday") $key = "lesson_time";
-    $item = GeneralAttribute::where('attribute_key', $key)
+
+    //if($key==="lesson_time_holiday") $key = "lesson_time";
+
+    $item = GeneralAttribute::where('attribute_key', $this->tag_key)
       ->where('attribute_value', $this->tag_value)->first();
+
+    //general_attributeのattribute_keyをtag_keyとして使っている場合
     if(!empty($item)) return $item;
 
-    $charge_subject_level_item = GeneralAttribute::where('attribute_key', 'charge_subject_level_item')
+    //general_attributesから取得できなかった場合
+    $charge_subject_level_item = GeneralAttribute::where('attribute_key','charge_subject_level_item')
         ->where('attribute_value', $this->tag_key)->first();
+
     if(!empty($charge_subject_level_item)){
+      //希望科目の場合
+      //受験希望、補習希望　生徒向けの定義
       $key = 'lesson_subject_level';
       if($this->table === 'user_tags'){
         //ユーザータグ＝人につくので、charge_subject_level
+        //受験可、補習可　講師向けの定義
         $key = 'charge_subject_level';
       }
       $item = GeneralAttribute::where('attribute_key', $key)
@@ -68,7 +78,6 @@ class UserTag extends Model
   {
       return $query->where('tag_key', $val);
   }
-
   //1 key = 1tagの場合利用する(上書き差し替え）
   public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
     UserTag::where('user_id', $user_id)
@@ -97,8 +106,7 @@ class UserTag extends Model
   }
   public function name(){
     $item = $this->details();
-    if(empty($item)) return $this->tag_value;
-
+    if(!isset($item) || empty($item)) return $this->tag_value;
     return $item->attribute_name;
   }
 }

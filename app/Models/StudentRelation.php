@@ -39,6 +39,10 @@ class StudentRelation extends Model
   {
       return $query->where('student_parent_id', $val);
   }
+  public function scopeFindParents($query, $val)
+  {
+      return $query->whereIn('student_parent_id', $val);
+  }
   public function scopeFindStudent($query, $val)
   {
       return $query->where('student_id', $val);

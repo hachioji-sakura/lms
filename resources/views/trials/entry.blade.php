@@ -121,7 +121,7 @@
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
-          @yield('confirm_form')
+          @component('trials.forms.confirm_form', ['attributes' => $attributes]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -147,7 +147,12 @@ $(function(){
   var form_data = util.getLocalData('trials_entry');
   base.pageSettinged("trials_entry", form_data);
   $('#trials_entry').carousel({ interval : false});
-
+  if(!util.isEmpty(form_data['student2_name_last'])){
+    $('.student2').collapse('show');
+  }
+  if(!util.isEmpty(form_data['student3_name_last'])){
+    $('.student3').collapse('show');
+  }
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
@@ -185,10 +190,6 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     form_data["email"] = $("input[name=email]").val();
-    if(form_data["grade"]){
-      var _name = $('select[name=grade] option:selected').text().trim();
-      form_data["grade_name"] = _name;
-    }
     if(form_data["trial_date1"] && form_data["trial_start_time1"] && form_data["trial_end_time1"]){
       var trial_start = $('select[name=trial_start_time1] option:selected').text().trim();
       var trial_end = $('select[name=trial_end_time1] option:selected').text().trim();
@@ -199,7 +200,7 @@ $(function(){
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
       form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
     }
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
@@ -208,7 +209,22 @@ $(function(){
         });
       }
     });
-    _names = ["english_teacher", "piano_level", "course_type", "course_minutes", "lesson_week_count", "gender"];
+
+    var _names = ["grade", "student2_grade", "student3_grade"];
+    $.each(_names, function(index, value) {
+      if(form_data["grade"]){
+        var _name = $('select[name='+value+'] option:selected').text().trim();
+        form_data[value+"_name"] = _name;
+      }
+    });
+
+    _names = ["english_teacher", "piano_level",
+              "english_talk_course_type", "kids_lesson_course_type",
+              "course_minutes", "lesson_week_count",
+              "gender",
+              "student2_gender",
+              "student3_gender"
+            ];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value]){

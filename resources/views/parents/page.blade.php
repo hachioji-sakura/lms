@@ -43,13 +43,13 @@
                       <br>
                       <i class="fa fa-clock mr-1"></i>{{$charge_student->current_calendar()->details()->timezone}}
                       <br>
-                      <small class="badge badge-info mt-1 mr-1">
-                        @if(!empty($charge_student->current_calendar()->details()->subject))
-                          {{$charge_student->current_calendar()->details()->subject}}
-                        @else
-                          体験授業
-                        @endif
-                      </small>
+                      @foreach($charge_student->current_calendar()->details()->subject as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
                   @else
                   -
                   @endif

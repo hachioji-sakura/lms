@@ -17,21 +17,17 @@
     </label>
     <select name="course" class="form-control" placeholder="コース" required="true" onChange="select_subject_set();">
       <option value="">(選択してください)</option>
-      @foreach($attributes['course'] as $index => $name)
-        <option value="{{$index}}">{{$name}}</option>
-      @endforeach
     </select>
     <input type="hidden" name="lecture_id" value="">
   </div>
 </div>
 <div class="col-12 collapse student_selected">
   <div class="form-group">
-    <label for="subject" class="w-100">
+    <label for="charge_subject" class="w-100">
       科目
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <select name="subject" class="form-control" placeholder="科目" required="true" onChange="select_lecture_id_set();">
-      <option value="">(選択してください)</option>
+    <select name="charge_subject[]" class="form-control select2" placeholder="科目" required="true" onChange="select_lecture_id_set();" multiple="multiple">
       @foreach($attributes['subject'] as $index => $name)
         <option value="{{$index}}">{{$name}}</option>
       @endforeach
@@ -127,20 +123,21 @@ function select_subject_set(){
       data[s['attribute_value']] = s['attribute_name'];
     }
   });
-  $("select[name='subject']").html('');
+  $("select[name='subject[]']").html('');
   var c = 0;
   $.each(data, function(id, val){
     var _option = '<option value="'+id+'">'+val+'</option>';
-    $("select[name='subject']").append(_option);
+    $("select[name='subject[]']").append(_option);
     c++;
   });
-  $("select[name='subject']").trigger('change');
+  $("select[name='subject[]']").trigger('change');
 
 }
+//該当するlectureを探索し、idをセット
 function select_lecture_id_set(){
   var lesson=$('select[name="lesson"]').val();
   var course=$('select[name="course"]').val();
-  var subject=$('select[name="subject"]').val();
+  var subject=$('select[name="subject[]"]').val();
   $.each(lectures, function(index, value) {
     var l = value['lesson'];
     var c = value['course'];

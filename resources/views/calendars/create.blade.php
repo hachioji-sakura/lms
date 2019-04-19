@@ -20,22 +20,22 @@
   @endif
 
 <div class="row">
-  @component('calendars.forms.select_date', ['item'=>$item]);
+  @component('calendars.forms.select_date', ['item'=>$item, 'attributes' => $attributes]);
   @endcomponent
-  @component('calendars.forms.select_time', ['item'=>$item]);
+  @component('calendars.forms.select_time',['item'=>$item, 'attributes' => $attributes]);
   @endcomponent
-  @component('calendars.forms.select_place', ['attributes' => $attributes])
+  @component('calendars.forms.select_place', ['item'=>$item, 'attributes' => $attributes]);
   @endcomponent
-  @component('calendars.forms.select_teacher', ['items'=>$teachers, 'item'=>$item]);
+  @component('calendars.forms.select_teacher', ['item'=>$item,'items'=>$teachers, 'item'=>$item]);
   @endcomponent
-  @component('calendars.forms.select_student', ['items'=>$students]);
+  @component('calendars.forms.select_work', ['item'=>$item, 'attributes' => $attributes]);
   @endcomponent
-  @component('calendars.forms.select_exchanged_calendar', ['item'=>$item]);
+  @component('calendars.forms.select_student', ['item'=>$item,'items'=>$students]);
+  @endcomponent
+  @component('calendars.forms.select_exchanged_calendar', ['item'=>$item, 'attributes' => $attributes]);
   @endcomponent
 </div>
 <div class="row">
-  @component('calendars.forms.select_lecture', ['attributes' => $attributes])
-  @endcomponent
 </div>
 
 <div class="row">

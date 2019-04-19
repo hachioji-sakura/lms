@@ -6,8 +6,8 @@
       ログイン情報
     </h5>
   </div>
-  @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
-  @component('students.forms.password', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.email', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+  @component('students.forms.password', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -21,36 +21,39 @@
       {{$domain_name}}情報
     </h5>
   </div>
-  @component('students.forms.name', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
-  @component('students.forms.kana', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
+  @component('students.forms.name', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
+  @component('students.forms.kana', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
   <div class="col-12 mb-2">
-    @component('components.select_birthday', ['item' => $item])
+    @component('components.select_birthday', ['_edit'=>$_edit, 'item' => $item])
     @endcomponent
   </div>
   <div class="col-12 mb-2">
-    @component('components.select_gender', ['item' => $item])
+    @component('components.select_gender', ['_edit'=>$_edit, 'item' => $item, 'prefix'=>''])
     @endcomponent
   </div>
-
-  @component('students.forms.phoneno', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
+  @component('students.forms.phoneno', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
 </div>
 @endsection
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson', ['item'=>$item, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
-  @component('students.forms.work_time', ['item'=>$item, 'prefix'=> 'lesson', 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => '担当可能な曜日・時間帯']) @endcomponent
 </div>
 @endsection
 
 @section('subject_form')
 <div class="row">
-  @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item,'title' => '担当可能科目', 'attributes' => $attributes, 'category_display' => false, 'grade_display' => true]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => true, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => true]) @endcomponent
+  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
 </div>
 @endsection
 
 @section('tag_form')
 <div class="row">
-  @component('students.forms.teacher_character', ['item'=>$item,'attributes' => $attributes]) @endcomponent
+  @component('students.forms.teacher_character', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection

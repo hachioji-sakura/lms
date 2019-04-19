@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+//データセット
 use App\User;
 use App\Models\Manager;
 use App\Models\UserTag;
