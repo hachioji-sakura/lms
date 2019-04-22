@@ -89,7 +89,7 @@
                   <div class="col-4">
                     {{$calendar["timezone"]}}
                     <br>
-                    {{$calendar["place"]}}
+                    {{$calendar['place']}}
                   </div>
                   <div class="col-4">
                     @foreach($calendar->members as $member)

@@ -21,19 +21,8 @@ class Trial extends Model
   public function tags(){
     return $this->hasMany('App\Models\TrialTag', 'trial_id');
   }
-  public function has_tag($key, $val){
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-    }
-    return false;
-  }
-  public function get_tag($key){
-    $item = $this->tags->where('tag_key', $key)->first();
-    if(isset($item)){
-      return $item;
-    }
-    return "";
+  public function user_calendar_settings(){
+    return $this->hasMany('App\Models\UserCalendarSetting', 'trial_id');
   }
   public function trial_students(){
     return $this->hasMany('App\Models\TrialStudent', 'trial_id');
@@ -77,7 +66,98 @@ EOT;
     });
     return $query;
   }
+  public function has_tag($key, $val){
+    $tags = $this->tags;
+    foreach($tags as $tag){
+      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    }
+    return false;
+  }
+  public function get_tag($key){
+    $item = $this->tags->where('tag_key', $key)->first();
+    if(isset($item)){
+      return $item;
+    }
+    return "";
+  }
+  public function get_tags($key){
+    $item = $this->tags->where('tag_key', $key);
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+  public function status_name(){
+    $status_name = "";
+    switch($this->status){
+      case "complete":
+        return "入会案内済み";
+      case "new":
+        return "未対応";
+      case "confirm":
+        return "予定確認中";
+      case "fix":
+        return "授業予定";
+      case "cancel":
+        return "キャンセル";
+      case "rest":
+        return "休み";
+      case "absence":
+        return "欠席";
+      case "presence":
+        return "出席済み";
+    }
+    return "";
+  }
+  public function details(){
+    $item = $this;
+    $item['status_name'] = $this->status_name();
+    $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
+    $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
+    $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));
+    $item['trial_end1'] = date('H:i',  strtotime($this->trial_end_time1));
+    $item['trial_date2'] = date('Y/m/d',  strtotime($this->trial_start_time2));
+    $item['trial_start2'] = date('H:i',  strtotime($this->trial_start_time2));
+    $item['trial_end2'] = date('H:i',  strtotime($this->trial_end_time2));
+    $item['parent_name'] =  $this->parent->name();
+    $item['parent_phone_no'] =  $this->parent->phone_no;
+    $item['parent_address'] =  $this->parent->address;
+    $item['parent_email'] =  $this->parent->user->email;
+    $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
+    $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
+    $subject1 = [];
+    $subject2 = [];
+    $tagdata = [];
+    foreach($this->tags as $tag){
+      $tag_data = $tag->details();
+      if(isset($tag_data['charge_subject_level_item'])){
+        if(intval($tag->tag_value) > 10){
+          $subject2[]= $tag->keyname();
+        }
+        else if(intval($tag->tag_value) > 1){
+          $subject1[] = $tag->keyname();
+        }
+      }
+      else {
+        $tagdata[$tag->tag_key][$tag->tag_value] = $tag->name();
+      }
+    }
 
+    $item['subject1'] = $subject1;
+    $item['subject2'] = $subject2;
+    $item['tagdata'] = $tagdata;
+    $calendars = $this->get_calendar();
+    foreach($calendars as $i => $calendar){
+      $calendars[$i] = $calendar->details();
+    }
+    $item['calendars'] = $calendars;
+    $calendar_settings = [];
+    foreach($this->user_calendar_settings as $user_calendar_setting){
+      $calendar_settings[] = $user_calendar_setting->details();
+    }
+    $item['calendar_settings'] = $calendar_settings;
+    return $item;
+  }
   static public function entry($form){
     $form["accesskey"] = '';
     $form["password"] = 'sakusaku';
@@ -244,73 +324,6 @@ EOT;
     }
 
     return $calendar;
-  }
-  public function status_name(){
-    $status_name = "";
-    switch($this->status){
-      case "complete":
-        return "入会案内済み";
-      case "new":
-        return "未対応";
-      case "confirm":
-        return "予定確認中";
-      case "fix":
-        return "授業予定";
-      case "cancel":
-        return "キャンセル";
-      case "rest":
-        return "休み";
-      case "absence":
-        return "欠席";
-      case "presence":
-        return "出席済み";
-    }
-    return "";
-  }
-
-  public function details(){
-    $item = $this;
-    $item['status_name'] = $this->status_name();
-    $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
-    $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
-    $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));
-    $item['trial_end1'] = date('H:i',  strtotime($this->trial_end_time1));
-    $item['trial_date2'] = date('Y/m/d',  strtotime($this->trial_start_time2));
-    $item['trial_start2'] = date('H:i',  strtotime($this->trial_start_time2));
-    $item['trial_end2'] = date('H:i',  strtotime($this->trial_end_time2));
-    $item['parent_name'] =  $this->parent->name();
-    $item['parent_phone_no'] =  $this->parent->phone_no;
-    $item['parent_address'] =  $this->parent->address;
-    $item['parent_email'] =  $this->parent->user->email;
-    $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
-    $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
-    $subject1 = [];
-    $subject2 = [];
-    $tagdata = [];
-    foreach($this->tags as $tag){
-      $tag_data = $tag->details();
-      if(isset($tag_data['charge_subject_level_item'])){
-        if(intval($tag->tag_value) > 10){
-          $subject2[]= $tag->keyname();
-        }
-        else if(intval($tag->tag_value) > 1){
-          $subject1[] = $tag->keyname();
-        }
-      }
-      else {
-        $tagdata[$tag->tag_key][$tag->tag_value] = $tag->name();
-      }
-    }
-
-    $item['subject1'] = $subject1;
-    $item['subject2'] = $subject2;
-    $item['tagdata'] = $tagdata;
-    $calendars = $this->get_calendar();
-    foreach($calendars as $i => $calendar){
-      $calendars[$i] = $calendar->details();
-    }
-    $item['calendars'] = $calendars;
-    return $item;
   }
   public function candidate_teachers($teacher_id, $lesson){
     $lessons = $this->tags->where('tag_key', 'lesson');
@@ -579,16 +592,23 @@ EOT;
     $count = [];
     $all_count = 0;
     $from_time = "";
+    $_minute = $this->course_minutes;
     foreach($this->student_schedule as $week_day => $week_schedule){
       $detail[$week_day] = [];
       $count[$week_day] = 0;
-      $_minute = $this->course_minutes;
       $c = 0;
+      //曜日別に時間が有効かチェック
+      /*
+      if(isset($teacher_current_schedule[$week_day])){
+        var_dump($teacher_current_schedule[$week_day]);
+        echo"<br>";
+      }
+      */
       foreach($week_schedule as $time => $val){
         $is_free = false;
         if(isset($teacher_enable_schedule) && isset($teacher_enable_schedule[$week_day])
           && isset($teacher_enable_schedule[$week_day][$time])){
-            //講師にも同じ曜日・時間の希望がある
+            //講師にも同じ曜日・時間の希望がある（ベースのシフト希望）
             $is_free = $teacher_enable_schedule[$week_day][$time];
         }
         if($is_free===true){
@@ -599,15 +619,18 @@ EOT;
               $is_free = false;
           }
         }
-        //echo"[$week_day][$time]$_minute<br>";
+        //echo"[".$week_day."][".$time."][".$_minute."][".$is_free."]<br>";
         if($is_free===true){
+          // 空き
           if(empty($from_time)){
             $from_time = $time;
           }
           $c+=30;
         }
         else {
+          // 空きがない
           if(!empty($from_time)){
+            //直前まで連続していた
             //可能なコマがある場合カウントアップ
             $_slot = floor($c / $this->course_minutes);
             if($_slot > 0){
@@ -615,7 +638,6 @@ EOT;
               $all_count+=$_slot;
             }
 
-            //直前まで連続していた
             $detail[$week_day][] = [
               "from" => $from_time,
               "to" => $time,
@@ -624,7 +646,6 @@ EOT;
           }
           $from_time = "";
           $c = 0;
-          $_minute = $this->course_minutes;
         }
       }
       if(!empty($from_time)){
@@ -633,6 +654,7 @@ EOT;
           $count[$week_day]+=$_slot;
           $all_count+=$_slot;
         }
+        if($time=='2130') $time='2200';
         $detail[$week_day][] = [
           "from" => $from_time,
           "to" => $time,
@@ -643,4 +665,38 @@ EOT;
     }
     return ["all_count" => $all_count, "count"=>$count, "detail" => $detail];
   }
+  public function to_calendar_setting($form, $calendar_id){
+    $calendar = UserCalendar::where('id', $calendar_id)->first();
+
+    $trial_details = $this->details($form['create_user_id']);
+    $teacher = Teacher::where('id', $form['teacher_id'])->first();
+
+    $calendar_setting = [
+      'user_id' => $teacher->user_id,
+      'trial_id' => $this->id,
+      'schedule_method' => 'week',
+      'lesson_week_count' => 0,
+      'setting_id_org' => 0,
+      'place' => $form['lesson_place_floor'],
+      'remark' => '',
+      'lesson' => $calendar->get_tag('lesson')->tag_value,
+    ];
+    $update_fields = [
+      'start_hours', 'start_minutes',
+      'course_minutes', 'lesson_week', 'create_user_id', 'course_type', 'enable_start_date', 'enable_end_date', 'lecture_id',
+      'charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'
+    ];
+    foreach($update_fields as $field){
+      if(!isset($form[$field])) continue;
+      $calendar_setting[$field] = $form[$field];
+    }
+
+    $setting = UserCalendarSetting::add($calendar_setting);
+    foreach($this->trial_students as $trial_student){
+      $student = Student::where('id', $trial_student->student_id)->first();
+      $setting->memberAdd($student->user_id, $form['create_user_id']);
+    }
+    return $setting;
+  }
+
 }

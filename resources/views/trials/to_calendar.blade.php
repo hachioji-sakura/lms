@@ -11,8 +11,43 @@
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
       @csrf
       @method('PUT')
-      @include('trials.forms.to_calendar_edit')
-      @yield('to_calendar_edit')
+      <input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
+      <input type="hidden" name="lesson" value="{{$select_lesson}}">
+      <input type="hidden" name="start_time" value="">
+      <input type="hidden" name="end_time" value="">
+      <div class="row mb-1">
+        <div class="col-6">
+          <div class="card card-widget mb-2">
+            <div class="card-header">
+              <i class="fa fa-user-tie mr-1"></i>担当講師
+            </div>
+            <div class="card-footer">
+              @component('trials.forms.charge_teacher', ['teacher' => $candidate_teachers[0], 'attributes' => $attributes, 'user' => $user,])
+                @slot('addon')
+                @endslot
+              @endcomponent
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card card-widget mb-2">
+            <div class="card-header">
+              <i class="fa fa-edit mr-1"></i>授業設定
+            </div>
+            <div class="card-footer">
+              <div class="row">
+                @component('calendar_settings.forms.course_type', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+                @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
+                @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+                @component('trials.forms.matching_decide', ['attributes' => $attributes]) @endcomponent
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-1">
+        @component('trials.forms.select_trial_date', ['item'=>$item, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
+      </div>
       <div class="row">
         <div class="col-12 mb-1">
           <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -29,8 +64,8 @@
       </div>
     </form>
     @else
-      @include('trials.forms.teacher_select')
-      @yield('teacher_select_form')
+      @include('trials.forms.select_teacher')
+      @yield('select_teacher_form')
     @endif
   </div>
 </section>

@@ -22,6 +22,19 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public function lecture(){
+    return $this->belongsTo('App\Models\Lecture');
+  }
+  public function create_user(){
+    return $this->belongsTo('App\User', 'create_user_id');
+  }
+  public function members(){
+    return $this->hasMany('App\Models\UserCalendarMember', 'calendar_id');
+  }
+  public function tags(){
+    return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
+  }
+
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);
@@ -143,18 +156,6 @@ EOT;
     }
   }
 
-  public function lecture(){
-    return $this->belongsTo('App\Models\Lecture');
-  }
-  public function create_user(){
-    return $this->belongsTo('App\User', 'create_user_id');
-  }
-  public function members(){
-    return $this->hasMany('App\Models\UserCalendarMember', 'calendar_id');
-  }
-  public function tags(){
-    return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
-  }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
     foreach($tags as $tag){
@@ -234,9 +235,11 @@ EOT;
         $ret[] = $tag->name();
       }
     }
-    $tags =  $this->get_tags('subject_expr');
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->tag_value;
+    if(count($ret)==0){
+      $tags =  $this->get_tags('subject_expr');
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->tag_value;
+      }
     }
     return $ret;
   }
@@ -254,6 +257,7 @@ EOT;
     }
     return "";
   }
+
   public function timezone(){
     $start_hour_minute = date('H:i',  strtotime($this->start_time));
     $end_hour_minute = date('H:i',  strtotime($this->end_time));
@@ -265,8 +269,6 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['place'] = $this->place();
-    $item['work'] = $this->work();
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -290,6 +292,7 @@ EOT;
         $teacher_name.=$_member['name'].',';
         $teachers[] = $member;
       }
+      $_member = $member->user->details('managers');
       if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
         $item['managers'][] = $member;
@@ -330,6 +333,7 @@ EOT;
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
+
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -351,6 +355,7 @@ EOT;
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
     UserCalendarMember::where('calendar_id', $this->id)->delete();
+    UserCalendarTag::where('calendar_id', $this->id)->delete();
     $this->delete();
     //事務システムも削除
     $this->office_system_api("DELETE");
@@ -384,10 +389,28 @@ EOT;
       if($is_status_update === true)  $status = $form['status'];
     }
 
+    //TODO Workの補間どうにかしたい
+    if(isset($form['course_type']) && !isset($form['work'])){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      $form['work'] = $work_data[$form["course_type"]];
+    }
+
+
+    //TODO lectureの補間どうにかしたい
+    $lecture_id = 0;
+    if(isset($form['lesson']) && isset($form['course_type'])){
+      $course_id = config('replace.course')[$form["course_type"]];
+      $lecture = Lecture::where('lesson', $form['lesson'])
+          ->where('course', $course_id)
+          ->first();
+      $lecture_id = $lecture->id;
+    }
+
     $data = [
       'status' => $status,
-      'lecture_id' => 0,
+      'lecture_id' => $lecture_id,
     ];
+
     foreach($update_fields as $field){
       if($field=='status') continue;
       if(!isset($form[$field])) continue;

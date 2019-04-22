@@ -438,7 +438,6 @@ class TrialController extends UserCalendarController
     */
    public function status_update(Request $request, $id, $status)
    {
-
      $form = $request->all();
      $param = $this->get_param($request, $id);
      $item = $param['item'];
@@ -482,7 +481,6 @@ class TrialController extends UserCalendarController
      return  $this->_mail($calendar,
               '体験授業予定のご確認',
               'trial_confirm');
-
    }
    /**
     * 予定確認メール送信
@@ -554,26 +552,6 @@ class TrialController extends UserCalendarController
    {
      $param = $this->get_param($request, $id);
 
-     $fields = array_merge($this->show_fields, [
-       'parent_email' => [
-         'label' => 'email',
-         'size' => 6
-       ],
-       /*
-       'parent_phone_no' => [
-         'label' => 'ご連絡先',
-         'size' => 3,
-       ],
-       */
-       'howto' => [
-         'label' => '当塾をお知りになった方法は何でしょうか？',
-         'size' => 6
-       ],
-       'howto_word' => [
-         'label' => '検索ワードを教えてください',
-         'size' => 6
-       ],
-     ]);
      $teacher_id = 0;
      $lesson = 0;
      if($request->has('teacher_id')){
@@ -586,9 +564,7 @@ class TrialController extends UserCalendarController
      $param['view'] = 'to_calendar';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
-     return view($this->domain.'.'.$param['view'], [
-       'action' => $request->get('action'),
-       'fields'=>$fields])
+     return view($this->domain.'.'.$param['view'], [])
        ->with($param);
    }
    /**
@@ -597,33 +573,31 @@ class TrialController extends UserCalendarController
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function register_mail(Request $request, $id)
+   public function to_calendar_setting(Request $request, $id)
    {
      $param = $this->get_param($request, $id);
-
-     $fields = array_merge($this->show_fields, [
-       'parent_email' => [
-         'label' => 'email',
-         'size' => 6
-       ],
-       /*
-       'parent_phone_no' => [
-         'label' => 'ご連絡先',
-         'size' => 3,
-       ],
-       */
-       'howto' => [
-         'label' => '当塾をお知りになった方法は何でしょうか？',
-         'size' => 6
-       ],
-       'howto_word' => [
-         'label' => '検索ワードを教えてください',
-         'size' => 6
-       ],
-     ]);
-     $param['view'] = 'register';
-     return view($this->domain.'.'.$param['view'], [
-       'fields'=>$fields])
+     $teacher_id = 0;
+     $calendar_id = 0;
+     $lesson = 0;
+     $param['calendar'] = null;
+     if($request->has('calendar_id')){
+       $calendar_id = $request->get('calendar_id');
+       $calendar = UserCalendar::where('id', $calendar_id)->first();
+       if(!isset($calendar)) abort(404);
+       $calendar = $calendar->details($param['user']->user_id);
+       $teacher_id = $calendar['teachers'][0]->user->teacher->id;
+       $lesson = $calendar->get_tag('lesson')->tag_value;
+       $param['calendar'] = $calendar;
+     }
+     if($teacher_id > 0 && $lesson > 0){
+      $candidate_teachers  = $param['item']->candidate_teachers($teacher_id, $lesson);
+      $param['candidate_teacher'] = $candidate_teachers[0];
+     }
+     $param['view'] = 'to_calendar_setting';
+     $param['select_teacher_id'] = $teacher_id;
+     $param['select_lesson'] = $lesson;
+     $param['select_calendar_id'] = $calendar_id;
+     return view($this->domain.'.'.$param['view'], [])
        ->with($param);
    }
    /**
@@ -631,10 +605,23 @@ class TrialController extends UserCalendarController
     * @param  Array  $param
     * @return boolean
     */
-   public function register_mail_send(Request $request, $id){
+  public function to_calendar_setting_update(Request $request, $id){
+    $res =  $this->transaction(function() use ($request, $id){
+      $form = $request->all();
+      $user = $this->login_details();
+      $form['create_user_id'] = $user->user_id;
+      //カレンダーステータス変更
+      $trial = Trial::where('id', $id)->first();
+      $setting = $trial->to_calendar_setting($form, $form['calendar_id']);
+      return $trial;
+    }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'/to_calendar_setting');
+  }
+  public function admission2(Request $request, $id){
      $access_key = $this->create_token();
      $param = $this->get_param($request, $id);
      $trial = Trial::where('id', $id)->first();
+
      $res = $this->transaction(function() use ($trial, $access_key){
        //保護者にアクセスキーを設定
        $trial->parent->user->update(['access_key' => $access_key]);
@@ -642,6 +629,7 @@ class TrialController extends UserCalendarController
        $trial->update(['status' => 'complete']);
        return $trial;
      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+
      if($this->is_success_response($res)){
        $email = $param['item']['parent_email'];
        $user_name = $param['item']['parent_name'];
@@ -658,15 +646,20 @@ class TrialController extends UserCalendarController
      }
      return $this->save_redirect($res, [], '入会案内メールを送信しました');
    }
+
    public function admission(Request $request, $id){
      $access_key = '';
+     /*
      if($request->has('key')){
        $access_key = $request->get('key');
      }
      if(empty($access_key)) abort(403);
+     */
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
+     /*
      if($trial->parent->user->access_key!==$access_key) abort(403);
+     */
 
      $param = [
        'item' => $trial->details(),

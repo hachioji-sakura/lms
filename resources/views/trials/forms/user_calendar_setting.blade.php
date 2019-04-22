@@ -1,21 +1,20 @@
-@if(count($item["calendars"])>0)
-  @foreach($item["calendars"] as $calendar)
+@if(count($item->user_calendar_settings)>0)
+  @foreach($item->user_calendar_settings as $setting)
     <div class="row border-bottom">
       <div class="col-sm-6 border-right">
         <div class="description-block">
           <h5 class="description-header">概要</h5>
           <span class="description-text mr-2">
-            <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
-            <i class="fa fa-clock mr-1"></i>
-            {{$calendar["datetime"]}}
+            <a href="javascript:void(0);" title="{{$setting->id}}" page_title="詳細" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" >
+              <i class="fa fa-clock mr-1"></i>
+              {{$setting["lesson_week_name"]}}曜日/
+              {{$setting->timezone()}}
             </a>
           </span>
-          <small class="badge badge-{{config('status_style')[$calendar->status]}} mx-2">
-            {{$calendar["status_name"]}}
-          </small>
+
           <br>
           <span class="description-text mr-2">
-          @foreach($calendar['teachers'] as $member)
+          @foreach($setting['teachers'] as $member)
             <a href='/teachers/{{$member->user->teacher->id}}'>
             <i class="fa fa-user-tie mr-1"></i>
             {{$member->user->teacher->name()}}
@@ -24,26 +23,26 @@
           </span>
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              {{$calendar['lesson']}}
+              {{$setting->lesson()}}
             </small>
           </span>
           <span class="text-xs mx-2">
             <small class="badge badge-success mt-1 mr-1">
-              {{$calendar->place()}}
+              {{$setting->place()}}
             </small>
           </span>
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              {{$calendar['course']}}
+              {{$setting->course()}}
             </small>
           </span>
         </div>
       </div>
-      <div class="col-sm-3">
+      <div class="col-sm-4 border-right">
         <div class="description-block">
           <h5 class="description-header">科目</h5>
           <span class="description-text">
-            @foreach($calendar['subject'] as $subject)
+            @foreach($setting->subject() as $subject)
             <span class="text-xs mx-2">
               <small class="badge badge-primary mt-1 mr-1">
                 {{$subject}}
@@ -53,14 +52,16 @@
           </span>
         </div>
       </div>
-      <div class="col-sm-3 border-left">
+      <div class="col-sm-2">
         <div class="description-block">
           <h5 class="description-header">操作</h5>
           <span class="description-text">
             <div class="col-12 my-1">
-              <a href="/{{$domain}}/{{$item->id}}/to_calendar_setting?calendar_id={{$calendar->id}}" role="button" class="btn btn-block btn-info">
-                <i class="fa fa-cogs mr-1"></i>
-                通常授業登録
+              <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="編集" role="button" class="btn btn-sm btn-success float-left mx-1 text-center">
+                <i class="fa fa-edit"></i>
+              </a>
+              <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete" page_title="削除" role="button" class="btn btn-sm btn-danger float-left mx-1 text-center">
+                <i class="fa fa-trash"></i>
               </a>
             </div>
           </span>

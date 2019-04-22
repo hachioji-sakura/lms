@@ -7,7 +7,7 @@
       @yield('matching_form')
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('teacher_select_form')
+          @yield('select_teacher_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
@@ -105,7 +105,7 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
-    if(form_data["place"]){
+    if(form_data['place']){
       form_data["place_name"] = $('select[name=place] option:selected').text().trim();
     }
     if(form_data["teacher_schedule"]){

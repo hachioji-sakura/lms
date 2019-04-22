@@ -28,7 +28,9 @@ class UserCalendarController extends MilestoneController
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
         ];
-
+  public function model(){
+    return UserCalendar::query();
+  }
   public function show_fields(){
     $user = $this->login_details();
       $ret = [
@@ -67,9 +69,7 @@ class UserCalendarController extends MilestoneController
     ];
     return $ret;
   }
-  public function model(){
-    return UserCalendar::query();
-  }
+
   /**
    * 更新用フォーム
    *

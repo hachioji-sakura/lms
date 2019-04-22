@@ -834,9 +834,14 @@ class ImportController extends UserController
       //繰り返し曜日
       if(isset($week[$item["dayofweek"]])) $item["lesson_week"] = $week[$item["dayofweek"]];
 
-      $_attr = $this->get_save_general_attribute('place', $item['place_id'],'');
-      $place = $_attr->attribute_value;
-
+      $place = "";
+      $lesson_place_floor = config('replace.lesson_place_floor');
+      if(isset($lesson_place_floor[$item['place_id']])){
+        $place = $lesson_place_floor[$item['place_id']];
+      }
+      if(empty($item["startdate"])){
+        $item["startdate"] = date('Y-m-d H:i:s');
+      }
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
       $setting_data = [

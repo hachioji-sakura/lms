@@ -46,6 +46,7 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+Route::resource('calendar_settings','UserCalendarSettingController');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 
@@ -65,8 +66,8 @@ Route::resource('calendars','UserCalendarController');
 
 Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::post('trials/{id}/to_calendar','TrialController@to_calendar_confirm');
-Route::get('trials/{id}/register','TrialController@register_mail');
-Route::post('trials/{id}/register','TrialController@register_mail_send');
+Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting');
+Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting_update');
 Route::get('trials/{id}/admission','TrialController@admission');
 Route::post('trials/{id}/admission','TrialController@admission_submit');
 Route::get('trials/{id}/{status}','TrialController@status_update_page');

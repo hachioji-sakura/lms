@@ -23,7 +23,9 @@ EOT;
 
     return $query->whereRaw($where_raw,[$user_id]);
   }
-
+  public function trial(){
+    return $this->belongsTo('App\Models\Trial');
+  }
   public function lecture(){
     return $this->belongsTo('App\Models\Lecture');
   }
@@ -32,6 +34,31 @@ EOT;
   }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
+  }
+  public function tags(){
+    return $this->hasMany('App\Models\UserCalendarTagSetting', 'user_calendar_setting_id');
+  }
+  public function has_tag($key, $val=""){
+    $tags = $this->tags;
+    foreach($tags as $tag){
+      if(empty($val) && $tag->tag_key==$key) return true;
+      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    }
+    return false;
+  }
+  public function get_tag($key){
+    $item = $this->tags->where('tag_key', $key)->first();
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+  public function get_tags($key){
+    $item = $this->tags->where('tag_key', $key);
+    if(isset($item)){
+      return $item;
+    }
+    return null;
   }
   public function place(){
     $item = GeneralAttribute::place($this->place)->first();
@@ -43,18 +70,131 @@ EOT;
     if(isset($item)) return $item->attribute_name;
     return "";
   }
+  public function lesson(){
+    $tag =  $this->get_tag('lesson');
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
+  }
+  public function course(){
+    $tag =  $this->get_tag('course_type');
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
+  }
+  public function lesson_week(){
+    $item = GeneralAttribute::week($this->lesson_week)->first();
+    if(isset($item)) return $item->attribute_name;
+    return "";
+  }
+
+  public function timezone(){
+    $base_date = '2000-01-01 ';
+    $start_hour_minute = date('H:i',  strtotime($base_date.$this->from_time_slot));
+    $end_hour_minute = date('H:i',  strtotime($base_date.$this->to_time_slot));
+    return $start_hour_minute.'～'.$end_hour_minute;
+  }
+  public function subject(){
+    $tags =  $this->get_tags('charge_subject');
+    $ret = [];
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
+    }
+    $tags =  $this->get_tags('english_talk_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
+    }
+    $tags =  $this->get_tags('piano_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
+    }
+    $tags =  $this->get_tags('kids_lesson');
+    if(isset($tags)){
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->name();
+      }
+    }
+    if(count($ret)==0){
+      $tags =  $this->get_tags('subject_expr');
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->tag_value;
+      }
+    }
+    return $ret;
+  }
+  public function details($user_id=0){
+    $item = $this;
+    $base_date = '2000-01-01 ';
+    $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
+    $item['start_minutes'] = date('i',  strtotime($base_date.$this->from_time_slot));
+    $item['timezone'] = $this->timezone();
+    $item['datetime'] = date('m月d日 H:i',  strtotime($this->start_time)).'～'.$item['end_hour_minute'];
+    $item['lesson'] = $this->lesson();
+    $item['course'] = $this->course();
+    $item['subject'] = $this->subject();
+    $item['lesson_week_name'] = $this->lesson_week();
+    $teacher_name = "";
+    $student_name = "";
+    $other_name = "";
+    $teachers = [];
+    $students = [];
+    $item['managers'] = [];
+    foreach($this->members as $member){
+      $_member = $member->user->details('teachers');
+      if($_member->role === 'teacher'){
+        $teacher_name.=$_member['name'].',';
+        $teachers[] = $member;
+      }
+      $_member = $member->user->details('managers');
+      if($_member->role === 'manager'){
+        $other_name.=$_member['name'].',';
+        $item['managers'][] = $member;
+      }
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+        $students[] = $member;
+      }
+    }
+
+    unset($item['members']);
+    unset($item['lecture']);
+    $item['teachers'] = $teachers;
+    $item['students'] = $students;
+    $item['student_name'] = trim($student_name,',');
+    $item['teacher_name'] = trim($teacher_name,',');
+    $item['other_name'] = trim($other_name,',');
+    return $item;
+  }
+  //本モデルはcreateではなくaddを使う
   static protected function add($form){
     $ret = [];
+    $trial_id = 0;
+    if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+
+    //TODO Workの補間どうにかしたい
+    if(isset($form['course_type']) && !isset($form['work'])){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      $form['work'] = $work_data[$form["course_type"]];
+    }
+
     //TODO:日にち指定、月末日指定の場合は別メソッドで対応する
     $calendar_setting = UserCalendarSetting::create([
       'user_id' => $form['user_id'],
+      'trial_id' => $trial_id,
       'schedule_method' => $form['schedule_method'],
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],
       'from_time_slot' => $form['from_time_slot'],
       'to_time_slot' => $form['to_time_slot'],
-      'enable_start_date' => $form['enable_start_date'],
-      'enable_end_date' => $form['enable_end_date'],
       'create_user_id' => $form['create_user_id'],
       'setting_id_org' => $form['setting_id_org']
     ]);
@@ -62,16 +202,62 @@ EOT;
     $calendar_setting->change($form);
     return $calendar_setting;
   }
-  protected function change($form){
+  //本モデルはdeleteではなくdisposeを使う
+  public function dispose(){
+    UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
+    UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
+    $this->delete();
+  }
+  public function change($form){
     $update_fields = [
-      'remark', 'place', 'work', 'enable_end_date', 'lecture_id',
+      'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
+      'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id',
     ];
+    $form['from_time_slot'] = $this->from_time_slot;
+    $form['to_time_slot'] = $this->to_time_slot;
+
+    if(isset($form['course_minutes']) && isset($form['start_hours']) && isset($form['start_minutes'])){
+      //画面のフォーム（開始時間、授業時間）　→　開始時間、終了時間更新
+      $form['from_time_slot'] = $form['start_hours'].':'.$form['start_minutes'].':00';
+      $minutes = $form['course_minutes'];
+      $form['to_time_slot'] = date("H:i:00", strtotime('+'.$minutes.' minute '.'2000-01-01 '.$form['from_time_slot']));
+    }
+
+    if(isset($form['course_type']) && !isset($form['work'])){
+    //TODO Workの補間どうにかしたい
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      $form['work'] = $work_data[$form["course_type"]];
+    }
+
+    //TODO lectureの補間どうにかしたい
+    $lecture_id = 0;
+    if(isset($form['lesson']) && isset($form['course_type'])){
+      $course_id = config('replace.course')[$form["course_type"]];
+      $lecture = Lecture::where('lesson', $form['lesson'])
+          ->where('course', $course_id)
+          ->first();
+      $lecture_id = $lecture->id;
+    }
+    $form['lecture_id'] = $lecture_id;
     $data = [];
     foreach($update_fields as $field){
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
     $this->update($data);
+    $tag_names = ['course_minutes', 'course_type', 'lesson'];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        UserCalendarTagSetting::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+    }
+    $tag_names = ['charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        UserCalendarTagSetting::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+    }
+
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark=''){
