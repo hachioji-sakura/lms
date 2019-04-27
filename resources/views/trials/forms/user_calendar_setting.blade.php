@@ -1,5 +1,5 @@
-@if(count($item->user_calendar_settings)>0)
-  @foreach($item->user_calendar_settings as $setting)
+@if(count($item->calendar_settings)>0)
+  @foreach($item->calendar_settings as $setting)
     <div class="row border-bottom">
       <div class="col-sm-6 border-right">
         <div class="description-block">
@@ -11,7 +11,6 @@
               {{$setting->timezone()}}
             </a>
           </span>
-
           <br>
           <span class="description-text mr-2">
           @foreach($setting['teachers'] as $member)

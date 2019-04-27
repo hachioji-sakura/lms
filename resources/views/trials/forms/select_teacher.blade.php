@@ -14,7 +14,13 @@
       @component('trials.forms.charge_teacher', ['teacher' => $teacher,  'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
         @slot('addon')
         <div class="col-12 mb-2">
-          <a href="/{{$domain}}/{{$item->id}}/to_calendar?teacher_id={{$teacher->id}}&lesson={{$lesson}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
+          @if(count($teacher->trial)<1)
+          <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
+            <i class="fa fa-exclamation-triangle mr-1"></i>予定が空いていません
+          </h6>
+          @else
+            <a href="/{{$domain}}/{{$item->id}}/to_calendar?teacher_id={{$teacher->id}}&lesson={{$lesson}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
+          @endif
         </div>
         @endslot
       @endcomponent

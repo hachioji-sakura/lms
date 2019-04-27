@@ -15,6 +15,13 @@ class UserCalendarMember extends Model
 {
   protected $table = 'user_calendar_members';
   protected $guarded = array('id');
+  protected $api_hosturl = "https://hachiojisakura.com/sakura-api";
+  public $api_endpoint = [
+    "GET" =>  "api_get_onetime_schedule.php",
+    "PUT" =>  "api_update_onetime_schedule.php",
+    "POST" =>  "api_insert_onetime_schedule.php",
+    "DELETE" =>  "api_delete_onetime_schedule.php",
+  ];
   public static $rules = array(
       'user_id' => 'required',
   );
@@ -29,7 +36,6 @@ class UserCalendarMember extends Model
   }
   public function add($form){
   }
-
   public function status_name(){
     $status_name = "";
     switch($this->status){
@@ -54,17 +60,12 @@ class UserCalendarMember extends Model
     if($this->schedule_id == 0 && $method=="PUT") return;
     if($this->schedule_id == 0 && $method=="DELETE") return;
     if($this->schedule_id > 0 && $method=="POST") return;
-    $url = [
-      "GET" =>  "https://hachiojisakura.com/sakura-api/api_get_onetime_schedule.php",
-      "PUT" =>  "https://hachiojisakura.com/sakura-api/api_update_onetime_schedule.php",
-      "POST" =>  "https://hachiojisakura.com/sakura-api/api_insert_onetime_schedule.php",
-      "DELETE" =>  "https://hachiojisakura.com/sakura-api/api_delete_onetime_schedule.php",
-    ];
-    $attend_api_url = "https://hachiojisakura.com/sakura-api/api_update_attend.php";
+
+    $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
+
     //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
     $_method = "GET";
     if($method!=="GET") $_method = "POST";
-    $_url = $url[$method];
     $student_no = "";
     $teacher_no = "";
     $manager_no = "";
@@ -223,8 +224,13 @@ class UserCalendarMember extends Model
     $str_res = json_encode($res);
     \Log::info("事務システムAPI Request:".$_url."\n".$message);
     \Log::info("事務システムAPI Response:".$_url."\n".$str_res);
+    if(empty($res)){
+      @$this->send_slack("事務システムAPIエラー:".$_url."\nresponseなし", 'error', "事務システムAPIエラー");
+      return null;
+    }
     if($res["status"] != 0){
-      @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
+      @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'error', "事務システムAPIエラー");
+      return null;
     }
     if($method==="POST" && $this->schedule_id==0){
       //事務システム側のIDを更新
@@ -233,12 +239,12 @@ class UserCalendarMember extends Model
     }
     return $res;
   }
-  private function send_slack($message, $msg_type, $username=null, $channel=null) {
+  protected function send_slack($message, $msg_type, $username=null, $channel=null) {
     $controller = new Controller;
     $res = $controller->send_slack($message, $msg_type, $username, $channel);
     return $res;
   }
-  private function call_api($url, $method, $data){
+  protected function call_api($url, $method, $data){
     $controller = new Controller;
     $req = new Request;
     $res = $controller->call_api($req, $url, $method, $data);

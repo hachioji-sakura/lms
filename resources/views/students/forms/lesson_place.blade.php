@@ -6,7 +6,11 @@
     </label>
     @foreach($attributes['lesson_place'] as $index => $name)
     <label class="mx-2">
-      <input type="checkbox" value="{{ $index }}" name="lesson_place[]" class="icheck flat-green" required="true">{{$name}}
+      <input type="checkbox" value="{{ $index }}" name="lesson_place[]" class="icheck flat-green" required="true"
+      @if($_edit===true && isset($item) && $item->has_tag("lesson_place", $index))
+      checked
+      @endif
+      >{{$name}}
     </label>
     @endforeach
   </div>

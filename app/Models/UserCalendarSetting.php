@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
-
+use DB;
 class UserCalendarSetting extends Model
 {
   protected $table = 'user_calendar_settings';
@@ -37,6 +37,14 @@ EOT;
   }
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTagSetting', 'user_calendar_setting_id');
+  }
+  public function scopeOrderByWeek($query){
+    $weeks = [];
+    foreach(config('attribute.lesson_week') as $index=>$name){
+      $weeks[] = "'".$index."'";
+    }
+    $weeks_order = implode(',', $weeks);
+    return $query->orderByRaw(DB::raw("FIELD(lesson_week, $weeks_order)"));
   }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
@@ -193,8 +201,8 @@ EOT;
       'schedule_method' => $form['schedule_method'],
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],
-      'from_time_slot' => $form['from_time_slot'],
-      'to_time_slot' => $form['to_time_slot'],
+      'from_time_slot' => '',
+      'to_time_slot' => '',
       'create_user_id' => $form['create_user_id'],
       'setting_id_org' => $form['setting_id_org']
     ]);
@@ -204,6 +212,8 @@ EOT;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
+    //事務システム側を先に削除
+    $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
     UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
     $this->delete();
@@ -257,17 +267,29 @@ EOT;
         UserCalendarTagSetting::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-
+    //事務システムも更新
+    $this->office_system_api("PUT");
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark=''){
     if(empty($user_id) || $user_id < 1) return null;
-    $member = UserCalendarMemberSetting::create([
-        'user_calendar_setting_id' => $this->id,
-        'user_id' => $user_id,
-        'remark' => $remark,
-        'create_user_id' => $create_user_id,
-    ]);
+
+    $member = UserCalendarMember::where('user_calendar_setting_id' , $this->id)
+      ->where('user_id', $user_id)->first();
+
+    if(isset($memeber)){
+      $member = $memeber->update(['remark', $remark]);
+    }
+    else {
+      $member = UserCalendarMemberSetting::create([
+          'user_calendar_setting_id' => $this->id,
+          'user_id' => $user_id,
+          'remark' => $remark,
+          'create_user_id' => $create_user_id,
+      ]);
+      //事務システムにも登録
+      $member->office_system_api("POST");
+    }
     return $member;
   }
   public function setting_to_calendar(){
@@ -381,5 +403,12 @@ EOT;
       $d = intval(date('d', strtotime($target_date)));
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
+  }
+  public function office_system_api($method){
+    $res = null;
+    foreach($this->members as $member){
+      $res = $member->office_system_api($method);
+    }
+    return $res;
   }
 }

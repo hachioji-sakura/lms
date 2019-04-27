@@ -10,7 +10,11 @@ $prefix_formで表示制御＋$prefix_course_typeにて、POST値を設定
     </label>
     @foreach($attributes['course_type'] as $index => $name)
     <label class="mx-2">
-      <input type="radio" value="{{ $index }}" name="{{$prefix}}_course_type" class="icheck flat-green" required="true">{{$name}}
+      <input type="radio" value="{{ $index }}" name="{{$prefix}}_course_type" class="icheck flat-green" required="true"
+      @if($_edit===true && isset($item) && $item->has_tag($prefix.'_course_type', $index)===true)
+      checked
+      @endif
+      >{{$name}}
     </label>
     @endforeach
   </div>

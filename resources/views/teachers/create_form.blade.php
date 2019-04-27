@@ -37,18 +37,18 @@
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => '担当可能な曜日・時間帯']) @endcomponent
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => '担当可能な曜日・時間帯']) @endcomponent
 </div>
 @endsection
 
 @section('subject_form')
 <div class="row">
-  @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => true, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => true]) @endcomponent
-  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
-  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
-  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
-  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item->user, '_teacher' => true, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => true]) @endcomponent
+  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
+  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
 </div>
 @endsection
 

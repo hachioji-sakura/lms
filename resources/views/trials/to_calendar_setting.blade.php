@@ -26,6 +26,7 @@
                 @endcomponent
               </div>
             </div>
+            @component('trials.forms.trial_week_time',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
           </div>
           <div class="col-6">
             <div class="card card-widget mb-2">
@@ -34,14 +35,14 @@
               </div>
               <div class="card-footer">
                 <div class="row">
-                  @component('calendar_settings.forms.course_type', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+                  @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                 </div>
                 <div class="row">
                   @component('calendar_settings.forms.lesson_week', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.select_time', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
-                  @component('calendar_settings.forms.course_minutes', ['item'=> $item->trial_students->first()->student->user, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  @component('students.forms.course_minutes', ['_edit'=>false, 'item'=> $item->trial_students->first()->student->user, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                 </div>
                 <div class="row">
                   <div class="col-6 mb-1">

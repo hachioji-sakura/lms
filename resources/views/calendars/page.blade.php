@@ -1,4 +1,4 @@
-@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>$action])
 {{-- メッセージカスタマイズ --}}
   @slot('page_message')
     @if(isset($page_message) && !empty(trim($page_message)))

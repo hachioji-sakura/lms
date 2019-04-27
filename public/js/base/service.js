@@ -426,8 +426,6 @@
 	function getAjax(async,url, request, success, error, cacheReset){
 		var _request = requestDataParse(request);
 		var auth = util.getLocalData("auth");
-		var token = "";
-		if(auth!=null && auth["token"]) token = auth["token"];
 		var key = url+JSON.stringify(_request);
 		var now = +new Date();
 
@@ -447,7 +445,7 @@
 		var ret = $.ajax({
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest',
-				'api_token' : token
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			},
 			type: "GET",
 			async: async,
@@ -489,14 +487,12 @@
     */
 	function postAjax(url, request, success, error){
 		var auth = util.getLocalData("auth");
-		var token = "";
-		if(auth!=null && auth["token"]) token = auth["token"];
 		console.log("postAjax exec:"+url);
 		loadStart();
 		var ret = $.ajax({
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest',
-				'api_token' : token
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			},
 			type: "POST",
 			cache: false,

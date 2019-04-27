@@ -13,7 +13,7 @@
           @if($item->lesson_week == $index)
           checked
           @endif
-        >{{$name}}
+        >{{$name}}曜
         </label>
         @endif
       @endif

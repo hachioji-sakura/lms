@@ -136,7 +136,6 @@ EOT;
     }
     return $ret;
   }
-
   public function is_access($user_id){
     $parent = StudentParent::where('user_id', $user_id)->first();
     if(isset($parent)){
@@ -155,7 +154,6 @@ EOT;
       return false;
     }
   }
-
   public function has_tag($key, $val=""){
     $tags = $this->tags;
     foreach($tags as $tag){
@@ -354,11 +352,11 @@ EOT;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
+    //事務システム側を先に削除
+    $this->office_system_api("DELETE");
     UserCalendarMember::where('calendar_id', $this->id)->delete();
     UserCalendarTag::where('calendar_id', $this->id)->delete();
     $this->delete();
-    //事務システムも削除
-    $this->office_system_api("DELETE");
   }
   //本モデルはupdateではなくchangeを使う
   public function change($form){
@@ -480,9 +478,9 @@ EOT;
     }
     return false;
   }
-  public function is_conflict($start, $end, $place=''){
-    $start = strtotime($start);
-    $end = strtotime($end);
+  public function is_conflict($start_time, $end_time, $place='', $place_floor=''){
+    $start = strtotime($start_time);
+    $end = strtotime($end_time);
     $calendar_starttime = strtotime($this->start_time);
     $calendar_endtime = strtotime($this->end_time);
     if($start > $calendar_starttime && $start < $calendar_endtime){
@@ -497,18 +495,63 @@ EOT;
       //完全一致
       return true;
     }
-    if(!empty($place)){
-      if($end == $calendar_starttime && $this->place!=$place){
-        //開始終了が一致したが、場所が違うので移動できない
+
+    if($end == $calendar_starttime || $start == $calendar_endtime){
+      //開始終了が一致した場合、場所をチェック
+      if(!empty($place) && $this->is_same_place($place)===false){
+        //場所が異なるのでスケジュール競合
+        return true;
+      }
+      else if(!empty($place_floor) && $this->is_same_place("",$place_floor)===false){
+        //場所が異なるのでスケジュール競合
         return true;
       }
     }
     return false;
   }
+  public function is_time_connect($start_time, $end_time){
+    //開始終了が一致した場合、場所をチェック
+    $start = strtotime($start_time);
+    $end = strtotime($end_time);
+    $calendar_starttime = strtotime($this->start_time);
+    $calendar_endtime = strtotime($this->end_time);
+
+    if($end == $calendar_starttime || $start == $calendar_endtime) return true;
+    return false;
+  }
+  public function is_same_place($place='', $place_floor=''){
+    //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
+    if(!empty($place)){
+      $calendar_place = $this->get_place($this->place);
+      if($calendar_place==$place){
+        return true;
+      }
+    }
+    else if(!empty($place_floor)){
+      $calendar_place = $this->get_place($this->place);
+      $args_place = $this->get_place($place_floor);
+      if($calendar_place==$args_place){
+        return true;
+      }
+    }
+    return false;
+  }
+  private function get_place($floor){
+    foreach(config('lesson_place_floor') as $place => $floors){
+      foreach($floors as $floor_code => $floor_name){
+        if($floor_code==$floor){
+          return $place;
+        }
+      }
+    }
+    return "";
+  }
   public function office_system_api($method){
     $res = null;
     foreach($this->members as $member){
       $res = $member->office_system_api($method);
+      if($res=="null" || !isset($res["status"])) break;
+      if($res["status"]!=0) break;
     }
     return $res;
   }

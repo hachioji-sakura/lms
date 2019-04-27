@@ -54,10 +54,10 @@
                 @endif
                subject_level"  required="true"
               @if($_edit===true)
-                @if($item->user->has_tag($subject.'_level', $index)===true)
+                @if($item->has_tag($subject.'_level', $index)===true)
                   checked
                 @endif
-                @if($item->user->has_tag($subject.'_level')===false && $loop->index)
+                @if($item->has_tag($subject.'_level')===false && $loop->index==0)
                   checked
                 @endif
               @else
@@ -91,12 +91,15 @@
             @endif
              subject_level"  required="true"
              @if($_edit===true)
-               @if($item->user->has_tag($subject.'_level', $index)===true)
-                 checked
+               @if($item->has_tag($subject.'_level', $index)===true)
+                checked
+               @endif
+               @if($item->has_tag($subject.'_level')===false && $loop->index==0)
+                checked
                @endif
              @else
                @if($loop->index == 0)
-                 checked
+                checked
                @endif
              @endif
              validate="subject_validate()">

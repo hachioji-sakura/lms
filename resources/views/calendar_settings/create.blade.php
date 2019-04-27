@@ -7,7 +7,7 @@
   @endif
   @csrf
   <div class="row">
-    @component('calendar_settings.forms.course_type', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+    @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent
     @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
     @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
   </div>

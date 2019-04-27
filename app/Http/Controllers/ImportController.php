@@ -18,12 +18,14 @@ use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\UserTag;
 use App\Models\ChargeStudent;
+use App\Models\ChargeStudentTag;
 
 use App\Models\UserCalendar;
 use App\Models\UserCalendarTag;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
+use App\Models\UserCalendarTagSetting;
 
 use Illuminate\Http\Request;
 use DB;
@@ -856,10 +858,12 @@ class ImportController extends UserController
         'lecture_id' => $lecture_id,
         'place' => $place,
         'work' => $work,
-        'setting_id_org' => $item["id"],
         'create_user_id' => 1
       ];
 
+      $member = UserCalendarMemberSetting::where('setting_id_org', $item['id'])->first();
+      if(isset($_member)) $setting = $member->setting;
+      $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
         $charge_student = ChargeStudent::where('student_id', $student->id)
@@ -870,6 +874,7 @@ class ImportController extends UserController
         ->where('schedule_method', $item["schedule_method"])
         ->where('lesson_week_count', $item["lesson_week_count"])
         ->first();
+        
         if(!isset($charge_student)){
           //存在しない場合、保存
           ChargeStudent::create([
@@ -893,13 +898,10 @@ class ImportController extends UserController
             'lecture_id' => $lecture_id,
           ]);
         }
-        $setting_data['user_id'] = $teacher->user_id;
-        $setting = UserCalendarSetting::add($setting_data);
-        $setting->memberAdd($student->user_id, 1, $item["comment"]);
+        $user_id = $teacher->user_id;
       }
       else if($_data_type=="teacher"){
-        $setting_data['user_id'] = $teacher->user_id;
-        $setting = UserCalendarSetting::add($setting_data);
+        $user_id = $teacher->user_id;
       }
       else if($_data_type=="manager"){
         $manager = User::tag('manager_no', $item['user_id'])->first();
@@ -908,10 +910,38 @@ class ImportController extends UserController
           return false;
         }
         $manager = $manager->manager;
-        $setting_data['user_id'] = $manager->user_id;
-        $setting = UserCalendarSetting::add($setting_data);
+        $user_id = $manager->user_id;
+      }
+      if(isset($setting)){
+        $setting->update($setting_data);
+      }
+      else {
+        //新規登録
+        $setting_data['user_id'] = $user_id;
+        $setting = UserCalendarSetting::create($setting_data);
+        $member = UserCalendarMemberSetting::create([
+            'user_calendar_setting_id' => $setting->id,
+            'user_id' => $user_id,
+            'remark' => '',
+            'create_user_id' => 1,
+            'stting_id_org' => $item['id'],
+        ]);
+        if(isset($student)){
+          $__member = UserCalendarMemberSetting::create([
+              'user_calendar_setting_id' => $setting->id,
+              'user_id' => $student->user_id,
+              'remark' => '',
+              'create_user_id' => 1,
+              'stting_id_org' => $item['id'],
+          ]);
+        }
       }
 
+      //事務システムから取得した科目
+      if(!empty($item['subject_expr'])){
+        if(isset($charge_student)) ChargeStudentTag::setTag($charge_student->id, 'subject_expr', $item['subject_expr'], 1);
+        if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, 'subject_expr', $item['subject_expr'], 1);
+      }
       return true;
     }
     /**
@@ -944,7 +974,7 @@ class ImportController extends UserController
       if($item['teacher_no']>0){
         $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
         if(!isset($teacher) || !isset($teacher->teacher) || !isset($teacher->teacher->user_id)){
-          @$this->remind("事務管理システム:teacher_id=".$item['teacher_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
         $teacher = $teacher->teacher;
@@ -1022,7 +1052,7 @@ class ImportController extends UserController
         if($item['confirm']==='c')  $status = 'presence';
         if($item['confirm']==='a2')  $status = 'absence';
       }
-      if(isset($item['altsched_id']) && $item['altsched_id']>0){
+      if(isset($item['altsched_id']) && $item['altsched_id']!=0){
         //事務システムの振替ID＝メンバーのIDを指している（メンバーとカレンダーが１：１だから）
         $exchanged_calendar_member = UserCalendarMember::where('schedule_id',$item['altsched_id'])->first();
         $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
@@ -1039,7 +1069,7 @@ class ImportController extends UserController
       $calendar_id = 0;
       $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();
       $items = null;
-      if(isset($_member)) $items = UserCalendar::where('id', $_member->calendar_id)->first();
+      if(isset($_member)) $items = $_member->calendar;
       if(!isset($items)){
         //おそらく同一のグループレッスンと思われる予定が見つかった
         $items = UserCalendar::where('user_id', $user_id)
@@ -1071,8 +1101,6 @@ class ImportController extends UserController
         $calendar_id = $items->id;
       }
       //いったんすべて参加者を削除
-      //UserCalendarMember::where('calendar_id',$calendar_id)->delete();
-
       /*誰の休みか？
       course=1 / マンツー
         休み１：月１の振替＝生徒起因 / それ以外講師

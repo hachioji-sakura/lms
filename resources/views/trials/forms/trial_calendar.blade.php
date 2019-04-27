@@ -5,7 +5,7 @@
         <div class="description-block">
           <h5 class="description-header">概要</h5>
           <span class="description-text mr-2">
-            <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
+            <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" >
             <i class="fa fa-clock mr-1"></i>
             {{$calendar["datetime"]}}
             </a>

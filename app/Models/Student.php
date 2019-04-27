@@ -324,7 +324,8 @@ EOT;
 	    }
     }
     //1:1タグ
-    $tag_names = ['piano_level', 'english_teacher', 'school_name', 'grade', 'lesson_week_count', 'english_talk_course_type','kids_lesson_course_type', 'course_minutes'];
+    $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
+      ,'school_name', 'grade'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -335,6 +336,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+    return $this;
   }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();

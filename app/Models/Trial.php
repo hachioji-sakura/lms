@@ -66,9 +66,10 @@ EOT;
     });
     return $query;
   }
-  public function has_tag($key, $val){
+  public function has_tag($key, $val=""){
     $tags = $this->tags;
     foreach($tags as $tag){
+      if(empty($val) && $tag->tag_key==$key) return true;
       if($tag->tag_key==$key && $tag->tag_value==$val) return true;
     }
     return false;
@@ -152,12 +153,16 @@ EOT;
     }
     $item['calendars'] = $calendars;
     $calendar_settings = [];
-    foreach($this->user_calendar_settings as $user_calendar_setting){
+    $user_calendar_settings = UserCalendarSetting::where('trial_id', $this->id)->orderByWeek()->get();
+    foreach($user_calendar_settings as $user_calendar_setting){
       $calendar_settings[] = $user_calendar_setting->details();
     }
     $item['calendar_settings'] = $calendar_settings;
     return $item;
   }
+  /**
+   * 体験授業申し込み登録
+   */
   static public function entry($form){
     $form["accesskey"] = '';
     $form["password"] = 'sakusaku';
@@ -171,7 +176,7 @@ EOT;
     $form["name_first"] = "";
     $form["kana_last"] = "";
     $form["kana_first"] = "";
-    //保護者情報登録
+    //１．保護者情報登録：無名のアカウント＋電話番号、メールアドレスを保存
     //同じ送信内容の場合は登録しない
     $parent = StudentParent::entry($form);
     $form["create_user_id"] = $parent->user_id;
@@ -180,7 +185,7 @@ EOT;
     $form["kana_first"] = $form["student_kana_first"];
     $form["name_last"] = $form["student_name_last"];
     $form["name_first"] = $form["student_name_first"];
-    //生徒情報登録
+    //２．生徒情報登録：氏名・カナ・学年・学校名
     //同じ送信内容の場合は登録しない
     $student = $parent->brother_add($form, 1);
     $ret = [];
@@ -260,7 +265,20 @@ EOT;
       'trial_start_time2' => $form['trial_start_time2'],
       'trial_end_time2' => $form['trial_end_time2'],
     ]);
-    $tag_names = ['howto_word', 'course_type', 'piano_level', 'english_teacher', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'];
+    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
+    $tag_names[] ='howto'; //体験のみのタグ
+    //通塾可能曜日・時間帯タグ
+    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+    foreach($lesson_weeks as $lesson_week){
+      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    }
+    foreach($tag_names as $tag_name){
+      if(!empty($form[$tag_name])){
+        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+	    }
+    }
+    $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
+      ,'howto_word', 'course_type'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -271,13 +289,9 @@ EOT;
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson_place', 'howto', 'lesson', 'kids_lesson', 'english_talk_lesson'];
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+    foreach($this->trial_students as $trial_student){
+      $trial_student->student->profile_update($form);
     }
-
   }
   public function get_calendar(){
     $calendar = UserCalendar::where('trial_id', $this->id)->findStatuses(['cancel'], true)->get();
@@ -387,35 +401,9 @@ EOT;
       $teachers = $teachers->where('id', $teacher_id);
     }
     $teachers = $teachers->get();
-    /*
-    $start_hour1 = date('H',  strtotime($this->trial_start_time1));
-    $end_hour1 = date('H',  strtotime($this->trial_end_time1));
-    $start_hour2 = date('H',  strtotime($this->trial_start_time2));
-    $end_hour2 = date('H',  strtotime($this->trial_end_time2));
-    */
-    //30分ごとの開始時間から1時間を指定
-    $_start = $this->trial_start_time1;
-    $time_list1 = [];
-    while(1){
-      $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
-      if(strtotime($_end) > strtotime($this->trial_end_time1)){
-        break;
-      }
-      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
-      $time_list1[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
-      $_start = date("Y-m-d H:i:s", strtotime("+30 minute ".$_start));
-    }
-    $_start = $this->trial_start_time2;
-    $time_list2 = [];
-    while(1){
-      $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
-      if(strtotime($_end) > strtotime($this->trial_end_time2)){
-        break;
-      }
-      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
-      $time_list2[]=["start_time" => $_start, "end_time" => $_end, "free" => true, "dulation" => $_dulation];
-      $_start = date("Y-m-d H:i:s", strtotime("+30 minute ".$_start));
-    }
+    //30分ごとの開始時間から授業時間までのslotを作成
+    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $course_minutes);
+    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $course_minutes);
     $ret = [];
     foreach($teachers as $teacher){
       $enable_point = 0;
@@ -513,44 +501,17 @@ EOT;
       }
 
       if($enable_point > 0){
-        //科目が担当可能
-        $now_calendars = UserCalendar::findUser($teacher->user_id)
-                        ->findStatuses(['fix', 'confirm'])
-                        ->searchDate($detail['trial_date1'].' 00:00:00', $detail['trial_date1'].' 23:59:59')
-                        ->get();
-        $teacher_trial1 = $time_list1;
-        if(isset($now_calendars)){
-          foreach($now_calendars as $now_calendar){
-            foreach($teacher_trial1 as $i => $_time){
-              if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
-                $teacher_trial1[$i]['free'] = false;
-                $teacher_trial1[$i]['calendar_id'] = $now_calendar->id;
-              }
-            }
-          }
-        }
-
-        $now_calendars = UserCalendar::findUser($teacher->user_id)
-                        ->findStatuses(['fix', 'confirm'])
-                        ->searchDate($detail['trial_date2'].' 00:00:00', $detail['trial_date2'].' 23:59:59')
-                        ->get();
-        $teacher_trial2 = $time_list2;
-        if(isset($now_calendars)){
-          foreach($now_calendars as $now_calendar){
-            foreach($teacher_trial2 as $i => $_time){
-              if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
-                $teacher_trial2[$i]['free'] = false;
-                $teacher_trial2[$i]['calendar_id'] = $now_calendar->id;
-              }
-            }
-          }
-        }
         $match_schedule = $this->get_match_schedule($teacher);
         if($match_schedule['all_count'] >= 0){
           //$teacher->brother_schedule = $this->get_brother_schedule($teacher);
           $teacher->match_schedule = $match_schedule;
+          /*
           $teacher->trial1 = $teacher_trial1;
           $teacher->trial2 = $teacher_trial2;
+          */
+          $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], "trial_date1");
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], "trial_date2"));
+          $teacher->trial = $this->get_time_list_review($teacher->trial);
           $teacher->enable_point = $enable_point;
           $teacher->disable_point = $disable_point;
           $teacher->subject_review = 'part';
@@ -559,11 +520,13 @@ EOT;
           $teacher->disable_subject = $disable_subject;
           $ret[] = $teacher;
         }
+
       }
     }
 
     return $ret;
   }
+  //↓まだつかってない
   public function get_brother_schedule($teacher){
     $student = [];
     foreach($this->trial_students as $i => $trial_student){
@@ -698,5 +661,142 @@ EOT;
     }
     return $setting;
   }
+  private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
+    $_start = $trial_start_time;
+    $time_list = [];
+    while(1){
+      $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
+      if(strtotime($_end) > strtotime($trial_end_time)){
+        break;
+      }
+      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => "free", 'dulation' => $_dulation];
+      $_start = date("Y-m-d H:i:s", strtotime("+30 minute ".$_start));
+    }
+    return $time_list;
+  }
+  private function get_time_list_free($time_list, $teacher_user_id, $trial_date, $remark=""){
+    /*
+    if(strtotime("now") > strtotime($trial_date)){
+      return [];
+    }
+    */
+    //講師の対象日のカレンダーを取得
+    $now_calendars = UserCalendar::findUser($teacher_user_id)
+                    ->findStatuses(['fix', 'confirm'])
+                    ->searchDate($trial_date.' 00:00:00', $trial_date.' 23:59:59')
+                    ->get();
+    $_time_list = $time_list;
+    foreach($_time_list as $i => $_time){
+      $status = "free";
+      $_time_list[$i]["conflict_calendar"] = null;
+      $_time_list[$i]["is_time_conflict"] = false;
+      $_time_list[$i]["is_place_conflict"] = false;
+      $_time_list[$i]["free_place_floor"] = "";
+      $_time_list[$i]["review"]="";
+      $_time_list[$i]["remark"]=$remark;;
+      if(isset($now_calendars)){
+        //講師の予定との競合するかチェック
+        //echo $_time['start_time']."-".$_time['end_time'];
+        foreach($now_calendars as $now_calendar){
+          if($_time_list[$i]['is_time_conflict']===false){
+            if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
+              //時間が競合した場合
+              $_time_list[$i]['conflict_calendar'] = $now_calendar;
+              $_time_list[$i]['is_time_conflict'] = true;
+            }
+          }
+          if($_time_list[$i]['is_time_conflict']===false && $_time_list[$i]['is_place_conflict']===false){
+            $_free_place = "";
+            $is_place_conflict = true;
+            foreach($this->get_tags('lesson_place') as $tag){
+              if(!$now_calendar->is_conflict($_time['start_time'], $_time['end_time'], $tag->tag_value)){
+                //場所の競合もなし=選択候補
+                //echo "pass:[".$_time_list[$i]["dulation"]."][".$tag->tag_value."][".$now_calendar->place."]";
+                $is_place_conflict = false;
+                if($now_calendar->is_same_place($tag->tag_value)){
+                  $_free_place = $now_calendar->place;
+                }
+              }
+            }
+            $_time_list[$i]['is_place_conflict'] = $is_place_conflict;
+            if($is_place_conflict===true){
+              $_time_list[$i]['conflict_calendar'] = $now_calendar;
+            }
+            else {
+              //空いている
+              $_time_list[$i]['free_place_floor'] = $_free_place;
+            }
+          }
+        }
+      }
+      //競合状況を保存
+      if($_time_list[$i]["is_time_conflict"]){
+        $_time_list[$i]["status"] = "time_conflict";
+        if($_time_list[$i]["is_place_conflict"]){
+          $_time_list[$i]["status"] = "time_place_conflict";
+        }
+      }
+      else if($_time_list[$i]["is_place_conflict"]){
+        $_time_list[$i]["status"] = "place_conflict";
+      }
+    }
+    return $_time_list; //デバッグ用
+  }
+  private function get_time_list_review($_time_list){
+    $primary_count = 0;
+    $secondary_count = 0;
+    //予定ありの次の時間の状態によって評価を設定
+    for($i=0;$i<count($_time_list);$i++){
+      $review = "";
+      if($i<count($_time_list)-1){
+        $review = $this->schedule_review($_time_list[$i], $_time_list[$i+1]);
+      }
+      if($i>0 && $review!="primary"){
+        $_review = $this->schedule_review($_time_list[$i], $_time_list[$i-1]);
+        if($_review=="primary") $review = $_review;
+        if($_review=="secondary") $review = $_review;
+      }
+      if($review=="primary") $primary_count++;
+      if($review=="secondary") $secondary_count++;
+      $_time_list[$i]["review"] = $review;
+    }
 
+    //優先度の最も高いものから返却する
+    $ret = [];
+    foreach($_time_list as $_item){
+      if($primary_count > 0){
+        if($_item["review"]==="primary"){
+          $ret[] = $_item;
+        }
+      }
+      else if($secondary_count > 0){
+        if($_item["review"]==="secondary"){
+          $ret[] = $_item;
+        }
+      }
+      else {
+        if($_item["status"]==="free"){
+          $ret[] = $_item;
+        }
+      }
+    }
+    return $ret;
+  }
+  private function schedule_review($target, $next){
+    if($target["status"]!=="free") return "";
+    //echo $target["dulation"]."/".$target["status"]."/".$target["free_place_floor"]."/";
+    //echo $target["review"]."/".$next["status"]."<br>";
+    if($next["status"]==="free") return "";
+    //隣の予定が空いていない
+    if(isset($next["conflict_calendar"]) && $next["conflict_calendar"]->is_same_place("", $target['free_place_floor'])){
+      //隣の予定が空いていないかつ、場所が同じ
+      return "primary";
+    }
+    else {
+      //隣の予定が空いていないかつ、場所が異なる
+      return "secondary";
+    }
+    return "";
+  }
 }

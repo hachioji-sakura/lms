@@ -231,5 +231,12 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <a class="btn btn-primary float-right" role="button" href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit">
+          <i class="fa fa-edit mr-1"></i>編集
+        </a>
+      </div>
+    </div>
   </div>
 </div>
