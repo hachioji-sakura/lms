@@ -11,7 +11,7 @@
     @foreach($attributes['course_minutes'] as $index => $name)
     <label class="mx-2">
       <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
-        @if($_edit===true && isset($item) && $item->has_tag("course_minutes", $index))
+        @if($_edit===true && isset($item) && $item->has_tag("course_minutes"))
         checked
         @endif
       required="true">{{$name}}

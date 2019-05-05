@@ -129,7 +129,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-
+    $this->user->update(['status' => 0]);
   }
   public function get_charge_subject(){
     //担当科目を取得

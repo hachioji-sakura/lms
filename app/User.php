@@ -201,7 +201,7 @@ EOT;
           //echo"[".$setting['from_time_slot']."][".$setting['to_time_slot']."][".$time_minutes."][".$setting['lesson_week']."]<br>";
           while($time_minutes > 0){
             $time = date('Hi', strtotime($base_date));
-            $week_setting[$week_day][$time] = true; //ex.$week_setting['fri'][1630] = true
+            $week_setting[$week_day][$time] = $setting; //ex.$week_setting['fri'][1630] = setting
             //echo "→[".$time."][".$setting['lesson_week']."]<br>";
             $base_date = date("Y-m-d H:i:s", strtotime("+30 minute ".$base_date));
             $time_minutes -= 1800;
@@ -209,8 +209,15 @@ EOT;
         }
       }
       //var_dump($week_setting);
+      //array("mon" : [ calendar_setting...])
       return $week_setting;
     }
+    /**
+     * user_tagsから、work_mon_time、work_the_timeなどを取得し、
+     * 30分単位のtime_slotにしてtrue/falseを返す
+     * @return array
+     * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
+     */
     public function get_work_times($prefix='work')
     {
       $weeks = config('attribute.lesson_week');
@@ -237,6 +244,12 @@ EOT;
       }
       return $ret;
     }
+    /**
+     * user_tagsから、lesson_mon_time、lesson_the_timeなどを取得し、
+     * 30分単位のtime_slotにしてtrue/falseを返す
+     * @return array
+     * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
+     */
     public function get_lesson_times()
     {
       return $this->get_work_times('lesson');

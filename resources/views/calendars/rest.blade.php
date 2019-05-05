@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain])
   @slot('page_message')
     @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
       {{-- 授業当日9時を過ぎたら休み連絡はできない
@@ -7,6 +7,11 @@
       </div>
       --}}
     @else
+    @endif
+    @if($user->role==="manager" || $user->role==="teacher")
+    <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>生徒の代わりに休み連絡をします。
+    </div>
     @endif
     この授業予定をお休みしますか？
   @endslot

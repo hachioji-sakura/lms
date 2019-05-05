@@ -16,9 +16,10 @@
            @foreach($calendar->get_tags('charge_subject') as $index => $tag)
              @if($tag->tag_value===$subject['subject_key'])
                selected
-               @break
              @endif
            @endforeach
+         @elseif($item->has_tag($subject['subject_key'].'_level')==true)
+          selected
          @endif
          >{{$subject['subject_name']}}</option>
        @endforeach

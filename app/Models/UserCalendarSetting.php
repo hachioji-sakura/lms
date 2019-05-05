@@ -201,12 +201,14 @@ EOT;
       'schedule_method' => $form['schedule_method'],
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],
-      'from_time_slot' => '',
-      'to_time_slot' => '',
+      'place' => $form['place'],
+      'work' => $form['work'],
+      'remark' => $form['remark'],
+      'from_time_slot' => $form['from_time_slot'],
+      'to_time_slot' => $form['to_time_slot'],
       'create_user_id' => $form['create_user_id'],
-      'setting_id_org' => $form['setting_id_org']
     ]);
-    $calendar_setting->memberAdd($form['user_id'], $form['create_user_id'], '主催者');
+    $calendar_setting->memberAdd($form['user_id'], $form['create_user_id'], '主催者', false);
     $calendar_setting->change($form);
     return $calendar_setting;
   }
@@ -234,9 +236,11 @@ EOT;
     }
 
     if(isset($form['course_type']) && !isset($form['work'])){
-    //TODO Workの補間どうにかしたい
+      //TODO Workの補間どうにかしたい
+      \Log::warning("TODO Workの補間どうにかしたい course_type=:".$form['course_type']);
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
       $form['work'] = $work_data[$form["course_type"]];
+      \Log::warning("TODO Workの補間どうにかしたい work=:".$form['work']);
     }
 
     //TODO lectureの補間どうにかしたい
@@ -271,10 +275,10 @@ EOT;
     $this->office_system_api("PUT");
     return $this;
   }
-  public function memberAdd($user_id, $create_user_id, $remark=''){
+  public function memberAdd($user_id, $create_user_id, $remark='', $is_api=true){
     if(empty($user_id) || $user_id < 1) return null;
 
-    $member = UserCalendarMember::where('user_calendar_setting_id' , $this->id)
+    $member = UserCalendarMemberSetting::where('user_calendar_setting_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
     if(isset($memeber)){
@@ -287,8 +291,10 @@ EOT;
           'remark' => $remark,
           'create_user_id' => $create_user_id,
       ]);
-      //事務システムにも登録
-      $member->office_system_api("POST");
+      if($is_api===true){
+        //事務システムにも登録
+        $member->office_system_api("POST");
+      }
     }
     return $member;
   }
@@ -403,6 +409,88 @@ EOT;
       $d = intval(date('d', strtotime($target_date)));
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
+  }
+  public function is_member($user_id){
+    foreach($this->members as $member){
+      if($member->user_id === $user_id){
+        return true;
+      }
+    }
+    return false;
+  }
+  public function is_conflict($schedule_method, $lesson_week_count, $lesson_week='', $from_time_slot, $to_time_slot){
+    $base_date= '2000-01-01 ';
+    $start = strtotime($base_date.$from_time_slot);
+    $end = strtotime($base_date.$to_time_slot);
+    $calendar_starttime = strtotime($base_date.$this->from_time_slot);
+    $calendar_endtime = strtotime($base_date.$this->$to_time_slot);
+    if($start > $calendar_starttime && $start < $calendar_endtime){
+      //開始時刻が、範囲内
+      return true;
+    }
+    if($end > $calendar_starttime && $end < $calendar_endtime){
+      //終了時刻が、範囲内
+      return true;
+    }
+    if($start==$calendar_starttime && $end == $calendar_endtime){
+      //完全一致
+      return true;
+    }
+
+    if($end == $calendar_starttime || $start == $calendar_endtime){
+      //開始終了が一致した場合、場所をチェック
+      if(!empty($place) && $this->is_same_place($place)===false){
+        //場所が異なるのでスケジュール競合
+        return true;
+      }
+      else if(!empty($place_floor) && $this->is_same_place("",$place_floor)===false){
+        //場所が異なるのでスケジュール競合
+        return true;
+      }
+    }
+    return false;
+  }
+  public function is_time_connect($start_time, $end_time){
+    //開始終了が一致した場合、場所をチェック
+    $base_date= '2000-01-01 ';
+    $start = strtotime($base_date.$from_time_slot);
+    $end = strtotime($base_date.$to_time_slot);
+    $calendar_starttime = strtotime($base_date.$this->from_time_slot);
+    $calendar_endtime = strtotime($base_date.$this->$to_time_slot);
+    $start = strtotime($start_time);
+    $end = strtotime($end_time);
+    $calendar_starttime = strtotime($this->start_time);
+    $calendar_endtime = strtotime($this->end_time);
+
+    if($end == $calendar_starttime || $start == $calendar_endtime) return true;
+    return false;
+  }
+  public function is_same_place($place='', $place_floor=''){
+    //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
+    if(!empty($place)){
+      $calendar_place = $this->get_place($this->place);
+      if($calendar_place==$place){
+        return true;
+      }
+    }
+    else if(!empty($place_floor)){
+      $calendar_place = $this->get_place($this->place);
+      $args_place = $this->get_place($place_floor);
+      if($calendar_place==$args_place){
+        return true;
+      }
+    }
+    return false;
+  }
+  private function get_place($floor){
+    foreach(config('lesson_place_floor') as $place => $floors){
+      foreach($floors as $floor_code => $floor_name){
+        if($floor_code==$floor){
+          return $place;
+        }
+      }
+    }
+    return "";
   }
   public function office_system_api($method){
     $res = null;

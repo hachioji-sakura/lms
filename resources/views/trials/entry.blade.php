@@ -212,7 +212,7 @@ $(function(){
 
     var _names = ["grade", "student2_grade", "student3_grade"];
     $.each(_names, function(index, value) {
-      if(form_data["grade"]){
+      if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();
         form_data[value+"_name"] = _name;
       }

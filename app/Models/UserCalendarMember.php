@@ -83,12 +83,14 @@ class UserCalendarMember extends Model
         $manager_no = $user->get_tag('manager_no')["value"];
       }
     }
-    \Log::info("事務システムAPI :".$student_no."\n".$teacher_no);
+    \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no);
 
     $user = $this->user->details('teachers');
-    if($user->role==="teacher" && !empty($student_no)){
+    if(($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8)
+        && $user->role==="teacher" && !empty($student_no)){
       //講師がメンバーかつ、生徒が取得可能な場合　＝　授業予定のカレンダー
       //生徒がメンバーかつ、講師が取得可能時に処理を行うので、APIは無視
+      \Log::warning("授業予定の場合、参加者が講師だけではAPIを実行できない");
       return null;
     }
 
@@ -234,8 +236,13 @@ class UserCalendarMember extends Model
     }
     if($method==="POST" && $this->schedule_id==0){
       //事務システム側のIDを更新
-      $this->update(['schedule_id'=>$res["id"]]);
-      \Log::info("事務システムAPI ID更新:".$res["id"]);
+      if(isset($res['id'])){
+        $this->update(['schedule_id'=>$res["id"]]);
+        \Log::info("事務システムAPI ID更新:".$res["id"]);
+      }
+      else{
+        @$this->send_slack("事務システムAPIエラー:IDがとれない", 'warning', "事務システムAPIエラー");
+      }
     }
     return $res;
   }

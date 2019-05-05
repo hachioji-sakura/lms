@@ -123,6 +123,10 @@
           left  : '',
           center: '',
           right : ''
+        @elseif(isset($mode) && $mode==="week")
+          left  : '',
+          center: 'title',
+          right : ''
         @else
           left  : 'prev today',
           center: 'title',
@@ -173,19 +177,29 @@
       @endif
       @if(isset($mode) && $mode==="day")
         defaultView: 'agendaDay',
+      @elseif(isset($mode) && $mode==="week")
+        defaultView: 'agendaWeek',
       @else
         defaultView: 'agendaWeek',
       @endif
       scrollTime: first_scroll_time,
       // 最小時間
       @if(isset($minHour) && $minHour>0)
-        minTime: "{{$minHour}}:00:00",
+        @if($minHour>15)
+          minTime: "15:00:00",
+        @else
+          minTime: "10:00:00",
+        @endif
       @else
         minTime: "08:00:00",
       @endif
       // 最大時間
       @if(isset($maxHour) && $maxHour>0)
-        maxTime: "{{$maxHour}}:00:00",
+        @if($maxHour>20)
+          maxTime: "23:00:00",
+        @else
+          maxTime: "21:00:00",
+        @endif
       @else
         maxTime: "22:00:00",
       @endif

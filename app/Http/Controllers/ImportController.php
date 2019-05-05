@@ -874,7 +874,7 @@ class ImportController extends UserController
         ->where('schedule_method', $item["schedule_method"])
         ->where('lesson_week_count', $item["lesson_week_count"])
         ->first();
-        
+
         if(!isset($charge_student)){
           //存在しない場合、保存
           ChargeStudent::create([
@@ -924,7 +924,7 @@ class ImportController extends UserController
             'user_id' => $user_id,
             'remark' => '',
             'create_user_id' => 1,
-            'stting_id_org' => $item['id'],
+            'setting_id_org' => $item['id'],
         ]);
         if(isset($student)){
           $__member = UserCalendarMemberSetting::create([
@@ -932,7 +932,7 @@ class ImportController extends UserController
               'user_id' => $student->user_id,
               'remark' => '',
               'create_user_id' => 1,
-              'stting_id_org' => $item['id'],
+              'setting_id_org' => $item['id'],
           ]);
         }
       }

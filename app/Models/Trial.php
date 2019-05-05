@@ -540,94 +540,6 @@ EOT;
     }
     return $students;
   }
-  public function get_match_schedule($teacher){
-    if(empty($this->student_schedule)){
-      $student = $this->trial_students->first()->student;
-      $this->student_schedule = $student->user->get_lesson_times();
-    }
-    if($this->couser_minutes==0){
-      if(!isset($student)) $student = $this->trial_students->first()->student;
-      $this->course_minutes = intval($student->user->get_tag('course_minutes')['tag_value']);
-    }
-    $teacher_enable_schedule = $teacher->user->get_lesson_times();
-    $teacher_current_schedule = $teacher->user->get_week_calendar_setting();
-    $detail = [];
-    $count = [];
-    $all_count = 0;
-    $from_time = "";
-    $_minute = $this->course_minutes;
-    foreach($this->student_schedule as $week_day => $week_schedule){
-      $detail[$week_day] = [];
-      $count[$week_day] = 0;
-      $c = 0;
-      //曜日別に時間が有効かチェック
-      /*
-      if(isset($teacher_current_schedule[$week_day])){
-        var_dump($teacher_current_schedule[$week_day]);
-        echo"<br>";
-      }
-      */
-      foreach($week_schedule as $time => $val){
-        $is_free = false;
-        if(isset($teacher_enable_schedule) && isset($teacher_enable_schedule[$week_day])
-          && isset($teacher_enable_schedule[$week_day][$time])){
-            //講師にも同じ曜日・時間の希望がある（ベースのシフト希望）
-            $is_free = $teacher_enable_schedule[$week_day][$time];
-        }
-        if($is_free===true){
-          //現状の講師のカレンダー設定とブッキングしたらfalse
-          if(isset($teacher_current_schedule) && isset($teacher_current_schedule[$week_day])
-            && isset($teacher_current_schedule[$week_day][$time]) && $teacher_current_schedule[$week_day][$time]==true){
-              //講師にも同じ曜日・時間の希望がある
-              $is_free = false;
-          }
-        }
-        //echo"[".$week_day."][".$time."][".$_minute."][".$is_free."]<br>";
-        if($is_free===true){
-          // 空き
-          if(empty($from_time)){
-            $from_time = $time;
-          }
-          $c+=30;
-        }
-        else {
-          // 空きがない
-          if(!empty($from_time)){
-            //直前まで連続していた
-            //可能なコマがある場合カウントアップ
-            $_slot = floor($c / $this->course_minutes);
-            if($_slot > 0){
-              $count[$week_day]+=$_slot;
-              $all_count+=$_slot;
-            }
-
-            $detail[$week_day][] = [
-              "from" => $from_time,
-              "to" => $time,
-              "slot" => $_slot
-            ];
-          }
-          $from_time = "";
-          $c = 0;
-        }
-      }
-      if(!empty($from_time)){
-        $_slot = floor($c / $this->course_minutes);
-        if($_slot > 0){
-          $count[$week_day]+=$_slot;
-          $all_count+=$_slot;
-        }
-        if($time=='2130') $time='2200';
-        $detail[$week_day][] = [
-          "from" => $from_time,
-          "to" => $time,
-          "slot" => $_slot
-        ];
-        $from_time = "";
-      }
-    }
-    return ["all_count" => $all_count, "count"=>$count, "detail" => $detail];
-  }
   public function to_calendar_setting($form, $calendar_id){
     $calendar = UserCalendar::where('id', $calendar_id)->first();
 
@@ -639,10 +551,13 @@ EOT;
       'trial_id' => $this->id,
       'schedule_method' => 'week',
       'lesson_week_count' => 0,
-      'setting_id_org' => 0,
+      'lesson_week' => $form['lesson_place_floor'],
+      'from_time_slot' => $form['from_time_slot'],
+      'to_time_slot' => $form['to_time_slot'],
       'place' => $form['lesson_place_floor'],
       'remark' => '',
       'lesson' => $calendar->get_tag('lesson')->tag_value,
+      'create_user_id' => $form['create_user_id'],
     ];
     $update_fields = [
       'start_hours', 'start_minutes',
@@ -670,7 +585,14 @@ EOT;
         break;
       }
       $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
-      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => "free", 'dulation' => $_dulation];
+      $status = "free";
+      foreach($this->get_calendar() as $calendar){
+        if($calendar->is_conflict($_start, $_end)){
+          $status = "trial_calendar_conflict";
+          break;
+        }
+      }
+      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'dulation' => $_dulation];
       $_start = date("Y-m-d H:i:s", strtotime("+30 minute ".$_start));
     }
     return $time_list;
@@ -761,7 +683,7 @@ EOT;
       if($review=="secondary") $secondary_count++;
       $_time_list[$i]["review"] = $review;
     }
-
+    return $_time_list;
     //優先度の最も高いものから返却する
     $ret = [];
     foreach($_time_list as $_item){
@@ -786,17 +708,229 @@ EOT;
   private function schedule_review($target, $next){
     if($target["status"]!=="free") return "";
     //echo $target["dulation"]."/".$target["status"]."/".$target["free_place_floor"]."/";
-    //echo $target["review"]."/".$next["status"]."<br>";
-    if($next["status"]==="free") return "";
+    //echo $next["dulation"]."/".$next["status"]."/";
+    //echo abs($diff)."/".$next["review"]."/<br>";
+    $ret = "";
+    $diff = strtotime($target["start_time"]) - strtotime($next["start_time"]);
+    //30分差でなければ、隣の予定ではない
+    if(abs($diff) != 1800 ) return $ret;
+    if($next["status"]==="free") return $ret;
     //隣の予定が空いていない
     if(isset($next["conflict_calendar"]) && $next["conflict_calendar"]->is_same_place("", $target['free_place_floor'])){
       //隣の予定が空いていないかつ、場所が同じ
-      return "primary";
+      $ret = "primary";
     }
     else {
       //隣の予定が空いていないかつ、場所が異なる
-      return "secondary";
+      $ret = "secondary";
     }
-    return "";
+    //echo "=".$ret."<br>";
+    return $ret;
+  }
+
+  //体験希望スケジュールと、講師の勤務可能スケジュール・現在のスケジュール設定
+  public function get_match_schedule($teacher){
+    //１．この体験対象の生徒の希望スケジュールと希望授業時間を取得
+    if(empty($this->student_schedule)){
+      //兄弟登録された場合は一人目と同一のため、一人目のスケジュールを利用する
+      $student = $this->trial_students->first()->student;
+      $this->student_schedule = $student->user->get_lesson_times();
+    }
+    if($this->couser_minutes==0){
+      if(!isset($student)) $student = $this->trial_students->first()->student;
+      $this->course_minutes = intval($student->user->get_tag('course_minutes')['tag_value']);
+    }
+
+    //２．講師の勤務可能スケジュール、通常授業スケジュールを取得
+    $teacher_enable_schedule = $teacher->user->get_lesson_times();
+    $teacher_current_schedule = $teacher->user->get_week_calendar_setting();
+    $detail = [];
+    $count = [];
+    $student_schedule = [];
+    $secondary_count = 0;
+    $all_count = 0;
+    $from_time = "";
+    //３．マッチング判定
+    foreach($this->student_schedule as $week_day => $week_schedule){
+      $detail[$week_day] = [];
+      $count[$week_day] = 0;
+      $c = 0;
+      //曜日別に時間が有効かチェック
+      /*
+      if(isset($teacher_current_schedule[$week_day])){
+        var_dump($teacher_current_schedule[$week_day]);
+        echo"<br>";
+      }
+      */
+      $student_schedule[$week_day] = [];
+      foreach($week_schedule as $time => $val){
+        $data = ["week_day"=>$week_day, "from" => $time, "to"=>"", "status"=>"free", "review"=>"", "place"=>"", "show"=>false];
+        //３－１．生徒の希望スケジュールの場合、判定する
+        if($val===false) {
+          $data["status"] = "student_ng";
+          $student_schedule[$week_day][] = $data;
+          continue;
+        }
+        $is_free = false;
+        //３－２．講師にも同じ曜日・時間の希望がある（ベースのシフト希望）
+        if(isset($teacher_enable_schedule) && isset($teacher_enable_schedule[$week_day])
+          && isset($teacher_enable_schedule[$week_day][$time])){
+            $is_free = $teacher_enable_schedule[$week_day][$time];
+          if($is_free===false){
+            $data["status"] = "teacher_ng";
+          }
+        }
+
+        //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
+        if($is_free===true){
+          if(isset($teacher_current_schedule) && isset($teacher_current_schedule[$week_day])
+            && isset($teacher_current_schedule[$week_day][$time]) && isset($teacher_current_schedule[$week_day][$time]->id)){
+              //講師にも同じ曜日・時間の希望がある
+              $is_free = false;
+              $data["status"] = "time_conflict";
+              $data["conflict_calendar_setting"] = $teacher_current_schedule[$week_day][$time];
+          }
+        }
+        //echo"[".$week_day."][".$time."][".$this->course_minutes."][".$is_free."]<br>";
+        if($is_free===true){
+          // 空き
+          if(empty($from_time)){
+            //どこからどこまでの時間が空いているか記録
+            $from_time = $time;
+          }
+          $c+=30;
+        }
+        else {
+          // 空きがない
+          if(!empty($from_time)){
+            //直前まで連続していた
+            //可能なコマがある場合カウントアップ
+            $_slot = floor($c / $this->course_minutes);
+            if($_slot > 0){
+              $count[$week_day]+=$_slot;
+              $all_count+=$_slot;
+            }
+
+            $detail[$week_day][] = [
+              "from" => $from_time,
+              "to" => $time,
+              "slot" => $_slot
+            ];
+          }
+          $from_time = "";
+          $c = 0;
+        }
+        if(isset($teacher_current_schedule[$week_day]) && count($teacher_current_schedule[$week_day]) > 0){
+          //通常授業のある曜日は評価をあげておく
+          $data["review"] = "secondary";
+        }
+        $student_schedule[$week_day][] = $data;
+      }
+      //最終値の処理
+      if(!empty($from_time)){
+        $_slot = floor($c / $this->course_minutes);
+        if($_slot > 0){
+          $count[$week_day]+=$_slot;
+          $all_count+=$_slot;
+        }
+        if($time=='2130') $time='2200';
+        $detail[$week_day][] = [
+          "from" => $from_time,
+          "to" => $time,
+          "slot" => $_slot
+        ];
+        $from_time = "";
+      }
+    }
+    //time_slotの評価
+    $primary_count = 0;
+    $minute_count = intval($this->course_minutes / 30);
+    foreach($student_schedule as $week_day => $week_schedule){
+      for($i=0;$i<count($week_schedule);$i++){
+        $c = 0;
+        if($week_schedule[$i]["status"]==="free"){
+          for($j=0;$j<$minute_count;$j++){
+            if($i+$j >= count($week_schedule)) continue;
+            if($week_schedule[$i+$j]["status"]==="free"){
+              $c++;
+            }
+          }
+          if($c<$minute_count){
+            //必要な授業時間の枠が足りない
+            $student_schedule[$week_day][$i]["status"] = "time_less";
+          }
+          else {
+            $student_schedule[$week_day][$i]["to"] = "2200";
+            if(($i+$minute_count)<count($week_schedule)){
+              $student_schedule[$week_day][$i]["to"] =  $student_schedule[$week_day][$i+$minute_count]["from"];
+            }
+            //直前が埋まっている場合
+            if($i>0 && $week_schedule[$i-1]["status"]==="time_conflict"){
+              $same_place="";
+              $setting = $week_schedule[$i-1]["conflict_calendar_setting"];
+              foreach($this->get_tags('lesson_place') as $tag){
+                if($setting->is_same_place($tag->tag_value)){
+                  $same_place = $tag->tag_value;
+                  break;
+                }
+              }
+              if($same_place!=""){
+                //場所が同じ
+                $student_schedule[$week_day][$i]["review"] = "primary";
+                $student_schedule[$week_day][$i]["place"] = $same_place;
+                $primary_count++;
+              }
+              else {
+                //場所が異なる
+                $student_schedule[$week_day][$i]["status"] = "place_conflict";
+              }
+            }
+            //授業後の予定が埋まっている場合
+            if($student_schedule[$week_day][$i]["status"]==="free" && ($i+$minute_count)<count($week_schedule)-1
+              && $week_schedule[$i+$minute_count]["status"]==="time_conflict"){
+              $same_place="";
+              $setting = $week_schedule[$i+$minute_count]["conflict_calendar_setting"];
+              foreach($this->get_tags('lesson_place') as $tag){
+                if($setting->is_same_place($tag->tag_value)){
+                  $same_place = $tag->tag_value;
+                  break;
+                }
+              }
+              if($same_place!=""){
+                //場所が同じ
+                $student_schedule[$week_day][$i]["review"] = "primary";
+                $student_schedule[$week_day][$i]["place"] = $same_place;
+                $primary_count++;
+              }
+              else {
+                //場所が異なる
+                $student_schedule[$week_day][$i]["status"] = "place_conflict";
+              }
+            }
+          }
+        }
+
+        if($student_schedule[$week_day][$i]["status"] == "free" &&
+          $student_schedule[$week_day][$i]["review"] == "secondary"){
+            $secondary_count++;
+        }
+      }
+    }
+    //優先度に応じた、設定可能な曜日×開始時間リストを返す
+    foreach($student_schedule as $week_day => $week_schedule){
+      for($i=0;$i<count($week_schedule);$i++){
+        if($week_schedule[$i]["status"]!=="free") continue;
+        if($primary_count > 0){
+           if($week_schedule[$i]["review"]==="primary") $student_schedule[$week_day][$i]["show"] = true;
+        }
+        else if($secondary_count > 0){
+          if($week_schedule[$i]["review"]==="secondary") $student_schedule[$week_day][$i]["show"] = true;
+        }
+        else {
+          $student_schedule[$week_day][$i]["show"] = true;
+        }
+      }
+    }
+    return ["all_count" => $all_count, "count"=>$count, "detail" => $detail, "result" => $student_schedule];
   }
 }

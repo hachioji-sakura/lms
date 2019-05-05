@@ -72,7 +72,7 @@
                     <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                   </a>
                   <br>
-                  @if($user->role==="teacher")
+                  @if($user->role==="teacher" || $user->role==="manager" )
                     @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
                     <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/presence?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-success btn-sm w-100 mt-1">
                       <i class="fa fa-user-check mr-1"></i>

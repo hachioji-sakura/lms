@@ -69,6 +69,7 @@
       </div>
     </div>
   </div>
+  @if(!isset($is_detail) || $is_detail!==true)
   <div class="col-12 mb-2">
     <div class="description-block">
       <h5 class="description-header">
@@ -95,22 +96,26 @@
             @isset($teacher->match_schedule['count'][$index])
               @if($teacher->match_schedule['count'][$index] > 0)
                 @if(isset($is_detail) && $is_detail==true)
+                {{-- 詳細表示 --}}
                   @foreach($teacher->match_schedule['detail'][$index] as $time_slot)
-                  <small class="badge badge-primary mx-2">
-                    {{$time_slot["from"]}}～{{$time_slot["to"]}}
-                    {{-- ({{$time_slot["slot"]}}) --}}
-                  </small>
+                    @if($time_slot["slot"]>0)
+                    <small class="badge badge-primary mx-2">
+                      {{$time_slot["from"]}}～{{$time_slot["to"]}}
+                      ({{$time_slot["slot"]}})
+                    </small>
+                    @endif
                   @endforeach
                 @else
-                @if($teacher->match_schedule['count'][$index]<2)
-                <small class="badge badge-danger mx-2">
-                @elseif($teacher->match_schedule['count'][$index]<3)
-                <small class="badge badge-warning mx-2">
-                @else
-                <small class="badge badge-primary mx-2">
-                @endif
-                  空き{{$teacher->match_schedule['count'][$index]}}コマ
-                </small>
+                  {{-- 簡易表示 --}}
+                  @if($teacher->match_schedule['count'][$index]<2)
+                  <small class="badge badge-danger mx-2">
+                  @elseif($teacher->match_schedule['count'][$index]<3)
+                  <small class="badge badge-warning mx-2">
+                  @else
+                  <small class="badge badge-primary mx-2">
+                  @endif
+                    空き{{$teacher->match_schedule['count'][$index]}}コマ
+                  </small>
                 @endif
               @else
               -
@@ -125,7 +130,8 @@
       </span>
     </div>
   </div>
-  @if(isset($is_detail) && $is_detail==true)
+  @else
+  {{--
   <div class="col-12 mb-2">
     <div class="description-block">
       <h5 class="description-header">
@@ -134,47 +140,55 @@
       </h5>
       <span class="description-text">
         <table class="table table-striped border-bottom">
-        <tr class="bg-gray">
+        <tr class="bg-secondary header">
           <th class="p-1 text-center border-right ">
-            曜日
+            曜日/時間
           </th>
           <th class="p-1 text-center border-right ">
-            時間
-          </th>
-          <th class="p-1 text-center border-right ">
-            場所
+            生徒
           </th>
           <th class="p-1 text-center border-right ">
             内容
           </th>
         </tr>
         @foreach($attributes['lesson_week'] as $week_day => $week_name)
-          {{-- 必要な曜日の予定のみ表示 --}}
-          @if($teacher->match_schedule['count'][$week_day] > 0)
             @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
               @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
               <tr>
                 <td>
                   {{$week_name}}
-                </td>
-                <td>
                   {{$setting->timezone()}}
                 </td>
                 <td>
-                  {{$setting->place()}}
+                  @foreach($setting->details()['students'] as $member)
+                  <a class="text-xs mx-2" href="/students/{{$member->user->student->id}}" target="_blank">
+                      {{$member->user->student->name()}}
+                  </a>
+                  @endforeach
                 </td>
                 <td>
-                  {{$setting->work()}}
+                  <span class="text-xs mx-2">
+                    <small class="badge badge-success mt-1 mr-1">
+                      {{$setting->place()}}
+                    </small>
+                  </span>
+                  @foreach($setting->subject() as $index => $name)
+                  <span class="text-xs mx-2">
+                    <small class="badge badge-primary mt-1 mr-1">
+                      {{$name}}
+                    </small>
+                  </span>
+                  @endforeach
                 </td>
               </tr>
               @endforeach
             @endif
-          @endif
         @endforeach
         </table>
       </span>
     </div>
   </div>
+  --}}
   @endif
   {{$addon}}
 </div>

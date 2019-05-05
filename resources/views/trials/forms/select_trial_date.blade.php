@@ -85,16 +85,11 @@
              validate="teacher_schedule_validate('#trial_select')"
              @if($is_first==false) checked @endif
              >
-            <label class="form-check-label" for="trial_{{$i}}">
+            <label class="form-check-label" for="trial_{{$i}}" title="{{$_list['review']}}">
               {{$_list['dulation']}}
-              @if($_list['review']==="primary")
-              ★★
-              @elseif($_list['review']==="primary")
-              ★
-              @endif
             </label>
           </div>
-      <?php $is_first=true; ?>
+          <?php $is_first=true; ?>
           @else
           {{-- 空いてない場合の表示はなくなる --}}
           <div class="form-check ml-2">
@@ -102,7 +97,7 @@
             <label class="form-check-label" for="trial_{{$i}}">
               @if($_list['status']==='place_conflict')
               <i class="fa fa-times mr-1"></i>
-              @elseif($_list['status']==='place_conflict')
+              @elseif($_list['status']==='time_conflict')
               <i class="fa fa-calendar-times mr-1"></i>
               @else
               <i class="fa fa-times-circle mr-1"></i>

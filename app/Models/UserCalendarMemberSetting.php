@@ -19,7 +19,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
       'user_id' => 'required',
   );
   public function setting(){
-    return $this->belongsTo('App\Models\Calendar', 'user_calendar_setting_id');
+    return $this->belongsTo('App\Models\UserCalendarSetting', 'user_calendar_setting_id');
   }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
@@ -33,12 +33,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($this->schedule_id == 0 && $method=="DELETE") return;
     if($this->schedule_id > 0 && $method=="POST") return;
 
-    $url = $this->$api_hosturl.'/'.$this->$api_endpoint[$method];
+    $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
 
     //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
     $_method = "GET";
     if($method!=="GET") $_method = "POST";
-    $_url = $url[$method];
     $student_no = "";
     $teacher_no = "";
     $manager_no = "";
@@ -56,12 +55,14 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $manager_no = $user->get_tag('manager_no')["value"];
       }
     }
-    \Log::info("事務システムAPI :".$student_no."\n".$teacher_no);
+    \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no."\nwork=".$this->setting->work);
 
     $user = $this->user->details('teachers');
-    if($user->role==="teacher" && !empty($student_no)){
+    if(($this->setting->work==6 || $this->setting->work==7 || $this->setting->work==8)
+        && $user->role==="teacher" && !empty($student_no)){
       //講師がメンバーかつ、生徒が取得可能な場合　＝　授業予定のカレンダー
       //生徒がメンバーかつ、講師が取得可能時に処理を行うので、APIは無視
+      \Log::warning("授業予定の場合、参加者が講師だけではAPIを実行できない");
       return null;
     }
 
@@ -175,8 +176,13 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     if($method==="POST" && $this->schedule_id==0){
       //事務システム側のIDを更新
-      $this->update(['setting_id_org'=>$res["id"]]);
-      \Log::info("事務システムAPI ID更新:".$res["id"]);
+      if(isset($res['id'])){
+        $this->update(['setting_id_org'=>$res["id"]]);
+        \Log::info("事務システムAPI ID更新:".$res["id"]);
+      }
+      else{
+        @$this->send_slack("事務システムAPIエラー:IDがとれない", 'warning', "事務システムAPIエラー");
+      }
     }
     return $res;
   }

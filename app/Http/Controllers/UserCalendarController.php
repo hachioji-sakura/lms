@@ -457,9 +457,10 @@ class UserCalendarController extends MilestoneController
             abort(403, '有効期限が切れています(4)');
         }
       }
+      if(!isset($param['item'])) abort(404, 'ページがみつかりません(3)');
 
       $param['fields'] = $this->show_fields();
-      if(!isset($param['item'])) abort(404, 'ページがみつかりません(3)');
+      $param['action'] = '';
 
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);

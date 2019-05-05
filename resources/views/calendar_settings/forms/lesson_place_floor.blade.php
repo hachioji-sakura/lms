@@ -14,6 +14,8 @@
             <option value="{{$index}}"
             @if(isset($calendar) && $calendar->place==$index)
               selected
+            @elseif($loop->index==0)
+              selected
             @endif
             >{{$name}}</option>
             @endif

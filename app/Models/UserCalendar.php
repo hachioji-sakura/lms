@@ -346,7 +346,7 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
-    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new');
+    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     $calendar = $calendar->change($form);
     return $calendar;
   }
@@ -435,7 +435,7 @@ EOT;
     $this->office_system_api("PUT");
     return $this;
   }
-  public function memberAdd($user_id, $create_user_id, $status='new'){
+  public function memberAdd($user_id, $create_user_id, $status='new', $is_api=true){
     if(empty($user_id) || $user_id < 1) return null;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
@@ -449,8 +449,10 @@ EOT;
           'status' => $status,
           'create_user_id' => $create_user_id,
       ]);
-      //事務システムにも登録
-      $member->office_system_api("POST");
+      if($is_api===true){
+        //事務システムにも登録
+        $member->office_system_api("POST");
+      }
     }
     return $member;
   }

@@ -14,7 +14,7 @@
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
         <div class="row mb-1">
-          <div class="col-6">
+          <div class="col-md-4">
             <div class="card card-widget mb-2">
               <div class="card-header">
                 <i class="fa fa-user-tie mr-1"></i>担当講師
@@ -22,13 +22,40 @@
               <div class="card-footer">
                 @component('trials.forms.charge_teacher', ['teacher' => $candidate_teacher,  'attributes' => $attributes, 'user' => $user,'is_detail'=>true])
                   @slot('addon')
+                  {{--
+                  <div class="col-12">
+                  @component('components.calendar', [
+                    'id' => 1,
+                    'mode'=>'week',
+                    'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id])
+                    @slot('event_select')
+                    @endslot
+                    @slot('event_click')
+                    eventClick: function(event, jsEvent, view) {
+                      if(event.status == "trial") return false;
+                      $calendar.fullCalendar('unselect');
+                      base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+                    },
+                    @endslot
+                    @slot('event_render')
+                    eventRender: function(event, element) {
+                      var title = '授業追加';
+                      if(event['student_name']){
+                        title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+                      }
+                      event_render(event, element, title);
+                    },
+                    @endslot
+                  @endcomponent
+                  </div>
+                  --}}
                   @endslot
                 @endcomponent
               </div>
             </div>
-            @component('trials.forms.trial_week_time',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
+            @component('trials.forms.trial_week_time',['teacher' => $candidate_teacher, 'item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
           </div>
-          <div class="col-6">
+          <div class="col-md-8">
             <div class="card card-widget mb-2">
               <div class="card-header">
                 <i class="fa fa-edit mr-1"></i>通常授業設定
@@ -40,22 +67,26 @@
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                 </div>
                 <div class="row">
-                  @component('calendar_settings.forms.lesson_week', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  {{--
+                  @component('calendar_settings.forms.lesson_week', ['item'=>$item, 'teacher'=> $candidate_teacher ,'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.select_time', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
-                  @component('students.forms.course_minutes', ['_edit'=>false, 'item'=> $item->trial_students->first()->student->user, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  @component('students.forms.course_minutes', ['_teacher'=>true, '_edit'=>false, 'item'=> $item->trial_students->first()->student->user, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  --}}
+                  @component('trials.forms.lesson_week', ['item'=>$item, 'teacher'=> $candidate_teacher ,'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+
                 </div>
                 <div class="row">
-                  <div class="col-6 mb-1">
-                    <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                      <i class="fa fa-arrow-circle-left mr-1"></i>
-                      キャンセル
-                    </a>
-                  </div>
                   <div class="col-6 mb-1">
                     <button type="button" class="btn btn-submit btn-primary btn-block">
                       <i class="fa fa-check mr-1"></i>
                       通常授業設定
                     </button>
+                  </div>
+                  <div class="col-6 mb-1">
+                    <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn btn-secondary btn-block float-left mr-1">
+                      <i class="fa fa-arrow-circle-left mr-1"></i>
+                      キャンセル
+                    </a>
                   </div>
                 </div>
               </div>
