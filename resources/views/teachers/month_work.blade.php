@@ -77,7 +77,7 @@
               <div class="row">
                 <div class="col-12 pl-3">
                   <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
-                    <i class="fa fa-calendar-alt mr-1"></i>
+                    <i class="fa fa-chevron-down mr-1"></i>
                     {{date('m月d日', strtotime($calendar["date"]))}}
                   </a>
                 </div>
@@ -87,14 +87,15 @@
                 <div class="row pl-3 p-1">
                   <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                   <div class="col-4">
-                    {{$calendar["timezone"]}}
+                    <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                     <br>
-                    {{$calendar['place']}}
+                    <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
                   </div>
                   <div class="col-4">
                     @foreach($calendar->members as $member)
                       @if($member->user->details()->role==="student")
                         <a href="/students/{{$member->user->details()->id}}">
+                          <i class="fa fa-user-graduate mr-2"></i>
                           {{$member->user->details()->name}}
                         </a>
                       @endif

@@ -45,9 +45,10 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mr-1"></i>{{$calendar["date"]}}
+                  <i class="fa fa-calendar mx-1"></i>{{$calendar["date"]}}
+                  <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                   <br>
-                  <i class="fa fa-clock mr-1"></i>{{$calendar["timezone"]}}
+                  <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)
