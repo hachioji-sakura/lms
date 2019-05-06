@@ -33,16 +33,16 @@
                 @component('trials.forms.select_trial_date', ['item'=>$item, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
                 @if(count($candidate_teachers[0]->trial) < 1)
                 <div class="col-6 mb-1">
-                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                    <i class="fa fa-arrow-circle-left mr-1"></i>
-                    キャンセル
-                  </a>
-                </div>
-                <div class="col-6 mb-1">
                     <button type="button" class="btn btn-primary btn-block" disabled>
                       <i class="fa fa-check mr-1"></i>
                       体験授業予定を連絡する
                     </button>
+                </div>
+                <div class="col-6 mb-1">
+                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                    <i class="fa fa-arrow-circle-left mr-1"></i>
+                    キャンセル
+                  </a>
                 </div>
                 @else
                 @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent

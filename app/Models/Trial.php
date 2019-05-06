@@ -870,7 +870,7 @@ EOT;
               $setting = $week_schedule[$i-1]["conflict_calendar_setting"];
               foreach($this->get_tags('lesson_place') as $tag){
                 if($setting->is_same_place($tag->tag_value)){
-                  $same_place = $tag->tag_value;
+                  $same_place = $setting->place;
                   break;
                 }
               }
@@ -892,7 +892,7 @@ EOT;
               $setting = $week_schedule[$i+$minute_count]["conflict_calendar_setting"];
               foreach($this->get_tags('lesson_place') as $tag){
                 if($setting->is_same_place($tag->tag_value)){
-                  $same_place = $tag->tag_value;
+                  $same_place = $setting->place;
                   break;
                 }
               }

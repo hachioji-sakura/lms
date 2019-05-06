@@ -73,6 +73,7 @@
                   @component('students.forms.course_minutes', ['_teacher'=>true, '_edit'=>false, 'item'=> $item->trial_students->first()->student->user, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   --}}
                   @component('trials.forms.lesson_week', ['item'=>$item, 'teacher'=> $candidate_teacher ,'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
 
                 </div>
                 <div class="row">

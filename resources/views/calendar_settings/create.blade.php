@@ -14,7 +14,7 @@
   <div class="row">
     @component('calendar_settings.forms.lesson_week', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
     @component('calendar_settings.forms.select_time', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
-    @component('calendar_settings.forms.course_minutes', ['item'=> $item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
+    @component('students.forms.course_minutes', ['_edit'=>$_edit, '_teacher'=>true, 'item'=> $item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
   </div>
 
 <div class="row">

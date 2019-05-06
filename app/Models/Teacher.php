@@ -179,7 +179,7 @@ EOT;
       if($lesson==2){
         $key_name = 'english_talk_lesson';
       }
-      foreach($this->tags as $tag){
+      foreach($this->user->tags as $tag){
         if($tag->tag_key !== $key_name) continue;
         //対応可能
         $ret[$tag->tag_value] = [
