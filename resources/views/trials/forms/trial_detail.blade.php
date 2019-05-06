@@ -17,7 +17,7 @@
           </span>
         </div>
       </div>
-      <div class="col-sm-6 border-right">
+      <div class="col-sm-6">
         <div class="description-block">
           <h5 class="description-header">ご希望のレッスン</h5>
           <span class="description-text">
@@ -41,19 +41,19 @@
           </span>
         </div>
       </div>
-      <div class="col-sm-6">
+      <div class="col-sm-6 border-right">
         <div class="description-block">
           <h5 class="description-header">希望日時</h5>
           <span class="description-text">
             第１希望：<span class="text-xs mx-2">
               <small class="badge badge-secondary ">
                 {{$item["date1"]}}
-              </small><br>
+              </small>
+            </span><br>
             第２希望：<span class="text-xs mx-2">
               <small class="badge badge-secondary ">
                 {{$item["date2"]}}
               </small>
-            </span>
             </span>
           </span>
         </div>
@@ -91,7 +91,7 @@
           </span>
         </div>
       </div>
-      <div class="col-sm-6 border-right">
+      <div class="col-sm-6">
         <div class="description-block">
           <h5 class="description-header">希望科目（受験対策）</h5>
           <span class="description-text">
@@ -112,6 +112,8 @@
         </div>
       </div>
       @endisset
+    </div>
+    <div class="row">
       @isset($item["tagdata"]['lesson'][2])
         @isset($item["tagdata"]['english_teacher'])
         <div class="col-sm-6 border-right">
@@ -130,7 +132,7 @@
         </div>
         @endisset
         @isset($item["tagdata"]['english_talk_lesson'])
-        <div class="col-sm-6 border-right">
+        <div class="col-sm-6">
           <div class="description-block">
             <h5 class="description-header">ご希望の英会話レッスン</h5>
             <span class="description-text">
@@ -146,7 +148,7 @@
         </div>
         @endisset
         @isset($item["tagdata"]['english_talk_course_type'])
-        <div class="col-sm-6 border-right">
+        <div class="col-sm-12">
           <div class="description-block">
             <h5 class="description-header">授業形式(英会話）</h5>
             <span class="description-text">
@@ -162,9 +164,11 @@
         </div>
         @endisset
       @endisset
+    </div>
+    <div class="row">
       @isset($item["tagdata"]['lesson'][3])
         @isset($item["tagdata"]['piano_level'])
-        <div class="col-sm-6 border-right">
+        <div class="col-sm-12">
           <div class="description-block">
             <h5 class="description-header">ピアノのご経験</h5>
             <span class="description-text">
@@ -180,6 +184,8 @@
         </div>
         @endisset
       @endisset
+    </div>
+    <div class="row">
       @isset($item["tagdata"]['lesson'][4])
         @isset($item["tagdata"]['kids_lesson'])
         <div class="col-sm-6 border-right">
@@ -198,7 +204,7 @@
         </div>
         @endisset
         @isset($item["tagdata"]['kids_lesson_course_type'])
-        <div class="col-sm-6 border-right">
+        <div class="col-sm-6">
           <div class="description-block">
             <h5 class="description-header">授業形式(習い事）</h5>
             <span class="description-text">
@@ -214,6 +220,8 @@
         </div>
         @endisset
       @endisset
+    </div>
+    <div class="row">
       <div class="col-sm-12">
         <div class="description-block">
           <h5 class="description-header">ご要望</h5>
@@ -224,9 +232,9 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">
-        <a role="button" class="btn btn-block btn-flat btn-danger float-right" href="javascript:void(0);" page_form="dialog" page_url="/trials/{{$item["id"]}}/register"  page_title="入会案内連絡">
-          <i class="fa fa-envelope mr-1"></i>入塾のご案内を出す
+      <div class="col-sm-12">
+        <a class="btn btn-primary float-right" role="button" href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit">
+          <i class="fa fa-edit mr-1"></i>編集
         </a>
       </div>
     </div>

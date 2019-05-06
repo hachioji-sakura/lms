@@ -32,7 +32,7 @@
   </div>
   @component('students.forms.name', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'student_', 'is_label' => true])
   @endcomponent
-  @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'student_'])
+  @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'student_', 'is_label' => true])
   @endcomponent
 
   <div class="col-10">
@@ -52,9 +52,9 @@
 @endsection
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' => $student, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
-  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' => $student->user, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -64,14 +64,16 @@
     <i class="fa fa-file-invoice mr-1"></i>
     お申込み内容
   </div>
-  @component('students.forms.lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.subject', ['_edit'=>$_edit,'item' => $student, '_teacher' => false, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.subject', ['_edit'=>$_edit,'item' => $student->user, '_teacher' => false, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+{{--
   @component('students.forms.course_type', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
+--}}
+  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item' => $student->user, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.remark', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection

@@ -174,26 +174,50 @@ EOT;
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
     }
     public function calendar_setting(){
-      $items = UserCalendarSetting::findUser($this->id)->get();
-      return $items;
+      $items = UserCalendarSetting::findUser($this->id)
+      ->orderBy('lesson_week', 'asc')
+      ->orderBy('from_time_slot', 'asc')
+      ->get();
+      $ret = [];
+      foreach($items as $item){
+        if(!isset($ret[$item->schedule_method])) $ret[$item->schedule_method] = [];
+        if(!isset($ret[$item->schedule_method][$item->lesson_week])) $ret[$item->schedule_method][$item->lesson_week] = [];
+        $ret[$item->schedule_method][$item->lesson_week][] = $item;
+      }
+      return $ret;
     }
     public function get_week_calendar_setting()
     {
-      $settings = $this->calendar_setting();
+      $settings = $this->calendar_setting()['week'];
       $week_setting = [];
-      foreach($settings as $index => $setting){
-        $base_date = '2000-01-01 '.$setting['from_time_slot'];
-        $diff = strtotime('2000-01-01 '.$setting['to_time_slot'])-strtotime($base_date);
-        $week_setting[$setting['lesson_week']] = [];
-        while($diff > 0){
-          $time = date('H:i', strtotime($base_date));
-          $week_setting[$setting['lesson_week']][$time] = true;
-          $base_date = date("Y-m-d H:i:s", strtotime("+30 minute ".$base_date));
-          $diff -= 1800;
+      foreach($settings as $week_day => $settings){
+        if(!isset($week_setting[$week_day])){
+          $week_setting[$week_day] = [];
+        }
+        foreach($settings as $setting){
+          //カレンダー設定を取得し、30分単位のコマ設定として取得する
+          $base_date = '2000-01-01 '.$setting['from_time_slot'];
+          $time_minutes = strtotime('2000-01-01 '.$setting['to_time_slot'])-strtotime($base_date);
+          //echo"[".$setting['from_time_slot']."][".$setting['to_time_slot']."][".$time_minutes."][".$setting['lesson_week']."]<br>";
+          while($time_minutes > 0){
+            $time = date('Hi', strtotime($base_date));
+            $week_setting[$week_day][$time] = $setting; //ex.$week_setting['fri'][1630] = setting
+            //echo "→[".$time."][".$setting['lesson_week']."]<br>";
+            $base_date = date("Y-m-d H:i:s", strtotime("+30 minute ".$base_date));
+            $time_minutes -= 1800;
+          }
         }
       }
+      //var_dump($week_setting);
+      //array("mon" : [ calendar_setting...])
       return $week_setting;
     }
+    /**
+     * user_tagsから、work_mon_time、work_the_timeなどを取得し、
+     * 30分単位のtime_slotにしてtrue/falseを返す
+     * @return array
+     * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
+     */
     public function get_work_times($prefix='work')
     {
       $weeks = config('attribute.lesson_week');
@@ -220,6 +244,12 @@ EOT;
       }
       return $ret;
     }
+    /**
+     * user_tagsから、lesson_mon_time、lesson_the_timeなどを取得し、
+     * 30分単位のtime_slotにしてtrue/falseを返す
+     * @return array
+     * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
+     */
     public function get_lesson_times()
     {
       return $this->get_work_times('lesson');

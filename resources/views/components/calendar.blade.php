@@ -1,7 +1,11 @@
 <div class="card card-primary">
   <div class="card-body p-0">
     <!-- THE CALENDAR -->
-    <div id="calendar"></div>
+    @if(isset($id) && $id >0)
+      <div id="calendar{{$id}}"></div>
+    @else
+      <div id="calendar"></div>
+    @endif
   </div>
 </div>
 
@@ -9,16 +13,20 @@
   $(function () {
     function status_style(status){
       var _ret = {
+        "trial" : {
+          "color" : "#6c757d",
+          "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
+        },
         "new" : {
           "color" : "#6c757d",
-          "icon" : "<i class='fa fa-question-circle mr-1'></i>",
+          "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
         },
         "confirm" : {
           "color" : "#ffc107",
           "icon" : "<i class='fa fa-question-circle mr-1'></i>",
         },
         "fix" : {
-          "color" : "#007bff",
+          "color" : "#17a2b8",
           "icon" : "<i class='fa fa-clock mr-1'></i>",
         },
         "cancel" : {
@@ -42,7 +50,7 @@
       return _ret['new'];
     }
     function event_render(events, element, title){
-      var _status_style = status_style(events.own_member.status);
+      var _status_style = status_style(events.status);
       var bgcolor = _status_style["color"];
       var icon = _status_style["icon"];
       var textColor  = "#FFF";
@@ -76,8 +84,10 @@
             $.each(result['data'], function(index, value) {
               value["start"] = value['start_time'];
               value["end"] = value['end_time'];
+              value["status"] = value.own_member.status;
               events.push(value);
             });
+            console.log(events);
             callback(events);
           }
         },
@@ -94,17 +104,34 @@
      -----------------------------------------------------------------*/
     //Date for the calendar events (dummy data)
     var date = new Date()
+    /*
     var d    = date.getDate(),
         m    = date.getMonth(),
         y    = date.getFullYear();
     var current_hours = date.getHours() - 5;
     var current_minutes = date.getMinutes();
+    */
     var first_scroll_time = "15:00:00";
-    const $calendar = $('#calendar').fullCalendar({
+    @if(isset($id) && $id >0)
+    var id= "calendar{{$id}}";
+    @else
+    var id= "calendar";
+    @endif
+    const $calendar = $('#'+id).fullCalendar({
       header    : {
-        left  : 'prev today',
-        center: 'title',
-        right : 'month,agendaWeek,agendaDay next'
+        @if(isset($mode) && $mode==="day")
+          left  : '',
+          center: '',
+          right : ''
+        @elseif(isset($mode) && $mode==="week")
+          left  : '',
+          center: 'title',
+          right : ''
+        @else
+          left  : 'prev today',
+          center: 'title',
+          right : 'month,agendaWeek,agendaDay next'
+        @endif
       },
       columnFormat: {
         month: 'ddd', // 月
@@ -145,12 +172,37 @@
       allDaySlot: false,
       //allDayText:'終日',
       axisFormat: 'H(:mm)',
-      defaultView: 'agendaWeek',
+      @if(isset($defaultDate) && !empty($defaultDate))
+        defaultDate : '{{$defaultDate}}',
+      @endif
+      @if(isset($mode) && $mode==="day")
+        defaultView: 'agendaDay',
+      @elseif(isset($mode) && $mode==="week")
+        defaultView: 'agendaWeek',
+      @else
+        defaultView: 'agendaWeek',
+      @endif
       scrollTime: first_scroll_time,
       // 最小時間
-      minTime: "08:00:00",
+      @if(isset($minHour) && $minHour>0)
+        @if($minHour>15)
+          minTime: "15:00:00",
+        @else
+          minTime: "10:00:00",
+        @endif
+      @else
+        minTime: "08:00:00",
+      @endif
       // 最大時間
-      maxTime: "22:00:00",
+      @if(isset($maxHour) && $maxHour>0)
+        @if($maxHour>20)
+          maxTime: "23:00:00",
+        @else
+          maxTime: "21:00:00",
+        @endif
+      @else
+        maxTime: "22:00:00",
+      @endif
       // 月名称
       monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
       // 月略称
@@ -171,6 +223,10 @@
       },
     })
     // 動的にオプションを変更する
-    $('#calendar').fullCalendar('option', 'height', 'auto');
+    $calendar.fullCalendar('option', 'height', 'auto');
+    @if(isset($mode) && $mode==="day")
+    $('.fc-toolbar').hide();
+    @endif
+
   })
 </script>

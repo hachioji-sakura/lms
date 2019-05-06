@@ -319,7 +319,19 @@ class TrialController extends UserCalendarController
       'fields'=>$fields])
       ->with($param);
   }
-
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    return view($this->domain.'.edit', [
+      '_edit' => true])
+      ->with($param);
+  }
   /**
    * 体験授業申し込みページ
    *
@@ -331,6 +343,7 @@ class TrialController extends UserCalendarController
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
       'attributes' => $this->attributes(),
+      'item' => [],
     ];
     return view($this->domain.'.entry',
       ['sended' => '',
@@ -376,57 +389,29 @@ class TrialController extends UserCalendarController
      }
    }
    /**
-    * 体験申し込み更新ページ
+    * 詳細画面表示
     *
     * @param  int  $id
-    * @param  string  $status
     * @return \Illuminate\Http\Response
     */
-   public function status_update_page(Request $request, $id, $status)
+   public function to_calendar(Request $request, $id)
    {
-     if (!View::exists($this->domain.'.'.$status)) {
-         abort(404);
-     }
      $param = $this->get_param($request, $id);
-     $param['fields'] = $this->show_fields;
-     if($status === 'confirm'){
-       //体験かつ、講師に授業予定を連絡するケース
-       $param['candidate_teachers'] = $param['item']->candidate_teachers();
-     }
-     else if($status ==='fix'){
-       //体験かつ、生徒が授業予定をfixするケース
-       $param['trial_id'] = $param['item']->id;
-       $calendar = $param['item']->get_calendar();
-       if(!isset($calendar)){
-         abort(404);
-       }
-       $param['item'] = $calendar->details();
-       $param['fields'] = [
-         'date' => [
-           'label' => '日付',
-           'size' => 6,
-         ],
-         'timezone' => [
-           'label' => '時間',
-           'size' => 6,
-         ],
-         'student_name' => [
-           'label' => '生徒',
-           'size' => 6,
-         ],
-         'teacher_name' => [
-           'label' => '講師',
-           'size' => 6,
-         ],
-         'place' => [
-           'label' => '場所',
-           'size' => 6,
-         ]
-       ];
-     }
-     if(!isset($param['item'])) abort(404);
 
-     return view($this->domain.'.'.$status, [ ])->with($param);
+     $teacher_id = 0;
+     $lesson = 0;
+     if($request->has('teacher_id')){
+       $teacher_id = $request->get('teacher_id');
+     }
+     if($request->has('lesson')){
+       $lesson = $request->get('lesson');
+     }
+     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
+     $param['view'] = 'to_calendar';
+     $param['select_teacher_id'] = $teacher_id;
+     $param['select_lesson'] = $lesson;
+     return view($this->domain.'.'.$param['view'], [])
+       ->with($param);
    }
    /**
     * カレンダーステータス更新
@@ -436,42 +421,26 @@ class TrialController extends UserCalendarController
     * @param  string  $status
     * @return \Illuminate\Http\Response
     */
-   public function status_update(Request $request, $id, $status)
+   public function to_calendar_confirm(Request $request, $id)
    {
-
      $form = $request->all();
      $param = $this->get_param($request, $id);
      $item = $param['item'];
-     $res = $this->api_response();
-     $message = [
-       "confirm" => "授業予定の確認連絡をしました。",
-       "remind" => "授業予定の確認連絡をしました。",
-       "fix" => "授業予定を確定しました。",
-       "cancel" => "この授業予定をキャンセルしました。",
-     ];
-     $res = $this->_status_update($request, $id, $status);
-     if($status !== "remind"){
-       //リマインドはステータス更新なし
+     $user = $this->login_details();
+
+     $res = $this->transaction(function() use ($request, $id, $user){
+       $form = $request->all();
+       $form['create_user_id'] = $user->user_id;
+       //カレンダーステータス変更
+       $trial = Trial::where('id', $id)->first();
+       $trial->update(['status'=>'confirm']);
+       $calendar = $trial->trial_to_calendar($form);
+       return $calendar;
+     }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+     if($this->is_success_response($res)){
+       $this->confirm_mail($res["data"]->details($user->user_id));
      }
-     $redirect = "";
-     if($status==="confirm"){
-       $redirect = $this->domain.'/'.$id;
-     }
-     if($status==="remind" || $status==="cancel"){
-       $calendar = $item->get_calendar();
-       if(isset($calendar)){
-         if($calendar->status!='new'){
-           $url = config('app.url').'/calendars/'.$calendar->id.'/'.$status;
-           $res = $this->call_api($request, $url, 'PUT');
-           //TODO : errorハンドリング
-           $res = $this->api_response();
-         }
-         else {
-           $this->confirm_mail($calendar->details($param['user']->user_id));
-         }
-       }
-     }
-     return $this->save_redirect($res, $param, $message[$status], $redirect);
+     return $this->save_redirect($res, $param, "授業予定の確認連絡をしました。", $this->domain.'/'.$id);
    }
    /**
     * 体験授業予定連絡通知メール送信
@@ -482,7 +451,6 @@ class TrialController extends UserCalendarController
      return  $this->_mail($calendar,
               '体験授業予定のご確認',
               'trial_confirm');
-
    }
    /**
     * 予定確認メール送信
@@ -521,109 +489,36 @@ class TrialController extends UserCalendarController
    }
 
    /**
-    * 体験授業ステータス更新
-    *
-    * @param  array  $param
-    * @param  string  $status
-    * @return \Illuminate\Http\Response
-    */
-   private function _status_update($request, $id, $status){
-     return $this->transaction(function() use ($request, $id, $status){
-       $form = $request->all();
-       $user = $this->login_details();
-       $form['create_user_id'] = $user->user_id;
-       //カレンダーステータス変更
-       $trial = Trial::where('id', $id)->first();
-       $trial->update(['status'=>$status]);
-       if($status==="confirm"){
-         //体験授業内容から、授業予定追加
-         $calendar = $trial->trial_to_calendar($form);
-         $this->confirm_mail($calendar->details($user->user_id));
-       }
-       $this->send_slack('体験授業ステータス更新['.$status.']:/ id['.$trial->id.']開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', '体験授業ステータス更新');
-       return $calendar;
-     }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-   }
-   /**
     * 詳細画面表示
     *
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-   public function to_calendar(Request $request, $id)
+   public function to_calendar_setting(Request $request, $id)
    {
      $param = $this->get_param($request, $id);
-
-     $fields = array_merge($this->show_fields, [
-       'parent_email' => [
-         'label' => 'email',
-         'size' => 6
-       ],
-       /*
-       'parent_phone_no' => [
-         'label' => 'ご連絡先',
-         'size' => 3,
-       ],
-       */
-       'howto' => [
-         'label' => '当塾をお知りになった方法は何でしょうか？',
-         'size' => 6
-       ],
-       'howto_word' => [
-         'label' => '検索ワードを教えてください',
-         'size' => 6
-       ],
-     ]);
      $teacher_id = 0;
+     $calendar_id = 0;
      $lesson = 0;
-     if($request->has('teacher_id')){
-       $teacher_id = $request->get('teacher_id');
+     $param['calendar'] = null;
+     if($request->has('calendar_id')){
+       $calendar_id = $request->get('calendar_id');
+       $calendar = UserCalendar::where('id', $calendar_id)->first();
+       if(!isset($calendar)) abort(404);
+       $calendar = $calendar->details($param['user']->user_id);
+       $teacher_id = $calendar['teachers'][0]->user->teacher->id;
+       $lesson = $calendar->get_tag('lesson')->tag_value;
+       $param['calendar'] = $calendar;
      }
-     if($request->has('lesson')){
-       $lesson = $request->get('lesson');
+     if($teacher_id > 0 && $lesson > 0){
+      $candidate_teachers  = $param['item']->candidate_teachers($teacher_id, $lesson);
+      $param['candidate_teacher'] = $candidate_teachers[0];
      }
-     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
-     $param['view'] = 'to_calendar';
+     $param['view'] = 'to_calendar_setting';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
-     return view($this->domain.'.'.$param['view'], [
-       'action' => $request->get('action'),
-       'fields'=>$fields])
-       ->with($param);
-   }
-   /**
-    * 詳細画面表示
-    *
-    * @param  int  $id
-    * @return \Illuminate\Http\Response
-    */
-   public function register_mail(Request $request, $id)
-   {
-     $param = $this->get_param($request, $id);
-
-     $fields = array_merge($this->show_fields, [
-       'parent_email' => [
-         'label' => 'email',
-         'size' => 6
-       ],
-       /*
-       'parent_phone_no' => [
-         'label' => 'ご連絡先',
-         'size' => 3,
-       ],
-       */
-       'howto' => [
-         'label' => '当塾をお知りになった方法は何でしょうか？',
-         'size' => 6
-       ],
-       'howto_word' => [
-         'label' => '検索ワードを教えてください',
-         'size' => 6
-       ],
-     ]);
-     $param['view'] = 'register';
-     return view($this->domain.'.'.$param['view'], [
-       'fields'=>$fields])
+     $param['select_calendar_id'] = $calendar_id;
+     return view($this->domain.'.'.$param['view'], [])
        ->with($param);
    }
    /**
@@ -631,42 +526,32 @@ class TrialController extends UserCalendarController
     * @param  Array  $param
     * @return boolean
     */
-   public function register_mail_send(Request $request, $id){
-     $access_key = $this->create_token();
-     $param = $this->get_param($request, $id);
-     $trial = Trial::where('id', $id)->first();
-     $res = $this->transaction(function() use ($trial, $access_key){
-       //保護者にアクセスキーを設定
-       $trial->parent->user->update(['access_key' => $access_key]);
-       //この体験に関してはいったん完了ステータス
-       $trial->update(['status' => 'complete']);
-       return $trial;
-     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-     if($this->is_success_response($res)){
-       $email = $param['item']['parent_email'];
-       $user_name = $param['item']['parent_name'];
-       $this->send_mail($email,
-        '入会のご案内',
-       [
-       'user_name' => $user_name,
-       'access_key' => $access_key,
-       'comment' => $request->get('comment'),
-       'item' => $param['item'],
-       ],
-       'text',
-       'trial_register');
-     }
-     return $this->save_redirect($res, [], '入会案内メールを送信しました');
-   }
+  public function to_calendar_setting_update(Request $request, $id){
+    $res =  $this->transaction(function() use ($request, $id){
+      $form = $request->all();
+      $user = $this->login_details();
+      $form['create_user_id'] = $user->user_id;
+      //カレンダーステータス変更
+      $trial = Trial::where('id', $id)->first();
+      $setting = $trial->to_calendar_setting($form, $form['calendar_id']);
+      return $trial;
+    }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
+  }
+
    public function admission(Request $request, $id){
      $access_key = '';
+     /*
      if($request->has('key')){
        $access_key = $request->get('key');
      }
      if(empty($access_key)) abort(403);
+     */
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
+     /*
      if($trial->parent->user->access_key!==$access_key) abort(403);
+     */
 
      $param = [
        'item' => $trial->details(),
@@ -680,6 +565,62 @@ class TrialController extends UserCalendarController
        ->with($param);
 
    }
+   public function _update(Request $request, $id)
+   {
+     $res =  $this->transaction(function() use ($request, $id){
+       $form = $request->all();
+       $user = $this->login_details();
+       $form['create_user_id'] = $user->user_id;
+       $item = $this->model()->where('id',$id)->first();
+       $item->trial_update($form);
+       return $item;
+     }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
+   }
+   public function admission_mail(Request $request, $id){
+     $access_key = '';
+     $trial = Trial::where('id', $id)->first();
+     if(!isset($trial)) abort(404);
+     $param = [
+       'item' => $trial->details(),
+       'domain' => $this->domain,
+       'domain_name' => $this->domain_name,
+       'attributes' => $this->attributes(),
+     ];
+     return view($this->domain.'.admission_mail',
+       ['sended' => '',
+        '_edit' => false])
+       ->with($param);
+   }
+   public function admission_mail_send(Request $request, $id){
+      $access_key = $this->create_token();
+      $param = $this->get_param($request, $id);
+      $trial = Trial::where('id', $id)->first();
+
+      $res = $this->transaction(function() use ($trial, $access_key){
+        //保護者にアクセスキーを設定
+        $trial->parent->user->update(['access_key' => $access_key]);
+        //この体験に関してはいったん完了ステータス
+        $trial->update(['status' => 'complete']);
+        return $trial;
+      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+
+      if($this->is_success_response($res)){
+        $email = $param['item']['parent_email'];
+        $user_name = $param['item']['parent_name'];
+        $this->send_mail($email,
+         '入会のご案内',
+        [
+        'user_name' => $user_name,
+        'access_key' => $access_key,
+        'comment' => $request->get('comment'),
+        'item' => $param['item'],
+        ],
+        'text',
+        'trial_register');
+      }
+      return $this->save_redirect($res, [], '入会案内メールを送信しました');
+    }
    public function admission_submit(Request $request, $id){
    }
 }

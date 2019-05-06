@@ -22,6 +22,19 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public function lecture(){
+    return $this->belongsTo('App\Models\Lecture');
+  }
+  public function create_user(){
+    return $this->belongsTo('App\User', 'create_user_id');
+  }
+  public function members(){
+    return $this->hasMany('App\Models\UserCalendarMember', 'calendar_id');
+  }
+  public function tags(){
+    return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
+  }
+
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);
@@ -123,7 +136,6 @@ EOT;
     }
     return $ret;
   }
-
   public function is_access($user_id){
     $parent = StudentParent::where('user_id', $user_id)->first();
     if(isset($parent)){
@@ -141,19 +153,6 @@ EOT;
       }
       return false;
     }
-  }
-
-  public function lecture(){
-    return $this->belongsTo('App\Models\Lecture');
-  }
-  public function create_user(){
-    return $this->belongsTo('App\User', 'create_user_id');
-  }
-  public function members(){
-    return $this->hasMany('App\Models\UserCalendarMember', 'calendar_id');
-  }
-  public function tags(){
-    return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
   }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
@@ -234,9 +233,11 @@ EOT;
         $ret[] = $tag->name();
       }
     }
-    $tags =  $this->get_tags('subject_expr');
-    foreach($tags as $index => $tag){
-      $ret[] = $tag->tag_value;
+    if(count($ret)==0){
+      $tags =  $this->get_tags('subject_expr');
+      foreach($tags as $index => $tag){
+        $ret[] = $tag->tag_value;
+      }
     }
     return $ret;
   }
@@ -254,6 +255,7 @@ EOT;
     }
     return "";
   }
+
   public function timezone(){
     $start_hour_minute = date('H:i',  strtotime($this->start_time));
     $end_hour_minute = date('H:i',  strtotime($this->end_time));
@@ -265,8 +267,6 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['place'] = $this->place();
-    $item['work'] = $this->work();
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -290,6 +290,7 @@ EOT;
         $teacher_name.=$_member['name'].',';
         $teachers[] = $member;
       }
+      $_member = $member->user->details('managers');
       if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
         $item['managers'][] = $member;
@@ -330,6 +331,7 @@ EOT;
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
+
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -344,16 +346,17 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
-    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new');
+    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     $calendar = $calendar->change($form);
     return $calendar;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
-    UserCalendarMember::where('calendar_id', $this->id)->delete();
-    $this->delete();
-    //事務システムも削除
+    //事務システム側を先に削除
     $this->office_system_api("DELETE");
+    UserCalendarMember::where('calendar_id', $this->id)->delete();
+    UserCalendarTag::where('calendar_id', $this->id)->delete();
+    $this->delete();
   }
   //本モデルはupdateではなくchangeを使う
   public function change($form){
@@ -384,10 +387,28 @@ EOT;
       if($is_status_update === true)  $status = $form['status'];
     }
 
+    //TODO Workの補間どうにかしたい
+    if(isset($form['course_type']) && !isset($form['work'])){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      $form['work'] = $work_data[$form["course_type"]];
+    }
+
+
+    //TODO lectureの補間どうにかしたい
+    $lecture_id = 0;
+    if(isset($form['lesson']) && isset($form['course_type'])){
+      $course_id = config('replace.course')[$form["course_type"]];
+      $lecture = Lecture::where('lesson', $form['lesson'])
+          ->where('course', $course_id)
+          ->first();
+      $lecture_id = $lecture->id;
+    }
+
     $data = [
       'status' => $status,
-      'lecture_id' => 0,
+      'lecture_id' => $lecture_id,
     ];
+
     foreach($update_fields as $field){
       if($field=='status') continue;
       if(!isset($form[$field])) continue;
@@ -414,7 +435,7 @@ EOT;
     $this->office_system_api("PUT");
     return $this;
   }
-  public function memberAdd($user_id, $create_user_id, $status='new'){
+  public function memberAdd($user_id, $create_user_id, $status='new', $is_api=true){
     if(empty($user_id) || $user_id < 1) return null;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
@@ -428,8 +449,10 @@ EOT;
           'status' => $status,
           'create_user_id' => $create_user_id,
       ]);
-      //事務システムにも登録
-      $member->office_system_api("POST");
+      if($is_api===true){
+        //事務システムにも登録
+        $member->office_system_api("POST");
+      }
     }
     return $member;
   }
@@ -457,9 +480,9 @@ EOT;
     }
     return false;
   }
-  public function is_conflict($start, $end, $place=''){
-    $start = strtotime($start);
-    $end = strtotime($end);
+  public function is_conflict($start_time, $end_time, $place='', $place_floor=''){
+    $start = strtotime($start_time);
+    $end = strtotime($end_time);
     $calendar_starttime = strtotime($this->start_time);
     $calendar_endtime = strtotime($this->end_time);
     if($start > $calendar_starttime && $start < $calendar_endtime){
@@ -474,18 +497,63 @@ EOT;
       //完全一致
       return true;
     }
-    if(!empty($place)){
-      if($end == $calendar_starttime && $this->place!=$place){
-        //開始終了が一致したが、場所が違うので移動できない
+
+    if($end == $calendar_starttime || $start == $calendar_endtime){
+      //開始終了が一致した場合、場所をチェック
+      if(!empty($place) && $this->is_same_place($place)===false){
+        //場所が異なるのでスケジュール競合
+        return true;
+      }
+      else if(!empty($place_floor) && $this->is_same_place("",$place_floor)===false){
+        //場所が異なるのでスケジュール競合
         return true;
       }
     }
     return false;
   }
+  public function is_time_connect($start_time, $end_time){
+    //開始終了が一致した場合、場所をチェック
+    $start = strtotime($start_time);
+    $end = strtotime($end_time);
+    $calendar_starttime = strtotime($this->start_time);
+    $calendar_endtime = strtotime($this->end_time);
+
+    if($end == $calendar_starttime || $start == $calendar_endtime) return true;
+    return false;
+  }
+  public function is_same_place($place='', $place_floor=''){
+    //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
+    if(!empty($place)){
+      $calendar_place = $this->get_place($this->place);
+      if($calendar_place==$place){
+        return true;
+      }
+    }
+    else if(!empty($place_floor)){
+      $calendar_place = $this->get_place($this->place);
+      $args_place = $this->get_place($place_floor);
+      if($calendar_place==$args_place){
+        return true;
+      }
+    }
+    return false;
+  }
+  private function get_place($floor){
+    foreach(config('lesson_place_floor') as $place => $floors){
+      foreach($floors as $floor_code => $floor_name){
+        if($floor_code==$floor){
+          return $place;
+        }
+      }
+    }
+    return "";
+  }
   public function office_system_api($method){
     $res = null;
     foreach($this->members as $member){
       $res = $member->office_system_api($method);
+      if($res=="null" || !isset($res["status"])) break;
+      if($res["status"]!=0) break;
     }
     return $res;
   }

@@ -14,7 +14,6 @@
         @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             @endslot
-
             @slot('alias')
               <h6 class="widget-user-desc">
                 @foreach($item["tags"] as $tag)

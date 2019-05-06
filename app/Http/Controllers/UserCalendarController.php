@@ -28,7 +28,9 @@ class UserCalendarController extends MilestoneController
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
         ];
-
+  public function model(){
+    return UserCalendar::query();
+  }
   public function show_fields(){
     $user = $this->login_details();
       $ret = [
@@ -67,9 +69,7 @@ class UserCalendarController extends MilestoneController
     ];
     return $ret;
   }
-  public function model(){
-    return UserCalendar::query();
-  }
+
   /**
    * 更新用フォーム
    *
@@ -413,6 +413,22 @@ class UserCalendarController extends MilestoneController
       ])->with($param);
     }
     /**
+     * 詳細画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_calendar(Request $request, $user_id)
+    {
+      $param = $this->get_param($request, "");
+      $param["date"] = "2019-04-29";
+      $param["minHour"] = "10";
+      $param["maxHour"] = "15";
+      $param["user_id"] = $user_id;
+      return view($this->domain.'.user_calendar', [
+      ])->with($param);
+    }
+    /**
      * カレンダーステータス更新ページ
      *
      * @param  int  $id
@@ -441,9 +457,10 @@ class UserCalendarController extends MilestoneController
             abort(403, '有効期限が切れています(4)');
         }
       }
+      if(!isset($param['item'])) abort(404, 'ページがみつかりません(3)');
 
       $param['fields'] = $this->show_fields();
-      if(!isset($param['item'])) abort(404, 'ページがみつかりません(3)');
+      $param['action'] = '';
 
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
@@ -913,23 +930,12 @@ class UserCalendarController extends MilestoneController
      */
     public function _delete(Request $request, $id)
     {
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      $res = $this->transaction(function() use ($request, $id){
         $user = $this->login_details();
         $item = $this->model()->where('id',$id)->first();
         $item->dispose();
-        DB::commit();
-        return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $item;
+      }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
     }
 
     public function test(Request $request){

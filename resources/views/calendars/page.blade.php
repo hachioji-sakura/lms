@@ -1,4 +1,4 @@
-@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>$action])
 {{-- メッセージカスタマイズ --}}
   @slot('page_message')
     @if(isset($page_message) && !empty(trim($page_message)))
@@ -20,6 +20,11 @@
               {{$field['label']}}
             </label>
             <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
+          @elseif($key==="place")
+            <label for="{{$key}}" class="w-100">
+              {{$field['label']}}
+            </label>
+            <small title="{{$item["id"]}}" class="badge badge-success mt-1 mr-1">{{$item->place()}}</small>
           @elseif($key==='student_name')
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}

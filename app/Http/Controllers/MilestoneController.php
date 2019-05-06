@@ -374,24 +374,13 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      $res =  $this->transaction(function() use ($request, $id){
         $user = $this->login_details();
         $item = $this->model()->where('id',$id)->update($this->update_form($request));
-        DB::commit();
-        return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $item;
+      }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
-
     /**
      * Remove the specified resource from storage.
      *

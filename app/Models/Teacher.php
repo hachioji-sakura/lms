@@ -129,7 +129,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-
+    $this->user->update(['status' => 0]);
   }
   public function get_charge_subject(){
     //担当科目を取得
@@ -144,6 +144,52 @@ EOT;
       }
     }
     return $subjects;
+  }
+  public function get_enable_subjcet($lesson){
+    $ret = [];
+    $lesson = intval($lesson);
+    if($lesson===1){
+      $tags = $this->user->tags;
+      foreach($this->user->tags as $tag){
+        $tag_data = $tag->details();
+        if(isset($tag_data['charge_subject_level_item'])){
+          if(intval($tag->tag_value) > 1){
+            $subject_key = str_replace('_level', '', $tag->tag_key);
+            $ret[$subject_key] = [
+              "subject_key" => $subject_key,
+              "subject_name" => $tag->keyname(),  //科目名
+              "level_name" => $tag->name(), //補習可能、受験可能など
+              "style" => "secondary",
+            ];
+          }
+        }
+      }
+    }
+    else if($lesson===3){
+      //ピアノの場合特に判断基準なし
+      $ret['piano'] = [
+        "subject_key" => 'piano',
+        "subject_name" => 'ピアノ',  //科目名
+        "level_name" => '',
+        "style" => "primary",
+      ];
+    }
+    else if($lesson==4 || $lesson==2){
+      $key_name = 'kids_lesson';
+      if($lesson==2){
+        $key_name = 'english_talk_lesson';
+      }
+      foreach($this->user->tags as $tag){
+        if($tag->tag_key !== $key_name) continue;
+        //対応可能
+        $ret[$tag->tag_value] = [
+          "subject_key" => $tag->tag_value,
+          "subject_name" => $tag->name(),
+          "style" => "secondary",
+        ];
+      }
+    }
+    return $ret;
   }
   public function is_manager(){
     $manager = Manager::where('user_id', $this->user_id)->first();
@@ -180,5 +226,4 @@ EOT;
                         ]);
     return $manager;
   }
-
 }

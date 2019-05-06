@@ -22,11 +22,11 @@
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
         <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey week_time"  onChange="week_change(this)"  validate="week_validate()"
-          @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', 'disabled')===true)
+          @if($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time', 'disabled')===true)
           checked
-          @elseif(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time')===false)
+          @elseif($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time')===false)
           checked
-          @elseif(isset($item) && !isset($item->user))
+          @elseif($_edit===false)
            checked
           @endif
          >
@@ -39,7 +39,7 @@
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
         <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"
-        @if(isset($item) && isset($item->user) && $item->user->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
+        @if($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
        @elseif($_edit==false)
         disabled = "disabled"

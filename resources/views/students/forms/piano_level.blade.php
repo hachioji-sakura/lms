@@ -11,7 +11,7 @@
     @foreach($attributes['piano_level'] as $index => $name)
     <label class="mx-2">
       <input type="radio" id="piano_level_{{$index}}" value="{{ $index }}" name="piano_level" class="icheck flat-green" required="true"
-      @if(isset($item) && $item->user->has_tag('piano_level', $index)===true)
+      @if($_edit===true && isset($item) && $item->has_tag('piano_level', $index)===true)
       checked
       @endif
       >{{$name}}

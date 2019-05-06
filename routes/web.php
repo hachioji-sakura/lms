@@ -46,8 +46,11 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+Route::resource('calendar_settings','UserCalendarSettingController');
 
 Route::resource('calendar_members','UserCalendarMemberController');
+
+Route::get('calendar/{user_id}','UserCalendarController@show_calendar');
 
 Route::get('calendars/{id}/api_test','UserCalendarController@api_test');
 Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
@@ -65,12 +68,15 @@ Route::resource('calendars','UserCalendarController');
 
 Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::post('trials/{id}/to_calendar','TrialController@to_calendar_confirm');
-Route::get('trials/{id}/register','TrialController@register_mail');
-Route::post('trials/{id}/register','TrialController@register_mail_send');
-Route::get('trials/{id}/admission','TrialController@admission');
-Route::post('trials/{id}/admission','TrialController@admission_submit');
+Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting');
+Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting_update');
+Route::get('trials/{id}/admission','TrialController@admission_mail');
+Route::post('trials/{id}/admission','TrialController@admission_mail_send');
+Route::put('trials/{id}/admission','TrialController@admission_submit');
+/*
 Route::get('trials/{id}/{status}','TrialController@status_update_page');
 Route::put('trials/{id}/{status}','TrialController@status_update');
+*/
 Route::resource('trials','TrialController');
 Route::get('entry','TrialController@trial');
 Route::post('entry','TrialController@trial_store');

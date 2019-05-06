@@ -5072,7 +5072,11 @@ button.close, button.mailbox-attachment-close {
 	right: 0;
 	bottom: 0;
 	left: 0;
+	/* yasui ほかのフォームと調整
 	z-index: 1100;
+
+	 */
+  z-index: 1102;
 	display: none;
 	overflow: hidden;
 	outline: 0;
@@ -5133,7 +5137,7 @@ button.close, button.mailbox-attachment-close {
 	left: 0;
   /* yasui サイドメニューの上にしたい
   */
-	z-index: 1040;
+	z-index: 1101;
 	background-color: #000;
 }
 
@@ -13435,4 +13439,7 @@ span.select2-container{
 }
 .step li.is-current:after{
   border-color: transparent transparent transparent #17a2b8 !important;
+}
+.fc .fc-center h2{
+	font-size: 1.5rem;
 }
