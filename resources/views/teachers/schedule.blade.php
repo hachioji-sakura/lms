@@ -40,59 +40,79 @@
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
           @if(count($calendars) > 0)
+          <?php
+            $__date = "";
+          ?>
           <ul class="mailbox-attachments clearfix row">
             @foreach($calendars as $calendar)
-            <li class="col-12" accesskey="" target="">
-              <div class="row">
-                <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mx-1"></i>{{$calendar["date"]}}
-                  <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
-                  <br>
-                  <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+              @if($__date != $calendar["date"])
+              <li class="col-12 p-1" accesskey="" target="">
+                <div class="row">
+                  <div class="col-12 pl-3">
+                    <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
+                      <i class="fa fa-chevron-down mr-1"></i>
+                      {{date('m月d日', strtotime($calendar["date"]))}}
+                    </a>
+                  </div>
                 </div>
-                <div class="col-7 col-lg-4 col-md-4">
-                  @foreach($calendar->members as $member)
-                    @if($member->user->details()->role==="student")
-                      <a href="/students/{{$member->user->details()->id}}">
-                        <i class="fa fa-user-graduate mr-2"></i>
-                        {{$member->user->details()->name}}
+                <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
+              @endif
+                  <div class="row border-bottom">
+                    <div class="col-5 col-lg-4 col-md-4">
+                      <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
+                      <br>
+                      <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                    </div>
+                    <div class="col-7 col-lg-4 col-md-4">
+                      @foreach($calendar->members as $member)
+                        @if($member->user->details()->role==="student")
+                          <a href="/students/{{$member->user->details()->id}}">
+                            <i class="fa fa-user-graduate mr-2"></i>
+                            {{$member->user->details()->name}}
+                          </a>
+                        @endif
+                      @endforeach
+                      <br>
+                      @foreach($calendar['subject'] as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
+                    </div>
+                    <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
+                      <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100">
+                        <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
                       </a>
-                    @endif
-                  @endforeach
-                  <br>
-                  @foreach($calendar['subject'] as $subject)
-                  <span class="text-xs mx-2">
-                    <small class="badge badge-primary mt-1 mr-1">
-                      {{$subject}}
-                    </small>
-                  </span>
-                  @endforeach
+                      <br>
+                      @if($user->role==="teacher" || $user->role==="manager" )
+                        @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
+                        <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/presence?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                          <i class="fa fa-user-check mr-1"></i>
+                          出欠確認
+                        </a>
+                        @elseif($calendar["status"]==="new")
+                        <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/confirm?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                          <i class="fa fa-user-check mr-1"></i>
+                          予定を確定する
+                        </a>
+                        @elseif($calendar["status"]==="confirm")
+                        <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                          <i class="fa fa-user-check mr-1"></i>
+                          予定連絡
+                        </a>
+                        @endif
+                      @endif
+                    </div>
+                  </div>
+              <?php
+                $__date = $calendar["date"];
+              ?>
+              @if($__date != $calendar["date"])
                 </div>
-                <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100">
-                    <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
-                  </a>
-                  <br>
-                  @if($user->role==="teacher" || $user->role==="manager" )
-                    @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/presence?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-success btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      出欠確認
-                    </a>
-                    @elseif($calendar["status"]==="new")
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/confirm?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      予定を確定する
-                    </a>
-                    @elseif($calendar["status"]==="confirm")
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      予定連絡
-                    </a>
-                    @endif
-                  @endif
-                </div>
-            </li>
+              </li>
+              @endif
             @endforeach
           </ul>
           @else
