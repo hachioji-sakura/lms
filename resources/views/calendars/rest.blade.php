@@ -23,6 +23,9 @@
       @if(isset($student_id))
         <input type="hidden" value="{{$student_id}}" name="student_id" />
       @endif
+      @if($user->role==="manager" || $user->role==="teacher")
+      <input type="hidden" value="1" name="is_proxy">
+      @endif
 
     <div class="row">
       @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent

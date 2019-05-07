@@ -218,6 +218,10 @@ class UserCalendarController extends MilestoneController
       'rest_reason' => $request->rest_reason,
       'attributes' => $this->attributes(),
     ];
+    $ret['is_proxy'] = false;
+    if($request->has('is_proxy')){
+      $ret['is_proxy'] = true;
+    }
     if($request->has('access_key')){
       $ret['token'] = $request->get('access_key');
     }
@@ -465,7 +469,7 @@ class UserCalendarController extends MilestoneController
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
-      return view($this->domain.'.'.$status, [ ])->with($param);
+      return view($this->domain.'.'.$status, [])->with($param);
     }
     /**
      * カレンダーステータス更新
@@ -792,6 +796,7 @@ class UserCalendarController extends MilestoneController
          ];
        }
       }
+      $is_proxy = $param['is_proxy'];
 
       foreach($send_dataset as $send_data){
         $this->send_mail($send_data['email'],
@@ -802,6 +807,7 @@ class UserCalendarController extends MilestoneController
          'item' =>$send_data['item'],
          'token' => $send_data['token'],
          'user_id' => $user_id,
+         'is_proxy' => $is_proxy
          ],
          'text',
          $template);
