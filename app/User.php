@@ -188,7 +188,9 @@ EOT;
     }
     public function get_week_calendar_setting()
     {
-      $settings = $this->calendar_setting()['week'];
+      $settings = $this->calendar_setting();
+      if(!isset($settings['week'])) return [];
+      $settings = $settings['week'];
       $week_setting = [];
       foreach($settings as $week_day => $settings){
         if(!isset($week_setting[$week_day])){
