@@ -50,7 +50,11 @@
       return _ret['new'];
     }
     function event_render(events, element, title){
+
       var _status_style = status_style(events.status);
+      if(events.status=="fix"){
+        var _status_style = status_style(events.total_status);
+      }
       var bgcolor = _status_style["color"];
       var icon = _status_style["icon"];
       var textColor  = "#FFF";
@@ -77,6 +81,8 @@
       */
     }
     function set_calendar(start_time, end_time, callback) {
+      start_time = start_time.replace_all('-','');
+      end_time = end_time.replace_all('-','');
       service.getAjax(false, '/api_calendars/{{$user_id}}/'+start_time+'/'+end_time, null,
         function(result, st, xhr) {
           if(result['status']===200){
@@ -84,6 +90,7 @@
             $.each(result['data'], function(index, value) {
               value["start"] = value['start_time'];
               value["end"] = value['end_time'];
+              value["total_status"] = value.status;
               value["status"] = value.own_member.status;
               events.push(value);
             });

@@ -66,7 +66,7 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.status){
+            switch(event.total_status){
               case "new":
                 base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/confirm");
                 break;
