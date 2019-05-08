@@ -283,6 +283,7 @@ EOT;
     $other_name = "";
     $teachers = [];
     $students = [];
+    $managers = [];
     $item['managers'] = [];
     foreach($this->members as $member){
       $_member = $member->user->details('teachers');
@@ -293,7 +294,7 @@ EOT;
       $_member = $member->user->details('managers');
       if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
-        $item['managers'][] = $member;
+        $managers[] = $member;
       }
     }
     if($user_id > 0){
@@ -311,6 +312,7 @@ EOT;
     unset($item['lecture']);
     $item['teachers'] = $teachers;
     $item['students'] = $students;
+    $item['managers'] = $managers;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['other_name'] = trim($other_name,',');
@@ -493,8 +495,12 @@ EOT;
       //終了時刻が、範囲内
       return true;
     }
-    if($start==$calendar_starttime && $end == $calendar_endtime){
-      //完全一致
+    if($start <= $calendar_starttime && $end >= $calendar_endtime){
+      //内包しているケース
+      return true;
+    }
+    if($calendar_starttime <= $start && $calendar_endtime >= $end){
+      //内包しているケース
       return true;
     }
 
