@@ -523,6 +523,7 @@ class StudentController extends UserController
         break;
       default:
         if(empty($from_date)) $from_date = date('Y-m-d');
+        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+7 day"));
         $statuses = ['rest', 'fix', 'presence', 'absence'];
         break;
     }
