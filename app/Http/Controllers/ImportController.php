@@ -863,6 +863,23 @@ class ImportController extends UserController
 
       $member = UserCalendarMemberSetting::where('setting_id_org', $item['id'])->first();
       if(isset($_member)) $setting = $member->setting;
+      if(!isset($setting) && !empty($user_id) && $work==7){
+        //$user_idが設定されるケースは、事務or講師
+        $__setting = UserCalendarMemberSetting::where('user_id', $user_id)
+          ->where('schedule_method', $item['schedule_method'])
+          ->where('lesson_week_count', $item['lesson_week_count'])
+          ->where('lesson_week', $item['lesson_week'])
+          ->where('from_time_slot', $item['starttime'])
+          ->where('to_time_slot', $item['endtime'])
+          ->where('work' , $work)
+          ->where('lecture_id' , $lecture_id)
+          ->where('place', $item['place'])
+          ->first();
+        if(isset($__items)){
+          //おそらく同一のグループレッスンと思われる予定が見つかった
+          $items = $__items;
+        }
+      }
       $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
@@ -1070,14 +1087,18 @@ class ImportController extends UserController
       $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();
       $items = null;
       if(isset($_member)) $items = $_member->calendar;
-      if(!isset($items)){
-        //おそらく同一のグループレッスンと思われる予定が見つかった
-        $items = UserCalendar::where('user_id', $user_id)
+      if(!isset($items) && !empty($user_id) && $work==7){
+        $__items = UserCalendar::where('user_id', $user_id)
           ->where('start_time', $item['ymd'].' '.$item['starttime'])
           ->where('end_time' , $item['ymd'].' '.$item['endtime'])
-          ->where('work' , 7)
+          ->where('work' , $work)
           ->where('lecture_id' , $lecture_id)
+          ->where('place', $place)
           ->first();
+        if(isset($__items)){
+          //おそらく同一のグループレッスンと思われる予定が見つかった
+          $items = $__items;
+        }
       }
       $update_form = [
         'start_time' => $item['ymd'].' '.$item['starttime'],
@@ -1446,6 +1467,7 @@ EOT;
         $ret[] = DB::update($query, []);
         $query = <<<EOT
           update users u inner join managers t on u.id = t.user_id set email=concat('yasui.hideo+m',t.id,'@gmail.com')
+          where u.id > 1
 EOT;
         $ret[] = DB::update($query, []);
         @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
