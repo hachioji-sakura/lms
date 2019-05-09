@@ -57,8 +57,13 @@ class Controller extends BaseController
       if(config('app.env')==="local"){
         return true;
       }
-      $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
-      return $res;
+      try {
+        $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
+        return $res;
+      }
+      catch(\Exception $e){
+          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+      }
     }
     public function send_slack($message, $msg_type, $username=null, $channel=null) {
       if(empty($message)) return false;
