@@ -716,16 +716,25 @@ class UserCalendarController extends MilestoneController
       $login_user = $param['user'];
       $target_student_id = $param['student_id'];
       $send_from = "student";
-      if($this->is_teacher($login_user->role)){
-        $send_from = "teacher";
+
+      $is_proxy = $param['is_proxy'];
+      if($is_proxy===true && $target_student_id>0){
+        $login_user = Student::where('id', $target_student_id)->first()->user->details();
       }
-      else if($this->is_manager($login_user->role)){
-        $send_from = "manager";
+      else {
+        //代理ではない
+        if($this->is_teacher($login_user->role)){
+          $send_from = "teacher";
+        }
+        else if($this->is_manager($login_user->role)){
+          $send_from = "manager";
+        }
       }
       $members = $item->members;
       if($param['remind']===true){
         //$title .= '【再送】';
       }
+
       $send_dataset = [];
       foreach($members as $member){
         $email = $member->user['email'];
@@ -796,7 +805,6 @@ class UserCalendarController extends MilestoneController
          ];
        }
       }
-      $is_proxy = $param['is_proxy'];
 
       foreach($send_dataset as $send_data){
         $this->send_mail($send_data['email'],
@@ -868,19 +876,20 @@ class UserCalendarController extends MilestoneController
         'start_hours' => $request->get('start_hours'),
         'start_minutes' => $request->get('start_minutes'),
       ];
-      $param['students'] = $this->get_students($param);
       $param['teachers'] = [];
-      if(!$request->has('teacher_id')){
-        //teacher_id指定がない場合、講師は選択する
-        $param['teachers'] = $this->get_teachers($param);
-        if(count($param['teachers'])==1){
-          $param['item']['teacher_id'] = $param['teachers'][0]['id'];
+      if($param['user']->role==="teacher"){
+        $param['teacher'] = $param['user'];
+        $param['teacher_id'] = $param['user']->id;
+      }
+      else if($param['user']->role==="manager"){
+        if($request->has('origin') && $request->has('item_id')){
+          if($request->get('origin')=="teachers"){
+            $param['teacher'] = Teacher::where('id', $request->get('item_id'))->first();
+            $param['teacher_id'] = $request->get('item_id');
+          }
         }
       }
-      else {
-        $param['item']['teacher_id'] = $request->get('teacher_id');
-      }
-
+      $param['students'] = $this->get_students($param);
       return view($this->domain.'.create',
         [ 'error_message' => ''])
         ->with($param);
