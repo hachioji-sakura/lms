@@ -497,7 +497,7 @@
 	*/
 	function clearValidateError(formId){
 		if(util.isEmpty(formId)) formId = "form";
-		else if(formId.substr(0,1)!="#") formId="#"+form_id;
+		else if(formId.substr(0,1)!="#") formId="#"+formId;
 		$(".error_message", $(formId)).remove();
 	}
 
