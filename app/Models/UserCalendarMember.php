@@ -226,6 +226,8 @@ class UserCalendarMember extends Model
     $str_res = json_encode($res);
     \Log::info("事務システムAPI Request:".$_url."\n".$message);
     \Log::info("事務システムAPI Response:".$_url."\n".$str_res);
+    @$this->send_slack("事務システムAPI Request:".$_url."\n".$message, 'warning', "事務システムAPI");
+    @$this->send_slack("事務システムAPI Response:".$_url."\n".$str_res, 'warning', "事務システムAPI");
     if(empty($res)){
       @$this->send_slack("事務システムAPIエラー:".$_url."\nresponseなし", 'error', "事務システムAPIエラー");
       return null;
