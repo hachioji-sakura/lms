@@ -62,7 +62,8 @@ class Controller extends BaseController
         return $res;
       }
       catch(\Exception $e){
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
+        $this->send_slack('メール送信エラー:'.$e->getMessage(), 'error', 'Controller.send_mail');
+        return true;
       }
     }
     public function send_slack($message, $msg_type, $username=null, $channel=null) {

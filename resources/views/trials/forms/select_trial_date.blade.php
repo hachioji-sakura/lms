@@ -127,7 +127,7 @@ function teacher_schedule_change(obj){
   $('input[name=end_time]').val(end);
   var lesson_place_floor = _teacher_schedule.attr('lesson_place_floor');
   var select_lesson_place_floor = $("*[name='lesson_place_floor']").val();
-  if(!util.isEmpty(lesson_place_floor) && util.isEmpty(select_lesson_place_floor)){
+  if(!util.isEmpty(lesson_place_floor)){
     $("*[name='lesson_place_floor']").val(lesson_place_floor);
   }
   var remark = _teacher_schedule.attr('remark');

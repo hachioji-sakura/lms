@@ -16,7 +16,7 @@
             {!! sprintf($field['format'], $item[$key]) !!}
           @else
             @if($key==="status_name")
-              <label for="{{$key}}" class="w-100">
+              <label for="{{$key}}" class="w-100" title="{{$item["id"]}}">
                 {{$field['label']}}
               </label>
               <small class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>

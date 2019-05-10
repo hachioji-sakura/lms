@@ -48,17 +48,11 @@
             $__date = "";
           ?>
           @if($is_checked==true)
-          <div class="row">
-            <div class="col-12">
               <h6 class="text-sm p-1 pl-2 mt-2 bg-secondary" >
                 <i class="fa fa-info-circle mr-1"></i>
                 この勤怠はすべて確認済みです
               </h6>
-            </div>
-          </div>
           @elseif($enable_confirm==false)
-          <div class="row">
-            <div class="col-12">
               <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
                 <i class="fa fa-exclamation-triangle mr-1"></i>
                 @if($user->user_id === $item->user_id)
@@ -67,8 +61,6 @@
                 勤務実績確認は、本人のみ可能です
                 @endif
               </h6>
-            </div>
-          </div>
           @endif
           <ul id="month_work_list" class="mailbox-attachments clearfix row">
             @foreach($calendars as $calendar)
@@ -86,32 +78,47 @@
               @endif
               <div class="row pl-3 p-1 border-bottom">
                 <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
-                <div class="col-4">
-                  <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
-                  <br>
-                  <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                <div class="col-12 col-lg-4 col-md-4">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
+                    <span class="mr-2">
+                      <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
+                    </span>
+                    <span class="mr-2">
+                      <i class="fa fa-map-marker"></i>{{$calendar->place()}}
+                    </span>
+                    <span class="text-xs mr-2">
+                      <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
+                        {{$calendar["status_name"]}}
+                      </small>
+                    </span>
+                  </a>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-lg-6 col-md-6">
                   @foreach($calendar->members as $member)
                     @if($member->user->details()->role==="student")
+                    {{--
                       <a href="/students/{{$member->user->details()->id}}">
-                        <i class="fa fa-user-graduate mr-2"></i>
+                        <i class="fa fa-user-graduate"></i>
                         {{$member->user->details()->name}}
                       </a>
+                      --}}
+                      <span class="mr-2">
+                      <i class="fa fa-user-graduate"></i>
+                      {{$member->user->details()->name}}
+                      </span>
                     @endif
                   @endforeach
-                </div>
-                <div class="col-4">
                   @foreach($calendar['subject'] as $subject)
-                  <span class="text-xs mx-2">
+                  <span class="text-xs mr-2">
                     <small class="badge badge-primary mt-1 mr-1">
                       {{$subject}}
                     </small>
                   </span>
                   @endforeach
-                  <br>
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100 mt-1">
-                    <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
+                </div>
+                <div class="col-12 col-lg-2 col-md-2">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-default btn-sm float-left mr-1 mt-1 float-right">
+                    <i class="fa fa-edit"></i>変更
                   </a>
                 </div>
               </div>

@@ -13,22 +13,23 @@
   <form method="POST" action="/calendars/{{$item['id']}}">
   @csrf
   @method('PUT')
-  <div class="row">
+  <div class="row border-top">
     <div class="col-12 mb-1">
       <div class="form-group">
         <label for="status">
+          <i class="fa fa-question-circle mr-1"></i>
           この授業を実施しましたか？
           <span class="right badge badge-danger ml-1">必須</span>
         </label>
         <div class="input-group">
           <div class="form-check">
-            <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_presence" value="presence" required="true" onChange="status_change();">
+            <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_presence" value="presence" required="true" onChange="status_change();" validate="status_presence_check();">
             <label class="form-check-label" for="status_presence">
                 実施した
             </label>
           </div>
           <div class="form-check ml-2">
-            <input class="form-check-input icheck flat-red" type="radio" name="status" id="status_absence" value="absence" required="true" onChange="status_change();">
+            <input class="form-check-input icheck flat-red" type="radio" name="status" id="status_absence" value="absence" required="true" onChange="status_change();" validate="status_presence_check();">
             <label class="form-check-label" for="status_absence">
                 実施していない
             </label>
@@ -79,6 +80,7 @@
         front.showValidateError('#presence_list_table', '授業を実施していない場合、生徒に出席とつけれません');
       }
     }
+    return false;
     return _is_scceuss;
   }
   </script>
@@ -86,6 +88,7 @@
     <div class="col-12 mb-1">
       <div class="form-group">
         <label for="status">
+          <i class="fa fa-question-circle mr-1"></i>
           生徒は出席しましたか？
           <span class="right badge badge-danger ml-1">必須</span>
         </label>
@@ -109,13 +112,13 @@
             <div class="input-group">
               <div class="form-check">
                 <input class="form-check-input icheck flat-green presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_presence" value="presence" required="true" >
-                <label class="form-check-label" for="{{$member->id}}_status_presence" validate="status_presence_check();">
+                <label class="form-check-label" for="{{$member->id}}_status_presence">
                     出席
                 </label>
               </div>
               <div class="form-check ml-2">
                 <input class="form-check-input icheck flat-red presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_absence" value="absence" required="true" >
-                <label class="form-check-label" for="{{$member->id}}_status_absence" validate="status_presence_check();">
+                <label class="form-check-label" for="{{$member->id}}_status_absence">
                     欠席
                 </label>
               </div>
