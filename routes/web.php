@@ -94,6 +94,7 @@ Route::get('teachers/{id}/month_work/{target_moth?}','TeacherController@month_wo
 Route::post('teachers/{id}/month_work','TeacherController@month_work_confirm');
 Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
 Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
+Route::get('teachers/{id}/students','TeacherController@get_charge_students');
 
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
@@ -125,6 +126,8 @@ Route::post('students/{id}/tag','StudentController@update');
 Route::get('teachers/{id}/tag','TeacherController@tag_page');
 Route::post('teachers/{id}/tag','TeacherController@update');
 
+Route::get('students/{id}/subject','StudentController@get_subject');
+Route::get('teachers/{id}/subject','TeacherController@get_subject');
 
 Route::resource('parents','StudentParentController');
 Route::resource('students','StudentController');

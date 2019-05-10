@@ -496,7 +496,8 @@
 	* @return {void} return nothing
 	*/
 	function clearValidateError(formId){
-		$(".error_message", $("#"+formId)).remove();
+		if(form_id.substr(0,1)!="#") form_id="#"+form_id;
+		$(".error_message", $(formId)).remove();
 	}
 
 	/**

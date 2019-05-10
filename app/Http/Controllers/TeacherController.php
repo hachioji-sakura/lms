@@ -535,4 +535,25 @@ class TeacherController extends StudentController
          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
     }
+    /**
+     * 生徒取得
+     *
+     * @param  array  $param
+     * @return array
+     */
+    public function get_charge_students(Request $request , $id){
+      $param = $this->get_param($request, $id);
+
+      $items = Student::whereRaw('students.user_id in (select id from users where status !=9)');
+      $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $id);
+
+      $items = $items->get();
+      foreach($items as $i => $item){
+        $detail = $item->user->details();
+        $detail['grade'] = $item->tag_value('grade');
+        $items[$i] = $detail;
+      }
+      return $this->api_response(200, "", "", $items);
+    }
+
 }
