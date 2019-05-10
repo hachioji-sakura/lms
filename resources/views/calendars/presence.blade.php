@@ -55,10 +55,11 @@
     var _is_scceuss = false;
     var status = $("input[name='status']:checked").val();
     if(status=="presence"){
+      //実施
       $("input.presence_check[type='radio']:checked").each(function(index, value){
         var val = $(this).val();
         console.log(val);
-        if(val!="absence"){
+        if(val=="presence"){
           //一人でも出席がいる
           _is_scceuss = true;
         }
@@ -68,12 +69,14 @@
       }
     }
     else {
+      _is_scceuss = true;
+      //実施していない
       $("input.presence_check[type='radio']:checked").each(function(index, value){
         var val = $(this).val();
         console.log(val);
-        if(val!="presence"){
+        if(val=="presence"){
           //一人でも出席がいる
-          _is_scceuss = true;
+          _is_scceuss = false;
         }
       });
       if(!_is_scceuss){
