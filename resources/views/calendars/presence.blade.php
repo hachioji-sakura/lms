@@ -80,7 +80,6 @@
         front.showValidateError('#presence_list_table', '授業を実施していない場合、生徒に出席とつけれません');
       }
     }
-    return false;
     return _is_scceuss;
   }
   </script>
