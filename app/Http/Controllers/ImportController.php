@@ -772,11 +772,14 @@ class ImportController extends UserController
       foreach($item as $key => $val){
         $message .= $key.'='.$val.'/';
       }
-
       if(empty($item['kind'])) return false;
       if(!($item['kind']=="m" || $item['kind']=="w")) return false;
       if(empty($item['starttime'])) return false;
       if(empty($item['endtime'])) return false;
+      $tags = [];
+
+      //授業時間
+      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']) / 60);
 
       $student = null;
       $teacher = null;
@@ -812,8 +815,15 @@ class ImportController extends UserController
       }
       $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])->first();
       $lecture_id = 0;
-      if(isset($lecture)) $lecture_id = $lecture->id;
-
+      if(isset($lecture)){
+        $lecture_id = $lecture->id;
+        $replace_course_type = config('replace.course_type');
+        $course = intval($lecture->course);
+        if(isset($replace_course_type[$course])){
+          $tags['course_type'] = $replace_course_type[$course];
+        }
+        $tags['lesson'] = $lecture->lesson;
+      }
       //スケジュール登録方式
       $item["schedule_method"] = "week";
       if($item["kind"]=="m") $item["schedule_method"] = "month";
@@ -955,10 +965,17 @@ class ImportController extends UserController
       }
 
       //事務システムから取得した科目
-      if(!empty($item['subject_expr'])){
-        if(isset($charge_student)) ChargeStudentTag::setTag($charge_student->id, 'subject_expr', $item['subject_expr'], 1);
-        if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, 'subject_expr', $item['subject_expr'], 1);
+      if(!empty(trim($item['subject_expr']))){
+        $tags['subject_expr'] = $item['subject_expr'];
       }
+      $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+      foreach($tag_names as $tag_name){
+        if(!empty($tags[$tag_name])){
+          if(isset($charge_student)) ChargeStudentTag::setTag($charge_student->id, $tag_name, $tags[$tag_name], 1);
+          if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
+        }
+      }
+
       return true;
     }
     /**
@@ -972,6 +989,12 @@ class ImportController extends UserController
       foreach($item as $key => $val){
         $message .= $key.'='.$val.'/';
       }
+      if(empty($item['starttime'])) return false;
+      if(empty($item['endtime'])) return false;
+      $tags = [];
+
+      //授業時間
+      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']) / 60);
 
       $item['teacher_no'] = $this->get_id_value('teacher', $item);
       $item['student_no'] = $this->get_id_value('student', $item);
@@ -1171,19 +1194,27 @@ class ImportController extends UserController
         $_member->update(['status' => $student_status]);
       }
       //事務システムから取得した科目
-      if(!empty($item['subject_expr'])){
-        UserCalendarTag::setTag($calendar_id, 'subject_expr', $item['subject_expr'], 1);
+      if(!empty(trim($item['subject_expr']))){
+        $tags['subject_expr'] = trim($item['subject_expr']);
       }
+
       if(isset($lecture)) {
         $lecture_id = $lecture->id;
-        UserCalendarTag::setTag($calendar_id, 'lesson', $lecture->lesson, 1);
         $replace_course_type = config('replace.course_type');
-        //single:1 / group:2 / family:3 に置き換え
         $course = intval($lecture->course);
         if(isset($replace_course_type[$course])){
-          UserCalendarTag::setTag($calendar_id, 'course_type', $replace_course_type[$course], 1);
+          $tags['course_type'] = $replace_course_type[$course];
+        }
+        $tags['lesson'] = $lecture->lesson;
+      }
+
+      $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+      foreach($tag_names as $tag_name){
+        if(!empty($tags[$tag_name])){
+          UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
         }
       }
+
       return true;
     }
 
