@@ -40,16 +40,18 @@ function select_student_change(){
   $.each(options, function(i, v){
     _options.push({'id':i, 'text':v});
   });
-  var charge_subject_form = $("select[name='charge_subject[]']");
-  var _width = charge_subject_form.attr("width");
-  charge_subject_form.select2('destroy');
-  charge_subject_form.empty();
-  charge_subject_form.select2({
-    data : _options,
-    width: _width,
-    placeholder: '選択してください',
-  });
-  $(".student_selected").collapse('show');
-  $('input[type="radio"][name="add_type"]:checked').change();
+  if($("select[name='charge_subject[]']").length > 0){
+    var charge_subject_form = $("select[name='charge_subject[]']");
+    var _width = charge_subject_form.attr("width");
+    charge_subject_form.select2('destroy');
+    charge_subject_form.empty();
+    charge_subject_form.select2({
+      data : _options,
+      width: _width,
+      placeholder: '選択してください',
+    });
+    $(".student_selected").collapse('show');
+    $('input[type="radio"][name="add_type"]:checked').change();
+  }
 }
 </script>

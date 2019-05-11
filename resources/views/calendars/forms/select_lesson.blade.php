@@ -1,3 +1,4 @@
+@if(count($teacher->get_tags('lesson'))>1)
 <div class="col-12 mt-2">
   <div class="form-group">
     <label for="course_type" class="w-100">
@@ -17,13 +18,17 @@
     </div>
   </div>
 </div>
+@else
+{{-- レッスンが１つしかない --}}
+<input type="hidden" name="lesson" value="{{$teacher->get_tag('lesson')['value']}}">
+@endif
 <script>
 $(function(){
   lesson_change();
   get_charge_students();
 });
 function lesson_change(){
-  var lesson = ($('input[name=lesson]:checked').val())|0;
+  var lesson = ($('input[name=lesson]').val())|0;
   $(".charge_subject").hide();
   $("#course_type_form .form-check").hide();
   $("#course_type_form_single").show();
@@ -40,7 +45,7 @@ function lesson_change(){
 }
 function get_charge_students(){
   var teacher_id = ($('*[name=teacher_id]').val())|0;
-  var lesson = ($('input[name=lesson]:checked').val())|0;
+  var lesson = ($('input[name=lesson]').val())|0;
   console.log("get_charge_students");
   //振替対象の予定を取得
   service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, null,
