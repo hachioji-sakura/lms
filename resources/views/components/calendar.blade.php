@@ -50,7 +50,6 @@
       return _ret['new'];
     }
     function event_render(events, element, title){
-
       var _status_style = status_style(events.status);
       if(events.status=="confirm"){
         var _status_style = status_style(events.total_status);
@@ -104,7 +103,7 @@
         function(xhr, st, err) {
             messageCode = "error";
             messageParam= "\n"+err.message+"\n"+xhr.responseText;
-            alert("カレンダー取得エラー"+messageParam);
+            alert("カレンダー取得エラー\n画面を再表示してください\n"+messageParam);
         }
       ,true);
       return;
@@ -127,7 +126,8 @@
     @else
     var id= "calendar";
     @endif
-    const $calendar = $('#'+id).fullCalendar({
+
+    var calendar_option = {
       header    : {
         @if(isset($mode) && $mode==="day")
           left  : '',
@@ -229,14 +229,31 @@
       unselectCancel: '',
       {{$event_render}}
       events: function(start, end, timezone, callback) {
-        set_calendar(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), callback);
+        start = start.format('YYYY-MM-DD');
+        end = end.format('YYYY-MM-DD');
+        set_calendar(start, end, callback);
+        var view = this.getView();
+        var setting = {
+          'start' : view.start.format('YYYY-MM-DD'),
+          'end' : view.end.format('YYYY-MM-DD'),
+          'type' : view.type
+        };
+        util.setLocalData('calendar_setting', setting);
       },
-    })
+    };
+    var setting = util.getLocalData('calendar_setting');
+    if(!util.isEmpty(setting)){
+      calendar_option["defaultDate"] = setting.start;
+      calendar_option["defaultView"] = setting.type;
+    }
+
+    const $calendar = $('#'+id).fullCalendar(calendar_option);
+
     // 動的にオプションを変更する
     $calendar.fullCalendar('option', 'height', 'auto');
     @if(isset($mode) && $mode==="day")
     $('.fc-toolbar').hide();
     @endif
 
-  })
+});
 </script>
