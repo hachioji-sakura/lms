@@ -426,7 +426,7 @@ EOT;
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'course_minutes'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);

@@ -779,7 +779,7 @@ class ImportController extends UserController
       $tags = [];
 
       //授業時間
-      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']) / 60);
+      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
 
       $student = null;
       $teacher = null;
@@ -994,7 +994,7 @@ class ImportController extends UserController
       $tags = [];
 
       //授業時間
-      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']) / 60);
+      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
 
       $item['teacher_no'] = $this->get_id_value('teacher', $item);
       $item['student_no'] = $this->get_id_value('student', $item);

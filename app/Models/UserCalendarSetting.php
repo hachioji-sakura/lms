@@ -149,6 +149,7 @@ EOT;
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();
     $item['lesson_week_name'] = $this->lesson_week();
+    $item['place_name'] = $this->place();
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
