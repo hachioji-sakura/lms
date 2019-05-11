@@ -186,12 +186,13 @@ EOT;
       }
       return $ret;
     }
-    public function get_week_calendar_setting()
+    public function get_week_calendar_setting($minute=30)
     {
       $settings = $this->calendar_setting();
       if(!isset($settings['week'])) return [];
       $settings = $settings['week'];
       $week_setting = [];
+      $seconds = $minute*60;
       foreach($settings as $week_day => $settings){
         if(!isset($week_setting[$week_day])){
           $week_setting[$week_day] = [];
@@ -205,8 +206,8 @@ EOT;
             $time = date('Hi', strtotime($base_date));
             $week_setting[$week_day][$time] = $setting; //ex.$week_setting['fri'][1630] = setting
             //echo "→[".$time."][".$setting['lesson_week']."]<br>";
-            $base_date = date("Y-m-d H:i:s", strtotime("+30 minute ".$base_date));
-            $time_minutes -= 1800;
+            $base_date = date("Y-m-d H:i:s", strtotime("+".$minute." minute ".$base_date));
+            $time_minutes -= $seconds;
           }
         }
       }
@@ -220,7 +221,7 @@ EOT;
      * @return array
      * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
      */
-    public function get_work_times($prefix='work')
+    public function get_work_times($prefix='work', $minute=30)
     {
       $weeks = config('attribute.lesson_week');
       $ret = [];
@@ -231,16 +232,25 @@ EOT;
         foreach($tags as $index => $tag){
           $tag_value = $tag->tag_value;
           if($tag_value=='am'){
-            $ret[$week_day][1000] = true;
-            $ret[$week_day][1030] = true;
-            $ret[$week_day][1100] = true;
-            $ret[$week_day][1130] = true;
+            $c = 0;
+            while($c < 60){
+              $ret[$week_day]['10'.sprintf('%02d', $c)] = true;
+              $c+=$minute;
+            }
+            $c = 0;
+            while($c < 60){
+              $ret[$week_day]['11'.sprintf('%02d', $c)] = true;
+              $c+=$minute;
+            }
           }
           else if(strlen($tag_value)==5){
             //nn_nn形式
             $time = intval(substr($tag_value,0,2));
-            $ret[$week_day][$time.'00'] = true;
-            $ret[$week_day][$time.'30'] = true;
+            $c = 0;
+            while($c < 60){
+              $ret[$week_day][$time.sprintf('%02d', $c)] = true;
+              $c+=$minute;
+            }
           }
         }
       }
@@ -252,8 +262,8 @@ EOT;
      * @return array
      * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
      */
-    public function get_lesson_times()
+    public function get_lesson_times($minute=30)
     {
-      return $this->get_work_times('lesson');
+      return $this->get_work_times('lesson', $minute);
     }
 }

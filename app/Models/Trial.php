@@ -456,6 +456,7 @@ EOT;
               "subject_name" => $tag_keyname,  //科目名
               "level_name" => $tag_name, //補習可能、受験可能など
               "style" => "danger",
+              "parent_key" => "",
             ];
             $disable_point++;
           }
@@ -593,7 +594,7 @@ EOT;
         }
       }
       $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'dulation' => $_dulation];
-      $_start = date("Y-m-d H:i:s", strtotime("+30 minute ".$_start));
+      $_start = date("Y-m-d H:i:s", strtotime("+10 minute ".$_start));
     }
     return $time_list;
   }
@@ -619,7 +620,6 @@ EOT;
       $_time_list[$i]["remark"]=$remark;;
       if(isset($now_calendars)){
         //講師の予定との競合するかチェック
-        //echo $_time['start_time']."-".$_time['end_time'];
         foreach($now_calendars as $now_calendar){
           if($_time_list[$i]['is_time_conflict']===false){
             if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){
@@ -663,7 +663,7 @@ EOT;
         $_time_list[$i]["status"] = "place_conflict";
       }
     }
-    return $_time_list; //デバッグ用
+    return $_time_list;
   }
   private function get_time_list_review($_time_list){
     $primary_count = 0;
@@ -683,7 +683,7 @@ EOT;
       if($review=="secondary") $secondary_count++;
       $_time_list[$i]["review"] = $review;
     }
-    return $_time_list;
+    //return $_time_list;
     //優先度の最も高いものから返却する
     $ret = [];
     foreach($_time_list as $_item){
@@ -713,7 +713,7 @@ EOT;
     $ret = "";
     $diff = strtotime($target["start_time"]) - strtotime($next["start_time"]);
     //30分差でなければ、隣の予定ではない
-    if(abs($diff) != 1800 ) return $ret;
+    if(abs($diff) > 1800 ) return $ret;
     if($next["status"]==="free") return $ret;
     //隣の予定が空いていない
     if(isset($next["conflict_calendar"]) && $next["conflict_calendar"]->is_same_place("", $target['free_place_floor'])){
@@ -734,7 +734,7 @@ EOT;
     if(empty($this->student_schedule)){
       //兄弟登録された場合は一人目と同一のため、一人目のスケジュールを利用する
       $student = $this->trial_students->first()->student;
-      $this->student_schedule = $student->user->get_lesson_times();
+      $this->student_schedule = $student->user->get_lesson_times(10);
     }
     if($this->couser_minutes==0){
       if(!isset($student)) $student = $this->trial_students->first()->student;
@@ -742,8 +742,8 @@ EOT;
     }
 
     //２．講師の勤務可能スケジュール、通常授業スケジュールを取得
-    $teacher_enable_schedule = $teacher->user->get_lesson_times();
-    $teacher_current_schedule = $teacher->user->get_week_calendar_setting();
+    $teacher_enable_schedule = $teacher->user->get_lesson_times(10);
+    $teacher_current_schedule = $teacher->user->get_week_calendar_setting(10);
     $detail = [];
     $count = [];
     $student_schedule = [];
@@ -798,7 +798,7 @@ EOT;
             //どこからどこまでの時間が空いているか記録
             $from_time = $time;
           }
-          $c+=30;
+          $c+=10;
         }
         else {
           // 空きがない
@@ -820,7 +820,7 @@ EOT;
           $from_time = "";
           $c = 0;
         }
-        if(isset($teacher_current_schedule[$week_day]) && count($teacher_current_schedule[$week_day]) > 0){
+        if(isset($teacher_current_schedule[$week_day]) && count($teacher_current_schedule[$week_day]) == 0){
           //通常授業のある曜日は評価をあげておく
           $data["review"] = "secondary";
         }
@@ -844,7 +844,7 @@ EOT;
     }
     //time_slotの評価
     $primary_count = 0;
-    $minute_count = intval($this->course_minutes / 30);
+    $minute_count = intval($this->course_minutes / 10);
     foreach($student_schedule as $week_day => $week_schedule){
       for($i=0;$i<count($week_schedule);$i++){
         $c = 0;

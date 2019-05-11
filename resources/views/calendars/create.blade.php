@@ -12,30 +12,28 @@
   @if(isset($student_id))
     <input type="hidden" value="{{$student_id}}" name="student_id" />
   @endif
-  @if(isset($teacher_id))
-    <input type="hidden" value="{{$teacher_id}}" name="teacher_id" />
-  @endif
   @if(isset($manager_id))
     <input type="hidden" value="{{$manager_id}}" name="manager_id" />
   @endif
 
 <div class="row">
-  @component('calendars.forms.select_date', ['item'=>$item, 'attributes' => $attributes]);
-  @endcomponent
-  @component('calendars.forms.select_time',['item'=>$item, 'attributes' => $attributes]);
-  @endcomponent
-  @component('calendars.forms.select_place', ['item'=>$item, 'attributes' => $attributes]);
-  @endcomponent
-  @component('calendars.forms.select_teacher', ['item'=>$item,'items'=>$teachers, 'item'=>$item]);
-  @endcomponent
-  @component('calendars.forms.select_work', ['item'=>$item, 'attributes' => $attributes]);
-  @endcomponent
-  @component('calendars.forms.select_student', ['item'=>$item,'items'=>$students]);
-  @endcomponent
-  @component('calendars.forms.select_exchanged_calendar', ['item'=>$item, 'attributes' => $attributes]);
-  @endcomponent
-</div>
-<div class="row">
+  <div class="col-12 col-lg-6 col-md-6 border-right">
+    <div class="row">
+      @component('calendars.forms.select_teacher', ['teacher'=>$teacher]); @endcomponent
+      @component('calendars.forms.select_student', ['item'=>$item]); @endcomponent
+      @component('calendars.forms.select_date', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.select_place', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
+      @component('students.forms.course_minutes', ['_teacher'=>true, '_edit'=>false, 'teacher'=>$teacher,'attributes' => $attributes]) @endcomponent
+    </div>
+  </div>
+  <div class="col-12 col-lg-6 col-md-6">
+    <div class="row">
+      @component('calendars.forms.select_lesson', ['item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.select_work', ['item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.charge_subject', ['teacher'=>$teacher, 'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.select_exchanged_calendar', ['item'=>$item, 'attributes' => $attributes]);  @endcomponent
+    </div>
+  </div>
 </div>
 
 <div class="row">

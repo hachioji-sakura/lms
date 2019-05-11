@@ -66,7 +66,9 @@ class UserTag extends Model
           ->where('attribute_value', $this->tag_value)->first();
       $item['charge_subject_level_item'] = $charge_subject_level_item;
     }
+
     if(!empty($item)){
+      $item->parent = $item->parent();
       return $item;
     }
     return null;

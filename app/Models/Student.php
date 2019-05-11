@@ -99,11 +99,31 @@ class Student extends Model
   {
     return $this->tags_name('lesson');
   }
+  public function tag_value($key)
+  {
+    $tag = $this->get_tag($key);
+    if(isset($tag)){
+      return $tag['value'];
+    }
+    return "";
+  }
   public function tag_name($key)
   {
     $tag = $this->get_tag($key);
     if(isset($tag)){
       return $tag['name'];
+    }
+    return "";
+  }
+  public function tags_value($key)
+  {
+    $tags = $this->get_tags($key);
+    $ret = "";
+    if(isset($tags)){
+      foreach($tags as $tag){
+        $ret .= $tag['tags_value'].',';
+      }
+      return trim($ret, ',');
     }
     return "";
   }
@@ -202,7 +222,11 @@ EOT;
   public function scopeFindChargeStudent($query, $id)
   {
     $where_raw = <<<EOT
-      students.id in (select student_id from charge_students where teacher_id=?)
+      students.user_id in (
+        select user_id from user_calendar_member_settings where user_calendar_setting_id in (
+         select id from user_calendar_settings where user_id=(select user_id from teachers where id = ?)
+        )
+)
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
     return $this->scopeFindStatuses($query, "0,1");
@@ -354,4 +378,70 @@ EOT;
     }
     return $ret;
   }
+  public function get_charge_subject(){
+    //担当科目を取得
+    $subjects = [];
+    $tags = $this->user->tags;
+    foreach($this->user->tags as $tag){
+      $tag_data = $tag->details();
+      if(isset($tag_data['charge_subject_level_item'])){
+        //補習以上可能なものを取得
+        if(intval($tag->tag_value) > 1){
+          $subjects[$tag->tag_key] = intval($tag->tag_value);
+        }
+      }
+    }
+    return $subjects;
+  }
+  public function get_subject($lesson=0){
+    $ret = [];
+    $lesson = intval($lesson);
+    if($lesson===1 || $lesson==0){
+      $tags = $this->user->tags;
+      foreach($this->user->tags as $tag){
+        $tag_data = $tag->details();
+        if(isset($tag_data['charge_subject_level_item'])){
+          if(intval($tag->tag_value) > 1){
+            $subject_key = str_replace('_level', '', $tag->tag_key);
+            $grade = $tag_data['charge_subject_level_item']->parent();
+            if(isset($grade)) $grade = $grade->parent_attribute_value;
+            else $grade = "";
+            $ret[$subject_key] = [
+              "subject_key" => $subject_key,
+              "subject_name" => $tag->keyname(),  //科目名
+              "level_name" => $tag->name(), //補習可能、受験可能など
+              "style" => "secondary",
+              "grade" => $grade,
+            ];
+          }
+        }
+      }
+    }
+    else if($lesson===3 || $lesson==0){
+      //ピアノの場合特に判断基準なし
+      $ret['piano'] = [
+        "subject_key" => 'piano',
+        "subject_name" => 'ピアノ',  //科目名
+        "level_name" => '',
+        "style" => "primary",
+      ];
+    }
+    else if($lesson==4 || $lesson==2 || $lesson==0){
+      $key_name = 'kids_lesson';
+      if($lesson==2){
+        $key_name = 'english_talk_lesson';
+      }
+      foreach($this->user->tags as $tag){
+        if($tag->tag_key !== $key_name) continue;
+        //対応可能
+        $ret[$tag->tag_value] = [
+          "subject_key" => $tag->tag_value,
+          "subject_name" => $tag->name(),
+          "style" => "secondary",
+        ];
+      }
+    }
+    return $ret;
+  }
+
 }

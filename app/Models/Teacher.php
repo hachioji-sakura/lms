@@ -131,6 +131,7 @@ EOT;
     }
     $this->user->update(['status' => 0]);
   }
+  /*
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
@@ -138,6 +139,7 @@ EOT;
     foreach($this->user->tags as $tag){
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
+        //補習以上可能なものを取得
         if(intval($tag->tag_value) > 1){
           $subjects[$tag->tag_key] = intval($tag->tag_value);
         }
@@ -191,6 +193,7 @@ EOT;
     }
     return $ret;
   }
+  */
   public function is_manager(){
     $manager = Manager::where('user_id', $this->user_id)->first();
     if(isset($manager)) return true;
@@ -226,4 +229,5 @@ EOT;
                         ]);
     return $manager;
   }
+  
 }

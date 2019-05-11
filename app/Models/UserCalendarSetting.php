@@ -154,7 +154,7 @@ EOT;
     $other_name = "";
     $teachers = [];
     $students = [];
-    $item['managers'] = [];
+    $managers = [];
     foreach($this->members as $member){
       $_member = $member->user->details('teachers');
       if($_member->role === 'teacher'){
@@ -164,7 +164,7 @@ EOT;
       $_member = $member->user->details('managers');
       if($_member->role === 'manager'){
         $other_name.=$_member['name'].',';
-        $item['managers'][] = $member;
+        $managers[] = $member;
       }
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
@@ -177,6 +177,7 @@ EOT;
     unset($item['lecture']);
     $item['teachers'] = $teachers;
     $item['students'] = $students;
+    $item['managers'] = $managers;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['other_name'] = trim($other_name,',');

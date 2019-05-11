@@ -5,20 +5,20 @@
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <div class="input-group" id="course_type_form">
-      <div class="form-check">
-          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true" onChange="course_type_change()">
+      <div class="form-check" id="course_type_form_single">
+          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true" onChange="course_type_change()" checked>
           <label class="form-check-label" for="course_type_single">
               マンツーマン
           </label>
       </div>
-      <div class="form-check ml-2">
-          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true" onChange="course_type_change()" >
+      <div class="form-check ml-2" id="course_type_form_group">
+          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true" onChange="course_type_change()">
           <label class="form-check-label" for="course_type_group">
-              グループレッスン
+              グループ
           </label>
       </div>
-      <div class="form-check ml-2">
-          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_family" value="family" required="true" onChange="course_type_change()" >
+      <div class="form-check ml-2" id="course_type_form_family">
+          <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_family" value="family" required="true" onChange="course_type_change()">
           <label class="form-check-label" for="course_type_family">
               ファミリー
           </label>
@@ -27,6 +27,22 @@
   </div>
 </div>
 <script>
-function course_type_change(obj){
+$(function(){
+  course_type_change();
+});
+function course_type_change(){
+  var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+  var student_id_form = $("select[name='student_id[]']");
+  var _width = student_id_form.attr("width");
+  student_id_form.select2('destroy');
+  student_id_form.removeAttr("multiple");
+  if(course_type!=="single"){
+    student_id_form.attr("multiple", "multiple");
+  }
+  student_id_form.select2({
+    width: _width,
+    placeholder: '選択してください',
+  });
+  student_id_form.val(-1).trigger('change');
 }
 </script>

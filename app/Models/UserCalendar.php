@@ -255,7 +255,11 @@ EOT;
     }
     return "";
   }
-
+  public function is_group(){
+    $tag =  $this->get_tag('course_type');
+    if($tag->tag_value!="single") return true;
+    return false;
+  }
   public function timezone(){
     $start_hour_minute = date('H:i',  strtotime($this->start_time));
     $end_hour_minute = date('H:i',  strtotime($this->end_time));
@@ -267,6 +271,7 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
+    $item['place_name'] = $this->place();
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -432,6 +437,14 @@ EOT;
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
+    }
+    if($status==="absence" || $status==="fix" || $status==="rest"){
+      //absence = 全員欠席＝休講
+      //rest = 全員休み＝休講
+      //fix = 全員の予定確定
+      UserCalendarMember::where('calendar_id', $this->id)->update(
+        ['status' => $status ]
+      );
     }
     //事務システムも更新
     $this->office_system_api("PUT");

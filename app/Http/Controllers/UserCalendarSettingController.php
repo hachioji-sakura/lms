@@ -61,6 +61,47 @@ class UserCalendarSettingController extends UserCalendarController
       ];
       return $ret;
     }
+    public function search(Request $request, $user_id=0)
+    {
+      $items = $this->model();
+      $items = $this->_search_pagenation($request, $items);
+
+      $items = $this->_search_sort($request, $items);
+
+      $items = $items->get();
+      $fields = [
+        "id" => [
+          "label" => "ID",
+        ],
+        "lesson_week_name" => [
+          "label" => "曜日",
+          "link" => "show",
+        ],
+        "timezone" => [
+          "label" => "時間帯",
+        ],
+        "teacher_name" => [
+          "label" => "講師",
+        ],
+        "student_name" => [
+          "label" => "生徒",
+        ],
+        "buttons" => [
+          "label" => "操作",
+          "button" => ["edit", "delete"]
+        ]
+      ];
+      foreach($items as $item){
+        $item = $item->details($user_id);
+        /*
+        if($user_id > 0) {
+          $item->own_member = $item->get_member($user_id);
+        }
+        */
+      }
+      return ["items" => $items, "fields" => $fields];
+    }
+
     public function update_form(Request $request){
       $form = [];
 
@@ -106,7 +147,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
         if(count($item['teachers'])>0){
           $ret['candidate_teacher'] = $item['teachers'][0]->user->teacher;
-          $ret['candidate_teacher']["enable_subject"] = $item['teachers'][0]->user->teacher->get_enable_subjcet($ret['select_lesson']);
+          $ret['candidate_teacher']["enable_subject"] = $item['teachers'][0]->user->teacher->get_subject($ret['select_lesson']);
         }
       }
       return $ret;
@@ -119,8 +160,9 @@ class UserCalendarSettingController extends UserCalendarController
     public function index(Request $request)
     {
       $param = $this->get_param($request);
-      $items = DB::table($this->table)->get();
-      return $items->toArray();
+      $_table = $this->search($request);
+      return view($this->domain.'.lists', $_table)
+        ->with($param);
     }
     /**
      * 詳細画面表示

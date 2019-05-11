@@ -8,14 +8,20 @@
       @endif
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
+    <div class="input-group" id="">
     @foreach($attributes['course_minutes'] as $index => $name)
-    <label class="mx-2">
-      <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
+      <div class="form-check">
+        <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
         @if($_edit===true && isset($item) && $item->has_tag("course_minutes", $index))
         checked
         @endif
-      required="true">{{$name}}
-    </label>
+        id="course_minutes_{{$index}}"
+      required="true">
+        <label class="form-check-label" for="course_minutes_{{$index}}">
+          {{$name}}
+        </label>
+      </div>
     @endforeach
+    </div>
   </div>
 </div>

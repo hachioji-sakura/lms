@@ -78,6 +78,7 @@
                     休み連絡
                 </button>
             </div>
+          </div>
         @endif
       </form>
       @endif

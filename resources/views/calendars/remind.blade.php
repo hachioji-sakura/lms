@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>''])
   @slot('page_message')
   @if($item['status']==='rest')
   講師あてに休み連絡を再送します。
