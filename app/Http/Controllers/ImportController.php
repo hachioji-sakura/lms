@@ -777,6 +777,7 @@ class ImportController extends UserController
       if(empty($item['starttime'])) return false;
       if(empty($item['endtime'])) return false;
       $tags = [];
+      $user_id = 0;
 
       //授業時間
       $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
@@ -872,24 +873,8 @@ class ImportController extends UserController
       ];
 
       $member = UserCalendarMemberSetting::where('setting_id_org', $item['id'])->first();
-      if(isset($_member)) $setting = $member->setting;
-      if(!isset($setting) && !empty($user_id) && $work==7){
-        //$user_idが設定されるケースは、事務or講師
-        $__setting = UserCalendarMemberSetting::where('user_id', $user_id)
-          ->where('schedule_method', $item['schedule_method'])
-          ->where('lesson_week_count', $item['lesson_week_count'])
-          ->where('lesson_week', $item['lesson_week'])
-          ->where('from_time_slot', $item['starttime'])
-          ->where('to_time_slot', $item['endtime'])
-          ->where('work' , $work)
-          ->where('lecture_id' , $lecture_id)
-          ->where('place', $item['place'])
-          ->first();
-        if(isset($__items)){
-          //おそらく同一のグループレッスンと思われる予定が見つかった
-          $items = $__items;
-        }
-      }
+      if(isset($member)) $setting = $member->setting;
+
       $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
@@ -926,6 +911,22 @@ class ImportController extends UserController
           ]);
         }
         $user_id = $teacher->user_id;
+        if(!isset($setting) && $work==7 && !empty($user_id)){
+          //$user_idが設定されるケースは、事務or講師
+          $__setting = UserCalendarSetting::where('user_id', $user_id)
+            ->where('schedule_method', $item['schedule_method'])
+            ->where('lesson_week_count', $item['lesson_week_count'])
+            ->where('lesson_week', $item['lesson_week'])
+            ->where('from_time_slot', $item['starttime'])
+            ->where('to_time_slot', $item['endtime'])
+            ->where('work' , $work)
+            ->where('place', $place)
+            ->first();
+          if(isset($__setting)){
+            //おそらく同一のグループレッスンと思われる予定が見つかった
+            $setting = $__setting;
+          }
+        }
       }
       else if($_data_type=="teacher"){
         $user_id = $teacher->user_id;
@@ -940,12 +941,18 @@ class ImportController extends UserController
         $user_id = $manager->user_id;
       }
       if(isset($setting)){
+        //既存更新
         $setting->update($setting_data);
       }
       else {
         //新規登録
         $setting_data['user_id'] = $user_id;
         $setting = UserCalendarSetting::create($setting_data);
+      }
+      $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
+      ->where('user_id', $user_id)
+      ->first();
+      if(!isset($__member)){
         $member = UserCalendarMemberSetting::create([
             'user_calendar_setting_id' => $setting->id,
             'user_id' => $user_id,
@@ -953,7 +960,12 @@ class ImportController extends UserController
             'create_user_id' => 1,
             'setting_id_org' => $item['id'],
         ]);
-        if(isset($student)){
+      }
+      if(isset($student)){
+        $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
+        ->where('user_id', $student->user_id)
+        ->first();
+        if(!isset($__member)){
           $__member = UserCalendarMemberSetting::create([
               'user_calendar_setting_id' => $setting->id,
               'user_id' => $student->user_id,
@@ -1037,16 +1049,19 @@ class ImportController extends UserController
         $manager = $manager->manager;
         $user_id = $manager->user_id;
       }
-
+      //レクチャ取得
       $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])
         ->first();
       $lecture_id = 0;
       if(isset($lecture)) {
         $lecture_id = $lecture->id;
       }
+
+      //その他の項目は、remarkにでも入れておく
       $remark = $item['comment'];
       $remark.='[free='.$item['free'].']';
       $remark.='[repeattimes='.$item['repeattimes'].']';
+
       $exchanged_calendar_id = 0;
       $status= 'fix';
       if(isset($student) && isset($teacher)){
@@ -1058,6 +1073,7 @@ class ImportController extends UserController
         //講師・生徒いずれかセットされていない
         $status = 'new';
       }
+
       if(is_numeric($item['temporary'])){
         switch(intval($item['temporary'])){
           case 101:
@@ -1092,17 +1108,21 @@ class ImportController extends UserController
         if($item['confirm']==='c')  $status = 'presence';
         if($item['confirm']==='a2')  $status = 'absence';
       }
+
+      //振替
       if(isset($item['altsched_id']) && $item['altsched_id']!=0){
         //事務システムの振替ID＝メンバーのIDを指している（メンバーとカレンダーが１：１だから）
         $exchanged_calendar_member = UserCalendarMember::where('schedule_id',$item['altsched_id'])->first();
         $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
       }
+      //場所
       $place = "";
       $lesson_place_floor = config('replace.lesson_place_floor');
       if(isset($lesson_place_floor[$item['place_id']])){
         $place = $lesson_place_floor[$item['place_id']];
       }
 
+      //work
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
 
@@ -1213,6 +1233,44 @@ class ImportController extends UserController
         if(!empty($tags[$tag_name])){
           UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
         }
+      }
+
+      $setting_id = 0;
+      $calendar = UserCalendar::where('id', $calendar_id)->first();
+      //カレンダー設定によるものか探す
+      $w = date('w', strtotime($item['ymd']));
+      $start_date = $item['ymd'];
+      $week = ["sun", "mon", "tue", "wed", "thi", "fri", "sat"];
+      $lesson_week = $week[$w];
+      //曜日・時間・作業内容・場所・ユーザーが一致する
+      $settings = UserCalendarSetting::where('user_id', $user_id)
+        ->where('from_time_slot', $item['starttime'])
+        ->where('to_time_slot', $item['endtime'])
+        ->where('work', $work)
+        ->where('place', $place)
+        ->where('lesson_week', $lesson_week)
+        ->enable()
+        ->get();
+      foreach($settings as $setting){
+        $is_member = true;
+        foreach($calendar->members as $member){
+          if($setting->is_member($member->user_id)==false){
+            //設定に参加者が含まれていない
+            $is_member = false;
+            break;
+          }
+        }
+        //参加者が異なるのでこの設定ではない
+        if($is_member===false) break;
+
+        $add_calendar_date = $setting->get_add_calendar_date($start_date,1);
+        if(isset($add_calendar_date[$item['ymd']])){
+          $setting_id = $setting->id;
+          break;
+        }
+      }
+      if($setting_id > 0){
+        $calendar->update(['user_calendar_setting_id' => $setting_id]);
       }
 
       return true;

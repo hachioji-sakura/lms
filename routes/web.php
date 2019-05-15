@@ -47,6 +47,8 @@ Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
 Route::resource('calendar_settings','UserCalendarSettingController');
+Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
+Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 

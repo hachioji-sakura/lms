@@ -47,6 +47,91 @@
 		</div>
 	</div>
 </section>
+<section class="content-header">
+	<div class="container-fluid">
+		<div class="row">
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/calendar" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-calendar"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">カレンダー</b>
+            <span class="text-sm">授業予定をカレンダー表示</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/schedule" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-clock"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">授業予定一覧</b>
+            <span class="text-sm">授業予定をリスト表示</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?origin={{$domain}}&item_id={{$item->id}}" page_title="授業追加">
+        <div class="info-box">
+          <span class="info-box-icon bg-primary">
+            <i class="fa fa-plus"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">授業追加</b>
+            <span class="text-sm">授業の追加・振替</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/month_work" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fa fa-tasks"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">勤務実績</b>
+            <span class="text-sm">月末の実績登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/calendar_settings?teacher_id={{$item->id}}" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fa fa-chalkboard-teacher"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">通常授業設定</b>
+            <span class="text-sm">繰り返し授業予定の登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-user-cog"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">講師設定</b>
+            <span class="text-sm">担当科目、授業可能曜日の設定</span>
+          </div>
+        </div>
+        </a>
+      </div>
+    </div>
+	</div>
+</section>
+
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">

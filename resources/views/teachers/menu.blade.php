@@ -15,7 +15,7 @@
 <div class="user-panel mb-1">
   <div class="w-100 p-2 @if($view=="month_work")bg-light @endif">
     <a href="/{{$domain}}/{{$item->id}}/month_work" class="text-light">
-      <i class="fa fa-check-circle mr-1"></i>勤務実績
+      <i class="fa fa-tasks mr-1"></i>勤務実績
     </a>
   </div>
 </div>

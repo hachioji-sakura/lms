@@ -1,5 +1,5 @@
  <div class="col-12 mt-2">
-   <label for="" class="w-100">
+   <label for="charge_subject" class="w-100">
      担当科目
      <span class="right badge badge-danger ml-1">必須</span>
    </label>
@@ -12,7 +12,11 @@
          @foreach($teacher->get_subject(1) as $index=>$subject)
            <option
            grade="{{$subject['grade']}}"
-           value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
+           value="{{$subject['subject_key']}}"
+           @if(isset($_edit) && $_edit==true && $item->has_tag('charge_subject', $subject['subject_key']))
+           selected
+           @endif
+           >{{$subject['subject_name']}}</option>
          @endforeach
        </select>
      </div>
@@ -22,7 +26,11 @@
        <select name="english_talk_lesson[]" class="form-control select2" width=100% placeholder="担当科目" required="true" multiple="multiple" >
          <option value="">(選択)</option>
          @foreach($teacher->get_subject(2) as $index=>$subject)
-           <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
+           <option value="{{$subject['subject_key']}}"
+           @if(isset($_edit) && $_edit==true && $item->has_tag('english_talk_lesson', $subject['subject_key']))
+           selected
+           @endif
+           >{{$subject['subject_name']}}</option>
          @endforeach
        </select>
      </div>
@@ -32,7 +40,11 @@
        <select name="kids_lesson[]" class="form-control select2" width=100% placeholder="担当科目" required="true" multiple="multiple" >
          <option value="">(選択)</option>
          @foreach($teacher->get_subject(4) as $index=>$subject)
-           <option value="{{$subject['subject_key']}}">{{$subject['subject_name']}}</option>
+           <option value="{{$subject['subject_key']}}"
+           @if(isset($_edit) && $_edit==true && $item->has_tag('kids_lesson', $subject['subject_key']))
+           selected
+           @endif
+           >{{$subject['subject_name']}}</option>
          @endforeach
        </select>
       </div>

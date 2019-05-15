@@ -25,7 +25,6 @@
 <script>
 $(function(){
   lesson_change();
-  get_charge_students();
 });
 function lesson_change(){
   var lesson = ($('input[name=lesson]').val())|0;
@@ -42,47 +41,5 @@ function lesson_change(){
   }
   $(".lesson_selected").collapse('show');
   //担当生徒取得
-}
-function get_charge_students(){
-  var teacher_id = ($('*[name=teacher_id]').val())|0;
-  var lesson = ($('input[name=lesson]').val())|0;
-  console.log("get_charge_students");
-  //振替対象の予定を取得
-  service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, null,
-    function(result, st, xhr) {
-      if(result['status']===200){
-        var c = 0;
-        var student_id_form = $("select[name='student_id[]']");
-        student_id_form.select2('destroy');
-        $.each(result['data'], function(id, val){
-          var _option = '<option value="'+val['id']+'"';
-          var _field = ['grade'];
-          for(var i=0,n=_field.length;i<n;i++){
-            _option += ' '+_field[i]+'="'+val[_field[i]]+'"';
-          }
-          _option+= '>'+val['name']+'</option>';
-          student_id_form.append(_option);
-          c++;
-        });
-        if(c>0){
-          var _width = student_id_form.attr("width");
-          student_id_form.select2({
-            width: _width,
-            placeholder: '選択してください',
-          });
-          student_id_form.val(-1).trigger('change');
-          student_id_form.show();
-          $("#select_student_none").hide();
-        }
-        else {
-          student_id_form.hide();
-          $("#select_student_none").show();
-        }
-      }
-    },
-    function(xhr, st, err) {
-        alert("UI取得エラー");
-    }
-  );
 }
 </script>

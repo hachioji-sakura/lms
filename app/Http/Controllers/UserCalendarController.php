@@ -372,7 +372,9 @@ class UserCalendarController extends MilestoneController
         $to_date = $request->to_date;
         if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
       }
-      $items = $items->rangeDate($from_date, $to_date);
+      if(!empty($from_date) || !empty($to_date)){
+        $items = $items->rangeDate($from_date, $to_date);
+      }
       //検索ワード
       if(isset($request->search_word)){
         $search_words = explode(' ', $request->search_word);

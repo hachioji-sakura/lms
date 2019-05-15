@@ -29,7 +29,7 @@
   <div class="col-12 col-lg-6 col-md-6">
     <div class="row">
       @component('calendars.forms.select_lesson', ['item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
-      @component('calendars.forms.select_work', ['item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.course_type', ['item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
       @component('calendars.forms.charge_subject', ['teacher'=>$teacher, 'attributes' => $attributes]); @endcomponent
       @component('calendars.forms.select_exchanged_calendar', ['item'=>$item, 'attributes' => $attributes]);  @endcomponent
     </div>

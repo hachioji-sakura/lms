@@ -35,8 +35,21 @@ EOT;
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
   }
+  public function calendars(){
+    return $this->hasMany('App\Models\UserCalendar', 'user_calendar_setting_id');
+  }
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTagSetting', 'user_calendar_setting_id');
+  }
+  public function scopeEnable($query){
+    $where_raw = <<<EOT
+      (
+       (user_calendar_settings.enable_start_date is null OR user_calendar_settings.enable_start_date < ?)
+       AND
+       (user_calendar_settings.enable_end_date is null OR user_calendar_settings.enable_end_date > ?)
+      )
+EOT;
+    return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
   public function scopeOrderByWeek($query){
     $weeks = [];
@@ -92,12 +105,31 @@ EOT;
     }
     return "";
   }
+  public function course_minutes(){
+    $tag =  $this->get_tag('course_minutes');
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
+  }
+
   public function lesson_week(){
     $item = GeneralAttribute::week($this->lesson_week)->first();
     if(isset($item)) return $item->attribute_name;
     return "";
   }
-
+  public function week_setting(){
+    $item = GeneralAttribute::where('attribute_key', 'schedule_method')
+      ->where('attribute_value', $this->schedule_method)
+      ->first();
+    if(!isset($item)) return "";
+    $ret = $item->attribute_name;
+    if($this->lesson_week_count > 0){
+      $ret .= '第'.$this->lesson_week_count;
+    }
+    $ret.=$this->lesson_week().'曜';
+    return $ret;
+  }
   public function timezone(){
     $base_date = '2000-01-01 ';
     $start_hour_minute = date('H:i',  strtotime($base_date.$this->from_time_slot));
@@ -144,12 +176,15 @@ EOT;
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
     $item['start_minutes'] = date('i',  strtotime($base_date.$this->from_time_slot));
     $item['timezone'] = $this->timezone();
-    $item['datetime'] = date('m月d日 H:i',  strtotime($this->start_time)).'～'.$item['end_hour_minute'];
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();
-    $item['lesson_week_name'] = $this->lesson_week();
+    $item['course_minutes_name'] = $this->course_minutes();
+    $item['week_setting'] = $this->week_setting();
     $item['place_name'] = $this->place();
+    $item['subject'] = $this->subject();
+    $item['title1'] = $item['week_setting'].' / '.$item['timezone'];
+    $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
@@ -302,9 +337,8 @@ EOT;
   }
   public function setting_to_calendar(){
     //この設定により作成した予定を取得
-    $calendars = UserCalendar::where('user_calendar_setting_id', $this->id)->get();
     $_calendars = [];
-    foreach($calendars as $calendar){
+    foreach($this->calendars as $calendar){
       $_calendars[$calendar->start_time] = $calendar;
     }
     //この設定の対象日付を取得
@@ -323,6 +357,7 @@ EOT;
       }
       $ret[] = $this->_setting_to_calendar($schedule);
     }
+
     return $ret;
   }
   private function _setting_to_calendar($date){
@@ -348,19 +383,22 @@ EOT;
     }
     return $calendar;
   }
-  public function get_add_calendar_date($month_week_count=4){
-    $ret = [];
-    $start_date = date('Y-m-01'); //月初
+  public function get_add_calendar_date($start_date="", $range_month=1, $month_week_count=5){
+    $add_calendar_date = [];
+    if(empty($start_date)) $start_date = date('Y-m-01'); //月初
+
     if(isset($this->enable_start_date)){
       if(strtotime($start_date) < strtotime($this->enable_start_date)){
         //月初以降の有効開始日の場合、そちらを使う
         $start_date = $this->enable_start_date;
       }
     }
-    //3か月後の月末
-    $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+3 month'));
+
+    //1か月後の月末
+    $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
+
     if(strtotime($end_date) < strtotime($this->enable_end_date)){
-      //3か月後月末以前に設定が切れる場合、そちらを使う
+      //1か月後月末以前に設定が切れる場合、そちらを使う
       $end_date = $this->enable_end_date;
     }
     //echo $start_date."\n";
@@ -389,7 +427,7 @@ EOT;
         }
       }
       if($is_add===true && $c > 0){
-        $ret[] = $target_date;
+        $add_calendar_date[] = $target_date;
         $c--;
       }
       //次の登録日 ７日後
@@ -400,6 +438,25 @@ EOT;
         $target_month = date("m", strtotime($target_date));
       }
     } while(strtotime($end_date) > strtotime($target_date));
+
+    $ret = [];
+    foreach($add_calendar_date as $date){
+      $ret[$date] = [];
+      $_calendars = $this->calendars->where('start_time', $date.' '.$this->from_time_slot)
+        ->where('end_time', $date.' '.$this->to_time_slot);
+        /*
+      $_calendars = UserCalendar::where('user_id', $this->user_id)
+        ->where('place', $this->place)
+        ->where('work', $this->work)
+        ->where('start_time', $date.' '.$this->from_time_slot)
+        ->where('end_time', $date.' '.$this->to_time_slot)->get();
+        */
+      $is_member = true;
+      if(count($_calendars) > 0){
+        //同じ日付のカレンダーがすでに作成済み
+        $ret[$date] = $_calendars;
+      }
+    }
     return $ret;
   }
   /* https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155

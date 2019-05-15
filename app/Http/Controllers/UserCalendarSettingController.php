@@ -26,37 +26,28 @@ class UserCalendarSettingController extends UserCalendarController
     public function show_fields(){
       $user = $this->login_details();
         $ret = [
-        'lesson_week_name' => [
-          'label' => '曜日',
+        'title1' => [
+          'label' => '概要',
           'size' => 6,
         ],
-        'timezone' => [
-          'label' => '時間帯',
+        'place_name' => [
+          'label' => '講師',
           'size' => 6,
+        ],
+        'title2' => [
+          'label' => '詳細',
         ],
         'teacher_name' => [
           'label' => '講師',
           'size' => 6,
         ],
-        'place_name' => [
-          'label' => '場所',
-          'size' => 6,
-        ],
-        'lesson' => [
-          'label' => 'レッスン',
-          'size' => 6,
-        ],
-        'course' => [
-          'label' => 'コース',
+        'student_name' => [
+          'label' => '生徒',
           'size' => 6,
         ],
         'subject' => [
           'label' => '科目',
-          'size' => 6,
-        ],
-        'student_name' => [
-          'label' => '生徒',
-          'size' => 6,
+          'size' => 12,
         ],
       ];
       return $ret;
@@ -64,6 +55,9 @@ class UserCalendarSettingController extends UserCalendarController
     public function search(Request $request, $user_id=0)
     {
       $items = $this->model();
+
+      $items = $items->enable();
+      $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
 
       $items = $this->_search_sort($request, $items);
@@ -73,12 +67,15 @@ class UserCalendarSettingController extends UserCalendarController
         "id" => [
           "label" => "ID",
         ],
-        "lesson_week_name" => [
+        "week_setting" => [
           "label" => "曜日",
           "link" => "show",
         ],
         "timezone" => [
           "label" => "時間帯",
+        ],
+        "place_name" => [
+          "label" => "場所",
         ],
         "teacher_name" => [
           "label" => "講師",
@@ -86,9 +83,19 @@ class UserCalendarSettingController extends UserCalendarController
         "student_name" => [
           "label" => "生徒",
         ],
+        "subject" => [
+          "label" => "科目",
+        ],
         "buttons" => [
           "label" => "操作",
-          "button" => ["edit", "delete"]
+          "button" => [
+            "to_calendar" => [
+              "method" => "to_calendar",
+              "label" => "適用",
+              "style" => "default",
+            ],
+            "edit",
+            "delete"]
         ]
       ];
       foreach($items as $item){
@@ -125,7 +132,7 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details();
-      if($this->is_manager($user->role)===false){
+      if(!isset($user) || $this->is_manager($user->role)===false){
         abort(403, 'このページにはアクセスできません(1)');
       }
       //$user = User::where('id', 607)->first()->details();
@@ -175,6 +182,22 @@ class UserCalendarSettingController extends UserCalendarController
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields();
       return view($this->domain.'.page', [
+        'action' => $request->get('action')
+      ])->with($param);
+    }
+    /**
+     * 詳細画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function to_calendar_page(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['fields'] = $this->show_fields();
+      $param['add_dates'] = $param['item']->get_add_calendar_date();
+
+      return view($this->domain.'.to_calendar', [
         'action' => $request->get('action')
       ])->with($param);
     }

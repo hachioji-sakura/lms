@@ -52,10 +52,10 @@
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)
-                    @if($member->user->details()->role==="student")
-                      <a href="/students/{{$member->user->details()->id}}" class="mr-2">
+                    @if($member->user->details('students')->role==="student")
+                      <a href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
                         <i class="fa fa-user-graduate"></i>
-                        {{$member->user->details()->name}}
+                        {{$member->user->details('students')->name}}
                       </a>
                     @endif
                   @endforeach

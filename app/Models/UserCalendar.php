@@ -495,6 +495,12 @@ EOT;
     }
     return false;
   }
+  public function is_members($members){
+    foreach($members as $member){
+      if($this->is_member($member->user_id)===false) return false;
+    }
+    return true;
+  }
   public function is_conflict($start_time, $end_time, $place='', $place_floor=''){
     $start = strtotime($start_time);
     $end = strtotime($end_time);
