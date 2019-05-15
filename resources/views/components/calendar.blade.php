@@ -97,7 +97,7 @@
               events.push(value);
             });
             console.log(events);
-            callback(events);
+            if(util.isFunction(callback))callback(events);
           }
         },
         function(xhr, st, err) {
@@ -238,13 +238,20 @@
           'end' : view.end.format('YYYY-MM-DD'),
           'type' : view.type
         };
-        util.setLocalData('calendar_setting', setting);
+        var q = util.convJsonToQueryString(setting);
+        var url = location.pathname+"?"+q;
+        if(_is_history===false){
+          //履歴からの表示でなければ、履歴に追加
+          history.pushState(setting, null, url);
+        }
+        _is_history = false;
       },
     };
-    var setting = util.getLocalData('calendar_setting');
+    //URLパラメータより表示パラメータを取得（日付とview.type)
+    var setting = util.convQueryStringToJson();
     if(!util.isEmpty(setting)){
-      calendar_option["defaultDate"] = setting.start;
-      calendar_option["defaultView"] = setting.type;
+      if(!util.isEmpty(setting.start)) calendar_option["defaultDate"] = setting.start;
+      if(!util.isEmpty(setting.type)) calendar_option["defaultView"] = setting.type;
     }
 
     const $calendar = $('#'+id).fullCalendar(calendar_option);
@@ -254,6 +261,25 @@
     @if(isset($mode) && $mode==="day")
     $('.fc-toolbar').hide();
     @endif
-
+    window.onpopstate=function(e){
+      //prev , nowなどの操作後にhistory.backした際の表示
+      console.log(e.state);
+      _is_history = true;
+      var setting = e.state;
+      if(setting){
+        if(setting.type) {
+          $calendar.fullCalendar("changeView", setting.type);
+        }
+        if(setting.start){
+          $calendar.fullCalendar('gotoDate', setting.start);
+        }
+      }
+      else {
+        //設定なし＝初期表示
+        $calendar.fullCalendar("changeView", "agendaWeek");
+        $calendar.fullCalendar('gotoDate', util.nowDate());
+      }
+    };
+    var _is_history = false;
 });
 </script>

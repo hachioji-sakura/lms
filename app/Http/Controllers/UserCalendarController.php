@@ -581,6 +581,12 @@ class UserCalendarController extends MilestoneController
 
         //操作者のステータス更新
         $member_user_id = $param['user']->user_id;
+
+        if($this->is_manager($param['user'])){
+          //事務による代理登録=カレンダー主催者（講師）のステータスを更新
+          $member_user_id = $param['item']->user_id;
+        }
+
         if(!empty($param['student_id'])){
           //保護者の場合は、student_id指定がある場合
           $student = Student::where('id', $param['student_id'])->first();

@@ -389,7 +389,7 @@
 		if(!util.isEmpty(param) && typeof param == "string") p = (param+"|").split("|");
 		var title = "";
 		var body = "";
-		if(util.isHankaku(msgCode)){
+		if(util.isHankaku(msgCode) && _message[msgCode]){
 			title = _message[msgCode]["title"];
 			body = _message[msgCode]["body"];
 		}
