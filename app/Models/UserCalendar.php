@@ -22,6 +22,9 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public function user(){
+    return $this->belongsTo('App\User');
+  }
   public function lecture(){
     return $this->belongsTo('App\Models\Lecture');
   }
@@ -84,6 +87,16 @@ EOT;
     }
     else {
       $query = $query->whereIn('status', $statuses);
+    }
+    return $query;
+  }
+  public function scopeFindWorks($query, $works, $is_not=false)
+  {
+    if($is_not===true){
+      $query = $query->whereNotIn('work', $works);
+    }
+    else {
+      $query = $query->whereIn('work', $works);
     }
     return $query;
   }
@@ -320,7 +333,7 @@ EOT;
     $item['managers'] = $managers;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
-    $item['other_name'] = trim($other_name,',');
+    $item['manager_name'] = trim($other_name,',');
     $item['is_exchange'] = false;
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;

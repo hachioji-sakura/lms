@@ -1,9 +1,9 @@
  <div class="col-12 mt-2">
    <label for="charge_subject" class="w-100">
-     担当科目
+     担当科目{{$teacher->user->has_tag('lesson', '3')}}
      <span class="right badge badge-danger ml-1">必須</span>
    </label>
-     @if($teacher->user->has_tag('lesson', 1))
+     @if($teacher->user->has_tag('lesson', '1')===true)
      <div class="form-group w-100 charge_subject_1 charge_subject">
        <select name="charge_subject[]" class="form-control select2" width=100% placeholder="担当科目" required="true" multiple="multiple" >
        </select>
@@ -21,7 +21,7 @@
        </select>
      </div>
      @endif
-     @if($teacher->user->has_tag('lesson', 2))
+     @if($teacher->user->has_tag('lesson', '2')===true)
      <div class="form-group w-100 charge_subject_2 charge_subject">
        <select name="english_talk_lesson[]" class="form-control select2" width=100% placeholder="担当科目" required="true" multiple="multiple" >
          <option value="">(選択)</option>
@@ -35,7 +35,7 @@
        </select>
      </div>
      @endif
-     @if($teacher->user->has_tag('lesson', 4))
+     @if($teacher->user->has_tag('lesson', '4')===true)
      <div class="form-group w-100 charge_subject_4 charge_subject">
        <select name="kids_lesson[]" class="form-control select2" width=100% placeholder="担当科目" required="true" multiple="multiple" >
          <option value="">(選択)</option>
@@ -48,5 +48,11 @@
          @endforeach
        </select>
       </div>
+     @endif
+     @if($teacher->user->has_tag('lesson', '3')===true)
+     <div class="form-group w-100 charge_subject_2 charge_subject">
+       ピアノレッスン
+       <input type="hidden" name="piano_lesson" value="piano" >
+     </div>
      @endif
  </div>

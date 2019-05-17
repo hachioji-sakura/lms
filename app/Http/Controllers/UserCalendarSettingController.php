@@ -37,8 +37,8 @@ class UserCalendarSettingController extends UserCalendarController
         'title2' => [
           'label' => '詳細',
         ],
-        'teacher_name' => [
-          'label' => '講師',
+        'user_name' => [
+          'label' => '担当',
           'size' => 6,
         ],
         'student_name' => [
@@ -56,10 +56,18 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $items = $this->model();
 
-      $items = $items->enable();
+      //設定有効なものだけ表示（設定開始～終了）
+      //$items = $items->enable();
+
+      //ワーク 検索
+      if(isset($request->search_week)){
+        $items = $items->findWeeks(explode(',', $request->search_week.','));
+      }
+
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
 
+      $items = $items->orderByWeek();
       $items = $this->_search_sort($request, $items);
 
       $items = $items->get();
@@ -77,8 +85,11 @@ class UserCalendarSettingController extends UserCalendarController
         "place_name" => [
           "label" => "場所",
         ],
-        "teacher_name" => [
-          "label" => "講師",
+        "work_name" => [
+          "label" => "作業",
+        ],
+        "user_name" => [
+          "label" => "担当",
         ],
         "student_name" => [
           "label" => "生徒",
@@ -172,6 +183,21 @@ class UserCalendarSettingController extends UserCalendarController
         ->with($param);
     }
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function teacher_index(Request $request, $teacher_id)
+    {
+      $teacher = Teacher::where('id', $teacher_id)->first();
+      if(!isset($teacher)) abort(404);
+
+      $param = $this->get_param($request);
+      $_table = $this->search($request);
+      return view($this->domain.'.lists', $_table)
+        ->with($param);
+    }
+    /**
      * 詳細画面表示
      *
      * @param  int  $id
@@ -181,6 +207,11 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields();
+      if($param['item']->is_teaching()===false){
+        unset($param['fields']['subject']);
+        unset($param['fields']['student_name']);
+        unset($param['fields']['title2']);
+      }
       return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])->with($param);

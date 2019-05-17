@@ -453,7 +453,11 @@
 	//ダイアログ表示
 	function showPage(type, form_id, page_title, page_url, callback){
 		$("#"+form_id+" .page_title").html(page_title);
-    $("#"+form_id+" .page_contents").load(page_url, function(){
+    $("#"+form_id+" .page_contents").load(page_url, function(response, status, xhr){
+			if(status !== "success"){
+				service.alert("E_ERROR", {});
+				return;
+			}
 			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit

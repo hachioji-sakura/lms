@@ -240,8 +240,9 @@ class MilestoneController extends UserController
      */
    public function create(Request $request)
    {
+
       $param = $this->get_param($request);
-      return view($this->domain.'.create',[])
+      return view($this->domain.'.create',['_edit' => false])
         ->with($param);
     }
 

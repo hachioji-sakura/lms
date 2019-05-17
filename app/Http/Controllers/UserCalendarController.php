@@ -340,8 +340,11 @@ class UserCalendarController extends MilestoneController
       }
       //ステータス 検索
       if(isset($request->search_status)){
-        $statuses = explode(',', $request->search_status.',');
-        $items = $items->findStatuses($statuses);
+        $items = $items->findStatuses(explode(',', $request->search_status.','));
+      }
+      //ワーク 検索
+      if(isset($request->search_work)){
+        $items = $items->findWorks(explode(',', $request->search_work.','));
       }
       //振替元対象
       if(isset($request->exchange_target)){
@@ -841,7 +844,7 @@ class UserCalendarController extends MilestoneController
         }
       }
       return view($this->domain.'.create',
-        [ 'error_message' => ''])
+        [ 'error_message' => '', '_edit' => false])
         ->with($param);
     }
     /**

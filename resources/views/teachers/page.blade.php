@@ -103,7 +103,7 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/calendar_settings?teacher_id={{$item->id}}" class="">
+        <a href="/{{$domain}}/{{$item->id}}/calendar_settings" class="">
         <div class="info-box">
           <span class="info-box-icon bg-success">
             <i class="fa fa-chalkboard-teacher"></i>

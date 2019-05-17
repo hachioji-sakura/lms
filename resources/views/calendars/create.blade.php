@@ -1,5 +1,5 @@
 <div id="{{$domain}}_create">
-  @if(isset($_edit))
+  @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
   @else

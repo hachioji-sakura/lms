@@ -2,7 +2,6 @@
   {{$domain_name}}一覧
 @endsection
 @extends('dashboard.common')
-@include('dashboard.lists')
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -15,20 +14,39 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタリング
+        曜日別
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-         <a href="/{{$domain}}" class="nav-link active">
-           <i class="fa fa-list-alt nav-icon"></i>フィルタ１
+         <a href="/{{$domain}}" class="nav-link">
+           <i class="fa fa-calendar nav-icon"></i>すべて
          </a>
        </li>
+      @foreach($attributes['lesson_week'] as $index => $week)
+      <li class="nav-item">
+         <a href="/{{$domain}}?lesson_week={{$index}}" class="nav-link">
+           <i class="fa fa-calendar nav-icon"></i>{{$week}}曜日
+         </a>
+       </li>
+       @endforeach
     </ul>
   </li>
 </ul>
 @endsection
+
+
+@section('contents')
+<div class="card-header">
+  <h3 class="card-title">@yield('title')</h3>
+</div>
+<div class="card-body table-responsive p-0">
+  @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
+  @endcomponent
+</div>
+@endsection
+
 
 @section('page_footer')
   <dt>

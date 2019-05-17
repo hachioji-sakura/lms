@@ -23,6 +23,9 @@ EOT;
 
     return $query->whereRaw($where_raw,[$user_id]);
   }
+  public function user(){
+    return $this->belongsTo('App\User');
+  }
   public function trial(){
     return $this->belongsTo('App\Models\Trial');
   }
@@ -41,6 +44,26 @@ EOT;
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTagSetting', 'user_calendar_setting_id');
   }
+  public function scopeFindWeeks($query, $weeks, $is_not=false)
+  {
+    if($is_not===true){
+      $query = $query->whereNotIn('lesson_week', $weeks);
+    }
+    else {
+      $query = $query->whereIn('lesson_week', $weeks);
+    }
+    return $query;
+  }
+  public function scopeFindWorks($query, $works, $is_not=false)
+  {
+    if($is_not===true){
+      $query = $query->whereNotIn('work', $works);
+    }
+    else {
+      $query = $query->whereIn('work', $works);
+    }
+    return $query;
+  }
   public function scopeEnable($query){
     $where_raw = <<<EOT
       (
@@ -57,7 +80,8 @@ EOT;
       $weeks[] = "'".$index."'";
     }
     $weeks_order = implode(',', $weeks);
-    return $query->orderByRaw(DB::raw("FIELD(lesson_week, $weeks_order)"));
+    $query = $query->orderByRaw(DB::raw("FIELD(lesson_week, $weeks_order)"));
+    return $query->orderBy('from_time_slot', 'asc');
   }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
@@ -182,9 +206,14 @@ EOT;
     $item['course_minutes_name'] = $this->course_minutes();
     $item['week_setting'] = $this->week_setting();
     $item['place_name'] = $this->place();
+    $item['work_name'] = $this->work();
     $item['subject'] = $this->subject();
     $item['title1'] = $item['week_setting'].' / '.$item['timezone'];
-    $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
+    $item['title2']  = "";
+    if($item->is_teaching()===true){
+      //授業について詳細を表示
+      $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
+    }
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
@@ -208,7 +237,6 @@ EOT;
         $students[] = $member;
       }
     }
-
     unset($item['members']);
     unset($item['lecture']);
     $item['teachers'] = $teachers;
@@ -216,7 +244,8 @@ EOT;
     $item['managers'] = $managers;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
-    $item['other_name'] = trim($other_name,',');
+    $item['manager_name'] = trim($other_name,',');
+    $item['user_name'] = $this->user->details()->name();
     return $item;
   }
   //本モデルはcreateではなくaddを使う
@@ -474,6 +503,15 @@ EOT;
       if($member->user_id === $user_id){
         return true;
       }
+    }
+    return false;
+  }
+  public function is_teaching(){
+    switch(intval($this->work)){
+      case 6:
+      case 7:
+      case 8:
+        return true;
     }
     return false;
   }

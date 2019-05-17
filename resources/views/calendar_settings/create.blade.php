@@ -1,5 +1,5 @@
 <div id="{{$domain}}_create">
-  @if(isset($_edit))
+  @if(isset($_edit) && $_edit==true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
   @else
@@ -10,6 +10,7 @@
     <div class="col-12 col-lg-6 col-md-6 border-right">
       <div class="row">
         @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teacher'=>$item['teachers'][0]->user->details('teachers')]); @endcomponent
+        @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
         @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
         @component('calendar_settings.forms.select_time', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
         @component('calendars.forms.select_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
