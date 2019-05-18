@@ -164,7 +164,7 @@
       {{-- マンツーマン系 --}}
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <form method="POST" action="/calendars/{{$item['id']}}/presence">
+          <form method="POST" action="/calendars/{{$item['id']}}/status_update/presence">
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
@@ -175,7 +175,7 @@
           </form>
         </div>
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <form method="POST" action="/calendars/{{$item['id']}}/absence">
+          <form method="POST" action="/calendars/{{$item['id']}}/status_update/absence">
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')

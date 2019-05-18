@@ -95,19 +95,19 @@
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, $(this).html(), formData);
 		});
 		$("select.select2", $("#"+form_id)).each(function(e){
+			var _placeholder = '選択してください';
+			if($(this).attr('placeholder')) _placeholder = $(this).attr('placeholder');
 			var _parent_id = $(this).attr("parent_id");
 			var _width = $(this).attr("width");
 			var _parent = $("body");
-			if(util.isEmpty(_parent_id)){
-				_parent_id = "body";
-			}
-			else {
-				_parent = $(this).parent();
+			if(!util.isEmpty(_parent_id)){
+				_parent = $("#"+_parent_id);
 			}
 			$(this).select2({
 				width: _width,
-				placeholder: '選択してください',
+				placeholder: _placeholder,
 			});
+
 		});
 		var colors = ['green', 'aero', 'red', 'blue', 'grey'];
 		$.each(colors, function(i,color){

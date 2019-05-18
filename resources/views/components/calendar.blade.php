@@ -60,10 +60,11 @@
       var bgcolor = _status_style["color"];
       var icon = _status_style["icon"];
       var textColor  = "#FFF";
+      var length = 5;
       //一文字分表示する
       /*
-      var t1 = title.substring(0,20);
-      var t2 = title.substring(20,title.length);
+      var t1 = title.substring(0,length);
+      var t2 = title.substring(length,title.length);
       */
       var t1=title;
       var t2="";

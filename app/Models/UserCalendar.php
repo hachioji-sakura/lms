@@ -285,6 +285,8 @@ EOT;
     $item = $this;
     $item['status_name'] = $this->status_name();
     $item['place_name'] = $this->place();
+    $item['work_name'] = $this->work();
+
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -334,10 +336,12 @@ EOT;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($other_name,',');
+    $item['user_name'] = $this->user->details()->name();
     $item['is_exchange'] = false;
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;
     }
+
     return $item;
   }
   //本モデルはcreateではなくaddを使う

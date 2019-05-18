@@ -7,7 +7,7 @@
 この度は、体験授業のお申込み、誠にありがとうございます。
 @endif
 以下のURLより、授業予定のご確認をお願いいたします。
-{{config('app.url')}}/calendars/{{$item['id']}}/fix?key={{$token}}&user={{$user->user_id}}
+{{config('app.url')}}/calendars/{{$item['id']}}/status_update/fix?key={{$token}}&user={{$user->user_id}}
 
 ご不明な点等ございましたら、下記までお問い合わせください。　
 

@@ -8,7 +8,7 @@
 
 …………………………………………………………………………………………
 授業をお休みする場合は、以下の画面よりご連絡ください。
-{{config('app.url')}}/calendars/{{$item['id']}}/rest?key={{$token}}&user={{$user->user_id}}
+{{config('app.url')}}/calendars/{{$item['id']}}/status_update/rest?key={{$token}}&user={{$user->user_id}}
 
 詳細のご確認については、以下の画面をご利用ください
 {{config('app.url')}}/calendars/{{$item['id']}}?user={{$user->user_id}}

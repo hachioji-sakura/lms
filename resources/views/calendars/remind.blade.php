@@ -10,7 +10,7 @@
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
-    <form method="POST" action="/calendars/{{$item['id']}}/remind" >
+    <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind" >
       @csrf
       @method('PUT')
       @if(isset($student_id))

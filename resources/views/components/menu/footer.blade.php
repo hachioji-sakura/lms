@@ -40,5 +40,6 @@ $(function(){
   $("a[page_url][page_title][page_form='footer_form'], a.nav-link[page_url][page_title][page_form='footer_form']").on("click", function(e){
     base.showPage("footer", "footer_form", $(this).attr("page_title"), $(this).attr("page_url"));
   });
+
 });
 </script>

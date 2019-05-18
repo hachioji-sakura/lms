@@ -229,5 +229,5 @@ EOT;
                         ]);
     return $manager;
   }
-  
+
 }

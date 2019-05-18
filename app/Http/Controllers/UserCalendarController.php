@@ -77,7 +77,26 @@ class UserCalendarController extends MilestoneController
    * @return json
    */
   public function update_form(Request $request){
-    $form = [];
+    $form = $request->all();
+    $user = $this->login_details();
+    $form['create_user_id'] = $user->user_id;
+    //予定の指定
+    if($request->has('start_date') && $request->has('start_hours')
+        && $request->has('start_minutes') && $request->has('course_minutes')){
+      $form['course_minutes'] = $request->get('course_minutes');
+      $form['start_date'] = $request->get('start_date');
+      $form['start_hours'] = $request->get('start_hours');
+      $form['start_minutes'] = $request->get('start_minutes');
+      $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
+      //授業時間＋開始日時から終了日時を計算
+      $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
+      $form['start_time'] = $start_time;
+      $form['end_time'] = $end_time;
+    }
+    else {
+      abort(400);
+    }
+
     if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
       $form['rest_reason'] = $request->get('rest_reason');
     }
@@ -120,14 +139,6 @@ class UserCalendarController extends MilestoneController
       $form['start_date'] = $request->get('start_date');
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
-      $form['charge_subject'] = $request->get('charge_subject');
-      $form['english_talk_lesson'] = $request->get('english_talk_lesson');
-      $form['piano_lesson'] = $request->get('piano_lesson');
-      $form['kids_lesson'] = $request->get('kids_lesson');
-      $form['lesson'] = $request->get('lesson');
-      $form['course_type'] = $request->get('course_type');
-      $form['place'] = $request->get('place');
-      $form['is_exchange'] = false;
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
       //授業時間＋開始日時から終了日時を計算
       $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
@@ -137,6 +148,14 @@ class UserCalendarController extends MilestoneController
     else {
       abort(400);
     }
+    $form['charge_subject'] = $request->get('charge_subject');
+    $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+    $form['piano_lesson'] = $request->get('piano_lesson');
+    $form['kids_lesson'] = $request->get('kids_lesson');
+    $form['lesson'] = $request->get('lesson');
+    $form['course_type'] = $request->get('course_type');
+    $form['place'] = $request->get('place');
+    $form['is_exchange'] = false;
     //生徒と講師の情報が予定追加時には必須としている
     //講師の指定
     if($request->has('teacher_id')){
@@ -268,9 +287,26 @@ class UserCalendarController extends MilestoneController
      */
     public function index(Request $request)
     {
+      if(!$request->has('_line')){
+        $request->merge([
+          '_line' => $this->pagenation_line,
+        ]);
+      }
+      if(!$request->has('_page')){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      if(!$request->has('_sort')){
+        $request->merge([
+          '_sort' => 'start_time',
+          '_sort_order' => 'desc',
+        ]);
+      }
       $param = $this->get_param($request);
-      $items = DB::table($this->table)->get();
-      return $items->toArray();
+      $_table = $this->search($request);
+      return view($this->domain.'.lists', $_table)
+        ->with($param);
     }
     /**
      * Display a listing of the resource.
@@ -280,8 +316,6 @@ class UserCalendarController extends MilestoneController
     public function api_index(Request $request, $user_id=0, $from_date=null, $to_date=null)
     {
       $param = $this->get_param($request);
-      $user = $this->login_details();
-      if(!isset($user)) return $this->forbidden();
       if(!empty($from_date) && strlen($from_date)===8){
         $from_date = date('Y-m-d', strtotime($from_date));
         $request->merge([
@@ -294,20 +328,8 @@ class UserCalendarController extends MilestoneController
           'to_date' => $to_date,
         ]);
       }
-      $_table = $this->search($request, $user_id);
-
-      return $this->api_response(200, "", "", $_table);
-    }
-
-    /**
-     * 検索～一覧
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return [Collection, field]
-     */
-    public function search(Request $request, $user_id=0)
-    {
       $user = $this->login_details();
+      if(!isset($user)) return $this->forbidden();
 
       $items = $this->model();
       if($this->is_student_or_parent($user->role)){
@@ -315,6 +337,7 @@ class UserCalendarController extends MilestoneController
       }
       $items = $this->_search_scope($request, $items);
       if($user_id > 0)  $items = $items->findUser($user_id);
+      $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $item){
@@ -323,8 +346,55 @@ class UserCalendarController extends MilestoneController
           $item->own_member = $item->get_member($user_id);
         }
       }
-      return $items->toArray();
+
+      return $this->api_response(200, "", "", $items->toArray());
     }
+    public function search(Request $request)
+    {
+      $user = $this->login_details();
+      if(!isset($user)) return $this->forbidden();
+      if($this->is_manager($user->role)!=true) return $this->forbidden();
+      $items = $this->model();
+      $items = $this->_search_scope($request, $items);
+      $items = $this->_search_pagenation($request, $items);
+      $items = $this->_search_sort($request, $items);
+      $items = $items->get();
+      foreach($items as $item){
+        $item = $item->details(1);
+      }
+      $fields = [
+        "id" => [
+          "label" => "ID",
+        ],
+        "datetime" => [
+          "label" => "日時",
+          "link" => "show",
+        ],
+        "place_name" => [
+          "label" => "場所",
+        ],
+        "work_name" => [
+          "label" => "作業",
+        ],
+        "user_name" => [
+          "label" => "担当",
+        ],
+        "student_name" => [
+          "label" => "生徒",
+        ],
+        "subject" => [
+          "label" => "科目",
+        ],
+        "buttons" => [
+          "label" => "操作",
+          "button" => [
+            "edit",
+            "delete"]
+        ]
+      ];
+      return ["items" => $items->toArray(), "fields" => $fields];
+    }
+
     /**
      * フィルタリングロジック
      *
@@ -344,7 +414,10 @@ class UserCalendarController extends MilestoneController
       }
       //ワーク 検索
       if(isset($request->search_work)){
-        $items = $items->findWorks(explode(',', $request->search_work.','));
+        $_param = "";
+        if(gettype($request->search_work) == "array") $_param  = $request->search_work;
+        else $_param = explode(',', $request->search_work.',');
+        $items = $items->findWorks($_param);
       }
       //振替元対象
       if(isset($request->exchange_target)){
@@ -407,22 +480,6 @@ class UserCalendarController extends MilestoneController
       }
       return view($this->domain.'.page', [
         'action' => $request->get('action')
-      ])->with($param);
-    }
-    /**
-     * 詳細画面表示
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show_calendar(Request $request, $user_id)
-    {
-      $param = $this->get_param($request, "");
-      $param["date"] = "2019-04-29";
-      $param["minHour"] = "10";
-      $param["maxHour"] = "15";
-      $param["user_id"] = $user_id;
-      return view($this->domain.'.user_calendar', [
       ])->with($param);
     }
     /**
@@ -608,6 +665,21 @@ class UserCalendarController extends MilestoneController
         return $param['item'];
       }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['teacher'] = $param['item']["teachers"][0]->user->details('teachers');
+      return view($this->domain.'.create', [
+        '_edit' => true])
+        ->with($param);
     }
 
     /**

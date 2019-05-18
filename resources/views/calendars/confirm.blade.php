@@ -23,7 +23,7 @@
   </form>
 </div>
 <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-  <form method="POST" action="/calendars/{{$item['id']}}/remind">
+  <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind">
     @csrf
     @method('PUT')
     <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
@@ -35,7 +35,7 @@
 @elseif(isset($user) && $user->role==="teacher")
     @if($item['trial_id'] < 1 && $item['status']==='new')
     <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-      <form method="POST" action="/calendars/{{$item['id']}}/confirm">
+      <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
@@ -56,7 +56,7 @@
     </div>
     @else
     <div class="col-12 col-lg-12 col-md-12 mb-1" id="{{$domain}}_confirm">
-      <form method="POST" action="/calendars/{{$item['id']}}/confirm">
+      <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">

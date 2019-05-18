@@ -50,15 +50,12 @@ Route::resource('calendar_settings','UserCalendarSettingController');
 Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
 Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
 Route::get('teachers/{teacher_id}/calendar_settings','UserCalendarSettingController@teacher_index');
-
+Route::get('teachers/{teacher_id}/calendar_settings/create','UserCalendarSettingController@create');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 
-Route::get('calendar/{user_id}','UserCalendarController@show_calendar');
-
-Route::get('calendars/{id}/api_test','UserCalendarController@api_test');
-Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
-Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
+Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
+Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
 
 
 

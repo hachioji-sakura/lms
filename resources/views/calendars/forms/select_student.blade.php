@@ -3,7 +3,6 @@
   <div class="form-group">
     <label for="title" class="w-100">
       生徒
-      <span class="right badge badge-danger ml-1">必須</span>
     </label>
     @foreach($item->students as $member)
     <a href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
@@ -49,7 +48,7 @@ function get_charge_students(){
   var teacher_id = ($('*[name=teacher_id]').val())|0;
   var lesson = ($('input[name=lesson]').val())|0;
   console.log("get_charge_students");
-  //振替対象の予定を取得
+  //対象の生徒を取得
   service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, null,
     function(result, st, xhr) {
       if(result['status']===200){
@@ -89,50 +88,3 @@ function get_charge_students(){
 }
 </script>
 @endif
-<script>
-$(function(){
-  select_student_change();
-});
-function select_student_change(){
-  var options = {};
-  console.log("select_student_change");
-  var selecter = "select[name='student_id[]'] option:selected";
-  if($(selecter).length < 1){
-    selecter = "*[name='student_id[]']";
-  }
-  $(selecter).each(function(){
-    var val = $(this).val();
-    var grade = $(this).attr("grade");
-    var grade_code = "";
-    if(!util.isEmpty(grade)){
-      grade_code = grade.substr(0,1);
-    }
-    $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
-      options[$(this).val()] = $(this).text();
-    });
-    console.log(val+":"+grade_code);
-  });
-  var _options = [];
-  var _option_html = "";
-  $.each(options, function(i, v){
-    _options.push({'id':i, 'text':v});
-    _option_html+='<option value="'+i+'">'+v+'</option>';
-  });
-  if($("select[name='charge_subject[]']").length > 0){
-    var charge_subject_form = $("select[name='charge_subject[]']");
-    var _width = charge_subject_form.attr("width");
-    charge_subject_form.select2('destroy');
-    var selected =  $("select[name='__charge_subject[]']").val();
-
-    //charge_subject_form.empty();
-    charge_subject_form.html(_option_html);
-    $("select[name='charge_subject[]']").val(selected);
-    charge_subject_form.select2({
-      width: _width,
-      placeholder: '選択してください',
-    });
-    $(".student_selected").collapse('show');
-    $('input[type="radio"][name="add_type"]:checked').change();
-  }
-}
-</script>

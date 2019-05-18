@@ -59,9 +59,12 @@ class UserCalendarSettingController extends UserCalendarController
       //設定有効なものだけ表示（設定開始～終了）
       //$items = $items->enable();
 
-      //ワーク 検索
+      //曜日検索
       if(isset($request->search_week)){
-        $items = $items->findWeeks(explode(',', $request->search_week.','));
+        $_param = "";
+        if(gettype($request->search_week) == "array") $_param  = $request->search_week;
+        else $_param = explode(',', $request->search_week.',');
+        $items = $items->findWeeks($_param);
       }
 
       $items = $this->_search_scope($request, $items);
@@ -151,6 +154,9 @@ class UserCalendarSettingController extends UserCalendarController
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
         'user' => $user,
+        'search_work' => $request->search_work,
+        'search_week' => $request->search_week,
+        'search_place' => $request->search_place,
         'attributes' => $this->attributes(),
       ];
       if(is_numeric($id) && $id > 0){

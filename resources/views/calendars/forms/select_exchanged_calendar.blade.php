@@ -1,6 +1,32 @@
+@if(isset($_edit) && $_edit==true)
+<div class="col-12">
+  <div class="form-group">
+    <label for="start_date" class="w-100">
+      予定タイプ
+    </label>
+    @if($item->trial_id > 0)
+    <span >
+      体験授業
+    </span>
+    @elseif($item->exchanged_calendar_id>0)
+    <span >
+      振替授業
+    </span>
+    @elseif($item->user_calendar_setting_id>0)
+    <span >
+      通常授業
+    </span>
+    @else
+    <span >
+      追加授業
+    </span>
+    @endif
+  </div>
+</div>
+@else
 <div class="col-12 mb-1 student_selected collapse">
   <div class="form-group">
-    <label for="status">
+    <label for="add_type">
       振替授業
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
@@ -111,3 +137,4 @@ function exchange_validate(){
 }
 
 </script>
+@endif
