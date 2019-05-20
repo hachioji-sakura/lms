@@ -236,14 +236,26 @@ class UserCalendarMember extends Model
       @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'error', "事務システムAPIエラー");
       return null;
     }
-    if($method==="POST" && $this->schedule_id==0){
+    $schedule_id = $this->schedule_id;
+    if($method==="POST" && $schedule_id==0){
       //事務システム側のIDを更新
       if(isset($res['id'])){
         $this->update(['schedule_id'=>$res["id"]]);
         \Log::info("事務システムAPI ID更新:".$res["id"]);
+        $schedule_id = $res["id"];
       }
       else{
         @$this->send_slack("事務システムAPIエラー:IDがとれない", 'warning', "事務システムAPIエラー");
+      }
+    }
+    //cancel_reasonの取得
+    $_url = $this->api_hosturl.'/'.$this->api_endpoint["GET"].'?id='.$schedule_id;
+    $res = $this->call_api($_url, $_method, $postdata);
+    if(isset($res) && isset($res["data"]) && count($res["data"])==1){
+      $remark = trim($res["data"][0]["cancel_reason"]);
+      if(!empty($remark)  && $this->remark != $remark){
+        $this->update(['remark' => $remark]);
+        @$this->send_slack("休み判別結果：".$remark, 'warning', "事務システムAPI");
       }
     }
     return $res;

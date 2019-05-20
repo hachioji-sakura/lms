@@ -17,7 +17,7 @@
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
-    <form method="POST" action="/calendars/{{$item['id']}}/rest">
+    <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest">
       @csrf
       @method('PUT')
       @if(isset($student_id))

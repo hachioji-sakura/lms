@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
 use DB;
-class UserCalendarSetting extends Model
+class UserCalendarSetting extends UserCalendar
 {
   protected $table = 'user_calendar_settings';
   protected $guarded = array('id');
@@ -23,18 +23,6 @@ EOT;
 
     return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function user(){
-    return $this->belongsTo('App\User');
-  }
-  public function trial(){
-    return $this->belongsTo('App\Models\Trial');
-  }
-  public function lecture(){
-    return $this->belongsTo('App\Models\Lecture');
-  }
-  public function create_user(){
-    return $this->belongsTo('App\User', 'create_user_id');
-  }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
   }
@@ -44,25 +32,9 @@ EOT;
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTagSetting', 'user_calendar_setting_id');
   }
-  public function scopeFindWeeks($query, $weeks, $is_not=false)
+  public function scopeFindWeeks($query, $vals, $is_not=false)
   {
-    if($is_not===true){
-      $query = $query->whereNotIn('lesson_week', $weeks);
-    }
-    else {
-      $query = $query->whereIn('lesson_week', $weeks);
-    }
-    return $query;
-  }
-  public function scopeFindWorks($query, $works, $is_not=false)
-  {
-    if($is_not===true){
-      $query = $query->whereNotIn('work', $works);
-    }
-    else {
-      $query = $query->whereIn('work', $works);
-    }
-    return $query;
+    return $this->scopeFieldWhereIn($query, 'lesson_week', $vals, $is_not);
   }
   public function scopeEnable($query){
     $where_raw = <<<EOT
@@ -83,64 +55,8 @@ EOT;
     $query = $query->orderByRaw(DB::raw("FIELD(lesson_week, $weeks_order)"));
     return $query->orderBy('from_time_slot', 'asc');
   }
-  public function has_tag($key, $val=""){
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-    }
-    return false;
-  }
-  public function get_tag($key){
-    $item = $this->tags->where('tag_key', $key)->first();
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function get_tags($key){
-    $item = $this->tags->where('tag_key', $key);
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function place(){
-    $item = GeneralAttribute::place($this->place)->first();
-    if(isset($item)) return $item->attribute_name;
-    return "";
-  }
-  public function work(){
-    $item = GeneralAttribute::work($this->work)->first();
-    if(isset($item)) return $item->attribute_name;
-    return "";
-  }
-  public function lesson(){
-    $tag =  $this->get_tag('lesson');
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-  public function course(){
-    $tag =  $this->get_tag('course_type');
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-  public function course_minutes(){
-    $tag =  $this->get_tag('course_minutes');
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-
   public function lesson_week(){
-    $item = GeneralAttribute::week($this->lesson_week)->first();
-    if(isset($item)) return $item->attribute_name;
-    return "";
+    return $this->get_attribute_name('lesson_week', $this->lesson_week);
   }
   public function week_setting(){
     $item = GeneralAttribute::where('attribute_key', 'schedule_method')
@@ -160,40 +76,7 @@ EOT;
     $end_hour_minute = date('H:i',  strtotime($base_date.$this->to_time_slot));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
-  public function subject(){
-    $tags =  $this->get_tags('charge_subject');
-    $ret = [];
-    if(isset($tags)){
-      foreach($tags as $index => $tag){
-        $ret[] = $tag->name();
-      }
-    }
-    $tags =  $this->get_tags('english_talk_lesson');
-    if(isset($tags)){
-      foreach($tags as $index => $tag){
-        $ret[] = $tag->name();
-      }
-    }
-    $tags =  $this->get_tags('piano_lesson');
-    if(isset($tags)){
-      foreach($tags as $index => $tag){
-        $ret[] = $tag->name();
-      }
-    }
-    $tags =  $this->get_tags('kids_lesson');
-    if(isset($tags)){
-      foreach($tags as $index => $tag){
-        $ret[] = $tag->name();
-      }
-    }
-    if(count($ret)==0){
-      $tags =  $this->get_tags('subject_expr');
-      foreach($tags as $index => $tag){
-        $ret[] = $tag->tag_value;
-      }
-    }
-    return $ret;
-  }
+
   public function details($user_id=0){
     $item = $this;
     $base_date = '2000-01-01 ';
@@ -498,24 +381,7 @@ EOT;
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
   }
-  public function is_member($user_id){
-    foreach($this->members as $member){
-      if($member->user_id === $user_id){
-        return true;
-      }
-    }
-    return false;
-  }
-  public function is_teaching(){
-    switch(intval($this->work)){
-      case 6:
-      case 7:
-      case 8:
-        return true;
-    }
-    return false;
-  }
-  public function is_conflict($schedule_method, $lesson_week_count, $lesson_week='', $from_time_slot, $to_time_slot){
+  public function is_conflict_setting($schedule_method, $lesson_week_count, $lesson_week='', $from_time_slot, $to_time_slot){
     $base_date= '2000-01-01 ';
     $start = strtotime($base_date.$from_time_slot);
     $end = strtotime($base_date.$to_time_slot);
@@ -546,54 +412,5 @@ EOT;
       }
     }
     return false;
-  }
-  public function is_time_connect($start_time, $end_time){
-    //開始終了が一致した場合、場所をチェック
-    $base_date= '2000-01-01 ';
-    $start = strtotime($base_date.$from_time_slot);
-    $end = strtotime($base_date.$to_time_slot);
-    $calendar_starttime = strtotime($base_date.$this->from_time_slot);
-    $calendar_endtime = strtotime($base_date.$this->$to_time_slot);
-    $start = strtotime($start_time);
-    $end = strtotime($end_time);
-    $calendar_starttime = strtotime($this->start_time);
-    $calendar_endtime = strtotime($this->end_time);
-
-    if($end == $calendar_starttime || $start == $calendar_endtime) return true;
-    return false;
-  }
-  public function is_same_place($place='', $place_floor=''){
-    //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
-    if(!empty($place)){
-      $calendar_place = $this->get_place($this->place);
-      if($calendar_place==$place){
-        return true;
-      }
-    }
-    else if(!empty($place_floor)){
-      $calendar_place = $this->get_place($this->place);
-      $args_place = $this->get_place($place_floor);
-      if($calendar_place==$args_place){
-        return true;
-      }
-    }
-    return false;
-  }
-  private function get_place($floor){
-    foreach(config('lesson_place_floor') as $place => $floors){
-      foreach($floors as $floor_code => $floor_name){
-        if($floor_code==$floor){
-          return $place;
-        }
-      }
-    }
-    return "";
-  }
-  public function office_system_api($method){
-    $res = null;
-    foreach($this->members as $member){
-      $res = $member->office_system_api($method);
-    }
-    return $res;
   }
 }

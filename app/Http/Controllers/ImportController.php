@@ -852,9 +852,6 @@ class ImportController extends UserController
       if(isset($lesson_place_floor[$item['place_id']])){
         $place = $lesson_place_floor[$item['place_id']];
       }
-      if(empty($item["startdate"])){
-        $item["startdate"] = date('Y-m-d H:i:s');
-      }
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
       $setting_data = [
@@ -1033,6 +1030,18 @@ class ImportController extends UserController
         $user_id = $teacher->user_id;
       }
 
+      //ステータス初期設定
+      $status= 'fix';
+      if(isset($student) && isset($teacher)){
+         if(strtotime($item['ymd']) > strtotime(date('Y-m-d'))){
+           $status = 'fix';
+         }
+      }
+      else {
+        //講師・生徒いずれかセットされていない
+        $status = 'new';
+      }
+
       //可能性があるケース
       //講師のみ指定、生徒＋講師の指定、事務のみ指定
       $_data_type = 'student_teacher';
@@ -1048,6 +1057,7 @@ class ImportController extends UserController
         }
         $manager = $manager->manager;
         $user_id = $manager->user_id;
+        $status = "fix";
       }
       //レクチャ取得
       $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])
@@ -1063,16 +1073,6 @@ class ImportController extends UserController
       $remark.='[repeattimes='.$item['repeattimes'].']';
 
       $exchanged_calendar_id = 0;
-      $status= 'fix';
-      if(isset($student) && isset($teacher)){
-         if(strtotime($item['ymd']) > strtotime(date('Y-m-d'))){
-           $status = 'fix';
-         }
-      }
-      else {
-        //講師・生徒いずれかセットされていない
-        $status = 'new';
-      }
 
       if(is_numeric($item['temporary'])){
         switch(intval($item['temporary'])){

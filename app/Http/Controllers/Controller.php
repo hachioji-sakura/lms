@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Mail\CommonNotification;
+use App\User;
 use Illuminate\Http\Request;
 use Mail;
 
@@ -55,6 +56,16 @@ class Controller extends BaseController
         $to = config('app.debug_mail');
       }
       if(config('app.env')==="local"){
+        return true;
+      }
+      $user_check = User::where('email', $to)->first();
+      if(!isset($user_check)){
+        $this->send_slack("存在しないユーザー\n".$to, "info", "send_mail");
+        return true;
+      }
+      $role = $user_check->details()->role;
+      if($role=="student" || $role=="parent"){
+        $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
         return true;
       }
       try {

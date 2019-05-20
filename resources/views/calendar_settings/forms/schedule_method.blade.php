@@ -9,7 +9,7 @@
       {{-- この生徒（複数の場合は一人目）と、講師の曜日が有効な曜日を選択しに出す--}}
         <label class="mx-2">
         <input type="radio" value="{{ $index }}" name="schedule_method" class="icheck flat-green" required="true" onChange="schedule_method_change();"
-          @if($item->schedule_method == $index)
+          @if(isset($_edit) && $_edit==true && $item->schedule_method == $index)
           checked
           @endif
         >{{$name}}

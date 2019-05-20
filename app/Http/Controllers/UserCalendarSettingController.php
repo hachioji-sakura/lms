@@ -68,15 +68,19 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       $items = $this->_search_scope($request, $items);
+      $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
 
-      $items = $items->orderByWeek();
+      //$items = $items->orderByWeek();
       $items = $this->_search_sort($request, $items);
 
       $items = $items->get();
       $fields = [
         "id" => [
           "label" => "ID",
+          "link" => function($row){
+            return "/calendars?setting_id=".$row['id'];
+          }
         ],
         "week_setting" => [
           "label" => "曜日",
@@ -120,7 +124,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
         */
       }
-      return ["items" => $items, "fields" => $fields];
+      return ["items" => $items, "fields" => $fields, "count" => $count];
     }
 
     public function update_form(Request $request){
@@ -157,6 +161,8 @@ class UserCalendarSettingController extends UserCalendarController
         'search_work' => $request->search_work,
         'search_week' => $request->search_week,
         'search_place' => $request->search_place,
+        '_page' => $request->get('_page'),
+        '_line' => $request->get('_line'),
         'attributes' => $this->attributes(),
       ];
       if(is_numeric($id) && $id > 0){
@@ -181,27 +187,19 @@ class UserCalendarSettingController extends UserCalendarController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-      $param = $this->get_param($request);
-      $_table = $this->search($request);
-      return view($this->domain.'.lists', $_table)
-        ->with($param);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function teacher_index(Request $request, $teacher_id)
     {
       $teacher = Teacher::where('id', $teacher_id)->first();
       if(!isset($teacher)) abort(404);
 
       $param = $this->get_param($request);
-      $_table = $this->search($request);
-      return view($this->domain.'.lists', $_table)
-        ->with($param);
+      $request->merge([
+        'teacher_id' => $teacher_id,
+      ]);
+      $request->merge([
+        '_origin' => 'teachers/'.$teacher_id.'/calendar_settings',
+      ]);
+      return $this->index($request);
     }
     /**
      * 詳細画面表示

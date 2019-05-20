@@ -26,6 +26,10 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', $val);
   }
+  public function scopeFindKeyValue($query, $key, $val)
+  {
+      return $query->where('attribute_key', $key)->where('attribute_value', $val);
+  }
   public function scopeLesson($query, $val)
   {
       return $query->where('attribute_key', 'lesson')->findVal($val);

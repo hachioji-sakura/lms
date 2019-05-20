@@ -4,23 +4,9 @@
     <label for="start_date" class="w-100">
       予定タイプ
     </label>
-    @if($item->trial_id > 0)
-    <span >
-      体験授業
+    <span title="{{$item->user_calendar_setting_id}}">
+      {{$item->add_type_name()}}
     </span>
-    @elseif($item->exchanged_calendar_id>0)
-    <span >
-      振替授業
-    </span>
-    @elseif($item->user_calendar_setting_id>0)
-    <span >
-      通常授業
-    </span>
-    @else
-    <span >
-      追加授業
-    </span>
-    @endif
   </div>
 </div>
 @else

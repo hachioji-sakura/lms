@@ -220,9 +220,14 @@ class UserCalendarController extends MilestoneController
       'student_id' => $request->student_id,
       'search_word'=>$request->search_word,
       'search_status'=>$request->status,
+      'search_work' => $request->search_work,
+      'search_place' => $request->search_place,
       'access_key' => $request->key,
       'cancel_reason' => $request->cancel_reason,
       'rest_reason' => $request->rest_reason,
+      '_page' => $request->get('_page'),
+      '_line' => $request->get('_line'),
+      '_origin' => $request->get('_origin'),
       'attributes' => $this->attributes(),
     ];
     $ret['is_proxy'] = false;
@@ -287,6 +292,11 @@ class UserCalendarController extends MilestoneController
      */
     public function index(Request $request)
     {
+      if(!$request->has('_origin')){
+        $request->merge([
+          '_origin' => $this->domain,
+        ]);
+      }
       if(!$request->has('_line')){
         $request->merge([
           '_line' => $this->pagenation_line,
@@ -297,14 +307,33 @@ class UserCalendarController extends MilestoneController
           '_page' => 1,
         ]);
       }
+      else if($request->get('_page')==0){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      /*
       if(!$request->has('_sort')){
         $request->merge([
           '_sort' => 'start_time',
           '_sort_order' => 'desc',
         ]);
       }
+      */
       $param = $this->get_param($request);
       $_table = $this->search($request);
+      $param["_maxpage"] = $this->get_maxpage($_table["count"] , $param['_line']);
+
+      if($param["_maxpage"] < $param["_page"]){
+        $param["_page"] = $param["_maxpage"];
+      }
+      $param["_list_count"] = $_table["count"];
+      $param["_list_start"] = ($param["_page"]-1)*$param['_line'];
+      $param["_list_end"] = $param["_list_start"]+$param['_line'];
+      if($param["_list_count"]-$param["_list_start"] < $param["_line"]){
+        $param["_list_end"] = $param["_list_count"];
+      }
+      $param["_list_start"]++;
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -355,7 +384,12 @@ class UserCalendarController extends MilestoneController
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
+      //設定ID
+      if(isset($request->setting_id)){
+        $items = $items->where('user_calendar_setting_id', $request->setting_id);
+      }
       $items = $this->_search_scope($request, $items);
+      $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
@@ -392,7 +426,7 @@ class UserCalendarController extends MilestoneController
             "delete"]
         ]
       ];
-      return ["items" => $items->toArray(), "fields" => $fields];
+      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
     }
 
     /**
@@ -418,6 +452,13 @@ class UserCalendarController extends MilestoneController
         if(gettype($request->search_work) == "array") $_param  = $request->search_work;
         else $_param = explode(',', $request->search_work.',');
         $items = $items->findWorks($_param);
+      }
+      //場所 検索
+      if(isset($request->search_place)){
+        $_param = "";
+        if(gettype($request->search_place) == "array") $_param  = $request->search_place;
+        else $_param = explode(',', $request->search_place.',');
+        $items = $items->findPlaces($_param);
       }
       //振替元対象
       if(isset($request->exchange_target)){
@@ -676,7 +717,8 @@ class UserCalendarController extends MilestoneController
     public function edit(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['teacher'] = $param['item']["teachers"][0]->user->details('teachers');
+      $param['teachers'] = [];
+      $param['teachers'][] = Teacher::where('user_id', $param['item']["teachers"][0]->user_id)->first();
       return view($this->domain.'.create', [
         '_edit' => true])
         ->with($param);
@@ -822,7 +864,9 @@ class UserCalendarController extends MilestoneController
             }
             //TODO 先にとれたユーザーを操作する親にする（修正したい）
             $user_id = $relation->parent->user->id;
-            $email = $relation->parent->user->email;
+            //$email = $relation->parent->user->email;
+            //TODO 安全策をとるテスト用メールにする
+            $email = 'yasui.hideo+u'.$user_id.'@gmail.com';
           }
         }
         \Log::info("[".$user_name."][".$send_from."][".$send_to."][".$is_own."][".$is_child_member."][".$student_id."]");
@@ -904,17 +948,18 @@ class UserCalendarController extends MilestoneController
       ];
       $param['teachers'] = [];
       if($param['user']->role==="teacher"){
-        $param['teacher'] = $param['user'];
+        $param['teachers'][] = $param['user'];
         $param['teacher_id'] = $param['user']->id;
       }
       else if($param['user']->role==="manager"){
         if($request->has('origin') && $request->has('item_id')){
           if($request->get('origin')=="teachers"){
-            $param['teacher'] = Teacher::where('id', $request->get('item_id'))->first();
+            $param['teachers'][] = Teacher::where('id', $request->get('item_id'))->first();
             $param['teacher_id'] = $request->get('item_id');
           }
         }
       }
+      if(!isset($param['teacher_id'])) abort(404);
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
         ->with($param);

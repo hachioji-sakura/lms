@@ -197,6 +197,13 @@ class UserController extends Controller
     }
     return false;
   }
+  protected function get_maxpage($count, $line)
+  {
+    $max_page = 0;
+    if($count == 0) return $max_page;
+    $max_page = floor(intval($count-1) / intval($line))+1;
+    return $max_page;
+  }
   /**
     * roleが生徒の場合 true
     * @param string role

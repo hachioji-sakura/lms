@@ -37,7 +37,12 @@ class UserCalendar extends Model
   public function tags(){
     return $this->hasMany('App\Models\UserCalendarTag', 'calendar_id');
   }
-
+  public function setting(){
+    return $this->belongsTo('App\Models\UserCalendarSetting', 'user_calendar_setting_id');
+  }
+  public function trial(){
+    return $this->belongsTo('App\Models\Trial');
+  }
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);
@@ -80,23 +85,44 @@ EOT;
     return $query->whereRaw($where_raw,[$from_date, $to_date]);
 
   }
-  public function scopeFindStatuses($query, $statuses, $is_not=false)
+  public function scopeSearchWord($query, $word)
   {
-    if($is_not===true){
-      $query = $query->whereNotIn('status', $statuses);
-    }
-    else {
-      $query = $query->whereIn('status', $statuses);
-    }
+    $search_words = explode(' ', $word);
+    $where_raw = <<<EOT
+      user_calendars.id in (select calendar_id where user_calendar_members um
+        left join students s on s.user_id = um.user_id
+        left join teachers t on t.user_id = um.user_id
+        left join managers m on m.user_id = um.user_id
+        where s.name_last like '%%'
+EOT;
+    $query = $query->where(function($query)use($search_words, $where_raw){
+      foreach($search_words as $_search_word){
+        $query = $query->whereRaw($where_raw,[$_search_word]);
+      }
+    });
     return $query;
   }
-  public function scopeFindWorks($query, $works, $is_not=false)
+  public function get_search_word_where_string($word){
+  }
+  public function scopeFindStatuses($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+  }
+  public function scopeFindWorks($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'work', $vals, $is_not);
+  }
+  public function scopeFindPlaces($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'place', $vals, $is_not);
+  }
+  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
     if($is_not===true){
-      $query = $query->whereNotIn('work', $works);
+      $query = $query->whereNotIn($field, $vals);
     }
     else {
-      $query = $query->whereIn('work', $works);
+      $query = $query->whereIn($field, $vals);
     }
     return $query;
   }
@@ -189,16 +215,44 @@ EOT;
     }
     return null;
   }
-
-  public function place(){
-    $item = GeneralAttribute::place($this->place)->first();
+  public function get_tag_name($tag_key){
+    $tag =  $this->get_tag($tag_key);
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
+  }
+  public function get_attribute_name($key, $val){
+    $item = GeneralAttribute::findKeyValue($key,$val)->first();
     if(isset($item)) return $item->attribute_name;
     return "";
   }
+  public function lesson(){
+    return $this->get_tag_name('lesson');
+  }
+  public function course(){
+    return $this->get_tag_name('course_type');
+  }
+  public function course_minutes(){
+    return $this->get_tag_name('course_minutes');
+  }
+  public function place(){
+    return $this->get_attribute_name('lesson_place_floor', $this->place);
+  }
   public function work(){
-    $item = GeneralAttribute::work($this->work)->first();
-    if(isset($item)) return $item->attribute_name;
-    return "";
+    return $this->get_attribute_name('work', $this->work);
+  }
+  public function add_type_name(){
+    if($this->trial_id > 0){
+      return "体験授業";
+    }
+    if(intval($this->user_calendar_setting_id) > 0){
+      return "通常授業";
+    }
+    if($this->exchanged_calendar_id > 0){
+      return "振替授業";
+    }
+    return "追加授業";
   }
   public function status_name(){
     $status_name = "";
@@ -253,20 +307,6 @@ EOT;
       }
     }
     return $ret;
-  }
-  public function lesson(){
-    $tag =  $this->get_tag('lesson');
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-  public function course(){
-    $tag =  $this->get_tag('course_type');
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
   }
   public function is_group(){
     $tag =  $this->get_tag('course_type');
@@ -517,6 +557,15 @@ EOT;
       if($this->is_member($member->user_id)===false) return false;
     }
     return true;
+  }
+  public function is_teaching(){
+    switch(intval($this->work)){
+      case 6:
+      case 7:
+      case 8:
+        return true;
+    }
+    return false;
   }
   public function is_conflict($start_time, $end_time, $place='', $place_floor=''){
     $start = strtotime($start_time);
