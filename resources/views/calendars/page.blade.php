@@ -47,6 +47,9 @@
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
+                @if(!empty($member->remark))
+                 ({{$member->remark}})
+                @endif
               </a>
               <br>
             @endforeach
