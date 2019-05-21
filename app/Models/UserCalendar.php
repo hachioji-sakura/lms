@@ -249,17 +249,20 @@ EOT;
   public function work(){
     return $this->get_attribute_name('work', $this->work);
   }
-  public function add_type_name(){
-    if($this->trial_id > 0){
-      return "体験授業";
+  public function teaching_name(){
+    if($this->is_teaching()){
+      if($this->trial_id > 0){
+        return "体験授業";
+      }
+      if(intval($this->user_calendar_setting_id) > 0){
+        return "通常授業";
+      }
+      if($this->exchanged_calendar_id > 0){
+        return "振替授業";
+      }
+      return "追加授業";
     }
-    if(intval($this->user_calendar_setting_id) > 0){
-      return "通常授業";
-    }
-    if($this->exchanged_calendar_id > 0){
-      return "振替授業";
-    }
-    return "追加授業";
+    return "";
   }
   public function status_name(){
     $status_name = "";

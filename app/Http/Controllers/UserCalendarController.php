@@ -93,9 +93,6 @@ class UserCalendarController extends MilestoneController
       $form['start_time'] = $start_time;
       $form['end_time'] = $end_time;
     }
-    else {
-      abort(400);
-    }
 
     if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
       $form['rest_reason'] = $request->get('rest_reason');
@@ -144,9 +141,6 @@ class UserCalendarController extends MilestoneController
       $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
       $form['start_time'] = $start_time;
       $form['end_time'] = $end_time;
-    }
-    else {
-      abort(400);
     }
     $form['charge_subject'] = $request->get('charge_subject');
     $form['english_talk_lesson'] = $request->get('english_talk_lesson');
@@ -634,6 +628,9 @@ class UserCalendarController extends MilestoneController
             else if($param['item']['status']==='rest'){
               $this->rest_mail($param);
             }
+            else if($param['item']['status']==='new'){
+              $this->new_mail($param);
+            }
             break;
         }
       }
@@ -806,6 +803,12 @@ class UserCalendarController extends MilestoneController
                'calendar_absence');
 
     }
+    private function new_mail($param){
+      return  $this->_mail($param,
+               '授業予定のご連絡',
+               'calendar_new', true);
+
+    }
 
     /**
      * 予定確認メール送信
@@ -817,7 +820,7 @@ class UserCalendarController extends MilestoneController
      * @param  string  $template
      * @return view
      */
-    private function _mail($param, $title, $template){
+    private function _mail($param, $title, $template, $is_teacher_only=false){
       $item = $param['item']->details();
       $login_user = $param['user'];
       $target_student_id = $param['student_id'];
@@ -841,6 +844,7 @@ class UserCalendarController extends MilestoneController
         //$title .= '【再送】';
       }
 
+      //送信対象を判定
       $send_dataset = [];
       foreach($members as $member){
         $email = $member->user['email'];
@@ -855,6 +859,10 @@ class UserCalendarController extends MilestoneController
         if($user->user_id===$login_user->user_id){
           //メンバー＝操作者
           $is_own = true;
+        }
+        if($is_teacher_only===true && $this->is_teacher($user->role)!==true){
+          //講師のみのメールの場合、講師以外は無効
+          continue;
         }
         if($this->is_student($user->role)){
           //対象が生徒の場合、保護者のメールアドレスを取得
@@ -913,7 +921,7 @@ class UserCalendarController extends MilestoneController
          ];
        }
       }
-
+      //送信対象にメール送信
       foreach($send_dataset as $send_data){
         $this->send_mail($send_data['email'],
          $title,
@@ -945,10 +953,10 @@ class UserCalendarController extends MilestoneController
         $start_date = date('Y/m/d', strtotime($request->get('start_date')));
       }
       $param['item'] = [
-        'lesson_time' => $request->get('lesson_time'),
+        'course_minutes' => $request->get('course_minutes'),
         'start_date' => $start_date,
-        'start_hours' => $request->get('start_hours'),
-        'start_minutes' => $request->get('start_minutes'),
+        'start_hours' => intval($request->get('start_hours')),
+        'start_minutes' => intval($request->get('start_minutes')),
       ];
       $param['teachers'] = [];
       if($param['user']->role==="teacher"){
@@ -963,7 +971,7 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-      if(!isset($param['teacher_id'])) abort(404);
+      if(!isset($param['teacher_id'])) abort(400, '講師の設定がありません');
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
         ->with($param);
@@ -989,6 +997,10 @@ class UserCalendarController extends MilestoneController
     {
       $res = $this->transaction(function() use ($request){
         $form = $this->create_form($request);
+        if(empty($form['start_time']) || empty($form['end_time'])) {
+          abort(400, "日時パラメータ不正");
+        }
+
         $calendar = UserCalendar::add($form);
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
@@ -1012,8 +1024,8 @@ class UserCalendarController extends MilestoneController
         $user = $this->login_details();
         $calendar = $this->model()->where('id',$id)->first();
         $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
-        $item->dispose();
-        return $item;
+        $calendar->dispose();
+        return $calendar;
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
     }
 

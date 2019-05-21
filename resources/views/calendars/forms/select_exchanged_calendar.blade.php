@@ -5,7 +5,7 @@
       予定タイプ
     </label>
     <span title="{{$item->user_calendar_setting_id}}">
-      {{$item->add_type_name()}}
+      {{$item->teaching_name()}}
     </span>
   </div>
 </div>

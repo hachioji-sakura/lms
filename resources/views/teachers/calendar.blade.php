@@ -41,7 +41,7 @@
           // 選択可
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
-            var _lesson_time = end.diff(start, 'minutes');
+            var _course_minutes = end.diff(start, 'minutes');
             $calendar.fullCalendar("removeEvents", -1);
             $calendar.fullCalendar('unselect');
             $calendar.fullCalendar('addEventSource', [{
@@ -57,7 +57,7 @@
             param += "&start_date="+start_date;
             param += "&start_hours="+start.hour();
             param += "&start_minutes="+start.minute();
-            param += "&lesson_time="+_lesson_time;
+            param += "&course_minutes="+_course_minutes;
             base.showPage('dialog', "subDialog", "授業追加", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });

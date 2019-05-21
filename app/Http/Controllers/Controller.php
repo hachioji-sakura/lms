@@ -60,13 +60,17 @@ class Controller extends BaseController
       }
       $user_check = User::where('email', $to)->first();
       if(!isset($user_check)){
-        $this->send_slack("存在しないユーザー\n".$to, "info", "send_mail");
-        return true;
+        if(strpos($to,'yasui.hideo') === false){
+          $this->send_slack("存在しないユーザー\n".$to, "info", "send_mail");
+          return true;
+        }
       }
-      $role = $user_check->details()->role;
-      if($role=="student" || $role=="parent"){
-        $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
-        return true;
+      else {
+        $role = $user_check->details()->role;
+        if($role=="student" || $role=="parent"){
+          $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
+          return true;
+        }
       }
       try {
         $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));

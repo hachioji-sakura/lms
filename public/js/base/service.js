@@ -12,7 +12,7 @@
 	var _requestCache = {};
 	var _cache = {};
 	_cache["userSetting"] = {
-		"loadingStart" : 300,
+		"loadingStart" : 1,
 		"requestCacheTime" : 300000,
 		"requestCacheSize" : 30
 	};
@@ -105,6 +105,7 @@
 			clearTimeout(_loadTimer);
 		}
 		_loadTimer = setTimeout(loadOpen, 1);
+		return;
 	}
 	/**
 	* ローディング終了
@@ -119,6 +120,7 @@
 			_loadTimer = null;
 		}
 		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
+		return;
 	}
 	/**
 	* ローディングダイアログを閉じる
@@ -132,7 +134,7 @@
 		_loading.dialog("close");
 		*/
 		$("#loading").modal('hide');
-
+		return;
 	}
 	/**
 	* ローディングダイアログを表示する
@@ -142,28 +144,7 @@
     */
 	function loadOpen (){
 		$("#loading").modal('show');
-
-		/*
-		if(util.isEmpty(_loading)) {
-			if($("#loading")[0] && _loading==null){
-				_loading = $("#loading").dialog({
-					title : "Now Loading",
-					draggable : true,
-					resizable : false,
-					stack : true,
-					width: "300px",
-					height: "auto",
-					autoOpen : false,
-					open:function(event, ui){
-					},
-					modal : true,
-					zIndex : 2000
-				});
-				$(".ui-dialog-titlebar-close").hide();
-			}
-		}
-		_loading.dialog("open");
-		*/
+		return;
 	}
 
 	/**
