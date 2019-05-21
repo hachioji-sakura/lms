@@ -10,20 +10,21 @@
 以下の 授業予定を、
 {{$item['target_student']->name()}}様に代わってお休み連絡をしました。
 @else
-{{$login_user["name"]}}様より、
-以下の 授業予定のお休み連絡をいただきました。
+{{$login_user["name"]}}様より、以下の 授業予定のお休み連絡をいただきました。
 @endif
 
+@if($item->is_group()==true)
 @if($item['status'] =='rest')
-また、この授業予定はお休みとなりますので、
+また、この授業予定は休講となりますので、
 何卒、よろしくお願いいたします。
 @else
 引き続き、出席予定の生徒様への授業をよろしくお願いいたします。
 @endif
+@endif
 
 @endif
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
 @if($send_to==='student')

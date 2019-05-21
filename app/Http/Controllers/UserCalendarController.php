@@ -809,6 +809,12 @@ class UserCalendarController extends MilestoneController
                'calendar_new', true);
 
     }
+    private function delete_mail($param){
+      return  $this->_mail($param,
+               '授業予定削除',
+               'calendar_delete', true);
+
+    }
 
     /**
      * 予定確認メール送信
@@ -1010,6 +1016,8 @@ class UserCalendarController extends MilestoneController
         }
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
+        $param = $this->get_param($request, $calendar->id);
+        $this->new_mail($param);
         return $calendar;
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
     }
@@ -1021,9 +1029,11 @@ class UserCalendarController extends MilestoneController
     public function _delete(Request $request, $id)
     {
       $res = $this->transaction(function() use ($request, $id){
+        $param = $this->get_param($request, $id);
         $user = $this->login_details();
-        $calendar = $this->model()->where('id',$id)->first();
+        $calendar = $param["item"];
         $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
+        $this->delete_mail($param);
         $calendar->dispose();
         return $calendar;
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );

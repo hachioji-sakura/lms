@@ -6,7 +6,7 @@
 以下の授業は欠席となりました。
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
 @if($send_to==='student')

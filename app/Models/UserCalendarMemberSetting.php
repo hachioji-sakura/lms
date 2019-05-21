@@ -29,9 +29,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
 
   public function office_system_api($method){
-    if($this->schedule_id == 0 && $method=="PUT") return;
-    if($this->schedule_id == 0 && $method=="DELETE") return;
-    if($this->schedule_id > 0 && $method=="POST") return;
+    if($this->schedule_id == 0 && $method=="PUT") return null;;
+    if($this->schedule_id == 0 && $method=="DELETE") return null;;
+    if($this->schedule_id > 0 && $method=="POST") return null;;
 
     $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
 

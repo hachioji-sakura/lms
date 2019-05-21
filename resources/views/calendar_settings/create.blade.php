@@ -30,9 +30,10 @@
   <div class="row mt-2">
     <div class="col-12 col-lg-6 col-md-6 mb-1">
     <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
-      @if(isset($_edit))
+      @if(isset($_edit) && $_edit==true)
         更新する
       @else
+        <i class="fa fa-plus-circle mr-1"></i>
         登録する
       @endif
     </button>

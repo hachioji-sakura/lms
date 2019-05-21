@@ -319,8 +319,13 @@ EOT;
     return $ret;
   }
   public function is_group(){
+    /*
     $tag =  $this->get_tag('course_type');
-    if($tag->tag_value!="single") return true;
+    if($tag->tag_value=="group") return true;
+    */
+    $details = $this->details(1);
+    //course_typeに限らず、生徒が複数いるかどうか
+    if(count($details["students"]) > 1) return true;
     return false;
   }
   public function timezone(){
@@ -653,6 +658,7 @@ EOT;
     $res = null;
     foreach($this->members as $member){
       $res = $member->office_system_api($method);
+      if(!isset($res)) continue;
       if($res=="null" || !isset($res["status"])) break;
       if($res["status"]!=0) break;
     }

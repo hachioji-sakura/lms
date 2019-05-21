@@ -15,7 +15,7 @@
 以下の授業予定を生徒様にご連絡いたしました。
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
 生徒様から授業予定の確定操作後に、
