@@ -460,10 +460,6 @@ class UserCalendarController extends MilestoneController
         else $_param = explode(',', $request->search_place.',');
         $items = $items->findPlaces($_param);
       }
-      //振替元対象
-      if(isset($request->exchange_target)){
-        $items = $items->findExchangeTarget();
-      }
       //講師ID
       if(isset($request->teacher_id)){
         $teacher = Teacher::where('id',$request->teacher_id)->first();
@@ -472,7 +468,15 @@ class UserCalendarController extends MilestoneController
       //生徒ID
       if(isset($request->student_id)){
         $student = Student::where('id',$request->student_id)->first();
-        if(isset($student)) $items = $items->findUser($student->user_id);
+        if(isset($student)) {
+          //振替元対象
+          if(isset($request->exchange_target)){
+            $items = $items->findExchangeTarget($student->user_id);
+          }
+          else {
+            $items = $items->findUser($student->user_id);
+          }
+        }
       }
       //更新取得
       if(isset($request->update)){

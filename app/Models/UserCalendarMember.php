@@ -34,7 +34,11 @@ class UserCalendarMember extends Model
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
-  public function add($form){
+  public function is_limit_over(){
+    if($this->remark=='規定回数以上'){
+      return true;
+    }
+    return false;
   }
   public function status_name(){
     $status_name = "";
@@ -150,7 +154,7 @@ class UserCalendarMember extends Model
     if($this->calendar->exchanged_calendar_id > 0){
       //振替元のメンバーを取得
       $exchanged_calendar_member = UserCalendarMember::where('calendar_id', $this->calendar->exchanged_calendar_id)
-        ->where('user_id', $this->user_id)->get();
+        ->where('user_id', $this->user_id)->first();
       $altsched_id = $exchanged_calendar_member->schedule_id;
     }
 
@@ -252,10 +256,14 @@ class UserCalendarMember extends Model
     $_url = $this->api_hosturl.'/'.$this->api_endpoint["GET"].'?id='.$schedule_id;
     $res = $this->call_api($_url, $_method, $postdata);
     if(isset($res) && isset($res["data"]) && count($res["data"])==1){
+      $message = "";
+      foreach($res["data"][0] as $key => $val){
+        $message .= '['.$key.':'.$val.']';
+      }
       $remark = trim($res["data"][0]["cancel_reason"]);
       if(!empty($remark)  && $this->remark != $remark){
         $this->update(['remark' => $remark]);
-        @$this->send_slack("休み判別結果：".$remark, 'warning', "事務システムAPI");
+        @$this->send_slack("休み判別結果：".$remark."\ndata:\n".$message, 'warning', "事務システムAPI");
       }
     }
     return $res;

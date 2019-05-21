@@ -70,6 +70,7 @@ function get_exchange_calendar(){
   //振替対象の予定を取得
   service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1', null,
     function(result, st, xhr) {
+      console.log(result["data"]);
       if(result['status']===200){
         var c = 0;
         $.each(result['data'], function(id, val){

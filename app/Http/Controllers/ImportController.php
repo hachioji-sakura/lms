@@ -1187,12 +1187,16 @@ class ImportController extends UserController
             'calendar_id' => $calendar_id,
             'user_id' => $student->user_id,
             'status' => $student_status,
+            'remark' => $item['cancel_reason'],
             'schedule_id' => $item['id'],
             'create_user_id' => 1
           ]);
         }
         else {
-          $_member->update(['status' => $student_status]);
+          $_member->update([
+            'status' => $student_status,
+            'remark' => $item['cancel_reason']
+          ]);
         }
       }
       //講師 or 事務をカレンダーに追加

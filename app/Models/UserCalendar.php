@@ -133,16 +133,23 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function scopeFindExchangeTarget($query)
+  public function scopeFindExchangeTarget($query, $user_id)
   {
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
     $to = date("Y-m-01", strtotime("+2 month ".$from));
+    //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
+    //かつ、振替が未登録
     $query = $this->scopeSearchDate($query, $from, $to);
     $where_raw = <<<EOT
       user_calendars.id not in (select exchanged_calendar_id from user_calendars)
-      and user_calendars.status = 'rest'
+      and user_calendars.id in (
+        select calendar_id from user_calendar_members where
+          user_id = $user_id
+          and status = 'rest'
+          and remark != '規定回数以上'
+        )
 EOT;
-    return $query->whereRaw($where_raw,[]);
+    return $query->whereRaw($where_raw,[$user_id]);
   }
   public function get_access_member($user_id){
     $user = User::where('id', $user_id)->first();
