@@ -7,8 +7,7 @@
 @elseif($send_to==='teacher')
 {{$user["name"]}}先生
 @if($is_proxy===true)
-以下の 授業予定を、
-{{$item['target_student']->name()}}様に代わってお休み連絡をしました。
+以下の 授業予定のお休み連絡をしました。
 @else
 {{$login_user["name"]}}様より、以下の 授業予定のお休み連絡をいただきました。
 @endif

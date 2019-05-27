@@ -175,7 +175,7 @@ EOT;
     }
     public function calendar_setting(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->orderBy('lesson_week', 'asc')
+      ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
       $ret = [];

@@ -52,6 +52,71 @@ class UserCalendarSettingController extends UserCalendarController
       ];
       return $ret;
     }
+    public function create_form(Request $request){
+      $user = $this->login_details();
+      $form = $request->all();
+      $form['create_user_id'] = $user->user_id;
+      if($request->has('lesson_week_count')){
+        $form['lesson_week_count'] = $request->get('lesson_week_count');
+      }
+      if(empty($form['lesson_week_count'])){
+        $form['lesson_week_count'] = 0;
+      }
+      $form['remark'] = "";
+      if($request->has('remark')){
+        $form['remark'] = $request->get('remark');
+      }
+
+      //予定の指定
+      if($request->has('schedule_method') && $request->has('lesson_week') && $request->has('start_hours')
+          && $request->has('start_minutes') && $request->has('course_minutes')){
+        $form['schedule_method'] = $request->get('schedule_method');
+        $form['lesson_week'] = $request->get('lesson_week');
+        $form['start_hours'] = $request->get('start_hours');
+        $form['start_minutes'] = $request->get('start_minutes');
+        $form['course_minutes'] = $request->get('course_minutes');
+        $form['from_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['start_hours'].':'.$form['start_minutes']));
+        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+      }
+      $form['charge_subject'] = $request->get('charge_subject');
+      $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+      $form['piano_lesson'] = $request->get('piano_lesson');
+      $form['kids_lesson'] = $request->get('kids_lesson');
+      $form['lesson'] = $request->get('lesson');
+      $form['course_type'] = $request->get('course_type');
+      $form['place'] = $request->get('place');
+      //生徒と講師の情報が予定追加時には必須としている
+      //講師の指定
+      if($request->has('teacher_id')){
+        $form['teacher_id'] = $request->get('teacher_id');
+      }
+      $teacher = Teacher::where('id', $form['teacher_id'])->first();
+      if(!isset($teacher)){
+        //講師が存在しない
+        abort(400, "存在しない講師");
+      }
+      $form['user_id'] = $teacher->user_id;
+
+      //生徒の指定
+      if($request->has('student_id')){
+        $form['student_id'] = $request->get('student_id');
+      }
+      else {
+        abort(400, "生徒指定なし");
+      }
+      $form['students'] = [];
+      foreach($form['student_id'] as $student_id){
+        $student = Student::where('id', $student_id)->first();
+        if(!isset($student)){
+          //生徒が存在しない
+          abort(400, "存在しない生徒");
+        }
+        $form['students'][] = $student;
+      }
+
+      return $form;
+    }
+
     public function search(Request $request, $user_id=0)
     {
       $items = $this->model();
@@ -157,14 +222,18 @@ class UserCalendarSettingController extends UserCalendarController
       $ret = [
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
+        'teacher_id' => $request->teacher_id,
         'user' => $user,
-        'search_work' => $request->search_work,
-        'search_week' => $request->search_week,
-        'search_place' => $request->search_place,
         '_page' => $request->get('_page'),
         '_line' => $request->get('_line'),
         'attributes' => $this->attributes(),
       ];
+      $ret['filter'] = [
+        'search_work' => $request->search_work,
+        'search_week' => $request->search_week,
+        'search_place' => $request->search_place,
+      ];
+
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id',$id)->first();
         if(!isset($item)){
@@ -181,25 +250,6 @@ class UserCalendarSettingController extends UserCalendarController
         }
       }
       return $ret;
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function teacher_index(Request $request, $teacher_id)
-    {
-      $teacher = Teacher::where('id', $teacher_id)->first();
-      if(!isset($teacher)) abort(404);
-
-      $param = $this->get_param($request);
-      $request->merge([
-        'teacher_id' => $teacher_id,
-      ]);
-      $request->merge([
-        '_origin' => 'teachers/'.$teacher_id.'/calendar_settings',
-      ]);
-      return $this->index($request);
     }
     /**
      * 詳細画面表示
@@ -245,7 +295,43 @@ class UserCalendarSettingController extends UserCalendarController
         $setting = UserCalendarSetting::where('id', $id)->first();
         $setting->change($form);
         return $setting;
-      }, '通常授業設定更新', __FILE__, __FUNCTION__, __LINE__ );
+      }, $this->domain_name.'更新', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    /**
+     * 新規登録
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+      $param = $this->get_param($request);
+      $res = $this->_store($request);
+
+      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました');
+    }
+    /**
+     * 新規登録ロジック
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function _store(Request $request)
+    {
+      $res = $this->transaction(function() use ($request){
+        $form = $this->create_form($request);
+
+        $setting = UserCalendarSetting::add($form);
+        //生徒をカレンダーメンバーに追加
+        if(!empty($form['students'])){
+          foreach($form['students'] as $student){
+            $setting->memberAdd($student->user_id, $form['create_user_id']);
+          }
+        }
+        $setting = $setting->details();
+        $this->send_slack($this->domain_name.'追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', $this->domain_name.'追加');
+        $param = $this->get_param($request, $setting->id);
+        return $setting;
+      }, $this->domain_name.'作成', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
     public function _delete(Request $request, $id)
     {
@@ -253,6 +339,6 @@ class UserCalendarSettingController extends UserCalendarController
         $setting = UserCalendarSetting::where('id', $id)->first();
         $setting->dispose();
         return $setting;
-      }, '通常授業設定削除', __FILE__, __FUNCTION__, __LINE__ );
+      }, $this->domain_name.'削除', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

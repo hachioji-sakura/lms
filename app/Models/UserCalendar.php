@@ -124,6 +124,7 @@ EOT;
     else {
       $query = $query->whereIn($field, $vals);
     }
+
     return $query;
   }
   public function scopeFindUser($query, $user_id)
@@ -133,7 +134,7 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function scopeFindExchangeTarget($query, $user_id)
+  public function scopeFindExchangeTarget($query, $user_id, $lesson)
   {
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
     $to = date("Y-m-01", strtotime("+2 month ".$from));
@@ -148,6 +149,11 @@ EOT;
           and status = 'rest'
           and remark != '規定回数以上'
         )
+        and user_calendars.id in (
+          select calendar_id from user_calendar_tags where
+            tag_value = $lesson
+            and tag_key = 'lesson'
+          )
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
@@ -156,7 +162,7 @@ EOT;
     if(isset($user)) $user = $user->details();
     $ret = [];
     if($user->role=='parent'){
-      //保護者の場合
+      //保護者の場合、自分の子供のみアクセス可能
       foreach ($user->relation() as $relation){
         $member = $this->get_member($relation->student->user_id);
         if(!empty($member)){
@@ -165,19 +171,18 @@ EOT;
       }
     }
     else if($user->role=='manager'){
+      //事務＝全員
+      return $this->members;
+    }
+    else if($user->role=='teacher'){
+      //講師＝全員
       return $this->members;
     }
     else {
+      //生徒＝自分のみ
       $member = $this->get_member($user_id);
-
       if(!empty($member)){
         $ret[] = $member;
-        if($user->role=='teacher'){
-          return $this->members;
-        }
-        else {
-          return $member;
-        }
       }
     }
     return $ret;
@@ -323,9 +328,9 @@ EOT;
     $tag =  $this->get_tag('course_type');
     if($tag->tag_value=="group") return true;
     */
-    $details = $this->details(1);
+    $students = $this->get_students(1);
     //course_typeに限らず、生徒が複数いるかどうか
-    if(count($details["students"]) > 1) return true;
+    if(count($students) > 1) return true;
     return false;
   }
   public function timezone(){
@@ -355,7 +360,7 @@ EOT;
     $item['subject'] = $this->subject();
     $teacher_name = "";
     $student_name = "";
-    $other_name = "";
+    $manager_name = "";
     $teachers = [];
     $students = [];
     $managers = [];
@@ -368,14 +373,13 @@ EOT;
       }
       $_member = $member->user->details('managers');
       if($_member->role === 'manager'){
-        $other_name.=$_member['name'].',';
+        $manager_name.=$_member['name'].',';
         $managers[] = $member;
       }
     }
     if($user_id > 0){
       //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
       foreach($this->get_access_member($user_id) as $member){
-        if(!isset($member->user)) continue;
         $_member = $member->user->details('students');
         if($_member->role === 'student'){
           $student_name.=$_member['name'].',';
@@ -383,6 +387,7 @@ EOT;
         }
       }
     }
+
     unset($item['members']);
     unset($item['lecture']);
     $item['teachers'] = $teachers;
@@ -390,13 +395,12 @@ EOT;
     $item['managers'] = $managers;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
-    $item['manager_name'] = trim($other_name,',');
+    $item['manager_name'] = trim($manager_name,',');
     $item['user_name'] = $this->user->details()->name();
     $item['is_exchange'] = false;
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;
     }
-
     return $item;
   }
   //本モデルはcreateではなくaddを使う
@@ -449,12 +453,16 @@ EOT;
       'place',
       'work'
     ];
+    //TODO : グループレッスンの予定確定方式
+    //A案：一人でも出席なら出席
+    //B案：全員が出席なら出席（通知がかなり複雑）
     $status = $this->status;
     if(isset($form['status'])){
       $is_status_update = true;
-      if($form['status']=='rest' || $form['status']=='fix' || $form['status']=='cancel'){
+      if($form['status']=='rest' || $form['status']=='cancel'){
         //status=restは生徒全員が休みの場合
         //status=fixは生徒全員が予定確認した場合
+        //status=cancelは生徒全員が予定キャンセルした場合
         foreach($this->members as $member){
           if($member->user->details('students')->role == "student"){
             if($member->status != $form['status']){
@@ -510,10 +518,10 @@ EOT;
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    if($status==="absence" || $status==="fix" || $status==="rest"){
+    if($status==="absence" || $status==="rest" || $status==="confirm"){
       //absence = 全員欠席＝休講
       //rest = 全員休み＝休講
-      //fix = 全員の予定確定
+      //confirm = 全員の予定確認中に変更
       UserCalendarMember::where('calendar_id', $this->id)->update(
         ['status' => $status ]
       );
@@ -663,5 +671,47 @@ EOT;
       if($res["status"]!=0) break;
     }
     return $res;
+  }
+  /*
+  public function student_mail($title, $param, $type, $template,$user_id=0){
+    \Log::info("-----------------student_mail start------------------");
+    $param['send_to'] = 'student';
+    foreach($this->members as $member){
+      if($member->user->details('students')->role != "student") continue;
+      \Log::info('user_id='.$member->user_id.":student_id=".$member->user->student->id);
+      //if($student_id >0 && $student_id != $member->user->student->id) continue;
+      $member->send_mail($title, $param, $type, $template);
+    }
+    \Log::info("-----------------student_mailend------------------");
+    return;
+  }
+  public function all_member_mail($title, $param, $type, $template){
+    \Log::info("-----------------all_member_mail start------------------");
+    \Log::info($title);
+    //$this->teacher_mail($title, $param, $type, $template);
+    $this->student_mail($title, $param, $type, $template);
+    \Log::info("-----------------all_member_mail end------------------");
+    return;
+  }
+  */
+  public function teacher_mail($title, $param, $type, $template){
+    $param['send_to'] = 'teacher';
+    $param['item'] = $this->details(1);
+    foreach($this->members as $member){
+      if($member->user->details('teachers')->role != "teacher") continue;
+      $member->send_mail($title, $param, $type, $template);
+    }
+    return;
+  }
+  public function get_students($user_id=0){
+    $students = [];
+    //foreach($this->get_access_member($user_id) as $member){
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $students[] = $member;
+      }
+    }
+    return $students;
   }
 }

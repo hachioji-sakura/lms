@@ -9,7 +9,7 @@
       <i class="fa fa-user-tie mr-1"></i>
       {{$teachers[0]->name()}}
       </a>
-      <input type="hidden" name="teacher_id" value="{{$teachers[0]->id}}" />
+      <input type="hidden" name="teacher_id" value="{{$teachers[0]->id}}" alt="{{$teachers[0]->name()}}" />
     </div>
   </div>
   @endif

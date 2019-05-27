@@ -1,4 +1,4 @@
-<div class="col-12 mt-2">
+<div class="col-10 mt-2">
   <div class="form-group">
     <label for="lesson_week" class="w-100">
       曜日

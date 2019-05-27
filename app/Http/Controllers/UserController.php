@@ -197,13 +197,30 @@ class UserController extends Controller
     }
     return false;
   }
-  protected function get_maxpage($count, $line)
+  protected function get_pagedata($count, $line, $page)
   {
     $max_page = 0;
-    if($count == 0) return $max_page;
-    $max_page = floor(intval($count-1) / intval($line))+1;
-    return $max_page;
+    $_list_start = 0;
+    $_list_end = 0;
+    if($count > 0){
+      $max_page = floor(intval($count-1) / intval($line))+1;
+      if($max_page < $page){
+        $page = $max_page;
+      }
+      $_list_start = ($page-1)*$line;
+      $_list_end = $_list_start+$line;
+      if($count-$_list_start < $line){
+        $_list_end = $count;
+      }
+      $_list_start++;
+    }
+    return ["_list_start" => $_list_start,
+      "_list_end" => $_list_end,
+      "_list_count" => $count,
+      "_page" => $page,
+      "_maxpage" => $max_page];
   }
+
   /**
     * roleが生徒の場合 true
     * @param string role

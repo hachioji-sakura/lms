@@ -58,6 +58,7 @@
  </div>
  <script>
  $(function(){
+   //編集時は、生徒が決定しているので科目の初期表示をする
    select_student_change();
  });
  function select_student_change(){
@@ -67,6 +68,8 @@
    if($(selecter).length < 1){
      selecter = "*[name='student_id[]']";
    }
+   //選択した生徒の学年に応じて、塾の科目を絞り込む
+   var _is_select_student = false;
    $(selecter).each(function(){
      var val = $(this).val();
      var grade = $(this).attr("grade");
@@ -78,6 +81,9 @@
        options[$(this).val()] = $(this).text();
      });
      console.log(val+":"+grade_code);
+     if(val|0 > 0){
+       _is_select_student = true;
+     }
    });
    var _options = [];
    var _option_html = "";
@@ -100,8 +106,18 @@
        width: _width,
        placeholder: '選択してください',
      });
-     $(".student_selected").collapse('show');
-     $('input[type="radio"][name="add_type"]:checked').change();
+   }
+   //マンツーの場合のみ振替フォームを表示
+   $("#exchanged_calendar").collapse('hide');
+   $("#select_exchanged_calendar").collapse('hide');
+   if(_is_select_student){
+     var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+     if(course_type!=="single"){
+       //グループ or ファミリーの場合
+     }
+     else {
+       $("#select_exchanged_calendar").collapse('show');
+     }
    }
  }
  </script>

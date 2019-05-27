@@ -34,9 +34,11 @@
 		var _req = {};
 		$("input, textarea, select", $("#"+formId)).each(function(){
 			var field = $(this).attr("name");
-			if(field.indexOf("#")<0){
-				var val = _getFormValue(this);
-				_req[field] = val;
+			if(field){
+				if(field.indexOf("#")<0){
+					var val = _getFormValue(this);
+					_req[field] = val;
+				}
 			}
 		});
 		$("input[type=checkbox]:checked,input[type=radio]:checked", $("#"+formId)).each(function(){
@@ -85,7 +87,11 @@
 	*/
 	function clearFormValue(formId){
 		clearValidateError();
-		$("input, textarea, select", $("#"+formId)).val("");
+		$("textarea, select", $("#"+formId)).val("");
+		$("select.select2", $("#"+formId)).each(function(){
+			$(this).val(-1).trigger('change');
+		});
+		$("input:not([type='hidden'])", $("#"+formId)).val("");
 	}
 	/**
 	* form配下の入力要素の値をチェックする

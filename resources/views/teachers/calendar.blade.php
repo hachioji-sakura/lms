@@ -52,8 +52,8 @@
               status : "new",
             }]);
             var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
-            var param ="?origin={{$domain}}&item_id={{$item->id}}";
-            param += "&teacher_id={{$item->id}}";
+            var param ="";
+            param += "?teacher_id={{$item->id}}";
             param += "&start_date="+start_date;
             param += "&start_hours="+start.hour();
             param += "&start_minutes="+start.minute();

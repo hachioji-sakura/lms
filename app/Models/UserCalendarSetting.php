@@ -21,7 +21,7 @@ class UserCalendarSetting extends UserCalendar
       user_calendar_settings.id in (select user_calendar_setting_id from user_calendar_member_settings where user_id=$user_id)
 EOT;
 
-    return $query->whereRaw($where_raw,[$user_id]);
+    return $query->whereRaw($where_raw,[]);
   }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
@@ -63,7 +63,7 @@ EOT;
       ->where('attribute_value', $this->schedule_method)
       ->first();
     if(!isset($item)) return "";
-    $ret = $item->attribute_name;
+    $ret = "";
     if($this->lesson_week_count > 0){
       $ret .= '第'.$this->lesson_week_count;
     }

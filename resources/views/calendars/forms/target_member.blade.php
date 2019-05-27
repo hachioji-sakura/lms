@@ -1,7 +1,7 @@
 @if(count($item->get_access_member($user->user_id)) > 0)
   @foreach($item->get_access_member($user->user_id) as $member)
-    @if($member->user->details()->role==="student")
-      @if(isset($student_id) && $student_id>0 && $member->user->details()->id!=$student_id)
+    @if($member->user->details("students")->role==="student")
+      @if($item->is_group()==false && isset($student_id) && $student_id>0 && $member->user->details()->id!=$student_id)
         {{-- student_idが指定されている場合の対象は一人 --}}
         @continue
       @endif
@@ -9,6 +9,7 @@
     @endif
   @endforeach
 @endif
+
 {{--
   @if($is_hidden == true || count($item->get_access_member($user->user_id))==1)
   @else

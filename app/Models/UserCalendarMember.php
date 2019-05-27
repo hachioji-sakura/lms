@@ -23,7 +23,8 @@ class UserCalendarMember extends Model
     "DELETE" =>  "api_delete_onetime_schedule.php",
   ];
   public static $rules = array(
-      'user_id' => 'required',
+    'calendar_id' => 'required',
+    'user_id' => 'required',
   );
   public function calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'calendar_id');
@@ -267,6 +268,36 @@ class UserCalendarMember extends Model
       }
     }
     return $res;
+  }
+  public function send_mail($title, $param, $type, $template){
+    $param['user'] = $this->user->details();
+    $controller = new Controller;
+    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template);
+    return $res;
+  }
+  private function get_mail_address(){
+    \Log::info("-----------------get_mail_address------------------");
+    $u = $this->user->details();
+    $email = '';
+    \Log::info($u->role);
+    if($u->role==='student'){
+      $student_id = $this->user->student->id;
+      $relations = StudentRelation::where('student_id', $student_id)->get();
+      foreach($relations as $relation){
+        //TODO 先にとれたユーザーを操作する親にする（修正したい）
+        $user_id = $relation->parent->user->id;
+        $email = $relation->parent->user->email;
+        \Log::info("relation=".$user_id.":".$email);
+        //TODO 安全策をとるテスト用メールにする
+        //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
+        break;
+      }
+    }
+    else {
+      $email = $u->email;
+    }
+    \Log::info("-----------------get_mail_address[$email]------------------");
+    return $email;
   }
   protected function send_slack($message, $msg_type, $username=null, $channel=null) {
     $controller = new Controller;

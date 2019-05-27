@@ -49,8 +49,6 @@ Route::resource('parents','StudentParentController');
 Route::resource('calendar_settings','UserCalendarSettingController');
 Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
 Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
-Route::get('teachers/{teacher_id}/calendar_settings','UserCalendarSettingController@teacher_index');
-Route::get('teachers/{teacher_id}/calendar_settings/create','UserCalendarSettingController@create');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 
@@ -145,7 +143,23 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
+Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
 
+
+Route::resource('student_groups','StudentGroupController');
+Route::get('api_student_groups/{teacher_id}','StudentGroupController@api_index');
+Route::get('teachers/{teacher_id}/student_groups','StudentGroupController@teacher_index');
+Route::get('teachers/{teacher_id}/student_groups/create','StudentGroupController@teacher_create');
+/*
+Route::get('teachers/{teacher_id}/calendar_settings','UserCalendarSettingController@teacher_index');
+Route::get('teachers/{teacher_id?}/calendar_settings/create','UserCalendarSettingController@teacher_create');
+Route::get('teachers/{teacher_id?}/calendar_settings/{id}','UserCalendarSettingController@teacher_show');
+Route::get('teachers/{teacher_id?}/calendar_settings/{id}/edit','UserCalendarSettingController@teacher_edit');
+Route::get('teachers/{teacher_id}/calendars','UserCalendarController@teacher_index');
+Route::get('teachers/{teacher_id?}/calendars/create','UserCalendarController@teacher_create');
+Route::get('teachers/{teacher_id?}/calendars/{id}','UserCalendarController@teacher_show');
+Route::get('teachers/{teacher_id?}/calendars/{id}/edit','UserCalendarController@teacher_edit');
+*/
 Route::get('home', 'HomeController@index')->name('home');
 
 //教科書を選択する画面

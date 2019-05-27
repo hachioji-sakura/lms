@@ -52,7 +52,13 @@ function course_type_change(){
     student_id_form.select2('destroy');
     student_id_form.removeAttr("multiple");
     if(course_type!=="single"){
+      //グループ or ファミリーの場合
+      get_student_group();
       student_id_form.attr("multiple", "multiple");
+      $(".course_type_selected").collapse('show');
+    }
+    else {
+      $(".course_type_selected").collapse('hide');
     }
     student_id_form.select2({
       width: _width,
@@ -61,4 +67,5 @@ function course_type_change(){
     student_id_form.val(-1).trigger('change');
   }
 }
+
 </script>

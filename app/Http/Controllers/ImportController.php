@@ -27,6 +27,8 @@ use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
 use App\Models\UserCalendarTagSetting;
 
+use App\Models\StudentGroup;
+
 use Illuminate\Http\Request;
 use DB;
 class ImportController extends UserController
@@ -198,10 +200,6 @@ class ImportController extends UserController
             $this->logic_name = "事務取り込み";
             $res = $this->managers_import($items);
             break;
-          case 'charge_students':
-            $this->logic_name = "担当生徒取り込み";
-            $res = $this->charge_students_import($items);
-            break;
           case 'repeat_schedules':
             $this->logic_name = "繰り返しスケジュール取り込み";
             $res = $this->repeat_schedules_import($items);
@@ -280,20 +278,6 @@ class ImportController extends UserController
         $c = 0;
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
-        }
-        return 'count['.$c.']';
-      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
-    }
-    /**
-     * 事務管理システムから取得したデータを取り込み
-     * @param array $items
-     * @return boolean
-     */
-    private function charge_students_import($items){
-      return $this->transaction(function() use ($items){
-        $c = 0;
-        foreach($items as $item){
-          if($this->store_charge_student($item)) $c++;
         }
         return 'count['.$c.']';
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
@@ -722,44 +706,26 @@ class ImportController extends UserController
      * @param array $item
      * @return boolean
      */
-    private function store_charge_student($item){
-      if(empty($item['student_no']) || intval($item['student_no'])==0) return false;
-      if(empty($item['teacher_no']) || intval($item['teacher_no'])==0) return false;
+    private function store_charge_student($student_id, $teacher_id, $tags){
+      $charge_student = ChargeStudent::where('student_id', $student_id)
+      ->where('teacher_id', $teacher_id)
+      ->first();
 
-      $student = User::tag('student_no', $item['student_no'])->first();
-      if(!isset($student)){
-        @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
+      if(!isset($charge_student)){
+        //存在しない場合、保存
+        $charge_student = ChargeStudent::create([
+          'student_id' => $student_id,
+          'teacher_id' => $teacher_id,
+          'create_user_id' => 1
+        ]);
+        $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+        foreach($tag_names as $tag_name){
+          if(!empty($tags[$tag_name])){
+             ChargeStudentTag::setTag($charge_student->id, $tag_name, $tags[$tag_name], 1);
+          }
+        }
       }
-      $student = $student->student;
-
-      $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
-      if(!isset($teacher)){
-        @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません", 'error', $this->logic_name);
-        return false;
-      }
-      $teacher = $teacher->teacher;
-
-      $lecture = Lecture::where('lecture_id_org',$item['lecture_id'])->first();
-      $lecture_id = 0;
-      if(isset($lecture)) $lecture_id = $lecture->id;
-
-      $items = ChargeStudent::where('student_id', $student->id)
-      ->where('teacher_id', $teacher->id)
-      ->where('lecture_id', $lecture->id)->first();
-
-      if(isset($items)){
-        //すでに存在する場合は保存しない
-        return false;
-      }
-
-      ChargeStudent::create([
-        'student_id' => $student->id,
-        'teacher_id' => $teacher->id,
-        'lecture_id' => $lecture_id,
-        'create_user_id' => 1
-      ]);
-      return true;
+      return $charge_student;
     }
     /**
      * 担当生徒+スケジュール登録
@@ -875,40 +841,8 @@ class ImportController extends UserController
       $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
-        $charge_student = ChargeStudent::where('student_id', $student->id)
-        ->where('teacher_id', $teacher->id)
-        ->where('lesson_week', $item["lesson_week"])
-        ->where('from_time_slot', $item["starttime"])
-        ->where('to_time_slot', $item["endtime"])
-        ->where('schedule_method', $item["schedule_method"])
-        ->where('lesson_week_count', $item["lesson_week_count"])
-        ->first();
-
-        if(!isset($charge_student)){
-          //存在しない場合、保存
-          ChargeStudent::create([
-            'student_id' => $student->id,
-            'teacher_id' => $teacher->id,
-            'schedule_method' => $item["schedule_method"],
-            'lesson_week_count' => $item["lesson_week_count"],
-            'lesson_week' => $item["lesson_week"],
-            'from_time_slot' => $item["starttime"],
-            'to_time_slot' => $item["endtime"],
-            'enable_start_date' => $item["startdate"],
-            'enable_end_date' => $item["enddate"],
-            'lecture_id' => $lecture_id,
-            'create_user_id' => 1
-          ]);
-        }
-        else {
-          $charge_student->update([
-            'enable_start_date' => $item["startdate"],
-            'enable_end_date' => $item["enddate"],
-            'lecture_id' => $lecture_id,
-          ]);
-        }
         $user_id = $teacher->user_id;
-        if(!isset($setting) && $work==7 && !empty($user_id)){
+        if(!isset($setting) && ($work==7 || $work==8) && !empty($user_id)){
           //$user_idが設定されるケースは、事務or講師
           $__setting = UserCalendarSetting::where('user_id', $user_id)
             ->where('schedule_method', $item['schedule_method'])
@@ -922,6 +856,7 @@ class ImportController extends UserController
           if(isset($__setting)){
             //おそらく同一のグループレッスンと思われる予定が見つかった
             $setting = $__setting;
+
           }
         }
       }
@@ -980,11 +915,12 @@ class ImportController extends UserController
       $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
-          if(isset($charge_student)) ChargeStudentTag::setTag($charge_student->id, $tag_name, $tags[$tag_name], 1);
           if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
         }
       }
-
+      if(isset($student) && isset($teacher)){
+        $this->store_charge_student($student->id,$teacher->id,$tags);
+      }
       return true;
     }
     /**
@@ -1130,7 +1066,7 @@ class ImportController extends UserController
       $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();
       $items = null;
       if(isset($_member)) $items = $_member->calendar;
-      if(!isset($items) && !empty($user_id) && $work==7){
+      if(!isset($items) && !empty($user_id) && ($work==7 || $work==8)){
         $__items = UserCalendar::where('user_id', $user_id)
           ->where('start_time', $item['ymd'].' '.$item['starttime'])
           ->where('end_time' , $item['ymd'].' '.$item['endtime'])
@@ -1238,6 +1174,10 @@ class ImportController extends UserController
           UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
         }
       }
+      if(isset($student) && isset($teacher)){
+         $this->store_charge_student($student->id, $teacher->id, $tags);
+      }
+
 
       $setting_id = 0;
       $calendar = UserCalendar::where('id', $calendar_id)->first();
@@ -1276,7 +1216,6 @@ class ImportController extends UserController
       if($setting_id > 0){
         $calendar->update(['user_calendar_setting_id' => $setting_id]);
       }
-
       return true;
     }
 
@@ -1518,6 +1457,9 @@ class ImportController extends UserController
       }
 
       return true;
+    }
+    private function store_student_group(){
+
     }
     private function remind($message, $type, $title){
       @$this->send_slack($message, $type, $title);

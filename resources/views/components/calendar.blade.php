@@ -51,11 +51,14 @@
     }
     function event_render(events, element, title){
       var _status_style = status_style(events.status);
-      if(events.status=="confirm"){
-        var _status_style = status_style(events.total_status);
+      if(events.status=="confirm" && events.total_status=="fix"){
+        _status_style = status_style(events.status);
+      }
+      else if(events.status=="confirm"){
+        _status_style = status_style(events.total_status);
       }
       if(events.status=="fix" && events.total_status=="rest"){
-        var _status_style = status_style(events.total_status);
+        _status_style = status_style(events.total_status);
       }
       var bgcolor = _status_style["color"];
       var icon = _status_style["icon"];

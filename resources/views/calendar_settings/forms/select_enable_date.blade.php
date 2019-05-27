@@ -1,4 +1,4 @@
-<div class="col-12 mt-2">
+<div class="col-12 mb-2">
   <label for="start_date" class="w-100">
     設定有効日
     <span class="right badge badge-secondary ml-1">任意</span>

@@ -62,6 +62,11 @@ class TeacherController extends StudentController
       'list' => $request->get('list'),
       'attributes' => $this->attributes(),
     ];
+    $ret['filter'] = [
+      'search_week'=>$request->search_week,
+      'search_work' => $request->search_work,
+      'search_place' => $request->search_place,
+    ];
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(empty($user)){
@@ -106,6 +111,11 @@ class TeacherController extends StudentController
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
+    if($request->has('api')){
+      $model = $this->model()->where('id',$id)->first();
+      if(isset($model)) $model = $model->details();
+      return $this->api_response(200, '','', $model);
+    }
     $user = $param['user'];
     //コメントデータ取得
     $comments = $param['item']->user->target_comments;
@@ -146,6 +156,21 @@ class TeacherController extends StudentController
       'item' => $item,
     ])->with($param);
   }
+  public function calendar_settings(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $model = $this->model()->where('id',$id)->first()->user;
+    $item = $model->details();
+    $item['tags'] = $model->tags();
+
+    $user = $param['user'];
+    $view = "calendar_settings";
+    $param['view'] = $view;
+    return view($this->domain.'.'.$view, [
+      'calendar_settings' => $item->get_calendar_settings($param['filter']),
+    ])->with($param);
+  }
+
   public function schedule(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
@@ -543,16 +568,8 @@ class TeacherController extends StudentController
      */
     public function get_charge_students(Request $request , $id){
       $param = $this->get_param($request, $id);
+      $items = $param['item']->get_charge_students();
 
-      $items = Student::whereRaw('students.user_id in (select id from users where status !=9)');
-      $items = $items->whereRaw('students.id in (select student_id from charge_students where teacher_id=?)', $id);
-
-      $items = $items->get();
-      foreach($items as $i => $item){
-        $detail = $item->user->details();
-        $detail['grade'] = $item->tag_value('grade');
-        $items[$i] = $detail;
-      }
       return $this->api_response(200, "", "", $items);
     }
 

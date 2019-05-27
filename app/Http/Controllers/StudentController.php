@@ -205,6 +205,11 @@ class StudentController extends UserController
    if(!isset($model)){
       abort(404);
    }
+   if($request->has('api')){
+     if(isset($model)) $model = $model->first()->details();
+     return $this->api_response(200, '','', $model);
+   }
+
    $model = $model->first()->user;
    $item = $model->details();
    $item['tags'] = $model->tags();

@@ -21,6 +21,13 @@ class Teacher extends Student
     'kana_last' => 'required',
     'kana_first' => 'required',
   );
+  /**
+   *　リレーション：担当生徒（担当講師）
+   */
+  public function chargeStudents(){
+    return $this->hasMany('App\Models\ChargeStudent', 'teacher_id');
+  }
+
   public function scopeFindChargeStudent($query, $id)
   {
     $where_raw = <<<EOT
@@ -229,5 +236,13 @@ EOT;
                         ]);
     return $manager;
   }
-
+  public function get_charge_students(){
+    $items = [];
+    foreach($this->chargeStudents as $charge_student){
+      $detail = $charge_student->student->user->details("students");
+      $detail['grade'] = $detail->tag_value('grade');
+      $items[$detail->id] = $detail;
+    }
+    return $items;
+  }
 }

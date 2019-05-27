@@ -5,6 +5,7 @@ use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
 use App\Models\Student;
+use App\Models\UserCalendarSetting;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -183,7 +184,7 @@ class Student extends Model
    *　リレーション：家族関係
    */
   public function relations(){
-    return $this->hasMany('App\Models\StudentRelation');
+    return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
   /**
    *　スコープ：ユーザーステータス
@@ -443,5 +444,56 @@ EOT;
     }
     return $ret;
   }
+  public function is_family($student_id){
+    $relations = StudentRelation::where('student_id', $this->id)->get();
+    $relations2 = StudentRelation::where('student_id', $student_id)->get();
+    foreach($relations as $relation){
+      foreach($relations2 as $relation2){
+        if($relation2->student_parent_id == $relation->student_parent_id) return true;
+      }
+    }
+    return false;
+  }
+  public function get_calendar_settings($filter){
+    $items = UserCalendarSetting::findUser($this->user_id);
+    $items = $items->enable();
 
+    if(isset($filter["search_place"])){
+      $_param = "";
+      if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
+      else $_param = explode(',', $filter["search_place"].',');
+      $items = $items->findPlaces($_param);
+    }
+    if(isset($filter["search_work"])){
+      $_param = "";
+      if(gettype($filter["search_work"]) == "array") $_param  = $filter["search_work"];
+      else $_param = explode(',', $filter["search_work"].',');
+      $items = $items->findWorks($_param);
+    }
+    if(isset($filter["search_week"])){
+      $_param = "";
+      if(gettype($filter["search_week"]) == "array") $_param  = $filter["search_week"];
+      else $_param = explode(',', $filter["search_week"].',');
+      $items = $items->findWeeks($_param);
+    }
+    $items = $items->orderByWeek()
+    ->get();
+    foreach($items as $key=>$item){
+      $items[$key] = $item->details();
+    }
+    return $items;
+  }
+  public function details(){
+    $item = $this;
+    $subject = [];
+    $lessons = [];
+    foreach($this->get_tags('lesson') as $tag){
+      $lesson = intval($tag["value"]);
+      $lessons[] = $lesson;
+      $subject[$lesson] = $this->get_subject($lesson);
+    }
+    $item["lesson"] = $lessons;
+    $item["subject"] = $subject;
+    return $item;
+  }
 }

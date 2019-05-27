@@ -42,7 +42,7 @@
             </div>
           </div>
         </div>
-        <div class="card-body table-responsive p-0">
+        <div class="card-body p-0">
           @if(count($calendars) > 0)
           <?php
             $__date = "";

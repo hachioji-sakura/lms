@@ -17,57 +17,129 @@
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
-    <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest">
+    @if($item->is_group()===true)
+      {{-- グループレッスン系 --}}
+      <form method="POST" action="/calendars/{{$item['id']}}">
       @csrf
       @method('PUT')
-      @if(isset($student_id))
-        <input type="hidden" value="{{$student_id}}" name="student_id" />
-      @endif
-      @if($user->role==="manager" || $user->role==="teacher")
-      <input type="hidden" value="1" name="is_proxy">
-      @endif
+      <input type="hidden" value="rest" name="status" />
+      <div class="row" id="rest_list">
+        <div class="col-12">
+          <table class="table table-striped w-80" id="rest_list_table">
+            <tr class="bg-gray">
+              <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
+              <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>休み</th>
+            </tr>
+            @foreach($item->members as $member)
+            @if($member->user->details()->role==="student")
+            <tr class="">
+              <th class="p-1 pl-2">
+                {{$member->user->details()->name}}</th>
+              <td class="p-1 text-sm text-center">
+                @if($member->status=="rest")
+                  <i class="fa fa-times mr-1"></i>お休み
+                @elseif($member->status=="fix")
+                <div class="input-group">
+                  <div class="form-check">
+                    <input class="form-check-input icheck flat-green rest_check" type="checkbox" name="{{$member->id}}_status" id="{{$member->id}}_status_rest" value="rest" validate="status_rest_check()">
+                    <label class="form-check-label" for="{{$member->id}}_status_rest">
+                        休み
+                    </label>
+                  </div>
+                </div>
+                @endif
+              </td>
+            </tr>
+            @endif
+            @endforeach
+          </table>
+          <script>
+          function status_rest_check(){
+            console.log("status_rest_check");
+            var _is_scceuss = false;
+            $("input.rest_check[type='checkbox']:checked").each(function(index, value){
+              var val = $(this).val();
+              console.log(val);
+              if(val=="rest"){
+                _is_scceuss = true;
+              }
+            });
+            if(!_is_scceuss){
+              front.showValidateError('#rest_list_table', '休みにチェックが入っていません');
+            }
+            return _is_scceuss;
+          }
+          </script>
 
-    <div class="row">
-      @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
-      @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest', 'student_id' => $student_id]) @endcomponent
-    </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+              <i class="fa fa-envelope mr-1"></i>
+                休み連絡
+            </button>
+        </div>
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="reset" class="btn btn-secondary btn-block">
+                閉じる
+            </button>
+        </div>
+      </div>
+      </form>
+    @else
+      <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest">
+        @csrf
+        @method('PUT')
+        @if(isset($student_id))
+          <input type="hidden" value="{{$student_id}}" name="student_id" />
+        @endif
+        @if($user->role==="manager" || $user->role==="teacher")
+        <input type="hidden" value="1" name="is_proxy">
+        @endif
 
-    <div class="row">
-      {{--
-      @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
-      <div class="col-12 mb-1">
-          <button type="reset" class="btn btn-secondary btn-block">
-              閉じる
-          </button>
-      </div>
-      @else
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
-            <i class="fa fa-envelope mr-1"></i>
-              休み連絡
-          </button>
-      </div>
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="reset" class="btn btn-secondary btn-block">
-              閉じる
-          </button>
-      </div>
-      @endif
-      --}}
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
-            <i class="fa fa-envelope mr-1"></i>
-              休み連絡
-          </button>
-      </div>
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="reset" class="btn btn-secondary btn-block">
-              閉じる
-          </button>
+      <div class="row">
+        @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
+        @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest', 'student_id' => $student_id]) @endcomponent
       </div>
 
-    </div>
-    </form>
+      <div class="row">
+        {{--
+        @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
+        <div class="col-12 mb-1">
+            <button type="reset" class="btn btn-secondary btn-block">
+                閉じる
+            </button>
+        </div>
+        @else
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+              <i class="fa fa-envelope mr-1"></i>
+                休み連絡
+            </button>
+        </div>
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="reset" class="btn btn-secondary btn-block">
+                閉じる
+            </button>
+        </div>
+        @endif
+        --}}
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+              <i class="fa fa-envelope mr-1"></i>
+                休み連絡
+            </button>
+        </div>
+        <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <button type="reset" class="btn btn-secondary btn-block">
+                閉じる
+            </button>
+        </div>
+
+      </div>
+      </form>
+    @endif
   </div>
   @endslot
 @endcomponent

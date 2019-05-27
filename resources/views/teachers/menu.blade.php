@@ -73,7 +73,7 @@
         </li>
         --}}
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?origin={{$domain}}&item_id={{$item->id}}" page_title="授業追加">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
             <i class="fa fa-calendar-plus nav-icon"></i>授業追加
           </a>
         </li>
@@ -102,7 +102,7 @@
   </a>
 </dt>
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?origin={{$domain}}&item_id={{$item->id}}" page_title="授業追加">
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
     <i class="fa fa-chalkboard-teacher"></i>授業追加
   </a>
 </dt>

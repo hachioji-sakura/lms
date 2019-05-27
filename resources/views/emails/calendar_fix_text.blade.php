@@ -1,19 +1,15 @@
 @include('emails.common')
-
 @if($send_to==='student')
-{{$user->name()}}様
+{{$user_name}}様
 以下の授業予定を確定いたしました。
 @elseif($send_to==='teacher')
 {{$user->name()}}先生
 生徒様よりご連絡があり、
 以下の 授業予定が確定となりました。
-
 @endif
-
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
-
 @if($send_to==='student')
 …………………………………………………………………………………………
 授業をお休みする場合は、以下の画面よりご連絡ください。

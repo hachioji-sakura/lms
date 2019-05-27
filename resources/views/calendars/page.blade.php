@@ -29,7 +29,7 @@
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            @foreach($item->students as $member)
+            @foreach($item["students"] as $member)
               <a target="_blank" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
                 @if($member->status=='new')
                 <i class="fa fa-question-circle mr-1"></i>
@@ -47,7 +47,7 @@
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
-                @if(!empty($member->remark))
+                @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty($member->remark))
                  ({{$member->remark}})
                 @endif
               </a>

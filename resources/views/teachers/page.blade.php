@@ -77,7 +77,7 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?origin={{$domain}}&item_id={{$item->id}}" page_title="授業追加">
+        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
         <div class="info-box">
           <span class="info-box-icon bg-primary">
             <i class="fa fa-plus"></i>
@@ -103,14 +103,27 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/{{$domain}}/{{$item->id}}/calendar_settings" class="">
+        <a class="" href="/student_groups?teacher_id={{$item->id}}" >
         <div class="info-box">
-          <span class="info-box-icon bg-success">
-            <i class="fa fa-chalkboard-teacher"></i>
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-users"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">通常授業設定</b>
-            <span class="text-sm">繰り返し授業予定の登録</span>
+            <b class="info-box-text text-lg">生徒グループ</b>
+            <span class="text-sm">グループ、ファミリーの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="/teacgers/{{$item->id}}/calendar_settings" >
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-calendar-alt"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">通常授業一覧</b>
+            <span class="text-sm">定期的な授業予定</span>
           </div>
         </div>
         </a>
@@ -131,7 +144,6 @@
     </div>
 	</div>
 </section>
-
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">

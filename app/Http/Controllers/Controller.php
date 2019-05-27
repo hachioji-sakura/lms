@@ -47,7 +47,7 @@ class Controller extends BaseController
     protected  function forbidden($message="forbidden", $description=""){
       return $this->api_response(403, $message, $description);
     }
-    protected function send_mail($to, $title, $param, $type, $template)
+    public function send_mail($to, $title, $param, $type, $template)
     {
       $title = '【'.config('app.name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
@@ -69,7 +69,7 @@ class Controller extends BaseController
         $role = $user_check->details()->role;
         if($role=="student" || $role=="parent"){
           $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
-          return true;
+          //return true;
         }
       }
       try {

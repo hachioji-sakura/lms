@@ -7,11 +7,15 @@
 レッスン：{{$item['lesson']}}
 コース：{{$item['course']}}
 科目：{{implode(',', $item['subject'])}}
-
+@if($send_to!=='student')
 生徒：
-@foreach($item['students'] as $member)
-  {{$member->user->details('students')->name()}}:  {{$member->status_name()}}
+@foreach($item->members as $member)
+@if($member->user->details('students')->role=="student")
+{{$member->user->details('students')["name"]}}:  {{$member->status_name()}}
+@endif
 @endforeach
+@endif
+
 --------------------------------------------
 @isset($item['comment'])
 連絡事項：{{$item['comment']}}

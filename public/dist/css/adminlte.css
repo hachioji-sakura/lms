@@ -13382,9 +13382,9 @@ iframe.map {
 }
 .fc-sun { color: red; }  /* 日曜日 */
 .fc-sat { color: blue; } /* 土曜日 */
-span.select2-container{
+span.select2-container--open{
 	z-index: 1102;
-	modalの上にのるので、modalのz-indexを考慮*/
+	/*modalの上にのるので、modalのz-indexを考慮*/
 }
 .step{
   list-style-type: none;

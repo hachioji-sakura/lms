@@ -1,5 +1,5 @@
 @if(isset($_edit) && $_edit==true)
-<div class="col-12">
+<div class="col-12 collapse">
   <div class="form-group">
     <label for="start_date" class="w-100">
       予定タイプ
@@ -10,7 +10,7 @@
   </div>
 </div>
 @else
-<div class="col-12 mb-1 student_selected collapse">
+<div class="col-12 mb-1 collapse" id="select_exchanged_calendar">
   <div class="form-group">
     <label for="add_type">
       振替授業
@@ -66,9 +66,13 @@ function add_type_change(obj){
 function get_exchange_calendar(){
   var teacher_id = ($('*[name=teacher_id]').val())|0;
   var student_id = $('select[name="student_id[]"]').val()|0;
+  var lesson = ($('input[name=lesson]:checked').val())|0;
+  if(lesson==0){
+    lesson = ($('input[name=lesson]').val())|0;
+  }
   console.log("get_exchange_calendar");
   //振替対象の予定を取得
-  service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1', null,
+  service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson, null,
     function(result, st, xhr) {
       console.log(result["data"]);
       if(result['status']===200){

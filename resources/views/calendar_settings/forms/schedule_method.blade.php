@@ -12,9 +12,9 @@
           @if(isset($_edit) && $_edit==true && $item->schedule_method == $index)
           checked
           @endif
-        >{{$name}}
-        </label>
+        >{{$name}}</label>
       @endif
+
     @endforeach
   </div>
 </div>
@@ -22,17 +22,14 @@
   <div class="form-group">
     <label for="lesson_week" class="w-100">
     週（毎月）
-      <span class="right badge badge-danger ml-1">必須</span>
     </label>
     <div class="input-group">
-      第
-      <input type="text" inputtype="number" minvalue=1 maxvalue=5 maxlength=1 minlength=1
-       name="lesson_week_count" class="form-control mx-1 w-50" required="true"
-       placeholder="例：1"
-        @if(isset($_edit) && $_edit===true && $item->lesson_week_count > 0)
-        value="{{ $item->lesson_week_count }}"
-        @endif
-      >週
+      <select name='lesson_week_count' class="form-control" placeholder="場所" required="true">
+        <option value="">(選択)</option>
+        @for($i=1;$i<5;$i++)
+          <option value="{{$i}}" @if(isset($_edit) && $_edit==true && $item['lesson_week_count'] == $i) selected @endif>第{{$i}}週</option>
+        @endfor
+      </select>
     </div>
   </div>
 </div>
