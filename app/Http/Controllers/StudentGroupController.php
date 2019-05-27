@@ -50,6 +50,9 @@ class StudentGroupController  extends MilestoneController
 
   public function get_param(Request $request, $id=null){
     $user = $this->login_details();
+    if(!(isset($user)){
+      abort(403);
+    }
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
@@ -95,8 +98,10 @@ class StudentGroupController  extends MilestoneController
       if(!isset($item)){
         abort(404, 'ページがみつかりません(1)');
       }
-      if(!(isset($user) && $user->id==$item->teacher_id)){
-        abort(403, 'このページにはアクセスできません('.$user->id.'!='.$item->teacher_id.')');
+      if($this->is_manager($user->role)!==true){
+        if($user->id==$item->teacher_id)){
+          abort(403, 'このページにはアクセスできません('.$user->id.'!='.$item->teacher_id.')');
+        }
       }
 
       $ret['item'] = $item->details();
