@@ -191,12 +191,6 @@ class UserCalendarSettingController extends UserCalendarController
       }
       return ["items" => $items, "fields" => $fields, "count" => $count];
     }
-
-    public function update_form(Request $request){
-      $form = [];
-
-      return $form;
-    }
     /**
      * データ更新時のパラメータチェック
      *
