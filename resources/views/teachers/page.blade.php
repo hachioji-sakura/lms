@@ -116,7 +116,7 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="/teacgers/{{$item->id}}/calendar_settings" >
+        <a class="" href="/teachers/{{$item->id}}/calendar_settings" >
         <div class="info-box">
           <span class="info-box-icon bg-secondary">
             <i class="fa fa-calendar-alt"></i>
