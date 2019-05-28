@@ -832,6 +832,7 @@ class ImportController extends UserController
         'lecture_id' => $lecture_id,
         'place' => $place,
         'work' => $work,
+        'status' => 'fix',
         'create_user_id' => 1
       ];
 
@@ -1005,8 +1006,6 @@ class ImportController extends UserController
 
       //その他の項目は、remarkにでも入れておく
       $remark = $item['comment'];
-      $remark.='[free='.$item['free'].']';
-      $remark.='[repeattimes='.$item['repeattimes'].']';
 
       $exchanged_calendar_id = 0;
 

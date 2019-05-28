@@ -247,54 +247,6 @@ EOT;
     }
     return $member;
   }
-  public function setting_to_calendar(){
-    //この設定により作成した予定を取得
-    $_calendars = [];
-    foreach($this->calendars as $calendar){
-      $_calendars[$calendar->start_time] = $calendar;
-    }
-    //この設定の対象日付を取得
-    $schedules = $this->get_add_calendar_date();
-    $ret = [];
-    foreach($schedules as $index => $schedule){
-      $start_time = $schedule.' '.$this->from_time_slot;
-      if(isset($_calendars[$start_time])){
-        $_already_calendar = $_calendars[$start_time];
-        if($_already_calendar->end_time == $schedule.' '.$this->to_time_slot
-           && $_already_calendar->user_id == $this->user_id){
-             //この日付の予定がすでに作成済み
-             //開始・終了・主催者が同じ
-             continue;
-        }
-      }
-      $ret[] = $this->_setting_to_calendar($schedule);
-    }
-
-    return $ret;
-  }
-  private function _setting_to_calendar($date){
-    $default_status = 'fix';
-    $form = [
-      'status' => $default_status,
-      'user_calendar_setting_id' => $this->id,
-      'start_time' => $date.' '.$this->from_time_slot,
-      'end_time' => $date.' '.$this->to_time_slot,
-      'lecture_id' => $this->lecture_id,
-      'place' => $this->place,
-      'work' => $this->work,
-      'exchanged_calendar_id' => 0,
-      'remark' => $this->remark,
-      'teacher_user_id' => $this->user_id,
-      'create_user_id' => 1,
-    ];
-    $calendar = UserCalendar::add($form);
-    foreach($this->members as $member){
-      if($this->user_id == $member->user_id) continue;
-      //主催者以外を追加
-      $calendar->memberAdd($member->user_id, 1, $default_status);
-    }
-    return $calendar;
-  }
   public function get_add_calendar_date($start_date="", $range_month=1, $month_week_count=5){
     $add_calendar_date = [];
     if(empty($start_date)) $start_date = date('Y-m-01'); //月初
