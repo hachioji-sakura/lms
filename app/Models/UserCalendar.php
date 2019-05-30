@@ -271,23 +271,18 @@ EOT;
   }
   public function status_name(){
     $status_name = "";
-    switch($this->status){
-      case "new":
-        return "予定(下書き)";
-      case "confirm":
-        return "予定確認中";
-      case "fix":
-        return "授業予定";
-      case "cancel":
-        return "キャンセル";
-      case "rest":
-        return "休み";
-      case "absence":
-        return "欠席";
-      case "presence":
-        return "出席済み";
+    if(isset(config('attribute.calendar_status')[$this->status])){
+      $status_name = config('attribute.calendar_status')[$this->status];
     }
-    return "";
+    switch($this->status){
+      case "fix":
+        if($this->work==9) return "勤務予定";
+      case "absence":
+        if($this->work==9) return "欠勤";
+      case "presence":
+      if($this->work==9) return "出勤";
+    }
+    return $status_name;
   }
   public function subject(){
     $tags =  $this->get_tags('charge_subject');
@@ -322,6 +317,10 @@ EOT;
       }
     }
     return $ret;
+  }
+  public function is_management(){
+    if($this->work==9) return true;
+    return false;
   }
   public function is_group(){
     /*

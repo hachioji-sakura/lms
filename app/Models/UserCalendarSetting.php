@@ -38,7 +38,8 @@ EOT;
   }
   public function scopeEnable($query){
     $where_raw = <<<EOT
-      (
+      user_calendar_settings.status = 'fix'
+      AND (
        (user_calendar_settings.enable_start_date is null OR user_calendar_settings.enable_start_date < ?)
        AND
        (user_calendar_settings.enable_end_date is null OR user_calendar_settings.enable_end_date > ?)
@@ -172,7 +173,7 @@ EOT;
   public function change($form){
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
-      'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id',
+      'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
     ];
     $form['from_time_slot'] = $this->from_time_slot;
     $form['to_time_slot'] = $this->to_time_slot;

@@ -532,11 +532,11 @@ class StudentController extends UserController
         $statuses = ['rest', 'fix', 'presence', 'absence'];
         break;
     }
-    $calendars = UserCalendar::rangeDate($from_date, $to_date)
-      ->findUser($user_id);
+    $calendars = UserCalendar::rangeDate($from_date, $to_date);
     if($request->get('list')!=='history'){
       $calendars = $calendars->findStatuses($statuses);
     }
+    $calendars = $calendars->findUser($user_id);
     //var_dump($calendars->toSql());
     $count = $calendars->count();
     $calendars = $calendars->sortStarttime($sort);

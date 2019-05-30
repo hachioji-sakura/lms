@@ -23,33 +23,35 @@ class UserCalendarSettingController extends UserCalendarController
     public function model(){
       return UserCalendarSetting::query();
     }
-    public function show_fields(){
+    public function show_fields($work){
       $user = $this->login_details();
+      if($work==9){
         $ret = [
-        'title1' => [
-          'label' => '概要',
-          'size' => 6,
-        ],
-        'place_name' => [
-          'label' => '講師',
-          'size' => 6,
-        ],
-        'title2' => [
-          'label' => '詳細',
-        ],
-        'user_name' => [
-          'label' => '担当',
-          'size' => 6,
-        ],
-        'student_name' => [
-          'label' => '生徒',
-          'size' => 6,
-        ],
-        'subject' => [
-          'label' => '科目',
-          'size' => 12,
-        ],
-      ];
+          'title1' => [
+            'label' => '概要',
+            'size' => 6,
+          ],
+          'place_name' => [
+            'label' => '場所',
+            'size' => 6,
+          ],
+          'title2' => [
+            'label' => '詳細',
+          ],
+          'user_name' => [
+            'label' => '担当',
+            'size' => 6,
+          ],
+          'student_name' => [
+            'label' => '生徒',
+            'size' => 6,
+          ],
+          'subject' => [
+            'label' => '科目',
+            'size' => 12,
+          ],
+        ];
+      }
       return $ret;
     }
     public function create_form(Request $request){

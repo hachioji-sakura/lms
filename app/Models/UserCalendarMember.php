@@ -61,6 +61,17 @@ class UserCalendarMember extends Model
     }
     return "";
   }
+  public function remark(){
+    $remark = "";
+    if(!empty(trim($this->remark))) $remark = trim($this->remark);
+    if($this->rest_type == 'a1'){
+      $remark = '休み1:'.$remark;
+    }
+    if($this->rest_type == 'a2'){
+      $remark = '休み2:'.$remark;
+    }
+    return $remark;
+  }
   public function office_system_api($method){
     if($this->schedule_id == 0 && $method=="PUT") return null; ;
     if($this->schedule_id == 0 && $method=="DELETE") return null;;
@@ -158,7 +169,6 @@ class UserCalendarMember extends Model
         ->where('user_id', $this->user_id)->first();
       $altsched_id = $exchanged_calendar_member->schedule_id;
     }
-
 
     $postdata =[];
     switch($method){
@@ -262,9 +272,22 @@ class UserCalendarMember extends Model
         $message .= '['.$key.':'.$val.']';
       }
       $remark = trim($res["data"][0]["cancel_reason"]);
+      $cancel = "";
+      if(isset($res["data"][0]["cancel"])) $cancel = trim($res["data"][0]["cancel"]);
+      $update = [];
+      $is_update = false;
       if(!empty($remark)  && $this->remark != $remark){
+        $update['remark'] = $remark;
+        $is_update = true;
         $this->update(['remark' => $remark]);
-        @$this->send_slack("休み判別結果：".$remark."\ndata:\n".$message, 'warning', "事務システムAPI");
+      }
+      if(!empty($cancel)  && $this->rest_type != $cancel){
+        $update['rest_type'] = $cancel;
+        $is_update = true;
+      }
+      if($is_update==true){
+        $this->update($update);
+        @$this->send_slack("休み判別結果：".$cancel.':'.$remark."\ndata:\n".$message, 'warning', "事務システムAPI");
       }
     }
     return $res;

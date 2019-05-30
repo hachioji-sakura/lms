@@ -31,42 +31,64 @@ class UserCalendarController extends MilestoneController
   public function model(){
     return UserCalendar::query();
   }
-  public function show_fields(){
+  public function show_fields($work){
     $user = $this->login_details();
+    if($work==9){
       $ret = [
-      'datetime' => [
-        'label' => '日時',
-        'size' => 6,
-      ],
-      'status_name' => [
-        'label' => 'ステータス',
-        'size' => 6,
-      ],
-      'teacher_name' => [
-        'label' => '講師',
-        'size' => 6,
-      ],
-      'place_name' => [
-        'label' => '場所',
-        'size' => 6,
-      ],
-      'lesson' => [
-        'label' => 'レッスン',
-        'size' => 6,
-      ],
-      'course' => [
-        'label' => 'コース',
-        'size' => 6,
-      ],
-      'subject' => [
-        'label' => '科目',
-        'size' => 6,
-      ],
-      'student_name' => [
-        'label' => '生徒',
-        'size' => 6,
-      ],
-    ];
+        'datetime' => [
+          'label' => '日時',
+          'size' => 6,
+        ],
+        'status_name' => [
+          'label' => 'ステータス',
+          'size' => 6,
+        ],
+        'manager_name' => [
+          'label' => '担当',
+          'size' => 6,
+        ],
+        'place_name' => [
+          'label' => '場所',
+          'size' => 6,
+        ],
+      ];
+    }
+    else {
+      $ret = [
+        'datetime' => [
+          'label' => '日時',
+          'size' => 6,
+        ],
+        'status_name' => [
+          'label' => 'ステータス',
+          'size' => 6,
+        ],
+        'teacher_name' => [
+          'label' => '講師',
+          'size' => 6,
+        ],
+        'place_name' => [
+          'label' => '場所',
+          'size' => 6,
+        ],
+        'lesson' => [
+          'label' => 'レッスン',
+          'size' => 6,
+        ],
+        'course' => [
+          'label' => 'コース',
+          'size' => 6,
+        ],
+        'subject' => [
+          'label' => '科目',
+          'size' => 6,
+        ],
+        'student_name' => [
+          'label' => '生徒',
+          'size' => 12,
+        ],
+      ];
+    }
     return $ret;
   }
 
@@ -83,14 +105,23 @@ class UserCalendarController extends MilestoneController
     $form['create_user_id'] = $user->user_id;
     //予定の指定
     if($request->has('start_date') && $request->has('start_hours')
-        && $request->has('start_minutes') && $request->has('course_minutes')){
-      $form['course_minutes'] = $request->get('course_minutes');
+        && $request->has('start_minutes')){
       $form['start_date'] = $request->get('start_date');
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
+      $form['end_hours'] = $request->get('end_hours');
+      $form['end_minutes'] = $request->get('end_minutes');
+
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
-      //授業時間＋開始日時から終了日時を計算
-      $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
+      $end_time = null;
+      if($request->has('course_minutes')){
+        //授業時間＋開始日時から終了日時を計算
+        $form['course_minutes'] = $request->get('course_minutes');
+        $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
+      }
+      if($request->has('end_hours') && $request->has('end_minutes')){
+        $end_time = $form['start_date'].' '.$form['end_hours'].':'.$form['end_minutes'].':00';
+      }
       $form['start_time'] = $start_time;
       $form['end_time'] = $end_time;
     }
@@ -541,7 +572,7 @@ class UserCalendarController extends MilestoneController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields();
+      $param['fields'] = $this->show_fields($param['item']->work);
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>'' ])->with($param);
       }
@@ -579,7 +610,7 @@ class UserCalendarController extends MilestoneController
         }
       }
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-      $param['fields'] = $this->show_fields();
+      $param['fields'] = $this->show_fields($param['item']->work);
       $param['action'] = '';
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
@@ -668,7 +699,7 @@ class UserCalendarController extends MilestoneController
       }
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
-        $param['fields'] = $this->show_fields();
+        $param['fields'] = $this->show_fields($param['item']->work);
         return $this->save_redirect($res, $param, $this->status_update_message[$status], '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
       }
       else {
@@ -745,7 +776,8 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $param['teachers'] = [];
-      $param['teachers'][] = Teacher::where('user_id', $param['item']["teachers"][0]->user_id)->first();
+      $teacher = Teacher::where('user_id', $param['item']["user_id"])->first();
+      if(isset($teacher)) $param['teachers'][] = $teacher;
       return view($this->domain.'.create', [
         '_edit' => true])
         ->with($param);
@@ -770,7 +802,7 @@ class UserCalendarController extends MilestoneController
 
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
-        $param['fields'] = $this->show_fields();
+        $param['fields'] = $this->show_fields($param['item']->work);
         return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
       }
       else {

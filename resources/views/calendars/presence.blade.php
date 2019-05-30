@@ -10,7 +10,7 @@
   @endslot
   @slot('forms')
   <div  id="{{$domain}}_presence">
-    @if($item->is_group()===true)
+    @if(count($item["students"]) > 1)
       {{-- グループレッスン系 --}}
       <form method="POST" action="/calendars/{{$item['id']}}">
       @csrf
@@ -19,7 +19,7 @@
         <div class="col-12 mb-1">
           <div class="form-group">
             <label for="status">
-              <i class="fa fa-question-circle mr-1"></i>
+              <i class="fa fa-question-circle mr-1 mt-2"></i>
               この授業を実施しましたか？
               <span class="right badge badge-danger ml-1">必須</span>
             </label>
@@ -104,7 +104,7 @@
               <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
               <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>出欠</th>
             </tr>
-            @foreach($item->members as $member)
+            @foreach($item["students"] as $member)
             @if($member->user->details()->role==="student")
             <tr class="">
               <th class="p-1 pl-2">
@@ -117,13 +117,21 @@
                   <div class="form-check">
                     <input class="form-check-input icheck flat-green presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_presence" value="presence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_presence">
-                        出席
+                      @if($item->is_management())
+                      出勤
+                      @else
+                      出席
+                      @endif
                     </label>
                   </div>
                   <div class="form-check ml-2">
                     <input class="form-check-input icheck flat-red presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_absence" value="absence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_absence">
-                        欠席
+                      @if($item->is_management())
+                      欠勤
+                      @else
+                      欠席
+                      @endif
                     </label>
                   </div>
                 </div>
@@ -170,7 +178,11 @@
             @method('PUT')
             <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_presence">
                 <i class="fa fa-check-circle mr-1"></i>
+                @if($item->is_management())
+                出勤
+                @else
                 出席
+                @endif
             </button>
           </form>
         </div>
@@ -181,7 +193,11 @@
             @method('PUT')
             <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_presence">
               <i class="fa fa-times-circle mr-1"></i>
-                欠席
+              @if($item->is_management())
+              欠勤
+              @else
+              欠席
+              @endif
             </button>
           </form>
         </div>

@@ -119,7 +119,7 @@
 			clearTimeout(_loadTimer);
 			_loadTimer = null;
 		}
-		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
+		loadClose();
 		return;
 	}
 	/**
@@ -133,6 +133,7 @@
 		if(util.isEmpty(_loading)) return;
 		_loading.dialog("close");
 		*/
+		console.log("loadClose");
 		$("#loading").modal('hide');
 		return;
 	}
@@ -467,16 +468,17 @@
 	* @param error {Function}  エラー時コールバック関数
     * @return {Object} defferd
     */
-	function postAjax(url, request, success, error){
+	function postAjax(url, request, success, error, _type){
 		var auth = util.getLocalData("auth");
 		console.log("postAjax exec:"+url);
 		loadStart();
+		if(util.isEmpty(_type)) _type="POST";
 		var ret = $.ajax({
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest',
 				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			},
-			type: "POST",
+			type: _type,
 			cache: false,
 			dataType: "JSON",
 			url: (url),

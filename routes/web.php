@@ -52,6 +52,7 @@ Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@
 Route::post('api_setting_to_calendar/{id?}','UserCalendarSettingController@api_setting_to_calendar');
 
 Route::resource('calendar_members','UserCalendarMemberController');
+Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');
 
 Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
@@ -106,6 +107,8 @@ Route::get('managers/entry','ManagerController@entry');
 Route::post('managers/entry','ManagerController@entry_store');
 Route::get('managers/register','ManagerController@register');
 Route::post('managers/register','ManagerController@register_update');
+Route::get('managers/{id}/month_work/{target_moth?}','ManagerController@month_work');
+Route::post('managers/{id}/month_work','ManagerController@month_work_confirm');
 
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
@@ -145,6 +148,7 @@ Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
+Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
 
 
 Route::resource('student_groups','StudentGroupController');

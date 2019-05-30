@@ -1122,6 +1122,7 @@ class ImportController extends UserController
             'calendar_id' => $calendar_id,
             'user_id' => $student->user_id,
             'status' => $student_status,
+            'rest_type' => $item['cancel'],
             'remark' => $item['cancel_reason'],
             'schedule_id' => $item['id'],
             'create_user_id' => 1

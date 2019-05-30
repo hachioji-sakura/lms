@@ -21,14 +21,24 @@
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
+            @if($item->is_management()==true)
+            <div class="col-12 mb-1">
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                  更新する
+                  <i class="fa fa-caret-right ml-1"></i>
+              </button>
+            </div>
+            @else
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 次へ
                 <i class="fa fa-arrow-circle-right ml-1"></i>
               </a>
             </div>
+            @endif
           </div>
         </div>
+        @if($item->is_management()!=true)
         <div class="carousel-item">
           @yield('second_form')
           <div class="row">
@@ -56,13 +66,14 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
-                  <i class="fa fa-file-alt mr-1"></i>
-                  内容確認
-                </a>
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
+                <i class="fa fa-file-alt mr-1"></i>
+                内容確認
+              </a>
             </div>
           </div>
         </div>
+        @endif
         <div class="carousel-item" id="confirm_form">
           @yield('confirm_form')
           <div class="row">
@@ -74,7 +85,11 @@
             </div>
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                  @if(isset($_edit) && $_edit==true)
+                    更新する
+                  @else
                     この内容で追加する
+                  @endif
                     <i class="fa fa-caret-right ml-1"></i>
                 </button>
             </div>

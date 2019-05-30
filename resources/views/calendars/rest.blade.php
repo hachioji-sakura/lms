@@ -17,7 +17,7 @@
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
-    @if($item->is_group()===true)
+    @if(count($item["students"]) > 1)
       {{-- グループレッスン系 --}}
       <form method="POST" action="/calendars/{{$item['id']}}">
       @csrf
@@ -30,7 +30,7 @@
               <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
               <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>休み</th>
             </tr>
-            @foreach($item->members as $member)
+            @foreach($item["students"] as $member)
             @if($member->user->details()->role==="student")
             <tr class="">
               <th class="p-1 pl-2">

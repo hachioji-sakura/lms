@@ -78,7 +78,7 @@
               @endif
               <div class="row pl-3 p-1 border-bottom">
                 <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
-                <div class="col-12 col-lg-4 col-md-4">
+                <div class="col-12 col-lg-3 col-md-3">
                   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
                     <span class="mr-2">
                       <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
@@ -93,7 +93,7 @@
                     </span>
                   </a>
                 </div>
-                <div class="col-12 col-lg-6 col-md-6">
+                <div class="col-12 col-lg-5 col-md-5">
                   @foreach($calendar->members as $member)
                     @if($member->user->details()->role==="student")
                     {{--
@@ -116,9 +116,12 @@
                   </span>
                   @endforeach
                 </div>
-                <div class="col-12 col-lg-2 col-md-2">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-default btn-sm float-left mr-1 mt-1 float-right">
-                    <i class="fa fa-edit"></i>変更
+                <div class="col-12 col-lg-4 col-md-4">
+                  @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+                  @endcomponent
+                  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定変更" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm mx-1">
+                    <i class="fa fa-edit mr-1"></i>
+                    変更
                   </a>
                 </div>
               </div>
