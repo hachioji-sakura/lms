@@ -101,7 +101,7 @@ class UserCalendarMemberController extends UserCalendarController
 
     $rest_type = $request->get('rest_type');
     $res = $this->transaction(function() use ($item,$rest_type){
-      $item->update(['rest_type' => $rest_type]);
+      $item->update_rest_type($rest_type);
       return $item;
     }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
     $res["message"] = $rest_type;

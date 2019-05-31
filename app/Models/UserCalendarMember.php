@@ -61,6 +61,10 @@ class UserCalendarMember extends Model
     }
     return "";
   }
+  public function update_rest_type($update_rest_type){
+    $res = $this->office_system_api('PUT', $update_rest_type);
+    return $this;
+  }
   public function remark(){
     $remark = "";
     if(!empty(trim($this->remark))) $remark = trim($this->remark);
@@ -72,7 +76,7 @@ class UserCalendarMember extends Model
     }
     return $remark;
   }
-  public function office_system_api($method){
+  public function office_system_api($method, $update_rest_type=""){
     if($this->schedule_id == 0 && $method=="PUT") return null; ;
     if($this->schedule_id == 0 && $method=="DELETE") return null;;
     if($this->schedule_id > 0 && $method=="POST") return null;;
@@ -169,7 +173,6 @@ class UserCalendarMember extends Model
         ->where('user_id', $this->user_id)->first();
       $altsched_id = $exchanged_calendar_member->schedule_id;
     }
-
     $postdata =[];
     switch($method){
       case "PUT":
@@ -232,6 +235,10 @@ class UserCalendarMember extends Model
         $postdata['confirm'] = 'f';
         $postdata['updateuser'] = $teacher_no;
         break;
+    }
+    //休み１⇔休み２の変更のための対応
+    if(!empty($update_rest_type)) {
+      $postdata['cancel'] = $update_rest_type;
     }
     $message = "";
     foreach($postdata as $key => $val){
