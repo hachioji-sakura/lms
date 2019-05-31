@@ -62,7 +62,7 @@ class UserCalendarMember extends Model
     return "";
   }
   public function update_rest_type($update_rest_type){
-    $res = $this->office_system_api('PUT', $update_rest_type);
+    $res = $this->_office_system_api('PUT', $update_rest_type);
     return $this;
   }
   public function remark(){
@@ -76,7 +76,10 @@ class UserCalendarMember extends Model
     }
     return $remark;
   }
-  public function office_system_api($method, $update_rest_type=""){
+  public function office_system_api($method){
+    return $this->_office_system_api($method);
+  }
+  public function _office_system_api($method, $update_rest_type=""){
     if($this->schedule_id == 0 && $method=="PUT") return null; ;
     if($this->schedule_id == 0 && $method=="DELETE") return null;;
     if($this->schedule_id > 0 && $method=="POST") return null;;
