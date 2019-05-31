@@ -114,18 +114,26 @@ EOT;
     $item = $this;
     $item['status_name'] = $this->status_name();
     $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
+
     $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
     $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));
     $item['trial_end1'] = date('H:i',  strtotime($this->trial_end_time1));
+
     $item['trial_date2'] = date('Y/m/d',  strtotime($this->trial_start_time2));
     $item['trial_start2'] = date('H:i',  strtotime($this->trial_start_time2));
     $item['trial_end2'] = date('H:i',  strtotime($this->trial_end_time2));
+
+    $item['trial_date3'] = date('Y/m/d',  strtotime($this->trial_start_time3));
+    $item['trial_start3'] = date('H:i',  strtotime($this->trial_start_time3));
+    $item['trial_end3'] = date('H:i',  strtotime($this->trial_end_time3));
+
     $item['parent_name'] =  $this->parent->name();
     $item['parent_phone_no'] =  $this->parent->phone_no;
     $item['parent_address'] =  $this->parent->address;
     $item['parent_email'] =  $this->parent->user->email;
     $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
     $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
+    $item['date3'] = date('m月d日 H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
     $subject1 = [];
     $subject2 = [];
     $tagdata = [];
@@ -255,8 +263,13 @@ EOT;
   public function trial_update($form){
     $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
     $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
+
     $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
     $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
+
+    $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
+    $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
+
     if(!isset($form['remark']) || empty($form['remark'])) $form['remark'] = '';
     $this->update([
       'remark' => $form['remark'],
@@ -264,6 +277,8 @@ EOT;
       'trial_end_time1' => $form['trial_end_time1'],
       'trial_start_time2' => $form['trial_start_time2'],
       'trial_end_time2' => $form['trial_end_time2'],
+      'trial_start_time3' => $form['trial_start_time3'],
+      'trial_end_time3' => $form['trial_end_time3'],
     ]);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
     $tag_names[] ='howto'; //体験のみのタグ
@@ -315,12 +330,7 @@ EOT;
       'teacher_user_id' => $teacher->user_id,
     ];
     $charge_student_form = [
-      'schedule_method' => 'month',
-      'lesson_week_count' => 0,
-      'lesson_week' => '',
       'teacher_id' => $teacher->id,
-      'from_time_slot' => date('H:i:s', strtotime($form["start_time"])),
-      'to_time_slot' => date('H:i:s', strtotime($form["end_time"])),
     ];
     $common_fields = ['create_user_id', 'charge_subject', 'english_talk_lesson', 'piano_lesson', 'kids_lesson'];
     foreach($common_fields as $field){
@@ -404,6 +414,7 @@ EOT;
     //30分ごとの開始時間から授業時間までのslotを作成
     $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $course_minutes);
     $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $course_minutes);
+    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $course_minutes);
     $ret = [];
     foreach($teachers as $teacher){
       $enable_point = 0;
@@ -512,6 +523,7 @@ EOT;
           */
           $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], "trial_date1");
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], "trial_date2"));
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], "trial_date3"));
           $teacher->trial = $this->get_time_list_review($teacher->trial);
           $teacher->enable_point = $enable_point;
           $teacher->disable_point = $disable_point;
@@ -585,7 +597,7 @@ EOT;
       if(strtotime($_end) > strtotime($trial_end_time)){
         break;
       }
-      $_dulation = date('m月d日 H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+      $_dulation = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
       foreach($this->get_calendar() as $calendar){
         if($calendar->is_conflict($_start, $_end)){

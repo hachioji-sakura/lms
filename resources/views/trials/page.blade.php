@@ -8,12 +8,12 @@
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-      <div class="col-md-4">
+      <div class="col-lg-4">
         @component('trials.forms.trial_detail',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
         @component('trials.forms.trial_student',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
         @component('trials.forms.trial_week_time',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
       </div>
-      <div class="col-md-8">
+      <div class="col-lg-8">
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-calendar mr-1"></i>体験授業予定

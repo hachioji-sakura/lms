@@ -60,7 +60,7 @@
     >
   </div>
 </div>
-<div class="col-12 mt-2 col-md-8 mb-4">
+<div class="col-12 mt-2 col-md-8">
   <label for="start_date" class="w-100">
     時間帯
     <span class="right badge badge-danger ml-1">必須</span>
@@ -83,6 +83,49 @@
       @for ($i = 8; $i < 23; $i++)
         <option value="{{$i}}"
         @if($_edit===true && $i==date('H', strtotime($item->trial_end_time2)))
+        selected
+        @endif
+        >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-4">
+  <label for="start_date" class="w-100">
+    第３希望日
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  <div class="input-group">
+    <input type="text" name="trial_date3" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}"
+    @if($_edit===true)
+     value="{{date('Y/m/d', strtotime($item->trial_start_time3))}}"
+    @endif
+    >
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-8  mb-4">
+  <label for="start_date" class="w-100">
+    時間帯
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  <div class="input-group">
+    <select name="trial_start_time3" class="form-control float-left mr-1 w-40" required="true">
+      <option value="">(選択してください)</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_start_time3)))
+        selected
+        @endif
+        >
+        {{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+    <div class="w-10 text-center float-left mx-2">～</div>
+    <select name="trial_end_time3" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time2" greater_error="時間帯範囲が間違っています" not_equal="trial_start_time2" not_equal_error="時間帯範囲が間違っています" >
+      <option value="">(選択してください)</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_end_time3)))
         selected
         @endif
         >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>

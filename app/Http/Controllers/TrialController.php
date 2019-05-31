@@ -478,6 +478,7 @@ class TrialController extends UserCalendarController
        $this->send_mail($email,
         $title,
         [
+        'login_user' => $login_user,
         'user_name' => $user_name,
         'send_from' => $send_from,
         'send_to' => $send_to,

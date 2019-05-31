@@ -42,6 +42,25 @@ class UserCalendarSettingController extends UserCalendarController
             'label' => '担当',
             'size' => 6,
           ],
+        ];
+      }
+      else {
+        $ret = [
+          'title1' => [
+            'label' => '概要',
+            'size' => 6,
+          ],
+          'place_name' => [
+            'label' => '場所',
+            'size' => 6,
+          ],
+          'title2' => [
+            'label' => '詳細',
+          ],
+          'user_name' => [
+            'label' => '担当',
+            'size' => 6,
+          ],
           'student_name' => [
             'label' => '生徒',
             'size' => 6,
@@ -323,7 +342,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields();
+      $param['fields'] = $this->show_fields($param['item']->work);
       if($param['item']->is_teaching()===false){
         unset($param['fields']['subject']);
         unset($param['fields']['student_name']);
@@ -342,7 +361,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function to_calendar_page(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields();
+      $param['fields'] = $this->show_fields($param['item']->work);
       $param['add_dates'] = $param['item']->get_add_calendar_date();
 
       return view($this->domain.'.to_calendar', [

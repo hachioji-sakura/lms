@@ -7,12 +7,39 @@
       </h5>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-12">
+    <div class="form-group">
+      <?php
+      $d = [1=>date('Y-m-d',strtotime($item->trial_start_time1)),
+            2=>date('Y-m-d',strtotime($item->trial_start_time2)),
+            3=>date('Y-m-d',strtotime($item->trial_start_time3))];
+        ?>
+      @for($i=1;$i<4;$i++)
+      <label class="mx-2">
+        <input type="radio" name="trial_date_hope" value="{{$d[$i]}}" class="icheck flat-green" required="true"
+        @if($i==1)
+        checked
+        @endif
+        onChange="trial_date_hope_change({{$i}})"
+        >第{{$i}}希望
+      </label>
+      @endfor
+    </div>
+  </div>
+  <script>
+  function trial_date_hope_change(no){
+    var d = $("input[name='trial_date_hope']:checked").val();
+    if(!d) return ;
+    $(".teacher_schedule").hide();
+    $(".teacher_schedule[remark='trial_date"+no+"']").show();
+    $("#calendar1").fullCalendar('gotoDate', d);
+    console.log("trial_date_hope_change");
+  }
+  </script>
+  <div class="col-md-6">
     @component('components.calendar', [
       'id' => 1,
       'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time1)),
-      'minHour'=> date('H',strtotime($item->trial_start_time1)),
-      'maxHour'=> date('H',strtotime($item->trial_end_time1)),
       'mode'=>'day',
       'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id])
       @slot('event_select')
@@ -34,35 +61,7 @@
       @endslot
     @endcomponent
   </div>
-  <div class="col-md-4">
-    @component('components.calendar', [
-      'id' => 2,
-      'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time2)),
-      'minHour'=> date('H',strtotime($item->trial_start_time2)),
-      'maxHour'=> date('H',strtotime($item->trial_end_time2)),
-      'mode'=>'day',
-      'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id])
-      @slot('event_select')
-      @endslot
-      @slot('event_click')
-      eventClick: function(event, jsEvent, view) {
-        if(event.status == "trial") return false;
-        $calendar.fullCalendar('unselect');
-        base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
-      },
-      @endslot
-      @slot('event_render')
-      eventRender: function(event, element) {
-        var title = '授業追加';
-        if(event['student_name']){
-          title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-        }
-        event_render(event, element, title);
-      },
-      @endslot
-    @endcomponent
-  </div>
-  <div class="col-md-4">
+  <div class="col-md-6" id="trial_select">
     <span class="description-text">
       @if(count($candidate_teacher->trial) < 1)
       <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
@@ -73,7 +72,7 @@
       <?php $is_first=false; ?>
         @foreach($candidate_teacher->trial as $i=>$_list)
           @if($_list['status']==='free')
-          <div class="form-check ml-2" id="trial_select">
+          <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
             <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$i}}"
              value="{{$_list['start_time']}}_{{$_list['end_time']}}"
              dulation="{{$_list['dulation']}}"
@@ -130,13 +129,7 @@ function teacher_schedule_change(obj){
   if(!util.isEmpty(lesson_place_floor)){
     $("*[name='lesson_place_floor']").val(lesson_place_floor);
   }
-  var remark = _teacher_schedule.attr('remark');
-  if(remark=="trial_date1"){
-    $calendar = $("#calendar1");
-  }
-  else if(remark=="trial_date2"){
-    $calendar = $("#calendar2");
-  }
+  $calendar = $("#calendar1");
   $("#calendar2").fullCalendar("removeEvents", -1);
   $("#calendar1").fullCalendar("removeEvents", -1);
   $("#calendar2").fullCalendar("unselect");

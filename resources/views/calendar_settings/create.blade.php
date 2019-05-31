@@ -196,7 +196,9 @@ $(function(){
     if(lesson==3) _snames = "ピアノ";
     form_data["subject_name"] = _snames;
 
-    form_data["schedule_name"] = form_data["schedule_method_name"]+" "+form_data["lesson_week_count_name"]+" "+form_data["lesson_week_name"];
+    form_data["schedule_name"] = form_data["schedule_method_name"];
+    if(form_data["lesson_week_count_name"]) form_data["schedule_name"] += " "+form_data["lesson_week_count_name"];
+    if(form_data["lesson_week_name"]) form_data["schedule_name"] += " "+form_data["lesson_week_name"];
 
     return form_data;
   }

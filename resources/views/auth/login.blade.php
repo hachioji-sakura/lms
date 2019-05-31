@@ -58,7 +58,7 @@
 </div>
 <div class="my-2 row">
   <a href="/entry" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
-    <i class="fa fa-sign-in-alt mr-1"></i>入会・登録はこちら
+    <i class="fa fa-sign-in-alt mr-1"></i>体験授業お申込みはこちら
   </a>
 </div>
 <div class="my-2 row">

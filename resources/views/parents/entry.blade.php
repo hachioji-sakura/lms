@@ -153,14 +153,20 @@ $(function(){
       var grade_name = $('select[name=grade] option:selected').text().trim();
       form_data["grade_name"] = grade_name;
     }
+
     if(form_data["trial_date1"] && form_data["trial_time1"]){
       var trial_time_name = $('select[name=trial_time1] option:selected').text().trim();
-      form_data["trial_date_time1"] = form_data["trial_date1"]+" "+ trial_time_name;
+      form_data["trial_date_time1"] = util.dateformat(form_data["trial_date1"], '%m月%d日')+'<br>'+trial_time_name;
     }
     if(form_data["trial_date2"] && form_data["trial_time2"]){
       var trial_time_name = $('select[name=trial_time2] option:selected').text().trim();
-      form_data["trial_date_time2"] = form_data["trial_date1"]+" "+ trial_time_name;
+      form_data["trial_date_time2"] = util.dateformat(form_data["trial_date2"], '%m月%d日')+'<br>'+trial_time_name;
     }
+    if(form_data["trial_date3"] && form_data["trial_time3"]){
+      var trial_time_name = $('select[name=trial_time3] option:selected').text().trim();
+      form_data["trial_date_time3"] = util.dateformat(form_data["trial_date3"], '%m月%d日')+'<br>'+trial_time_name;
+    }
+
     var _names = ["lesson_place", "howto"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";

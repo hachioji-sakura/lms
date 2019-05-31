@@ -16,8 +16,6 @@
             </small>
           </span>
         </div>
-      </div>
-      <div class="col-sm-6">
         <div class="description-block">
           <h5 class="description-header">ご希望のレッスン</h5>
           <span class="description-text">
@@ -40,25 +38,6 @@
             </span>
           </span>
         </div>
-      </div>
-      <div class="col-sm-6 border-right">
-        <div class="description-block">
-          <h5 class="description-header">希望日時</h5>
-          <span class="description-text">
-            第１希望：<span class="text-xs mx-2">
-              <small class="badge badge-secondary ">
-                {{$item["date1"]}}
-              </small>
-            </span><br>
-            第２希望：<span class="text-xs mx-2">
-              <small class="badge badge-secondary ">
-                {{$item["date2"]}}
-              </small>
-            </span>
-          </span>
-        </div>
-      </div>
-      <div class="col-sm-6">
         <div class="description-block">
           <h5 class="description-header">ご希望の教室</h5>
           <span class="description-text">
@@ -69,6 +48,27 @@
                 </small>
               </span>
             @endforeach
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-6 border-right">
+        <div class="description-block">
+          <span class="description-text">
+            第１希望：<span class="text-xs mx-2">
+              <small class="badge badge-secondary ">
+                {{$item["date1"]}}
+              </small>
+            </span><br>
+            第２希望：<span class="text-xs mx-2">
+              <small class="badge badge-secondary ">
+                {{$item["date2"]}}
+              </small>
+            </span><br>
+            第３希望：<span class="text-xs mx-2">
+              <small class="badge badge-secondary ">
+                {{$item["date3"]}}
+              </small>
+            </span>
           </span>
         </div>
       </div>

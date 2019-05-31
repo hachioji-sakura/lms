@@ -61,6 +61,13 @@
           </small>
         </span>
       </li>
+      <li class="nav-item text-light ml-2 mb-2">
+        第３希望：<span class="text-xs mx-2">
+          <small class="badge badge-secondary ">
+            {{$item["date3"]}}
+          </small>
+        </span>
+      </li>
       <li class="nav-item text-light ml-2 hr-1 bd-light mb-2">
         レッスン：
         <div class="nav-link w-100">

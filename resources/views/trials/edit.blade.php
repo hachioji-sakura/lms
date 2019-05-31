@@ -119,16 +119,23 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     form_data["email"] = $("input[name=email]").val();
+
     if(form_data["trial_date1"] && form_data["trial_start_time1"] && form_data["trial_end_time1"]){
       var trial_start = $('select[name=trial_start_time1] option:selected').text().trim();
       var trial_end = $('select[name=trial_end_time1] option:selected').text().trim();
-      form_data["trial_date_time1"] = form_data["trial_date1"]+" "+ trial_start+" ～ "+trial_end+"";
+      form_data["trial_date_time1"] = util.dateformat(form_data["trial_date1"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
     }
     if(form_data["trial_date2"] && form_data["trial_start_time2"] && form_data["trial_end_time2"]){
       var trial_start = $('select[name=trial_start_time2] option:selected').text().trim();
       var trial_end = $('select[name=trial_end_time2] option:selected').text().trim();
-      form_data["trial_date_time2"] = form_data["trial_date2"]+" "+ trial_start+" ～ "+trial_end+"";
+      form_data["trial_date_time2"] = util.dateformat(form_data["trial_date2"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
     }
+    if(form_data["trial_date3"] && form_data["trial_start_time3"] && form_data["trial_end_time3"]){
+      var trial_start = $('select[name=trial_start_time3] option:selected').text().trim();
+      var trial_end = $('select[name=trial_end_time3] option:selected').text().trim();
+      form_data["trial_date_time3"] = util.dateformat(form_data["trial_date3"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
+    }
+
     var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
