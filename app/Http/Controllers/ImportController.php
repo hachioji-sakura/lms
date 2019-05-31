@@ -581,7 +581,7 @@ class ImportController extends UserController
       if(!isset($parent_user)){
         //認証情報登録(保護者として登録）
         $res = $this->user_create([
-          'name' => $item['family_name'].'様',
+          'name' => $item['family_name'].'',
           'password' => $item['password'],
           'email' => $item['email'],
           'image_id' => 4,

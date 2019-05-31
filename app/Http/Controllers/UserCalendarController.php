@@ -972,7 +972,7 @@ class UserCalendarController extends MilestoneController
              'send_to' => $send_to,
              'item' => $_item,
              'token' => $param['token'],
-             'user_name' => $user->name().'様',
+             'user_name' => $user->name(),
              'user' => $user
             ];
          }
