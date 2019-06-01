@@ -114,6 +114,7 @@
 
 <script >
 $(function(){
+  trial_date_hope_change(1);
   teacher_schedule_change();
 });
 function teacher_schedule_change(obj){
