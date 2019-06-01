@@ -141,10 +141,10 @@ EOT;
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
         if(intval($tag->tag_value) > 10){
-          $subject2[]= $tag->keyname();
+          $subject1[]= $tag->keyname();
         }
         else if(intval($tag->tag_value) > 1){
-          $subject1[] = $tag->keyname();
+          $subject2[] = $tag->keyname();
         }
       }
       else {
