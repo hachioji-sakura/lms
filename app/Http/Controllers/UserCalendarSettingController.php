@@ -24,7 +24,7 @@ class UserCalendarSettingController extends UserCalendarController
       return UserCalendarSetting::query();
     }
     public function show_fields($work){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($work==9){
         $ret = [
           'title1' => [
@@ -74,7 +74,7 @@ class UserCalendarSettingController extends UserCalendarController
       return $ret;
     }
     public function create_form(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $form = $request->all();
       $form['create_user_id'] = $user->user_id;
       if($request->has('lesson_week_count')){
@@ -296,7 +296,7 @@ class UserCalendarSettingController extends UserCalendarController
      * @return json
      */
     public function get_param(Request $request, $id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user) || $this->is_manager($user->role)===false){
         abort(403, 'このページにはアクセスできません(1)');
       }

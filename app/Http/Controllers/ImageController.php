@@ -31,7 +31,7 @@ class ImageController extends UserController
       return $items->toArray();
     }
     public function get_param(Request $request, $id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) {
         abort(403);
       }
@@ -111,7 +111,7 @@ class ImageController extends UserController
      */
     public function _icon_change(Request $request)
     {
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $res = $this->bad_request();
       $image_id = null;
       $form = $request->all();
@@ -196,7 +196,7 @@ class ImageController extends UserController
 
     private function save_image($request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $image = new Image;
 
       try {

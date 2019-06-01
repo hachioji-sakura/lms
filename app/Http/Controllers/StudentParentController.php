@@ -28,7 +28,7 @@ class StudentParentController extends TeacherController
    */
   public function get_param(Request $request, $id=null){
     $id = intval($id);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
@@ -44,7 +44,7 @@ class StudentParentController extends TeacherController
     ];
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
-    if(empty($user)){
+    if(!isset($user)){
       //ログインしていない
       abort(419);
     }
@@ -73,7 +73,7 @@ class StudentParentController extends TeacherController
   public function search(Request $request)
   {
     $items = $this->model()->with('user.image');
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if($this->domain==="students" && $this->is_parent($user->role)){
       //自分の子供のみ閲覧可能
       $items = $items->findChild($user->id);
@@ -220,7 +220,7 @@ class StudentParentController extends TeacherController
      $param = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
-       'user' => $this->login_details(),
+       'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];
      if(!empty($param['user'])){
@@ -254,7 +254,7 @@ class StudentParentController extends TeacherController
     public function register_update(Request $request)
     {
       $param = [
-        'user' => $this->login_details(),
+        'user' => $this->login_details($request),
         'attributes' => $this->attributes(),
       ];
       $result = "success";

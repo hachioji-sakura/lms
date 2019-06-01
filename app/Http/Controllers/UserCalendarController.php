@@ -32,7 +32,6 @@ class UserCalendarController extends MilestoneController
     return UserCalendar::query();
   }
   public function show_fields($work){
-    $user = $this->login_details();
     if($work==9){
       $ret = [
         'datetime' => [
@@ -171,7 +170,7 @@ class UserCalendarController extends MilestoneController
    * @return json
    */
   public function create_form(Request $request){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $form = [];
     $form['create_user_id'] = $user->user_id;
 
@@ -247,7 +246,7 @@ class UserCalendarController extends MilestoneController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
@@ -410,7 +409,7 @@ class UserCalendarController extends MilestoneController
           'to_date' => $to_date,
         ]);
       }
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) return $this->forbidden();
 
       $items = $this->model();
@@ -433,7 +432,7 @@ class UserCalendarController extends MilestoneController
     }
     public function search(Request $request)
     {
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
@@ -1116,7 +1115,7 @@ class UserCalendarController extends MilestoneController
     {
       $res = $this->transaction(function() use ($request, $id){
         $param = $this->get_param($request, $id);
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $calendar = $param["item"];
         $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
         $this->delete_mail($param);

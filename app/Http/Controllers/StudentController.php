@@ -40,6 +40,13 @@ class StudentController extends UserController
   {
    $param = $this->get_param($request);
    $_table = $this->search($request);
+   if($request->has('api')){
+     $items = $_table['items'];
+     foreach($items as $key=>$item){
+       $items[$key] = $item->details();
+     }
+     return $this->api_response(200, '', '', $items);
+   }
    return view($this->domain.'.tiles', $_table)
      ->with($param);
   }
@@ -52,7 +59,7 @@ class StudentController extends UserController
    */
   public function get_param(Request $request, $id=null){
     $id = intval($id);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(empty($user)){
       //ログインしていない
       abort(419);
@@ -68,9 +75,9 @@ class StudentController extends UserController
        '_line' => $request->get('_line'),
        'list' => $request->get('list'),
        'attributes' => $this->attributes(),
-     ];
-     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-     if(empty($ret['_page'])) $ret['_page'] = 0;
+    ];
+    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
+    if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
     }
@@ -87,7 +94,7 @@ class StudentController extends UserController
   {
     $items = $this->model()->with('user.image');
 
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if($this->domain==="students" && $this->is_parent($user->role)){
       //自分の子供のみ閲覧可能
       $items = $items->findChild($user->id);
@@ -455,7 +462,7 @@ class StudentController extends UserController
    $form = $request->all();
    try {
      DB::beginTransaction();
-     $user = $this->login_details();
+     $user = $this->login_details($request);
      $form = $request->all();
      $form['create_user_id'] = $user->user_id;
      $item = $this->model()->where('id',$id)->first();

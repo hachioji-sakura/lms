@@ -113,4 +113,17 @@ class StudentParent extends Teacher
     $items = StudentRelation::where('student_parent_id', $this->id)->get();
     return $items;
   }
+  public function details(){
+    $item = $this;
+    $students = [];
+    //$item['relations'] = $this->relations;
+    foreach($this->relation() as $relation){
+      $students[] = $relation->student->details();
+    }
+    unset($item->user);
+    $item['students'] = $students;
+    $item['email'] = $this->user->email;
+
+    return $item;
+  }
 }

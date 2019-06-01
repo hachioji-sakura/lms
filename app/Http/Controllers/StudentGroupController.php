@@ -49,7 +49,7 @@ class StudentGroupController  extends MilestoneController
   }
 
   public function get_param(Request $request, $id=null){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user)){
       abort(403);
     }
@@ -139,7 +139,7 @@ class StudentGroupController  extends MilestoneController
     }
     */
     $param = $this->get_param($request);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user)) abort(403);
 
     $_table = $this->search($request);
@@ -153,7 +153,7 @@ class StudentGroupController  extends MilestoneController
   public function api_index(Request $request, $teacher_id=0)
   {
     $param = $this->get_param($request);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user)) return $this->forbidden();
     if(!($this->is_manager($user->role) || ($this->is_teacher($user->role) && $user->id == $teacher_id))){
       //事務または、講師＝本人でないと生徒グループ取得不可能
@@ -210,7 +210,7 @@ class StudentGroupController  extends MilestoneController
 
   public function search(Request $request)
   {
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user)) return $this->forbidden();
 
     $items = $this->model();
@@ -343,7 +343,7 @@ class StudentGroupController  extends MilestoneController
     {
       $res = $this->transaction(function() use ($request, $id){
         $param = $this->get_param($request, $id);
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $student_group = $param["item"];
         $student_group->dispose();
         return $student_group;

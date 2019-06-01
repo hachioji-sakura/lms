@@ -485,6 +485,7 @@ EOT;
   }
   public function details(){
     $item = $this;
+    /*
     $subject = [];
     $lessons = [];
     foreach($this->get_tags('lesson') as $tag){
@@ -494,6 +495,7 @@ EOT;
     }
     $item["lesson"] = $lessons;
     $item["subject"] = $subject;
+    */
     return $item;
   }
 }

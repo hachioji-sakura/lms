@@ -14,12 +14,7 @@ Auth::routes();
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('managers/login','ManagerController@login');
-
 Route::get('auth','AuthController@auth');
-Route::get('test','UserCalendarController@test');
-Route::post('rest/test2','RestController@test');
-
-Route::get('users/email/{email}','UserController@email_check');
 Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
 
@@ -27,6 +22,10 @@ Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
 Route::get('password/setting','AuthController@password_setting');
 Route::post('password/setting','AuthController@password_settinged');
+
+
+Route::post('credentials/{id?}','AuthController@credential');
+
 
 Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
@@ -74,6 +73,8 @@ Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setti
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
 Route::put('trials/{id}/admission','TrialController@admission_submit');
+Route::get('trials/{id}/commit','TrialController@admission');
+
 /*
 Route::get('trials/{id}/{status}','TrialController@status_update_page');
 Route::put('trials/{id}/{status}','TrialController@status_update');
@@ -128,6 +129,7 @@ Route::get('students/{id}/tag','StudentController@tag_page');
 Route::post('students/{id}/tag','StudentController@update');
 Route::get('teachers/{id}/tag','TeacherController@tag_page');
 Route::post('teachers/{id}/tag','TeacherController@update');
+
 
 Route::get('students/{id}/subject','StudentController@get_subject');
 Route::get('teachers/{id}/subject','TeacherController@get_subject');

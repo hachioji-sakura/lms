@@ -118,7 +118,8 @@ class User extends Authenticatable
       if(isset($image)){
         $s3_url = $image->s3_url;
       }
-      if(session('login_role') == 'manager' || $domain=="managers"){
+      //id=1はroot
+      if($this->id==1 || session('login_role') == 'manager' || $domain=="managers"){
         //TODO 事務でない権限で事務の情報を取得できない（例えば、事務からの通達など）
         if(empty($domain) || $domain=="managers"){
           $item = Manager::where('user_id', $this->id)->first();

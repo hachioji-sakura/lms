@@ -22,7 +22,7 @@ class MilestoneController extends UserController
       return Milestone::query();
     }
     public function get_target_user_id(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_student($user->role)===true){
         return $user->user_id;
       }
@@ -63,7 +63,7 @@ class MilestoneController extends UserController
      * @return json
      */
     public function create_form(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $form = [];
       $form['create_user_id'] = $user->user_id;
       $form['type'] = $request->get('type');
@@ -111,7 +111,7 @@ class MilestoneController extends UserController
      * @return json
      */
     public function get_param(Request $request, $id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) {
         abort(403);
       }
@@ -156,7 +156,7 @@ class MilestoneController extends UserController
     public function search(Request $request)
     {
       $items = $this->model();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         $items = $items->mydata($user->user_id);
       }
@@ -376,7 +376,7 @@ class MilestoneController extends UserController
         return $res;
       }
       $res =  $this->transaction(function() use ($request, $id){
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $item = $this->model()->where('id',$id)->update($this->update_form($request));
         return $item;
       }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -402,7 +402,7 @@ class MilestoneController extends UserController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $items = $this->model()->where('id',$id)->delete();
         DB::commit();
         return $this->api_response(200, '', '', $items);

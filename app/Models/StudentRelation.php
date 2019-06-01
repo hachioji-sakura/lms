@@ -14,7 +14,7 @@ class StudentRelation extends Model
       'student_parent_id' => 'required',
   );
   public function student(){
-    return $this->belongsTo('App\Models\Student');
+    return $this->belongsTo('App\Models\Student', 'student_id');
   }
   public function parent(){
     return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');

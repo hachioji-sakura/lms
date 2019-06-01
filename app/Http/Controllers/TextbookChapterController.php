@@ -26,7 +26,7 @@ class TextbookChapterController extends TextbookController
      * @return json
      */
     public function get_param(Request $request, $textbook_id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!is_numeric($textbook_id) || $textbook_id <= 0){
         abort(500);
       }
@@ -67,7 +67,7 @@ class TextbookChapterController extends TextbookController
     public function search(Request $request)
     {
       $items = $this->model();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         //生徒の場合は所有しているものを表示する
       }

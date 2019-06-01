@@ -26,19 +26,7 @@ class TeacherController extends StudentController
   public function model(){
    return Teacher::query();
   }
-  /**
-   * 一覧表示
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return view / domain.lists
-   */
-  public function index(Request $request)
-  {
-   $param = $this->get_param($request);
-   $_table = $this->search($request);
-   return view($this->domain.'.tiles', $_table)
-    ->with($param);
-  }
+
   /**
    * 共通パラメータ取得
    *
@@ -48,7 +36,7 @@ class TeacherController extends StudentController
    */
   public function get_param(Request $request, $id=null){
     $id = intval($id);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
@@ -298,7 +286,7 @@ class TeacherController extends StudentController
          'access_key' => $access_key,
          'send_to' => $send_to,
        ], 'text', 'entry');
-       $login_user = $this->login_details();
+       $login_user = $this->login_details($request);
        if(!isset($login_user)){
          return view($this->domain.'.entry',
            ['result' => $result])->with($param);
@@ -338,7 +326,7 @@ class TeacherController extends StudentController
      $param = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
-       'user' => $this->login_details(),
+       'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];
      if(isset($param['user'])){
@@ -372,7 +360,7 @@ class TeacherController extends StudentController
     public function register_update(Request $request)
     {
       $param = [
-        'user' => $this->login_details(),
+        'user' => $this->login_details($request),
         'attributes' => $this->attributes(),
       ];
 

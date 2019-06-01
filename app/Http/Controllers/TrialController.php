@@ -129,7 +129,7 @@ class TrialController extends UserCalendarController
    * @return json
    */
   public function get_param(Request $request, $id=null, $user_id=null){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user)) {
       abort(403);
     }
@@ -169,7 +169,7 @@ class TrialController extends UserCalendarController
   {
     $items = $this->model();
     $items->with('parent');
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $items = $this->_search_scope($request, $items);
     $items = $this->_search_pagenation($request, $items);
 
@@ -426,7 +426,7 @@ class TrialController extends UserCalendarController
      $form = $request->all();
      $param = $this->get_param($request, $id);
      $item = $param['item'];
-     $user = $this->login_details();
+     $user = $this->login_details($request);
 
      $res = $this->transaction(function() use ($request, $id, $user){
        $form = $request->all();
@@ -438,7 +438,7 @@ class TrialController extends UserCalendarController
        return $calendar;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
      if($this->is_success_response($res)){
-       $this->confirm_mail($res["data"]->details($user->user_id));
+       $this->confirm_mail($param, $res["data"]->details($user->user_id));
      }
      return $this->save_redirect($res, $param, "授業予定の確認連絡をしました。", $this->domain.'/'.$id);
    }
@@ -447,8 +447,8 @@ class TrialController extends UserCalendarController
     * @param  Array  $param
     * @return boolean
     */
-   private function confirm_mail($calendar){
-     return  $this->_mail($calendar,
+   private function confirm_mail($param, $calendar){
+     return  $this->trial_mail($param, $calendar,
               '体験授業予定のご確認',
               'trial_confirm');
    }
@@ -462,8 +462,8 @@ class TrialController extends UserCalendarController
     * @param  string  $template
     * @return view
     */
-   protected function _mail($calendar, $title, $template){
-     $login_user = $this->login_details();
+   protected function trial_mail($param, $calendar, $title, $template){
+     $login_user = $param['user'];
      $members = $calendar->members;
 
      foreach($members as $member){
@@ -531,7 +531,7 @@ class TrialController extends UserCalendarController
   public function to_calendar_setting_update(Request $request, $id){
     $res =  $this->transaction(function() use ($request, $id){
       $form = $request->all();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $form['create_user_id'] = $user->user_id;
       //カレンダーステータス変更
       $trial = Trial::where('id', $id)->first();
@@ -571,7 +571,7 @@ class TrialController extends UserCalendarController
    {
      $res =  $this->transaction(function() use ($request, $id){
        $form = $request->all();
-       $user = $this->login_details();
+       $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
        $item = $this->model()->where('id',$id)->first();
        $item->trial_update($form);

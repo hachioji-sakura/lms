@@ -15,7 +15,7 @@ class UserCalendarMemberController extends UserCalendarController
     return UserCalendarMember::query();
   }
   public function get_param(Request $request, $id=null){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
