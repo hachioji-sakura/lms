@@ -65,21 +65,6 @@
                   @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
-                  <div class="col-12">
-                    <label for="charge_subject" class="w-100">
-                      曜日
-                      <span class="right badge badge-danger ml-1">必須</span>
-                    </label>
-                    @foreach($attributes['lesson_week'] as $week_day => $week_name)
-                      @if($candidate_teacher->match_schedule['count'][$week_day] > 0)
-                      <label class="mx-2">
-                        <input type="radio" name="select_lesson_week" value="{{$week_day}}" class="icheck flat-green" required="true"
-                        onChange="select_lesson_week_change()"
-                        >{{$week_name}}曜日
-                      </label>
-                      @endif
-                    @endforeach
-                  </div>
                   {{--
                   @component('calendar_settings.forms.lesson_week', ['item'=>$item, 'teacher'=> $candidate_teacher ,'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.select_time', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
@@ -145,12 +130,5 @@ $(function(){
     }
   });
 });
-function select_lesson_week_change(){
-  var w = $('input[name="select_lesson_week"]:checked').val();
-  if(!w) return ;
-  console.log("select_lesson_week_change:"+w);
-  $(".teacher_schedule").hide();
-  $(".teacher_schedule."+w).show();
-}
 </script>
 @endsection

@@ -1,3 +1,18 @@
+<div class="col-12">
+  <label for="charge_subject" class="w-100">
+    曜日
+    <span class="right badge badge-danger ml-1">必須</span>
+  </label>
+  @foreach($attributes['lesson_week'] as $week_day => $week_name)
+    @if($teacher->match_schedule['count'][$week_day] > 0)
+    <label class="mx-2">
+      <input type="radio" name="select_lesson_week" value="{{$week_day}}" class="icheck flat-green" required="true"
+      onChange="select_lesson_week_change()"
+      >{{$week_name}}曜日
+    </label>
+    @endif
+  @endforeach
+</div>
 <div class="col-8 mb-2">
   <div class="description-block">
     <h5 class="description-header">
@@ -22,7 +37,7 @@
         @if($teacher->match_schedule['count'][$week_day] > 0)
           @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
             @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
-            <tr id="{{$week_day}}_{{$setting["from_time_slot"]}}_{{$setting["to_time_slot"]}}" class="calendar_setting_row">
+            <tr id="{{$week_day}}_{{$setting["from_time_slot"]}}_{{$setting["to_time_slot"]}}" class="calendar_setting_row {{$week_day}}">
               <td>
                 {{$week_name}}
                 {{$setting->timezone()}}
@@ -84,7 +99,7 @@
                  end_time="{{$time_slot["to"]}}"
                  lesson_place_floor="{{$time_slot["place"]}}"
                  onChange="lesson_week_datetime_change()"
-                 @if($is_first==false) checked @endif
+                 @if($is_first==false)  @endif
                  >
                  <label class="form-check-label" for="lesson_week_{{$week_day}}_{{$time_slot["from"]}}_{{$time_slot["to"]}}" title="{{$time_slot["review"]}}_{{$time_slot["show"]}}">
                    {{$week_name}}
@@ -112,6 +127,7 @@
 <input type="hidden" name="lesson_week" value="">
 <script>
 $(function(){
+  select_lesson_week_change();
   lesson_week_datetime_change();
   $("select[name='charge_subject[]']").on('change', lesson_week_datetime_change);
   $("select[name='lesson_place_floor']").on('change', lesson_week_datetime_change);
@@ -196,5 +212,14 @@ function lesson_week_datetime_change(){
     if(_is_before)  $(_element).before(_html);
     else $(_element).after(_html);
   }
+}
+function select_lesson_week_change(){
+  var w = $('input[name="select_lesson_week"]:checked').val();
+  if(!w) return ;
+  console.log("select_lesson_week_change:"+w);
+  $(".teacher_schedule").hide();
+  $(".teacher_schedule."+w).show();
+  $(".calendar_setting_row").hide();
+  $(".calendar_setting_row."+w).show();
 }
 </script>

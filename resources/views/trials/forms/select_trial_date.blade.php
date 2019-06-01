@@ -21,7 +21,7 @@
         checked
         @endif
         onChange="trial_date_hope_change({{$i}})"
-        >第{{$i}}希望
+        >第{{$i}}希望({{$d[$i]}})
       </label>
       @endfor
     </div>

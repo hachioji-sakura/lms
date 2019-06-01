@@ -30,7 +30,7 @@
   @foreach($item->calendar_settings as $setting)
   <tr class="bg-light">
     <td class="border-right">
-      {{$setting["lesson_week_name"]}}曜日<br>
+      {{$setting->lesson_week()}}曜日<br>
       {{$setting->timezone()}}
     </td>
     <td class="border-right">
