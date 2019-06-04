@@ -91,7 +91,7 @@
           eventRender: function(event, element) {
             var title = '授業追加';
             if(event['student_name']){
-              title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+              title = event['student_name']+'('+event['place_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             }
             event_render(event, element, title);
           },
