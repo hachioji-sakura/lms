@@ -1011,12 +1011,12 @@ class UserCalendarController extends MilestoneController
       if($request->has('start_date')){
         $start_date = date('Y/m/d', strtotime($request->get('start_date')));
       }
-      $param['item'] = [
-        'course_minutes' => $request->get('course_minutes'),
-        'start_date' => $start_date,
-        'start_hours' => intval($request->get('start_hours')),
-        'start_minutes' => intval($request->get('start_minutes')),
-      ];
+      $param['item'] = new UserCalendar();
+      $param['item']->work = "";
+      $param['item']['course_minutes'] = $request->get('course_minutes');
+      $param['item']['start_date'] = $start_date;
+      $param['item']['start_hours'] = intval($request->get('start_hours'));
+      $param['item']['start_minutes'] = intval($request->get('start_minutes'));
       $param['teachers'] = [];
       if($param['user']->role==="teacher"){
         $param['teachers'][] = $param['user'];
@@ -1034,6 +1034,7 @@ class UserCalendarController extends MilestoneController
           [ 'error_message' => '', '_edit' => false])
           ->with($param);
       }
+
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
         ->with($param);

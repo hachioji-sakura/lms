@@ -1,6 +1,6 @@
 @section('first_form')
 <div class="row">
-  @if($item->is_management()!=true)
+  @if($item->work!=9)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
   @endif
@@ -11,14 +11,14 @@
     @component('calendars.forms.select_status', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
   @endif
   --}}
-  @if($item->is_management()!=true)
+  @if($item->work!=9)
     @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
   @endif
 </div>
 @endsection
 @section('second_form')
 <div class="row">
-  @if($item->is_management()!=true)
+  @if($item->work!=9)
     @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
     @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent

@@ -4,7 +4,7 @@
   {{-- 授業当日出欠 --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-success btn-sm">
     <i class="fa fa-user-check mr-1"></i>
-    @if($calendar->is_management())
+    @if($calendar->is_management()==true)
     出勤確認
     @else
     出欠確認

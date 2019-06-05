@@ -249,9 +249,11 @@ EOT;
     return $this->get_tag_name('course_minutes');
   }
   public function place(){
+    if(!isset($this->place)) return "";
     return $this->get_attribute_name('lesson_place_floor', $this->place);
   }
   public function work(){
+    if(!isset($this->work)) return "";
     return $this->get_attribute_name('work', $this->work);
   }
   public function teaching_name(){

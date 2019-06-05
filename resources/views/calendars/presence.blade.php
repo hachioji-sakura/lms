@@ -117,7 +117,7 @@
                   <div class="form-check">
                     <input class="form-check-input icheck flat-green presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_presence" value="presence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_presence">
-                      @if($item->is_management())
+                      @if($item->work==9)
                       出勤
                       @else
                       出席
@@ -127,7 +127,7 @@
                   <div class="form-check ml-2">
                     <input class="form-check-input icheck flat-red presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_absence" value="absence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_absence">
-                      @if($item->is_management())
+                      @if($item->work==9)
                       欠勤
                       @else
                       欠席
@@ -178,7 +178,7 @@
             @method('PUT')
             <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_presence">
                 <i class="fa fa-check-circle mr-1"></i>
-                @if($item->is_management())
+                @if($item->work==9)
                 出勤
                 @else
                 出席
@@ -193,7 +193,7 @@
             @method('PUT')
             <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_presence">
               <i class="fa fa-times-circle mr-1"></i>
-              @if($item->is_management())
+              @if($item->work==9)
               欠勤
               @else
               欠席

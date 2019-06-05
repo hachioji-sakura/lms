@@ -21,7 +21,7 @@
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
-            @if($item->is_management()==true)
+            @if($item->work==9)
             <div class="col-12 mb-1">
               <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   更新する
@@ -38,7 +38,7 @@
             @endif
           </div>
         </div>
-        @if($item->is_management()!=true)
+        @if($item->work!=9)
         <div class="carousel-item">
           @yield('second_form')
           <div class="row">

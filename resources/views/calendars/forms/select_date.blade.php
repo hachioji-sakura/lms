@@ -1,4 +1,4 @@
-@if($item->is_management()!=true)
+@if($item->work!=9)
 <div class="col-12 col-lg-6 col-md-6">
 @else
 <div class="col-12">
@@ -61,7 +61,7 @@
     </div>
   </div>
 </div>
-@if($item->is_management()==true)
+@if($item->work==9)
 <div class="col-12 col-lg-6 col-md-6">
   <div class="form-group">
     <label for="end_hours" class="w-100">
