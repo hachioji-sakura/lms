@@ -17,8 +17,9 @@
         value="{{date('Y/m/d', strtotime($item['start_time']))}}"
       @elseif(isset($item) && isset($item['start_date']))
         value="{{$item['start_date']}}"
-      @else
-        minvalue="{{date('Y/m/d')}}"
+      @endif
+      @if(!(isset($_edit) && $_edit==true))
+      minvalue="{{date('Y/m/d')}}"
       @endif
       >
     </div>

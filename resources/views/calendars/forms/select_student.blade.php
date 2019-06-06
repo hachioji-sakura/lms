@@ -16,7 +16,7 @@
       @endforeach
       --}}
     </select>
-    @if(isset($_edit) && $_edit==true)
+    @if((isset($_edit) && $_edit==true) || $item['exchanged_calendar_id']>0)
       @foreach($item->students as $member)
         <input type="hidden" name="select_student_id[]"
           value="{{$member->user->details('students')->id}}"

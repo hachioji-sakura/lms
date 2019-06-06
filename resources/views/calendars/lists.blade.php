@@ -45,7 +45,7 @@
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
     <div class="col-4">
-      <label for="charge_subject" class="w-100">
+      <label for="search_week" class="w-100">
         曜日
       </label>
       <div class="w-100">
@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="col-4">
-      <label for="charge_subject" class="w-100">
+      <label for="search_work" class="w-100">
         作業
       </label>
       <div class="w-100">
@@ -77,7 +77,7 @@
       </div>
     </div>
     <div class="col-4">
-      <label for="charge_subject" class="w-100">
+      <label for="search_place" class="w-100">
         場所
       </label>
       <div class="w-100">

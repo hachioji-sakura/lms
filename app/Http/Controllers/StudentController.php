@@ -292,6 +292,9 @@ class StudentController extends UserController
      case "confirm":
        $list_title = '予定調整中';
        break;
+     case "exchange":
+       $list_title = '振替対象';
+       break;
      case "cancel":
        $list_title = '休み・キャンセル';
        break;
@@ -522,6 +525,10 @@ class StudentController extends UserController
         $sort = 'desc';
         if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+1 month"));
         break;
+      case "exchange":
+        //振替
+        if(empty($to_date)) $from_date = date('Y-m-d', strtotime("-1 month"));
+        break;
       case "cancel":
         //休み予定
         if(empty($from_date)) $from_date = date('Y-m-d');
@@ -548,7 +555,7 @@ class StudentController extends UserController
     $count = $calendars->count();
     $calendars = $calendars->sortStarttime($sort);
     if($request->has('_page') && $request->has('_line')){
-      $calendars = $calendars->pagenation($request->get('_page'), $request->get('_line'));
+      $calendars = $calendars->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
     }
     $calendars = $calendars->get();
     return ["data" => $calendars, "count" => $count];

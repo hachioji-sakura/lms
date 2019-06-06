@@ -205,6 +205,21 @@ EOT;
       return false;
     }
   }
+  public function is_exchange_target(){
+    if($this->is_single()==false) return false;
+    //マンツーであること
+    if($this->status!="rest") return false;
+    //ステータス＝休み
+    $students = $this->get_students(1);
+    if(count($students)!=1) return false;
+    if($students[0]->status != 'rest') return false;
+    if($students[0]->rest_type!='a2') return false;
+    if($students[0]->is_limit_over()==true) return false;
+    //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
+    $exchanged_calendar = $students[0]->exchanged_calendar;
+    if(isset($exchanged_calendar)) return false;  //振替済み
+    return true;
+  }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
     foreach($tags as $tag){
@@ -325,13 +340,18 @@ EOT;
     return false;
   }
   public function is_group(){
-    /*
     $tag =  $this->get_tag('course_type');
     if($tag->tag_value=="group") return true;
-    */
+    /*
     $students = $this->get_students(1);
     //course_typeに限らず、生徒が複数いるかどうか
     if(count($students) > 1) return true;
+    */
+    return false;
+  }
+  public function is_single(){
+    $tag =  $this->get_tag('course_type');
+    if($tag->tag_value=="single") return true;
     return false;
   }
   public function timezone(){

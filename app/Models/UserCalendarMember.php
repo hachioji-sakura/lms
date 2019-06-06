@@ -29,6 +29,9 @@ class UserCalendarMember extends Model
   public function calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'calendar_id');
   }
+  public function exchanged_calendar(){
+    return $this->hasOne('App\Models\UserCalendar', 'exchanged_calendar_id', 'calendar_id');
+  }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
   }

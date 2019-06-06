@@ -1007,34 +1007,54 @@ class UserCalendarController extends MilestoneController
    public function create(Request $request)
    {
       $param = $this->get_param($request);
+      if($request->has('exchanged_calendar_id')){
+        $exchanged_calendar_id = intval($request->get('exchanged_calendar_id'));
+        $exchanged_calendar = UserCalendar::where('id', $exchanged_calendar_id)->first();
+        if(!isset($exchanged_calendar)) abort(404);
+        $param['item'] = $exchanged_calendar->details(1);
+        $param['item']['exchanged_calendar_id'] = $exchanged_calendar_id;
+        $teacher = Teacher::where('user_id', $exchanged_calendar->user_id)->first();
+        $param['teachers'][] = $teacher;
+        $param['teacher_id'] = $teacher->id;
+        $students = $exchanged_calendar->get_students(1);
+        $student = Student::where('user_id', $students[0]->user_id)->first();
+        $param['student_id'] = $student->id;
+
+      }
+      else {
+        $param['item'] = new UserCalendar();
+        $param['item']->work = "";
+        $param['teachers'] = [];
+        if($param['user']->role==="teacher"){
+          $param['teachers'][] = $param['user'];
+          $param['teacher_id'] = $param['user']->id;
+        }
+        else if($param['user']->role==="manager"){
+          if($request->has('teacher_id')){
+            $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
+            $param['teacher_id'] = $request->get('teacher_id');
+          }
+          else {
+            $param['item']->work = 9;
+          }
+        }
+        if(!isset($param['teacher_id'])) {
+          $param["teachers"] = Teacher::findStatuses('0')->get();
+          return view('teachers.select_teacher',
+            [ 'error_message' => '', '_edit' => false])
+            ->with($param);
+        }
+      }
       $start_date = date('Y/m/d');
       if($request->has('start_date')){
         $start_date = date('Y/m/d', strtotime($request->get('start_date')));
       }
-      $param['item'] = new UserCalendar();
-      $param['item']->work = "";
-      $param['item']['course_minutes'] = $request->get('course_minutes');
       $param['item']['start_date'] = $start_date;
       $param['item']['start_hours'] = intval($request->get('start_hours'));
       $param['item']['start_minutes'] = intval($request->get('start_minutes'));
-      $param['teachers'] = [];
-      if($param['user']->role==="teacher"){
-        $param['teachers'][] = $param['user'];
-        $param['teacher_id'] = $param['user']->id;
+      if($request->has('course_minutes')){
+        $param['item']['course_minutes'] = $request->get('course_minutes');
       }
-      else if($param['user']->role==="manager"){
-        if($request->has('teacher_id')){
-          $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
-          $param['teacher_id'] = $request->get('teacher_id');
-        }
-      }
-      if(!isset($param['teacher_id'])) {
-        $param["teachers"] = Teacher::findStatuses('0')->get();
-        return view('teachers.select_teacher',
-          [ 'error_message' => '', '_edit' => false])
-          ->with($param);
-      }
-
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
         ->with($param);

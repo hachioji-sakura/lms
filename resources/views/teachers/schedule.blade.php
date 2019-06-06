@@ -15,6 +15,10 @@
             <i class="fa fa-calendar mr-1"></i>
             {{$list_title}}
           </h3>
+          <div class="card-tools pt-2">
+            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count]) @endcomponent
+          </div>
+{{--
           <div class="card-tools">
             <ul class="pagination pagination-sm m-0 float-right">
               @if($_maxpage>1)
@@ -36,6 +40,7 @@
               @endif
             </ul>
           </div>
+--}}
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
@@ -85,4 +90,105 @@
     </div>
   </div>
 </section>
+
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_from_date" class="w-100">
+        日付 FROM
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_from_date']))
+          value="{{$filter['search_from_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_to_date" class="w-100">
+        日付 TO
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_to_date']))
+          value="{{$filter['search_to_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-group">
+      <label for="is_exchange" class="w-100">
+        振替対象
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
+      @if(isset($filter['is_exchange']) && $filter['is_exchagen']==true)
+        checked
+      @endif
+      >振替対象を表示
+      </label>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_status" class="w-100">
+      ステータス
+    </label>
+    <div class="w-100">
+      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
+        @foreach(config('attribute.calendar_status') as $index => $name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_work" class="w-100">
+      作業
+    </label>
+    <div class="w-100">
+      <select name="search_work[]" class="form-control select2" width=100% placeholder="検索作業" multiple="multiple" >
+        @foreach($attributes['work'] as $index=>$name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_place" class="w-100">
+      場所
+    </label>
+    <div class="w-100">
+      <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
+        @foreach($attributes['lesson_place_floor'] as $index=>$name)
+          <option value="{{$index}}"
+          <option value="{{$index}}"
+          @if(isset($filter['search_place']) && in_array($index, $filter['search_place'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  @endslot
+@endcomponent
 @endsection

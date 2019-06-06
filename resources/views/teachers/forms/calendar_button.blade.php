@@ -29,3 +29,9 @@
   </a>
   @endif
 @endif
+@if($calendar->is_exchange_target()==true)
+<a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="振替登録" page_form="dialog" page_url="/calendars/create?exchanged_calendar_id={{$calendar["id"]}}" role="button" class="btn btn-default btn-sm mr-1">
+  <i class="fa fa-exchange-alt mr-1"></i>
+  振替登録
+</a>
+@endif

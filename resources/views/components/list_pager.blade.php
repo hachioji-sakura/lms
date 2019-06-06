@@ -1,6 +1,7 @@
-<a class="btn btn-default btn-sm mr-2 float-right" role="button" data-toggle="collapse" data-parent="#filter_form" href="#filter_form_item" class="" aria-expanded="true">
+<button type="button" class="btn btn-default btn-sm mr-2 float-right" data-toggle="modal" data-target="#filter_form">
   <i class="fa fa-filter mr-1"></i>絞込
-</a>
+</button>
+
 <ul class="pagination pagination-sm m-0 float-right">
   @if($_maxpage>=1)
     @if($_page > 1)

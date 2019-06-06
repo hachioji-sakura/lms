@@ -1,14 +1,57 @@
+<input type="hidden" name="exchanged_calendar_id" value="{{$item['exchanged_calendar_id']}}">
+<input type="hidden" name="exchanged_calendar_datetime" value="">
+<script>
+$(function(){
+  get_exchange_calendar();
+});
+function get_exchange_calendar(){
+  var teacher_id = ($('*[name=teacher_id]').val())|0;
+  var student_id = $('select[name="student_id[]"]').val()|0;
+  var lesson = ($('input[name=lesson]:checked').val())|0;
+  var exchanged_calendar_id = ($('input[name=exchanged_calendar_id]').val())|0;
+  if(lesson==0){
+    lesson = ($('input[name=lesson]').val())|0;
+  }
+  var url = '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson;
+  if(exchanged_calendar_id>0){
+    url = '/api_calendars?id='+exchanged_calendar_id;
+  }
+  console.log("get_exchange_calendar");
+  $('.add_type').hide();
+  $('.add_type.add_type_new').show();
+  //振替対象の予定を取得
+  service.getAjax(false, url, null,
+    function(result, st, xhr) {
+      console.log(result["data"]);
+      if(result['status']===200){
+        if(result["data"].length>0){
+          var val = result["data"][0];
+          $('input[name=exchanged_calendar_datetime]').val(val['datetime']);
+          $('input[name=exchanged_calendar_id').val(val['id']);
+          $('.add_type .add_type_exchange').show();
+        }
+      }
+    },
+    function(xhr, st, err) {
+        alert("UI取得エラー");
+    }
+  );
+}
+</script>
+{{--
 @if(isset($_edit) && $_edit==true)
 <div class="col-12 collapse">
   <div class="form-group">
     <label for="start_date" class="w-100">
-      予定タイプ
+      追加タイプ
     </label>
     <span title="{{$item->user_calendar_setting_id}}">
       {{$item->teaching_name()}}
     </span>
   </div>
 </div>
+@elseif($item['exchanged_calendar_id'] > 0)
+<input type="hidden" name="exchanged_calendar_id" value="{{$item['exchanged_calendar_id']}}">
 @else
 <div class="col-12 mb-1 collapse" id="select_exchanged_calendar">
   <div class="form-group">
@@ -129,3 +172,4 @@ function exchange_validate(){
 
 </script>
 @endif
+--}}

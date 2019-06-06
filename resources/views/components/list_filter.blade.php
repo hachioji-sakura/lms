@@ -1,25 +1,39 @@
-<div id="filter_form" class="container-fluid">
-  <form method="POST" action="{{request()->fullUrl()}}">
-    @method('GET')
-    @csrf
-    <input name="_domain" type="hidden" value="{{$domain}}">
-    <input name="_page" type="hidden" value="{{$_page}}">
-    <input name="_line" type="hidden" value="{{$_line}}">
-    <div class="row collapse p-2" id="filter_form_item">
-      {{$search_form}}
-    </div>
-    <div class="col-12 mt-2 text-right">
-        <button type="button" class="btn btn-submit btn-info mr-2"  accesskey="filter_search">
-          <i class="fa fa-search mr-1"></i>
-            絞り込み
+<div class="modal fade" id="filter_form" role="dialog" aria-labelledby="modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <i class="fa fa-times"></i>
         </button>
-        <button type="reset" class="btn btn-secondary" accesskey="filter_search">
-            クリア
-        </button>
+        <h4 class="modal-title content-sub-title">絞込</h4>
+      </div>
+      <div class="modal-body content-sub-body">
+        <form method="POST" action="{{request()->fullUrl()}}">
+          @method('GET')
+          @csrf
+          <input name="_domain" type="hidden" value="{{$domain}}">
+          <input name="_page" type="hidden" value="{{$_page}}">
+          <input name="_line" type="hidden" value="{{$_line}}">
+          <div class="row p-2" id="filter_form_item">
+            {{$search_form}}
+          </div>
+          <div class="col-12 mt-2 text-right">
+              <button type="button" class="btn btn-submit btn-info mr-2"  accesskey="filter_search">
+                <i class="fa fa-search mr-1"></i>
+                  絞り込み
+              </button>
+              <button type="reset" class="btn btn-secondary" accesskey="filter_search">
+                  クリア
+              </button>
+          </div>
+        </div>
+        </form>
+      </div>
     </div>
   </div>
-  </form>
 </div>
+
+
 
 <script>
 $(function(){

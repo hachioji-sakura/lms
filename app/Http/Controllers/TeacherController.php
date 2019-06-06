@@ -161,6 +161,24 @@ class TeacherController extends StudentController
 
   public function schedule(Request $request, $id)
   {
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    $request->merge([
+      '_sort' => 'start_time',
+    ]);
     $param = $this->get_param($request, $id);
     $model = $this->model()->where('id',$id)->first()->user;
     $item = $model->details();
@@ -168,11 +186,12 @@ class TeacherController extends StudentController
 
     $user = $param['user'];
     $view = "schedule";
-    $request->merge([
-      '_sort' => 'start_time',
-    ]);
     $calendars = $this->get_schedule($request, $item->user_id);
-    $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
+    $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
+    foreach($page_data as $key => $val){
+      $param[$key] = $val;
+    }
+    //$param["_maxpage"] = floor($calendars["count"] / $param['_line']);
     $calendars = $calendars["data"];
     foreach($calendars as $calendar){
       $calendar = $calendar->details();
