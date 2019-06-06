@@ -1,8 +1,4 @@
-<button type="button" class="btn btn-default btn-sm mr-2 float-right" data-toggle="modal" data-target="#filter_form">
-  <i class="fa fa-filter mr-1"></i>絞込
-</button>
-
-<ul class="pagination pagination-sm m-0 float-right">
+<ul class="pagination pagination-sm m-0 float-right text-sm">
   @if($_maxpage>=1)
     @if($_page > 1)
     <li class="page-item"><a class="page-link" href="javascript:void(0);" accesskey="pager" page="1">«</a></li>
@@ -14,4 +10,10 @@
     <li class="page-item"><a class="page-link" href="javascript:void(0);" accesskey="pager" page="{{$_maxpage}}">»</a></li>
     @endif
   @endif
+  <li class="page-item">
+    <a class="page-link btn btn-float btn-default btn-sm" data-toggle="modal" data-target="#filter_form">
+      <i class="fa fa-filter"></i>
+      絞込
+    </a>
+  </li>
 </ul>

@@ -118,13 +118,14 @@ EOT;
   }
   public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
-    if($is_not===true){
-      $query = $query->whereNotIn($field, $vals);
+    if(count($vals) > 0){
+      if($is_not===true){
+        $query = $query->whereNotIn($field, $vals);
+      }
+      else {
+        $query = $query->whereIn($field, $vals);
+      }
     }
-    else {
-      $query = $query->whereIn($field, $vals);
-    }
-
     return $query;
   }
   public function scopeFindUser($query, $user_id)
@@ -134,7 +135,7 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function scopeFindExchangeTarget($query, $user_id, $lesson)
+  public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
     $to = date("Y-m-01", strtotime("+2 month ".$from));
@@ -145,17 +146,32 @@ EOT;
       user_calendars.id not in (select exchanged_calendar_id from user_calendars)
       and user_calendars.id in (
         select calendar_id from user_calendar_members where
-          user_id = $user_id
-          and status = 'rest'
+          status = 'rest'
           and remark != '規定回数以上'
+EOT;
+    if($user_id > 0){
+      $where_raw .= <<<EOT
+       and user_id = $user_id
+EOT;
+    }
+    $where_raw .= <<<EOT
         )
         and user_calendars.id in (
           select calendar_id from user_calendar_tags where
-            tag_value = $lesson
-            and tag_key = 'lesson'
+            tag_value = 'single'
+            and tag_key = 'course_type'
           )
 EOT;
-    return $query->whereRaw($where_raw,[$user_id]);
+    if($lesson > 0){
+      $where_raw .= <<<EOT
+          and user_calendars.id in (
+            select calendar_id from user_calendar_tags where
+              tag_value = $lesson
+              and tag_key = 'lesson'
+            )
+EOT;
+    }
+    return $query->whereRaw($where_raw,[1]);
   }
   public function get_access_member($user_id){
     $user = User::where('id', $user_id)->first();
@@ -359,6 +375,14 @@ EOT;
     $end_hour_minute = date('H:i',  strtotime($this->end_time));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
+  public function dateweek(){
+    $d = date('n月n日',  strtotime($this->start_time));
+    $week = [
+      '日', '月','火','水','木','金','土',
+    ];
+    $d .= '('.$week[date('w',  strtotime($this->start_time))].')';
+    return $d;
+  }
   public function get_member($user_id){
     return $this->members->where('user_id', $user_id)->first();
   }
@@ -369,10 +393,12 @@ EOT;
     $item['work_name'] = $this->work();
 
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
+    $item['dateweek'] = $this->dateweek();
+
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
     $item['timezone'] = $this->timezone();
-    $item['datetime'] = date('m月d日 H:i',  strtotime($this->start_time)).'～'.$item['end_hour_minute'];
+    $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
     if($this->lecture_id > 0){
       $lecture = $this->lecture->details();
     }

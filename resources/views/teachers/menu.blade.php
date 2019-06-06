@@ -35,7 +35,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="/{{$domain}}/{{$item->id}}/schedule" class="nav-link @if($view=="schedule" && $list=="") active @endif">
+          <a href="/{{$domain}}/{{$item->id}}/schedule?list=recent" class="nav-link @if($view=="schedule" && $list=="recent") active @endif">
             <i class="fa fa-calendar-check nav-icon"></i>直近予定
           </a>
         </li>
@@ -47,6 +47,11 @@
         <li class="nav-item">
           <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
             <i class="fa fa-calendar-times nav-icon"></i>休み予定
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/schedule?list=exchange" class="nav-link @if($view=="schedule" && $list=="exchange") active @endif">
+            <i class="fa fa-exchange-alt nav-icon"></i>振替対象
           </a>
         </li>
         <li class="nav-item">

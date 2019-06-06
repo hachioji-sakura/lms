@@ -265,7 +265,156 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
  }
+
  public function schedule(Request $request, $id)
+ {
+   if(!$request->has('_line')){
+     $request->merge([
+       '_line' => $this->pagenation_line,
+     ]);
+   }
+   if(!$request->has('_page')){
+     $request->merge([
+       '_page' => 1,
+     ]);
+   }
+   else if($request->get('_page')==0){
+     $request->merge([
+       '_page' => 1,
+     ]);
+   }
+   $request->merge([
+     '_sort' => 'start_time',
+   ]);
+
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+   $list_title = '授業予定';
+   //status: new > confirm > fix >rest, presence , absence
+   //other status : cancel
+   switch($request->get('list')){
+     case "history":
+       $list_title = '授業履歴';
+       break;
+     case "exchange":
+      $list_title = '振替対象';
+       $request->merge([
+         'is_exchange' => 1,
+       ]);
+       break;
+     case "cancel":
+       $list_title = '休み・キャンセル';
+       $request->merge([
+         'search_status' => ['cancel', 'rest'],
+       ]);
+       break;
+     case "confirm":
+       $list_title = '予定調整中';
+       $request->merge([
+         'search_status' => ['new', 'confirm'],
+       ]);
+       break;
+     case "recent":
+       $list_title = '直近予定';
+       if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
+       if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
+       $request->merge([
+         'search_status' => ['rest', 'fix', 'presence', 'absence'],
+       ]);
+       break;
+     default:
+       $request->merge([
+         'search_status' => ['rest', 'fix', 'presence', 'absence'],
+       ]);
+       break;
+   }
+
+   $request->merge([
+     '_sort' => 'start_time',
+   ]);
+
+
+   $view = "schedule";
+   $calendars = $this->get_schedule($request, $item->user_id);
+   $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
+   foreach($page_data as $key => $val){
+     $param[$key] = $val;
+   }
+   $calendars = $calendars["data"];
+   foreach($calendars as $calendar){
+     $calendar = $calendar->details();
+   }
+   $param["calendars"] = $calendars;
+
+   $filter = [];
+   $filter_keys = ['search_from_date', 'search_to_date', 'is_exchange', 'search_status', 'search_work', 'search_place', 'is_desc', ''];
+   foreach($filter_keys as $filter_key){
+     if($request->has($filter_key)){
+       $filter[$filter_key] = $request->get($filter_key);
+     }
+   }
+   $param['filter'] = $filter;
+   $param['list_title'] = $list_title;
+   $param['view'] = $view;
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+   ])->with($param);
+ }
+ public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
+   $statuses = [];
+   $is_exchange = false;
+   $is_desc = false;
+   if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
+   if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
+
+   if($request->has('is_exchange') && $request->get('is_exchange')==1){
+     $is_exchange = true;
+   }
+
+   $sort = 'asc';
+   if($request->has('is_desc') && $request->get('is_desc')==1){
+     $sort = 'desc';
+   }
+   if($request->has('search_from_date')){
+     $from_date = $request->get('search_from_date');
+   }
+   if($request->has('search_to_date')){
+     $to_date = $request->get('search_to_date');
+   }
+   if($request->has('search_status')){
+     $statuses = $request->get('search_status');
+   }
+   $works =[];
+   if($request->has('search_work')){
+     $works = $request->get('search_work');
+   }
+   $places =[];
+   if($request->has('search_place')){
+     $places = $request->get('search_place');
+   }
+
+   $calendars = UserCalendar::rangeDate($from_date, $to_date);
+   $calendars = $calendars->findStatuses($statuses);
+   $calendars = $calendars->findWorks($works);
+   $calendars = $calendars->findPlaces($places);
+   if($is_exchange==true){
+     $calendars = $calendars->findExchangeTarget();
+   }
+   $calendars = $calendars->findUser($user_id);
+   $count = $calendars->count();
+   $calendars = $calendars->sortStarttime($sort);
+
+   if($request->has('_page') && $request->has('_line')){
+     $calendars = $calendars->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
+   }
+   $calendars = $calendars->get();
+   return ["data" => $calendars, "count" => $count];
+ }
+
+ public function schedule2(Request $request, $id)
  {
    $param = $this->get_param($request, $id);
    $model = $this->model()->where('id',$id)->first()->user;
@@ -513,51 +662,5 @@ class StudentController extends UserController
       DB::rollBack();
       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
    }
-  }
-  public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
-    $statuses = [];
-    $sort = 'asc';
-    //status: new > confirm > fix >rest, presence , absence
-    //other status : cancel
-    switch($request->get('list')){
-      case "history":
-        //履歴
-        $sort = 'desc';
-        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+1 month"));
-        break;
-      case "exchange":
-        //振替
-        if(empty($to_date)) $from_date = date('Y-m-d', strtotime("-1 month"));
-        break;
-      case "cancel":
-        //休み予定
-        if(empty($from_date)) $from_date = date('Y-m-d');
-        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+1 month"));
-        $statuses = ['cancel','rest'];
-        break;
-      case "confirm":
-        //予定調整中
-        if(empty($from_date)) $from_date = date('Y-m-d');
-        $statuses = ['new', 'confirm'];
-        break;
-      default:
-        if(empty($from_date)) $from_date = date('Y-m-d');
-        if(empty($to_date)) $to_date = date('Y-m-d', strtotime("+7 day"));
-        $statuses = ['rest', 'fix', 'presence', 'absence'];
-        break;
-    }
-    $calendars = UserCalendar::rangeDate($from_date, $to_date);
-    if($request->get('list')!=='history'){
-      $calendars = $calendars->findStatuses($statuses);
-    }
-    $calendars = $calendars->findUser($user_id);
-    //var_dump($calendars->toSql());
-    $count = $calendars->count();
-    $calendars = $calendars->sortStarttime($sort);
-    if($request->has('_page') && $request->has('_line')){
-      $calendars = $calendars->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
-    }
-    $calendars = $calendars->get();
-    return ["data" => $calendars, "count" => $count];
   }
 }

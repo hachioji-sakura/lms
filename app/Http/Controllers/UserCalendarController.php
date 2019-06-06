@@ -36,7 +36,6 @@ class UserCalendarController extends MilestoneController
       $ret = [
         'datetime' => [
           'label' => '日時',
-          'size' => 6,
         ],
         'status_name' => [
           'label' => 'ステータス',
@@ -56,7 +55,6 @@ class UserCalendarController extends MilestoneController
       $ret = [
         'datetime' => [
           'label' => '日時',
-          'size' => 6,
         ],
         'status_name' => [
           'label' => 'ステータス',
@@ -1019,11 +1017,11 @@ class UserCalendarController extends MilestoneController
         $students = $exchanged_calendar->get_students(1);
         $student = Student::where('user_id', $students[0]->user_id)->first();
         $param['student_id'] = $student->id;
-
       }
       else {
         $param['item'] = new UserCalendar();
         $param['item']->work = "";
+        $param['item']->place = "";
         $param['teachers'] = [];
         if($param['user']->role==="teacher"){
           $param['teachers'][] = $param['user'];

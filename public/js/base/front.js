@@ -92,6 +92,13 @@
 			$(this).val(-1).trigger('change');
 		});
 		$("input:not([type='hidden'])", $("#"+formId)).val("");
+		$("input[type='checkbox'],input[type='radio']", $("#"+formId)).each(function(){
+			$(this).val("");
+			if($(this).iCheck){
+				$(this).iCheck('uncheck');
+			}
+			$(this).change();
+		});
 	}
 	/**
 	* form配下の入力要素の値をチェックする

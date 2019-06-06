@@ -3,7 +3,6 @@
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
-@include('dashboard.widget.milestones')
 
 @section('contents')
 <section class="content mb-2">
@@ -24,7 +23,7 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mr-1"></i>{{$calendar["date"]}}
+                  <i class="fa fa-calendar mr-1"></i>{{$calendar["dateweek"]}}
                   <br>
                   <i class="fa fa-clock mr-1"></i>{{$calendar["timezone"]}}
                 </div>

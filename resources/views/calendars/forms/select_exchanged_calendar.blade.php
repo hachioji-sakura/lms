@@ -12,14 +12,18 @@ function get_exchange_calendar(){
   if(lesson==0){
     lesson = ($('input[name=lesson]').val())|0;
   }
-  var url = '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson;
+  var url = '';
   if(exchanged_calendar_id>0){
     url = '/api_calendars?id='+exchanged_calendar_id;
   }
-  console.log("get_exchange_calendar");
+  else if(student_id > 0){
+    url = '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson;
+  }
+  console.log("get_exchange_calendar:"+url);
   $('.add_type').hide();
   $('.add_type.add_type_new').show();
   //振替対象の予定を取得
+  if(url == '') return;
   service.getAjax(false, url, null,
     function(result, st, xhr) {
       console.log(result["data"]);
@@ -28,7 +32,8 @@ function get_exchange_calendar(){
           var val = result["data"][0];
           $('input[name=exchanged_calendar_datetime]').val(val['datetime']);
           $('input[name=exchanged_calendar_id').val(val['id']);
-          $('.add_type .add_type_exchange').show();
+          $('.add_type.add_type_new').hide();
+          $('.add_type.add_type_exchange').show();
         }
       }
     },

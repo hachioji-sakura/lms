@@ -49,16 +49,23 @@
     <div class="col-6 p-3">
       <span id="{{$key}}"></span>
       @if($key=="start_time")
-        <span class="text-xs  ">
-          <small class="badge badge-danger mt-1 mr-1 add_type add_type_new">
+        <span class="text-xs add_type add_type_new">
+          <small class="badge badge-danger mt-1 mr-1">
             追加授業
-          </small>
-          <small class="badge badge-info mt-1 mr-1 add_type add_type_exchange ">
-            振替授業
           </small>
         </span>
       @endif
-    </div>
+     </div>
+      @if($key=="start_time")
+        <div class="col-12 add_type add_type_exchange px-3" >
+          <span class="text-xs">
+            <small class="badge badge-primary mt-1 mr-1 p-1">
+              <i class="fa fa-exchange-alt mr-1"></i>
+              振替: <span id="exchanged_calendar_datetime"></span>
+            </small>
+          </span>
+        </div>
+      @endif
     @endforeach
 </div>
 @endsection

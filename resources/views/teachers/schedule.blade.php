@@ -15,32 +15,9 @@
             <i class="fa fa-calendar mr-1"></i>
             {{$list_title}}
           </h3>
-          <div class="card-tools pt-2">
+          <div class="card-title text-sm">
             @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count]) @endcomponent
           </div>
-{{--
-          <div class="card-tools">
-            <ul class="pagination pagination-sm m-0 float-right">
-              @if($_maxpage>1)
-              <li class="page-item"><a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, 0, $_line)}}">«</a></li>
-              @for($i=$_page-2;$i<$_page+3;$i++)
-                @if($i<0)
-                  @continue
-                @endif
-                @if($i>$_maxpage) @continue @endif
-                <li class="page-item">
-                  @if($i==$_page)
-                  <span class="page-link text-dark bg-primary">{{$i+1}}</span>
-                  @else
-                  <a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, $i, $_line)}}">{{$i+1}}</a>
-                  @endif
-                </li>
-              @endfor
-              <li class="page-item"><a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, $_maxpage, $_line)}}">»</a></li>
-              @endif
-            </ul>
-          </div>
---}}
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
@@ -50,7 +27,7 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mx-1"></i>{{$calendar["date"]}}
+                  <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
                   <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                   <br>
                   <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
@@ -130,14 +107,28 @@
   <div class="col-12">
     <div class="form-group">
       <label for="is_exchange" class="w-100">
+        表示順
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
+      @if(isset($filter['is_desc']) && $filter['is_desc']==true)
+        checked
+      @endif
+      >日付降順
+      </label>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-group">
+      <label for="is_exchange" class="w-100">
         振替対象
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
-      @if(isset($filter['is_exchange']) && $filter['is_exchagen']==true)
+      @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
         checked
       @endif
-      >振替対象を表示
+      >振替対象のみを表示
       </label>
     </div>
   </div>
