@@ -224,7 +224,8 @@ EOT;
   }
   //振替対象の場合:true
   public function is_exchange_target(){
-    if(strtotime('now') - strtotime($this->start_time) > 0) return false;
+    $d = intval(strtotime('now')) - intval(strtotime($this->start_time));
+    if($d < 0) return false;
     //過去の予定であること
     if($this->is_single()==false) return false;
     //マンツーであること
