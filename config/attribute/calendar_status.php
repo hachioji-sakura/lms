@@ -6,6 +6,7 @@ return array(
   'presence' => '出席済み',
   'absence' => '欠席',
   'rest' => '休み',
+  'rest_cancel' => '休み取消(確認待ち)',
   'cancel' => 'キャンセル',
 );
 ?>

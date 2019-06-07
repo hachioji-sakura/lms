@@ -140,10 +140,11 @@ EOT;
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
     $to = date("Y-m-01", strtotime("+2 month ".$from));
     //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
-    //かつ、振替が未登録
+    //かつ、振替が未登録(cancelは除く）
     $query = $this->scopeSearchDate($query, $from, $to);
     $where_raw = <<<EOT
-      user_calendars.id not in (select exchanged_calendar_id from user_calendars)
+      user_calendars.id not in (select exchanged_calendar_id from user_calendars where status != 'cancel')
+      and start_time < current_timestamp
       and user_calendars.id in (
         select calendar_id from user_calendar_members where
           status = 'rest'
@@ -221,7 +222,10 @@ EOT;
       return false;
     }
   }
+  //振替対象の場合:true
   public function is_exchange_target(){
+    if(strtotime('now') - strtotime($this->start_time) > 0) return false;
+    //過去の予定であること
     if($this->is_single()==false) return false;
     //マンツーであること
     if($this->status!="rest") return false;
@@ -233,7 +237,8 @@ EOT;
     if($students[0]->is_limit_over()==true) return false;
     //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
     $exchanged_calendar = $students[0]->exchanged_calendar;
-    if(isset($exchanged_calendar)) return false;  //振替済み
+    //振替登録済み（cancelを除く）
+    if(isset($exchanged_calendar) && $exchanged_calendar->status!='cancel') return false;  //振替済み
     return true;
   }
   public function has_tag($key, $val=""){
@@ -376,7 +381,7 @@ EOT;
     return $start_hour_minute.'～'.$end_hour_minute;
   }
   public function dateweek(){
-    $d = date('n月n日',  strtotime($this->start_time));
+    $d = date('n月j日',  strtotime($this->start_time));
     $week = [
       '日', '月','火','水','木','金','土',
     ];
@@ -391,6 +396,7 @@ EOT;
     $item['status_name'] = $this->status_name();
     $item['place_name'] = $this->place();
     $item['work_name'] = $this->work();
+    $item['teaching_name'] = $this->teaching_name();
 
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
@@ -506,8 +512,9 @@ EOT;
     $status = $this->status;
     if(isset($form['status'])){
       $is_status_update = true;
-      if($form['status']=='rest' || $form['status']=='cancel'){
+      if($form['status']=='rest' || $form['status']=='cancel' || $form['status']=='rest_cancel'){
         //status=restは生徒全員が休みの場合
+        //status=rest_cancelは生徒全員が休み取り消しの場合
         //status=fixは生徒全員が予定確認した場合
         //status=cancelは生徒全員が予定キャンセルした場合
         foreach($this->members as $member){

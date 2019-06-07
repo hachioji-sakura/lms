@@ -68,6 +68,15 @@ class TeacherController extends StudentController
         abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      $lists = ['cancel', 'confirm', 'exchange', 'recent'];
+      foreach($lists as $list){
+        $r = new Request();
+        $r->merge([
+          'list' => $list
+        ]);
+        $calendars = $this->get_schedule($r, $ret['item']->user_id);
+        $ret[$list.'_count'] = $calendars["count"];
+      }
     }
     else {
       //id指定がない、かつ、事務以外はNG

@@ -48,9 +48,17 @@
                     TODO　将来的に事務のみ代理連絡可能にする
                   @if($user->role!=="teacher" && $calendar->get_member($item->user_id)->status==="fix")
                   --}}
-                  @if($calendar->get_member($item->user_id)->status==="fix")
+                  @if($calendar->get_member($item->user_id)->status==="fix" && strtotime($calendar["start_time"]) > strtotime('now'))
                   <a href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest?student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
                     <i class="fa fa-minus-circle mr-1"></i>休み連絡する
+                    @if($user->role==="manager" || $user->role==="teacher")
+                    (代理連絡）
+                    @endif
+                  </a>
+                  @endif
+                  @if($calendar->get_member($item->user_id)->status==="rest" && strtotime($calendar["start_time"]) > strtotime('now'))
+                  <a href="javascript:void(0);" page_title="休み取り消し" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest_cancel?student_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="rest") disabled @endif>
+                    <i class="fa fa-minus-circle mr-1"></i>休み取り消し連絡
                     @if($user->role==="manager" || $user->role==="teacher")
                     (代理連絡）
                     @endif

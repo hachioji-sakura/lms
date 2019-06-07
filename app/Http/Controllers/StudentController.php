@@ -80,6 +80,15 @@ class StudentController extends UserController
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
+      $lists = ['cancel', 'confirm', 'exchange', 'recent'];
+      foreach($lists as $list){
+        $r = new Request();
+        $r->merge([
+          'list' => $list
+        ]);
+        $calendars = $this->get_schedule($r, $ret['item']->user_id);
+        $ret[$list.'_count'] = $calendars["count"];
+      }
     }
     return $ret;
   }
@@ -283,9 +292,6 @@ class StudentController extends UserController
        '_page' => 1,
      ]);
    }
-   $request->merge([
-     '_sort' => 'start_time',
-   ]);
 
    $param = $this->get_param($request, $id);
    $model = $this->model()->where('id',$id)->first()->user;
@@ -295,50 +301,11 @@ class StudentController extends UserController
    $list_title = '授業予定';
    //status: new > confirm > fix >rest, presence , absence
    //other status : cancel
-   switch($request->get('list')){
-     case "history":
-       $list_title = '授業履歴';
-       break;
-     case "exchange":
-      $list_title = '振替対象';
-       $request->merge([
-         'is_exchange' => 1,
-       ]);
-       break;
-     case "cancel":
-       $list_title = '休み・キャンセル';
-       $request->merge([
-         'search_status' => ['cancel', 'rest'],
-       ]);
-       break;
-     case "confirm":
-       $list_title = '予定調整中';
-       $request->merge([
-         'search_status' => ['new', 'confirm'],
-       ]);
-       break;
-     case "recent":
-       $list_title = '直近予定';
-       if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
-       if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
-       $request->merge([
-         'search_status' => ['rest', 'fix', 'presence', 'absence'],
-       ]);
-       break;
-     default:
-       $request->merge([
-         'search_status' => ['rest', 'fix', 'presence', 'absence'],
-       ]);
-       break;
-   }
-
-   $request->merge([
-     '_sort' => 'start_time',
-   ]);
 
 
    $view = "schedule";
    $calendars = $this->get_schedule($request, $item->user_id);
+   $param['list_title'] = $calendars["title"];
    $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
@@ -357,13 +324,121 @@ class StudentController extends UserController
      }
    }
    $param['filter'] = $filter;
-   $param['list_title'] = $list_title;
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
    ])->with($param);
  }
  public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
+   switch($request->get('list')){
+     case "history":
+       $list_title = '授業履歴';
+       break;
+     case "exchange":
+      $list_title = '振替対象';
+       $request->merge([
+         'is_exchange' => 1,
+       ]);
+       break;
+     case "cancel":
+       $list_title = '休み・キャンセル';
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['cancel', 'rest'],
+         ]);
+       }
+       break;
+     case "confirm":
+       $list_title = '予定調整中';
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['new', 'confirm'],
+         ]);
+       }
+       break;
+     case "recent":
+       $list_title = '直近予定';
+       if(!$request->has('search_from_date')){
+         $request->merge([
+           'search_from_date' => date('Y-m-1', strtotime("now"))
+         ]);
+       }
+       if(!$request->has('search_to_date')){
+         $request->merge([
+           'search_to_date' => date('Y-m-t', strtotime("+1 month"))
+         ]);
+       }
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['rest', 'fix', 'presence', 'absence'],
+         ]);
+       }
+       break;
+     default:
+       $request->merge([
+         'search_status' => ['rest', 'fix', 'presence', 'absence'],
+       ]);
+       break;
+   }
+
+   $request->merge([
+     '_sort' => 'start_time',
+   ]);
+   $list_title = "授業予定";
+   switch($request->get('list')){
+     case "history":
+       $list_title = '授業履歴';
+       break;
+     case "exchange":
+      $list_title = '振替対象';
+       $request->merge([
+         'is_exchange' => 1,
+       ]);
+       break;
+     case "cancel":
+       $list_title = '休み・キャンセル';
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['cancel', 'rest'],
+         ]);
+       }
+       break;
+     case "confirm":
+       $list_title = '予定調整中';
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['new', 'confirm'],
+         ]);
+       }
+       break;
+     case "recent":
+       $list_title = '直近予定';
+       if(!$request->has('search_from_date')){
+         $request->merge([
+           'search_from_date' => date('Y-m-1', strtotime("now"))
+         ]);
+       }
+       if(!$request->has('search_to_date')){
+         $request->merge([
+           'search_to_date' => date('Y-m-t', strtotime("+1 month"))
+         ]);
+       }
+       if(!$request->has('search_status')){
+         $request->merge([
+           'search_status' => ['rest', 'fix', 'presence', 'absence'],
+         ]);
+       }
+       break;
+     default:
+       $request->merge([
+         'search_status' => ['rest', 'fix', 'presence', 'absence'],
+       ]);
+       break;
+   }
+   $request->merge([
+     '_sort' => 'start_time',
+   ]);
+
    $statuses = [];
    $is_exchange = false;
    $is_desc = false;
@@ -410,51 +485,11 @@ class StudentController extends UserController
    if($request->has('_page') && $request->has('_line')){
      $calendars = $calendars->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
    }
+   //echo $calendars->toSql();
    $calendars = $calendars->get();
-   return ["data" => $calendars, "count" => $count];
+   return ["data" => $calendars, "count" => $count, "title" => $list_title];
  }
 
- public function schedule2(Request $request, $id)
- {
-   $param = $this->get_param($request, $id);
-   $model = $this->model()->where('id',$id)->first()->user;
-   $item = $model->details();
-   $item['tags'] = $model->tags();
-   $user = $param['user'];
-
-   //目標データ取得
-   $milestones = $model->target_milestones;
-
-   $view = "schedule";
-   $calendars = $this->get_schedule($request, $item->user_id);
-   $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
-   $calendars = $calendars["data"];
-   foreach($calendars as $calendar){
-     $calendar = $calendar->details();
-   }
-   $param["calendars"] = $calendars;
-   $list_title = '授業予定';
-   switch($request->get('list')){
-     case "history":
-       $list_title = '授業履歴';
-       break;
-     case "confirm":
-       $list_title = '予定調整中';
-       break;
-     case "exchange":
-       $list_title = '振替対象';
-       break;
-     case "cancel":
-       $list_title = '休み・キャンセル';
-       break;
-   }
-   $param['list_title'] = $list_title;
-   $param['view'] = $view;
-   return view($this->domain.'.'.$view, [
-     'item' => $item,
-     'milestones'=>$milestones
-   ])->with($param);
- }
  /**
   * Show the form for agreement the specified resource.
   *

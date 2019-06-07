@@ -24,6 +24,7 @@ class UserCalendarController extends MilestoneController
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
           'rest' => '休み連絡をしました。',
+          'rest_cancel' => '休み取り消し連絡をしました。',
           'presence' => '授業を出席に更新しました。',
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
@@ -74,6 +75,10 @@ class UserCalendarController extends MilestoneController
         ],
         'course' => [
           'label' => 'コース',
+          'size' => 6,
+        ],
+        'teaching_name' => [
+          'label' => 'ステータス',
           'size' => 6,
         ],
         'subject' => [
@@ -224,13 +229,8 @@ class UserCalendarController extends MilestoneController
 
     $form['exchanged_calendar_id'] = 0;
     //内容の指定
-    if($request->has('add_type') && $request->get('add_type') == "exchange"){
-      if($request->has('exchanged_calendar_id') && $request->get('exchanged_calendar_id') > 0){
-        $form['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
-      }
-      else {
-        abort(400, "振替元IDの指定がない");
-      }
+    if($request->has('exchanged_calendar_id') && $request->get('exchanged_calendar_id') > 0){
+      $form['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
     }
 
     return $form;
@@ -654,6 +654,10 @@ class UserCalendarController extends MilestoneController
             //お休み連絡メール通知
             if($is_send) $this->rest_mail($param);
             break;
+          case "rest_cancel":
+            //お休み取り消し連絡メール通知
+            if($is_send) $this->rest_cancel_mail($param);
+            break;
           case "confirm":
             //授業追加確認メール通知
             if($is_send) $this->confirm_mail($param);
@@ -829,7 +833,9 @@ class UserCalendarController extends MilestoneController
       return  $this->calendar_mail($param,
                'お休み連絡',
                'calendar_rest');
-
+    }
+    private function rest_cancel_mail($param){
+      return $param['item']->teacher_mail('休み取り消し連絡', $param, 'text', 'calendar_rest_cancel');
     }
     private function cancel_mail($param){
       //TODO 講師あてにキャンセル連絡が届くが、グループレッスンの場合、部分的なキャンセル→全体をキャンセルが必要

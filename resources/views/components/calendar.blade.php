@@ -39,11 +39,11 @@
         },
         "absence" : {
           "color" : "#dc3545",
-          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+          "icon" : "<i class='fa fa-user-times mr-1'></i>",
         },
         "rest" : {
           "color" : "#dc3545",
-          "icon" : "<i class='fa fa-user-times mr-1'></i>",
+          "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
         },
       };
       if(_ret[status]) return _ret[status];

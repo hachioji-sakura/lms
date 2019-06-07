@@ -12,19 +12,64 @@
     </a>
   </div>
 </div>
-<div class="user-panel mb-1">
-  <div class="w-100 p-2 @if($view=="calendar")bg-light @endif">
-    <a href="/{{$domain}}/{{$item->id}}/calendar" class="text-light">
-      <i class="fa fa-calendar-alt mr-1"></i>カレンダー
-    </a>
-  </div>
-  <div class="w-100 p-2 @if($view=="month_work")bg-light @endif">
-    <a href="/{{$domain}}/{{$item->id}}/schedule" class="text-light">
-      <i class="fa fa-check-circle mr-1"></i>授業予定
-    </a>
-  </div>
-</div>
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <li class="nav-item">
+    <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar" && $list=="") active @endif">
+      <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
+    </a>
+  </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-clock"></i>
+    <p>
+      スケジュール
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=recent" class="nav-link @if($view=="schedule" && $list=="recent") active @endif">
+          <i class="fa fa-calendar-check nav-icon"></i>
+          <p>
+            直近予定
+            <span class="badge badge-primary right">{{$recent_count}}</span>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=confirm" class="nav-link  @if($view=="schedule" && $list=="confirm") active @endif">
+          <i class="fa fa-hourglass nav-icon"></i>
+          <p>
+            予定調整中
+            <span class="badge badge-warning right">{{$confirm_count}}</span>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
+          <i class="fa fa-calendar-times nav-icon"></i>
+          <p>
+            休み予定
+            <span class="badge badge-danger right">{{$cancel_count}}</span>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=exchange" class="nav-link @if($view=="schedule" && $list=="exchange") active @endif">
+          <i class="fa fa-exchange-alt nav-icon"></i>
+          <p>
+            振替対象
+            <span class="badge badge-danger right">{{$exchange_count}}</span>
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
+          <i class="fa fa-history nav-icon "></i>授業履歴
+        </a>
+      </li>
+    </ul>
+  </li>
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-cogs"></i>
