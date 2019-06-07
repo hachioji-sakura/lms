@@ -362,7 +362,7 @@ EOT;
   }
   public function is_group(){
     $tag =  $this->get_tag('course_type');
-    if($tag->tag_value=="group") return true;
+    if(isset($tag) && $tag->tag_value=="group") return true;
     /*
     $students = $this->get_students(1);
     //course_typeに限らず、生徒が複数いるかどうか
@@ -372,7 +372,7 @@ EOT;
   }
   public function is_single(){
     $tag =  $this->get_tag('course_type');
-    if($tag->tag_value=="single") return true;
+    if(isset($tag) && $tag->tag_value=="single") return true;
     return false;
   }
   public function timezone(){

@@ -176,7 +176,7 @@
                 </div>
                 <div class="col-6 text-sm">
                   @if(!empty($student->current_calendar))
-                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar->date}}
+                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar["dateweek"]}}
                       <br>
                       <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->timezone}}
                       <br>
