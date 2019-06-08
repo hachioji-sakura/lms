@@ -149,6 +149,7 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
+Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
 Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
 
@@ -167,6 +168,18 @@ Route::get('teachers/{teacher_id?}/calendars/create','UserCalendarController@tea
 Route::get('teachers/{teacher_id?}/calendars/{id}','UserCalendarController@teacher_show');
 Route::get('teachers/{teacher_id?}/calendars/{id}/edit','UserCalendarController@teacher_edit');
 */
+
+Route::resource('asks','AskController');
+
+
+
+
+
+
+
+
+
+
 Route::get('home', 'HomeController@index')->name('home');
 
 //教科書を選択する画面

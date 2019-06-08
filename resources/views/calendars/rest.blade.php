@@ -104,29 +104,8 @@
       </div>
 
       <div class="row">
-        {{--
-        @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
-        <div class="col-12 mb-1">
-            <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
-            </button>
-        </div>
-        @else
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
-              <i class="fa fa-envelope mr-1"></i>
-                休み連絡
-            </button>
-        </div>
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
-            </button>
-        </div>
-        @endif
-        --}}
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="休み連絡を送信しますか？">
               <i class="fa fa-envelope mr-1"></i>
                 休み連絡
             </button>

@@ -147,7 +147,7 @@
           {{-- 当日開始15分前～終了15分後までの表示 --}}
           <div class="row">
             <div class="col-12 col-lg-6 col-md-6 mb-1">
-              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence">
+              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
                   <i class="fa fa-check-circle mr-1"></i>
                   出欠をつける
               </button>
@@ -176,7 +176,7 @@
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="submit" class="btn btn-success btn-block"  accesskey="{{$domain}}_presence">
+            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
                 <i class="fa fa-check-circle mr-1"></i>
                 @if($item->work==9)
                 出勤
@@ -191,7 +191,7 @@
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="submit" class="btn btn-danger btn-block"  accesskey="{{$domain}}_presence">
+            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
               <i class="fa fa-times-circle mr-1"></i>
               @if($item->work==9)
               欠勤

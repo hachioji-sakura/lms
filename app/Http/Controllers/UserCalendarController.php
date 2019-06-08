@@ -12,6 +12,7 @@ use App\Models\UserTag;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
+use App\Models\Ask;
 use DB;
 use View;
 class UserCalendarController extends MilestoneController
@@ -78,7 +79,7 @@ class UserCalendarController extends MilestoneController
           'size' => 6,
         ],
         'teaching_name' => [
-          'label' => 'ステータス',
+          'label' => '授業種類',
           'size' => 6,
         ],
         'subject' => [
@@ -641,6 +642,12 @@ class UserCalendarController extends MilestoneController
           //TODO: カレンダー更新が2重で動作することがある
           $is_send = false;
         }
+        if($status=='rest_cancel'){
+          //TODO : 取り消し依頼
+          $student = Student::where('id', $request->student_id)->first();
+          $member = $calendar->members->where('user_id', $student->user_id)->first();
+          $ask = $member->rest_cancel_ask();
+        }
       }
       $slack_type = 'error';
       $slack_message = '更新エラー';
@@ -1020,7 +1027,7 @@ class UserCalendarController extends MilestoneController
         $teacher = Teacher::where('user_id', $exchanged_calendar->user_id)->first();
         $param['teachers'][] = $teacher;
         $param['teacher_id'] = $teacher->id;
-        $students = $exchanged_calendar->get_students(1);
+        $students = $exchanged_calendar->get_students();
         $student = Student::where('user_id', $students[0]->user_id)->first();
         $param['student_id'] = $student->id;
       }

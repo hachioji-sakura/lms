@@ -13,6 +13,16 @@ class MilestoneController extends UserController
     public $domain = 'milestones';
     public $table = 'milestones';
     public $domain_name = '目標';
+    public $list_fields = [
+      'id' => [
+        'label' => 'ID',
+      ],
+      'title' => [
+        'label' => 'タイトル',
+        'link' => 'show',
+      ],
+    ];
+
     /**
      * このdomainで管理するmodel
      *
@@ -161,10 +171,11 @@ class MilestoneController extends UserController
         $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
+      $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
-
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
+      /*
       foreach($items as $item){
         $create_user = $item->create_user->details();
         $item->create_user_name = $create_user->name;
@@ -173,30 +184,27 @@ class MilestoneController extends UserController
         $item->target_user_name = $target_user->name;
         unset($item->target_user);
       }
-      $fields = [
-        'id' => [
-          'label' => 'ID',
-        ],
-        'title' => [
-          'label' => 'タイトル',
-          'link' => 'show',
-        ],
-      ];
+      */
+      foreach($items as $key => $item){
+        $items[$key] = $item->details();
+      }
+      $fields = $this->list_fields;
+      /*
       if($this->is_manager_or_teacher($user->role)===true){
         //生徒以外の場合は、対象者も表示する
         $fields['target_user_name'] = [
           'label' => 'ユーザー',
         ];
       }
-
       $fields['created_at'] = [
         'label' => '登録日時',
       ];
+      */
       $fields['buttons'] = [
         'label' => '操作',
         'button' => ['edit', 'delete']
       ];
-      return ['items' => $items->toArray(), 'fields' => $fields];
+      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
     }
     /**
      * フィルタリングロジック
@@ -311,17 +319,8 @@ class MilestoneController extends UserController
     {
       $param = $this->get_param($request, $id);
 
-      $fields = [
-        'type' => [
-          'label' => '種別',
-        ],
-        'title' => [
-          'label' => 'タイトル',
-        ],
-        'body' => [
-          'label' => '内容',
-        ],
-      ];
+      $fields = $this->show_fields();
+      /*
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
         $fields['target_user_name'] = [
@@ -334,7 +333,7 @@ class MilestoneController extends UserController
       $fields['updated_at'] = [
         'label' => '更新日時',
       ];
-
+      */
       return view('components.page', [
         'action' => $request->get('action'),
         'fields'=>$fields])

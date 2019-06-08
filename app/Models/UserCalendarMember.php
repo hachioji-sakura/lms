@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GeneralAttribute;
 use App\Models\Lecture;
 use App\Models\Trial;
+use App\Models\Ask;
 
 class UserCalendarMember extends Model
 {
@@ -46,23 +47,18 @@ class UserCalendarMember extends Model
   }
   public function status_name(){
     $status_name = "";
-    switch($this->status){
-      case "new":
-        return "予定(下書き)";
-      case "confirm":
-        return "予定確認中";
-      case "fix":
-        return "授業予定";
-      case "cancel":
-        return "キャンセル";
-      case "rest":
-        return "休み";
-      case "absence":
-        return "欠席";
-      case "presence":
-        return "出席済み";
+    if(isset(config('attribute.calendar_status')[$this->status])){
+      $status_name = config('attribute.calendar_status')[$this->status];
     }
-    return "";
+    switch($this->status){
+      case "fix":
+        if($this->work==9) return "勤務予定";
+      case "absence":
+        if($this->work==9) return "欠勤";
+      case "presence":
+      if($this->work==9) return "出勤";
+    }
+    return $status_name;
   }
   public function update_rest_type($update_rest_type){
     $res = $this->_office_system_api('PUT', $update_rest_type);
@@ -177,7 +173,9 @@ class UserCalendarMember extends Model
       //振替元のメンバーを取得
       $exchanged_calendar_member = UserCalendarMember::where('calendar_id', $this->calendar->exchanged_calendar_id)
         ->where('user_id', $this->user_id)->first();
-      $altsched_id = $exchanged_calendar_member->schedule_id;
+      if(isset($exchanged_calendar_member)){
+        $altsched_id = $exchanged_calendar_member->schedule_id;
+      }
     }
     $postdata =[];
     switch($method){
@@ -345,5 +343,21 @@ class UserCalendarMember extends Model
     $req = new Request;
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
+  }
+  public function rest_cancel_ask(){
+    $teachers = $this->calendar->get_teachers();
+    foreach($teachers as $teacher){
+      //期限＝予定前日まで
+      Ask::add("rest_cancel", [
+        "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
+        "body" => "",
+        "target_model" => "user_calendar_members",
+        "target_id" => $this->id,
+        "charge_user_id" => $teacher->user_id,
+        "target_user_id" => $this->user_id,
+        "create_user_id" => $this->user_id,
+      ]);
+    }
+    return true;
   }
 }

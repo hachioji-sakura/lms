@@ -12,16 +12,14 @@
     </a>
   </div>
 </div>
-<div class="user-panel mb-1">
-  <div class="w-100 p-2 @if($view=="month_work")bg-light @endif">
-    <a href="/{{$domain}}/{{$item->id}}/month_work" class="text-light">
-      <i class="fa fa-tasks mr-1"></i>勤務実績
-    </a>
-  </div>
-</div>
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item">
-    <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar" && $list=="") active @endif">
+    <a href="/{{$domain}}/{{$item->id}}/month_work" class="nav-link @if($view=="month_work") active @endif">
+      <i class="fa fa-tasks nav-icon"></i>勤務実績
+    </a>
+  </li>
+  <li class="nav-item">
+    <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar") active @endif">
       <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
     </a>
   </li>
@@ -77,41 +75,46 @@
       </li>
     </ul>
   </li>
-    <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-cogs"></i>
-      <p>
-        その他
-        <i class="right fa fa-angle-left"></i>
-      </p>
-      </a>
-      <ul class="nav nav-treeview pl-2">
-        {{--
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
-            <i class="fa fa-comment-dots nav-icon"></i>コメント登録
-          </a>
-        </li>
-        --}}
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
-            <i class="fa fa-calendar-plus nav-icon"></i>授業追加
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
-            <i class="fa fa-user-edit nav-icon"></i>{{$domain_name}}設定
-          </a>
-        </li>
-        @if($user->role==="manager")
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="タグ設定">
-            <i class="fa fa-tags nav-icon"></i>タグ設定
-          </a>
-        </li>
-        @endif
-      </ul>
-    </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-cogs"></i>
+    <p>
+      その他
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      {{--
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
+          <i class="fa fa-comment-dots nav-icon"></i>コメント登録
+        </a>
+      </li>
+      --}}
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask" class="nav-link @if($view=="ask") active @endif">
+          <i class="fa fa-envelope-square nav-icon"></i>依頼内容
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
+          <i class="fa fa-calendar-plus nav-icon"></i>授業追加
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+          <i class="fa fa-user-edit nav-icon"></i>{{$domain_name}}設定
+        </a>
+      </li>
+      @if($user->role==="manager")
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="タグ設定">
+          <i class="fa fa-tags nav-icon"></i>タグ設定
+        </a>
+      </li>
+      @endif
+    </ul>
+  </li>
 </ul>
 @endsection
 

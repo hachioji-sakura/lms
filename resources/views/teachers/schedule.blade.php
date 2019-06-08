@@ -27,10 +27,12 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
-                  <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
-                  <br>
-                  <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
+                    <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
+                    <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
+                    <br>
+                    <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                  </a>
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)

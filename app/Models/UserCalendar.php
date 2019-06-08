@@ -231,7 +231,7 @@ EOT;
     //マンツーであること
     if($this->status!="rest") return false;
     //ステータス＝休み
-    $students = $this->get_students(1);
+    $students = $this->get_students();
     if(count($students)!=1) return false;
     if($students[0]->status != 'rest') return false;
     if($students[0]->rest_type!='a2') return false;
@@ -365,7 +365,7 @@ EOT;
     $tag =  $this->get_tag('course_type');
     if(isset($tag) && $tag->tag_value=="group") return true;
     /*
-    $students = $this->get_students(1);
+    $students = $this->get_students();
     //course_typeに限らず、生徒が複数いるかどうか
     if(count($students) > 1) return true;
     */
@@ -383,10 +383,7 @@ EOT;
   }
   public function dateweek(){
     $d = date('n月j日',  strtotime($this->start_time));
-    $week = [
-      '日', '月','火','水','木','金','土',
-    ];
-    $d .= '('.$week[date('w',  strtotime($this->start_time))].')';
+    $d .= '('.config('week')[date('w',  strtotime($this->start_time))].')';
     return $d;
   }
   public function get_member($user_id){
@@ -468,7 +465,6 @@ EOT;
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
-
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -511,11 +507,11 @@ EOT;
     //A案：一人でも出席なら出席
     //B案：全員が出席なら出席（通知がかなり複雑）
     $status = $this->status;
-    if(isset($form['status'])){
+    //rest_cancelは、ステータス更新しない
+    if(isset($form['status']) && $form['status']!='rest_cancel'){
       $is_status_update = true;
-      if($form['status']=='rest' || $form['status']=='cancel' || $form['status']=='rest_cancel'){
+      if($form['status']=='rest' || $form['status']=='cancel'){
         //status=restは生徒全員が休みの場合
-        //status=rest_cancelは生徒全員が休み取り消しの場合
         //status=fixは生徒全員が予定確認した場合
         //status=cancelは生徒全員が予定キャンセルした場合
         foreach($this->members as $member){
@@ -573,13 +569,15 @@ EOT;
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    if($status==="absence" || $status==="rest" || $status==="confirm"){
-      //absence = 全員欠席＝休講
-      //rest = 全員休み＝休講
-      //confirm = 全員の予定確認中に変更
-      UserCalendarMember::where('calendar_id', $this->id)->update(
-        ['status' => $status ]
-      );
+    if(isset($form['status']) && $form['status']!='rest_cancel'){
+      if($status==="absence" || $status==="rest" || $status==="confirm"){
+        //absence = 全員欠席＝休講
+        //rest = 全員休み＝休講
+        //confirm = 全員の予定確認中に変更
+        UserCalendarMember::where('calendar_id', $this->id)->update(
+          ['status' => $status ]
+        );
+      }
     }
     //事務システムも更新
     $this->office_system_api("PUT");
@@ -758,7 +756,7 @@ EOT;
     }
     return;
   }
-  public function get_students($user_id=0){
+  public function get_students(){
     $students = [];
     //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
@@ -768,5 +766,16 @@ EOT;
       }
     }
     return $students;
+  }
+  public function get_teachers(){
+    $teachers = [];
+    //foreach($this->get_access_member($user_id) as $member){
+    foreach($this->members as $member){
+      $_member = $member->user->details('teachers');
+      if($_member->role === 'teacher'){
+        $teachers[] = $member;
+      }
+    }
+    return $teachers;
   }
 }

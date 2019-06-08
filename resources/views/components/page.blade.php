@@ -41,7 +41,7 @@
     @if(isset($action) && $action=='delete')
       @method('DELETE')
       <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}">
+          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
             <i class="fa fa-trash mr-1"></i>
               削除する
           </button>
@@ -71,7 +71,7 @@
       </div>
       @endif
       <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_{{$action}}">
+          <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="送信しますか？">
             <i class="fa fa-envelope mr-1"></i>
               送信する
           </button>

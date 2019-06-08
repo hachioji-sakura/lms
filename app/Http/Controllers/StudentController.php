@@ -8,6 +8,7 @@ use App\Models\StudentParent;
 use App\Models\UserCalendar;
 use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
+use App\Models\Ask;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -274,7 +275,6 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
  }
-
  public function schedule(Request $request, $id)
  {
    if(!$request->has('_line')){
@@ -329,58 +329,59 @@ class StudentController extends UserController
      'item' => $item,
    ])->with($param);
  }
- public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
-   switch($request->get('list')){
-     case "history":
-       $list_title = '授業履歴';
-       break;
-     case "exchange":
-      $list_title = '振替対象';
-       $request->merge([
-         'is_exchange' => 1,
-       ]);
-       break;
-     case "cancel":
-       $list_title = '休み・キャンセル';
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['cancel', 'rest'],
-         ]);
-       }
-       break;
-     case "confirm":
-       $list_title = '予定調整中';
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['new', 'confirm'],
-         ]);
-       }
-       break;
-     case "recent":
-       $list_title = '直近予定';
-       if(!$request->has('search_from_date')){
-         $request->merge([
-           'search_from_date' => date('Y-m-1', strtotime("now"))
-         ]);
-       }
-       if(!$request->has('search_to_date')){
-         $request->merge([
-           'search_to_date' => date('Y-m-t', strtotime("+1 month"))
-         ]);
-       }
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['rest', 'fix', 'presence', 'absence'],
-         ]);
-       }
-       break;
-     default:
-       $request->merge([
-         'search_status' => ['rest', 'fix', 'presence', 'absence'],
-       ]);
-       break;
+
+ public function ask(Request $request, $id)
+ {
+   if(!$request->has('_line')){
+     $request->merge([
+       '_line' => $this->pagenation_line,
+     ]);
+   }
+   if(!$request->has('_page')){
+     $request->merge([
+       '_page' => 1,
+     ]);
+   }
+   else if($request->get('_page')==0){
+     $request->merge([
+       '_page' => 1,
+     ]);
    }
 
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+   $list_title = '授業予定';
+
+   $view = "ask";
+   $asks = $this->get_ask($request, $item->user_id);
+   $param['list_title'] = $asks["title"];
+   $page_data = $this->get_pagedata($asks["count"] , $param['_line'], $param["_page"]);
+   foreach($page_data as $key => $val){
+     $param[$key] = $val;
+   }
+   $asks = $asks["data"];
+   foreach($asks as $ask){
+     $ask = $ask->details();
+   }
+   $param["asks"] = $asks;
+
+   $filter = [];
+   $filter_keys = [''];
+   foreach($filter_keys as $filter_key){
+     if($request->has($filter_key)){
+       $filter[$filter_key] = $request->get($filter_key);
+     }
+   }
+   $param['filter'] = $filter;
+   $param['view'] = $view;
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+   ])->with($param);
+ }
+ public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
    $request->merge([
      '_sort' => 'start_time',
    ]);
@@ -488,6 +489,47 @@ class StudentController extends UserController
    //echo $calendars->toSql();
    $calendars = $calendars->get();
    return ["data" => $calendars, "count" => $count, "title" => $list_title];
+ }
+ public function get_ask(Request $request, $user_id){
+   $list_title = "依頼一覧";
+   $request->merge([
+     'search_status' => ['new', 'commit', 'cancel'],
+   ]);
+   $request->merge([
+     '_sort' => 'end_date',
+   ]);
+   $statuses = [];
+   $is_desc = false;
+
+   $sort = 'asc';
+   if($request->has('is_desc') && $request->get('is_desc')==1){
+     $sort = 'desc';
+   }
+   if($request->has('search_status')){
+     $statuses = $request->get('search_status');
+   }
+   /*
+   $works =[];
+   if($request->has('search_work')){
+     $works = $request->get('search_work');
+   }
+   $places =[];
+   if($request->has('search_place')){
+     $places = $request->get('search_place');
+   }
+   */
+   $asks = Ask::findStatuses($statuses);
+   $asks = $asks->findStatuses($statuses);
+   $asks = $asks->findUser($user_id);
+   $count = $asks->count();
+   $asks = $asks->sortEnddate($sort);
+
+   if($request->has('_page') && $request->has('_line')){
+     $calendars = $asks->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
+   }
+   //echo $asks->toSql();
+   $asks = $asks->get();
+   return ["data" => $asks, "count" => $count, "title" => $list_title];
  }
 
  /**
