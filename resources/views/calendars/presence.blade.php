@@ -9,7 +9,7 @@
     @endif
   @endslot
   @slot('forms')
-  <div  id="{{$domain}}_presence">
+  <div id="{{$domain}}_presence">
     @if(count($item["students"]) > 1)
       {{-- グループレッスン系 --}}
       <form method="POST" action="/calendars/{{$item['id']}}">
@@ -171,12 +171,12 @@
     @else
       {{-- マンツーマン系 --}}
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_single_presence">
           <form method="POST" action="/calendars/{{$item['id']}}/status_update/presence">
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
+            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence" confirm="更新しますか？">
                 <i class="fa fa-check-circle mr-1"></i>
                 @if($item->work==9)
                 出勤
@@ -186,12 +186,12 @@
             </button>
           </form>
         </div>
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_single_absence">
           <form method="POST" action="/calendars/{{$item['id']}}/status_update/absence">
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
+            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_single_absence" confirm="更新しますか？">
               <i class="fa fa-times-circle mr-1"></i>
               @if($item->work==9)
               欠勤
