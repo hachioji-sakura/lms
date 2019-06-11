@@ -221,8 +221,12 @@ class UserCalendarMember extends Model
           $postdata['temporary'] = '11';
           break;
         case "fix":
+          //生徒確定(休み取り消し時考慮）
+          $postdata['cancel'] = '';
+          $postdata['confirm'] = '';
+          $postdata['updateuser'] = $student_no;
+          break;
         case "rest_cancel":
-          //生徒確定
           $postdata['updateuser'] = $student_no;
           break;
         case "cancel":
@@ -237,7 +241,7 @@ class UserCalendarMember extends Model
           break;
         case "absence":
           //3.12確認：欠席＝a2にする
-          $postdata['cancel'] = 'a2';
+          $postdata['confirm'] = 'a2';
           $postdata['updateuser'] = $teacher_no;
           break;
         case "presence":
