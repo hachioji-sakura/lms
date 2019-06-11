@@ -75,6 +75,7 @@ class AskController extends MilestoneController
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
       'user' => $user,
+      'login_user' => $user,
       'origin' => $request->origin,
       'item_id' => $request->item_id,
       'teacher_id' => $request->teacher_id,
@@ -127,5 +128,104 @@ class AskController extends MilestoneController
     }
     return view($this->domain.'.lists', $_table)
       ->with($param);
+  }
+  /**
+   * ステータス更新ページ
+   *
+   * @param  int  $id
+   * @param  string  $status
+   * @return \Illuminate\Http\Response
+   */
+  public function status_update_page(Request $request, $id, $status)
+  {
+    if(!$request->has('user')){
+      if (!View::exists($this->domain.'.'.$status)) {
+          abort(404, 'ページがみつかりません(21)');
+      }
+    }
+    $param = $this->get_param($request, $id);
+
+    if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+    $param['fields'] = $this->show_fields($param['item']->work);
+    $param['action'] = '';
+    return view($this->domain.'.'.$status, [])->with($param);
+  }
+  /**
+   * ステータス更新
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id
+   * @param  string  $status
+   * @return \Illuminate\Http\Response
+   */
+  public function status_update(Request $request, $id, $status)
+  {
+    $param = $this->get_param($request, $id);
+    $res = $this->api_response();
+    $is_send = true;
+    $ask = Ask::where('id', $id)->first();
+    if($status!="remind"){
+      //remind以外はステータスの更新
+      if($ask->status != $status){
+        $res = $this->_status_update($request, $param, $id, $status);
+        $param['item'] = Ask::where('id', $param['item']->id)->first();
+      }
+      else {
+        $is_send = false;
+      }
+    }
+    $slack_type = 'error';
+    $slack_message = '更新エラー';
+
+    if($this->is_success_response($res)){
+      $slack_type = 'info';
+      $slack_message = $this->status_update_message[$status];
+      switch($status){
+        case "commit":
+        //連絡メール通知
+          if($is_send) $param['item']->remind_mail($param);
+          break;
+        case "cancel":
+          //連絡メール通知
+          if($is_send) $param['item']->remind_mail($param);
+          break;
+        case "remind":
+          //連絡メール通知
+          $param['remind'] = true;
+          if($param['item']['status']==='cancel'){
+            $param['item']->remind_mail($param, true);
+          }
+          else if($param['item']['status']==='commit'){
+            $param['item']->remind_mail($param, true);
+          }
+          break;
+      }
+    }
+    if($status==="remind"){
+      $this->send_slack('依頼リマインド['.$param['item']['status'].']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼リマインド');
+    }
+    else {
+      $this->send_slack('依頼ステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼ステータス更新');
+    }
+    return $this->save_redirect($res, $param, $this->status_update_message[$status]);
+  }
+
+  /**
+   * カレンダーステータス更新
+   *
+   * @param  array  $param
+   * @param  string  $status
+   * @return \Illuminate\Http\Response
+   */
+  private function _status_update(Request $request, $param, $id, $status){
+    $res = $this->transaction(function() use ($request, $param, $id, $status){
+      $form = $request->all();
+      $param['item'] = Ask::where('id', $param['item']->id)->first();
+      $param['item'] = $param['item']->change([
+        'status'=>$status,
+      ]);
+      return $param['item'];
+    }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
   }
 }

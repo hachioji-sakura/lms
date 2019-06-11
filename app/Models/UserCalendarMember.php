@@ -106,8 +106,13 @@ class UserCalendarMember extends Model
       }
     }
     \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no);
-
-    $user = $this->user->details('teachers');
+    $user = null;
+    if($this->calendar->work==9){
+      $user = $this->user->details('managers');
+    }
+    else {
+      $user = $this->user->details('teachers');
+    }
     if(($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8)
         && $user->role==="teacher" && !empty($student_no)){
       //講師がメンバーかつ、生徒が取得可能な場合　＝　授業予定のカレンダー
@@ -134,18 +139,19 @@ class UserCalendarMember extends Model
     //レクチャー取得できない場合
     //TODO : lesson + courseからlectureを取得(subject=0)
     $lecture_id_org = 0;
-    $lecture = Lecture::where('id', $this->lecture_id)->first();
-    if(isset($lecture)){
-      $lecture_id_org = $lecture->lecture_id_org;
-    }
-    else {
-      //TODO:レクチャが取得できない=lesson ・ courseから取得
-      $lecture = Lecture::where('lesson', $lesson)->where('course', $course)->first();
+    if($this->lecture_id > 0){
+      $lecture = Lecture::where('id', $this->lecture_id)->first();
       if(isset($lecture)){
         $lecture_id_org = $lecture->lecture_id_org;
       }
+      else {
+        //TODO:レクチャが取得できない=lesson ・ courseから取得
+        $lecture = Lecture::where('lesson', $lesson)->where('course', $course)->first();
+        if(isset($lecture)){
+          $lecture_id_org = $lecture->lecture_id_org;
+        }
+      }
     }
-
     $place = GeneralAttribute::place($this->calendar->place)->first();
     $place_text = "";
     if(isset($place)){
@@ -203,43 +209,50 @@ class UserCalendarMember extends Model
     if($method==="PUT" || $method==="DELETE"){
       $postdata['id'] = $this->schedule_id;
     }
+    if($this->calendar->status==6 || $this->calendar->status==7 || $this->calendar->status==8){
+      switch($this->calendar->status){
+        case "new":
+          //生徒確定ではないので、空にする
+          $postdata['updateuser'] = $teacher_no;
+          $postdata['temporary'] = '1';
+          break;
+        case "confirm":
+          $postdata['updateuser'] = $teacher_no;
+          $postdata['temporary'] = '11';
+          break;
+        case "fix":
+        case "rest_cancel":
+          //生徒確定
+          $postdata['updateuser'] = $student_no;
+          break;
+        case "cancel":
+          //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
+          $postdata['cancel'] = 'c';
+          $postdata['updateuser'] = $student_no;
+          break;
+        case "rest":
+          //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
+          $postdata['cancel'] = 'a';
+          $postdata['updateuser'] = $student_no;
+          break;
+        case "absence":
+          //3.12確認：欠席＝a2にする
+          $postdata['cancel'] = 'a2';
+          $postdata['updateuser'] = $teacher_no;
+          break;
+        case "presence":
+          $postdata['confirm'] = 'f';
+          $postdata['updateuser'] = $teacher_no;
+          break;
+        default:
+          $postdata['updateuser'] = $student_no;
+          break;
+      }
+    }
+    else {
+      $postdata['updateuser'] = $__user_id;
+    }
 
-    switch($this->calendar->status){
-      case "new":
-        //生徒確定ではないので、空にする
-        $postdata['updateuser'] = $teacher_no;
-        $postdata['temporary'] = '1';
-        break;
-      case "confirm":
-        $postdata['updateuser'] = $teacher_no;
-        $postdata['temporary'] = '11';
-        break;
-      case "fix":
-        //生徒確定
-        $postdata['updateuser'] = $student_no;
-        break;
-    }
-    switch($this->status){
-      case "cancel":
-        //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
-        $postdata['cancel'] = 'c';
-        $postdata['updateuser'] = $student_no;
-        break;
-      case "rest":
-        //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
-        $postdata['cancel'] = 'a';
-        $postdata['updateuser'] = $student_no;
-        break;
-      case "absence":
-        //3.12確認：欠席＝a2にする
-        $postdata['cancel'] = 'a2';
-        $postdata['updateuser'] = $teacher_no;
-        break;
-      case "presence":
-        $postdata['confirm'] = 'f';
-        $postdata['updateuser'] = $teacher_no;
-        break;
-    }
     //休み１⇔休み２の変更のための対応
     if(!empty($update_rest_type)) {
       $postdata['cancel'] = $update_rest_type;
@@ -352,7 +365,7 @@ class UserCalendarMember extends Model
         "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
         "body" => "",
         "target_model" => "user_calendar_members",
-        "target_id" => $this->id,
+        "target_model_id" => $this->id,
         "charge_user_id" => $teacher->user_id,
         "target_user_id" => $this->user_id,
         "create_user_id" => $this->user_id,

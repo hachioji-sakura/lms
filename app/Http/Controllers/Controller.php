@@ -51,6 +51,8 @@ class Controller extends BaseController
     {
       $title = '【'.config('app.name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
+      \Log::info("メール送信:\n".$to."\n".$title);
+
       if(config('app.env')==="develop"){
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');

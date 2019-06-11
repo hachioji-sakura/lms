@@ -579,7 +579,7 @@ class UserCalendarController extends MilestoneController
       ])->with($param);
     }
     /**
-     * カレンダーステータス更新ページ
+     * ステータス更新ページ
      *
      * @param  int  $id
      * @param  string  $status
@@ -616,7 +616,7 @@ class UserCalendarController extends MilestoneController
       return view($this->domain.'.'.$status, [])->with($param);
     }
     /**
-     * カレンダーステータス更新
+     * ステータス更新
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id

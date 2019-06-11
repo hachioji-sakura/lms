@@ -16,7 +16,18 @@
             {{$list_title}}
           </h3>
           <div class="card-title text-sm">
-            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count]) @endcomponent
+            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+              @slot("addon_button")
+              <ul class="pagination pagination-sm m-0 float-left text-sm">
+                <li class="page-item">
+                  <a class="btn btn-info btn-sm" href="#">
+                    <i class="fa fa-plus"></i>
+                    <span class="btn-label">追加</span>
+                  </a>
+                </li>
+              </ul>
+              @endslot
+            @endcomponent
           </div>
         </div>
         <!-- /.card-header -->

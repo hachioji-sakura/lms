@@ -22,7 +22,7 @@ class CreateAsksTable extends Migration
           $table->date('start_date')->nullable(true)->comment('開始日');
           $table->date('end_date')->nullable(true)->comment('終了日');
           $table->string('target_model')->default('')->comment('更新対象model');
-          $table->integer('target_id')->default(0)->comment('更新対象model.id');
+          $table->integer('target_model_id')->default(0)->comment('更新対象model.id');
           $table->integer('charge_user_id')->index('index_charge_user_id')->comment('担当ユーザーID');
           $table->integer('target_user_id')->index('index_target_user_id')->comment('対象ユーザーID');
           $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');

@@ -169,15 +169,9 @@ Route::get('teachers/{teacher_id?}/calendars/{id}','UserCalendarController@teach
 Route::get('teachers/{teacher_id?}/calendars/{id}/edit','UserCalendarController@teacher_edit');
 */
 
+Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
+Route::put('asks/{id}/status_update/{status}','AskController@status_update');
 Route::resource('asks','AskController');
-
-
-
-
-
-
-
-
 
 
 Route::get('home', 'HomeController@index')->name('home');
