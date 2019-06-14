@@ -211,7 +211,12 @@ class UserCalendarMember extends Model
       $postdata['id'] = $this->schedule_id;
     }
     //TODO : temporary / cancel / confirm 等のフィールドは不要
-    $postdata['type'] = $this->calendar->status;
+    $type = $this->status;
+    if($type != $this->status){
+      if($type=='new') $type = $this->calendar->status;
+    }
+    $postdata['type'] = $type;
+
     if($is_rest_cancel==true){
       //休み取り消しをAPIで送信
       $postdata['type'] = "rest_cancel";
