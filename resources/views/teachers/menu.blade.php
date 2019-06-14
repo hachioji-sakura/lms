@@ -93,7 +93,11 @@
       --}}
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask" class="nav-link @if($view=="ask") active @endif">
-          <i class="fa fa-envelope-square nav-icon"></i>依頼内容
+          <i class="fa fa-envelope-square nav-icon"></i>
+          <p>
+            依頼一覧
+            <span class="badge badge-danger right">{{$ask_count}}</span>
+          </p>
         </a>
       </li>
       <li class="nav-item">

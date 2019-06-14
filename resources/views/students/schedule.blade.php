@@ -58,8 +58,14 @@
                     (代理連絡）
                     @endif
                   </a>
-                  @endif
-                  @if($calendar->get_member($item->user_id)->status==="rest" && strtotime($calendar["start_time"]) > strtotime('now'))
+                  @elseif($calendar->get_member($item->user_id)->status==="confirm" && strtotime($calendar["start_time"]) > strtotime('now'))
+                  <a href="javascript:void(0);" page_title="予定確認" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/fix?student_id={{$item->id}}" role="button" class="btn btn-primary btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="rest") disabled @endif>
+                    <i class="fa fa-check mr-1"></i>予定確認
+                    @if($user->role==="manager" || $user->role==="teacher")
+                    (代理連絡）
+                    @endif
+                  </a>
+                  @elseif($calendar->get_member($item->user_id)->status==="rest" && strtotime($calendar["start_time"]) > strtotime('now'))
                   <a href="javascript:void(0);" page_title="休み取り消し" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest_cancel?student_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="rest") disabled @endif>
                     <i class="fa fa-minus-circle mr-1"></i>休み取り消し連絡
                     @if($user->role==="manager" || $user->role==="teacher")

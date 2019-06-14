@@ -40,6 +40,19 @@ $(function(){
   $("a[page_url][page_title][page_form='footer_form'], a.nav-link[page_url][page_title][page_form='footer_form']").on("click", function(e){
     base.showPage("footer", "footer_form", $(this).attr("page_title"), $(this).attr("page_url"));
   });
-
+  // #で始まるアンカーをクリックした場合に処理
+  $("a[href^='#'][scroll]").on("click", function(){
+    var speed = 400; // ミリ秒
+	  // アンカーの値取得
+	  var href= jQuery(this).attr("href");
+	  // 移動先を取得
+	  var target = jQuery(href == "#" || href == "" ? 'html' : href);
+	  // 移動先を数値で取得
+    var h = target.height();
+	  var position = target.offset().top - (h/2);
+	  // スムーススクロール
+	  jQuery('body,html').animate({scrollTop:position}, speed, 'swing');
+    return false;
+  });
 });
 </script>

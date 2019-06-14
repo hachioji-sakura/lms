@@ -1,7 +1,8 @@
 <?php
 return array(
-  'rest' => 'danger',
-  'rest_cancel' => 'secondary',
+  'rest' => 'secondary',
+  'rest_cancel' => 'warning',
+  'lecture_cancel' => 'secondary',
   'absence' => 'danger',
   'confirm' => 'warning',
   'fix' => 'primary',

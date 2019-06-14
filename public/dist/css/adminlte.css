@@ -13443,3 +13443,6 @@ span.select2-container--open{
 .fc .fc-center h2{
 	font-size: 1.5rem;
 }
+.row.calendar_rest {
+	background-color:#CCC;
+}

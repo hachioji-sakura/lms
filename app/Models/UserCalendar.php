@@ -143,16 +143,24 @@ EOT;
     //かつ、振替が未登録(cancelは除く）
     $query = $this->scopeSearchDate($query, $from, $to);
     $where_raw = <<<EOT
-      user_calendars.id not in (select exchanged_calendar_id from user_calendars where status != 'cancel')
+      user_calendars.id not in (
+        select exchanged_calendar_id
+         from user_calendars
+         where status != 'cancel'
+         and exchanged_calendar_id > 0
+        )
       and start_time < current_timestamp
       and user_calendars.id in (
-        select calendar_id from user_calendar_members where
-          status = 'rest'
-          and remark != '規定回数以上'
+        select um.calendar_id from user_calendar_members um
+          inner join students s on s.user_id = um.user_id
+        where
+          um.status = 'rest'
+          and um.rest_type = 'a2'
+          and um.remark != '規定回数以上'
 EOT;
     if($user_id > 0){
       $where_raw .= <<<EOT
-       and user_id = $user_id
+       and um.user_id = $user_id
 EOT;
     }
     $where_raw .= <<<EOT
@@ -225,21 +233,31 @@ EOT;
   //振替対象の場合:true
   public function is_exchange_target(){
     $d = intval(strtotime('now')) - intval(strtotime($this->start_time));
+    $c = 0;
+    $c++;
     if($d < 0) return false;
     //過去の予定であること
+    $c++;
     if($this->is_single()==false) return false;
     //マンツーであること
+    $c++;
     if($this->status!="rest") return false;
     //ステータス＝休み
     $students = $this->get_students();
+    $c++;
     if(count($students)!=1) return false;
+    $c++;
     if($students[0]->status != 'rest') return false;
+    $c++;
     if($students[0]->rest_type!='a2') return false;
+    $c++;
     if($students[0]->is_limit_over()==true) return false;
     //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
     $exchanged_calendar = $students[0]->exchanged_calendar;
     //振替登録済み（cancelを除く）
+    $c++;
     if(isset($exchanged_calendar) && $exchanged_calendar->status!='cancel') return false;  //振替済み
+    $c++;
     return true;
   }
   public function has_tag($key, $val=""){
@@ -756,6 +774,15 @@ EOT;
     }
     return;
   }
+  public function student_mail($title, $param, $type, $template){
+    $param['send_to'] = 'student';
+    $param['item'] = $this->details(1);
+    foreach($this->members as $member){
+      if($member->user->details('students')->role != "student") continue;
+      $member->send_mail($title, $param, $type, $template);
+    }
+    return;
+  }
   public function get_students(){
     $students = [];
     //foreach($this->get_access_member($user_id) as $member){
@@ -777,5 +804,15 @@ EOT;
       }
     }
     return $teachers;
+  }
+  public function lecture_cancel($is_exec=true){
+    if($is_exec){
+      //休講が承認された
+      //講師を休講、カレンダーも休講
+      foreach($this->get_teachers() as $member){
+        $member->update(['status'=>'lecture_cancel']);
+      }
+      $this->change(['status'=>'lecture_cancel']);
+    }
   }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\UserCalendar;
+use App\Models\UserCalendarSetting;
 
 class Ask extends Milestone
 {
@@ -56,7 +58,10 @@ EOT;
       ],
       "presence_check" => [
         "title" => "出欠確認依頼",
-      ]
+      ],
+      "lecture_cancel" => [
+        "title" => "休講依頼",
+      ],
     ];
     $title = $type_template[$type]["title"];
     if(!isset($form['title'])){
@@ -92,6 +97,7 @@ EOT;
   public function change($form){
     if(isset($form["status"])){
       $this->update(['status'=>$form['status']]);
+      $this->_change($form['status']);
     }
     return $this;
   }
@@ -118,33 +124,33 @@ EOT;
     $item["end_dateweek"] = $this->end_dateweek();
     return $item;
   }
-  public function commit(){
-    if($this->status!="commit") return false;
+  public function _change($status){
+    $ret = false;
+    $is_commit = false;
+    if($status == 'commit'){
+      $is_commit = true;
+    }
     switch($this->type){
       case "rest_cancel":
         $member = UserCalendarMember::where('id', $this->target_model_id)->first();
         if(!isset($member)){
           return false;
         }
-        $member->update(['status' => 'fix']);
-        $member->calendar->update(['status' => 'fix']);
+        $ret = true;
+        $member->rest_cancel($is_commit);
         break;
-    }
-  }
-  public function cancel(){
-    if($this->status!="cancel") return false;
-    switch($this->type){
-      case "rest_cancel":
-        $member = UserCalendarMember::where('id', $this->target_model_id)->first();
-        if(!isset($member)){
+      case "lecture_cancel":
+        $calendar = UserCalendar::where('id', $this->target_model_id)->first();
+        if(!isset($calendar)){
           return false;
         }
-        $member->update(['status' => 'rest']);
-        $member->calendar->change(['status' => 'rest']);
+        $ret = true;
+        $calendar->lecture_cancel($is_commit);
         break;
     }
-    return true;
+    return $ret;
   }
+  //依頼に関する通知
   public function remind_mail($param, $is_remind=false){
     $res = false;
     switch($this->type){
@@ -154,12 +160,17 @@ EOT;
           return false;
         }
         $param["item"] = $member->calendar->details($this->target_user_id);
-        if($this->status=="commit") $res = $this->commit();
-        else if($this->status=="cancel") $res = $this->cancel();
-
-        $res = $this->target_user_mail($param);
+        break;
+      case "lecture_cancel":
+        $calendar = UserCalendar::where('id', $this->target_model_id)->first();
+        if(!isset($calendar)){
+          return false;
+        }
+        $param["item"] = $calendar->details($this->target_user_id);
         break;
     }
+    //依頼対象者にメール通知
+    $res = $this->target_user_mail($param);
     return $res;
   }
   public function target_user_mail($param){

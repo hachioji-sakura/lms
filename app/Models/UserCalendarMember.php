@@ -78,11 +78,12 @@ class UserCalendarMember extends Model
   public function office_system_api($method){
     return $this->_office_system_api($method);
   }
-  public function _office_system_api($method, $update_rest_type=""){
+  public function _office_system_api($method, $update_rest_type="", $is_rest_cancel=false){
     if($this->schedule_id == 0 && $method=="PUT") return null; ;
-    if($this->schedule_id == 0 && $method=="DELETE") return null;;
-    if($this->schedule_id > 0 && $method=="POST") return null;;
-
+    if($this->schedule_id == 0 && $method=="DELETE") return null;
+    if($this->schedule_id > 0 && $method=="POST") return null;
+    //rest_cancelの場合、API実行不要
+    if($this->status=='rest_cancel') return null;
     $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
 
     //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
@@ -200,30 +201,35 @@ class UserCalendarMember extends Model
           "work_id" => $this->calendar->work,
           "place_id" => $place_text,
           "altsched_id" => $altsched_id,
-          "cancel" => "",
-          "confirm" => "",
-          "temporary" => "111",
+          //"cancel" => "",
+          //"confirm" => "",
+          //"temporary" => "111",
         ];
         break;
     }
     if($method==="PUT" || $method==="DELETE"){
       $postdata['id'] = $this->schedule_id;
     }
+    //TODO : temporary / cancel / confirm 等のフィールドは不要
+    $postdata['type'] = $this->calendar->status;
+    if($is_rest_cancel==true){
+      //休み取り消しをAPIで送信
+      $postdata['type'] = "rest_cancel";
+    }
     if($this->calendar->status==6 || $this->calendar->status==7 || $this->calendar->status==8){
+      $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
         case "new":
           //生徒確定ではないので、空にする
-          $postdata['updateuser'] = $teacher_no;
-          $postdata['temporary'] = '1';
+          //$postdata['temporary'] = '1';
           break;
         case "confirm":
-          $postdata['updateuser'] = $teacher_no;
-          $postdata['temporary'] = '11';
+          //$postdata['temporary'] = '11';
           break;
         case "fix":
           //生徒確定(休み取り消し時考慮）
-          $postdata['cancel'] = '';
-          $postdata['confirm'] = '';
+          //$postdata['cancel'] = '';
+          //$postdata['confirm'] = '';
           $postdata['updateuser'] = $student_no;
           break;
         case "rest_cancel":
@@ -231,22 +237,20 @@ class UserCalendarMember extends Model
           break;
         case "cancel":
           //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
-          $postdata['cancel'] = 'c';
+          //$postdata['cancel'] = 'c';
           $postdata['updateuser'] = $student_no;
           break;
         case "rest":
           //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
-          $postdata['cancel'] = 'a';
+          //$postdata['cancel'] = 'a';
           $postdata['updateuser'] = $student_no;
           break;
         case "absence":
           //3.12確認：欠席＝a2にする
-          $postdata['confirm'] = 'a2';
-          $postdata['updateuser'] = $teacher_no;
+          //$postdata['confirm'] = 'a2';
           break;
         case "presence":
-          $postdata['confirm'] = 'f';
-          $postdata['updateuser'] = $teacher_no;
+          //$postdata['confirm'] = 'f';
           break;
         default:
           $postdata['updateuser'] = $student_no;
@@ -259,7 +263,7 @@ class UserCalendarMember extends Model
 
     //休み１⇔休み２の変更のための対応
     if(!empty($update_rest_type)) {
-      $postdata['cancel'] = $update_rest_type;
+      //$postdata['cancel'] = $update_rest_type;
     }
     $message = "";
     foreach($postdata as $key => $val){
@@ -376,5 +380,16 @@ class UserCalendarMember extends Model
       ]);
     }
     return true;
+  }
+  public function rest_cancel($is_exec=true){
+    if($is_exec==true){
+      //授業予定に戻す
+      $this->update(['status' => 'fix']);
+      $this->_office_system_api('PUT', '', true);
+    }
+    else {
+      //休みに戻す
+      $this->update(['status' => 'rest']);
+    }
   }
 }

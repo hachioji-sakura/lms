@@ -70,13 +70,11 @@ class TeacherController extends StudentController
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
       $lists = ['cancel', 'confirm', 'exchange', 'recent'];
       foreach($lists as $list){
-        $r = new Request();
-        $r->merge([
-          'list' => $list
-        ]);
-        $calendars = $this->get_schedule($r, $ret['item']->user_id);
+        $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
       }
+      $asks = $this->get_ask([], $ret['item']->user_id);
+      $ret['ask_count'] = $asks["count"];
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -443,7 +441,7 @@ class TeacherController extends StudentController
       ]);
       $from_date = $target_month.'-01';
       $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
-      $calendars = $this->get_schedule($request, $item->user_id, $from_date, $to_date);
+      $calendars = $this->get_schedule($request->all(), $item->user_id, $from_date, $to_date);
       $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
       $calendars = $calendars["data"];
       $enable_confirm = true; //確認ボタン押せる場合 = true

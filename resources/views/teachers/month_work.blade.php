@@ -28,6 +28,9 @@
             <div class="col-6 text-center">
               <h3 class="card-title" id="charge_students">
                 {{$list_title}}
+                @if(date('Y-m')==$target_month)
+                <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm mx-2" scroll=true>今日</a>
+                @endif
               </h3>
             </div>
             <div class="col-3">
@@ -76,7 +79,7 @@
                 </div>
                 <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
               @endif
-              <div class="row pl-3 p-1 border-bottom">
+              <div class="row pl-3 p-1 border-bottom calendar_{{$calendar['status']}}">
                 <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                 <div class="col-12 col-lg-3 col-md-3">
                   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
@@ -119,10 +122,6 @@
                 <div class="col-12 col-lg-4 col-md-4">
                   @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
                   @endcomponent
-                  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定変更" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm mx-1">
-                    <i class="fa fa-edit mr-1"></i>
-                    変更
-                  </a>
                 </div>
               </div>
               <?php

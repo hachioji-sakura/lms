@@ -83,13 +83,12 @@ class StudentController extends UserController
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
       $lists = ['cancel', 'confirm', 'exchange', 'recent'];
       foreach($lists as $list){
-        $r = new Request();
-        $r->merge([
-          'list' => $list
-        ]);
-        $calendars = $this->get_schedule($r, $ret['item']->user_id);
+        $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
       }
+      $asks = $this->get_ask([], $ret['item']->user_id);
+      $ret['ask_count'] = $asks["count"];
+
     }
     return $ret;
   }
@@ -304,7 +303,7 @@ class StudentController extends UserController
 
 
    $view = "schedule";
-   $calendars = $this->get_schedule($request, $item->user_id);
+   $calendars = $this->get_schedule($request->all(), $item->user_id);
    $param['list_title'] = $calendars["title"];
    $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
@@ -356,7 +355,7 @@ class StudentController extends UserController
    $list_title = '授業予定';
 
    $view = "ask";
-   $asks = $this->get_ask($request, $item->user_id);
+   $asks = $this->get_ask($request->all(), $item->user_id);
    $param['list_title'] = $asks["title"];
    $page_data = $this->get_pagedata($asks["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
@@ -369,7 +368,7 @@ class StudentController extends UserController
    $param["asks"] = $asks;
 
    $filter = [];
-   $filter_keys = [''];
+   $filter_keys = ['search_type', 'search_status'];
    foreach($filter_keys as $filter_key){
      if($request->has($filter_key)){
        $filter[$filter_key] = $request->get($filter_key);
@@ -381,97 +380,84 @@ class StudentController extends UserController
      'item' => $item,
    ])->with($param);
  }
- public function get_schedule(Request $request, $user_id, $from_date = '', $to_date = ''){
-   $request->merge([
-     '_sort' => 'start_time',
-   ]);
+ public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
+   $user = User::where('id', $user_id)->first()->details();
+   $form['_sort'] ='start_time';
    $list_title = "授業予定";
-   switch($request->get('list')){
+   if(!isset($form['list'])) $form['list'] = '';
+   switch($form['list']){
      case "history":
        $list_title = '授業履歴';
        break;
      case "exchange":
       $list_title = '振替対象';
-       $request->merge([
-         'is_exchange' => 1,
-       ]);
+       $form['is_exchange'] = 1;
        break;
      case "cancel":
        $list_title = '休み・キャンセル';
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['cancel', 'rest'],
-         ]);
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['cancel', 'rest'];
        }
        break;
      case "confirm":
        $list_title = '予定調整中';
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['new', 'confirm'],
-         ]);
+       if(!isset($form['search_status'])){
+         if($this->is_student_or_parent($user->role)){
+           $form['search_status'] = ['confirm'];
+         }
+         else {
+           $form['search_status'] = ['new', 'confirm'];
+         }
        }
        break;
      case "recent":
        $list_title = '直近予定';
-       if(!$request->has('search_from_date')){
-         $request->merge([
-           'search_from_date' => date('Y-m-1', strtotime("now"))
-         ]);
+       if(!isset($form['search_from_date'])){
+         $form['search_from_date'] = date('Y-m-1', strtotime("now"));
        }
-       if(!$request->has('search_to_date')){
-         $request->merge([
-           'search_to_date' => date('Y-m-t', strtotime("+1 month"))
-         ]);
+       if(!isset($form['search_to_date'])){
+         $form['search_to_date'] = date('Y-m-t', strtotime("+1 month"));
        }
-       if(!$request->has('search_status')){
-         $request->merge([
-           'search_status' => ['rest', 'fix', 'presence', 'absence'],
-         ]);
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['rest', 'fix', 'presence', 'absence'];
        }
        break;
      default:
-       $request->merge([
-         'search_status' => ['rest', 'fix', 'presence', 'absence'],
-       ]);
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['rest', 'fix', 'presence', 'absence'];
+       }
        break;
    }
-   $request->merge([
-     '_sort' => 'start_time',
-   ]);
-
    $statuses = [];
    $is_exchange = false;
    $is_desc = false;
    if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
    if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
 
-   if($request->has('is_exchange') && $request->get('is_exchange')==1){
+   if(isset($form['is_exchange']) && $form['is_exchange']==1){
      $is_exchange = true;
    }
-
    $sort = 'asc';
-   if($request->has('is_desc') && $request->get('is_desc')==1){
+   if(isset($form['is_desc']) && $form['is_desc']==1){
      $sort = 'desc';
    }
-   if($request->has('search_from_date')){
-     $from_date = $request->get('search_from_date');
+   if(isset($form['search_from_date'])){
+     $from_date = $form['search_from_date'];
    }
-   if($request->has('search_to_date')){
-     $to_date = $request->get('search_to_date');
+   if(isset($form['search_to_date'])){
+     $to_date = $form['search_to_date'];
    }
-   if($request->has('search_status')){
-     $statuses = $request->get('search_status');
+   if(isset($form['search_status'])){
+     $statuses = $form['search_status'];
    }
    $works =[];
-   if($request->has('search_work')){
-     $works = $request->get('search_work');
+   if(isset($form['search_work'])){
+     $works = $form['search_work'];
    }
    $places =[];
-   if($request->has('search_place')){
-     $places = $request->get('search_place');
+   if(isset($form['search_place'])){
+     $places = $form['search_place'];
    }
-
    $calendars = UserCalendar::rangeDate($from_date, $to_date);
    $calendars = $calendars->findStatuses($statuses);
    $calendars = $calendars->findWorks($works);
@@ -483,49 +469,47 @@ class StudentController extends UserController
    $count = $calendars->count();
    $calendars = $calendars->sortStarttime($sort);
 
-   if($request->has('_page') && $request->has('_line')){
-     $calendars = $calendars->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
+   if(isset($form['_page']) && isset($form['_line'])){
+     $calendars = $calendars->pagenation(intval($form['_page'])-1, $form['_line']);
    }
-   //echo $calendars->toSql();
+   //echo $calendars->toSql()."<br>";
    $calendars = $calendars->get();
    return ["data" => $calendars, "count" => $count, "title" => $list_title];
  }
- public function get_ask(Request $request, $user_id){
+ public function get_ask($form, $user_id){
    $list_title = "依頼一覧";
-   $request->merge([
-     'search_status' => ['new', 'commit', 'cancel'],
-   ]);
-   $request->merge([
-     '_sort' => 'end_date',
-   ]);
+   if(!isset($form['list'])) $form['list'] = '';
+   if(!isset($form['search_type'])){
+     $form['search_type'] = [];
+   }
+   if(!isset($form['search_status'])){
+     $form['search_status'] = ['new'];
+   }
+   $form['_sort'] ='end_date';
+
    $statuses = [];
+   $types = [];
    $is_desc = false;
 
    $sort = 'asc';
-   if($request->has('is_desc') && $request->get('is_desc')==1){
+   if(isset($form['is_desc']) && $form['is_desc']==1){
      $sort = 'desc';
    }
-   if($request->has('search_status')){
-     $statuses = $request->get('search_status');
+   if(isset($form['search_status'])){
+     $statuses = $form['search_status'];
    }
-   /*
-   $works =[];
-   if($request->has('search_work')){
-     $works = $request->get('search_work');
+   if(isset($form['search_type'])){
+     $types = $form['search_type'];
    }
-   $places =[];
-   if($request->has('search_place')){
-     $places = $request->get('search_place');
-   }
-   */
    $asks = Ask::findStatuses($statuses);
+   $asks = $asks->findTypes($types);
    $asks = $asks->findStatuses($statuses);
    $asks = $asks->findUser($user_id);
    $count = $asks->count();
    $asks = $asks->sortEnddate($sort);
 
-   if($request->has('_page') && $request->has('_line')){
-     $calendars = $asks->pagenation(intval($request->get('_page'))-1, $request->get('_line'));
+   if(isset($form['_page']) && isset($form['_line'])){
+     $asks = $asks->pagenation(intval($form['_page'])-1, $form['_line']);
    }
    //echo $asks->toSql();
    $asks = $asks->get();

@@ -35,3 +35,9 @@
   振替登録
 </a>
 @endif
+@if($calendar["status"]=="new")
+<a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定変更" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm mx-1">
+  <i class="fa fa-edit mr-1"></i>
+  変更
+</a>
+@endif
