@@ -91,7 +91,6 @@
         @endif
 
       <div class="row">
-        @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
         @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest_cancel', 'student_id' => $student_id]) @endcomponent
       </div>
 
