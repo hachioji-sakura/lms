@@ -74,7 +74,12 @@
                 base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/status_update/remind");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/status_update/presence");
+                if(event.is_passed==true){
+                  base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/status_update/presence");
+                }
+                else{
+                  base.showPage('dialog', "subDialog", "休講依頼", "/calendars/"+event.id+"/status_update/lecture_cancel");
+                }
                 break;
               case "rest":
               case "cancel":

@@ -37,7 +37,9 @@
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
             直近予定
+            @if($recent_count > 0)
             <span class="badge badge-primary right">{{$recent_count}}</span>
+            @endif
           </p>
         </a>
       </li>
@@ -46,7 +48,9 @@
           <i class="fa fa-hourglass nav-icon"></i>
           <p>
             予定調整中
+            @if($confirm_count > 0)
             <span class="badge badge-warning right">{{$confirm_count}}</span>
+            @endif
           </p>
         </a>
       </li>
@@ -64,7 +68,9 @@
           <i class="fa fa-exchange-alt nav-icon"></i>
           <p>
             振替対象
+            @if($exchange_count > 0)
             <span class="badge badge-danger right">{{$exchange_count}}</span>
+            @endif
           </p>
         </a>
       </li>
@@ -96,7 +102,9 @@
           <i class="fa fa-envelope-square nav-icon"></i>
           <p>
             依頼一覧
+            @if($ask_count > 0)
             <span class="badge badge-danger right">{{$ask_count}}</span>
+            @endif
           </p>
         </a>
       </li>

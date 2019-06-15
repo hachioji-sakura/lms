@@ -149,7 +149,9 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
+Route::get('managers/{id}/calendar','ManagerController@calendar');
 Route::get('teachers/{id}/ask','TeacherController@ask');
+Route::get('managers/{id}/ask','ManagerController@ask');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
 Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
 

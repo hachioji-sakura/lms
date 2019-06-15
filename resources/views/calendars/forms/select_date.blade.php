@@ -79,6 +79,8 @@
           <option value="{{str_pad($i, 2, 0, STR_PAD_LEFT)}}"
           @if(isset($item) && isset($item['end_time']) && date('H', strtotime($item['end_time']))==str_pad($i, 2, 0, STR_PAD_LEFT))
             selected
+          @elseif(isset($item) && isset($item['end_hours']) && $item['end_hours']==$i)
+            selected
           @endif
           >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
         @endfor
@@ -88,6 +90,8 @@
         @for ($i = 0; $i < 6; $i++)
         <option value="{{str_pad($i*10, 2, 0, STR_PAD_LEFT)}}"
         @if(isset($item) && isset($item['end_time']) && date('i', strtotime($item['end_time']))==str_pad($i*10, 2, 0, STR_PAD_LEFT))
+          selected
+        @elseif(isset($item) && isset($item['end_minutes']) && $item['end_minutes']==$i*10)
           selected
         @endif
         >{{str_pad($i*10, 2, 0, STR_PAD_LEFT)}}分</option>>

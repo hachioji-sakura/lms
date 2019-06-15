@@ -25,7 +25,8 @@ class UserCalendarController extends MilestoneController
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
           'rest' => '休み連絡をしました。',
-          'rest_cancel' => '休み取り消し連絡をしました。',
+          'rest_cancel' => '休み取り消し依頼連絡をしました。',
+          'lecture_cancel' => '休講依頼連絡をしました。',
           'presence' => '授業を出席に更新しました。',
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
@@ -642,12 +643,6 @@ class UserCalendarController extends MilestoneController
           //TODO: カレンダー更新が2重で動作することがある
           $is_send = false;
         }
-        if($status=='rest_cancel'){
-          //TODO : 取り消し依頼
-          $student = Student::where('id', $request->student_id)->first();
-          $member = $calendar->members->where('user_id', $student->user_id)->first();
-          $ask = $member->rest_cancel_ask();
-        }
       }
       $slack_type = 'error';
       $slack_message = '更新エラー';
@@ -660,10 +655,6 @@ class UserCalendarController extends MilestoneController
           case "rest":
             //お休み連絡メール通知
             if($is_send) $this->rest_mail($param);
-            break;
-          case "rest_cancel":
-            //お休み取り消し連絡メール通知
-            if($is_send) $this->rest_cancel_mail($param);
             break;
           case "confirm":
             //授業追加確認メール通知
@@ -698,13 +689,31 @@ class UserCalendarController extends MilestoneController
             }
             break;
         }
+        if($status==="remind"){
+          $this->send_slack('カレンダーリマインド['.$param['item']['status'].']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーリマインド');
+        }
+        else {
+          $this->send_slack('カレンダーステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーステータス更新');
+        }
       }
-      if($status==="remind"){
-        $this->send_slack('カレンダーリマインド['.$param['item']['status'].']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーリマインド');
+      if($status=='rest_cancel'){
+        //休み取り消し依頼
+        $student = Student::where('id', $request->student_id)->first();
+        $member = $calendar->members->where('user_id', $student->user_id)->first();
+        $ask = $member->rest_cancel_ask($param['user']->user_id);
+        if($ask==null){
+          $res = $this->error_response("この依頼は登録済みです");
+        }
       }
-      else {
-        $this->send_slack('カレンダーステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーステータス更新');
+      else if($status=='lecture_cancel'){
+        //休講依頼
+        $member = $calendar->members->where('user_id', $calendar->user_id)->first();
+        $ask = $member->lecture_cancel_ask($param['user']->user_id);
+        if($ask==null){
+          $res = $this->error_response("この依頼は登録済みです");
+        }
       }
+
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
         $param['fields'] = $this->show_fields($param['item']->work);
@@ -840,9 +849,6 @@ class UserCalendarController extends MilestoneController
       return  $this->calendar_mail($param,
                'お休み連絡',
                'calendar_rest');
-    }
-    private function rest_cancel_mail($param){
-      return $param['item']->teacher_mail('休み取り消し連絡', $param, 'text', 'calendar_rest_cancel');
     }
     private function cancel_mail($param){
       //TODO 講師あてにキャンセル連絡が届くが、グループレッスンの場合、部分的なキャンセル→全体をキャンセルが必要
@@ -1045,11 +1051,11 @@ class UserCalendarController extends MilestoneController
             $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
             $param['teacher_id'] = $request->get('teacher_id');
           }
-          else {
+          else if($request->has('manager_id')){
             $param['item']->work = 9;
           }
         }
-        if(!isset($param['teacher_id'])) {
+        if($param['item']->work!=9 && !isset($param['teacher_id'])) {
           $param["teachers"] = Teacher::findStatuses('0')->get();
           return view('teachers.select_teacher',
             [ 'error_message' => '', '_edit' => false])
@@ -1065,6 +1071,10 @@ class UserCalendarController extends MilestoneController
       $param['item']['start_minutes'] = intval($request->get('start_minutes'));
       if($request->has('course_minutes')){
         $param['item']['course_minutes'] = $request->get('course_minutes');
+      }
+      if($request->has('end_date') && $request->has('end_hours') && $request->has('end_minutes')){
+        $param['item']['end_hours'] = intval($request->get('end_hours'));
+        $param['item']['end_minutes'] = intval($request->get('end_minutes'));
       }
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])

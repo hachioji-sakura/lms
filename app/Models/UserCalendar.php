@@ -417,6 +417,12 @@ EOT;
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
 
+    $diff = strtotime($this->start_time) - strtotime('+1 day');
+    //過ぎた予定かどうか
+    $item['is_passed'] = true;
+    if($diff > 0) {
+      $item['is_passed'] = false;
+    }
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
     $item['timezone'] = $this->timezone();
@@ -526,7 +532,7 @@ EOT;
     //B案：全員が出席なら出席（通知がかなり複雑）
     $status = $this->status;
     //rest_cancelは、ステータス更新しない
-    if(isset($form['status']) && $form['status']!='rest_cancel'){
+    if(isset($form['status']) && $form['status']!='rest_cancel'  && $form['status']!='lecture_cancel'){
       $is_status_update = true;
       if($form['status']=='rest' || $form['status']=='cancel'){
         //status=restは生徒全員が休みの場合
@@ -587,10 +593,9 @@ EOT;
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    if(isset($form['status']) && $form['status']!='rest_cancel'){
-      if($status==="absence" || $status==="rest" || $status==="confirm"){
-        //absence = 全員欠席＝休講
-        //rest = 全員休み＝休講
+    if(isset($form['status']) && $form['status']!='rest_cancel' && $form['status']!='lecture_cancel'){
+      if($status==="absence" || $status==="confirm"){
+        //absence = 全員欠席
         //confirm = 全員の予定確認中に変更
         UserCalendarMember::where('calendar_id', $this->id)->update(
           ['status' => $status ]
@@ -626,8 +631,14 @@ EOT;
     $this->update(['checked_at' => $check_date]);
     return false;
   }
+  public function is_cancel_status(){
+    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest"){
+      return true;
+    }
+    return false;
+  }
   public function is_last_status(){
-    if($this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
+    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
       return true;
     }
     return false;
@@ -743,33 +754,13 @@ EOT;
     }
     return $res;
   }
-  /*
-  public function student_mail($title, $param, $type, $template,$user_id=0){
-    \Log::info("-----------------student_mail start------------------");
-    $param['send_to'] = 'student';
-    foreach($this->members as $member){
-      if($member->user->details('students')->role != "student") continue;
-      \Log::info('user_id='.$member->user_id.":student_id=".$member->user->student->id);
-      //if($student_id >0 && $student_id != $member->user->student->id) continue;
-      $member->send_mail($title, $param, $type, $template);
-    }
-    \Log::info("-----------------student_mailend------------------");
-    return;
-  }
-  public function all_member_mail($title, $param, $type, $template){
-    \Log::info("-----------------all_member_mail start------------------");
-    \Log::info($title);
-    //$this->teacher_mail($title, $param, $type, $template);
-    $this->student_mail($title, $param, $type, $template);
-    \Log::info("-----------------all_member_mail end------------------");
-    return;
-  }
-  */
   public function teacher_mail($title, $param, $type, $template){
     $param['send_to'] = 'teacher';
     $param['item'] = $this->details(1);
     foreach($this->members as $member){
-      if($member->user->details('teachers')->role != "teacher") continue;
+      $u = $member->user->details('teachers');
+      if($u->role != "teacher") continue;
+      $param['user_name'] = $u->name();
       $member->send_mail($title, $param, $type, $template);
     }
     return;
@@ -778,7 +769,9 @@ EOT;
     $param['send_to'] = 'student';
     $param['item'] = $this->details(1);
     foreach($this->members as $member){
-      if($member->user->details('students')->role != "student") continue;
+      $u = $member->user->details('students');
+      if($u->role != "student") continue;
+      $param['user_name'] = $u->name();
       $member->send_mail($title, $param, $type, $template);
     }
     return;
@@ -805,14 +798,10 @@ EOT;
     }
     return $teachers;
   }
-  public function lecture_cancel($is_exec=true){
-    if($is_exec){
-      //休講が承認された
-      //講師を休講、カレンダーも休講
-      foreach($this->get_teachers() as $member){
-        $member->update(['status'=>'lecture_cancel']);
-      }
-      $this->change(['status'=>'lecture_cancel']);
-    }
+  public function is_english_talk_lesson(){
+    return $this->has_tag('lesson', 2);
+  }
+  public function is_kids_lesson(){
+    return $this->has_tag('lesson', 4);
   }
 }

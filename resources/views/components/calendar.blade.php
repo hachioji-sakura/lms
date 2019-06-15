@@ -45,6 +45,14 @@
           "color" : "#dc3545",
           "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
         },
+        "rest_cancel" : {
+          "color" : "#ffc107",
+          "icon" : "<i class='fa fa-hourglass-half mr-1'></i>",
+        },
+        "lecture_cancel" : {
+          "color" : "#6c757d",
+          "icon" : "<i class='fa fa-ban mr-1'></i>",
+        },
       };
       if(_ret[status]) return _ret[status];
       return _ret['new'];

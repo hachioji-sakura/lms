@@ -279,20 +279,11 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      try {
-        DB::beginTransaction();
+      $res = $this->transaction(function() use ($request, $form){
         $item = $this->model()->create($form);
-        DB::commit();
-        return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $item;
+      }, $this->domain_name.'を登録しました', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
      }
     /**
      * データ更新時のパラメータチェック
@@ -399,20 +390,11 @@ class MilestoneController extends UserController
     public function _delete(Request $request, $id)
     {
       $form = $request->all();
-      try {
-        DB::beginTransaction();
+      $res = $this->transaction(function() use ($request, $form){
         $user = $this->login_details($request);
         $items = $this->model()->where('id',$id)->delete();
-        DB::commit();
-        return $this->api_response(200, '', '', $items);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $items;
+      }, $this->domain_name.'を削除しました', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 }

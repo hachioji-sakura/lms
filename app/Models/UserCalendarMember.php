@@ -370,21 +370,18 @@ class UserCalendarMember extends Model
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function rest_cancel_ask(){
-    $teachers = $this->calendar->get_teachers();
-    foreach($teachers as $teacher){
-      //期限＝予定前日まで
-      Ask::add("rest_cancel", [
-        "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
-        "body" => "",
-        "target_model" => "user_calendar_members",
-        "target_model_id" => $this->id,
-        "charge_user_id" => $teacher->user_id,
-        "target_user_id" => $this->user_id,
-        "create_user_id" => $this->user_id,
-      ]);
-    }
-    return true;
+  public function rest_cancel_ask($create_user_id){
+    //期限＝予定前日まで
+    $ask = Ask::add("rest_cancel", [
+      "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
+      "body" => "",
+      "target_model" => "user_calendar_members",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->user_id,
+      "charge_user_id" => $this->calendar->user_id,
+    ]);
+    return $ask;
   }
   public function rest_cancel($is_exec=true){
     if($is_exec==true){
@@ -397,4 +394,32 @@ class UserCalendarMember extends Model
       $this->update(['status' => 'rest']);
     }
   }
+  public function lecture_cancel_ask($create_user_id){
+    //期限＝予定前日まで
+    $ask = Ask::add("lecture_cancel", [
+      "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
+      "body" => "",
+      "target_model" => "user_calendar_members",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->user_id,
+      "charge_user_id" => 1,
+    ]);
+    return $ask;
+  }
+  public function lecture_cancel($is_exec=true, $login_user_id){
+    if($is_exec==true){
+      //休講に更新
+      $this->calendar->update(['status' => 'lecture_cancel']);
+      foreach($this->calendar->members as $member){
+        $member->update(['status' => 'lecture_cancel']);
+      }
+      $this->calendar->office_system_api('PUT');
+    }
+    else {
+      //授業予定に戻す
+      $this->update(['status' => 'fix']);
+    }
+  }
+
 }

@@ -396,7 +396,7 @@ class StudentController extends UserController
      case "cancel":
        $list_title = '休み・キャンセル';
        if(!isset($form['search_status'])){
-         $form['search_status'] = ['cancel', 'rest'];
+         $form['search_status'] = ['cancel', 'rest', 'lecture_cancel'];
        }
        break;
      case "confirm":
@@ -419,12 +419,12 @@ class StudentController extends UserController
          $form['search_to_date'] = date('Y-m-t', strtotime("+1 month"));
        }
        if(!isset($form['search_status'])){
-         $form['search_status'] = ['rest', 'fix', 'presence', 'absence'];
+         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
        }
        break;
      default:
        if(!isset($form['search_status'])){
-         $form['search_status'] = ['rest', 'fix', 'presence', 'absence'];
+         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
        }
        break;
    }
@@ -504,7 +504,8 @@ class StudentController extends UserController
    $asks = Ask::findStatuses($statuses);
    $asks = $asks->findTypes($types);
    $asks = $asks->findStatuses($statuses);
-   $asks = $asks->findUser($user_id);
+   $u = User::where('id', $user_id)->first()->details('managers');
+   if(!$this->is_manager($u->role)) $asks = $asks->findUser($user_id);
    $count = $asks->count();
    $asks = $asks->sortEnddate($sort);
 

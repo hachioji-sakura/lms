@@ -1,5 +1,5 @@
 @if($user->role==="teacher" || $user->role==="manager" )
-  @if($ask["status"]==="new" && $ask["charge_user_id"]==$teacher->user_id)
+  @if($ask["status"]==="new" && ($ask["charge_user_id"]==$teacher->user_id || $domain=='managers'))
   {{-- 講師予定確認済み --}}
   <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="承認する" page_form="dialog" page_url="/asks/{{$ask["id"]}}/status_update/commit?origin={{$domain}}&item_id={{$teacher->id}}&page=ask" role="button" class="btn btn-success btn-sm">
     <i class="fa fa-check mr-1"></i>

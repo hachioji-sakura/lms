@@ -181,23 +181,14 @@ class AskController extends MilestoneController
       $slack_type = 'info';
       $slack_message = $this->status_update_message[$status];
       switch($status){
-        case "commit":
-        //連絡メール通知
-          if($is_send) $param['item']->remind_mail($param);
-          break;
         case "cancel":
+        case "commit":
           //連絡メール通知
-          if($is_send) $param['item']->remind_mail($param);
+          if($is_send) $param['item']->remind_mail($param['user']->user_id);
           break;
         case "remind":
           //連絡メール通知
-          $param['remind'] = true;
-          if($param['item']['status']==='cancel'){
-            $param['item']->remind_mail($param, true);
-          }
-          else if($param['item']['status']==='commit'){
-            $param['item']->remind_mail($param, true);
-          }
+          $param['item']->remind_mail($param['user']->user_id, true);
           break;
       }
     }
@@ -223,9 +214,24 @@ class AskController extends MilestoneController
       $param['item'] = Ask::where('id', $param['item']->id)->first();
       $param['item'] = $param['item']->change([
         'status'=>$status,
+        'login_user_id' => $param['user']->user_id,
       ]);
       return $param['item'];
     }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
+  public function _store(Request $request)
+  {
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $res = $this->transaction(function() use ($request){
+      $form = $request->all();
+      $item = $this->model()->add($form['type'], $form);
+      return $item;
+    }, $this->domain_name, __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+   }
+
 }
