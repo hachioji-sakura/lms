@@ -37,7 +37,9 @@
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
             休講申請
+            @if($lecture_cancel_count > 0)
             <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
+            @endif
           </p>
         </a>
       </li>

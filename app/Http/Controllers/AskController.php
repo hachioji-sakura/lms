@@ -16,7 +16,7 @@ class AskController extends MilestoneController
   public $status_update_message = [
           'new' => '新規依頼を登録しました',
           'commit' => '依頼を承認しました',
-          'cancel' => '依頼をキャンセルしました',
+          'cancel' => '依頼を差戻しました',
         ];
   public $list_fields = [
     'end_dateweek' => [

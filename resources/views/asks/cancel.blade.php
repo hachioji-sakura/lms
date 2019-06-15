@@ -1,6 +1,6 @@
 @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
   @slot('page_message')
-  この依頼内容を差し戻しますか？
+  この依頼内容を差戻しますか？
   @endslot
   @slot('forms')
     <div class="row">

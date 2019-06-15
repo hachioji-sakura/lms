@@ -5,7 +5,7 @@
     <i class="fa fa-check mr-1"></i>
     承認
   </a>
-  <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="差し戻し" page_form="dialog" page_url="/asks/{{$ask["id"]}}/status_update/cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=ask" role="button" class="btn btn-danger btn-sm">
+  <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="差戻し" page_form="dialog" page_url="/asks/{{$ask["id"]}}/status_update/cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=ask" role="button" class="btn btn-danger btn-sm">
     <i class="fa fa-times mr-1"></i>
     差戻
   </a>
