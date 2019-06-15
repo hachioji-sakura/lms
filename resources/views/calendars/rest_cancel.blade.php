@@ -52,7 +52,7 @@
             $("input.rest_check[type='checkbox']:checked").each(function(index, value){
               var val = $(this).val();
               console.log(val);
-              if(val=="rest"){
+              if(val=="rest_cancel"){
                 _is_scceuss = true;
               }
             });
