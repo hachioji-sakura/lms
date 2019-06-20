@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-  protected $table = 'students';
+  protected $connection = 'mysql_common';
+  protected $table = 'common.students';
   protected $guarded = array('id');
   /**
    * 入力ルール
@@ -224,8 +225,8 @@ EOT;
   {
     $where_raw = <<<EOT
       students.user_id in (
-        select user_id from user_calendar_member_settings where user_calendar_setting_id in (
-         select id from user_calendar_settings where user_id=(select user_id from teachers where id = ?)
+        select user_id from lms.user_calendar_member_settings where user_calendar_setting_id in (
+         select id from lms.user_calendar_settings where user_id=(select user_id from common.teachers where id = ?)
         )
 )
 EOT;
@@ -239,7 +240,7 @@ EOT;
   public function scopeFindChild($query, $id)
   {
     $where_raw = <<<EOT
-    students.id in (select student_id from student_relations where student_parent_id=?)
+    student_id in (select student_id from common.student_relations where student_parent_id=?)
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
     return $this->scopeFindStatuses($query, "0,1");
@@ -251,7 +252,7 @@ EOT;
   public function scopeFindEmail($query, $word)
   {
     $where_raw = <<<EOT
-      $this->table.user_id in (select id from users where email like ?)
+      $this->table.user_id in (select id from common.users where email like ?)
 EOT;
     return $query->whereRaw($where_raw,['%'.$word.'%']);
   }

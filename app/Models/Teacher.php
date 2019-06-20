@@ -12,7 +12,8 @@ use App\Models\GeneralAttribute;
 
 class Teacher extends Student
 {
-  protected $table = 'teachers';
+  protected $connection = 'mysql_common';
+  protected $table = 'common.teachers';
   protected $guarded = array('id');
 
   public static $rules = array(

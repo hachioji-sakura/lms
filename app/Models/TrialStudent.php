@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TrialStudent extends Model
 {
-  protected $table = 'trial_students';
+  protected $table = 'lms.trial_students';
   protected $guarded = array('id');
   public static $rules = array(
       'user_id' => 'required',

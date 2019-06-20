@@ -14,7 +14,7 @@ use App\Models\Ask;
 
 class UserCalendarMember extends Model
 {
-  protected $table = 'user_calendar_members';
+  protected $table = 'lms.user_calendar_members';
   protected $guarded = array('id');
   protected $api_hosturl = "https://hachiojisakura.com/sakura-api";
   public $api_endpoint = [
@@ -407,7 +407,7 @@ class UserCalendarMember extends Model
     ]);
     return $ask;
   }
-  public function lecture_cancel($is_exec=true, $login_user_id){
+  public function lecture_cancel($is_exec=true){
     if($is_exec==true){
       //休講に更新
       $this->calendar->update(['status' => 'lecture_cancel']);
@@ -421,5 +421,11 @@ class UserCalendarMember extends Model
       $this->update(['status' => 'fix']);
     }
   }
-
+  public function teacher_change($is_exec=true, $change_user_id){
+    if($is_exec==true){
+      //休講に更新
+      $this->update(['user_id' => $change_user_id]);
+      $this->calendar->update(['user_id' => $change_user_id]);
+    }
+  }
 }

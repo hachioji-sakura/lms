@@ -15,4 +15,10 @@
     <i class="fa fa-file-alt mr-1"></i>{{$ask["status_name"]}}
   </a>
   @endif
+  @if($user->role==="manager" && $domain=="managers" && $ask["type"] == "lecture_cancel")
+    {{-- 代講 --}}
+    <a href="javascript:void(0);" title="{{$ask["id"]}}" page_title="代講" page_form="dialog" page_url="/asks/{{$ask["id"]}}/teacher_change" role="button" class="btn btn-primary btn-sm mr-1">
+      <i class="fa fa-exchange-alt mr-1"></i>代講依頼
+    </a>
+  @endif
 @endif

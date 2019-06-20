@@ -7,7 +7,7 @@ use App\Models\StudentGroupMember;
 class StudentGroup extends Model
 {
   protected $pagenation_line = 20;
-  protected $table = 'student_groups';
+  protected $table = 'common.student_groups';
   protected $guarded = array('id');
   public static $rules = array(
     'teacher_id' => 'required',
@@ -113,7 +113,7 @@ class StudentGroup extends Model
       $item['teacher_name'] = $this->teacher->name();
     }
     else {
-      $item['teacher_name'] = $this->teacher_id;      
+      $item['teacher_name'] = $this->teacher_id;
     }
     return $item;
   }

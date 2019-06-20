@@ -222,16 +222,22 @@ class AskController extends MilestoneController
   }
   public function _store(Request $request)
   {
-    $res = $this->save_validate($request);
-    if(!$this->is_success_response($res)){
-      return $res;
-    }
     $res = $this->transaction(function() use ($request){
       $form = $request->all();
-      $item = $this->model()->add($form['type'], $form);
+      $param = $this->get_param($request);
+      $form["create_user_id"] = $param["user"]->user_id;
+      $item = Ask::add($form['type'], $form);
       return $item;
     }, $this->domain_name, __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
+   public function teacher_chagne_page(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
 
+     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+     $param['fields'] = $this->show_fields($param['item']->work);
+     $param['action'] = '';
+     return view('calendars.teacher_change', [])->with($param);
+   }
 }

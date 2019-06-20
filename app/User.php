@@ -20,7 +20,7 @@ use Hash;
 class User extends Authenticatable
 {
     use Notifiable;
-
+    protected $connection = 'mysql_common';
     /**
      * The attributes that are mass assignable.
      *

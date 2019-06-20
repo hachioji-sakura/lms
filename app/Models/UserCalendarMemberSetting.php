@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserCalendarMemberSetting extends UserCalendarMember
 {
-  protected $table = 'user_calendar_member_settings';
+  protected $table = 'lms.user_calendar_member_settings';
   protected $guarded = array('id');
   public $api_endpoint = [
     "GET" =>  "api_get_repeat_schedule.php",

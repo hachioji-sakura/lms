@@ -8,7 +8,7 @@ use App\Models\UserCalendarMember;
 
 class Ask extends Milestone
 {
-  protected $table = 'asks';
+  protected $table = 'lms.asks';
   protected $guarded = array('id');
 
   public function charge_user(){
@@ -53,6 +53,9 @@ EOT;
   }
   static protected function add($type, $form){
     $type_template = [
+      "teacher_change" => [
+        "title" => "代講依頼",
+      ],
       "rest_cancel" => [
         "title" => "休み取り消し依頼",
       ],
@@ -63,6 +66,20 @@ EOT;
         "title" => "休講依頼",
       ],
     ];
+    $parent_ask_id = 0;
+    if(isset($form['parent_ask_id'])){
+      $parent_ask_id = $form['parent_ask_id'];
+      if($type=="teacher_change"){
+        //代講：target_modelには、休講のデータを設定する
+        $parent_ask = Ask::where('id', $parent_ask_id)->first();
+        $form["charge_user_id"] = 1;
+        if(isset($parent_ask)){
+          $form["target_model"] = $parent_ask->target_model;
+          $form["target_model_id"] = $parent_ask->target_model_id;
+          $form["end_date"] = $parent_ask->end_date;
+        }
+      }
+    }
     $title = $type_template[$type]["title"];
     if(!isset($form['title'])){
       $form['title'] = $title;
@@ -93,6 +110,7 @@ EOT;
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],
       'type' => $type,
+      'parent_ask_id' => $parent_ask_id,
       'status' => 'new',
       'title' => $form['title'],
       'body' => $form['body'],
@@ -152,13 +170,21 @@ EOT;
     switch($this->type){
       case "rest_cancel":
       case "lecture_cancel":
+      case "teacher_change":
         $member = UserCalendarMember::where('id', $this->target_model_id)->first();
         if(!isset($member)){
           return false;
         }
         $ret = true;
-        if($this->type=='rest_cancel') $member->rest_cancel($is_commit, $login_user_id);
-        if($this->type=='lecture_cancel') $member->lecture_cancel($is_commit, $login_user_id);
+        if($this->type=='rest_cancel') $member->rest_cancel($is_commit);
+        if($this->type=='lecture_cancel') $member->lecture_cancel($is_commit);
+        if($this->type=='teacher_change'){
+          $member->calendar->teacher_change($is_commit, $this->target_user_id);
+          $parent_ask = Ask::where('id', $this->parent_ask_id)->first();
+          if(isset($parent_ask)){
+            $parent_ask->update(['status' => 'cancel']);
+          }
+        }
         break;
     }
     return $ret;
@@ -170,6 +196,7 @@ EOT;
     $param['send_to'] = 'teacher';
     $param['login_user'] = User::where('id', $login_user_id)->first()->details();
     switch($this->type){
+      case "teacher_change":
       case "rest_cancel":
       case "lecture_cancel":
         $member = UserCalendarMember::where('id', $this->target_model_id)->first();
@@ -182,10 +209,17 @@ EOT;
     //依頼対象者にメール通知
     $res = $this->target_user_mail($param);
     $res = $this->charge_user_mail($param);
-    if($this->type=='lecture_cancel' && $this->status='commit'){
+    if($this->type=='lecture_cancel' && $this->status=='commit'){
       //生徒あてに休講連絡
+      \Log::warning("休講更新[".$this->type."][".$this->status."]");
       $param['send_to'] = 'student';
       $param["item"]->student_mail('休講のお知らせ', $param, 'text', 'calendar_lecture_cancel');
+    }
+    else if($this->type=='teacher_change' && $this->status=='commit'){
+      //生徒あてに先生が変わったあとの連絡
+      \Log::warning("代講更新[".$this->type."][".$this->status."]");
+      $param['send_to'] = 'student';
+      $param["item"]->student_mail('講師変更のお知らせ', $param, 'text', 'calendar_teacher_change');
     }
     return $res;
   }

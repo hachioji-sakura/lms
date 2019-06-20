@@ -10,7 +10,8 @@ use App\Http\Controllers\Controller;
 
 class Milestone extends Model
 {
-  protected $table = 'milestones';
+  protected $connection = 'mysql';
+  protected $table = 'lms.milestones';
   protected $guarded = array('id');
 
   public static $rules = array(

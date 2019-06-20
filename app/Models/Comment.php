@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Milestone
 {
-  protected $table = 'comments';
+  protected $table = 'lms.comments';
   protected $guarded = array('id');
 
   public static $rules = array(

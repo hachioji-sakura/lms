@@ -8,7 +8,7 @@ use App\Models\UserCalendarMemberSetting;
 use DB;
 class UserCalendarSetting extends UserCalendar
 {
-  protected $table = 'user_calendar_settings';
+  protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
   public static $rules = array(
       'user_id' => 'required',
@@ -18,7 +18,7 @@ class UserCalendarSetting extends UserCalendar
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
-      user_calendar_settings.id in (select user_calendar_setting_id from user_calendar_member_settings where user_id=$user_id)
+      lms.user_calendar_settings.id in (select user_calendar_setting_id from lms.user_calendar_member_settings where user_id=$user_id)
 EOT;
 
     return $query->whereRaw($where_raw,[]);
@@ -38,11 +38,11 @@ EOT;
   }
   public function scopeEnable($query){
     $where_raw = <<<EOT
-      user_calendar_settings.status = 'fix'
+      lms.user_calendar_settings.status = 'fix'
       AND (
-       (user_calendar_settings.enable_start_date is null OR user_calendar_settings.enable_start_date < ?)
+       (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
        AND
-       (user_calendar_settings.enable_end_date is null OR user_calendar_settings.enable_end_date > ?)
+       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
       )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);

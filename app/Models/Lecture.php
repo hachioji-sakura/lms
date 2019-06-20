@@ -8,7 +8,7 @@ use App\Models\GeneralAttribute;
 
 class Lecture extends Model
 {
-  protected $table = 'lectures';
+  protected $table = 'lms.lectures';
   protected $guarded = array('id');
   public static $rules = array(
       'lesson' => 'required',

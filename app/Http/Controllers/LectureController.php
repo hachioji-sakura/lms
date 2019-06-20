@@ -90,7 +90,7 @@ class LectureController extends UserController
       left join general_attributes course on course.attribute_key = 'course' and course.attribute_value = l.course
 EOT;
     if($this->is_teacher($param['user']->role)){
-      $sql .= " where l.lesson in (select tag_value from user_tags where user_id=? and tag_key='lesson')";
+      $sql .= " where l.lesson in (select tag_value from common.user_tags where user_id=? and tag_key='lesson')";
     }
     $sql .= " order by lesson.sort_no, course.sort_no, subject.sort_no";
     $items = DB::select($sql, [$param['user']->user_id]);

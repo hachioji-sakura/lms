@@ -10,7 +10,7 @@ use App\Models\UserCalendar;
 
 class Trial extends Model
 {
-  protected $table = 'trials';
+  protected $table = 'lms.trials';
   protected $guarded = array('id');
   public static $rules = array(
       'student_parent_id' => 'required',
