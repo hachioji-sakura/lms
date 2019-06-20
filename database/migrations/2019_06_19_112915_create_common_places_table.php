@@ -15,7 +15,7 @@ class CreateCommonPlacesTable extends Migration
     {
         Schema::connection('mysql_common')->create('places', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('name')->nullable(false)->comment('');
+          $table->string('name')->nullable(false)->comment('所在地名');
           $table->integer('sort_no')->default(0)->comment('表示順');
           $table->string('post_no')->nullable(true)->comment('郵便番号');
           $table->string('addreess')->nullable(true)->comment('住所');
