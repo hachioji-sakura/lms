@@ -27,7 +27,7 @@ class UserExaminationController extends TextbookChapterController
      * @return json
      */
     public function get_param(Request $request, $chapter_id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!is_numeric($chapter_id) || $chapter_id <= 0){
         abort(500);
       }
@@ -197,7 +197,7 @@ class UserExaminationController extends TextbookChapterController
      */
      public function index(Request $request)
     {
-      $user = $this->login_details();
+      $user = $this->login_details($request);
 
       //return $this->get_next_question_id(4);
       return view("examinations.sample", [
@@ -210,7 +210,7 @@ class UserExaminationController extends TextbookChapterController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $_item = $this->model()->create([
           'user_id' => $user->user_id,
           'parent_id' => $form['parent_id'],
@@ -236,7 +236,7 @@ class UserExaminationController extends TextbookChapterController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $_item = $this->model()::where('id',$id)->update([
           'status' => $form['status'],
           'current_question_id' => $form['question_id']

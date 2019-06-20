@@ -34,9 +34,11 @@
 		var _req = {};
 		$("input, textarea, select", $("#"+formId)).each(function(){
 			var field = $(this).attr("name");
-			if(field.indexOf("#")<0){
-				var val = _getFormValue(this);
-				_req[field] = val;
+			if(field){
+				if(field.indexOf("#")<0){
+					var val = _getFormValue(this);
+					_req[field] = val;
+				}
 			}
 		});
 		$("input[type=checkbox]:checked,input[type=radio]:checked", $("#"+formId)).each(function(){
@@ -85,7 +87,18 @@
 	*/
 	function clearFormValue(formId){
 		clearValidateError();
-		$("input, textarea, select", $("#"+formId)).val("");
+		$("textarea, select", $("#"+formId)).val("");
+		$("select.select2", $("#"+formId)).each(function(){
+			$(this).val(-1).trigger('change');
+		});
+		$("input:not([type='hidden'])", $("#"+formId)).val("");
+		$("input[type='checkbox'],input[type='radio']", $("#"+formId)).each(function(){
+			$(this).val("");
+			if($(this).iCheck){
+				$(this).iCheck('uncheck');
+			}
+			$(this).change();
+		});
 	}
 	/**
 	* form配下の入力要素の値をチェックする
@@ -496,7 +509,9 @@
 	* @return {void} return nothing
 	*/
 	function clearValidateError(formId){
-		$(".error_message", $("#"+formId)).remove();
+		if(util.isEmpty(formId)) formId = "form";
+		else if(formId.substr(0,1)!="#") formId="#"+formId;
+		$(".error_message", $(formId)).remove();
 	}
 
 	/**

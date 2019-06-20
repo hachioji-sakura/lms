@@ -121,7 +121,7 @@ class UserAnswerController extends UserExaminationController
       try {
         DB::beginTransaction();
         $form = $request->all();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
 
         if($form['judge']===0){
           //間違え
@@ -164,7 +164,7 @@ class UserAnswerController extends UserExaminationController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $_item = $this->model()->create($form);
         DB::commit();
         return $this->api_response(200, "", "", $_item);

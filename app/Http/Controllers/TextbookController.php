@@ -22,7 +22,7 @@ class TextbookController extends MilestoneController
      * @return json
      */
     public function get_param(Request $request, $id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $ret = [
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
@@ -48,7 +48,7 @@ class TextbookController extends MilestoneController
     public function search(Request $request)
     {
       $items = $this->model();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         //生徒の場合は所有しているものを表示する
       }

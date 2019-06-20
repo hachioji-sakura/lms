@@ -24,13 +24,14 @@
   <div class="form-group">
     <label for="cancel_reason" class="w-100">
       授業予定に参加できない理由をお知らせください
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-secondary ml-1">任意</span>
     </label>
-    <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
+    <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" ></textarea>
   </div>
 </div>
 <script>
-function status_radio_change(obj){
+function status_radio_change(){
+  console.log("status_radio_change");
   var is_cancel = $('input[type="radio"][name="status"][value="cancel"]').prop("checked");
   if(is_cancel){
     $("textarea[name='remark']").show();
@@ -46,5 +47,6 @@ function status_radio_change(obj){
       $(this).val('fix');
     });
   }
+  console.log($("input[name=status]").val());
 }
 </script>

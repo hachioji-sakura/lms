@@ -18,7 +18,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body content-sub-body page_contents">
-        <i class="fa fa-spinner fa-spin"></i>
+        <i class="fa fa-spinner fa-spin mr-1"></i>
+        データロード中
       </div>
     </div>
   </div>

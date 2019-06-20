@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>''])
   @slot('page_message')
     @if(isset($user) && $user->role==="teacher")
     以下の授業予定を確定し、生徒に連絡しますか？
@@ -16,17 +16,17 @@
   <form method="POST" action="/calendars/{{$item['id']}}">
     @csrf
     @method('DELETE')
-    <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+    <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="この予定を削除しますか？">
       <i class="fa fa-trash-alt mr-1"></i>
       予定削除
     </button>
   </form>
 </div>
 <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-  <form method="POST" action="/calendars/{{$item['id']}}/remind">
+  <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind">
     @csrf
     @method('PUT')
-    <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
+    <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を講師に連絡しますか？">
         <i class="fa fa-envelope mr-1"></i>
           送信する
     </button>
@@ -35,10 +35,10 @@
 @elseif(isset($user) && $user->role==="teacher")
     @if($item['trial_id'] < 1 && $item['status']==='new')
     <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-      <form method="POST" action="/calendars/{{$item['id']}}/confirm">
+      <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
         @method('PUT')
-        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
               予定連絡
         </button>
@@ -48,7 +48,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
         @method('DELETE')
-        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action">
+        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="この予定を削除しますか？">
           <i class="fa fa-trash-alt mr-1"></i>
           予定削除
         </button>
@@ -56,10 +56,10 @@
     </div>
     @else
     <div class="col-12 col-lg-12 col-md-12 mb-1" id="{{$domain}}_confirm">
-      <form method="POST" action="/calendars/{{$item['id']}}/confirm">
+      <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
         @method('PUT')
-        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
               予定連絡
         </button>

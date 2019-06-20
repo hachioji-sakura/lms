@@ -1,5 +1,6 @@
 @section('parent_form')
 <div class="row">
+  @foreach($item->trial_students as $trial_student)
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-user-graduate mr-1"></i>
     生徒様情報
@@ -7,24 +8,24 @@
   <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
   <div class="col-6 p-3">
     <ruby style="ruby-overhang: none">
-      <rb>{{$item->student->name()}}</rb>
-      <rt>{{$item->student->kana()}}</rt>
+      <rb>{{$trial_student->student->name()}}</rb>
+      <rt>{{$trial_student->student->kana()}}</rt>
     </ruby>
   </div>
   <div class="col-6 p-3 font-weight-bold" >性別</div>
-  <div class="col-6 p-3">{{$item->student->gender()}}</div>
+  <div class="col-6 p-3">{{$trial_student->student->gender()}}</div>
   {{--
     <div class="col-6 p-3 font-weight-bold" >生年月日</div>
-    <div class="col-6 p-3">{{$item->student->birth_day()}}</div>
+    <div class="col-6 p-3">{{$trial_student->student->birth_day()}}</div>
   --}}
   <div class="col-12">
     @component('components.select_birthday', []) @endcomponent
   </div>
   <div class="col-6 p-3 font-weight-bold" >学年</div>
-  <div class="col-6 p-3">{{$item->student->grade()}}</div>
+  <div class="col-6 p-3">{{$trial_student->student->grade()}}</div>
   <div class="col-6 p-3 font-weight-bold school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 school_name_confirm">{{$item->student->school_name()}}</div>
-
+  <div class="col-6 p-3 school_name_confirm">{{$trial_student->student->school_name()}}</div>
+  @endforeach
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-user-friends mr-1"></i>
     ご契約者様情報
@@ -50,7 +51,7 @@
 @endsection
 
 @section('admission_form')
-
+  @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item]) @endcomponent
 @endsection
 @section('aa')
 <div class="row">

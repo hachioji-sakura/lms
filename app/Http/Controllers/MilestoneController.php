@@ -13,6 +13,16 @@ class MilestoneController extends UserController
     public $domain = 'milestones';
     public $table = 'milestones';
     public $domain_name = '目標';
+    public $list_fields = [
+      'id' => [
+        'label' => 'ID',
+      ],
+      'title' => [
+        'label' => 'タイトル',
+        'link' => 'show',
+      ],
+    ];
+
     /**
      * このdomainで管理するmodel
      *
@@ -22,7 +32,7 @@ class MilestoneController extends UserController
       return Milestone::query();
     }
     public function get_target_user_id(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_student($user->role)===true){
         return $user->user_id;
       }
@@ -63,7 +73,7 @@ class MilestoneController extends UserController
      * @return json
      */
     public function create_form(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $form = [];
       $form['create_user_id'] = $user->user_id;
       $form['type'] = $request->get('type');
@@ -111,7 +121,7 @@ class MilestoneController extends UserController
      * @return json
      */
     public function get_param(Request $request, $id=null){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) {
         abort(403);
       }
@@ -156,15 +166,16 @@ class MilestoneController extends UserController
     public function search(Request $request)
     {
       $items = $this->model();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
+      $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
-
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
+      /*
       foreach($items as $item){
         $create_user = $item->create_user->details();
         $item->create_user_name = $create_user->name;
@@ -173,30 +184,27 @@ class MilestoneController extends UserController
         $item->target_user_name = $target_user->name;
         unset($item->target_user);
       }
-      $fields = [
-        'id' => [
-          'label' => 'ID',
-        ],
-        'title' => [
-          'label' => 'タイトル',
-          'link' => 'show',
-        ],
-      ];
+      */
+      foreach($items as $key => $item){
+        $items[$key] = $item->details();
+      }
+      $fields = $this->list_fields;
+      /*
       if($this->is_manager_or_teacher($user->role)===true){
         //生徒以外の場合は、対象者も表示する
         $fields['target_user_name'] = [
           'label' => 'ユーザー',
         ];
       }
-
       $fields['created_at'] = [
         'label' => '登録日時',
       ];
+      */
       $fields['buttons'] = [
         'label' => '操作',
         'button' => ['edit', 'delete']
       ];
-      return ['items' => $items->toArray(), 'fields' => $fields];
+      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
     }
     /**
      * フィルタリングロジック
@@ -240,8 +248,9 @@ class MilestoneController extends UserController
      */
    public function create(Request $request)
    {
+
       $param = $this->get_param($request);
-      return view($this->domain.'.create',[])
+      return view($this->domain.'.create',['_edit' => false])
         ->with($param);
     }
 
@@ -270,20 +279,11 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      try {
-        DB::beginTransaction();
+      $res = $this->transaction(function() use ($request, $form){
         $item = $this->model()->create($form);
-        DB::commit();
-        return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $item;
+      }, $this->domain_name.'を登録しました', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
      }
     /**
      * データ更新時のパラメータチェック
@@ -310,17 +310,8 @@ class MilestoneController extends UserController
     {
       $param = $this->get_param($request, $id);
 
-      $fields = [
-        'type' => [
-          'label' => '種別',
-        ],
-        'title' => [
-          'label' => 'タイトル',
-        ],
-        'body' => [
-          'label' => '内容',
-        ],
-      ];
+      $fields = $this->show_fields();
+      /*
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
         $fields['target_user_name'] = [
@@ -333,7 +324,7 @@ class MilestoneController extends UserController
       $fields['updated_at'] = [
         'label' => '更新日時',
       ];
-
+      */
       return view('components.page', [
         'action' => $request->get('action'),
         'fields'=>$fields])
@@ -374,24 +365,13 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
-        $user = $this->login_details();
+      $res =  $this->transaction(function() use ($request, $id){
+        $user = $this->login_details($request);
         $item = $this->model()->where('id',$id)->update($this->update_form($request));
-        DB::commit();
-        return $this->api_response(200, '', '', $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $item;
+      }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -410,20 +390,11 @@ class MilestoneController extends UserController
     public function _delete(Request $request, $id)
     {
       $form = $request->all();
-      try {
-        DB::beginTransaction();
-        $user = $this->login_details();
+      $res = $this->transaction(function() use ($request, $form){
+        $user = $this->login_details($request);
         $items = $this->model()->where('id',$id)->delete();
-        DB::commit();
-        return $this->api_response(200, '', '', $items);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $items;
+      }, $this->domain_name.'を削除しました', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 }

@@ -17,47 +17,48 @@
           <ul class="mailbox-attachments clearfix row">
             @foreach($items as $item)
             <li class="col-12" accesskey="" target="">
-              <div class="row">
-                <div class="col-12">
-                <a href="trials/{{$item->id}}">
-                  <span class="time"><i class="fa fa-clock mx-1"></i>第1希望:{{$item['date1']}}</span>
-                  <span class="time"><i class="fa fa-clock mx-1"></i>第2希望:{{$item['date2']}}</span>
-                </a>
+              <a href="trials/{{$item->id}}">
+                <div class="row">
+                  <div class="col-12 col-lg-6 col-md-6 mt-1">
+                    <span class="time"><i class="fa fa-clock mx-1"></i>{{$item['create_date']}}申込</span>
+                    <span class="text-xs">
+                      <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
+                        <i class="fa fa-file-alt mr-1"></i>{{$item['status_name']}}
+                      </small>
+                    </span>
+                    @foreach($item["tagdata"]["lesson"] as $label)
+                    <span class="text-xs">
+                      <small class="badge badge-primary p-1 mr-1">
+                        <i class="fa fa-chalkboard mr-1"></i>
+                        {{$label}}
+                      </small>
+                    </span>
+                    @endforeach
+                    @foreach($item["tagdata"]["lesson_place"] as $label)
+                    <span class="text-xs">
+                      <small class="badge badge-success p-1 mr-1">
+                        <i class="fa fa-map-marker mr-1"></i>
+                        {{$label}}
+                      </small>
+                    </span>
+                    @endforeach
+                    @foreach($item->trial_students as $trial_student)
+                    <span class="text-xs">
+                      <small class="badge badge-info p-1 mr-1">
+                        <i class="fa fa-user mr-1"></i>
+                        {{$trial_student->student->name()}}
+                        （{{$trial_student->student->grade()}}）
+                      </small>
+                    </span>
+                    @endforeach
+                  </div>
+                  <div class="col-12 col-lg-6 col-md-6 mt-1">
+                      第1希望:{{$item['date1']}}</span><br>
+                      第2希望:{{$item['date2']}}</span><br>
+                      第3希望:{{$item['date3']}}</span>
+                  </div>
                 </div>
-                <div class="col-12">
-                  <span class="text-xs">
-                    <small class="badge badge-{{$item->status_style()}} p-1 mr-1">
-                      <i class="fa fa-file-alt mr-1"></i>{{$item['status_name']}}
-                    </small>
-                  </span>
-                  @foreach($item["tagdata"]["lesson"] as $label)
-                  <span class="text-xs">
-                    <small class="badge badge-primary p-1 mr-1">
-                      <i class="fa fa-chalkboard mr-1"></i>
-                      {{$label}}
-                    </small>
-                  </span>
-                  @endforeach
-                  @foreach($item["tagdata"]["lesson_place"] as $label)
-                  <span class="text-xs">
-                    <small class="badge badge-success p-1 mr-1">
-                      <i class="fa fa-map-marker mr-1"></i>
-                      {{$label}}
-                    </small>
-                  </span>
-                  @endforeach
-                </div>
-                <div class="col-12">
-                  @foreach($item->trial_students as $trial_student)
-                  <span class="text-xs">
-                    <small class="badge badge-info p-1 mr-1">
-                      <i class="fa fa-user mr-1"></i>
-                      {{$trial_student->student->name()}}
-                      （{{$trial_student->student->grade()}}）
-                    </small>
-                  </span>
-                  @endforeach
-                </div>
+              </a>
             </li>
             @endforeach
           </ul>

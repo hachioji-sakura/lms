@@ -10,8 +10,8 @@
     </label>
     @foreach($attributes['kids_lesson'] as $index => $name)
     <label class="mx-2">
-      <input type="checkbox" value="{{ $index }}" name="kids_lesson[]" class="icheck flat-green"
-      @if(isset($item) && $item->user->has_tag('kids_lesson', $index)===true)
+      <input type="checkbox" value="{{ $index }}" name="kids_lesson[]" class="icheck flat-green" required="true"
+      @if($_edit===true && isset($item) && $item->has_tag('kids_lesson', $index)===true)
       checked
       @endif
       >{{$name}}

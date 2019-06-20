@@ -26,19 +26,7 @@ class TeacherController extends StudentController
   public function model(){
    return Teacher::query();
   }
-  /**
-   * 一覧表示
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return view / domain.lists
-   */
-  public function index(Request $request)
-  {
-   $param = $this->get_param($request);
-   $_table = $this->search($request);
-   return view($this->domain.'.tiles', $_table)
-    ->with($param);
-  }
+
   /**
    * 共通パラメータ取得
    *
@@ -48,7 +36,7 @@ class TeacherController extends StudentController
    */
   public function get_param(Request $request, $id=null){
     $id = intval($id);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
@@ -61,6 +49,11 @@ class TeacherController extends StudentController
       '_line' => $request->get('_line'),
       'list' => $request->get('list'),
       'attributes' => $this->attributes(),
+    ];
+    $ret['filter'] = [
+      'search_week'=>$request->search_week,
+      'search_work' => $request->search_work,
+      'search_place' => $request->search_place,
     ];
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
@@ -75,6 +68,18 @@ class TeacherController extends StudentController
         abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      $lists = ['cancel', 'confirm', 'exchange', 'recent'];
+      foreach($lists as $list){
+        $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
+        $ret[$list.'_count'] = $calendars["count"];
+      }
+      $asks = $this->get_ask([], $ret['item']->user_id);
+      $ret['ask_count'] = $asks["count"];
+      $lists = ['lecture_cancel'];
+      foreach($lists as $list){
+        $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
+        $ret[$list.'_count'] = $asks["count"];
+      }
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -106,6 +111,11 @@ class TeacherController extends StudentController
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
+    if($request->has('api')){
+      $model = $this->model()->where('id',$id)->first();
+      if(isset($model)) $model = $model->details();
+      return $this->api_response(200, '','', $model);
+    }
     $user = $param['user'];
     //コメントデータ取得
     $comments = $param['item']->user->target_comments;
@@ -146,7 +156,7 @@ class TeacherController extends StudentController
       'item' => $item,
     ])->with($param);
   }
-  public function schedule(Request $request, $id)
+  public function calendar_settings(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
     $model = $this->model()->where('id',$id)->first()->user;
@@ -154,33 +164,10 @@ class TeacherController extends StudentController
     $item['tags'] = $model->tags();
 
     $user = $param['user'];
-    $view = "schedule";
-    $request->merge([
-      '_sort' => 'start_time',
-    ]);
-    $calendars = $this->get_schedule($request, $item->user_id);
-    $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
-    $calendars = $calendars["data"];
-    foreach($calendars as $calendar){
-      $calendar = $calendar->details();
-    }
-    $param["calendars"] = $calendars;
-    $list_title = '授業予定';
-    switch($request->get('list')){
-      case "history":
-        $list_title = '授業履歴';
-        break;
-      case "confirm":
-        $list_title = '予定調整中';
-        break;
-      case "cancel":
-        $list_title = '休み・キャンセル';
-        break;
-    }
-    $param['list_title'] = $list_title;
+    $view = "calendar_settings";
     $param['view'] = $view;
     return view($this->domain.'.'.$view, [
-      'item' => $item,
+      'calendar_settings' => $item->get_calendar_settings($param['filter']),
     ])->with($param);
   }
   private function get_students(Request $request, $teacher_id){
@@ -273,7 +260,7 @@ class TeacherController extends StudentController
          'access_key' => $access_key,
          'send_to' => $send_to,
        ], 'text', 'entry');
-       $login_user = $this->login_details();
+       $login_user = $this->login_details($request);
        if(!isset($login_user)){
          return view($this->domain.'.entry',
            ['result' => $result])->with($param);
@@ -313,7 +300,7 @@ class TeacherController extends StudentController
      $param = [
        'domain' => $this->domain,
        'domain_name' => $this->domain_name,
-       'user' => $this->login_details(),
+       'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];
      if(isset($param['user'])){
@@ -347,7 +334,7 @@ class TeacherController extends StudentController
     public function register_update(Request $request)
     {
       $param = [
-        'user' => $this->login_details(),
+        'user' => $this->login_details($request),
         'attributes' => $this->attributes(),
       ];
 
@@ -459,7 +446,7 @@ class TeacherController extends StudentController
       ]);
       $from_date = $target_month.'-01';
       $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
-      $calendars = $this->get_schedule($request, $item->user_id, $from_date, $to_date);
+      $calendars = $this->get_schedule($request->all(), $item->user_id, $from_date, $to_date);
       $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
       $calendars = $calendars["data"];
       $enable_confirm = true; //確認ボタン押せる場合 = true
@@ -535,4 +522,17 @@ class TeacherController extends StudentController
          return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
       }
     }
+    /**
+     * 生徒取得
+     *
+     * @param  array  $param
+     * @return array
+     */
+    public function get_charge_students(Request $request , $id){
+      $param = $this->get_param($request, $id);
+      $items = $param['item']->get_charge_students();
+
+      return $this->api_response(200, "", "", $items);
+    }
+
 }

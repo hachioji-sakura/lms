@@ -15,26 +15,19 @@
             <i class="fa fa-calendar mr-1"></i>
             {{$list_title}}
           </h3>
-          <div class="card-tools">
-            <ul class="pagination pagination-sm m-0 float-right">
-              @if($_maxpage>1)
-              <li class="page-item"><a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, 0, $_line)}}">«</a></li>
-              @for($i=$_page-2;$i<$_page+3;$i++)
-                @if($i<0)
-                  @continue
-                @endif
-                @if($i>$_maxpage) @continue @endif
+          <div class="card-title text-sm">
+            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+              @slot("addon_button")
+              <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
-                  @if($i==$_page)
-                  <span class="page-link text-dark bg-primary">{{$i+1}}</span>
-                  @else
-                  <a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, $i, $_line)}}">{{$i+1}}</a>
-                  @endif
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
+                    <i class="fa fa-plus"></i>
+                    <span class="btn-label">追加</span>
+                  </a>
                 </li>
-              @endfor
-              <li class="page-item"><a class="page-link" href="{{sprintf('/%s/%d/schedule?list=%s&_page=%d&_line=%d', $domain, $item->id, $list, $_maxpage, $_line)}}">»</a></li>
-              @endif
-            </ul>
+              </ul>
+              @endslot
+            @endcomponent
           </div>
         </div>
         <!-- /.card-header -->
@@ -42,19 +35,27 @@
           @if(count($calendars) > 0)
           <ul class="mailbox-attachments clearfix row">
             @foreach($calendars as $calendar)
-            <li class="col-12" accesskey="" target="">
-              <div class="row">
-                <div class="col-5 col-lg-4 col-md-4">
-                  <i class="fa fa-calendar mr-1"></i>{{$calendar["date"]}}
-                  <br>
-                  <i class="fa fa-clock mr-1"></i>{{$calendar["timezone"]}}
-                </div>
+            <li class="col-12 p-0" accesskey="" target="">
+              <div class="row p-2
+              @if($calendar->is_cancel_status()==true)
+              calendar_rest
+              @endif
+                ">
                 <div class="col-7 col-lg-4 col-md-4">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
+                    <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
+                    <br>
+                    <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
+                    <br>
+                    <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                  </a>
+                </div>
+                <div class="col-5 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)
-                    @if($member->user->details()->role==="student")
-                      <a href="/students/{{$member->user->details()->id}}">
-                        <i class="fa fa-user-graduate mr-2"></i>
-                        {{$member->user->details()->name}}
+                    @if($member->user->details('students')->role==="student")
+                      <a href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
+                        <i class="fa fa-user-graduate"></i>
+                        {{$member->user->details('students')->name}}
                       </a>
                     @endif
                   @endforeach
@@ -68,28 +69,8 @@
                   @endforeach
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100">
-                    <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
-                  </a>
-                  <br>
-                  @if($user->role==="teacher")
-                    @if($calendar["status"]==="fix" && date('Ymd', strtotime($calendar["start_time"])) === date('Ymd'))
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/presence?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-success btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      出欠確認
-                    </a>
-                    @elseif($calendar["status"]==="new")
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/confirm?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      予定を確定する
-                    </a>
-                    @elseif($calendar["status"]==="confirm")
-                    <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$item->id}}&page=schedule" role="button" class="btn btn-warning btn-sm w-100 mt-1">
-                      <i class="fa fa-user-check mr-1"></i>
-                      予定連絡
-                    </a>
-                    @endif
-                  @endif
+                  @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+                  @endcomponent
                 </div>
             </li>
             @endforeach
@@ -104,4 +85,119 @@
     </div>
   </div>
 </section>
+
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_from_date" class="w-100">
+        日付 FROM
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_from_date']))
+          value="{{$filter['search_from_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_to_date" class="w-100">
+        日付 TO
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_to_date']))
+          value="{{$filter['search_to_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-group">
+      <label for="is_exchange" class="w-100">
+        表示順
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
+      @if(isset($filter['is_desc']) && $filter['is_desc']==true)
+        checked
+      @endif
+      >日付降順
+      </label>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-group">
+      <label for="is_exchange" class="w-100">
+        振替対象
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
+      @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
+        checked
+      @endif
+      >振替対象のみを表示
+      </label>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_status" class="w-100">
+      ステータス
+    </label>
+    <div class="w-100">
+      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
+        @foreach(config('attribute.calendar_status') as $index => $name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_work" class="w-100">
+      作業
+    </label>
+    <div class="w-100">
+      <select name="search_work[]" class="form-control select2" width=100% placeholder="検索作業" multiple="multiple" >
+        @foreach($attributes['work'] as $index=>$name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <label for="search_place" class="w-100">
+      場所
+    </label>
+    <div class="w-100">
+      <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
+        @foreach($attributes['lesson_place_floor'] as $index=>$name)
+          <option value="{{$index}}"
+          <option value="{{$index}}"
+          @if(isset($filter['search_place']) && in_array($index, $filter['search_place'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  @endslot
+@endcomponent
 @endsection

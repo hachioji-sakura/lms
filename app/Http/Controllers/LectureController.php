@@ -49,7 +49,7 @@ class LectureController extends UserController
    */
   public function get_param(Request $request, $id=null){
     $id = intval($id);
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $ret = [
       'domain' => $this->domain,
       'domain_name' => $this->domain_name,
@@ -103,7 +103,7 @@ EOT;
   }
   public function _search(Request $request)
   {
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     $teacher_id = 0;
     $student_id = 0;
     if($request->has('student_id')){

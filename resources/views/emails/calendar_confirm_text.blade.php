@@ -1,13 +1,13 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user->name()}}様
+{{$user_name}}様
 
 @if($item['trial_id'] > 0)
 この度は、体験授業のお申込み、誠にありがとうございます。
 @endif
 以下のURLより、授業予定のご確認をお願いいたします。
-{{config('app.url')}}/calendars/{{$item['id']}}/fix?key={{$token}}&user={{$user->user_id}}
+{{config('app.url')}}/calendars/{{$item['id']}}/status_update/fix?key={{$token}}&user={{$user->user_id}}
 
 ご不明な点等ございましたら、下記までお問い合わせください。　
 
@@ -15,7 +15,7 @@
 以下の授業予定を生徒様にご連絡いたしました。
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
 生徒様から授業予定の確定操作後に、

@@ -723,7 +723,7 @@
 							break;
 						case "select":
 							$(this).val(val);
-							$(this).change();
+							//$(this).change();
 							break;
 						default:
 							$(this).val(val);

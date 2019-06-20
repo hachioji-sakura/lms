@@ -311,7 +311,7 @@
 
 		/**
 		* 文字列フォーマット
-		*     format("The format example : {0}, {1}, {0}", "ABC", "123");
+		*     format("The format example : {0}, {1}, {2}", "ABC", "123");
 		* @method format
 		* @param str {String}
 		* @param {JSON} args
@@ -330,6 +330,16 @@
 			return str.replace(/\{(\w+)\}/g, rep_fn);
 		},
 
+		dateformat: function(val, template){
+			var val = val.replace_all('/', '');
+			var y = val.substring(0,4);
+			var m = val.substring(4,6);
+			var d = val.substring(6,8);
+			template = template.replace('%Y', '{0}');
+			template = template.replace('%m', '{1}');
+			template = template.replace('%d', '{2}');
+			return this.format(template, [y, m, d]);
+		},
 		/**
 		* 現在のクライアント日付文字列を返却
 		* 引数の指定がある場合は、現在日時との差を返却する

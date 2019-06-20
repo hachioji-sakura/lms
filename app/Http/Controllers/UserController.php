@@ -73,7 +73,7 @@ class UserController extends Controller
   }
   protected function get_image()
   {
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     return Image::findCreateUser($user->user_id)->publiced()->get();
   }
 
@@ -102,31 +102,13 @@ class UserController extends Controller
     }
     return back()->withInput()->with($param);
   }
-
-  /**
-   * メールアドレス存在チェック
-   *
-   * @return response
-  */
-  public function email_check($email){
-    $user = $this->login_details();
-    if(!isset($user) || !is_numeric($user->user_id)){
-      abort(403);
-    }
-    $item = User::where('email', $email)->first();
-    if(isset($item)){
-      $json = $this->api_response(200,"","",["email"=>$email]);
-      return $this->send_json_response($json);
-    }
-    return $this->send_json_response($this->notfound());
-  }
   /**
    * パスワード設定画面
    *
    * @return response
   */
   public function password(Request $request){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user) || !is_numeric($user->user_id)){
       abort(403);
     }
@@ -139,7 +121,7 @@ class UserController extends Controller
    * @return response
   */
   public function password_update(Request $request){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     if(!isset($user) || !is_numeric($user->user_id)){
       abort(403);
     }
@@ -164,9 +146,15 @@ class UserController extends Controller
    *
    * @return Collection User->details()
   */
-  protected function login_details()
+  protected function login_details(Request $request)
   {
     $user = Auth::user();
+    $api_token = $request->header('api-token');
+
+    if(!empty($api_token)){
+      $user = User::where('access_key', $api_token)->first();
+      if(isset($user))  Auth::loginUsingId($user->id);
+    }
     if(!isset($user)){
       return null;
     }
@@ -197,6 +185,30 @@ class UserController extends Controller
     }
     return false;
   }
+  protected function get_pagedata($count, $line, $page)
+  {
+    $max_page = 0;
+    $_list_start = 0;
+    $_list_end = 0;
+    if($count > 0){
+      $max_page = floor(intval($count-1) / intval($line))+1;
+      if($max_page < $page){
+        $page = $max_page;
+      }
+      $_list_start = ($page-1)*$line;
+      $_list_end = $_list_start+$line;
+      if($count-$_list_start < $line){
+        $_list_end = $count;
+      }
+      $_list_start++;
+    }
+    return ["_list_start" => $_list_start,
+      "_list_end" => $_list_end,
+      "_list_count" => $count,
+      "_page" => $page,
+      "_maxpage" => $max_page];
+  }
+
   /**
     * roleが生徒の場合 true
     * @param string role

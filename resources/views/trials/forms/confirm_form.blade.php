@@ -8,8 +8,13 @@
   <div class="col-6 p-3 font-weight-bold" >第１希望日時</div>
   <div class="col-6 p-3"><span id="trial_date_time1"></span></div>
   <div class="col-6 p-3 font-weight-bold" >第２希望日時</div>
-  <div class="col-6 p-3"><span id="trial_date_time2"></span></div>
+  <div class="col-6 p-3"><span id="trial_date_time3"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第３希望日時</div>
+  <div class="col-6 p-3"><span id="trial_date_time3"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
+  <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
 </div>
+@if(!isset($_edit) || $_edit!=true)
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-user-graduate mr-1"></i>
@@ -83,6 +88,7 @@
   <div class="col-6 p-3 font-weight-bold" >住所</div>
   <div class="col-6 p-3"><span id="address"></span></div>
 </div>
+@endif
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-calendar-alt mr-1"></i>
@@ -119,8 +125,6 @@
       </table>
     </div>
   </div>
-  <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
-  <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
 </div>
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 subject_confirm">
@@ -208,6 +212,7 @@
   <div class="col-6 p-3 font-weight-bold kids_lesson_confirm" >授業形式のご希望をお知らせください</div>
   <div class="col-6 p-3 kids_lesson_confirm"><span id="kids_lesson_course_type_name"></span></div>
 </div>
+@if(!isset($_edit) || $_edit!=true)
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-question-circle mr-1"></i>
@@ -220,3 +225,4 @@
   <div class="col-6 p-3 font-weight-bold howto_word_confirm collapse" >検索ワードをお答えください</div>
   <div class="col-6 p-3 howto_word_confirm collapse"><span id="howto_word"></span></div>
 </div>
+@endif

@@ -18,12 +18,12 @@
             $calendar.fullCalendar('unselect');
             switch(event.own_member.status){
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/fix?student_id={{$item->id}}");
-                console.log("/calendars/"+event.id+"/fix?student_id={{$item->id}}");
+                base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/status_update/fix?student_id={{$item->id}}");
+                console.log("/calendars/"+event.id+"/status_update/fix?student_id={{$item->id}}");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/rest?student_id={{$item->id}}");
-                console.log("/calendars/"+event.id+"/rest?student_id={{$item->id}}");
+                base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/status_update/rest?student_id={{$item->id}}");
+                console.log("/calendars/"+event.id+"/status_update/rest?student_id={{$item->id}}");
                 break;
               case "new":
               case "rest":

@@ -36,7 +36,7 @@
             この授業予定をお休みしますか？
           @endif
         @else
-          以下の授業予定をご確認してください
+          以下の授業予定をご確認ください
         @endif
       @endif
     @endslot
@@ -54,7 +54,7 @@
           </div>
           <div class="row">
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form">
+                <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="この予定を確認済みに更新しますか？">
                   <i class="fa fa-envelope mr-1"></i>
                   送信
                 </button>
@@ -73,11 +73,12 @@
             </div>
           <div class="row">
             <div class="col-12">
-                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form">
+                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form" confirm="休み連絡を送信しますか？">
                   <i class="fa fa-envelope mr-1"></i>
                     休み連絡
                 </button>
             </div>
+          </div>
         @endif
       </form>
       @endif

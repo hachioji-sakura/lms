@@ -14,12 +14,7 @@ Auth::routes();
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('managers/login','ManagerController@login');
-
 Route::get('auth','AuthController@auth');
-Route::get('test','UserCalendarController@test');
-Route::post('rest/test2','RestController@test');
-
-Route::get('users/email/{email}','UserController@email_check');
 Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
 
@@ -27,6 +22,10 @@ Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
 Route::get('password/setting','AuthController@password_setting');
 Route::post('password/setting','AuthController@password_settinged');
+
+
+Route::post('credentials/{id?}','AuthController@credential');
+
 
 Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
@@ -46,12 +45,16 @@ Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
 Route::resource('parents','StudentParentController');
 
+Route::resource('calendar_settings','UserCalendarSettingController');
+Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
+Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
+Route::post('api_setting_to_calendar/{id?}','UserCalendarSettingController@api_setting_to_calendar');
 
 Route::resource('calendar_members','UserCalendarMemberController');
+Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');
 
-Route::get('calendars/{id}/api_test','UserCalendarController@api_test');
-Route::get('calendars/{id}/{status}','UserCalendarController@status_update_page');
-Route::put('calendars/{id}/{status}','UserCalendarController@status_update');
+Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
+Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
 
 
 
@@ -65,12 +68,17 @@ Route::resource('calendars','UserCalendarController');
 
 Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::post('trials/{id}/to_calendar','TrialController@to_calendar_confirm');
-Route::get('trials/{id}/register','TrialController@register_mail');
-Route::post('trials/{id}/register','TrialController@register_mail_send');
-Route::get('trials/{id}/admission','TrialController@admission');
-Route::post('trials/{id}/admission','TrialController@admission_submit');
+Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting');
+Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting_update');
+Route::get('trials/{id}/admission','TrialController@admission_mail');
+Route::post('trials/{id}/admission','TrialController@admission_mail_send');
+Route::put('trials/{id}/admission','TrialController@admission_submit');
+Route::get('trials/{id}/commit','TrialController@admission');
+
+/*
 Route::get('trials/{id}/{status}','TrialController@status_update_page');
 Route::put('trials/{id}/{status}','TrialController@status_update');
+*/
 Route::resource('trials','TrialController');
 Route::get('entry','TrialController@trial');
 Route::post('entry','TrialController@trial_store');
@@ -88,6 +96,7 @@ Route::get('teachers/{id}/month_work/{target_moth?}','TeacherController@month_wo
 Route::post('teachers/{id}/month_work','TeacherController@month_work_confirm');
 Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
 Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
+Route::get('teachers/{id}/students','TeacherController@get_charge_students');
 
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
@@ -99,6 +108,8 @@ Route::get('managers/entry','ManagerController@entry');
 Route::post('managers/entry','ManagerController@entry_store');
 Route::get('managers/register','ManagerController@register');
 Route::post('managers/register','ManagerController@register_update');
+Route::get('managers/{id}/month_work/{target_moth?}','ManagerController@month_work');
+Route::post('managers/{id}/month_work','ManagerController@month_work_confirm');
 
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
@@ -120,6 +131,9 @@ Route::get('teachers/{id}/tag','TeacherController@tag_page');
 Route::post('teachers/{id}/tag','TeacherController@update');
 
 
+Route::get('students/{id}/subject','StudentController@get_subject');
+Route::get('teachers/{id}/subject','TeacherController@get_subject');
+
 Route::resource('parents','StudentParentController');
 Route::resource('students','StudentController');
 Route::resource('managers','ManagerController');
@@ -135,6 +149,32 @@ Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
+Route::get('managers/{id}/calendar','ManagerController@calendar');
+Route::get('teachers/{id}/ask','TeacherController@ask');
+Route::get('managers/{id}/ask','ManagerController@ask');
+Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
+Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
+
+
+Route::resource('student_groups','StudentGroupController');
+Route::get('api_student_groups/{teacher_id}','StudentGroupController@api_index');
+Route::get('teachers/{teacher_id}/student_groups','StudentGroupController@teacher_index');
+Route::get('teachers/{teacher_id}/student_groups/create','StudentGroupController@teacher_create');
+/*
+Route::get('teachers/{teacher_id}/calendar_settings','UserCalendarSettingController@teacher_index');
+Route::get('teachers/{teacher_id?}/calendar_settings/create','UserCalendarSettingController@teacher_create');
+Route::get('teachers/{teacher_id?}/calendar_settings/{id}','UserCalendarSettingController@teacher_show');
+Route::get('teachers/{teacher_id?}/calendar_settings/{id}/edit','UserCalendarSettingController@teacher_edit');
+Route::get('teachers/{teacher_id}/calendars','UserCalendarController@teacher_index');
+Route::get('teachers/{teacher_id?}/calendars/create','UserCalendarController@teacher_create');
+Route::get('teachers/{teacher_id?}/calendars/{id}','UserCalendarController@teacher_show');
+Route::get('teachers/{teacher_id?}/calendars/{id}/edit','UserCalendarController@teacher_edit');
+*/
+
+Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
+Route::put('asks/{id}/status_update/{status}','AskController@status_update');
+Route::resource('asks','AskController');
+
 
 Route::get('home', 'HomeController@index')->name('home');
 

@@ -95,19 +95,19 @@
 			dom.selectFormLoad(_currentForm, this, _defaultSelect, $(this).html(), formData);
 		});
 		$("select.select2", $("#"+form_id)).each(function(e){
+			var _placeholder = '選択してください';
+			if($(this).attr('placeholder')) _placeholder = $(this).attr('placeholder');
 			var _parent_id = $(this).attr("parent_id");
 			var _width = $(this).attr("width");
 			var _parent = $("body");
-			if(util.isEmpty(_parent_id)){
-				_parent_id = "body";
-			}
-			else {
-				_parent = $(this).parent();
+			if(!util.isEmpty(_parent_id)){
+				_parent = $("#"+_parent_id);
 			}
 			$(this).select2({
 				width: _width,
-				placeholder: '選択してください',
+				placeholder: _placeholder,
 			});
+
 		});
 		var colors = ['green', 'aero', 'red', 'blue', 'grey'];
 		$.each(colors, function(i,color){
@@ -453,11 +453,19 @@
 	//ダイアログ表示
 	function showPage(type, form_id, page_title, page_url, callback){
 		$("#"+form_id+" .page_title").html(page_title);
-    $("#"+form_id+" .page_contents").load(page_url, function(){
+    $("#"+form_id+" .page_contents").load(page_url, function(response, status, xhr){
+			if(status !== "success"){
+				service.alert("E_ERROR", {});
+				return;
+			}
 			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit
       $("#"+form_id+" .btn.btn-submit[accesskey]").on("click", function(){
+				var _confirm = $(this).attr("confirm");
+				if(!util.isEmpty(_confirm)){
+					if(!confirm(_confirm)) return false;
+				}
 				var accesskey = $(this).attr("accesskey");
         var form = form_id+" .page_contents #"+accesskey+" form";
         if(!front.validateFormValue(form)) return false;

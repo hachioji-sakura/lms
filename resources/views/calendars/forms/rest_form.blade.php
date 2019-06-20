@@ -8,12 +8,15 @@
   </div>
 </div>
 @endif
+{{--
+  休み理由は不要 5/17
 <div class="col-12" id="cancel_reason">
   <div class="form-group">
     <label for="rest_reason" class="w-100">
       お休みの理由をお知らせください
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-secondary ml-1">任意</span>
     </label>
-    <textarea type="text" name="rest_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" required="true"></textarea>
+    <textarea type="text" name="rest_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。"></textarea>
   </div>
 </div>
+--}}

@@ -25,7 +25,7 @@ class CommentController extends MilestoneController
     public function search(Request $request)
     {
       $items = $this->model();
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         //生徒の場合は自分自身を対象とする
         $items = $items->mydata($user->user_id);
@@ -111,7 +111,7 @@ class CommentController extends MilestoneController
       return $items;
     }
     public function create_form(Request $request){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       $form = [];
       $form['publiced_at'] = '9999-12-31';
       if($this->is_manager_or_teacher($user->role)){

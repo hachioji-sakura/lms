@@ -23,6 +23,27 @@ class AuthController extends UserController
      }
      return view('auth.login');
    }
+   public function credential(Request $request, $id=0)
+   {
+     if(!$request->has('password')) return $this->bad_request();
+
+     $user = null;
+     $email = "";
+     if($id>0) $user = User::where('id', $id)->first();
+     if(isset($user)) $email = $user->email;
+     else if($request->has('email')) $email = $request->get('email');
+
+     $form = $request->all();
+     if (Auth::attempt(['email' => $email, 'password' => $form['password']]))
+     {
+       $user = Auth::user();
+       $access_key = $this->create_token();
+       $res = $user->update(['access_key' => $access_key]);
+       return $this->api_response(200, $access_key, "", $user);
+     }
+
+     return $this->forbidden();
+   }
    /**
     * パスワード忘れた場合画面表示
     *

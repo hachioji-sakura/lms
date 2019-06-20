@@ -13,6 +13,8 @@ class GeneralAttributesSeeder extends Seeder
      */
     public function run()
     {
+      GeneralAttribute::truncate();
+
       $_add_items = [];
       foreach(config('charge_subjects') as $grade => $subject_group){
         $sort_no = 1;
@@ -140,10 +142,6 @@ class GeneralAttributesSeeder extends Seeder
       $controller = new Controller;
       $req = new Request;
       $url = config('app.url').'/import/attributes';
-      $res = $controller->call_api($req, $url, 'POST');
-      $url = config('app.url').'/import/users';
-      $res = $controller->call_api($req, $url, 'POST');
-      $url = config('app.url').'/import/concealment';
       $res = $controller->call_api($req, $url, 'POST');
     }
 }

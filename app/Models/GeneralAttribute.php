@@ -26,9 +26,17 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', $val);
   }
+  public function scopeFindKeyValue($query, $key, $val)
+  {
+      return $query->where('attribute_key', $key)->where('attribute_value', $val);
+  }
   public function scopeLesson($query, $val)
   {
       return $query->where('attribute_key', 'lesson')->findVal($val);
+  }
+  public function scopeWeek($query, $val)
+  {
+      return $query->where('attribute_key', 'lesson_week')->findVal($val);
   }
   public function scopeSubject($query, $val)
   {
@@ -45,5 +53,10 @@ class GeneralAttribute  extends Model
   public function scopeWork($query, $val)
   {
       return $query->where('attribute_key', 'work')->findVal($val);
+  }
+  public function parent(){
+    return GeneralAttribute::where('attribute_key', $this->parent_attribute_key)
+      ->where('attribute_value', $this->parent_attribute_value)
+      ->first();
   }
 }

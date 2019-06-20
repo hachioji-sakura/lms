@@ -7,9 +7,9 @@
 
 @section('contents')
 <section class="content">
-<form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work">
-@csrf
-<input type="hidden" name="target_month" value="{{$target_month}}" >
+  <form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work">
+  @csrf
+  <input type="hidden" name="target_month" value="{{$target_month}}" >
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -28,6 +28,9 @@
             <div class="col-6 text-center">
               <h3 class="card-title" id="charge_students">
                 {{$list_title}}
+                @if(date('Y-m')==$target_month)
+                <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm mx-2" scroll=true>今日</a>
+                @endif
               </h3>
             </div>
             <div class="col-3">
@@ -42,23 +45,17 @@
             </div>
           </div>
         </div>
-        <div class="card-body table-responsive p-0">
+        <div class="card-body p-0">
           @if(count($calendars) > 0)
           <?php
             $__date = "";
           ?>
           @if($is_checked==true)
-          <div class="row">
-            <div class="col-12">
               <h6 class="text-sm p-1 pl-2 mt-2 bg-secondary" >
                 <i class="fa fa-info-circle mr-1"></i>
                 この勤怠はすべて確認済みです
               </h6>
-            </div>
-          </div>
           @elseif($enable_confirm==false)
-          <div class="row">
-            <div class="col-12">
               <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
                 <i class="fa fa-exclamation-triangle mr-1"></i>
                 @if($user->user_id === $item->user_id)
@@ -67,60 +64,73 @@
                 勤務実績確認は、本人のみ可能です
                 @endif
               </h6>
-            </div>
-          </div>
           @endif
           <ul id="month_work_list" class="mailbox-attachments clearfix row">
             @foreach($calendars as $calendar)
-            @if($__date != $calendar["date"])
-            <li class="col-12 p-0" accesskey="" target="">
-              <div class="row">
-                <div class="col-12 pl-3">
-                  <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
-                    <i class="fa fa-calendar-alt mr-1"></i>
-                    {{date('m月d日', strtotime($calendar["date"]))}}
-                  </a>
-                </div>
-              </div>
-              <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
-            @endif
-                <div class="row pl-3 p-1">
-                  <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
-                  <div class="col-4">
-                    {{$calendar["timezone"]}}
-                    <br>
-                    {{$calendar["place"]}}
-                  </div>
-                  <div class="col-4">
-                    @foreach($calendar->members as $member)
-                      @if($member->user->details()->role==="student")
-                        <a href="/students/{{$member->user->details()->id}}">
-                          {{$member->user->details()->name}}
-                        </a>
-                      @endif
-                    @endforeach
-                  </div>
-                  <div class="col-4">
-                    @foreach($calendar['subject'] as $subject)
-                    <span class="text-xs mx-2">
-                      <small class="badge badge-primary mt-1 mr-1">
-                        {{$subject}}
-                      </small>
-                    </span>
-                    @endforeach
-                    <br>
-                    <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm float-left mr-1 w-100 mt-1">
-                      <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
+              @if($__date != $calendar["date"])
+              <li class="col-12 p-0" accesskey="" target="">
+                <div class="row">
+                  <div class="col-12 pl-3">
+                    <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
+                      <i class="fa fa-chevron-down mr-1"></i>
+                      {{date('m月d日', strtotime($calendar["date"]))}}
                     </a>
                   </div>
                 </div>
-            <?php
-              $__date = $calendar["date"];
-            ?>
-            @if($__date != $calendar["date"])
+                <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
+              @endif
+              <div class="row pl-3 p-1 border-bottom calendar_{{$calendar['status']}}">
+                <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
+                <div class="col-12 col-lg-3 col-md-3">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
+                    <span class="mr-2">
+                      <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
+                    </span>
+                    <span class="mr-2">
+                      <i class="fa fa-map-marker"></i>{{$calendar->place()}}
+                    </span>
+                    <span class="text-xs mr-2">
+                      <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
+                        {{$calendar["status_name"]}}
+                      </small>
+                    </span>
+                  </a>
+                </div>
+                <div class="col-12 col-lg-5 col-md-5">
+                  @foreach($calendar->members as $member)
+                    @if($member->user->details()->role==="student")
+                    {{--
+                      <a href="/students/{{$member->user->details()->id}}">
+                        <i class="fa fa-user-graduate"></i>
+                        {{$member->user->details()->name}}
+                      </a>
+                      --}}
+                      <span class="mr-2">
+                      <i class="fa fa-user-graduate"></i>
+                      {{$member->user->details()->name}}
+                      </span>
+                    @endif
+                  @endforeach
+                  @foreach($calendar['subject'] as $subject)
+                  <span class="text-xs mr-2">
+                    <small class="badge badge-primary mt-1 mr-1">
+                      {{$subject}}
+                    </small>
+                  </span>
+                  @endforeach
+                </div>
+                <div class="col-12 col-lg-4 col-md-4">
+                  @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+                  @endcomponent
+                </div>
               </div>
-            </li>
-            @endif
+              <?php
+                $__date = $calendar["date"];
+              ?>
+              @if($__date != $calendar["date"])
+                </div>
+              </li>
+              @endif
             @endforeach
           </ul>
           @else

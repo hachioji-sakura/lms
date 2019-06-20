@@ -11,7 +11,7 @@
     @foreach($attributes['lesson'] as $index => $name)
     <label class="mx-2">
       <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" required="true"
-      @if(isset($item) && $item->user->has_tag('lesson', $index)===true)
+      @if($_edit===true && isset($item) && $item->has_tag('lesson', $index)===true)
       checked
       @endif
       onChange="lesson_checkbox_change(this)">{{$name}}
@@ -35,39 +35,39 @@ function lesson_checkbox_change(obj){
     $(".subject_confirm").hide();
   }
   if(is_english){
+    $(".english_talk_form").show();
     $(".english_talk_form input").show();
-    $(".english_talk_form").show();
-    $(".english_talk_form").show();
+    $(".english_talk_form select").show();
     $(".english_talk_confirm").show();
   }
   else {
-    $(".english_talk_form input").hide();
     $(".english_talk_form").hide();
+    $(".english_talk_form input").hide();
     $(".english_talk_form select").hide();
     $(".english_talk_confirm").hide();
   }
   if(is_piano){
+    $(".piano_form").show();
     $(".piano_form input").show();
     $(".piano_form select").show();
-    $(".piano_form").show();
     $(".piano_confirm").show();
   }
   else {
+    $(".piano_form").hide();
     $(".piano_form input").hide();
     $(".piano_form select").hide();
-    $(".piano_form").hide();
     $(".piano_confirm").hide();
   }
   if(is_kids_lesson){
+    $(".kids_lesson_form").show();
     $(".kids_lesson_form input").show();
     $(".kids_lesson_form select").show();
-    $(".kids_lesson_form").show();
     $(".kids_lesson_confirm").show();
   }
   else {
+    $(".kids_lesson_form").hide();
     $(".kids_lesson_form input").hide();
     $(".kids_lesson_form select").hide();
-    $(".kids_lesson_form").hide();
     $(".kids_lesson_confirm").hide();
   }
   //grade_select_change();

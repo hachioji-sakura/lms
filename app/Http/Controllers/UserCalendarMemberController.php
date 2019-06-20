@@ -15,7 +15,7 @@ class UserCalendarMemberController extends UserCalendarController
     return UserCalendarMember::query();
   }
   public function get_param(Request $request, $id=null){
-    $user = $this->login_details();
+    $user = $this->login_details($request);
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
@@ -83,6 +83,29 @@ class UserCalendarMemberController extends UserCalendarController
     return view('calendars.page', [
       'action' => $request->get('action')
     ])->with($param);
+  }
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function rest_type_update(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+
+    if(!$request->has('rest_type')) return $this->bad_request();
+    $item = $this->model()->where('id',$id)->first();
+    if(!isset($item)) return $this->not_found();
+
+    $rest_type = $request->get('rest_type');
+    $res = $this->transaction(function() use ($item,$rest_type){
+      $item->update_rest_type($rest_type);
+      return $item;
+    }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
+    $res["message"] = $rest_type;
+    return $res;
   }
 
 }

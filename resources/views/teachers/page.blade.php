@@ -47,6 +47,103 @@
 		</div>
 	</div>
 </section>
+<section class="content-header">
+	<div class="container-fluid">
+		<div class="row">
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/calendar" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-calendar"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">カレンダー</b>
+            <span class="text-sm">授業予定をカレンダー表示</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/schedule" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-clock"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">授業予定一覧</b>
+            <span class="text-sm">授業予定をリスト表示</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
+        <div class="info-box">
+          <span class="info-box-icon bg-primary">
+            <i class="fa fa-plus"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">授業追加</b>
+            <span class="text-sm">授業の追加・振替</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/month_work" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-success">
+            <i class="fa fa-tasks"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">勤務実績</b>
+            <span class="text-sm">月末の実績登録</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="/student_groups?teacher_id={{$item->id}}" >
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-users"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">生徒グループ</b>
+            <span class="text-sm">グループ、ファミリーの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="/teachers/{{$item->id}}/calendar_settings" >
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-calendar-alt"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">通常授業一覧</b>
+            <span class="text-sm">定期的な授業予定</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary">
+            <i class="fa fa-user-cog"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">講師設定</b>
+            <span class="text-sm">担当科目、授業可能曜日の設定</span>
+          </div>
+        </div>
+        </a>
+      </div>
+    </div>
+	</div>
+</section>
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">
@@ -79,7 +176,7 @@
                 </div>
                 <div class="col-6 text-sm">
                   @if(!empty($student->current_calendar))
-                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar->date}}
+                      <i class="fa fa-calendar mr-1"></i>{{$student->current_calendar["dateweek"]}}
                       <br>
                       <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->timezone}}
                       <br>
@@ -97,15 +194,15 @@
                 <div class="col-12 text-sm">
                   @if(isset($student->current_calendar))
                     @if($user->role==="teacher" && $student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
                         {{$student->current_calendar->status_name}}
                       </a>
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
                       {{-- 予定確認 --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
-                        <i class="fa fa-envelope mr-1"></i>
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                        <i class="fa fa-envelope mr-1"></i>/
                         {{$student->current_calendar->status_name}}
                       </a>
                     @elseif($student->current_calendar->status==="presence")
@@ -116,7 +213,7 @@
                       </a>
                     @elseif($student->current_calendar->status==="new")
                       {{-- 予定下書き --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-calendar-check mr-1"></i>
                         {{$student->current_calendar->status_name}}
                       </a>

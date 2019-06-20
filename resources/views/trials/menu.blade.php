@@ -1,4 +1,5 @@
 @section('page_sidemenu')
+
 @foreach($item->trial_students as $trial_student)
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="image mt-1">
@@ -27,56 +28,19 @@
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="info text-light">
     対応状況：
-    <small class="badge badge-{{$item["status_style"]}} mx-2">
+    <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
       {{$item["status_name"]}}
     </small>
   </div>
 </div>
 --}}
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  @if(count($item["calendars"])>0)
-  @foreach($item["calendars"] as $calendar)
-  <li class="nav-item has-treeview menu-open text-light">
-    <a href="#" class="nav-link">
-    <p>
-      <i class="nav-icon fa fa-clock"></i>
-      体験予定
-      <small class="badge badge-{{config('status_style')[$calendar->status]}} mx-2">
-        {{$calendar["status_name"]}}
-      </small>
-      <i class="right fa fa-angle-left"></i>
-    </p>
-    </a>
-    <ul class="nav nav-treeview p-2">
-        <li class="nav-item">
-          講師：
-          <div class="nav-link w-100">
-            <span class="text-xs mx-2">
-              <small class="badge badge-secondary ">
-                <i class="fa fa-user-tie mr-1"></i>
-                {{$calendar['teacher_name']}}
-              </small>
-            </span>
-          </div>
-          予定日時：
-          <div class="nav-link w-100">
-            <span class="text-xs mx-2">
-              <small class="badge badge-secondary ">
-                {{$calendar['datetime']}}
-              </small>
-            </span>
-          </div>
-        </li>
-    </ul>
-  </li>
-  @endforeach
-  @endif
-  <li class="nav-item has-treeview">
+  <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-envelope-open-text"></i>
       <p>
         対応状況
-        <small class="badge badge-{{$item["status_style"]}} mx-2">
+        <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
           {{$item["status_name"]}}
         </small>
         <i class="right fa fa-angle-left"></i>
@@ -94,6 +58,13 @@
         第２希望：<span class="text-xs mx-2">
           <small class="badge badge-secondary ">
             {{$item["date2"]}}
+          </small>
+        </span>
+      </li>
+      <li class="nav-item text-light ml-2 mb-2">
+        第３希望：<span class="text-xs mx-2">
+          <small class="badge badge-secondary ">
+            {{$item["date3"]}}
           </small>
         </span>
       </li>
@@ -133,6 +104,43 @@
       </li>
     </ul>
   </li>
+  @if(count($item["calendars"])>0)
+    @foreach($item["calendars"] as $calendar)
+    <li class="nav-item has-treeview menu-open text-light">
+      <a href="#" class="nav-link">
+      <p>
+        <i class="nav-icon fa fa-clock"></i>
+        体験予定
+        <small class="badge badge-{{config('status_style')[$calendar->status]}} mx-2">
+          {{$calendar["status_name"]}}
+        </small>
+        <i class="right fa fa-angle-left"></i>
+      </p>
+      </a>
+      <ul class="nav nav-treeview p-2">
+          <li class="nav-item">
+            講師：
+            <div class="nav-link w-100">
+              <span class="text-xs mx-2">
+                <small class="badge badge-secondary ">
+                  <i class="fa fa-user-tie mr-1"></i>
+                  {{$calendar['teacher_name']}}
+                </small>
+              </span>
+            </div>
+            予定日時：
+            <div class="nav-link w-100">
+              <span class="text-xs mx-2">
+                <small class="badge badge-secondary ">
+                  {{$calendar['datetime']}}
+                </small>
+              </span>
+            </div>
+          </li>
+      </ul>
+    </li>
+    @endforeach
+  @endif
   <li class="nav-item has-treeview">
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-envelope-open-text"></i>

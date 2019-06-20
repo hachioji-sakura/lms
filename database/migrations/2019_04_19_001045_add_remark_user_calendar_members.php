@@ -14,7 +14,7 @@ class AddRemarkUserCalendarMembers extends Migration
     public function up()
     {
         Schema::table('user_calendar_members', function (Blueprint $table) {
-          $table->string('remark')->comment('備考')->after('schedule_id');
+          $table->string('remark')->nullable(true)->default('')->comment('備考')->after('schedule_id');
         });
     }
 

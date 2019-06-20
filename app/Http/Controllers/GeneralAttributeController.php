@@ -43,7 +43,7 @@ class GeneralAttributeController extends UserController
       return $_table['items'];
     }
     private function get_param(Request $request, $attribute_key='keys'){
-      $user = $this->login_details();
+      $user = $this->login_details($request);
       if(!isset($user)) {
         abort(403);
       }
@@ -157,7 +157,7 @@ class GeneralAttributeController extends UserController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $form["create_user_id"] = $user->user_id;
         unset($form['_token']);
         unset($form['key']);
@@ -288,7 +288,7 @@ class GeneralAttributeController extends UserController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $form = $request->all();
         $item = GeneralAttribute::findId($id)->update([
           'attribute_name' => $form['attribute_name'],
@@ -327,7 +327,7 @@ class GeneralAttributeController extends UserController
       $form = $request->all();
       try {
         DB::beginTransaction();
-        $user = $this->login_details();
+        $user = $this->login_details($request);
         $items = GeneralAttribute::findId($id)->delete();
         DB::commit();
         return $this->api_response(200, "", "", $items);

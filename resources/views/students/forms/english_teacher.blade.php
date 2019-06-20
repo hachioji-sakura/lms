@@ -18,7 +18,7 @@
     @else
       <label class="mx-2">
         <input type="radio" id="english_teacher_{{$index}}" value="{{ $index }}" name="english_teacher" class="icheck flat-green" required="true"
-        @if(isset($item) && $item->user->has_tag('english_teacher', $index)===true)
+        @if($_edit===true && isset($item) && $item->has_tag('english_teacher', $index)===true)
         checked
         @endif
         >{{$name}}

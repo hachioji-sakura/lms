@@ -1,20 +1,14 @@
-@if(count($items) > 1)
+@if(isset($teachers) && count($teachers)==1)
 <div class="col-12">
   <div class="form-group">
-    <label for="title" class="w-100">
+    <label for="start_date" class="w-100">
       講師
-      <span class="right badge badge-danger ml-1">必須</span>
     </label>
-
-    <select name="teacher_id" class="form-control" placeholder="担当講師" required="true">
-      @foreach($items as $teacher)
-         <option value="{{ $teacher->id }}" @if(isset($_edit) && $item['teacher_id'] == $teacher->id) selected @endif>{{$teacher->name()}}</option>
-      @endforeach
-    </select>
+    <a href="/teachers/{{$teachers[0]->id}}" target="_blank">
+    <i class="fa fa-user-tie mr-1"></i>
+    {{$teachers[0]->name()}}
+    </a>
+    <input type="hidden" name="teacher_id" value="{{$teachers[0]->id}}" alt="{{$teachers[0]->name()}}" />
   </div>
 </div>
-@else
-  @isset($item['teacher_id'])
-  <input type="hidden" name="teacher_id" value="{{$item['teacher_id']}}" />
-  @endisset
 @endif

@@ -38,6 +38,6 @@
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' =>$item, 'prefix'=>'work', 'attributes' => $attributes, 'title' => '勤務可能な曜日・時間帯']) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item' =>$item->user, 'prefix'=>'work', 'attributes' => $attributes, 'title' => '勤務可能な曜日・時間帯']) @endcomponent
 </div>
 @endsection

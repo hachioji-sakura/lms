@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 use App\User;
 use App\Models\Manager;
@@ -23,6 +25,12 @@ class ManagersTableSeeder extends Seeder
         'kana_first' => 'ユーザー',
         'image_id' => 4
       ]);
+      $controller = new Controller;
+      $req = new Request;
+      $url = config('app.url').'/import/users';
+      $res = $controller->call_api($req, $url, 'POST');
+      $url = config('app.url').'/import/concealment';
+      $res = $controller->call_api($req, $url, 'POST');
     }
     private function create_user($item){
       $_user = User::where('email', $item['email'])->first();

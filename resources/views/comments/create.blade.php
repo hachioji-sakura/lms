@@ -1,5 +1,5 @@
 <div id="{{$domain}}_create">
-  @if(isset($_edit))
+  @if(isset($_edit) && $_edit==true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
   @else
@@ -30,7 +30,11 @@
           </label>
           <select name="type" class="form-control" placeholder="種別" required="true">
             @foreach($attributes['comment_type'] as $index => $name)
-               <option value="{{ $index }}" @if(isset($_edit) && $item['type'] == $index) selected @endif>{{$name}}</option>
+               <option value="{{ $index }}"
+               @if(isset($_edit)  && $_edit==true && $item['type'] == $index)
+               selected
+               @endif
+               >{{$name}}</option>
             @endforeach
           </select>
         </div>
@@ -44,7 +48,7 @@
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
           <input type="text" id="title" name="title" class="form-control" required="true" maxlength=50
-          @if(isset($_edit))
+          @if(isset($_edit) && $_edit==true)
            value="{{$item['title']}}" placeholder="(変更前) {{$item['title']}}">
           @else
            placeholder="50文字まで">
@@ -60,7 +64,7 @@
             <span class="right badge badge-danger ml-1">必須</span>
           </label>
           <textarea type="text" id="body" name="body" class="form-control" required="true"  maxlength=500
-          @if(isset($_edit))
+          @if(isset($_edit) && $_edit==true)
             placeholder="(変更前) {{$item['body']}}" >{{$item['body']}}</textarea>
           @else
             placeholder="500文字まで" ></textarea>
@@ -71,7 +75,7 @@
     <div class="row">
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
-            @if(isset($_edit))
+            @if(isset($_edit) && $_edit==true)
               更新する
             @else
               登録する

@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Mail\CommonNotification;
+use App\User;
 use Illuminate\Http\Request;
 use Mail;
 
@@ -46,19 +47,41 @@ class Controller extends BaseController
     protected  function forbidden($message="forbidden", $description=""){
       return $this->api_response(403, $message, $description);
     }
-    protected function send_mail($to, $title, $param, $type, $template)
+    public function send_mail($to, $title, $param, $type, $template)
     {
       $title = '【'.config('app.name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
-      if(config('app.debug')){
+      \Log::info("メール送信:\n".$to."\n".$title);
+
+      if(config('app.env')==="develop"){
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
       if(config('app.env')==="local"){
         return true;
       }
-      $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
-      return $res;
+      $user_check = User::where('email', $to)->first();
+      if(!isset($user_check)){
+        if(strpos($to,'yasui.hideo') === false){
+          $this->send_slack("存在しないユーザー\n".$to, "info", "send_mail");
+          return true;
+        }
+      }
+      else {
+        $role = $user_check->details()->role;
+        if($role=="student" || $role=="parent"){
+          $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
+          //return true;
+        }
+      }
+      try {
+        $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
+        return $res;
+      }
+      catch(\Exception $e){
+        $this->send_slack('メール送信エラー:'.$e->getMessage(), 'error', 'Controller.send_mail');
+        return true;
+      }
     }
     public function send_slack($message, $msg_type, $username=null, $channel=null) {
       if(empty($message)) return false;

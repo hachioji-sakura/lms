@@ -12,7 +12,7 @@
 	var _requestCache = {};
 	var _cache = {};
 	_cache["userSetting"] = {
-		"loadingStart" : 300,
+		"loadingStart" : 1,
 		"requestCacheTime" : 300000,
 		"requestCacheSize" : 30
 	};
@@ -49,6 +49,7 @@
 		"C_POST_IMP" : {"title" : "ファイル取込", "body": "ファイルインポートを開始しますが、よろしいですか？"},
 		"C_POST_EXP" : {"title" : "ファイル出力", "body": "出力ファイルをダウンロードしますが、よろしいですか？"},
 		"C_POST_UPL" : {"title" : "ファイルアップロード", "body": "ファイルアップロードしますが、よろしいですか？"},
+		"E_ERROR" : {"title" : "システムエラー", "body" : "管理者にお問い合わせください" },
 		"REQ" :{"title" : "入力エラー", "body": "入力してください"},
 		"FLS" :{"title" : "入力エラー", "body": "{%0}MBを超えるファイルは添付できません"},
 		"MINL" :{"title" : "入力エラー", "body": "{%0}文字以上で入力してください"},
@@ -104,6 +105,7 @@
 			clearTimeout(_loadTimer);
 		}
 		_loadTimer = setTimeout(loadOpen, 1);
+		return;
 	}
 	/**
 	* ローディング終了
@@ -117,7 +119,8 @@
 			clearTimeout(_loadTimer);
 			_loadTimer = null;
 		}
-		_loadTimer = setTimeout(loadClose, _cache["userSetting"]["loadingStart"]);
+		loadClose();
+		return;
 	}
 	/**
 	* ローディングダイアログを閉じる
@@ -130,8 +133,9 @@
 		if(util.isEmpty(_loading)) return;
 		_loading.dialog("close");
 		*/
+		console.log("loadClose");
 		$("#loading").modal('hide');
-
+		return;
 	}
 	/**
 	* ローディングダイアログを表示する
@@ -141,28 +145,7 @@
     */
 	function loadOpen (){
 		$("#loading").modal('show');
-
-		/*
-		if(util.isEmpty(_loading)) {
-			if($("#loading")[0] && _loading==null){
-				_loading = $("#loading").dialog({
-					title : "Now Loading",
-					draggable : true,
-					resizable : false,
-					stack : true,
-					width: "300px",
-					height: "auto",
-					autoOpen : false,
-					open:function(event, ui){
-					},
-					modal : true,
-					zIndex : 2000
-				});
-				$(".ui-dialog-titlebar-close").hide();
-			}
-		}
-		_loading.dialog("open");
-		*/
+		return;
 	}
 
 	/**
@@ -389,7 +372,7 @@
 		if(!util.isEmpty(param) && typeof param == "string") p = (param+"|").split("|");
 		var title = "";
 		var body = "";
-		if(util.isHankaku(msgCode)){
+		if(util.isHankaku(msgCode) && _message[msgCode]){
 			title = _message[msgCode]["title"];
 			body = _message[msgCode]["body"];
 		}
@@ -426,8 +409,6 @@
 	function getAjax(async,url, request, success, error, cacheReset){
 		var _request = requestDataParse(request);
 		var auth = util.getLocalData("auth");
-		var token = "";
-		if(auth!=null && auth["token"]) token = auth["token"];
 		var key = url+JSON.stringify(_request);
 		var now = +new Date();
 
@@ -447,7 +428,7 @@
 		var ret = $.ajax({
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest',
-				'api_token' : token
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			},
 			type: "GET",
 			async: async,
@@ -487,18 +468,17 @@
 	* @param error {Function}  エラー時コールバック関数
     * @return {Object} defferd
     */
-	function postAjax(url, request, success, error){
+	function postAjax(url, request, success, error, _type){
 		var auth = util.getLocalData("auth");
-		var token = "";
-		if(auth!=null && auth["token"]) token = auth["token"];
 		console.log("postAjax exec:"+url);
 		loadStart();
+		if(util.isEmpty(_type)) _type="POST";
 		var ret = $.ajax({
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest',
-				'api_token' : token
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			},
-			type: "POST",
+			type: _type,
 			cache: false,
 			dataType: "JSON",
 			url: (url),

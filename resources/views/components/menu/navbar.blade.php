@@ -35,7 +35,7 @@
         <a href="/teachers/{{$user->id}}/schedule?list=confirm" class="dropdown-item">予定調整中</a>
         <a href="/teachers/{{$user->id}}/schedule?list=cancel" class="dropdown-item">休み予定</a>
         <a href="/teachers/{{$user->id}}/schedule?list=history" class="dropdown-item">授業履歴</a>
-        <a class="dropdown-item" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?origin={{$domain}}&teacher_id={{$user->id}}" page_title="授業追加">授業追加</a>
+        <a class="dropdown-item" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?teacher_id={{$user->id}}" page_title="授業追加">授業追加</a>
       </div>
     </li>
   @elseif($user->role==="manager")
