@@ -16,14 +16,14 @@ class CreateCommonStudentParentsTable extends Migration
         Schema::connection('mysql_common')->create('student_parents', function (Blueprint $table) {
           $table->increments('id');
           $table->integer('user_id')->index('index_user_id')->comment('ユーザーID')->unique();
-          $table->string('name_first')->nullable(false);
-          $table->string('name_last')->nullable(false);
-          $table->string('kana_first')->nullable(false);
-          $table->string('kana_last')->nullable(false);
-          $table->date('birth_day')->nullable(true)->default(null);
-          $table->string('phone_no')->nullable(true);
-          $table->string('address')->nullable(true);
-          $table->integer('create_user_id');
+          $table->string('name_first')->nullable(false)->comment('姓');
+          $table->string('name_last')->nullable(false)->comment('名');
+          $table->string('kana_first')->nullable(false)->comment('姓カナ');
+          $table->string('kana_last')->nullable(false)->comment('名カナ');
+          $table->date('birth_day')->nullable(true)->default(null)->comment('生年月日');
+          $table->string('phone_no')->nullable(true)->comment('生年月日');
+          $table->string('address')->nullable(true)->comment('住所');
+          $table->integer('create_user_id')->comment('作成者');
           $table->timestamps();
           });
       }
