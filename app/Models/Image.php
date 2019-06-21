@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Image extends Model
 {
-  protected $table = 'images';
+  protected $table = 'lms.images';
   protected $guarded = array('id');
 
   public static $rules = array(

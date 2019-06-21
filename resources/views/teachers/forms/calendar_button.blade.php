@@ -2,7 +2,7 @@
 {{--
   @if($calendar["status"]==="fix")
 --}}
-@if($calendar["status"]=="fix" && $calendar["is_passed"]==true)
+@if($calendar["status"]=="fix")
   {{-- 授業当日出欠 --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-success btn-sm">
     <i class="fa fa-user-check mr-1"></i>
@@ -12,17 +12,16 @@
     出欠確認
     @endif
   </a>
-  {{--TODO 休講は出欠と排反にする
-@elseif($calendar["status"]=="fix" && $calendar["is_passed"]==false)
-    --}}
-  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休講依頼" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/lecture_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-secondary btn-sm">
-    <i class="fa fa-ban mr-1"></i>
-    @if($calendar->is_management()==true)
-    休暇
-    @else
-    休講依頼
+    @if($calendar["is_passed"]==false)
+      <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休講依頼" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/lecture_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-secondary btn-sm">
+        <i class="fa fa-ban mr-1"></i>
+        @if($calendar->is_management()==true)
+        休暇
+        @else
+        休講依頼
+        @endif
+      </a>
     @endif
-  </a>
   @elseif($calendar["status"]==="new")
   {{-- 講師予定確認済み --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/confirm?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm">

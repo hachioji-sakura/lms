@@ -53,7 +53,20 @@ return [
             'strict' => true,
             'engine' => null,
         ],
-
+        'mysql_common' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE_COMMON', 'common'),
+            'username' => env('DB_USERNAME', 'dbadmin'),
+            'password' => env('DB_PASSWORD', 'admindb'),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),

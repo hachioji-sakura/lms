@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserAnswer extends Model
 {
-  protected $table = 'user_answers';
+  protected $table = 'lms.user_answers';
   protected $guarded = array('id');
   public static $rules = array(
       'question_id' => 'required',

@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class TrialTag extends UserTag
 {
-  protected $table = 'trial_tags';
+  protected $connection = 'mysql';
+  protected $table = 'lms.trial_tags';
   protected $guarded = array('id');
   public static $rules = array(
       'trial_id' => 'required',

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChargeStudent extends Model
 {
-  protected $table = 'charge_students';
+  protected $table = 'lms.charge_students';
   protected $guarded = array('id');
 
   public static $rules = array(
@@ -31,7 +31,7 @@ class ChargeStudent extends Model
       $where_raw .= 'OR kana_last like '.$_like;
       $where_raw .= 'OR kana_first like '.$_like;
     }
-    $where_raw = $this->table.'.student_id in (select id from students where '.trim($where_raw, 'OR ').')';
+    $where_raw = $this->table.'.student_id in (select id from common.students where '.trim($where_raw, 'OR ').')';
     return $query->whereRaw($where_raw,[]);
   }
   public function scopeFindTeacher($query, $val)

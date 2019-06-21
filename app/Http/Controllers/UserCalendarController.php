@@ -616,6 +616,38 @@ class UserCalendarController extends MilestoneController
       }
       return view($this->domain.'.'.$status, [])->with($param);
     }
+    public function teacher_change_page(Request $request, $ask_id)
+    {
+      $ask = Ask::where('id', $ask_id)->first();
+      if(!isset($ask)){
+        abort(404);
+      }
+      $id = 0;
+      if($ask->target_model_id > 0 && $ask->target_model=='user_calendar_members'){
+        $m = UserCalendarMember::where('id', $ask->target_model_id)->first();
+        if(!isset($m)) abort(404);
+        $id = $m->calendar->id;
+      }
+      if($id < 1) abort(404);
+      $param = $this->get_param($request, $id);
+      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+
+      $_teachers = Teacher::findStatuses('0')->get();
+      $teachers = [];
+      $lesson = $param['item']->get_tag('lesson')->tag_value;
+      foreach($_teachers as $teacher){
+        if($teacher->user_id == $param['item']->user_id) continue;
+        if(!$teacher->user->has_tag('lesson', $lesson)) continue;
+        $teachers[] = $teacher;
+      }
+      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['action'] = '';
+      $param['_edit'] = false;
+      $param['teachers'] = $teachers;
+      $param['ask'] = $ask;
+      return view($this->domain.'.teacher_change', [])->with($param);
+    }
+
     /**
      * ステータス更新
      *

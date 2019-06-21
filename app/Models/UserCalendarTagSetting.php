@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserCalendarTagSetting extends UserTag
 {
-  protected $table = 'user_calendar_tag_settings';
+  protected $connection = 'mysql';
+  protected $table = 'lms.user_calendar_tag_settings';
   protected $guarded = array('id');
   public static $rules = array(
       'user_calendar_setting_id' => 'required',

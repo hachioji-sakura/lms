@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TextbookSale extends Model
 {
-  protected $table = 'textbook_sales';
+  protected $table = 'lms.textbook_sales';
   protected $guarded = array('id');
   public static $rules = array(
       'textbook_id' => 'required',

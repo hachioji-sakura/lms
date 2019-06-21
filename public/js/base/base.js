@@ -462,13 +462,13 @@
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit
       $("#"+form_id+" .btn.btn-submit[accesskey]").on("click", function(){
+				var accesskey = $(this).attr("accesskey");
+        var form = form_id+" .page_contents #"+accesskey+" form";
+        if(!front.validateFormValue(form)) return false;
 				var _confirm = $(this).attr("confirm");
 				if(!util.isEmpty(_confirm)){
 					if(!confirm(_confirm)) return false;
 				}
-				var accesskey = $(this).attr("accesskey");
-        var form = form_id+" .page_contents #"+accesskey+" form";
-        if(!front.validateFormValue(form)) return false;
 				util.clearLocalData();
         $("#"+form).submit();
       });

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StudentGroupMember extends Model
 {
-  protected $table = 'student_group_members';
+  protected $table = 'common.student_group_members';
   protected $guarded = array('id');
   public static $rules = array(
     'student_group_id' => 'required',

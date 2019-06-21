@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Publisher extends Model
 {
-  protected $table = 'publishers';
+  protected $table = 'lms.publishers';
   protected $guarded = array('id');
   public static $rules = array(
       'name' => 'required',

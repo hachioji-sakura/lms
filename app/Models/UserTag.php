@@ -7,7 +7,8 @@ use App\Models\GeneralAttribute;
 
 class UserTag extends Model
 {
-  protected $table = 'user_tags';
+  protected $connection = 'mysql_common';
+  protected $table = 'common.user_tags';
   protected $guarded = array('id');
   public static $rules = array(
       'user_id' => 'required',

@@ -15,7 +15,7 @@ use App\User;
 class UserCalendar extends Model
 {
   protected $pagenation_line = 20;
-  protected $table = 'user_calendars';
+  protected $table = 'lms.user_calendars';
   protected $guarded = array('id');
   public static $rules = array(
       'user_id' => 'required',
@@ -90,9 +90,9 @@ EOT;
     $search_words = explode(' ', $word);
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id where user_calendar_members um
-        left join students s on s.user_id = um.user_id
-        left join teachers t on t.user_id = um.user_id
-        left join managers m on m.user_id = um.user_id
+        left join common.students s on s.user_id = um.user_id
+        left join common.teachers t on t.user_id = um.user_id
+        left join common.managers m on m.user_id = um.user_id
         where s.name_last like '%%'
 EOT;
     $query = $query->where(function($query)use($search_words, $where_raw){
@@ -152,7 +152,7 @@ EOT;
       and start_time < current_timestamp
       and user_calendars.id in (
         select um.calendar_id from user_calendar_members um
-          inner join students s on s.user_id = um.user_id
+          inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
           and um.rest_type = 'a2'

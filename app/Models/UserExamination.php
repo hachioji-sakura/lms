@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserExamination extends Model
 {
-  protected $table = 'user_examinations';
+  protected $table = 'lms.user_examinations';
   protected $guarded = array('id');
   public static $rules = array(
       'chapter_id' => 'required',
