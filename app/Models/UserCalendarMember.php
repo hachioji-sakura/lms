@@ -388,7 +388,7 @@ class UserCalendarMember extends Model
       //授業予定に戻す
       $this->update(['status' => 'fix']);
       if($this->calendar->status=='rest'){
-        $this->calendar->status='fix';
+        $this->calendar->update(['status' =>'fix']);
       }
       $this->_office_system_api('PUT', '', true);
     }

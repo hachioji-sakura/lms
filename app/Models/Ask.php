@@ -98,7 +98,7 @@ EOT;
     }
     //重複チェック
     $ask = Ask::where('type', $type)
-      ->where('status', '!=', 'cancel')
+      ->where('status', 'new')
       ->where('target_model', $form['target_model'])
       ->where('target_model_id', $form['target_model_id'])
       ->where('target_user_id', $form['target_user_id'])->get();
