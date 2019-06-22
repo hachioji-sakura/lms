@@ -41,7 +41,7 @@ class StudentGroupController  extends MilestoneController
         'label' => '生徒',
         'size' => 6,
       ],
-      'reamrk' => [
+      'remark' => [
         'label' => '説明',
       ],
     ];
