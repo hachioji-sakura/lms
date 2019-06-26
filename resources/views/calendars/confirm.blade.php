@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>''])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
   @slot('page_message')
     @if(isset($user) && $user->role==="teacher")
     以下の授業予定を確定し、生徒に連絡しますか？

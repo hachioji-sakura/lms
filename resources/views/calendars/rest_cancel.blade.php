@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
     @if($user->role==="manager" || $user->role==="teacher")
     <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">

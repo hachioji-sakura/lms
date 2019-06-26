@@ -1,4 +1,4 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
+@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
   この授業予定の確認連絡をしますか？
   @endslot

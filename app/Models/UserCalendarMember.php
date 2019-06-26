@@ -224,40 +224,10 @@ class UserCalendarMember extends Model
     if($this->calendar->status==6 || $this->calendar->status==7 || $this->calendar->status==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
-        case "new":
-          //生徒確定ではないので、空にする
-          //$postdata['temporary'] = '1';
-          break;
-        case "confirm":
-          //$postdata['temporary'] = '11';
-          break;
         case "fix":
-          //生徒確定(休み取り消し時考慮）
-          //$postdata['cancel'] = '';
-          //$postdata['confirm'] = '';
-          $postdata['updateuser'] = $student_no;
-          break;
         case "rest_cancel":
-          $postdata['updateuser'] = $student_no;
-          break;
         case "cancel":
-          //3.12確認：キャンセル：cにする（論理削除にすると表示できなくなるため）
-          //$postdata['cancel'] = 'c';
-          $postdata['updateuser'] = $student_no;
-          break;
         case "rest":
-          //3.12確認：事前連絡あり休み＝aにする、よしなに休み判定をするとのこと
-          //$postdata['cancel'] = 'a';
-          $postdata['updateuser'] = $student_no;
-          break;
-        case "absence":
-          //3.12確認：欠席＝a2にする
-          //$postdata['confirm'] = 'a2';
-          break;
-        case "presence":
-          //$postdata['confirm'] = 'f';
-          break;
-        default:
           $postdata['updateuser'] = $student_no;
           break;
       }

@@ -51,6 +51,7 @@
                  ({{$member->remark()}})
                 @endif
               </a>
+              {{--
               @if(isset($user) && ($user->role=="teacher" || $user->role=="manager"))
                 @if($member->rest_type=='a2')
                 <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2">
@@ -64,6 +65,7 @@
                 </a>
                 @endif
               @endif
+              --}}
               <br>
             @endforeach
           @elseif(isset($item[$key]) && gettype($item[$key])=='array')
