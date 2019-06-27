@@ -185,6 +185,16 @@ class UserCalendarMember extends Model
         $altsched_id = $exchanged_calendar_member->schedule_id;
       }
     }
+    $repetition_id = 0;
+    if($this->calendar->user_calendar_setting_id > 0){
+      //通常授業設定由来の場合
+      foreach($this->calendar->setting->members as $_m){
+        if($_m->user_id == $this->user_id){
+          $repetition_id = $_m->setting_id_org;
+        }
+      }
+    }
+
     $postdata =[];
     switch($method){
       case "PUT":
@@ -192,6 +202,7 @@ class UserCalendarMember extends Model
         $postdata = [
           "user_id" => $__user_id,
           "student_no" => $student_no,
+          "repetition_id" => $repetition_id,
           "teacher_id" => $teacher_no,
           "trial_id" => $this->calendar->trial_id,
           "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),

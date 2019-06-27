@@ -126,6 +126,13 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('trial_to_register')){
+      var from_time_slot = $('input[name="from_time_slot"]').val();
+      var to_time_slot = $('input[name="to_time_slot"]').val();
+      var lesson_week = $('input[name="lesson_week"]').val();
+      if(util.isEmpty(from_time_slot) || util.isEmpty(to_time_slot) || util.isEmpty(lesson_week)){
+        front.showValidateError('button.btn.btn-submit', '予定が選択されていません');
+        return;
+      }
       $("form").submit();
     }
   });

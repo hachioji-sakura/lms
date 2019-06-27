@@ -29,9 +29,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
 
   public function office_system_api($method){
-    if($this->schedule_id == 0 && $method=="PUT") return null;;
-    if($this->schedule_id == 0 && $method=="DELETE") return null;;
-    if($this->schedule_id > 0 && $method=="POST") return null;;
+    if($this->setting_id_org == 0 && $method=="PUT") return null;;
+    if($this->setting_id_org == 0 && $method=="DELETE") return null;;
+    if($this->setting_id_org > 0 && $method=="POST") return null;;
 
     $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
 
@@ -167,7 +167,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($res["status"] != 0){
       @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
     }
-    if($method==="POST" && $this->schedule_id==0){
+    if($method==="POST" && $this->setting_id_org==0){
       //事務システム側のIDを更新
       if(isset($res['id'])){
         $this->update(['setting_id_org'=>$res["id"]]);
