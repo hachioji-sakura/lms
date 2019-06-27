@@ -3,11 +3,16 @@
     曜日
     <span class="right badge badge-danger ml-1">必須</span>
   </label>
+  <?php $is_first=true; ?>
   @foreach($attributes['lesson_week'] as $week_day => $week_name)
     @if($teacher->match_schedule['count'][$week_day] > 0)
     <label class="mx-2">
       <input type="radio" name="select_lesson_week" value="{{$week_day}}" class="icheck flat-green" required="true"
       onChange="select_lesson_week_change()"
+      @if($is_first==true)
+        checked
+        <?php $is_first=false; ?>
+      @endif
       >{{$week_name}}曜日
     </label>
     @endif
@@ -52,7 +57,7 @@
               <td>
                 <span class="text-xs mx-2">
                   <small class="badge badge-success mt-1 mr-1">
-                    {{$setting->place()}}
+                    {{$setting["place_floor_name"]}}
                   </small>
                 </span>
                 @foreach($setting->subject() as $index => $name)

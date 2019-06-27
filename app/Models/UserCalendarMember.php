@@ -30,6 +30,9 @@ class UserCalendarMember extends Model
   public function calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'calendar_id');
   }
+  public function place_floor_sheat(){
+    return $this->belongsTo('App\Models\PlaceFloorSheat', 'place_floor_sheat_id');
+  }
   public function exchanged_calendar(){
     return $this->hasOne('App\Models\UserCalendar', 'exchanged_calendar_id', 'calendar_id');
   }
@@ -59,6 +62,12 @@ class UserCalendarMember extends Model
       if($this->work==9) return "出勤";
     }
     return $status_name;
+  }
+  public function is_active(){
+    if($this->status=='cancel') return false;
+    if($this->status=='rest') return false;
+    if($this->status=='lecture_cancel') return false;
+    return true;
   }
   public function update_rest_type($update_rest_type){
     $res = $this->_office_system_api('PUT', $update_rest_type);
@@ -153,17 +162,9 @@ class UserCalendarMember extends Model
         }
       }
     }
-    $place = GeneralAttribute::place($this->calendar->place)->first();
-    $place_text = "";
-    if(isset($place)){
-      //場所の指定はidではなくあえてテキストを渡してみる
-      $place_text = $place->attribute_name;
-    }
-
-    $replace_place = config('replace.place');
-    if(isset($replace_place[$this->calendar->place])){
-      $place_text = $replace_place[$this->calendar->place];
-    }
+    //TODO : 6/22 : 事務システム側の場所最適化すべき
+    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
+    $place_text = $this->calendar->place_floor->_convert_offie_system_place();
 
     $__user_id = $student_no;
     switch($this->calendar->work){
@@ -184,6 +185,16 @@ class UserCalendarMember extends Model
         $altsched_id = $exchanged_calendar_member->schedule_id;
       }
     }
+    $repetition_id = 0;
+    if($this->calendar->user_calendar_setting_id > 0){
+      //通常授業設定由来の場合
+      foreach($this->calendar->setting->members as $_m){
+        if($_m->user_id == $this->user_id){
+          $repetition_id = $_m->setting_id_org;
+        }
+      }
+    }
+
     $postdata =[];
     switch($method){
       case "PUT":
@@ -191,6 +202,7 @@ class UserCalendarMember extends Model
         $postdata = [
           "user_id" => $__user_id,
           "student_no" => $student_no,
+          "repetition_id" => $repetition_id,
           "teacher_id" => $teacher_no,
           "trial_id" => $this->calendar->trial_id,
           "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),

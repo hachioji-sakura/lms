@@ -47,7 +47,7 @@
                     <br>
                     <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                     <br>
-                    <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                    <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
                   </a>
                 </div>
                 <div class="col-5 col-lg-4 col-md-4">
@@ -188,13 +188,14 @@
     </label>
     <div class="w-100">
       <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
-        @foreach($attributes['lesson_place_floor'] as $index=>$name)
-          <option value="{{$index}}"
-          <option value="{{$index}}"
-          @if(isset($filter['search_place']) && in_array($index, $filter['search_place'])==true)
+        @foreach($attributes['places'] as $place)
+          @foreach($place->floors as $floor)
+          <option value="{{$floor->id}}"
+          @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
           selected
           @endif
-          >{{$name}}</option>
+          >{{$floor->name}}</option>
+          @endforeach
         @endforeach
       </select>
     </div>

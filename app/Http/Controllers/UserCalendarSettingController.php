@@ -24,14 +24,13 @@ class UserCalendarSettingController extends UserCalendarController
       return UserCalendarSetting::query();
     }
     public function show_fields($work){
-      $user = $this->login_details($request);
       if($work==9){
         $ret = [
           'title1' => [
             'label' => '概要',
             'size' => 6,
           ],
-          'place_name' => [
+          'place_floor_name' => [
             'label' => '場所',
             'size' => 6,
           ],
@@ -50,7 +49,7 @@ class UserCalendarSettingController extends UserCalendarController
             'label' => '概要',
             'size' => 6,
           ],
-          'place_name' => [
+          'place_floor_name' => [
             'label' => '場所',
             'size' => 6,
           ],
@@ -242,7 +241,7 @@ class UserCalendarSettingController extends UserCalendarController
         "timezone" => [
           "label" => "時間帯",
         ],
-        "place_name" => [
+        "place_floor_name" => [
           "label" => "場所",
         ],
         "work_name" => [

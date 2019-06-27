@@ -29,9 +29,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
 
   public function office_system_api($method){
-    if($this->schedule_id == 0 && $method=="PUT") return null;;
-    if($this->schedule_id == 0 && $method=="DELETE") return null;;
-    if($this->schedule_id > 0 && $method=="POST") return null;;
+    if($this->setting_id_org == 0 && $method=="PUT") return null;;
+    if($this->setting_id_org == 0 && $method=="DELETE") return null;;
+    if($this->setting_id_org > 0 && $method=="POST") return null;;
 
     $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
 
@@ -95,18 +95,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $lecture_id_org = $lecture->lecture_id_org;
       }
     }
-
-    $place = GeneralAttribute::place($this->setting->place)->first();
-    $place_text = "";
-    if(isset($place)){
-      //場所の指定はidではなくあえてテキストを渡してみる
-      $place_text = $place->attribute_name;
-    }
-
-    $replace_place = config('replace.place');
-    if(isset($replace_place[$this->setting->place])){
-      $place_text = $replace_place[$this->setting->place];
-    }
+    //TODO : 6/22 : 事務システム側の場所最適化すべき
+    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
+    $place_text = $this->setting->place_floor->_convert_offie_system_place();
 
     $__user_id = $student_no;
     switch($this->setting->work){
@@ -176,7 +167,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($res["status"] != 0){
       @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'warning', "事務システムAPIエラー");
     }
-    if($method==="POST" && $this->schedule_id==0){
+    if($method==="POST" && $this->setting_id_org==0){
       //事務システム側のIDを更新
       if(isset($res['id'])){
         $this->update(['setting_id_org'=>$res["id"]]);

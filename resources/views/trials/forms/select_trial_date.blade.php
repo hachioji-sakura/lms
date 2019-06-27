@@ -13,22 +13,33 @@
       $d = [1=>date('Y-m-d',strtotime($item->trial_start_time1)),
             2=>date('Y-m-d',strtotime($item->trial_start_time2)),
             3=>date('Y-m-d',strtotime($item->trial_start_time3))];
+      $is_first = true;
         ?>
       @for($i=1;$i<4;$i++)
       <label class="mx-2">
-        <input type="radio" name="trial_date_hope" value="{{$d[$i]}}" class="icheck flat-green" required="true"
-        @if($i==1)
-        checked
+        @if(isset($candidate_teacher->trial["trial_date".$i]) && count($candidate_teacher->trial["trial_date".$i])>0)
+          {{-- 空き予定が存在する --}}
+          <input type="radio" name="trial_date_hope" value="{{$d[$i]}}" class="icheck flat-green" required="true"
+          @if($is_first==true)
+          checked
+          <?php $is_first=false; ?>
+          @endif
+          attr="{{$i}}"
+          onChange="trial_date_hope_change()"
+          >
+        @else
+          <i class="fa fa-times mr-1"></i>
         @endif
-        onChange="trial_date_hope_change({{$i}})"
-        >第{{$i}}希望({{$d[$i]}})
+        第{{$i}}希望({{$d[$i]}})
       </label>
       @endfor
     </div>
   </div>
   <script>
   function trial_date_hope_change(no){
-    var d = $("input[name='trial_date_hope']:checked").val();
+    var check_date = $("input[name='trial_date_hope']:checked");
+    var d = check_date.val();
+    var no = check_date.attr('attr');
     if(!d) return ;
     $(".teacher_schedule").hide();
     $(".teacher_schedule[remark='trial_date"+no+"']").show();
@@ -70,42 +81,48 @@
       </h6>
       @else
       <?php $is_first=false; ?>
-        @foreach($candidate_teacher->trial as $i=>$_list)
-          @if($_list['status']==='free')
-          <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
-            <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$i}}"
-             value="{{$_list['start_time']}}_{{$_list['end_time']}}"
-             dulation="{{$_list['dulation']}}"
-             start_time="{{$_list['start_time']}}"
-             end_time="{{$_list['end_time']}}"
-             lesson_place_floor="{{$_list['free_place_floor']}}"
-             remark="{{$_list['remark']}}"
-             onChange="teacher_schedule_change(this)"
-             validate="teacher_schedule_validate('#trial_select')"
-             @if($is_first==false) checked @endif
-             >
-            <label class="form-check-label" for="trial_{{$i}}" title="{{$_list['review']}}">
-              {{$_list['dulation']}}
-            </label>
-          </div>
-          <?php $is_first=true; ?>
-          @else
-          {{-- 空いてない場合の表示はなくなる --}}
-          <div class="form-check ml-2">
-            <a  href="javascript:void(0);" page_title="授業予定" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
-            <label class="form-check-label" for="trial_{{$i}}">
-              @if($_list['status']==='place_conflict')
-              <i class="fa fa-times mr-1"></i>
-              @elseif($_list['status']==='time_conflict')
-              <i class="fa fa-calendar-times mr-1"></i>
-              @else
-              <i class="fa fa-times-circle mr-1"></i>
+        @foreach($candidate_teacher->trial as $remark=>$_lists)
+          @foreach($_lists as $i => $_list)
+            @if($_list['status']==='free')
+            <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
+              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$i}}"
+               value="{{$_list['start_time']}}_{{$_list['end_time']}}"
+               dulation="{{$_list['dulation']}}"
+               start_time="{{$_list['start_time']}}"
+               end_time="{{$_list['end_time']}}"
+               lesson_place_floor="{{$_list['free_place_floor']}}"
+               remark="{{$remark}}"
+               onChange="teacher_schedule_change(this)"
+               validate="teacher_schedule_validate('#trial_select')"
+               @if($is_first==false) checked @endif
+               >
+              <label class="form-check-label" for="trial_{{$i}}" title="{{$_list['review']}}">
+                {{$_list['dulation']}}
+              </label>
+            </div>
+            <?php $is_first=true; ?>
+            @else
+            {{-- 空いてない場合の表示はなくなる --}}
+            <div class="form-check ml-2">
+              @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
+              <a  href="javascript:void(0);" page_title="授業予定" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
               @endif
-              {{$_list['dulation']}}
-            </label>
-            </a>
-          </div>
-          @endif
+              <label class="form-check-label" for="trial_{{$i}}">
+                @if($_list['status']==='place_conflict')
+                <i class="fa fa-times mr-1"></i>
+                @elseif($_list['status']==='time_conflict')
+                <i class="fa fa-calendar-times mr-1"></i>
+                @else
+                <i class="fa fa-times-circle mr-1"></i>
+                @endif
+                {{$_list['dulation']}}
+              </label>
+              @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
+              </a>
+              @endif
+            </div>
+            @endif
+          @endforeach
         @endforeach
       @endif
     </span>
@@ -114,7 +131,7 @@
 
 <script >
 $(function(){
-  trial_date_hope_change(1);
+  trial_date_hope_change();
   teacher_schedule_change();
 });
 function teacher_schedule_change(obj){

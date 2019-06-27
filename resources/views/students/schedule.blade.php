@@ -32,7 +32,7 @@
                   <br>
                   <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                   <br>
-                  <i class="fa fa-map-marker mx-1"></i>{{$calendar->place()}}
+                  <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
                   </a>
                 </div>
                 <div class="col-7 col-lg-4 col-md-4">

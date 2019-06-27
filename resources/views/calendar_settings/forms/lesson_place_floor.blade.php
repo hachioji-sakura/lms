@@ -4,29 +4,22 @@
       教室
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    <select name="lesson_place_floor" class="form-control" placeholder="場所" required="true">
+    <select name="place_floor_id" class="form-control" placeholder="場所" required="true">
       <option value="">(選択してください)</option>
-      @foreach($attributes['lesson_place_floor'] as $index => $name)
-        @if(isset($item["tagdata"]) && isset($item["tagdata"]["lesson_place"]))
-          {{-- lesson_placeに所属する、lesson_place_floorのみ表示する --}}
-          @foreach($item["tagdata"]["lesson_place"] as $tag_value=>$tag_name)
-            @if(isset(config('lesson_place_floor')[$tag_value]) && isset(config('lesson_place_floor')[$tag_value][$index]))
-            <option value="{{$index}}"
-            @if(isset($calendar) && $calendar->place==$index)
+      @foreach($attributes['places'] as $place)
+        @foreach($place->floors as $floor)
+        @if(isset($item["tagdata"]) && isset($item["tagdata"]["lesson_place"]) && isset($item["tagdata"]["lesson_place"][$place->id]))
+          <option value="{{$floor->id}}"
+            @if(isset($calendar) && $calendar->place_floor_id==$floor->id)
+              selected
+            @elseif(isset($item->place_floor_id) && $item->place_floor_id==$floor->id)
               selected
             @elseif($loop->index==0)
               selected
             @endif
-            >{{$name}}</option>
-            @endif
-          @endforeach
-        @else
-          <option value="{{$index}}"
-          @if(isset($item->place) && $item->place==$index)
-            selected
+          >{{$floor->name}}</option>
           @endif
-          >{{$name}}</option>
-        @endif
+        @endforeach
       @endforeach
     </select>
   </div>

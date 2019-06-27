@@ -5,6 +5,8 @@ use App\User;
 use App\Models\Image;
 use App\Models\Student;
 use App\Models\GeneralAttribute;
+use App\Models\Place;
+use App\Models\PlaceFloor;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +34,8 @@ class UserController extends Controller
       }
       $attributes[$_attribute['attribute_key']][$_attribute['attribute_value']] = $_attribute['attribute_name'];
     }
+    $places = Place::orderBy('sort_no', 'asc')->get();
+    $attributes['places'] = $places;
     return $attributes;
   }
   protected function user_create($form)

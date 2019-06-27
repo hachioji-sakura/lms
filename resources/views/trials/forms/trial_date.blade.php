@@ -133,3 +133,9 @@
     </select>
   </div>
 </div>
+<div class="col-12">
+  <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
+    ※生徒様に最適な講師を紹介いたしますので、<br>
+     体験授業ご希望日時について、幅広く教えてください。
+  </h6>
+</div>

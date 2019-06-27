@@ -101,21 +101,6 @@ class GeneralAttributesSeeder extends Seeder
         }
       }
       $sort_no = 1;
-      foreach(config('lesson_place_floor') as $lesson_place => $floor){
-          foreach($floor as $index => $name){
-          $_add_items[] = [
-            'attribute_key' => 'lesson_place_floor',
-            'attribute_value' => $index,
-            'attribute_name' => $name,
-            'parent_attribute_key' => 'lesson_place',
-            'parent_attribute_value' => $lesson_place,
-            'sort_no' => $sort_no,
-            'create_user_id' => 1,
-          ];
-          $sort_no++;
-        }
-      }
-      $sort_no = 1;
       foreach(config('grade') as $index => $name){
         $charge_grade = substr($index,0,1);
         if($charge_grade!=='e' && $charge_grade!=='j' && $charge_grade!=='h'){

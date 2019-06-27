@@ -320,7 +320,7 @@ EOT;
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
       'trial_id' => $this->id,
-      'place' => $form['lesson_place_floor'],
+      'place_floor_id' => $form['place_floor_id'],
       'lesson' => $form['lesson'],
       'course_type' => $form['course_type'],
       'remark' => $this->remark,
@@ -524,7 +524,7 @@ EOT;
           $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], "trial_date1");
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], "trial_date2"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], "trial_date3"));
-          $teacher->trial = $this->get_time_list_review($teacher->trial);
+          $teacher->trial = $this->get_time_list_review($teacher->user_id, $teacher->trial);
           $teacher->enable_point = $enable_point;
           $teacher->disable_point = $disable_point;
           $teacher->subject_review = 'part';
@@ -564,10 +564,10 @@ EOT;
       'trial_id' => $this->id,
       'schedule_method' => 'week',
       'lesson_week_count' => 0,
-      'lesson_week' => $form['lesson_place_floor'],
+      'lesson_week' => $form['lesson_week'],
       'from_time_slot' => $form['from_time_slot'],
       'to_time_slot' => $form['to_time_slot'],
-      'place' => $form['lesson_place_floor'],
+      'place_floor_id' => $form['place_floor_id'],
       'remark' => '',
       'lesson' => $calendar->get_tag('lesson')->tag_value,
       'create_user_id' => $form['create_user_id'],
@@ -641,12 +641,12 @@ EOT;
             }
           }
           if($_time_list[$i]['is_time_conflict']===false && $_time_list[$i]['is_place_conflict']===false){
+            //echo "競合チェック：pass:[".$_time_list[$i]["dulation"]."][".$tag->tag_value."][".$now_calendar->place."]";
             $_free_place = "";
             $is_place_conflict = true;
             foreach($this->get_tags('lesson_place') as $tag){
               if(!$now_calendar->is_conflict($_time['start_time'], $_time['end_time'], $tag->tag_value)){
                 //場所の競合もなし=選択候補
-                //echo "pass:[".$_time_list[$i]["dulation"]."][".$tag->tag_value."][".$now_calendar->place."]";
                 $is_place_conflict = false;
                 if($now_calendar->is_same_place($tag->tag_value)){
                   $_free_place = $now_calendar->place;
@@ -677,66 +677,91 @@ EOT;
     }
     return $_time_list;
   }
-  private function get_time_list_review($_time_list){
+  //primaryがついている場合、primaryのみに選択肢を削る
+  private function get_time_list_review($user_id, $_time_list){
     $primary_count = 0;
-    $secondary_count = 0;
     //予定ありの次の時間の状態によって評価を設定
     for($i=0;$i<count($_time_list);$i++){
-      $review = "";
-      if($i<count($_time_list)-1){
-        $review = $this->schedule_review($_time_list[$i], $_time_list[$i+1]);
-      }
+      $review = $this->schedule_review($user_id, $_time_list[$i])["review"];
       if($i>0 && $review!="primary"){
-        $_review = $this->schedule_review($_time_list[$i], $_time_list[$i-1]);
+        $_review = $this->schedule_review($user_id, $_time_list[$i])["review"];
         if($_review=="primary") $review = $_review;
-        if($_review=="secondary") $review = $_review;
       }
       if($review=="primary") $primary_count++;
-      if($review=="secondary") $secondary_count++;
       $_time_list[$i]["review"] = $review;
     }
     //return $_time_list;
     //優先度の最も高いものから返却する
     $ret = [];
     foreach($_time_list as $_item){
+      $is_add = false;
       if($primary_count > 0){
         if($_item["review"]==="primary"){
-          $ret[] = $_item;
-        }
-      }
-      else if($secondary_count > 0){
-        if($_item["review"]==="secondary"){
-          $ret[] = $_item;
+          $is_add = true;
         }
       }
       else {
         if($_item["status"]==="free"){
-          $ret[] = $_item;
+          $is_add = true;
         }
+      }
+      if($is_add==true){
+        //追加
+        if(!isset($ret[$_item["remark"]])){
+          $ret[$_item["remark"]] = [];
+        }
+        $ret[$_item["remark"]][]=$_item;
       }
     }
     return $ret;
   }
-  private function schedule_review($target, $next){
-    if($target["status"]!=="free") return "";
-    $ret = "";
-    $diff = strtotime($target["start_time"]) - strtotime($next["start_time"]);
-    //echo $target["dulation"]."/".$target["status"]."/".$target["free_place_floor"]."/";
-    //echo $next["dulation"]."/".$next["status"]."/";
-    //echo abs($diff)."/".$next["review"]."/<br>";
-    //30分差でなければ、隣の予定ではない
-    if(abs($diff) > 1800 ) return $ret;
-    if($next["status"]==="free") return $ret;
-    //隣の予定が空いていない
-    if(isset($next["conflict_calendar"]) && $next["conflict_calendar"]->is_same_place("", $target['free_place_floor'])){
-      //隣の予定が空いていないかつ、場所が同じ
-      $ret = "primary";
+  private function schedule_review($user_id, $target){
+    $ret = ['calendar'=>null, 'same_place'=>'', 'review'=>''];
+    if($target["status"]!=="free") return $ret;
+    //上に隣接する授業設定を取得
+    $prev_calendars = UserCalendar::where('user_id', $user_id)
+                      ->where('start_time', $target["end_time"])
+                      ->get();
+    $prev = null;
+    foreach($prev_calendars as $calendar){
+      foreach($this->get_tags('lesson_place') as $tag){
+        //体験希望所在地のフロアと同じ場合隣接とみなす
+        if($calendar->is_same_place($tag->tag_value)){
+          $prev = $calendar;
+        }
+        if(isset($prev)) break;
+      }
+      if(isset($prev)) break;
     }
-    else {
-      //隣の予定が空いていないかつ、場所が異なる
-      $ret = "secondary";
+    //下に隣接する授業設定を取得
+    $next_calendars = UserCalendar::where('user_id', $user_id)
+                      ->where('end_time', $target["start_time"])
+                      ->get();
+    $next = null;
+    foreach($next_calendars as $calendar){
+      $same_place = "";
+      foreach($this->get_tags('lesson_place') as $tag){
+        if($calendar->is_same_place($tag->tag_value)){
+          $next  = $calendar;
+          return $ret;
+        }
+        if(isset($next)) break;
+      }
+      if(isset($next)) break;
     }
-    //echo "=".$ret."<br>";
+    if( (isset($prev) && isset($next)) ||
+         (isset($prev) && !isset($next) && count($next_settings)<1)){
+       //１．上下隣接、２．上に隣接し下がない
+       $ret['calendar'] = $prev;
+       $ret['same_place'] = $prev->place_floor_id;
+       $ret['review'] = 'primary';
+    }
+    else if(!isset($prev) && isset($next) && count($prev_settings)<1){
+      //３．下に隣接し上がない
+      $ret['calendar'] = $next;
+      $ret['same_place'] = $next->place_floor_id;
+      $ret['review'] = 'primary';
+    }
     return $ret;
   }
 
@@ -755,11 +780,9 @@ EOT;
 
     //２．講師の勤務可能スケジュール、通常授業スケジュールを取得
     $teacher_enable_schedule = $teacher->user->get_lesson_times(10);
-    $teacher_current_schedule = $teacher->user->get_week_calendar_setting(10);
     $detail = [];
     $count = [];
     $student_schedule = [];
-    $secondary_count = 0;
     $all_count = 0;
     $from_time = "";
     //３．マッチング判定
@@ -777,7 +800,8 @@ EOT;
       $student_schedule[$week_day] = [];
       foreach($week_schedule as $time => $val){
         $data = ["week_day"=>$week_day, "from" => $time, "to"=>"", "status"=>"free", "review"=>"", "place"=>"", "show"=>false];
-        //３－１．生徒の希望スケジュールの場合、判定する
+
+        //３－１．生徒の希望スケジュールの場合、講師とのスケジュールを判定する
         if($val===false) {
           $data["status"] = "student_ng";
           $student_schedule[$week_day][] = $data;
@@ -795,13 +819,25 @@ EOT;
 
         //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
         if($is_free===true){
+          $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
+          $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
+          foreach($teacher->user->calendar_settings as $setting){
+            if($setting->is_conflict($f,$t)==true){
+              //echo "conflict:".$week_day.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
+              $is_free = false;
+              $data["status"] = "time_conflict";
+              $data["conflict_calendar_setting"] = $setting;
+              break;
+            }
+          }
+          /*
           if(isset($teacher_current_schedule) && isset($teacher_current_schedule[$week_day])
             && isset($teacher_current_schedule[$week_day][$time]) && isset($teacher_current_schedule[$week_day][$time]->id)){
-              //講師にも同じ曜日・時間の希望がある
               $is_free = false;
               $data["status"] = "time_conflict";
               $data["conflict_calendar_setting"] = $teacher_current_schedule[$week_day][$time];
           }
+          */
         }
         //echo"[".$week_day."][".$time."][".$this->course_minutes."][".$is_free."]<br>";
         if($is_free===true){
@@ -832,10 +868,6 @@ EOT;
           $from_time = "";
           $c = 0;
         }
-        if(isset($teacher_current_schedule[$week_day]) && count($teacher_current_schedule[$week_day]) == 0){
-          //通常授業のある曜日は評価をあげておく
-          //$data["review"] = "secondary";
-        }
         $student_schedule[$week_day][] = $data;
       }
       //最終値の処理
@@ -865,64 +897,19 @@ EOT;
           $student_schedule[$week_day][$i]["to"] =  $d;
           //隣接チェック
           //直前が埋まっている場合
-          /*
-          if($i>0 && $week_schedule[$i-1]["status"]==="time_conflict"){
-            $same_place="";
-            $setting = $week_schedule[$i-1]["conflict_calendar_setting"];
-            foreach($this->get_tags('lesson_place') as $tag){
-              if($setting->is_same_place($tag->tag_value)){
-                $same_place = $setting->place;
-                break;
-              }
-            }
-            if($same_place!=""){
-              //場所が同じ:評価＝primary
-              $student_schedule[$week_day][$i]["review"] = "primary";
-              $student_schedule[$week_day][$i]["place"] = $same_place;
-              $primary_count++;
-            }
-            else {
-              //場所が異なる:隣接のスケジュールはNG
-              $student_schedule[$week_day][$i]["status"] = "place_conflict";
-            }
-          }
-          //授業後の予定が埋まっている場合
-          if($student_schedule[$week_day][$i]["status"]==="free" && ($i+$minute_count)<count($week_schedule)-1
-            && $week_schedule[$i+$minute_count]["status"]==="time_conflict"){
-            $same_place="";
-            $setting = $week_schedule[$i+$minute_count]["conflict_calendar_setting"];
-            foreach($this->get_tags('lesson_place') as $tag){
-              if($setting->is_same_place($tag->tag_value)){
-                $same_place = $setting->place;
-                break;
-              }
-            }
-            if($same_place!=""){
-              //場所が同じ
-              $student_schedule[$week_day][$i]["review"] = "primary";
-              $student_schedule[$week_day][$i]["place"] = $same_place;
-              $primary_count++;
-            }
-            else {
-              //場所が異なる
-              $student_schedule[$week_day][$i]["status"] = "place_conflict";
-            }
-          }
-          */
           $from = substr($student_schedule[$week_day][$i]["from"], 0,2).':'.substr($student_schedule[$week_day][$i]["from"], -2).':00';
           $to = substr($student_schedule[$week_day][$i]["to"], 0,2).':'.substr($student_schedule[$week_day][$i]["to"], -2).':00';
           $review = $this->get_setting_review($teacher->user_id, $week_day, $from, $to);
-          if($review['review']=='primary'){
+          if($review['review']=='place_conflict'){
+            $student_schedule[$week_day][$i]["status"] = "place_conflict";
+          }
+          else if($review['review']=='primary'){
             $student_schedule[$week_day][$i]["review"] = "primary";
             $student_schedule[$week_day][$i]["place"] = $review['same_place'];
             $primary_count++;
           }
         }
 
-        if($student_schedule[$week_day][$i]["status"] == "free" &&
-          $student_schedule[$week_day][$i]["review"] == "secondary"){
-            $secondary_count++;
-        }
         //echo "[$week_day][$c][".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["status"]."][".$student_schedule[$week_day][$i]["review"]."]<br>";
       }
     }
@@ -937,53 +924,74 @@ EOT;
             $c++;
           }
         }
-        else if($secondary_count > 0){
-          if($week_schedule[$i]["review"]==="secondary") {
-            $student_schedule[$week_day][$i]["show"] = true;
-            $c++;
-          }
-        }
         else {
           $student_schedule[$week_day][$i]["show"] = true;
           $c++;
         }
-        //echo "[".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["review"]."][".$student_schedule[$week_day][$i]["show"]."]<br>";
+        //echo $week_day."[".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["review"]."][".$student_schedule[$week_day][$i]["show"]."]<br>";
       }
       $count[$week_day] = $c;
     }
     return ["all_count" => $all_count, "count"=>$count, "detail" => $detail, "result" => $student_schedule];
   }
+  //コマの評価づけ：隣接するスケジュールを優先とする
   private function get_setting_review($user_id, $lesson_week, $from_time_slot, $to_time_slot){
+    //echo "[".$lesson_week."][".$from_time_slot."][".$to_time_slot."]<br>";
+    $is_place_conflict = false;
     $ret = ['setting'=>null, 'same_place'=>'', 'review'=>''];
-    $settings = UserCalendarSetting::where('user_id', $user_id)
+    //上に隣接する通常授業設定を取得
+    $prev_settings = UserCalendarSetting::where('user_id', $user_id)
+                      ->where('from_time_slot', $to_time_slot)
                       ->where('from_time_slot', $to_time_slot)
                       ->where('lesson_week', $lesson_week)
                       ->get();
-    foreach($settings as $setting){
-      $same_place = "";
+    $prev = null;
+    foreach($prev_settings as $setting){
       foreach($this->get_tags('lesson_place') as $tag){
-        if($setting->is_same_place($tag->tag_value)){
-          $ret['setting'] = $setting;
-          $ret['same_place'] = $setting->place;
-          $ret['review'] = 'primary';
-          return $ret;
+        //体験希望所在地のフロアと同じ場合隣接とみなす
+        if($setting->is_same_place($tag->tag_value)==true){
+          $prev  = $setting;
         }
+        else {
+          $is_place_conflict = true;
+        }
+        if(isset($prev)) break;
       }
+      if(isset($prev)) break;
     }
-    $settings = UserCalendarSetting::where('user_id', $user_id)
+    //下に隣接する通常授業設定を取得
+    $next_settings = UserCalendarSetting::where('user_id', $user_id)
                       ->where('to_time_slot', $from_time_slot)
                       ->where('lesson_week', $lesson_week)
                       ->get();
-    foreach($settings as $setting){
-      $same_place = "";
+    $next = null;
+    foreach($next_settings as $setting){
       foreach($this->get_tags('lesson_place') as $tag){
-        if($setting->is_same_place($tag->tag_value)){
-          $ret['setting'] = $setting;
-          $ret['same_place'] = $setting->place;
-          $ret['review'] = 'primary';
-          return $ret;
+        if($setting->is_same_place($tag->tag_value)==true){
+          $next  = $setting;
         }
+        else {
+          $is_place_conflict = true;
+        }
+        if(isset($next)) break;
       }
+      if(isset($next)) break;
+    }
+    if($is_place_conflict==true){
+      $ret['review'] = 'place_conflict';
+    }
+    else if( (isset($prev) && isset($next)) ||
+         (isset($prev) && !isset($next) && count($next_settings)<1)){
+       //１．上下隣接、２．上に隣接し下がない
+       $ret['setting'] = $prev;
+       $ret['same_place'] = $prev->place_floor_id;
+       $ret['review'] = 'primary';
+    }
+    else if(!isset($prev) && isset($next) && count($prev_settings)<1){
+      //３．下に隣接し上がない
+      $ret['setting'] = $next;
+      $ret['same_place'] = $next->place_floor_id;
+      $ret['review'] = 'primary';
     }
     return $ret;
   }

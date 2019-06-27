@@ -88,10 +88,13 @@ class User extends Authenticatable
     public function target_milestones(){
       return $this->hasMany('App\Models\Milestone', 'target_user_id');
     }
-    public function calendar_member(){
+    public function calendar_settings(){
+      return $this->hasMany('App\Models\UserCalendarSetting');
+    }
+    public function calendar_members(){
       return $this->hasMany('App\Models\UserCalendarMember');
     }
-    public function calendar_member_setting(){
+    public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
 
@@ -187,6 +190,7 @@ EOT;
       }
       return $ret;
     }
+    /*
     public function get_week_calendar_setting($minute=30)
     {
       $settings = $this->calendar_setting();
@@ -216,6 +220,7 @@ EOT;
       //array("mon" : [ calendar_setting...])
       return $week_setting;
     }
+    */
     /**
      * user_tagsから、work_mon_time、work_the_timeなどを取得し、
      * 30分単位のtime_slotにしてtrue/falseを返す

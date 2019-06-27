@@ -48,7 +48,7 @@ class UserCalendarController extends MilestoneController
           'label' => '担当',
           'size' => 6,
         ],
-        'place_name' => [
+        'place_floor_name' => [
           'label' => '場所',
           'size' => 6,
         ],
@@ -67,7 +67,7 @@ class UserCalendarController extends MilestoneController
           'label' => '講師',
           'size' => 6,
         ],
-        'place_name' => [
+        'place_floor_name' => [
           'label' => '場所',
           'size' => 6,
         ],
@@ -456,7 +456,7 @@ class UserCalendarController extends MilestoneController
           "label" => "日時",
           "link" => "show",
         ],
-        "place_name" => [
+        "place_floor_name" => [
           "label" => "場所",
         ],
         "work_name" => [
