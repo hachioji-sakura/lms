@@ -229,6 +229,10 @@ class AskController extends MilestoneController
       $item = Ask::add($form['type'], $form);
       return $item;
     }, $this->domain_name, __FILE__, __FUNCTION__, __LINE__ );
+
+    if($res["data"]==null){
+      $res = $this->error_response("同じ依頼内容がすでに登録されています。");
+    }
     return $res;
    }
    public function teacher_chagne_page(Request $request, $id)

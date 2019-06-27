@@ -8,7 +8,7 @@
         <h4 class="modal-title content-sub-title">絞込</h4>
       </div>
       <div class="modal-body content-sub-body">
-        <form method="POST" action="{{request()->fullUrl()}}">
+        <form class="filter" method="POST" action="{{request()->fullUrl()}}">
           @method('GET')
           @csrf
           <input name="_domain" type="hidden" value="{{$domain}}">
@@ -26,7 +26,6 @@
                   クリア
               </button>
           </div>
-        </div>
         </form>
       </div>
     </div>
@@ -41,11 +40,11 @@ $(function(){
   $("a.page-link[accesskey='pager']").on('click', function(){
     var page = $(this).attr("page");
     $("input[name=_page]").val(page);
-    $("#filter_form form").submit();
+    $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=button]").on('click', function(e){
     $("input[name=_page]").val("1");
-    $("#filter_form form").submit();
+    $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=reset]").on('click', function(e){
     e.preventDefault();

@@ -59,7 +59,9 @@
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
             休み予定
+            @if($cancel_count > 0)
             <span class="badge badge-danger right">{{$cancel_count}}</span>
+            @endif
           </p>
         </a>
       </li>

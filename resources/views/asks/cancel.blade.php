@@ -4,11 +4,11 @@
   @endslot
   @slot('forms')
     <div class="row">
-    <div class="col-12 mb-1" id="commit_form">
+    <div class="col-12 mb-1" id="cancel_form">
       <form method="POST" action="/asks/{{$item['id']}}/status_update/cancel">
         @csrf
         @method('PUT')
-        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="commit_form">
+        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="cancel_form">
           <i class="fa fa-check mr-1"></i>
           差戻
         </button>
@@ -21,12 +21,12 @@
     </div>
     <script>
     $(function(){
-      base.pageSettinged("_form", null);
+      base.pageSettinged("cancel_form", null);
       //submit
-      $("button.btn-submit").on('click', function(e){
+      $("#cancel_form button.btn-submit").on('click', function(e){
         e.preventDefault();
-        if(front.validateFormValue('_form')){
-          $("form").submit();
+        if(front.validateFormValue('cancel_form')){
+          $("#cancel_form form").submit();
         }
       });
     });

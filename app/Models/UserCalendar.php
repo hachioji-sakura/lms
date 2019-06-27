@@ -758,12 +758,14 @@ EOT;
     }
     return;
   }
-  public function student_mail($title, $param, $type, $template){
+  public function student_mail($title, $param, $type, $template, $is_rest_send=false){
     $param['send_to'] = 'student';
     $param['item'] = $this->details(1);
     foreach($this->members as $member){
       $u = $member->user->details('students');
       if($u->role != "student") continue;
+      //休み予定の場合送信しない
+      if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
       $member->send_mail($title, $param, $type, $template);
     }

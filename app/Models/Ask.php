@@ -14,6 +14,9 @@ class Ask extends Milestone
   public function charge_user(){
     return $this->belongsTo('App\User', 'charge_user_id');
   }
+  public function parent_ask(){
+    return $this->belongsTo('App\Models\Ask', 'parent_ask_id');
+  }
   public function scopeRangeDate($query, $from_date, $to_date=null, $field='start_time')
   {
     //日付検索
@@ -70,9 +73,12 @@ EOT;
     if(isset($form['parent_ask_id'])){
       $parent_ask_id = $form['parent_ask_id'];
       if($type=="teacher_change"){
+        if(!isset($form['target_user_id'])){
+          //担当者・対象者は一緒
+          $form['target_user_id'] = $form['charge_user_id'];
+        }
         //代講：target_modelには、休講のデータを設定する
         $parent_ask = Ask::where('id', $parent_ask_id)->first();
-        $form["charge_user_id"] = 1;
         if(isset($parent_ask)){
           $form["target_model"] = $parent_ask->target_model;
           $form["target_model_id"] = $parent_ask->target_model_id;
@@ -132,8 +138,8 @@ EOT;
   }
   public function change($form){
     if(isset($form["status"]) && isset($form["login_user_id"])){
-      $this->update(['status'=>$form['status']]);
       $this->_change($form['status'], $form['login_user_id']);
+      $this->update(['status'=>$form['status']]);
     }
     return $this;
   }
@@ -179,10 +185,16 @@ EOT;
         if($this->type=='rest_cancel') $member->rest_cancel($is_commit);
         if($this->type=='lecture_cancel') $member->lecture_cancel($is_commit);
         if($this->type=='teacher_change'){
-          $member->calendar->teacher_change($is_commit, $this->target_user_id);
-          $parent_ask = Ask::where('id', $this->parent_ask_id)->first();
-          if(isset($parent_ask)){
-            $parent_ask->update(['status' => 'cancel']);
+          //代講承認された
+          $member->teacher_change($is_commit, $this->target_user_id);
+          //親の依頼をcancel
+          if(isset($this->parent_ask)){
+            $this->parent_ask->update(['status' => 'commit']);
+          }
+          $brother_asks = Ask::where('parent_ask_id', $this->parent_ask_id)->where('id', '!=', $this->id)->get();
+          //同じ親の依頼
+          foreach($brother_asks as $brother_ask){
+            $brother_ask->update(['status' => 'cancel']);
           }
         }
         break;
@@ -219,6 +231,9 @@ EOT;
       //生徒あてに先生が変わったあとの連絡
       \Log::warning("代講更新[".$this->type."][".$this->status."]");
       $param['send_to'] = 'student';
+      $param['prev_teacher_name'] = $this->parent_ask->target_user->details()["name"];
+      $param['next_teacher_name'] = $this->target_user->details()["name"];
+
       $param["item"]->student_mail('講師変更のお知らせ', $param, 'text', 'calendar_teacher_change');
     }
     return $res;
@@ -231,15 +246,18 @@ EOT;
     if($this->target_user->details('students')->role=='student'){
       $param['send_to'] = 'student';
     }
+    $param["user_name"] = $this->target_user->details()["name"];
     return $this->send_mail($this->target_user_id, $title, $param, 'text', 'ask_'.$this->type.'_'.$this->status);
   }
   public function charge_user_mail($param){
     if($this->charge_user_id==1) return false;
+    if($this->charge_user_id==$this->target_user_id) return false;
     $title = $this->type_name().':'.$this->status_name();
     $param['send_to'] = 'teacher';
     if($this->charge_user->details('students')->role=='student'){
       $param['send_to'] = 'student';
     }
+    $param["user_name"] = $this->charge_user->details()["name"];
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', 'ask_'.$this->type.'_'.$this->status);
   }
   public function is_auto_commit(){
