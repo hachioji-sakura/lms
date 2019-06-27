@@ -89,7 +89,10 @@ EOT;
     $item['subject'] = $this->subject();
     $item['course_minutes_name'] = $this->course_minutes();
     $item['week_setting'] = $this->week_setting();
-    $item['place_name'] = $this->place();
+    $item['place_floor_name'] = "";
+    if(isset($this->place_floor)){
+      $item['place_floor_name'] = $this->place_floor->name;
+    }
     $item['work_name'] = $this->work();
     $item['subject'] = $this->subject();
     $item['title1'] = $item['week_setting'].' / '.$item['timezone'];
@@ -151,7 +154,7 @@ EOT;
       'schedule_method' => $form['schedule_method'],
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],
-      'place' => $form['place'],
+      'place_floor_id' => $form['place_floor_id'],
       'work' => $form['work'],
       'remark' => $form['remark'],
       'from_time_slot' => $form['from_time_slot'],
@@ -334,12 +337,11 @@ EOT;
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
   }
-  public function is_conflict_setting($schedule_method, $lesson_week_count, $lesson_week='', $from_time_slot, $to_time_slot){
-    $base_date= '2000-01-01 ';
-    $start = strtotime($base_date.$from_time_slot);
-    $end = strtotime($base_date.$to_time_slot);
-    $calendar_starttime = strtotime($base_date.$this->from_time_slot);
-    $calendar_endtime = strtotime($base_date.$this->$to_time_slot);
+  public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
+    $start = strtotime('2000-01-01 '.$start_time);
+    $end = strtotime('2000-01-01 '.$end_time);
+    $calendar_starttime = strtotime('2000-01-01 '.$this->from_time_slot);
+    $calendar_endtime = strtotime('2000-01-01 '.$this->to_time_slot);
     if($start > $calendar_starttime && $start < $calendar_endtime){
       //開始時刻が、範囲内
       return true;
@@ -348,18 +350,22 @@ EOT;
       //終了時刻が、範囲内
       return true;
     }
-    if($start==$calendar_starttime && $end == $calendar_endtime){
-      //完全一致
+    if($start <= $calendar_starttime && $end >= $calendar_endtime){
+      //内包しているケース
+      return true;
+    }
+    if($calendar_starttime <= $start && $calendar_endtime >= $end){
+      //内包しているケース
       return true;
     }
 
     if($end == $calendar_starttime || $start == $calendar_endtime){
       //開始終了が一致した場合、場所をチェック
-      if(!empty($place) && $this->is_same_place($place)===false){
+      if(!empty($place_id) && $this->is_same_place($place_id)===false){
         //場所が異なるのでスケジュール競合
         return true;
       }
-      else if(!empty($place_floor) && $this->is_same_place("",$place_floor)===false){
+      else if(!empty($place_floor_id) && $this->is_same_place(0,$place_floor_id)===false){
         //場所が異なるのでスケジュール競合
         return true;
       }

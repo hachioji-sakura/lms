@@ -43,7 +43,11 @@ class UserTag extends Model
 
     if($key==="kids_lesson_course_type") $key = "course_type";
     if($key==="english_talk_course_type") $key = "course_type";
-
+    if($key==="lesson_place"){
+      $place = Place::where('id', $this->tag_value)->first();
+      $place->attribute_name = $place->name;
+      return $place;
+    }
     $item = GeneralAttribute::where('attribute_key', $key)
       ->where('attribute_value', $this->tag_value)->first();
 

@@ -29,7 +29,7 @@
           </span>
           <span class="text-xs mx-2">
             <small class="badge badge-success mt-1 mr-1">
-              {{$calendar->place()}}
+              {{$calendar['place_floor_name']}}
             </small>
           </span>
           <span class="text-xs mx-2">

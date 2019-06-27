@@ -95,18 +95,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $lecture_id_org = $lecture->lecture_id_org;
       }
     }
-
-    $place = GeneralAttribute::place($this->setting->place)->first();
-    $place_text = "";
-    if(isset($place)){
-      //場所の指定はidではなくあえてテキストを渡してみる
-      $place_text = $place->attribute_name;
-    }
-
-    $replace_place = config('replace.place');
-    if(isset($replace_place[$this->setting->place])){
-      $place_text = $replace_place[$this->setting->place];
-    }
+    //TODO : 6/22 : 事務システム側の場所最適化すべき
+    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
+    $place_text = $this->setting->place_floor->_convert_offie_system_place();
 
     $__user_id = $student_no;
     switch($this->setting->work){

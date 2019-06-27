@@ -1,6 +1,6 @@
 ■{{$item->teaching_name()}}
 日時：{{$item['datetime']}}
-場所：{{$item['place_name']}}
+場所：{{$item['place_floor_name']}}
 --------------------------------------------
 （内容）
 講師：{{$item['teacher_name']}}

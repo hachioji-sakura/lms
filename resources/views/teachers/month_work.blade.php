@@ -87,7 +87,7 @@
                       <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
                     </span>
                     <span class="mr-2">
-                      <i class="fa fa-map-marker"></i>{{$calendar->place()}}
+                      <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
                     </span>
                     <span class="text-xs mr-2">
                       <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">

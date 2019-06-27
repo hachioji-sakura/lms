@@ -4,13 +4,13 @@
       ご希望の校舎
       <span class="right badge badge-danger ml-1">必須</span>
     </label>
-    @foreach($attributes['lesson_place'] as $index => $name)
+    @foreach($attributes['places'] as $place)
     <label class="mx-2">
-      <input type="checkbox" value="{{ $index }}" name="lesson_place[]" class="icheck flat-green" required="true"
-      @if($_edit===true && isset($item) && $item->has_tag("lesson_place", $index))
+      <input type="checkbox" value="{{ $place->id }}" name="lesson_place[]" class="icheck flat-green" required="true"
+      @if($_edit===true && isset($item) && $item->has_tag("lesson_place", $place->id))
       checked
       @endif
-      >{{$name}}
+      >{{$place->name}}
     </label>
     @endforeach
   </div>

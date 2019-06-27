@@ -9,12 +9,16 @@
         <span class="input-group-text"><i class="fa fa-map-marker-alt"></i></span>
       </div>
       <select name='place' class="form-control" placeholder="場所" required="true">
-        <option value="">(選択)</option>
-        @foreach($attributes['lesson_place_floor'] as $index => $name)
-          <option value="{{ $index }}" @if(isset($item['place']) && $item['place'] == $index) selected @endif>{{$name}}</option>
+        @foreach($attributes['places'] as $place)
+          @foreach($place->floors as $floor)
+          <option value="{{ $floor->id }}"
+            @if(isset($item['place']) && $item['place'] == $floor->id)
+             selected
+            @endif>{{$floor->name}}
+          </option>
+          @endforeach
         @endforeach
       </select>
     </div>
-
   </div>
 </div>

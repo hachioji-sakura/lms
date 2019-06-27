@@ -31,6 +31,9 @@ class UserCalendar extends Model
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
+  public function place_floor(){
+    return $this->belongsTo('App\Models\PlaceFloor', 'place_floor_id');
+  }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMember', 'calendar_id');
   }
@@ -114,7 +117,7 @@ EOT;
   }
   public function scopeFindPlaces($query, $vals, $is_not=false)
   {
-    return $this->scopeFieldWhereIn($query, 'place', $vals, $is_not);
+    return $this->scopeFieldWhereIn($query, 'place_floor_id', $vals, $is_not);
   }
   public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
@@ -303,10 +306,6 @@ EOT;
   public function course_minutes(){
     return $this->get_tag_name('course_minutes');
   }
-  public function place(){
-    if(!isset($this->place)) return "";
-    return $this->get_attribute_name('lesson_place_floor', $this->place);
-  }
   public function work(){
     if(!isset($this->work)) return "";
     return $this->get_attribute_name('work', $this->work);
@@ -410,7 +409,10 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['place_name'] = $this->place();
+    $item['place_floor_name'] = "";
+    if(isset($this->place_floor)){
+      $item['place_floor_name'] = $this->place_floor->name;
+    }
     $item['work_name'] = $this->work();
     $item['teaching_name'] = $this->teaching_name();
 
@@ -496,7 +498,7 @@ EOT;
       'trial_id' => $trial_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
-      'place' => '',
+      'place_floor_id' => 0,
       'work' => '',
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
@@ -524,7 +526,7 @@ EOT;
       'start_time',
       'end_time',
       'remark',
-      'place',
+      'place_floor_id',
       'work'
     ];
     //TODO : グループレッスンの予定確定方式
@@ -672,7 +674,7 @@ EOT;
     }
     return false;
   }
-  public function is_conflict($start_time, $end_time, $place='', $place_floor=''){
+  public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
     $start = strtotime($start_time);
     $end = strtotime($end_time);
     $calendar_starttime = strtotime($this->start_time);
@@ -696,11 +698,11 @@ EOT;
 
     if($end == $calendar_starttime || $start == $calendar_endtime){
       //開始終了が一致した場合、場所をチェック
-      if(!empty($place) && $this->is_same_place($place)===false){
+      if(!empty($place_id) && $this->is_same_place($place_id)===false){
         //場所が異なるのでスケジュール競合
         return true;
       }
-      else if(!empty($place_floor) && $this->is_same_place("",$place_floor)===false){
+      else if(!empty($place_floor_id) && $this->is_same_place(0,$place_floor_id)===false){
         //場所が異なるのでスケジュール競合
         return true;
       }
@@ -717,32 +719,23 @@ EOT;
     if($end == $calendar_starttime || $start == $calendar_endtime) return true;
     return false;
   }
-  public function is_same_place($place='', $place_floor=''){
+  public function is_same_place($place_id=0, $place_floor_id=0){
     //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
-    if(!empty($place)){
-      $calendar_place = $this->get_place($this->place);
-      if($calendar_place==$place){
+    //echo "is_same_place_check:";
+    if(!empty($place_id)){
+      if(isset($this->place_floor) && $this->place_floor->place_id==$place_id){
+        //echo "true<br>";
         return true;
       }
     }
-    else if(!empty($place_floor)){
-      $calendar_place = $this->get_place($this->place);
-      $args_place = $this->get_place($place_floor);
-      if($calendar_place==$args_place){
+    else if(!empty($place_floor_id)){
+      if(isset($this->place_floor) && $this->place_floor->id==$place_floor_id){
+        //echo "true<br>";
         return true;
       }
     }
+    //echo "false<br>";
     return false;
-  }
-  private function get_place($floor){
-    foreach(config('lesson_place_floor') as $place => $floors){
-      foreach($floors as $floor_code => $floor_name){
-        if($floor_code==$floor){
-          return $place;
-        }
-      }
-    }
-    return "";
   }
   public function office_system_api($method){
     $res = null;

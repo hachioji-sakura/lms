@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Models\GeneralAttribute;
+use App\Models\PlaceFloor;
 use App\Models\Lecture;
 use App\Models\Textbook;
 use App\Models\TextbookTag;
@@ -39,7 +40,6 @@ class ImportController extends UserController
     public $api_domain = 'https://hachiojisakura.com/sakura-api';
     public $api_endpoint = [
       'works' => 'api_get_work_explanation',
-      'places' =>  'api_get_place_name',
       'courses' =>  'api_get_course',
       'subjects' =>  'api_get_subject',
       'lessons' =>  'api_get_lesson',
@@ -86,7 +86,6 @@ class ImportController extends UserController
       else if($object=='all'){
         $objects = [
           'works',
-          'places',
           'courses',
           'lessons',
           'subjects',
@@ -108,7 +107,6 @@ class ImportController extends UserController
       else if($object=='attributes'){
         $objects = [
           'works',
-          'places',
           'courses',
           'lessons',
           'subjects',
@@ -164,10 +162,6 @@ class ImportController extends UserController
         }
         $items = $res['data'];
         switch($object){
-          case 'places':
-            $this->logic_name = "場所マスタ取り込み";
-            $res = $this->general_attributes_import($items, 'place', 'id', 'name');
-            break;
           case 'works':
             $this->logic_name = "作業種別マスタ取り込み";
             $res = $this->general_attributes_import($items, 'work', 'id', 'explanation');
@@ -813,11 +807,9 @@ class ImportController extends UserController
       //繰り返し曜日
       if(isset($week[$item["dayofweek"]])) $item["lesson_week"] = $week[$item["dayofweek"]];
 
-      $place = "";
-      $lesson_place_floor = config('replace.lesson_place_floor');
-      if(isset($lesson_place_floor[$item['place_id']])){
-        $place = $lesson_place_floor[$item['place_id']];
-      }
+      $floor_id = 0;
+      $floor = PlaceFloor::_offie_system_place_convert($item['place_id']);
+      if(isset($floor)) $floor_id = $floor->id;
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
       $setting_data = [
@@ -830,7 +822,7 @@ class ImportController extends UserController
         'enable_end_date' => $item["enddate"],
         'remark' => $item["comment"],
         'lecture_id' => $lecture_id,
-        'place' => $place,
+        'place_floor_id' => $floor_id,
         'work' => $work,
         'status' => 'fix',
         'create_user_id' => 1
@@ -852,7 +844,7 @@ class ImportController extends UserController
             ->where('from_time_slot', $item['starttime'])
             ->where('to_time_slot', $item['endtime'])
             ->where('work' , $work)
-            ->where('place', $place)
+            ->where('place_floor_id', $floor_id)
             ->first();
           if(isset($__setting)){
             //おそらく同一のグループレッスンと思われる予定が見つかった
@@ -938,7 +930,8 @@ class ImportController extends UserController
       if(empty($item['starttime'])) return false;
       if(empty($item['endtime'])) return false;
       $tags = [];
-
+      $start_time = $item['ymd'].' '.$item['starttime'];
+      $end_time = $item['ymd'].' '.$item['endtime'];
       //授業時間
       $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
 
@@ -1051,12 +1044,16 @@ class ImportController extends UserController
         $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
       }
       //場所
-      $place = "";
-      $lesson_place_floor = config('replace.lesson_place_floor');
-      if(isset($lesson_place_floor[$item['place_id']])){
-        $place = $lesson_place_floor[$item['place_id']];
+      $floor = PlaceFloor::_offie_system_place_convert($item['place_id']);
+      $floor_id = 0;
+      $sheat_id = 0;
+      if(isset($floor)){
+        $floor_id = $floor->id;
+        $sheat = $floor->get_free_seat($start_time, $end_time);
+        if(isset($sheat)){
+          $sheat_id = $sheat->id;
+        }
       }
-
       //work
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
@@ -1067,11 +1064,11 @@ class ImportController extends UserController
       if(isset($_member)) $items = $_member->calendar;
       if(!isset($items) && !empty($user_id) && ($work==7 || $work==8)){
         $__items = UserCalendar::where('user_id', $user_id)
-          ->where('start_time', $item['ymd'].' '.$item['starttime'])
-          ->where('end_time' , $item['ymd'].' '.$item['endtime'])
+          ->where('start_time', $start_time)
+          ->where('end_time' , $end_time)
           ->where('work' , $work)
           ->where('lecture_id' , $lecture_id)
-          ->where('place', $place)
+          ->where('place_floor_id', $floor_id)
           ->first();
         if(isset($__items)){
           //おそらく同一のグループレッスンと思われる予定が見つかった
@@ -1079,14 +1076,14 @@ class ImportController extends UserController
         }
       }
       $update_form = [
-        'start_time' => $item['ymd'].' '.$item['starttime'],
-        'end_time' => $item['ymd'].' '.$item['endtime'],
+        'start_time' => $start_time,
+        'end_time' => $end_time,
         'user_id' => $user_id,
         'lecture_id' => $lecture_id,
         'exchanged_calendar_id' => $exchanged_calendar_id,
         'remark' => $remark,
         'status' => $status,
-        'place' => $place,
+        'place_floor_id' => $floor_id,
         'work' => $work,
       ];
       if(isset($items)){
@@ -1125,6 +1122,7 @@ class ImportController extends UserController
             'rest_type' => $item['cancel'],
             'remark' => $item['cancel_reason'],
             'schedule_id' => $item['id'],
+            'place_floor_sheat_id' => $sheat_id,
             'create_user_id' => 1
           ]);
         }
@@ -1146,6 +1144,7 @@ class ImportController extends UserController
           'calendar_id' => $calendar_id,
           'status' => $teacher_status,
           'schedule_id' => $item['id'],
+          'place_floor_sheat_id' => $sheat_id,
           'user_id' => $user_id,
           'create_user_id' => 1
         ]);
@@ -1191,7 +1190,7 @@ class ImportController extends UserController
         ->where('from_time_slot', $item['starttime'])
         ->where('to_time_slot', $item['endtime'])
         ->where('work', $work)
-        ->where('place', $place)
+        ->where('place_floor_id', $floor_id)
         ->where('lesson_week', $lesson_week)
         ->enable()
         ->get();

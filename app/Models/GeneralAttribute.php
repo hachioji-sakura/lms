@@ -47,10 +47,6 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', 'course')->findVal($val);
   }
-  public function scopePlace($query, $val)
-  {
-      return $query->where('attribute_key', 'lesson_place_floor')->findVal($val);
-  }
   public function scopeWork($query, $val)
   {
       return $query->where('attribute_key', 'work')->findVal($val);
