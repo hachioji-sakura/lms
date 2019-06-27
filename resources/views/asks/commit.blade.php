@@ -21,12 +21,12 @@
     </div>
     <script>
     $(function(){
-      base.pageSettinged("_form", null);
+      base.pageSettinged("commit_form", null);
       //submit
-      $("button.btn-submit").on('click', function(e){
+      $("#commit_form button.btn-submit").on('click', function(e){
         e.preventDefault();
-        if(front.validateFormValue('_form')){
-          $("form").submit();
+        if(front.validateFormValue('#commit_form')){
+          $("#commit_form form").submit();
         }
       });
     });

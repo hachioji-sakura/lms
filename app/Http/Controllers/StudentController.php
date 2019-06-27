@@ -479,6 +479,21 @@ class StudentController extends UserController
  public function get_ask($form, $user_id){
    $list_title = "依頼一覧";
    if(!isset($form['list'])) $form['list'] = '';
+   switch($form['list']){
+     case "teacher_change":
+       $list_title = '代講依頼一覧';
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['teacher_change'];
+       }
+       break;
+     case "lecture_cancel":
+       $list_title = '休講依頼一覧';
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['lecture_cancel'];
+       }
+       break;
+   }
+
    if(!isset($form['search_type'])){
      $form['search_type'] = [];
    }

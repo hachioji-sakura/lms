@@ -34,11 +34,22 @@
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
-          <i class="fa fa-calendar-check nav-icon"></i>
+          <i class="fa fa-calendar-times nav-icon"></i>
           <p>
             休講申請
             @if($lecture_cancel_count > 0)
             <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=teacher_change" class="nav-link @if($view=="ask" && $list=="teacher_change") active @endif">
+          <i class="fa fa-exchange-alt nav-icon"></i>
+          <p>
+            代講依頼
+            @if($teacher_change_count > 0)
+            <span class="badge badge-danger right">{{$teacher_change_count}}</span>
             @endif
           </p>
         </a>
