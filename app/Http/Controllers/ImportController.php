@@ -795,12 +795,16 @@ class ImportController extends UserController
         }
       }
       else if($_data_type=="teacher"){
+        if(!isset($teacher)){
+          @$this->remind("事務管理システム:id=".$item['id']."/teacher_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
         $user_id = $teacher->user_id;
       }
       else if($_data_type=="manager"){
         $manager = User::tag('manager_no', $item['user_id'])->first();
         if(!isset($manager)){
-          @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:id=".$item['id']."/manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
         $manager = $manager->manager;
