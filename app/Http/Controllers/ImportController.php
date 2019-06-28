@@ -83,6 +83,10 @@ class ImportController extends UserController
         $res = $this->concealment();
         return $res;
       }
+      else if($object==='test'){
+        $res = $this->test();
+        return $res;
+      }
       else if($object=='all'){
         $objects = [
           'works',
@@ -688,22 +692,20 @@ class ImportController extends UserController
       $manager = null;
       $item['teacher_no'] = $this->get_id_value('teacher', $item);
       if($item['teacher_no']>0){
-        $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
+        $teacher = Teacher::hasTag('teacher_no', $item['teacher_no'])->first();
         if(!isset($teacher)){
-          @$this->remind("事務管理システム:teacher_no=".$item['teacher_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $teacher = $teacher->teacher;
       }
       $item['student_no'] = $this->get_id_value('student', $item);
       $item['student_no'] = intval($item['student_no']);
       if($item['student_no']>0){
-        $student = User::tag('student_no', $item['student_no'])->first();
+        $student = Student::hasTag('student_no', $item['student_no'])->first();
         if(!isset($student)){
           @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $student = $student->student;
       }
 
       //可能性があるケース
@@ -759,8 +761,8 @@ class ImportController extends UserController
         'lesson_week' => $item["lesson_week"],
         'from_time_slot' => $item["starttime"],
         'to_time_slot' => $item["endtime"],
-        'enable_start_date' => $item["startdate"],
-        'enable_end_date' => $item["enddate"],
+        'enable_start_date' => $this->get_date($item["startdate"]),
+        'enable_end_date' => $this->get_date($item["enddate"]),
         'remark' => $item["comment"],
         'lecture_id' => $lecture_id,
         'place_floor_id' => $floor_id,
@@ -775,6 +777,10 @@ class ImportController extends UserController
       $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
+        if(!isset($teacher)){
+          @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
         $user_id = $teacher->user_id;
         if(!isset($setting) && ($work==7 || $work==8) && !empty($user_id)){
           //$user_idが設定されるケースは、事務or講師
@@ -795,15 +801,18 @@ class ImportController extends UserController
         }
       }
       else if($_data_type=="teacher"){
+        if(!isset($teacher)){
+          @$this->remind("事務管理システム:id=".$item['id']."/teacher_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
         $user_id = $teacher->user_id;
       }
       else if($_data_type=="manager"){
-        $manager = User::tag('manager_no', $item['user_id'])->first();
+        $manager = Manager::hasTag('manager_no', $item['user_id'])->first();
         if(!isset($manager)){
-          @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:id=".$item['id']."/manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $manager = $manager->manager;
         $user_id = $manager->user_id;
       }
       if(isset($setting)){
@@ -883,21 +892,19 @@ class ImportController extends UserController
       $user_id = 0;
       $student = null;
       if($item['student_no'] > 0){
-        $student = User::tag('student_no', $item['student_no'])->first();
+        $student = Student::hasTag('student_no', $item['student_no'])->first();
         if(!isset($student)){
           @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $student = $student->student;
       }
       $teacher = null;
       if($item['teacher_no']>0){
-        $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
-        if(!isset($teacher) || !isset($teacher->teacher) || !isset($teacher->teacher->user_id)){
+        $teacher = Teacher::hasTag('teacher_no', $item['teacher_no'])->first();
+        if(!isset($teacher)){
           @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $teacher = $teacher->teacher;
         $user_id = $teacher->user_id;
       }
 
@@ -921,12 +928,11 @@ class ImportController extends UserController
       }
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
-        $manager = User::tag('manager_no', $item['user_id'])->first();
-        if(!isset($manager) || !isset($manager->manager) || !isset($manager->manager->user_id)){
+        $manager = Manager::hasTag('manager_no', $item['user_id'])->first();
+        if(!isset($manager)){
           @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
-        $manager = $manager->manager;
         $user_id = $manager->user_id;
         $status = "fix";
       }
@@ -1438,6 +1444,13 @@ class ImportController extends UserController
       if(empty($value)) return $is_null_value;
       return $value;
     }
+    private function get_date($str_date){
+      if(empty($str_date)) return null;
+      if(strlen($str_date)!=10) return null;
+      if($str_date=='0000-00-00') return null;
+      if(substr($str_date, 2)!='20') return null;
+      return $str_date;
+    }
     private function concealment(){
       $ret = [];
       $env = config('app.env');
@@ -1463,5 +1476,12 @@ EOT;
         @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
       }
       return $ret;
+    }
+    private function test(){
+      $u = Student::hasTag('student_no', '1053')->first();
+      if(isset($u)){
+        return $u->id;
+      }
+      return "";
     }
 }
