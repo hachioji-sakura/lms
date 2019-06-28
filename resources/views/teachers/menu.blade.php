@@ -36,7 +36,7 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=recent" class="nav-link @if($view=="schedule" && $list=="recent") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
-            直近予定
+            本日予定
             @if($recent_count > 0)
             <span class="badge badge-primary right">{{$recent_count}}</span>
             @endif

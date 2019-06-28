@@ -1,4 +1,4 @@
-<div class="col-6 col-lg-6">
+<div class="col-12 col-lg-6">
   <div class="form-group">
     <label for='place' class="w-100">
       場所

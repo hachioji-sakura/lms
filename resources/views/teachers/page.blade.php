@@ -180,6 +180,11 @@
                       <br>
                       <i class="fa fa-clock mr-1"></i>{{$student->current_calendar->timezone}}
                       <br>
+                      <i class="fa fa-map-marker mr-1"></i>{{$student->current_calendar["place_floor_name"]}}
+                      <br>
+                      <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$student->current_calendar['status']]}} mt-1 mr-1">{{$student->current_calendar["status_name"]}}</small>
+                      {{--
+                      <br>
                       @foreach($student->current_calendar['subject'] as $subject)
                       <span class="text-xs mx-2">
                         <small class="badge badge-primary mt-1 mr-1">
@@ -187,6 +192,7 @@
                         </small>
                       </span>
                       @endforeach
+                      --}}
                   @else
                   -
                   @endif
@@ -196,31 +202,31 @@
                     @if($user->role==="teacher" && $student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
-                        {{$student->current_calendar->status_name}}
+                        詳細
                       </a>
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
                       {{-- 予定確認 --}}
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                         <i class="fa fa-envelope mr-1"></i>/
-                        {{$student->current_calendar->status_name}}
+                        詳細
                       </a>
                     @elseif($student->current_calendar->status==="presence")
                       {{-- 出席済み --}}
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
                         <i class="fa fa-check-circle mr-1"></i>
-                        {{$student->current_calendar->status_name}}
+                        詳細
                       </a>
                     @elseif($student->current_calendar->status==="new")
                       {{-- 予定下書き --}}
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-calendar-check mr-1"></i>
-                        {{$student->current_calendar->status_name}}
+                        詳細
                       </a>
                     @else
                       <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-file-alt mr-1"></i>
-                        {{$student->current_calendar->status_name}}
+                        詳細
                       </a>
                     @endif
                   @endif

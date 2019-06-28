@@ -395,6 +395,12 @@ class StudentController extends UserController
        break;
      case "cancel":
        $list_title = '休み・キャンセル';
+       if(!isset($form['search_from_date'])){
+         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
+       }
+       if(!isset($form['search_to_date'])){
+         $form['search_to_date'] = date('Y-m-d', strtotime("+14 day"));
+       }
        if(!isset($form['search_status'])){
          $form['search_status'] = ['cancel', 'rest', 'lecture_cancel'];
        }
@@ -413,10 +419,10 @@ class StudentController extends UserController
      case "recent":
        $list_title = '直近予定';
        if(!isset($form['search_from_date'])){
-         $form['search_from_date'] = date('Y-m-1', strtotime("now"));
+         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
        }
        if(!isset($form['search_to_date'])){
-         $form['search_to_date'] = date('Y-m-t', strtotime("+1 month"));
+         $form['search_to_date'] = date('Y-m-d', strtotime("+1 day"));
        }
        if(!isset($form['search_status'])){
          $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
