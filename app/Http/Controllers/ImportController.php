@@ -690,7 +690,7 @@ class ImportController extends UserController
       if($item['teacher_no']>0){
         $teacher = User::tag('teacher_no', $item['teacher_no'])->first();
         if(!isset($teacher)){
-          @$this->remind("事務管理システム:teacher_no=".$item['teacher_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
         $teacher = $teacher->teacher;
@@ -759,8 +759,8 @@ class ImportController extends UserController
         'lesson_week' => $item["lesson_week"],
         'from_time_slot' => $item["starttime"],
         'to_time_slot' => $item["endtime"],
-        'enable_start_date' => $item["startdate"],
-        'enable_end_date' => $item["enddate"],
+        'enable_start_date' => $this->get_date($item["startdate"]),
+        'enable_end_date' => $this->get_date($item["enddate"]),
         'remark' => $item["comment"],
         'lecture_id' => $lecture_id,
         'place_floor_id' => $floor_id,
@@ -1441,6 +1441,13 @@ class ImportController extends UserController
       }
       if(empty($value)) return $is_null_value;
       return $value;
+    }
+    private function get_date($str_date){
+      if(empty($str_date)) return null;
+      if(strlen($str_date)!=10) return null;
+      if($str_date=='0000-00-00') return null;
+      if(substr($str_date, 2)!='20') return null;
+      return $str_date;
     }
     private function concealment(){
       $ret = [];
