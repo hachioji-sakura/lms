@@ -901,7 +901,7 @@ class ImportController extends UserController
       $teacher = null;
       if($item['teacher_no']>0){
         $teacher = Teacher::hasTag('teacher_no', $item['teacher_no'])->first();
-        if(!isset($teacher) || !isset($teacher->teacher) || !isset($teacher->teacher->user_id)){
+        if(!isset($teacher)){
           @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
@@ -929,7 +929,7 @@ class ImportController extends UserController
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
         $manager = Manager::hasTag('manager_no', $item['user_id'])->first();
-        if(!isset($manager) || !isset($manager->manager) || !isset($manager->manager->user_id)){
+        if(!isset($manager)){
           @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
           return false;
         }
