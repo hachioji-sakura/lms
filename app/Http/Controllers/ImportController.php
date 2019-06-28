@@ -83,6 +83,10 @@ class ImportController extends UserController
         $res = $this->concealment();
         return $res;
       }
+      else if($object==='test'){
+        $res = $this->test();
+        return $res;
+      }
       else if($object=='all'){
         $objects = [
           'works',
@@ -775,6 +779,10 @@ class ImportController extends UserController
       $user_id = 0;
       if($_data_type == 'student_teacher'){
         //生徒＋講師指定がある場合
+        if(!isset($teacher)){
+          @$this->remind("事務管理システム:teacher_no=".$item['teacher_no']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
         $user_id = $teacher->user_id;
         if(!isset($setting) && ($work==7 || $work==8) && !empty($user_id)){
           //$user_idが設定されるケースは、事務or講師
@@ -1474,5 +1482,12 @@ EOT;
         @$this->remind("講師・事務のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
       }
       return $ret;
+    }
+    private function test(){
+      $u = User::tag('teacher_no', '100075')->first();
+      if(isset($u)){
+        return $u->id;
+      }
+      return "";
     }
 }
