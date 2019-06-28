@@ -39,7 +39,7 @@ class ImageController extends UserController
         'domain' => $this->domain,
         'domain_name' => $this->domain_name,
         'user' => $user,
-        'use_icons' => $this->get_image(),
+        'use_icons' => $this->get_image($request),
         'user_id' => $request->user_id,
         'search_word'=>$request->search_word,
         'search_status'=>$request->status,
@@ -87,7 +87,7 @@ class ImageController extends UserController
       ]);
       $form = $request->all();
       if ($request->file('image')->isValid([])) {
-        $res = $this->save_image($request->file('image'), date('Y-m-d'), $form['alias'], config('aws_s3.icon_folder'));
+        $res = $this->save_image($request, $request->file('image'), date('Y-m-d'), $form['alias'], config('aws_s3.icon_folder'));
         return view('sample.create');
         //return redirect('/images/create')->with('success', "");
       }
@@ -132,7 +132,7 @@ class ImageController extends UserController
       ]);
       if($request->hasFile('image')){
         if ($request->file('image')->isValid([])) {
-          $res = $this->save_image($request->file('image'), "9999-12-31", "", config('aws_s3.icon_folder'));
+          $res = $this->save_image($request, $request->file('image'), "9999-12-31", "", config('aws_s3.icon_folder'));
           if($this->is_success_response($res)){
             $image_id = $res["data"]->id;
           }
@@ -194,7 +194,7 @@ class ImageController extends UserController
       return redirect('/images');
     }
 
-    private function save_image($request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
+    private function save_image($request, $request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
       $user = $this->login_details($request);
       $image = new Image;

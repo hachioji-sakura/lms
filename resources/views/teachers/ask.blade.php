@@ -12,7 +12,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
-            <i class="fa fa-calendar mr-1"></i>
+            <i class="fa fa-envelope-square mr-1"></i>
             {{$list_title}}
           </h3>
           <div class="card-title text-sm">

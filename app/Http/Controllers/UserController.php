@@ -75,7 +75,7 @@ class UserController extends Controller
 
     return $items;
   }
-  protected function get_image()
+  protected function get_image($request)
   {
     $user = $this->login_details($request);
     return Image::findCreateUser($user->user_id)->publiced()->get();

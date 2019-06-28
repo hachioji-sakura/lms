@@ -37,7 +37,7 @@
   @else
   {{-- 参照のみ --}}
   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm mr-1">
-    <i class="fa fa-file-alt mr-1"></i>{{$calendar["status_name"]}}
+    <i class="fa fa-file-alt mr-1"></i>詳細
   </a>
   @endif
 @endif

@@ -99,7 +99,7 @@
       <i class="fa fa-user-alt"></i>
       --}}
       <img src="{{$user->icon}}" class="img-size-32 mr-1 img-circle">
-      {{$user->name}}
+      <span class="d-none d-sm-inline-block">{{$user->name}}</span>
     </a>
     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
       {{--
