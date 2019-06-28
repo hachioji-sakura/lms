@@ -338,14 +338,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_manager($item){
-      if(empty($item['staff_no']) || intval($item['staff_no'])==0){
-        if(empty($item['staff_id']) || intval($item['staff_id'])==0){
-          return false;
-        }
-        //TODO : ネーミング問題、_idだったり,_noだったりする
-        //後続はstaff_noで統一
-        $item['staff_no'] = $item['staff_id'];
-      }
+      $item['staff_no'] = $this->get_id_value('staff', $item);
       $item['email'] = $item['mail_address'];
       if(empty($item['email'])) $item['email'] = $item['staff_no'];
       $item['image_id'] = 4;
@@ -371,9 +364,9 @@ class ImportController extends UserController
           $item['name_first'] = $names[1];
       }
 
-      $user = User::where('email', $item['email'])->first();
-      $user_id = 0;
-      if(!isset($user)){
+      $manager = Manager::hasTag('manager_no', $item['staff_no'])->first();
+
+      if(!isset($manager)){
         //認証情報登録
         $res = $this->user_create([
           'name' => $item['staff_no'],
@@ -384,7 +377,7 @@ class ImportController extends UserController
         ]);
         if($this->is_success_response($res)){
           //講師情報登録
-          $_item = Manager::create([
+          $manager = Manager::create([
             'name_last' => $item['name_last'],
             'name_first' => $item['name_first'],
             'kana_last' => $item['kana_last'],
@@ -398,27 +391,19 @@ class ImportController extends UserController
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['staff_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
+        $this->store_user_tag($manager->user_id, 'manager_no', $item['staff_no'], false);
       }
       else {
-        $user_id = $user->id;
-        $manager = Manager::where('user_id', $user_id)->first();
-        if(!isset($manager)){
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['staff_no']."認証あり / 講師情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
-          return false;
-        }
         $manager->update([
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],
           'kana_last' => $item['kana_last'],
           'kana_first' => $item['kana_first'],
         ]);
-        $user->update([
+        $manager->user->update([
           'status' => $item['status'],
         ]);
       }
-      UserTag::where('user_id',$user_id)->delete();
-      //事務属性登録
-      $this->store_user_tag($user_id, 'manager_no', $item['staff_no'], false);
       return true;
     }
 
@@ -454,9 +439,8 @@ class ImportController extends UserController
           $item['name_first'] = $names[1];
       }
 
-      $user = User::where('email', $item['email'])->first();
-      $user_id = 0;
-      if(!isset($user)){
+      $teacher = Teacher::hasTag('teacher_no', $item['teacher_no'])->first();
+      if(!isset($teacher)){
         //認証情報登録
         $res = $this->user_create([
           'name' => $item['teacher_no'],
@@ -468,7 +452,7 @@ class ImportController extends UserController
         if($this->is_success_response($res)){
           //講師情報登録
           $Teacher = new Teacher;
-          $_item = $Teacher->create([
+          $teacher = $Teacher->create([
             'name_last' => $item['name_last'],
             'name_first' => $item['name_first'],
             'kana_last' => $item['kana_last'],
@@ -476,35 +460,27 @@ class ImportController extends UserController
             'user_id' => $res['data']->id,
             'create_user_id' => 1
           ]);
-          $user_id = $res['data']->id;
         }
         else {
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
+        //講師属性登録
+        $this->store_user_tag($teacher->user_id, 'teacher_no', $item['teacher_no'], false);
+        if($item['lesson_id']!='0') $this->store_user_tag($teacher->user_id, 'lesson', $item['lesson_id'], false);
+        if($item['lesson_id2']!='0') $this->store_user_tag($teacher->user_id, 'lesson', $item['lesson_id2'], false);
       }
       else {
-        $user_id = $user->id;
-        $teacher = Teacher::where('user_id', $user_id)->first();
-        if(!isset($teacher)){
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."認証あり / 講師情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
-          return false;
-        }
         $teacher->update([
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],
           'kana_last' => $item['kana_last'],
           'kana_first' => $item['kana_first'],
         ]);
-        $user->update([
+        $teacher->user->update([
           'status' => $item['status'],
         ]);
       }
-      UserTag::where('user_id',$user_id)->delete();
-      //講師属性登録
-      $this->store_user_tag($user_id, 'teacher_no', $item['teacher_no'], false);
-      if($item['lesson_id']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id'], false);
-      if($item['lesson_id2']!='0') $this->store_user_tag($user_id, 'lesson', $item['lesson_id2'], false);
       return true;
     }
     /**
@@ -569,10 +545,9 @@ class ImportController extends UserController
           $item['kana_last'] = $kanas[0];
           $item['kana_first'] = $kanas[1];
       }
-
-      $parent_user = User::where('email', $item['email'])->first();
-      $parent = null;
-      if(!isset($parent_user)){
+      //student_noを持った生徒が登録済みかどうか
+      $student = Student::hasTag('student_no', $item['student_no'])->first();
+      if(!isset($student)){
         //認証情報登録(保護者として登録）
         $res = $this->user_create([
           'name' => $item['family_name'].'',
@@ -598,31 +573,6 @@ class ImportController extends UserController
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
-      }
-      else {
-        $parent = StudentParent::where('user_id', $parent_user->id)->first();
-        //認証情報存在：既存更新
-       if(!isset($parent)){
-         @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 保護者情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
-         return false;
-       }
-       $parent->update([
-         'name_last' => $item['family_name'],
-         'name_first' => $item['first_name'],
-         'kana_last' => $item['kana_last'],
-         'kana_first' => $item['kana_first'],
-       ]);
-       if($item['status']===9){
-         //削除時のみ更新
-         $parent_user->update([
-           'status' => $item['status'],
-         ]);
-       }
-      }
-
-      $user = User::tag('student_no', $item['student_no'])->first();
-      $student = null;
-      if(!isset($user)){
         //認証情報なし：新規登録
         $res = $this->user_create([
           'name' => $item['student_no'],
@@ -650,14 +600,14 @@ class ImportController extends UserController
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
+        $StudentRelation = new StudentRelation;
+        $StudentRelation->create([
+          'student_id' => $student->id,
+          'student_parent_id' => $parent->id,
+          'create_user_id' => 1,
+        ]);
       }
       else {
-         //認証情報存在：既存更新
-        $student = Student::where('user_id', $user->id)->first();
-        if(!isset($student)){
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."認証あり / 生徒情報なしエラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
-          return false;
-        }
         $student->update([
           'name_last' => $item['family_name'],
           'name_first' => $item['first_name'],
@@ -668,31 +618,22 @@ class ImportController extends UserController
         ]);
         if($item['status']===9){
           //削除時のみ更新
-          $user->update([
+          $student->user->update([
             'status' => $item['status'],
           ]);
         }
       }
-
       //@$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);
-      //家族情報（関連性）の登録
-      StudentRelation::where('student_id',$student->id)->delete();
-      $StudentRelation = new StudentRelation;
-      $StudentRelation->create([
-        'student_id' => $student->id,
-        'student_parent_id' => $parent->id,
-        'create_user_id' => 1,
-      ]);
       //生徒属性登録
-      UserTag::where('user_id', $user->id)->delete();
+      UserTag::where('user_id', $student->user_id)->delete();
       //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
       //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
-      $this->store_user_tag($user->id, 'student_no', $item['student_no'], false);
-      $this->store_user_tag($user->id, 'grade', $item['grade']);
+      $this->store_user_tag($student->user_id, 'student_no', $item['student_no'], false);
+      $this->store_user_tag($student->user_id, 'grade', $item['grade']);
       //TODO :以下の属性は申し込み時点でとっていない
-      $this->store_user_tag($user->id, 'grade_adj', $item['grade_adj']);
-      $this->store_user_tag($user->id, 'student_type', $item['fee_free']);
-      $this->store_user_tag($user->id, 'student_type', $item['jyukensei']);
+      $this->store_user_tag($student->user_id, 'grade_adj', $item['grade_adj']);
+      $this->store_user_tag($student->user_id, 'student_type', $item['fee_free']);
+      $this->store_user_tag($student->user_id, 'student_type', $item['jyukensei']);
       return true;
     }
     /**
@@ -1475,9 +1416,6 @@ class ImportController extends UserController
 
       return true;
     }
-    private function store_student_group(){
-
-    }
     private function remind($message, $type, $title){
       @$this->send_slack($message, $type, $title);
     }
@@ -1506,7 +1444,7 @@ class ImportController extends UserController
       if($env!=="product"){
         //本番でない場合、保護者あてのメールを隠す
         $query = <<<EOT
-        update users u inner join student_parents t on u.id = t.user_id set email=concat('yasui.hideo+p',t.id,'@gmail.com')
+        update common.users u inner join common.student_parents t on u.id = t.user_id set email=concat('yasui.hideo+p',t.id,'@gmail.com')
 EOT;
         $ret[] = DB::update($query, []);
         @$this->remind("契約者のメールアドレスを秘匿(".$env.")", 'info', $this->logic_name);
@@ -1514,11 +1452,11 @@ EOT;
       if($env!=="product" && $env !== "staging"){
         //staging or productでない場合、講師あて、事務あてのメールを隠す
         $query = <<<EOT
-          update users u inner join teachers t on u.id = t.user_id set email=concat('yasui.hideo+t',t.id,'@gmail.com')
+          update common.users u inner join common.teachers t on u.id = t.user_id set email=concat('yasui.hideo+t',t.id,'@gmail.com')
 EOT;
         $ret[] = DB::update($query, []);
         $query = <<<EOT
-          update users u inner join managers t on u.id = t.user_id set email=concat('yasui.hideo+m',t.id,'@gmail.com')
+          update common.users u inner join common.managers t on u.id = t.user_id set email=concat('yasui.hideo+m',t.id,'@gmail.com')
           where u.id > 1
 EOT;
         $ret[] = DB::update($query, []);
