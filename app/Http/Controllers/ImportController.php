@@ -1026,6 +1026,7 @@ class ImportController extends UserController
         //$yasumi = $_attr->attribute_value;
         $remark.='[cancel='.$item['cancel'].']';
         if($item['cancel']==='c')  $status = 'cancel';
+        else if($item['cancel']==='a1')  $status = 'lecture_cancel';
         else $status = 'rest';
       }
       if(!empty(trim($item['confirm']))){
@@ -1033,8 +1034,8 @@ class ImportController extends UserController
         //出席もしくは出勤確認(confirm):“f”、休み:”a”、休み1:”a1”、休み2:”a2”、振替出席(change):”c”
         $remark.='[confirm='.$item['confirm'].']';
         if($item['confirm']==='f')  $status = 'presence';
-        if($item['confirm']==='c')  $status = 'presence';
-        if($item['confirm']==='a2')  $status = 'absence';
+        else if($item['confirm']==='c')  $status = 'presence';
+        else if($item['confirm']==='a2')  $status = 'absence';
       }
 
       //振替
@@ -1143,6 +1144,8 @@ class ImportController extends UserController
         UserCalendarMember::create([
           'calendar_id' => $calendar_id,
           'status' => $teacher_status,
+          'rest_type' => $item['cancel'],
+          'remark' => $item['cancel_reason'],
           'schedule_id' => $item['id'],
           'place_floor_sheat_id' => $sheat_id,
           'user_id' => $user_id,
@@ -1156,7 +1159,7 @@ class ImportController extends UserController
       if(!empty(trim($item['subject_expr']))){
         $tags['subject_expr'] = trim($item['subject_expr']);
       }
-
+      //TODO lectureはほぼ使わない
       if(isset($lecture)) {
         $lecture_id = $lecture->id;
         $replace_course_type = config('replace.course_type');
@@ -1215,6 +1218,21 @@ class ImportController extends UserController
       if($setting_id > 0){
         $calendar->update(['user_calendar_setting_id' => $setting_id]);
       }
+      //ステータス整合性チェック
+      $calendar = UserCalendar::where('id', $calendar_id)->first();
+
+      if($calendar->status=='rest' && ($calendar->work==7 || $calendar->work==8)){
+        foreach($calendar->members as $member){
+          $s = Student::where('user_id', $member->user_id)->first();
+          if(!isset($s)) continue;
+          if($member->status=="fix"){
+            //一人でも出席がいるのに、休みとなっていた
+            $calendar->update(['status' => 'fix']);
+            break;
+          }
+        }
+      }
+
       return true;
     }
 
