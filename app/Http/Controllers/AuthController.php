@@ -70,7 +70,7 @@ class AuthController extends UserController
      $this->send_mail($email,
       'パスワード再設定',
       [
-      'user_name' => $user->name,
+      'user_name' => $user->details()["name"],
       'access_key' => $access_key
       ],
       'text',
