@@ -1478,7 +1478,7 @@ EOT;
       return $ret;
     }
     private function test(){
-      $u = Teacher::hasTag('teacher_no', '100075')->first();
+      $u = Student::hasTag('student_no', '1053')->first();
       if(isset($u)){
         return $u->id;
       }
