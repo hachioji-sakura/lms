@@ -148,7 +148,7 @@ $(function(){
     });
     form_data["student_name"] = _snames;
 
-    var _names = ["place", "student_group"];
+    var _names = ["place_floor_id", "student_group"];
     $.each(_names, function(index, value) {
       if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();

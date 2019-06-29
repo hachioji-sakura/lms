@@ -71,9 +71,9 @@
                 <div class="row p-2">
                   <div class="col-7 col-lg-4 col-md-4">
                     <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="詳細" page_form="dialog" page_url="/student_groups/{{$item["id"]}}" >
-                      <i class="fa fa-calendar mx-1"></i>{{$item["title"]}}
+                      <i class="fa fa-users mx-1"></i>{{$item["title"]}}
                       <br>
-                      <i class="fa fa-clock mx-1"></i>{{$item["type_name"]}}
+                      <i class="fa fa-star mx-1"></i>{{$item["type_name"]}}
                     </a>
                   </div>
                   <div class="col-5 col-lg-4 col-md-4">

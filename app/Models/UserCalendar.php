@@ -498,7 +498,7 @@ EOT;
       'trial_id' => $trial_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
-      'place_floor_id' => 0,
+      'place_floor_id' => $form['place_floor_id'],
       'work' => '',
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
