@@ -198,7 +198,7 @@ class UserCalendarController extends MilestoneController
     $form['kids_lesson'] = $request->get('kids_lesson');
     $form['lesson'] = $request->get('lesson');
     $form['course_type'] = $request->get('course_type');
-    $form['place'] = $request->get('place');
+    $form['place_floor_id'] = $request->get('place_floor_id');
     $form['is_exchange'] = false;
     //生徒と講師の情報が予定追加時には必須としている
     //講師の指定

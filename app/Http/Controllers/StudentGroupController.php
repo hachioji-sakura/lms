@@ -98,8 +98,8 @@ class StudentGroupController  extends MilestoneController
       if(!isset($item)){
         abort(404, 'ページがみつかりません(1)');
       }
-      if($this->is_manager($user->role)!==true && $user->id==$item->teacher_id){
-        abort(403, 'このページにはアクセスできません('.$user->id.'!='.$item->teacher_id.')');
+      if($this->is_manager($user->role)!==true && $user->id!=$item->teacher_id){
+        abort(403, 'このページにはアクセスできません('.$user->id.'!='.$item->teacher_id.')('.$this->is_manager($user->role).')');
       }
 
       $ret['item'] = $item->details();

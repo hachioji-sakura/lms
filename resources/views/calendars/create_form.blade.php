@@ -38,7 +38,7 @@
     <?php
       $form_data = ["teacher_name" => "講師",
                     "start_time"=>"開始日時",
-                    "place_name"=>"場所",
+                    "place_floor_id_name"=>"場所",
                     "course_minutes_name"=>"授業時間",
                     "course_type_name"=>"コース",
                     "student_name"=>"生徒",
