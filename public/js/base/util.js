@@ -719,7 +719,6 @@
 		clearLocalData: function() {
 			try {
 				sessionStorage.clear();
-				sessionStorage.clear();
 			}
 			catch(e){
 				return false;
@@ -960,3 +959,6 @@ if(!window.console) {
 	window.console = { log: function(msg){
 	} };
 }
+$(function(){
+	translate.translate_start();
+});

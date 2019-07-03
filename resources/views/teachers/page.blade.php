@@ -57,8 +57,8 @@
             <i class="fa fa-calendar"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">カレンダー</b>
-            <span class="text-sm">授業予定をカレンダー表示</span>
+            <b class="info-box-text text-lg">{{__('labels.calendar_page')}}</b>
+            <span class="text-sm">{{__('labels.calendar_page_description')}}</span>
           </div>
         </div>
         </a>
@@ -70,8 +70,10 @@
             <i class="fa fa-clock"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">授業予定一覧</b>
-            <span class="text-sm">授業予定をリスト表示</span>
+            <b class="info-box-text text-lg">{{__('labels.schedule_list')}}</b>
+            <span class="text-sm">{{__('labels.schedule_list_description')}}</span>
+            <b class="info-box-text text-lg"></b>
+            <span class="text-sm"></span>
           </div>
         </div>
         </a>
@@ -83,8 +85,8 @@
             <i class="fa fa-plus"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">授業追加</b>
-            <span class="text-sm">授業の追加・振替</span>
+            <b class="info-box-text text-lg">{{__('labels.schedule_add')}}</b>
+            <span class="text-sm">{{__('labels.schedule_add_description')}}</span>
           </div>
         </div>
         </a>
@@ -96,8 +98,8 @@
             <i class="fa fa-tasks"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">勤務実績</b>
-            <span class="text-sm">月末の実績登録</span>
+            <b class="info-box-text text-lg">{{__('labels.work_record')}}</b>
+            <span class="text-sm">{{__('labels.work_record_description')}}</span>
           </div>
         </div>
         </a>
@@ -109,8 +111,8 @@
             <i class="fa fa-users"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">生徒グループ</b>
-            <span class="text-sm">グループ、ファミリーの管理</span>
+            <b class="info-box-text text-lg">{{__('labels.student_group')}}</b>
+            <span class="text-sm">{{__('labels.student_group_description')}}</span>
           </div>
         </div>
         </a>
@@ -122,6 +124,9 @@
             <i class="fa fa-calendar-alt"></i>
           </span>
           <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">{{__('labels.student_group')}}</b>
+            <span class="text-sm">{{__('labels.student_group_description')}}</span>
+
             <b class="info-box-text text-lg">通常授業一覧</b>
             <span class="text-sm">定期的な授業予定</span>
           </div>
@@ -165,7 +170,7 @@
             <li class="col-lg-3 col-md-4 col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
-                  <a href="/students/{{$student->id}}">
+                  <a alt="student_name" href="/students/{{$student->id}}">
                     <img src="{{$student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">

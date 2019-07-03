@@ -7,7 +7,7 @@
 @endcomponent
 <div class="login-box">
 	<div class="login-logo">
-	<a href="./"><b>{{config('app.name')}}</b></a>
+	<a href="./"><b>{{__('labels.sakura')}}</b></a>
 	</div>
 	<div class="card">
 		<div class="card-header">

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App;
 use App\User;
 use App\Models\Image;
 use App\Models\Student;
@@ -154,6 +155,8 @@ class UserController extends Controller
   {
     $user = Auth::user();
     $api_token = $request->header('api-token');
+    \Log::warning("login_details:".session('locale'));
+    App::setLocale(session('locale'));
 
     if(!empty($api_token)){
       $user = User::where('access_key', $api_token)->first();

@@ -49,7 +49,7 @@
               </td>
               <td>
                 @foreach($setting->details()['students'] as $member)
-                <a class="text-xs mx-2" href="/students/{{$member->user->student->id}}" target="_blank">
+                <a class="text-xs mx-2" alt="student_name" href="/students/{{$member->user->student->id}}" target="_blank">
                     {{$member->user->student->name()}}
                 </a>
                 @endforeach

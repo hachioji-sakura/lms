@@ -39,6 +39,7 @@ $(function(){
 <script src="{{asset('js/base/dom.js')}}"></script>
 <script src="{{asset('js/base/service.js')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
+<script src="{{asset('js/base/translate.js')}}"></script>
 <script src="{{asset('js/base/base.js')}}"></script>
 </body>
 </html>

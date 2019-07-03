@@ -11,6 +11,10 @@
 |
 */
 Auth::routes();
+
+if(isset($_GET["locale"]) && !empty($_GET["locale"])){
+  App::setLocale($_GET["locale"]);
+}
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('managers/login','ManagerController@login');

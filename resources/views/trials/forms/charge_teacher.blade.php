@@ -4,7 +4,7 @@
       <div class="col-4">
         <div class="description-block">
           <h5 class="description-header text-center">
-            <a href="/teachers/{{$teacher->id}}" target="_blank" class="">
+            <a alt="teacher_name" href="/teachers/{{$teacher->id}}" target="_blank" class="">
             <img src="{{$teacher->user->icon()}}" class="img-circle mw-64px" alt="User Image">
             <br>
               {{$teacher->name()}}
@@ -161,7 +161,7 @@
                 </td>
                 <td>
                   @foreach($setting->details()['students'] as $member)
-                  <a class="text-xs mx-2" href="/students/{{$member->user->student->id}}" target="_blank">
+                  <a class="text-xs mx-2" alt="student_name" href="/students/{{$member->user->student->id}}" target="_blank">
                       {{$member->user->student->name()}}
                   </a>
                   @endforeach

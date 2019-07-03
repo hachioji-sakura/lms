@@ -123,7 +123,7 @@
                 @foreach($setting->members as $member)
                   @if($member->user->details()->role==="student")
                   {{--
-                    <a href="/students/{{$member->user->details()->id}}">
+                    <a alt="student_name" href="/students/{{$member->user->details()->id}}">
                       <i class="fa fa-user-graduate"></i>
                       {{$member->user->details()->name}}
                     </a>

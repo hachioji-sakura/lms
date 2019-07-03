@@ -110,6 +110,7 @@ class TeacherController extends StudentController
   */
   public function show(Request $request, $id)
   {
+
     $param = $this->get_param($request, $id);
     if($request->has('api')){
       $model = $this->model()->where('id',$id)->first();

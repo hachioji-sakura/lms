@@ -78,7 +78,7 @@
                   </div>
                   <div class="col-5 col-lg-4 col-md-4">
                     @foreach($item["students"] as $member)
-                        <a href="/students/{{$member->id}}" class="mr-2" target=_blank>
+                        <a alt="student_name" href="/students/{{$member->id}}" class="mr-2" target=_blank>
                           <i class="fa fa-user-graduate"></i>
                           {{$member->name()}}
                         </a><br>

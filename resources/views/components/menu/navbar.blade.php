@@ -12,13 +12,13 @@
   </li>
   @if($user->role==="student")
   <li class="nav-item">
-    <a href="/students/{{$user->id}}/calendar" class="nav-link">
+    <a alt="student_name" href="/students/{{$user->id}}/calendar" class="nav-link">
       <i class="fa fa-calendar-alt"></i>
       <span class="d-none d-sm-inline-block">カレンダー</span>
     </a>
   </li>
   <li class="nav-item">
-    <a href="/students/{{$user->id}}/schedule" class="nav-link">
+    <a alt="student_name" href="/students/{{$user->id}}/schedule" class="nav-link">
       <i class="fa fa-clock"></i>
       <span class="d-none d-sm-inline-block">授業予定</span>
     </a>
@@ -151,7 +151,6 @@
       <a href="javascript:void(0);" class="dropdown-item"  page_title="パスワード設定" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>パスワード設定
       </a>
-
       <div class="dropdown-divider"></div>
       <a href="/logout" class="dropdown-item">
         <i class="fa fa-sign-out-alt mr-2"></i>ログアウト

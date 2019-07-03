@@ -53,7 +53,7 @@
                 <div class="col-5 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)
                     @if($member->user->details('students')->role==="student")
-                      <a href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
+                      <a alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
                         <i class="fa fa-user-graduate"></i>
                         {{$member->user->details('students')->name}}
                       </a>
