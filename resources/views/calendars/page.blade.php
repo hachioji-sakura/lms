@@ -47,8 +47,8 @@
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
+                ({{$member->remark()}})
                 @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->remark())))
-                 ({{$member->remark()}})
                 @endif
               </a>
               {{--
