@@ -112,8 +112,8 @@ class UserController extends Controller
    *
    * @return response
   */
-  public function email_check($email){
-    $user = $this->login_details();
+  public function email_check(Request $request, $email){
+    $user = $this->login_details($request);
     if(!isset($user) || !is_numeric($user->user_id)){
       abort(403);
     }
