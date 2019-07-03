@@ -959,6 +959,3 @@ if(!window.console) {
 	window.console = { log: function(msg){
 	} };
 }
-$(function(){
-	translate.translate_start();
-});

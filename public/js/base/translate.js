@@ -210,3 +210,6 @@
 	root.translate = $.extend({}, root.translate, public_method);
 
 })(this);
+$(function(){
+	//translate.translate_start();
+});
