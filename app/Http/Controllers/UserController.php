@@ -108,6 +108,23 @@ class UserController extends Controller
     return back()->withInput()->with($param);
   }
   /**
+   * メールアドレス存在チェック
+   *
+   * @return response
+  */
+  public function email_check($email){
+    $user = $this->login_details();
+    if(!isset($user) || !is_numeric($user->user_id)){
+      abort(403);
+    }
+    $item = User::where('email', $email)->first();
+    if(isset($item)){
+      $json = $this->api_response(200,"","",["email"=>$email]);
+      return $this->send_json_response($json);
+    }
+    return $this->send_json_response($this->notfound());
+  }
+  /**
    * パスワード設定画面
    *
    * @return response
