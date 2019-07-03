@@ -21,6 +21,7 @@ Route::get('managers/login','ManagerController@login');
 Route::get('auth','AuthController@auth');
 Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
+Route::get('users/email/{email}','UserController@email_check');
 
 Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
