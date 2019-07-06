@@ -306,22 +306,28 @@ EOT;
     return $this->get_attribute_name('work', $this->work);
   }
   public function teaching_name(){
+    $_teaching_names = ['体験授業', '通常授業', '振替授業', '追加授業', ];
+    if(session('locale')=='en'){
+      $_teaching_names = ['Trial', 'Regular', 'Exchange', 'Add', ];
+    }
     if($this->is_teaching()){
       if($this->trial_id > 0){
-        return "体験授業";
+        return $_teaching_names[0];
       }
       if(intval($this->user_calendar_setting_id) > 0){
-        return "通常授業";
+        return $_teaching_names[1];
       }
       if($this->exchanged_calendar_id > 0){
-        return "振替授業";
+        return $_teaching_names[2];
       }
-      return "追加授業";
+      return $_teaching_names[3];
     }
     return "";
   }
   public function status_name(){
     $status_name = "";
+    if(session('locale')=='en') return $this->status;
+
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
@@ -412,7 +418,7 @@ EOT;
     $item['status_name'] = $this->status_name();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
-      $item['place_floor_name'] = $this->place_floor->name;
+      $item['place_floor_name'] = $this->place_floor->name();
     }
     $item['work_name'] = $this->work();
     $item['teaching_name'] = $this->teaching_name();

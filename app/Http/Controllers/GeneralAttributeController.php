@@ -145,7 +145,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_store($request);
-      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '登録しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _store(Request $request)
     {
@@ -276,7 +276,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_update($request, $id);
-      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '更新しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _update(Request $request, $id)
     {
@@ -319,7 +319,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_delete($request, $id);
-      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '削除しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _delete(Request $request, $id)
     {

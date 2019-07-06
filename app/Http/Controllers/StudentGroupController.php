@@ -19,7 +19,7 @@ class StudentGroupController  extends MilestoneController
 {
   public $domain = 'student_groups';
   public $table = 'student_groups';
-  
+
   public function model(){
     return StudentGroup::query();
   }
@@ -291,7 +291,7 @@ class StudentGroupController  extends MilestoneController
       $param = $this->get_param($request);
       $res = $this->_store($request);
 
-      return $this->save_redirect($res, $param, $this->domain_name.'を追加しました。');
+      return $this->save_redirect($res, $param, '追加しました。');
     }
     public function save_validate(Request $request)
     {
@@ -331,7 +331,7 @@ class StudentGroupController  extends MilestoneController
       $res = $this->transaction(function() use ($form){
         $student_group = StudentGroup::add($form);
         return $student_group;
-      }, $this->domain_name.'追加', __FILE__, __FUNCTION__, __LINE__ );
+      }, '追加しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
     /**
@@ -347,7 +347,7 @@ class StudentGroupController  extends MilestoneController
         $student_group = $param["item"];
         $student_group->dispose();
         return $student_group;
-      }, $this->domain_name.'削除', __FILE__, __FUNCTION__, __LINE__ );
+      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 詳細画面表示
@@ -389,7 +389,7 @@ class StudentGroupController  extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $res = $this->_update($request, $id);
-      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
+      return $this->save_redirect($res, $param, '更新しました。');
     }
     public function _update(Request $request, $id)
     {
@@ -403,7 +403,7 @@ class StudentGroupController  extends MilestoneController
         $item = $this->model()->where('id',$id)->first();
         $item->change($form);
         return $item;
-      }, $this->domain_name.'更新', __FILE__, __FUNCTION__, __LINE__ );
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
     }

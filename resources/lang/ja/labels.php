@@ -86,7 +86,7 @@ return [
   'phone_no' => '電話番号',
   'email' => 'メールアドレス',
   'charge_lesson' => '担当可能なレッスン',
-  'lesson_week_time' => '勤務希望時間',
+  'lesson_week_time' => '担当可能な曜日・時間帯',
   'week_day' => '曜日',
 
   'charge_subject' => '担当科目',

@@ -17,7 +17,7 @@
             @elseif($loop->index==0)
               selected
             @endif
-          >{{$floor->name}}</option>
+          >{{$floor->name()}}</option>
           @endif
         @endforeach
       @endforeach

@@ -52,6 +52,7 @@ class UserCalendarMember extends Model
     return false;
   }
   public function status_name(){
+    if(session('locale')=='en') return $this->status;
     $status_name = "";
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];

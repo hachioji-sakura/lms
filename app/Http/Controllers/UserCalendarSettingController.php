@@ -19,7 +19,7 @@ class UserCalendarSettingController extends UserCalendarController
 {
   public $domain = 'calendar_settings';
   public $table = 'user_calendar_settings';
-  
+
     public function model(){
       return UserCalendarSetting::query();
     }
@@ -376,7 +376,7 @@ class UserCalendarSettingController extends UserCalendarController
         $setting = UserCalendarSetting::where('id', $id)->first();
         $setting->change($form);
         return $setting;
-      }, $this->domain_name.'更新', __FILE__, __FUNCTION__, __LINE__ );
+      }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 新規登録
@@ -388,7 +388,7 @@ class UserCalendarSettingController extends UserCalendarController
       $param = $this->get_param($request);
       $res = $this->_store($request);
 
-      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました');
+      return $this->save_redirect($res, $param, '登録しました。');
     }
     /**
      * 新規登録ロジック
@@ -408,10 +408,10 @@ class UserCalendarSettingController extends UserCalendarController
           }
         }
         $setting = $setting->details();
-        $this->send_slack($this->domain_name.'追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', $this->domain_name.'追加');
+        $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         $param = $this->get_param($request, $setting->id);
         return $setting;
-      }, $this->domain_name.'作成', __FILE__, __FUNCTION__, __LINE__ );
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
     public function _delete(Request $request, $id)
@@ -420,6 +420,6 @@ class UserCalendarSettingController extends UserCalendarController
         $setting = UserCalendarSetting::where('id', $id)->first();
         $setting->dispose();
         return $setting;
-      }, $this->domain_name.'削除', __FILE__, __FUNCTION__, __LINE__ );
+      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

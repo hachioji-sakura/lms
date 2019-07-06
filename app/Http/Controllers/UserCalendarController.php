@@ -852,10 +852,10 @@ class UserCalendarController extends MilestoneController
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
         $param['fields'] = $this->show_fields($param['item']->work);
-        return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
+        return $this->save_redirect($res, $param, '更新しました。', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
       }
       else {
-        return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
+        return $this->save_redirect($res, $param, '更新しました。');
       }
     }
     public function _update(Request $request, $id)
@@ -1150,7 +1150,7 @@ class UserCalendarController extends MilestoneController
       if($this->is_success_response($res)){
         $res = $this->_store($request);
       }
-      return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました');
+      return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました。');
     }
     /**
      * 新規登録ロジック

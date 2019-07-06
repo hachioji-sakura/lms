@@ -257,7 +257,7 @@ class TeacherController extends StudentController
      }
      if($this->is_success_response($res)){
        $this->send_mail($form['email'],
-         $this->domain_name.'仮登録完了', [
+         '仮登録完了', [
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
          'send_to' => $send_to,
@@ -268,7 +268,7 @@ class TeacherController extends StudentController
            ['result' => $result])->with($param);
        }
      }
-     return $this->save_redirect($res, [], '仮登録メールを送信しました');
+     return $this->save_redirect($res, [], '仮登録メールを送信しました。');
    }
    public function _entry_store(Request $request)
    {
@@ -362,7 +362,7 @@ class TeacherController extends StudentController
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($email, $this->domain_name.'登録完了', $form, 'text', 'register');
+        $this->send_mail($email, '登録完了', $form, 'text', 'register');
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
         {
           abort(500);
@@ -371,7 +371,7 @@ class TeacherController extends StudentController
           session()->regenerate();
           session()->put('login_role', "manager");
         }
-        return $this->save_redirect($res, $param, $this->domain_name.'登録完了しました。', '/home');
+        return $this->save_redirect($res, $param, '登録完了しました。', '/home');
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
@@ -388,7 +388,7 @@ class TeacherController extends StudentController
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
         return $item;
-      }, $this->domain_name.'本登録', __FILE__, __FUNCTION__, __LINE__ );
+      }, '本登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
     protected function to_manager_page(Request $request, $id)
     {
@@ -419,7 +419,7 @@ class TeacherController extends StudentController
       $result = '';
       $email = $param['item']['email'];
       $status = intval($param['item']->user->status);
-      $message = '事務登録依頼メールを送信しました';
+      $message = '事務登録依頼メールを送信しました。';
       $already_manager_id = 0;
       if(isset($form['already_manager_id'])) $already_manager_id = $form['already_manager_id'];
       $manager = $param['item']->to_manager($access_key, $already_manager_id);
@@ -487,12 +487,12 @@ class TeacherController extends StudentController
       if($form['checked_at_type']==='fix'){
         //確認済み
         $res = $this->_month_work_confirm($request);
-        $message = '月次勤務実績を確認済みにしました';
+        $message = '月次勤務実績を確認済みにしました。';
         $this->_mail('月次勤務実績 確認', $param['user'], $form, 'calendar_month_work');
       }
       else {
         //訂正依頼
-        $message = 'カレンダーの訂正依頼を連絡しました';
+        $message = 'カレンダーの訂正依頼を連絡しました。';
         $this->_mail('カレンダーの訂正依頼を受け付けました', $param['user'], $form, 'calendar_correction');
       }
       return $this->save_redirect($res, $param, $message);

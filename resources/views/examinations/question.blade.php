@@ -11,7 +11,7 @@
     </div>
   </div>
 @if(isset($result))
-  <h3>{{$chapter_title}} にすべて回答しました</h3>
+  <h3>{{$chapter_title}} にすべて回答しました。</h3>
   <div class="row">
       <div class="col-12">
         <h4 class="text-primary">結果・正解数/問題数：{{$result['success']}} / {{$result['total']}}</h4>

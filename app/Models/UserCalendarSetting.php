@@ -91,7 +91,7 @@ EOT;
     $item['week_setting'] = $this->week_setting();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
-      $item['place_floor_name'] = $this->place_floor->name;
+      $item['place_floor_name'] = $this->place_floor->name();
     }
     $item['work_name'] = $this->work();
     $item['subject'] = $this->subject();

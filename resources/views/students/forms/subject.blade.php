@@ -4,7 +4,7 @@
       <?php $__attribute_name = 'lesson_subject_level'; ?>
       @if(isset($_teacher) && $_teacher===true)
       <?php $__attribute_name = 'charge_subject_level'; ?>
-      担当可能科目
+      {{__('labels.charge_subject')}}
       @else
       ご希望の科目
       @endif

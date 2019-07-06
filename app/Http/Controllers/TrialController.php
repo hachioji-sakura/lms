@@ -576,7 +576,7 @@ class TrialController extends UserCalendarController
        $item = $this->model()->where('id',$id)->first();
        $item->trial_update($form);
        return $item;
-     }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
    public function admission_mail(Request $request, $id){
@@ -621,7 +621,7 @@ class TrialController extends UserCalendarController
         'text',
         'trial_register');
       }
-      return $this->save_redirect($res, [], '入会案内メールを送信しました');
+      return $this->save_redirect($res, [], '入会案内メールを送信しました。');
     }
    public function admission_submit(Request $request, $id){
    }

@@ -41,7 +41,7 @@
     <div class="col-12 mt-4">
       @if($judge===1)
         @if(isset($result))
-          <h3>{{$chapter_title}} にすべて回答しました</h3>
+          <h3>{{$chapter_title}} にすべて回答しました。</h3>
           <div class="row my-2">
               <div class="col-12">
                 <h4 class="text-primary">正解/問題：{{$result['success']}} / {{$result['total']}}</h4>

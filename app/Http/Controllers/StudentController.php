@@ -631,7 +631,7 @@ class StudentController extends UserController
     $result = '';
     $email = $param['item']['email'];
     $status = intval($param['item']->user->status);
-    $message = '本登録依頼メールを送信しました';
+    $message = '本登録依頼メールを送信しました。';
     if(isset($form['email'])){
       //入力値としてemailがある場合はそちらを優先する
       $email = $form['email'];
@@ -651,7 +651,7 @@ class StudentController extends UserController
     }
 
     if($this->is_success_response($res)){
-      $title = $this->domain_name."本登録のお願い";
+      $title = "本登録のお願い";
       if($this->domain==="parents"){
         $title = "ご入会お申込みにつきましてご連絡";
       }
@@ -677,7 +677,7 @@ class StudentController extends UserController
   {
     $param = $this->get_param($request, $id);
     $res = $this->_update($request, $id);
-    return $this->save_redirect($res, $param, $this->domain_name.'設定を更新しました');
+    return $this->save_redirect($res, $param, '設定を更新しました。');
   }
 
   public function _update(Request $request, $id)
@@ -717,7 +717,7 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
 
     $res = $this->_delete($request, $id);
-    return $this->save_redirect($res, $param, $this->domain_name.'を削除しました');
+    return $this->save_redirect($res, $param, '削除しました。');
   }
 
   public function _delete(Request $request, $id)

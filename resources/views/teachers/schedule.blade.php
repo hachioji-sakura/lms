@@ -206,7 +206,7 @@
           @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
           selected
           @endif
-          >{{$floor->name}}</option>
+          >{{$floor->name()}}</option>
           @endforeach
         @endforeach
       </select>

@@ -265,7 +265,7 @@ class MilestoneController extends UserController
 
       $res = $this->_store($request);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました');
+      return $this->save_redirect($res, $param, '登録しました。');
     }
     /**
      * 新規登録ロジック
@@ -282,7 +282,7 @@ class MilestoneController extends UserController
       $res = $this->transaction(function() use ($request, $form){
         $item = $this->model()->create($form);
         return $item;
-      }, $this->domain_name.'を登録しました', __FILE__, __FUNCTION__, __LINE__ );
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
      }
     /**
@@ -357,7 +357,7 @@ class MilestoneController extends UserController
       $param = $this->get_param($request, $id);
       $res = $this->_update($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
+      return $this->save_redirect($res, $param, '更新しました。');
     }
     public function _update(Request $request, $id)
     {
@@ -369,7 +369,7 @@ class MilestoneController extends UserController
         $user = $this->login_details($request);
         $item = $this->model()->where('id',$id)->update($this->update_form($request));
         return $item;
-      }, $this->domain_name.'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
     /**
@@ -384,7 +384,7 @@ class MilestoneController extends UserController
 
       $res = $this->_delete($request, $id);
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました');
+      return $this->save_redirect($res, $param, '削除しました。');
     }
 
     public function _delete(Request $request, $id)
@@ -394,7 +394,7 @@ class MilestoneController extends UserController
         $user = $this->login_details($request);
         $items = $this->model()->where('id',$id)->delete();
         return $items;
-      }, $this->domain_name.'を削除しました', __FILE__, __FUNCTION__, __LINE__ );
+      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
 }

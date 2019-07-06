@@ -101,7 +101,7 @@ class ImageController extends UserController
     public function icon_change(Request $request){
       $param = $this->get_param($request);
       $res = $this->_icon_change($request);
-      return $this->save_redirect($res, $param, $this->domain_name.'設定を更新しました');
+      return $this->save_redirect($res, $param, '設定を更新しました。');
     }
     /**
      * Display the specified resource.

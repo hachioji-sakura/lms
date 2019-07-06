@@ -14,7 +14,7 @@
           <option value="{{ $floor->id }}"
             @if(isset($item['place']) && $item['place'] == $floor->id)
              selected
-            @endif>{{$floor->name}}
+            @endif>{{$floor->name()}}
           </option>
           @endforeach
         @endforeach
