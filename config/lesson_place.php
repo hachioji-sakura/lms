@@ -21,12 +21,12 @@ return array(
     'floors' => [
       [
       'name' => '北口校3F',
-      'name_en' => 'North 4F',
+      'name_en' => 'North3F',
       'sheat_count' => 5,
       ],
       [
       'name' => '北口校4F',
-      'name_en' => 'North 4F',
+      'name_en' => 'North4F',
       'sheat_count' => 5,
       ]
     ],

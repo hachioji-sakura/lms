@@ -37,7 +37,7 @@ class PlaceSeeder extends Seeder
           $floor = PlaceFloor::create([
             'place_id' => $place_id,
             'name' => $f['name'],
-            'name_en' => $p['name_en'],
+            'name_en' => $f['name_en'],
             'sort_no' => $j,
           ]);
           $floor_id = $floor->id;
