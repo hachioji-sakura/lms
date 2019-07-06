@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App;
 use App\User;
 use App\Models\Image;
 use App\Models\Student;
@@ -17,7 +18,7 @@ use DB;
 class UserController extends Controller
 {
   public $domain = "users";
-  public $domain_name = "ユーザー";
+
   protected $pagenation_line = 20;
   public function __construct()
   {
@@ -40,9 +41,10 @@ class UserController extends Controller
   }
   protected function user_create($form)
   {
-    try {
-      if(!isset($form['status'])) $form['status']=0;
-      if(!isset($form['access_key'])) $form['access_key']='';
+
+    if(!isset($form['status'])) $form['status']=0;
+    if(!isset($form['access_key'])) $form['access_key']='';
+    $res = $this->transaction(function() use ($form){
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
@@ -51,14 +53,9 @@ class UserController extends Controller
           'access_key' => $form['access_key'],
           'password' => Hash::make($form['password']),
       ]);
-      return $this->api_response(200, "", "", $user);
-    }
-    catch (\Illuminate\Database\QueryException $e) {
-        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
-    catch(\Exception $e){
-        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
+      return $user;
+    }, 'ユーザー登録', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
   }
   protected function _search_pagenation(Request $request, $items)
   {
@@ -105,6 +102,23 @@ class UserController extends Controller
       $param['error_message_description'] = $res['description'];
     }
     return back()->withInput()->with($param);
+  }
+  /**
+   * メールアドレス存在チェック
+   *
+   * @return response
+  */
+  public function email_check(Request $request, $email){
+    $user = $this->login_details($request);
+    if(!isset($user) || !is_numeric($user->user_id)){
+      abort(403);
+    }
+    $item = User::where('email', $email)->first();
+    if(isset($item)){
+      $json = $this->api_response(200,"","",["email"=>$email]);
+      return $this->send_json_response($json);
+    }
+    return $this->send_json_response($this->notfound());
   }
   /**
    * パスワード設定画面
@@ -154,7 +168,11 @@ class UserController extends Controller
   {
     $user = Auth::user();
     $api_token = $request->header('api-token');
-
+    \Log::warning("login_details:".session('locale'));
+    App::setLocale(session('locale'));
+    if($request->has('locale')){
+      App::setLocale($request->get('locale'));
+    }
     if(!empty($api_token)){
       $user = User::where('access_key', $api_token)->first();
       if(isset($user))  Auth::loginUsingId($user->id);

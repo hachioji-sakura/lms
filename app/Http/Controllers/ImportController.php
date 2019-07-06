@@ -466,7 +466,7 @@ class ImportController extends UserController
           ]);
         }
         else {
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
+          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['teacher_no']."登録エラー:".$res["message"]."/".$res["description"]."/".$res["status"]);
           return false;
         }
         //講師属性登録
@@ -553,29 +553,35 @@ class ImportController extends UserController
       $student = Student::hasTag('student_no', $item['student_no'])->first();
       if(!isset($student)){
         //認証情報登録(保護者として登録）
-        $res = $this->user_create([
-          'name' => $item['family_name'].'',
-          'password' => $item['password'],
-          'email' => $item['email'],
-          'image_id' => 4,
-          'status' => $item['status'],
-        ]);
-        if($this->is_success_response($res)){
-          //保護者情報登録
-          $parent_user = $res['data'];
-          $StudentParent = new StudentParent;
-          $parent = $StudentParent->create([
-            'name_last' => $item['family_name'],
-            'name_first' => $item['first_name'],
-            'kana_last' => $item['kana_last'],
-            'kana_first' => $item['kana_first'],
-            'user_id' => $parent_user->id,
-            'create_user_id' => 1,
+        $parent_user = User::where('email', $item['email'])->first();
+        if(!isset($parent_user)){
+          $res = $this->user_create([
+            'name' => $item['family_name'].'',
+            'password' => $item['password'],
+            'email' => $item['email'],
+            'image_id' => 4,
+            'status' => $item['status'],
           ]);
+          if($this->is_success_response($res)){
+            //保護者情報登録
+            $parent_user = $res['data'];
+            $StudentParent = new StudentParent;
+            $parent = $StudentParent->create([
+              'name_last' => $item['family_name'],
+              'name_first' => $item['first_name'],
+              'kana_last' => $item['kana_last'],
+              'kana_first' => $item['kana_first'],
+              'user_id' => $parent_user->id,
+              'create_user_id' => 1,
+            ]);
+          }
+          else {
+            @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."保護者登録エラー:email=".$parent_user->email." / name=".$parent_user->name, 'error', $this->logic_name);
+            return false;
+          }
         }
         else {
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
-          return false;
+          $parent = StudentParent::where('user_id', $parent_user->id)->first();
         }
         //認証情報なし：新規登録
         $res = $this->user_create([
@@ -1056,6 +1062,7 @@ class ImportController extends UserController
       */
       //TODO : 休みに関し、生徒起因か、講師起因かがわからない
       $student_status = $status;
+      if(empty(trim($item['altlimitdate']))) $item['altlimitdate'] = null;
       //生徒をカレンダーに追加
       if(isset($student)){
         $_member = UserCalendarMember::where('calendar_id' , $calendar_id)
@@ -1068,6 +1075,7 @@ class ImportController extends UserController
             'user_id' => $student->user_id,
             'status' => $student_status,
             'rest_type' => $item['cancel'],
+            'exchange_limit_date' => $item['altlimitdate'],
             'remark' => $item['cancel_reason'],
             'schedule_id' => $item['id'],
             'place_floor_sheat_id' => $sheat_id,
@@ -1092,6 +1100,7 @@ class ImportController extends UserController
           'calendar_id' => $calendar_id,
           'status' => $teacher_status,
           'rest_type' => $item['cancel'],
+          'exchange_limit_date' => $item['altlimitdate'],
           'remark' => $item['cancel_reason'],
           'schedule_id' => $item['id'],
           'place_floor_sheat_id' => $sheat_id,

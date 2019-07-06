@@ -1,6 +1,6 @@
 @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
   @slot('page_message')
-  この依頼内容を差戻しますか？
+  {{__('messages.confirm_ask_cancel')}}
   @endslot
   @slot('forms')
     <div class="row">
@@ -16,7 +16,8 @@
     </div>
     <div class="col-12 col-lg-12 col-md-12 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
-            閉じる
+            {{__('labels.close_button')}}
+
         </button>
     </div>
     <script>

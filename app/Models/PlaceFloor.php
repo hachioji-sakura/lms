@@ -27,6 +27,10 @@ class PlaceFloor extends Model
     public function sheats(){
       return $this->hasMany('App\Models\PlaceFloorSheat', 'place_floor_id');
     }
+    public function name(){
+      if(session('locale')=='en') return $this->name_en;
+      return $this->name;
+    }
     public function get_free_seat($start_time, $end_time){
       //指定した時間帯・フロアのカレンダーを取得(新規、キャンセル、休み、休講は利用扱いではない）
       $calendars = UserCalendar::searchDate($start_time, $end_time)

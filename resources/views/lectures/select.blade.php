@@ -1,18 +1,18 @@
 <div class="col-12" id="select_lesson_form">
   <div class="form-group">
     <label for="lesson" class="w-100">
-      レッスン
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.lesson')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <select name="lesson" class="form-control" placeholder="レッスン" required="true" >
-      <option value="">(選択してください)</option>
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['lesson'] as $index => $name)
         <option value="{{$index}}">{{$name}}</option>
       @endforeach
     </select>
     {{--
     <select name="lesson" class="form-control" placeholder="レッスン" required="true" onChange="select_lesson_change(this)">
-      <option value="">(選択してください)</option>
+      <option value="">{{__('labels.selectable')}}</option>
     </select>
     --}}
   </div>
@@ -20,11 +20,11 @@
 <div class="col-12">
   <div class="form-group">
     <label for="course" class="w-100">
-      コース
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.lesson_type')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <select name="course" class="form-control" placeholder="コース" required="true" >
-      <option value="">(選択してください)</option>
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['course'] as $index => $name)
         <option value="{{$index}}">{{$name}}</option>
       @endforeach
@@ -32,7 +32,7 @@
 
     {{--
     <select name="course" class="form-control" placeholder="コース" required="true" onChange="select_course_change(this)">
-      <option value="">(選択してください)</option>
+      <option value="">{{__('labels.selectable')}}</option>
     </select>
     --}}
   </div>
@@ -40,24 +40,24 @@
 <div class="col-12">
   <div class="form-group">
     <label for="subject" class="w-100">
-      科目
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.subject')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="subject" class="form-control" placeholder="科目" required="true" >
-      <option value="">(選択してください)</option>
+    <select name="subject" class="form-control" required="true" >
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['subject'] as $index => $name)
         <option value="{{$index}}">{{$name}}</option>
       @endforeach
     </select>
     {{--
-    <select name="subject" class="form-control" placeholder="科目" required="true" >
+    <select name="subject" class="form-control" required="true" >
     </select>
     --}}
   </div>
 </div>
 <script>
 var lectures = null;
-var _defaultOption = '<option value="">(選択してください)</option>';
+var _defaultOption = '<option value="">{{__('labels.selectable')}}</option>';
 function select_lesson_set(){
   lectures = util.getLocalData('lectures');
   if(util.isEmpty(lectures)){

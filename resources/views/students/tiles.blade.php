@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}一覧
+{{__('labels.students_list')}}
 @endsection
 @extends('dashboard.common')
 @include('dashboard.tiles')
@@ -10,7 +10,7 @@
   @if($user->role=="parent")
   <li class="nav-item hr-1">
     <a href="/{{$domain}}/create" class="nav-link">
-      <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
+      <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
   @endif
@@ -19,7 +19,7 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタリング
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
@@ -27,7 +27,7 @@
       @if($user->role==="teacher")
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link">
-          <i class="fa fa-user-friends nav-icon"></i>担当生徒
+          <i class="fa fa-user-friends nav-icon"></i>{{__('labels.charge_student')}}
         </a>
       </li>
       <li class="nav-item">

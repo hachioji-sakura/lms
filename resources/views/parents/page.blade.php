@@ -28,7 +28,7 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
-                  <a href="/students/{{$charge_student->student->id}}">
+                  <a alt="student_name" href="/students/{{$charge_student->student->id}}">
                     <img src="{{$charge_student->student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">
@@ -84,7 +84,7 @@
           </ul>
           @else
           <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
           </div>
           @endif
         </div>

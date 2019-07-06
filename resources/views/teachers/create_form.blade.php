@@ -3,7 +3,7 @@
   <div class="col-12">
     <h5 class="bg-info p-1 pl-2 mb-4">
       <i class="fa fa-key mr-1"></i>
-      ログイン情報
+      {{__('labels.login')}} {{__('labels.info')}}
     </h5>
   </div>
   @component('students.forms.email', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
@@ -18,7 +18,7 @@
   <div class="col-12">
     <h5 class="bg-info p-1 pl-2 mb-4">
       <i class="fa fa-user-friends mr-1"></i>
-      {{$domain_name}}情報
+      {{__('labels.teacher_setting')}}
     </h5>
   </div>
   @component('students.forms.name', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
@@ -37,8 +37,8 @@
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=>'担当レッスン']) @endcomponent
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => '担当可能な曜日・時間帯']) @endcomponent
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=> __('labels.charge_lesson')]) @endcomponent
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
 </div>
 @endsection
 

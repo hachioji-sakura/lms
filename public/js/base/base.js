@@ -458,6 +458,9 @@
 				service.alert("E_ERROR", {});
 				return;
 			}
+			//翻訳機能
+			//translate.translate_start("#"+form_id);
+
 			$("#"+form_id+' form select.select2').attr('parent_id', form_id);
       base.pageSettinged(form_id+' form', null);
       //サブページ内のsubmit

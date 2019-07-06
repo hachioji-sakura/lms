@@ -1,7 +1,7 @@
 <div class="col-12">
   <label for="charge_subject" class="w-100">
     曜日
-    <span class="right badge badge-danger ml-1">必須</span>
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
   </label>
   <?php $is_first=true; ?>
   @foreach($attributes['lesson_week'] as $week_day => $week_name)
@@ -49,7 +49,7 @@
               </td>
               <td>
                 @foreach($setting->details()['students'] as $member)
-                <a class="text-xs mx-2" href="/students/{{$member->user->student->id}}" target="_blank">
+                <a class="text-xs mx-2" alt="student_name" href="/students/{{$member->user->student->id}}" target="_blank">
                     {{$member->user->student->name()}}
                 </a>
                 @endforeach

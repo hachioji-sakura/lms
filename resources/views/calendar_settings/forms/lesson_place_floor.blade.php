@@ -1,11 +1,11 @@
 <div class="col-6 mt-2">
   <div class="form-group">
     <label for="lesson_place_floor" class="w-100">
-      教室
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.place')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="place_floor_id" class="form-control" placeholder="場所" required="true">
-      <option value="">(選択してください)</option>
+    <select name="place_floor_id" class="form-control" required="true">
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['places'] as $place)
         @foreach($place->floors as $floor)
         @if(isset($item["tagdata"]) && isset($item["tagdata"]["lesson_place"]) && isset($item["tagdata"]["lesson_place"][$place->id]))
@@ -17,7 +17,7 @@
             @elseif($loop->index==0)
               selected
             @endif
-          >{{$floor->name}}</option>
+          >{{$floor->name()}}</option>
           @endif
         @endforeach
       @endforeach

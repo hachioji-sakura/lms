@@ -27,7 +27,7 @@
               @endif
               ">
                 <div class="col-5 col-lg-4 col-md-4">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
                   <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
                   <br>
                   <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
@@ -48,8 +48,8 @@
                   @endforeach
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
-                  <a href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?student_id={{$item->id}}" role="button" class="btn btn-{{config('status_style')[$calendar->get_member($item->user_id)->status]}} btn-sm float-left mr-1 w-100">
-                    <i class="fa fa-file-alt mr-1"></i>{{$calendar->get_member($item->user_id)->status_name()}}
+                  <a href="javascript:void(0);" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?student_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1 w-100">
+                    <i class="fa fa-file-alt mr-1"></i>詳細
                   </a>
                   <br>
                   {{--
@@ -63,7 +63,7 @@
                     (代理連絡）
                     @endif
                   </a>
-                  @elseif($calendar->get_member($item->user_id)->status==="confirm" && strtotime($calendar["start_time"]) > strtotime('now'))
+                  @elseif($calendar->get_member($item->user_id)->status==="confirm")
                   <a href="javascript:void(0);" page_title="予定確認" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/fix?student_id={{$item->id}}" role="button" class="btn btn-primary btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="rest") disabled @endif>
                     <i class="fa fa-check mr-1"></i>予定確認
                     @if($user->role==="manager" || $user->role==="teacher")
@@ -84,7 +84,7 @@
           </ul>
           @else
           <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
           </div>
           @endif
         </div>

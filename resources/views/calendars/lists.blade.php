@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}一覧
+  {{$domain_name}} {{__('labels.list')}}
 @endsection
 @extends('dashboard.common')
 
@@ -11,14 +11,14 @@
     @else
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
     @endif
-      <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
+      <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタ
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
@@ -62,10 +62,10 @@
     </div>
     <div class="col-4">
       <label for="search_work" class="w-100">
-        作業
+        {{__('labels.work')}}
       </label>
       <div class="w-100">
-        <select name="search_work[]" class="form-control select2" width=100% placeholder="検索作業" multiple="multiple" >
+        <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
           @foreach($attributes['work'] as $index=>$name)
             <option value="{{$index}}"
             @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
@@ -78,17 +78,17 @@
     </div>
     <div class="col-4">
       <label for="search_place" class="w-100">
-        場所
+        {{__('labels.place')}}
       </label>
       <div class="w-100">
-        <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
+        <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
           @foreach($attributes['places'] as $place)
             @foreach($place->floors as $floor)
             <option value="{{$floor->id}}"
             @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
             selected
             @endif
-            >{{$floor->name}}</option>
+            >{{$floor->name()}}</option>
             @endforeach
           @endforeach
         </select>
@@ -105,11 +105,11 @@
 @section('page_footer')
   <dt>
     @if(isset($teacher_id) && $teacher_id>0)
-    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create?teacher_id={{$teacher_id}}">
+    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}} {{__('labels.add')}}" page_form="dialog" page_url="{{$domain}}/create?teacher_id={{$teacher_id}}">
     @else
-    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create">
+    <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}} {{__('labels.add')}}" page_form="dialog" page_url="{{$domain}}/create">
     @endif
-      <i class="fa fa-plus"></i>{{$domain_name}}登録
+      <i class="fa fa-plus"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </dt>
 @endsection

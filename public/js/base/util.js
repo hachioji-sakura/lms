@@ -719,7 +719,6 @@
 		clearLocalData: function() {
 			try {
 				sessionStorage.clear();
-				sessionStorage.clear();
 			}
 			catch(e){
 				return false;
@@ -906,9 +905,6 @@
 			var ret = "";
 			var ishash = false;
 			for(var key in data){
-				if(key==="DELETE_FLAG") continue;
-				if(key==="ADD_TIME") continue;
-				if(key==="UPD_TIME") continue;
 				if(this.isEmpty(data[key])) continue;
 				if(this.isFunction(data[key])) continue;
 				if($.isArray(data[key])) continue;

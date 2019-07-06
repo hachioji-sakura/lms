@@ -27,7 +27,7 @@
                 {{$field['label']}}
               </label>
               @foreach($item->students as $member)
-                <a target="_blank" href="/students/{{$member->user->details('students')->id}}" class="">
+                <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="">
                   <i class="fa fa-user-graduate mr-1"></i>
                   {{$member->user->details('students')->name}}
                 </a>

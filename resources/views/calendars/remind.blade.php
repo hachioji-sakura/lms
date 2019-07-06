@@ -18,14 +18,14 @@
       @endif
     <div class="row">
       <div class="col-12 col-lg-6 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="予定連絡を送信しますか？">
+          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_calendar_remind')}}">
             <i class="fa fa-envelope mr-1"></i>
-              再送する
+              {{__('labels.remind_button')}}
           </button>
       </div>
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
-              閉じる
+              {{__('labels.close_button')}}
           </button>
       </div>
     </div>

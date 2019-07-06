@@ -35,25 +35,30 @@
               <div class="col-12">
               @if($domain!="students" && $item->user->status===1)
                 <a class="btn btn-primary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
-                  <i class="fa fa-envelope mr-1"></i>登録依頼
+                  <i class="fa fa-envelope mr-1"></i>
+                  {{__('labels.register_ask')}}
                 </a>
               @endif
               @if($item->user->status===0 && !($domain=="managers" && $item->id===1))
               {{--
                 <a class="btn btn-success btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
                   <i class="fa fa-edit"></i>
-                  <span class="d-lg-block">編集</span>
+                  <span class="d-lg-block">
+                    {{__('labels.edit')}}
+                  </span>
                 </a>
               --}}
               @endif
               @if($item->user->status===0 && $domain==="teachers" && $item->is_manager()===false)
                 <a class="btn my-1 btn-info btn-sm text-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/to_manager" page_title="事務兼務">
-                  <i class="fa fa-users-cog mr-1"></i>事務兼務
+                  <i class="fa fa-users-cog mr-1"></i>
+                  {{__('labels.additional_officer')}}
                 </a>
               @endif
               @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9)
                 <a class="btn my-1 btn-danger btn-sm " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
-                  <i class="fa fa-trash-alt mr-1"></i>削除
+                  <i class="fa fa-trash-alt mr-1"></i>
+                  {{__('labels.delete')}}
                 </a>
               @endif
             </div>
@@ -63,7 +68,7 @@
         </ul>
         @else
         <div class="alert">
-          <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+          <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
         </div>
         @endif
       </div>

@@ -11,14 +11,14 @@
     @else
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
     @endif
-      <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
+      <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタ
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>

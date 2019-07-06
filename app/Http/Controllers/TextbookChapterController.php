@@ -13,7 +13,7 @@ class TextbookChapterController extends TextbookController
 {
     public $domain = 'textbook_chapters';
     public $table = 'textbook_chapters';
-    public $domain_name = '目次';
+    
 
     public function model(){
       return TextbookChapter::query();
@@ -37,7 +37,7 @@ class TextbookChapterController extends TextbookController
       $textbook = $textbook->first();
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'textbook_title' => $textbook->name,
         'user' => $user,
         'search_word'=>$request->search_word,

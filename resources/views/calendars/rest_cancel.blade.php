@@ -2,10 +2,10 @@
   @slot('page_message')
     @if($user->role==="manager" || $user->role==="teacher")
     <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>生徒の代わりに連絡をします。
+      <i class="fa fa-exclamation-triangle mr-1"></i>{{__('messages.info_proxy_contact_for_student')}}
     </div>
     @endif
-    この休み連絡を取り消しますか？
+    {{__('messages.confirm_rest_cancel')}}
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
@@ -19,8 +19,8 @@
         <div class="col-12">
           <table class="table table-striped w-80" id="rest_list_table">
             <tr class="bg-gray">
-              <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
-              <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>休み</th>
+              <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>{{__('labels.students')}}</th>
+              <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>{{__('labels.rest')}}</th>
             </tr>
             @foreach($item["students"] as $member)
             @if($member->user->details()->role==="student")
@@ -29,13 +29,13 @@
                 {{$member->user->details()->name}}</th>
               <td class="p-1 text-sm text-center">
                 @if($member->status=="fix")
-                  <i class="fa fa-calendar mr-1"></i>出席予定
+                  <i class="fa fa-calendar mr-1"></i>{{__('labels.prev_presence')}}
                 @elseif($member->status=="rest")
                 <div class="input-group">
                   <div class="form-check">
                     <input class="form-check-input icheck flat-green rest_check" type="checkbox" name="{{$member->id}}_status" id="{{$member->id}}_status_rest_cancel" value="rest_cancel" validate="status_rest_cancel_check()">
                     <label class="form-check-label" for="{{$member->id}}_status_rest_cancel">
-                        休み取り消し
+                        {{__('labels.rest_cancel')}}
                     </label>
                   </div>
                 </div>
@@ -67,14 +67,14 @@
       </div>
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="休み取り消し連絡を送信しますか？">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_rest_cancel')}}">
               <i class="fa fa-envelope mr-1"></i>
-                休み取り消し連絡
+                {{__('labels.schedule_rest_cancel')}}
             </button>
         </div>
         <div class="col-12 col-lg-6 col-md-6 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
+              {{__('labels.close_button')}}
             </button>
         </div>
       </div>
@@ -96,14 +96,14 @@
 
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="休み取り消し連絡を送信しますか？">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_rest_cancel')}}">
               <i class="fa fa-envelope mr-1"></i>
-              休み取り消し連絡
+              {{__('labels.schedule_rest_cancel')}}
             </button>
         </div>
         <div class="col-12 col-lg-6 col-md-6 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
+              {{__('labels.close_button')}}
             </button>
         </div>
 

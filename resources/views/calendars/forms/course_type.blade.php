@@ -1,8 +1,8 @@
 <div class="col-12 mt-2">
   <div class="form-group">
     <label for="course_type" class="w-100">
-      授業形式
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.lesson_type')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group" id="course_type_form">
       <div class="form-check" id="course_type_form_single">
@@ -14,7 +14,7 @@
           @endif
           >
           <label class="form-check-label" for="course_type_single">
-              マンツーマン
+            {{__('labels.one_to_one')}}
           </label>
       </div>
       <div class="form-check ml-2" id="course_type_form_group">
@@ -24,7 +24,7 @@
           @endif
           >
           <label class="form-check-label" for="course_type_group">
-              グループ
+            {{__('labels.group')}}
           </label>
       </div>
       <div class="form-check ml-2" id="course_type_form_family">
@@ -34,7 +34,7 @@
           @endif
           >
           <label class="form-check-label" for="course_type_family">
-              ファミリー
+            {{__('labels.family')}}
           </label>
       </div>
     </div>

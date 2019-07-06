@@ -11,14 +11,14 @@
     @else
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
     @endif
-      <i class="fa fa-plus nav-icon"></i>{{$domain_name}}登録
+      <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタ
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
@@ -45,16 +45,16 @@
           <div class="card-header">
             <h3 class="card-title" id="student_groups">
               <i class="fa fa-calendar mr-1"></i>
-              生徒グループ一覧
+              {{__('labels.student_groups_list')}}
             </h3>
             <div class="card-title text-sm">
               @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
                 @slot("addon_button")
                 <ul class="pagination pagination-sm m-0 float-left text-sm">
                   <li class="page-item">
-                    <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/student_groups/create" page_title="生徒グループ追加">
+                    <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/student_groups/create" page_title="{{$domain_name}} {{__('labels.add')}}">
                       <i class="fa fa-plus"></i>
-                      <span class="btn-label">追加</span>
+                      <span class="btn-label">{{__('labels.add_button')}}</span>
                     </a>
                   </li>
                 </ul>
@@ -70,7 +70,7 @@
               <li class="col-12 p-0" accesskey="" target="">
                 <div class="row p-2">
                   <div class="col-7 col-lg-4 col-md-4">
-                    <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="詳細" page_form="dialog" page_url="/student_groups/{{$item["id"]}}" >
+                    <a href="javascript:void(0);" title="{{$item["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/student_groups/{{$item["id"]}}" >
                       <i class="fa fa-users mx-1"></i>{{$item["title"]}}
                       <br>
                       <i class="fa fa-star mx-1"></i>{{$item["type_name"]}}
@@ -78,7 +78,7 @@
                   </div>
                   <div class="col-5 col-lg-4 col-md-4">
                     @foreach($item["students"] as $member)
-                        <a href="/students/{{$member->id}}" class="mr-2" target=_blank>
+                        <a alt="student_name" href="/students/{{$member->id}}" class="mr-2" target=_blank>
                           <i class="fa fa-user-graduate"></i>
                           {{$member->name()}}
                         </a><br>
@@ -99,7 +99,7 @@
             </ul>
             @else
             <div class="alert">
-              <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+              <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
             </div>
             @endif
           </div>
@@ -115,7 +115,7 @@
 @slot("search_form")
   <div class="col-12 col-md-4">
     <label for="charge_subject" class="w-100">
-      タイプ
+      {{__('labels.type')}}
     </label>
     <div class="w-100">
       <select name="search_type[]" class="form-control select2" width=100% placeholder="検索タイプ" multiple="multiple" >
@@ -134,10 +134,10 @@
   </div>
   <div class="col-12 col-md-4">
     <label for="charge_subject" class="w-100">
-      キーワード
+      {{__('labels.search_keyword')}}
     </label>
     <div class="input-group mb-3">
-      <input type="text" name="search_word" class="form-control" placeholder="キーワード検索" value="{{$search_word}}" style="width:140px;">
+      <input type="text" name="search_word" class="form-control" placeholder="{{__('labels.search_keyword')}}" value="{{$search_word}}" style="width:140px;">
     </div>
   @endslot
 @endcomponent

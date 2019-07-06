@@ -10950,7 +10950,9 @@ label:not(.form-check-label):not(.custom-file-label) {
 }
 
 .card-body .fc {
+	/*
 	margin-top: 5px;
+	*/
 }
 
 .card-body .full-width-chart {

@@ -1,8 +1,8 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    この授業の休講依頼を出しますか？
+    {{__('messages.confirm_lecture_cancel')}}
     <div class="col-12 col-lg-12 col-md-12 mb-1">
-      <span class="text-danger">休講依頼承認後、休講の予定に更新されます。</span>
+      <span class="text-danger">{{__('messages.warning_lecture_cancel')}}</span>
     </div>
   @endslot
   @slot('forms')
@@ -15,14 +15,14 @@
       @endif
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="休講依頼を送信しますか？">
+            <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_lecture_cancel')}}">
               <i class="fa fa-envelope mr-1"></i>
-              休講依頼を出す
+              {{__('labels.send_button')}}
             </button>
         </div>
         <div class="col-12 col-lg-6 col-md-6 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
+              {{__('labels.close_button')}}
             </button>
         </div>
       </div>

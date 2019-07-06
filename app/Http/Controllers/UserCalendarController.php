@@ -19,7 +19,7 @@ class UserCalendarController extends MilestoneController
 {
   public $domain = 'calendars';
   public $table = 'user_calendars';
-  public $domain_name = '授業予定';
+  
   public $status_update_message = [
           'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
@@ -38,18 +38,18 @@ class UserCalendarController extends MilestoneController
     if($work==9){
       $ret = [
         'datetime' => [
-          'label' => '日時',
+          'label' => __('labels.datetime'),
         ],
         'status_name' => [
-          'label' => 'ステータス',
+          'label' => __('labels.status'),
           'size' => 6,
         ],
         'manager_name' => [
-          'label' => '担当',
+          'label' => __('labels.charge_user'),
           'size' => 6,
         ],
         'place_floor_name' => [
-          'label' => '場所',
+          'label' => __('labels.place'),
           'size' => 6,
         ],
       ];
@@ -57,38 +57,38 @@ class UserCalendarController extends MilestoneController
     else {
       $ret = [
         'datetime' => [
-          'label' => '日時',
+          'label' => __('labels.datetime'),
         ],
         'status_name' => [
-          'label' => 'ステータス',
+          'label' => __('labels.status'),
           'size' => 6,
         ],
         'teacher_name' => [
-          'label' => '講師',
+          'label' => __('labels.teachers'),
           'size' => 6,
         ],
         'place_floor_name' => [
-          'label' => '場所',
+          'label' => __('labels.place'),
           'size' => 6,
         ],
         'lesson' => [
-          'label' => 'レッスン',
+          'label' => __('labels.lesson'),
           'size' => 6,
         ],
         'course' => [
-          'label' => 'コース',
+          'label' => __('labels.lesson_type'),
           'size' => 6,
         ],
         'teaching_name' => [
-          'label' => '授業種類',
+          'label' => __('labels.lesson_name'),
           'size' => 6,
         ],
         'subject' => [
-          'label' => '科目',
+          'label' => __('labels.subject'),
           'size' => 6,
         ],
         'student_name' => [
-          'label' => '生徒',
+          'label' => __('labels.students'),
           'size' => 12,
         ],
       ];
@@ -250,7 +250,7 @@ class UserCalendarController extends MilestoneController
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'login_user' => $user,
       'remind' => false,
@@ -453,26 +453,26 @@ class UserCalendarController extends MilestoneController
           "label" => "ID",
         ],
         "datetime" => [
-          "label" => "日時",
+          "label" => __('labels.datetime'),
           "link" => "show",
         ],
         "place_floor_name" => [
-          "label" => "場所",
+          "label" => __('labels.place'),
         ],
         "work_name" => [
-          "label" => "作業",
+          "label" => __('labels.work'),
         ],
         "user_name" => [
-          "label" => "担当",
+          "label" => __('labels.charge_user'),
         ],
         "student_name" => [
-          "label" => "生徒",
+          "label" => __('labels.students'),
         ],
         "subject" => [
-          "label" => "科目",
+          "label" => __('labels.subject'),
         ],
         "buttons" => [
-          "label" => "操作",
+          "label" => __('labels.control'),
           "button" => [
             "edit",
             "delete"]
@@ -852,10 +852,10 @@ class UserCalendarController extends MilestoneController
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
         $param['fields'] = $this->show_fields($param['item']->work);
-        return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
+        return $this->save_redirect($res, $param, '更新しました。', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
       }
       else {
-        return $this->save_redirect($res, $param, $this->domain_name.'を更新しました');
+        return $this->save_redirect($res, $param, '更新しました。');
       }
     }
     public function _update(Request $request, $id)
@@ -1150,7 +1150,7 @@ class UserCalendarController extends MilestoneController
       if($this->is_success_response($res)){
         $res = $this->_store($request);
       }
-      return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました');
+      return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました。');
     }
     /**
      * 新規登録ロジック

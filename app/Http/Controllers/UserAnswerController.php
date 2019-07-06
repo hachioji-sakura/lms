@@ -13,7 +13,7 @@ class UserAnswerController extends UserExaminationController
 {
     public $domain = 'user_answers';
     public $table = 'user_answers';
-    public $domain_name = '問題回答';
+    
 
     public function model(){
       return UserAnswer::query();

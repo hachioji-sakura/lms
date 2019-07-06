@@ -5,7 +5,7 @@
         <button type="button" class="close" data-dismiss="modal">
           <i class="fa fa-times"></i>
         </button>
-        <h4 class="modal-title content-sub-title">絞込</h4>
+        <h4 class="modal-title content-sub-title">{{__('labels.filter')}}</h4>
       </div>
       <div class="modal-body content-sub-body">
         <form class="filter" method="POST" action="{{request()->fullUrl()}}">
@@ -20,10 +20,10 @@
           <div class="col-12 mt-2 text-right">
               <button type="button" class="btn btn-submit btn-info mr-2"  accesskey="filter_search">
                 <i class="fa fa-search mr-1"></i>
-                  絞り込み
+                  {{__('labels.filter')}}
               </button>
               <button type="reset" class="btn btn-secondary" accesskey="filter_search">
-                  クリア
+                {{__('labels.clear')}}
               </button>
           </div>
         </form>

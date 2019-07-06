@@ -10,7 +10,7 @@ class UserCalendarMemberController extends UserCalendarController
 {
   public $domain = 'calendar_members';
   public $table = 'user_calendar_members';
-  public $domain_name = '授業予定';
+  
   public function model(){
     return UserCalendarMember::query();
   }
@@ -19,7 +19,7 @@ class UserCalendarMemberController extends UserCalendarController
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'remind' => false,
       'token' => $this->create_token(1728000),    //token期限＝20日

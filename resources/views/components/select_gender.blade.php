@@ -1,7 +1,7 @@
 <div class="form-group">
   <label for="{{$prefix}}gender">
-    性別
-    <span class="right badge badge-danger ml-1">必須</span>
+    {{__('labels.gender')}}
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
   </label>
   <div class="input-group">
     <div class="form-check">
@@ -11,7 +11,7 @@
         @endif
         >
         <label class="form-check-label" for="{{$prefix}}gender_2">
-            女性
+            {{__('labels.woman')}}
         </label>
     </div>
     <div class="form-check ml-2">
@@ -21,7 +21,7 @@
         @endif
         >
         <label class="form-check-label" for="{{$prefix}}gender_1">
-            男性
+            {{__('labels.man')}}
         </label>
     </div>
   </div>

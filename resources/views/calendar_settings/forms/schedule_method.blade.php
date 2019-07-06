@@ -1,8 +1,8 @@
 <div class="col-6 mt-2">
   <div class="form-group">
     <label for="lesson_week" class="w-100">
-      繰り返し
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.repeat')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['schedule_method'] as $index => $name)
       @if(isset($calendar))
@@ -21,13 +21,13 @@
 <div class="col-6 mt-2 collapse" id="schedule_method_changed">
   <div class="form-group">
     <label for="lesson_week" class="w-100">
-    週（毎月）
+      {{__('labels.number_of_weeks')}}
     </label>
     <div class="input-group">
-      <select name='lesson_week_count' class="form-control" placeholder="場所" required="true">
-        <option value="">(選択)</option>
+      <select name='lesson_week_count' class="form-control" required="true">
+        <option value="">{{__('labels.selectable')}}</option>
         @for($i=1;$i<5;$i++)
-          <option value="{{$i}}" @if(isset($_edit) && $_edit==true && $item['lesson_week_count'] == $i) selected @endif>第{{$i}}週</option>
+          <option value="{{$i}}" @if(isset($_edit) && $_edit==true && $item['lesson_week_count'] == $i) selected @endif>{{__('labels.number_of_title')}}{{$i}}{{__('labels.calendar_button_week')}}</option>
         @endfor
       </select>
     </div>

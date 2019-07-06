@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="type" class="w-100">
       グループ種別
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
       <div class="form-check ml-2 float-left">
           <input class="form-check-input icheck flat-green" type="radio" name="type" id="type_group" value="group" required="true"

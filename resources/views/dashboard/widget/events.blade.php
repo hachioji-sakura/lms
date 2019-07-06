@@ -15,7 +15,7 @@
         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 40px, 0px); top: 0px; left: 0px; will-change: transform;">
           <a class="dropdown-item" tabindex="1" href="#events_tab_1" data-toggle="tab">学校</a>
           <a class="dropdown-item" tabindex="2" href="#events_tab_2" data-toggle="tab">試験</a>
-          <a class="dropdown-item" tabindex="3" href="#events_tab_3" data-toggle="tab">その他</a>
+          <a class="dropdown-item" tabindex="3" href="#events_tab_3" data-toggle="tab">{{__('labels.other')}}</a>
         </div>
       </li>
       <!--
@@ -26,7 +26,7 @@
         <a class="nav-link" href="#events_tab_2" data-toggle="tab">試験</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#events_tab_3" data-toggle="tab">その他</a>
+        <a class="nav-link" href="#events_tab_3" data-toggle="tab">{{__('labels.other')}}</a>
       </li>
     -->
     </ul>

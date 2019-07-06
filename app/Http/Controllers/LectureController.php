@@ -10,7 +10,7 @@ class LectureController extends UserController
 {
   public $domain = "lectures";
   public $table = "lectures";
-  public $domain_name = "レクチャー";
+  
   /**
    * このdomainで管理するmodel
    *
@@ -52,7 +52,7 @@ class LectureController extends UserController
     $user = $this->login_details($request);
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'mode'=>$request->mode,
       'search_word'=>$request->search_word,

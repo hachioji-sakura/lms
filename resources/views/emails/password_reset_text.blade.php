@@ -1,13 +1,14 @@
 @include('emails.common')
 @yield('mail_title')
 
-{{$user_name}}様
+{{__('messages.mail_dear', ['user_name' => $user_name])}}
 
-以下の URL よりパスワードの再発行を行って下さい。
-※URLの有効期限はお申込みから24時間以内となっています。
+{{__('messages.mail_password_reset1')}}
+{{__('messages.mail_password_reset2')}}
+
 …………………………………………………………………………………………
-パスワードの再発行
-{{config('app.url')}}/password/setting?key={{$access_key}}
+{{__('labels.password_setting')}}
+{{config('app.url')}}/password/setting?key={{$access_key}}&locale={{$locale}}
 …………………………………………………………………………………………
 
 @yield('signature')

@@ -2,10 +2,10 @@
   <div class="form-group">
     <label for="{{$prefix}}grade" class="w-100">
       学年
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <select name="{{$prefix}}grade" class="form-control" placeholder="学年" required="true" onChange="{{$prefix}}grade_select_change(this)" accesskey="{{$prefix}}grade" @if(isset($item) && !empty($item)) value="{{$item->get_tag('grade')['value']}}" @endif>
-      <option value="">(選択してください)</option>
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
         @if(isset($item) && !empty($item) && $index==$item->get_tag('grade')['value']) selected @endif
@@ -18,7 +18,7 @@
   <div class="form-group">
     <label for="{{$prefix}}school_name" class="w-100">
       学校名
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
     <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" placeholder="例：八王子市立サクラ中学校"
       @if(isset($item) && !empty($item)) value="{{$item->get_tag('school_name')['value']}}" @endif

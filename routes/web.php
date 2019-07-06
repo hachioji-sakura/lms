@@ -11,12 +11,17 @@
 |
 */
 Auth::routes();
+
+if(isset($_GET["locale"]) && !empty($_GET["locale"])){
+  App::setLocale($_GET["locale"]);
+}
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('managers/login','ManagerController@login');
 Route::get('auth','AuthController@auth');
 Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
+Route::get('users/email/{email}','UserController@email_check');
 
 Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');

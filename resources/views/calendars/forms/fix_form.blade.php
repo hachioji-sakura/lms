@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="status">
       この授業予定に出席する
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       <div class="form-check">
@@ -24,7 +24,7 @@
   <div class="form-group">
     <label for="cancel_reason" class="w-100">
       授業予定に参加できない理由をお知らせください
-      <span class="right badge badge-secondary ml-1">任意</span>
+      <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
     <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" ></textarea>
   </div>

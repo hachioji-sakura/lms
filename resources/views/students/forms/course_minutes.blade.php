@@ -2,11 +2,11 @@
   <div class="form-group">
     <label for="course_minutes" class="w-100">
       @if(isset($_teacher) && $_teacher===true)
-      授業時間
+      {{__('labels.lesson_time')}}
       @else
       1回の授業時間は何分をご希望でしょうか？
       @endif
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group" id="">
     @foreach($attributes['course_minutes'] as $index => $name)

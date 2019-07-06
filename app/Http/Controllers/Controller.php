@@ -49,7 +49,7 @@ class Controller extends BaseController
     }
     public function send_mail($to, $title, $param, $type, $template)
     {
-      $title = '【'.config('app.name').'】'.$title;
+      $title = '【'.__('labels.app_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);
 

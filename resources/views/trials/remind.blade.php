@@ -18,7 +18,8 @@
     </div>
     <div class="col-12 col-lg-6 col-md-6 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
-            閉じる
+            {{__('labels.close_button')}}
+
         </button>
     </div>
   </div>

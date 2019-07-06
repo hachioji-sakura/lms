@@ -1,10 +1,10 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
     @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
-      以下の授業予定の出欠をつけてください
+      {{__('messages.warning_calendar_presence')}}
     @else
       <div class="col-12 col-lg-12 col-md-12 mb-1">
-        <h4 class="text-danger">出欠確認は、授業開始15分前から行ってください。</h4>
+        <h4 class="text-danger">{{__('messages.warning_calendar_presence_time')}}</h4>
       </div>
     @endif
   @endslot
@@ -20,20 +20,20 @@
           <div class="form-group">
             <label for="status">
               <i class="fa fa-question-circle mr-1 mt-2"></i>
-              この授業を実施しましたか？
-              <span class="right badge badge-danger ml-1">必須</span>
+              {{__('messages.confirm_lecture_exec')}}
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <div class="input-group">
               <div class="form-check">
                 <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_presence" value="presence" required="true" onChange="status_change();" validate="status_presence_check();">
                 <label class="form-check-label" for="status_presence">
-                    実施した
+                    {{__('messages.lecture_exec')}}
                 </label>
               </div>
               <div class="form-check ml-2">
                 <input class="form-check-input icheck flat-red" type="radio" name="status" id="status_absence" value="absence" required="true" onChange="status_change();" validate="status_presence_check();">
                 <label class="form-check-label" for="status_absence">
-                    実施していない
+                    {{__('messages.not_lecture_exec')}}
                 </label>
               </div>
             </div>
@@ -67,7 +67,7 @@
             }
           });
           if(!_is_scceuss){
-            front.showValidateError('#presence_list_table', '出席した生徒がいません');
+            front.showValidateError('#presence_list_table', '{{__('messages.error_calendar_presence_not_student')}}');
           }
         }
         else {
@@ -82,7 +82,7 @@
             }
           });
           if(!_is_scceuss){
-            front.showValidateError('#presence_list_table', '授業を実施していない場合、生徒に出席とつけれません');
+            front.showValidateError('#presence_list_table', '{{__('messages.error_calendar_presence_not_exec')}}');
           }
         }
         return _is_scceuss;
@@ -93,16 +93,16 @@
           <div class="form-group">
             <label for="status">
               <i class="fa fa-question-circle mr-1"></i>
-              生徒は出席しましたか？
-              <span class="right badge badge-danger ml-1">必須</span>
+              {{__('messages.confirm_student_presence')}}
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
           </div>
         </div>
         <div class="col-12">
           <table class="table table-striped w-80" id="presence_list_table">
             <tr class="bg-gray">
-              <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
-              <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>出欠</th>
+              <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>{{__('labels.students')}}</th>
+              <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>{{__('labels.calendar_button_attendance')}}</th>
             </tr>
             @foreach($item["students"] as $member)
             @if($member->user->details()->role==="student")
@@ -111,16 +111,16 @@
                 {{$member->user->details()->name}}</th>
               <td class="p-1 text-sm text-center">
                 @if($member->status=="rest")
-                  <i class="fa fa-times mr-1"></i>お休み
+                  <i class="fa fa-times mr-1"></i>{{__('labels.rest')}}
                 @else
                 <div class="input-group">
                   <div class="form-check">
                     <input class="form-check-input icheck flat-green presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_presence" value="presence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_presence">
                       @if($item->work==9)
-                      出勤
+                      {{__('labels.calendar_button_working')}}
                       @else
-                      出席
+                      {{__('labels.calendar_button_presence')}}
                       @endif
                     </label>
                   </div>
@@ -128,9 +128,9 @@
                     <input class="form-check-input icheck flat-red presence_check" type="radio" name="{{$member->id}}_status" id="{{$member->id}}_status_absence" value="absence" required="true" >
                     <label class="form-check-label" for="{{$member->id}}_status_absence">
                       @if($item->work==9)
-                      欠勤
+                      {{__('labels.calendar_button_no_working')}}
                       @else
-                      欠席
+                      {{__('labels.calendar_button_absence')}}
                       @endif
                     </label>
                   </div>
@@ -147,14 +147,16 @@
           {{-- 当日開始15分前～終了15分後までの表示 --}}
           <div class="row">
             <div class="col-12 col-lg-6 col-md-6 mb-1">
-              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence" confirm="更新しますか？">
+              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence" {{__('labels.close_button')}}
+confirm="{{__('messages.confirm_update')}}">
                   <i class="fa fa-check-circle mr-1"></i>
-                  出欠をつける
+                  {{__('labels.schedule_presence')}}
               </button>
             </div>
             <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_presence">
               <button type="reset" class="btn btn-secondary btn-block">
-                  閉じる
+                  {{__('labels.close_button')}}
+
               </button>
             </div>
           </div>
@@ -162,7 +164,8 @@
           <div class="row">
             <div class="col-12 col-lg-12 col-md-12 mb-1">
                 <button type="reset" class="btn btn-secondary btn-block">
-                    閉じる
+                    {{__('labels.close_button')}}
+
                 </button>
             </div>
           </div>
@@ -176,12 +179,13 @@
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence" confirm="更新しますか？">
+            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence" {{__('labels.close_button')}}
+confirm="{{__('messages.confirm_update')}}">
                 <i class="fa fa-check-circle mr-1"></i>
                 @if($item->work==9)
-                出勤
+                {{__('labels.calendar_button_working')}}
                 @else
-                出席
+                {{__('labels.calendar_button_presence')}}
                 @endif
             </button>
           </form>
@@ -191,19 +195,20 @@
             @csrf
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_single_absence" confirm="更新しますか？">
+            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_single_absence" confirm="{{__('messages.confirm_update')}}">
               <i class="fa fa-times-circle mr-1"></i>
               @if($item->work==9)
-              欠勤
+              {{__('labels.calendar_button_no_working')}}
               @else
-              欠席
+              {{__('labels.calendar_button_absence')}}
               @endif
             </button>
           </form>
         </div>
         <div class="col-12 col-lg-12 col-md-12 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
-                閉じる
+                {{__('labels.close_button')}}
+
             </button>
         </div>
       </div>

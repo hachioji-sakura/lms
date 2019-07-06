@@ -14,7 +14,7 @@ class UserExaminationController extends TextbookChapterController
 {
     public $domain = 'user_examinations';
     public $table = 'user_examinations';
-    public $domain_name = '問題';
+    
 
     public function model(){
       return UserExamination::query();
@@ -35,7 +35,7 @@ class UserExaminationController extends TextbookChapterController
       $current_examination = $this->get_examintaion($user->user_id, $chapter_id);
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'current_examination' => $current_examination,
         'user' => $user,
         'search_word'=>$request->search_word,

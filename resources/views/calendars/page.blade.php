@@ -30,7 +30,7 @@
               {{$field['label']}}
             </label>
             @foreach($item["students"] as $member)
-              <a target="_blank" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}" title="{{$member->exchange_limit_date}}">
                 @if($member->status=='new')
                 <i class="fa fa-question-circle mr-1"></i>
                 @elseif($member->status=='confirm')
@@ -47,8 +47,8 @@
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
+                ({{$member->remark()}})
                 @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->remark())))
-                 ({{$member->remark()}})
                 @endif
               </a>
               {{--
@@ -100,7 +100,7 @@
         var d = (new Date()).getTime();
         var url = '/calendars/'+calendar_id+'?v='+d;
         console.log(url);
-        base.showPage("dialog", "subDialog", '詳細', url);
+        base.showPage("dialog", "subDialog", "{{__('labels.details')}}", url);
       }
     },
     function(xhr, st, err) {

@@ -9,7 +9,6 @@ class GeneralAttributeController extends UserController
 {
     public $domain = "attributes";
     public $table = "general_attributes";
-    public $domain_name = "定義属性";
     /**
      * Display a listing of the resource.
      *
@@ -60,7 +59,7 @@ class GeneralAttributeController extends UserController
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
       return [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         "user" => $user,
         "search_word"=>$request->search_word,
         "select_key"=>$attribute_key,
@@ -92,13 +91,13 @@ class GeneralAttributeController extends UserController
           "link" => "show",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ],
         "buttons" => [
-          "label" => "操作",
+          "label" => __('labels.control'),
           "button" => ["edit", "delete"]
         ]
       ];
@@ -146,7 +145,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_store($request);
-      return $this->save_redirect($res, $param, $this->domain_name.'を登録しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '登録しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _store(Request $request)
     {
@@ -215,10 +214,10 @@ class GeneralAttributeController extends UserController
           "label" => "名称",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ]
       ];
       return view('components.page', [
@@ -250,10 +249,10 @@ class GeneralAttributeController extends UserController
           "label" => "名称",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ]
       ];
       return view($this->domain.'.create', [
@@ -277,7 +276,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_update($request, $id);
-      return $this->save_redirect($res, $param, $this->domain_name.'を更新しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '更新しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _update(Request $request, $id)
     {
@@ -320,7 +319,7 @@ class GeneralAttributeController extends UserController
       $param = $this->get_param($request, $attribute_key);
 
       $res = $this->_delete($request, $id);
-      return $this->save_redirect($res, $param, $this->domain_name.'を削除しました', '/'.$this->domain.'?key='.$param['select_key']);
+      return $this->save_redirect($res, $param, '削除しました。', '/'.$this->domain.'?key='.$param['select_key']);
     }
     public function _delete(Request $request, $id)
     {

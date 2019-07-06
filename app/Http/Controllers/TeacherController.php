@@ -16,7 +16,7 @@ class TeacherController extends StudentController
 {
   public $domain = "teachers";
   public $table = "teachers";
-  public $domain_name = "講師";
+
   public $default_image_id = 3;
   /**
    * このdomainで管理するmodel
@@ -40,7 +40,7 @@ class TeacherController extends StudentController
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'mode'=>$request->mode,
       'search_word'=>$request->get('search_word'),
@@ -110,6 +110,7 @@ class TeacherController extends StudentController
   */
   public function show(Request $request, $id)
   {
+
     $param = $this->get_param($request, $id);
     if($request->has('api')){
       $model = $this->model()->where('id',$id)->first();
@@ -166,8 +167,9 @@ class TeacherController extends StudentController
     $user = $param['user'];
     $view = "calendar_settings";
     $param['view'] = $view;
+    $calendar_settings = $item->get_calendar_settings($param['filter']);
     return view($this->domain.'.'.$view, [
-      'calendar_settings' => $item->get_calendar_settings($param['filter']),
+      'calendar_settings' => $calendar_settings,
     ])->with($param);
   }
   private function get_students(Request $request, $teacher_id){
@@ -206,7 +208,7 @@ class TeacherController extends StudentController
   {
     $param = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
@@ -222,7 +224,7 @@ class TeacherController extends StudentController
    {
      $param = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
      $send_to = "teacher";
@@ -255,7 +257,7 @@ class TeacherController extends StudentController
      }
      if($this->is_success_response($res)){
        $this->send_mail($form['email'],
-         $this->domain_name.'仮登録完了', [
+         '仮登録完了', [
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
          'send_to' => $send_to,
@@ -266,7 +268,7 @@ class TeacherController extends StudentController
            ['result' => $result])->with($param);
        }
      }
-     return $this->save_redirect($res, [], '仮登録メールを送信しました');
+     return $this->save_redirect($res, [], '仮登録メールを送信しました。');
    }
    public function _entry_store(Request $request)
    {
@@ -299,7 +301,7 @@ class TeacherController extends StudentController
      $result = '';
      $param = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];
@@ -360,7 +362,7 @@ class TeacherController extends StudentController
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($email, $this->domain_name.'登録完了', $form, 'text', 'register');
+        $this->send_mail($email, '登録完了', $form, 'text', 'register');
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
         {
           abort(500);
@@ -369,7 +371,7 @@ class TeacherController extends StudentController
           session()->regenerate();
           session()->put('login_role', "manager");
         }
-        return $this->save_redirect($res, $param, $this->domain_name.'登録完了しました。', '/home');
+        return $this->save_redirect($res, $param, '登録完了しました。', '/home');
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
@@ -386,7 +388,7 @@ class TeacherController extends StudentController
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
         return $item;
-      }, $this->domain_name.'本登録', __FILE__, __FUNCTION__, __LINE__ );
+      }, '本登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
     protected function to_manager_page(Request $request, $id)
     {
@@ -397,7 +399,7 @@ class TeacherController extends StudentController
           'label' => 'ID',
         ],
         'name' => [
-          'label' => '氏名',
+          'label' => __('labels.name'),
         ],
       ];
       $manager = Manager::where('name_last', $param['item']->name_last)->where('name_first', $param['item']->name_first)->first();
@@ -417,7 +419,7 @@ class TeacherController extends StudentController
       $result = '';
       $email = $param['item']['email'];
       $status = intval($param['item']->user->status);
-      $message = '事務登録依頼メールを送信しました';
+      $message = '事務登録依頼メールを送信しました。';
       $already_manager_id = 0;
       if(isset($form['already_manager_id'])) $already_manager_id = $form['already_manager_id'];
       $manager = $param['item']->to_manager($access_key, $already_manager_id);
@@ -464,8 +466,9 @@ class TeacherController extends StudentController
         $enable_confirm = false;
       }
       $param["calendars"] = $calendars;
-      $list_title = date('Y年m月 勤務実績', strtotime($from_date));
-      $param['list_title'] = $list_title;
+
+      $param['year'] = date('Y', strtotime($from_date));
+      $param['month'] = date('m', strtotime($from_date));
       $param['view'] = $view;
       $param['is_checked'] = $is_checked;
       $param['enable_confirm'] = $enable_confirm;
@@ -484,12 +487,12 @@ class TeacherController extends StudentController
       if($form['checked_at_type']==='fix'){
         //確認済み
         $res = $this->_month_work_confirm($request);
-        $message = '月次勤務実績を確認済みにしました';
+        $message = '月次勤務実績を確認済みにしました。';
         $this->_mail('月次勤務実績 確認', $param['user'], $form, 'calendar_month_work');
       }
       else {
         //訂正依頼
-        $message = 'カレンダーの訂正依頼を連絡しました';
+        $message = 'カレンダーの訂正依頼を連絡しました。';
         $this->_mail('カレンダーの訂正依頼を受け付けました', $param['user'], $form, 'calendar_correction');
       }
       return $this->save_redirect($res, $param, $message);

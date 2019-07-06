@@ -12,8 +12,8 @@
         <label for="title" class="w-100">
           講師
         </label>
-        <select name="teacher_id" class="form-control select2"  width=100% placeholder="講師" required="true" >
-          <option value="">(選択)</option>
+        <select name="teacher_id" class="form-control select2"  width=100% required="true" >
+          <option value="">{{__('labels.selectable')}}</option>
           @foreach($teachers as $teacher)
              <option
              value="{{ $teacher->id }}"

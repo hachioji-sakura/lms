@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App;
 use App\User;
 use Mail;
 use Illuminate\Http\Request;
@@ -59,23 +60,30 @@ class AuthController extends UserController
     * @return view
     */
    public function reset_mail(Request $request){
+     $locale = session('locale');
+     if($request->has('locale')){
+       $locale  = $request->get('locale');
+     }
+     App::setLocale($locale);
+
      $email = trim($request->email);
      $_user = User::where('email',$email);
      if($_user->count() < 1){
-       return back()->with(['error_message' => 'メールアドレスが間違っています']);
+       return back()->with(['error_message' => __('messages.error_email')]);
      }
      $user = $_user->first();
      $access_key = $this->create_token();
      $_user = $_user->update(['access_key' => $access_key]);
      $this->send_mail($email,
-      'パスワード再設定',
+      __('labels.password_setting'),
       [
+      'locale' => $locale,
       'user_name' => $user->details()["name"],
       'access_key' => $access_key
       ],
       'text',
       'password_reset');
-     return back()->with(['success_message' => 'パスワード再設定メールを送信しました']);
+     return back()->with(['success_message' =>  __('messages.info_password_setting_send')]);
    }
    /**
     * パスワード再設定画面
@@ -114,11 +122,11 @@ class AuthController extends UserController
      }
      $form = $request->all();
      $res = $this->update_user_password($user->id, $form['password']);
-     $message = 'パスワード更新しました。';
+     $message = __('info_password_setting_update');
      if($this->is_success_response($res)){
        if (Auth::attempt(['email' => $user->email, 'password' => $form['password']]))
        {
-         return $this->save_redirect($res, [], $message, '/home');
+         return $this->save_redirect($res, [], $message, '/home?locale='.$request->get('locale'));
        }
      }
      return $this->save_redirect($res, [], $message);

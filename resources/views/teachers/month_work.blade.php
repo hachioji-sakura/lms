@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}月次勤務実績
+  {{__('labels.work_record')}}
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
@@ -20,16 +20,21 @@
                 <li class="page-item">
                   <a class="page-link" href="{{sprintf('/%s/%d/month_work/%s', $domain, $item->id, $prev_month)}}">
                     <i class="fa fa-chevron-left mx-1"></i>
-                    <span class="d-none d-sm-inline-block">{{date('Y年m月',strtotime($prev_month.'-01'))}}</span>
+                    <span class="d-none d-sm-inline-block">
+                      {{__('labels.year_month', ['year'=>date('Y',strtotime($prev_month.'-01')), 'month' => date('m',strtotime($prev_month.'-01'))])}}
+                    </span>
                   </a>
                 </li>
               </ul>
             </div>
             <div class="col-6 text-center">
               <h3 class="card-title" id="charge_students">
-                {{$list_title}}
+                {{__('labels.year_month', ['year'=>$year, 'month' => $month])}}
+                {{__('labels.work_record')}}
                 @if(date('Y-m')==$target_month)
-                <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm mx-2" scroll=true>今日</a>
+                <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm mx-2" scroll=true>
+                  {{__('labels.calendar_button_today')}}
+                </a>
                 @endif
               </h3>
             </div>
@@ -37,7 +42,9 @@
               <ul class="pagination pagination-sm m-0 float-right">
                 <li class="page-item">
                   <a class="page-link" href="{{sprintf('/%s/%d/month_work/%s', $domain, $item->id, $next_month)}}">
-                    <span class="d-none d-sm-inline-block">{{date('Y年m月',strtotime($next_month.'-01'))}}</span>
+                    <span class="d-none d-sm-inline-block">
+                      {{__('labels.year_month', ['year'=>date('Y',strtotime($next_month.'-01')), 'month' => date('m',strtotime($next_month.'-01'))])}}
+                    </span>
                     <i class="fa fa-chevron-right"></i>
                   </a>
                 </li>
@@ -53,15 +60,15 @@
           @if($is_checked==true)
               <h6 class="text-sm p-1 pl-2 mt-2 bg-secondary" >
                 <i class="fa fa-info-circle mr-1"></i>
-                この勤怠はすべて確認済みです
+                {{__('messages.info_work_record_all_check')}}
               </h6>
           @elseif($enable_confirm==false)
               <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
                 <i class="fa fa-exclamation-triangle mr-1"></i>
                 @if($user->user_id === $item->user_id)
-                授業予定がまだ残っているため、月次勤怠の確定はできません
+                {{__('messages.error_work_record')}}
                 @else
-                勤務実績確認は、本人のみ可能です
+                {{__('messages.error_work_record_not_owner')}}
                 @endif
               </h6>
           @endif
@@ -82,7 +89,7 @@
               <div class="row pl-3 p-1 border-bottom calendar_{{$calendar['status']}}">
                 <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                 <div class="col-12 col-lg-3 col-md-3">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
                     <span class="mr-2">
                       <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
                     </span>
@@ -100,7 +107,7 @@
                   @foreach($calendar->members as $member)
                     @if($member->user->details()->role==="student")
                     {{--
-                      <a href="/students/{{$member->user->details()->id}}">
+                      <a alt="student_name" href="/students/{{$member->user->details()->id}}">
                         <i class="fa fa-user-graduate"></i>
                         {{$member->user->details()->name}}
                       </a>
@@ -135,7 +142,7 @@
           </ul>
           @else
           <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
           </div>
           @endif
         </div>
@@ -147,19 +154,19 @@
                 <div class="form-group">
                   <label for="checked_at_type">
                     この勤怠の内容でお間違いないでしょうか？
-                    <span class="right badge badge-danger ml-1">必須</span>
+                    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                   </label>
                   <div class="input-group">
                     <div class="form-check">
                         <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_fix" value="fix" required="true" onChange="checked_at_type_radio_change()">
-                        <label class="form-check-label" for="checked_at_type_fix">
-                            はい
+                        <label class="form-check-label" for="checked_at_type_fixyes">
+                            {{__('labels.yes')}}
                         </label>
                     </div>
                     <div class="form-check ml-2">
                         <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_cancel" value="cancel" required="true"  onChange="checked_at_type_radio_change()">
-                        <label class="form-check-label" for="checked_at_type_cancel">
-                            いいえ
+                        <label class="form-check-label" for="checked_at_type_cancelno">
+                            {{__('labels.no')}}
                         </label>
                     </div>
                   </div>
@@ -182,7 +189,7 @@
                 <div class="form-group">
                   <label for="howto" class="w-100">
                     訂正内容をご連絡ください
-                    <span class="right badge badge-danger ml-1">必須</span>
+                    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                   </label>
                   <textarea type="text" name="remark" class="form-control" placeholder="例：X月X日 15時～16時の出席を欠席に変更したい。" required="true"></textarea>
                 </div>
@@ -190,7 +197,7 @@
               <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-info btn-block">
                   <i class="fa fa-envelope mr-1"></i>
-                  送信
+                  {{__('labels.send')}}
                 </button>
               </div>
             @endif

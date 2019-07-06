@@ -158,8 +158,7 @@ EOT;
           inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
-          and um.rest_type = 'a2'
-          and um.remark != '規定回数以上'
+          and um.exchange_limit_date >= current_date
 EOT;
     if($user_id > 0){
       $where_raw .= <<<EOT
@@ -250,11 +249,7 @@ EOT;
     $c++;
     if(count($students)!=1) return false;
     $c++;
-    if($students[0]->status != 'rest') return false;
-    $c++;
-    if($students[0]->rest_type!='a2') return false;
-    $c++;
-    if($students[0]->is_limit_over()==true) return false;
+    if($students[0]->is_exchange_target()!=true) return false;
     //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
     $exchanged_calendar = $students[0]->exchanged_calendar;
     //振替登録済み（cancelを除く）
@@ -311,22 +306,28 @@ EOT;
     return $this->get_attribute_name('work', $this->work);
   }
   public function teaching_name(){
+    $_teaching_names = ['体験授業', '通常授業', '振替授業', '追加授業', ];
+    if(session('locale')=='en'){
+      $_teaching_names = ['Trial', 'Regular', 'Exchange', 'Add', ];
+    }
     if($this->is_teaching()){
       if($this->trial_id > 0){
-        return "体験授業";
+        return $_teaching_names[0];
       }
       if(intval($this->user_calendar_setting_id) > 0){
-        return "通常授業";
+        return $_teaching_names[1];
       }
       if($this->exchanged_calendar_id > 0){
-        return "振替授業";
+        return $_teaching_names[2];
       }
-      return "追加授業";
+      return $_teaching_names[3];
     }
     return "";
   }
   public function status_name(){
     $status_name = "";
+    if(session('locale')=='en') return $this->status;
+
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
@@ -399,8 +400,14 @@ EOT;
     return $start_hour_minute.'～'.$end_hour_minute;
   }
   public function dateweek(){
-    $d = date('n月j日',  strtotime($this->start_time));
-    $d .= '('.config('week')[date('w',  strtotime($this->start_time))].')';
+    $format = "n月j日";
+    $weeks = config('week');
+    if(session('locale')=='en'){
+      $format = "n/j";
+      $weeks = config('week_en');
+    }
+    $d = date($format,  strtotime($this->start_time));
+    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
     return $d;
   }
   public function get_member($user_id){
@@ -411,7 +418,7 @@ EOT;
     $item['status_name'] = $this->status_name();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
-      $item['place_floor_name'] = $this->place_floor->name;
+      $item['place_floor_name'] = $this->place_floor->name();
     }
     $item['work_name'] = $this->work();
     $item['teaching_name'] = $this->teaching_name();

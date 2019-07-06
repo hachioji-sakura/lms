@@ -44,6 +44,7 @@ class LoginController extends Controller
     {
       session()->regenerate();
       session()->put('login_role', null);
+      session()->put('locale', $request->get('locale'));
       $user = Auth::user();
       $manager = Manager::where('user_id', $user->id)->first();
       $teacher = Teacher::where('user_id', $user->id)->first();

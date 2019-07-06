@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="week_table" class="w-100">
       {{$title}}
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <table class="table table-striped" id="week_table">
     <tr class="bg-gray">

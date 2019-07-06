@@ -10,8 +10,8 @@
 <div class="col-12 mt-2">
   <div class="form-group">
     <label for="course_type" class="w-100">
-      授業形式
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.lesson_type')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group" id="course_type_form">
       <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true"
@@ -24,7 +24,7 @@
       @endif
       >
       <label class="form-check-label mr-3" for="course_type_single">
-          マンツーマン
+          {{__('labels.one_to_one')}}
       </label>
       <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true"
       @if($item->has_tag("course_type", "group"))
@@ -36,7 +36,7 @@
       @endif
       >
       <label class="form-check-label mr-3" for="course_type_group">
-          グループレッスン
+          {{__('labels.group')}}
       </label>
       {{--
       <input class="form-check-input icheck flat-green ml-3" type="radio" name="course_type" id="course_type_family" value="family" required="true"
@@ -47,7 +47,7 @@
       @endif
       >
       <label class="form-check-label mr-3" for="course_type_family">
-          ファミリー
+          {{__('labels.family')}}
       </label>
       --}}
     </div>

@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}ダッシュボード
+  {{$domain_name}}{{__('labels.dashboard')}}
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
@@ -57,8 +57,8 @@
             <i class="fa fa-calendar"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">カレンダー</b>
-            <span class="text-sm">授業予定をカレンダー表示</span>
+            <b class="info-box-text text-lg">{{__('labels.calendar_page')}}</b>
+            <span class="text-sm">{{__('labels.calendar_page_description')}}</span>
           </div>
         </div>
         </a>
@@ -70,21 +70,23 @@
             <i class="fa fa-clock"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">授業予定一覧</b>
-            <span class="text-sm">授業予定をリスト表示</span>
+            <b class="info-box-text text-lg">{{__('labels.schedule_list')}}</b>
+            <span class="text-sm">{{__('labels.schedule_list_description')}}</span>
+            <b class="info-box-text text-lg"></b>
+            <span class="text-sm"></span>
           </div>
         </div>
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
+        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
         <div class="info-box">
           <span class="info-box-icon bg-primary">
             <i class="fa fa-plus"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">授業追加</b>
-            <span class="text-sm">授業の追加・振替</span>
+            <b class="info-box-text text-lg">{{__('labels.schedule_add')}}</b>
+            <span class="text-sm">{{__('labels.schedule_add_description')}}</span>
           </div>
         </div>
         </a>
@@ -96,8 +98,8 @@
             <i class="fa fa-tasks"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">勤務実績</b>
-            <span class="text-sm">月末の実績登録</span>
+            <b class="info-box-text text-lg">{{__('labels.work_record')}}</b>
+            <span class="text-sm">{{__('labels.work_record_description')}}</span>
           </div>
         </div>
         </a>
@@ -109,8 +111,8 @@
             <i class="fa fa-users"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">生徒グループ</b>
-            <span class="text-sm">グループ、ファミリーの管理</span>
+            <b class="info-box-text text-lg">{{__('labels.student_groups')}}</b>
+            <span class="text-sm">{{__('labels.student_groups_description')}}</span>
           </div>
         </div>
         </a>
@@ -122,21 +124,21 @@
             <i class="fa fa-calendar-alt"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">通常授業一覧</b>
-            <span class="text-sm">定期的な授業予定</span>
+            <b class="info-box-text text-lg">{{__('labels.regular_schedule_list')}}</b>
+            <span class="text-sm">{{__('labels.regular_schedule_list_description')}}</span>
           </div>
         </div>
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+        <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}{{__('labels.setting')}}">
         <div class="info-box">
           <span class="info-box-icon bg-secondary">
             <i class="fa fa-user-cog"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">講師設定</b>
-            <span class="text-sm">担当科目、授業可能曜日の設定</span>
+            <b class="info-box-text text-lg">{{__('labels.teacher_setting')}}</b>
+            <span class="text-sm">{{__('labels.teacher_setting_description')}}</span>
           </div>
         </div>
         </a>
@@ -151,7 +153,7 @@
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
             <i class="fa fa-users mr-1"></i>
-            担当生徒
+            {{__('labels.charge_student')}}
           </h3>
           <div class="card-tools">
             @component('components.search_word', ['search_word' => $search_word])
@@ -165,7 +167,7 @@
             <li class="col-lg-3 col-md-4 col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
-                  <a href="/students/{{$student->id}}">
+                  <a alt="student_name" href="/students/{{$student->id}}">
                     <img src="{{$student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">
@@ -200,33 +202,33 @@
                 <div class="col-12 text-sm">
                   @if(isset($student->current_calendar))
                     @if($user->role==="teacher" && $student->current_calendar->status==="fix" && date('Ymd', strtotime($student->current_calendar->start_time)) === date('Ymd'))
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_presence')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
                         <i class="fa fa-user-check mr-1"></i>
-                        詳細
+                        {{__('labels.details')}}
                       </a>
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
                       {{-- 予定確認 --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="授業予定連絡" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                         <i class="fa fa-envelope mr-1"></i>/
-                        詳細
+                        {{__('labels.details')}}
                       </a>
                     @elseif($student->current_calendar->status==="presence")
                       {{-- 出席済み --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_details')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
                         <i class="fa fa-check-circle mr-1"></i>
-                        詳細
+                        {{__('labels.details')}}
                       </a>
                     @elseif($student->current_calendar->status==="new")
                       {{-- 予定下書き --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定を確定する" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_fix')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/confirm" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-calendar-check mr-1"></i>
-                        詳細
+                        {{__('labels.details')}}
                       </a>
                     @else
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_details')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
                         <i class="fa fa-file-alt mr-1"></i>
-                        詳細
+                        {{__('labels.details')}}
                       </a>
                     @endif
                   @endif
@@ -236,7 +238,7 @@
           </ul>
           @else
           <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
           </div>
           @endif
         </div>
@@ -244,7 +246,8 @@
         <!-- /.card-body -->
         <div class="card-footer clearfix">
           <button type="button" class="btn btn-info btn-sm float-left">
-            <i class="fa fa-plus mr-2"></i>追加
+            <i class="fa fa-plus mr-2"></i>
+            {{__('labels.add')}}
           </button>
         </div>
         --}}

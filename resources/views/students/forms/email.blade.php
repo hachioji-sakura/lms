@@ -1,8 +1,8 @@
 <div class="col-12">
   <div class="form-group">
     <label for="email">
-      メールアドレス
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.email')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @if(isset($is_label) && $is_label===true)
     <h5>{{$item['email']}}</h5>

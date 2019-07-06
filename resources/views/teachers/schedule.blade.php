@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}授業スケジュール
+  {{$domain_name}} {{__('labels.schedule_list')}}
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
@@ -13,16 +13,28 @@
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
             <i class="fa fa-calendar mr-1"></i>
-            {{$list_title}}
+            @if($list=="recent")
+              {{__('labels.today_schedule_list')}}
+            @elseif($list=="confirm")
+              {{__('labels.adjust_schedule_list')}}
+            @elseif($list=="cancel")
+              {{__('labels.rest_schedule_list')}}
+            @elseif($list=="exchange")
+              {{__('labels.exchange_schedule_list')}}
+            @elseif($list=="history")
+              {{__('labels.schedule_history')}}
+            @else
+              {{__('labels.schedule_list')}}
+            @endif
           </h3>
           <div class="card-title text-sm">
             @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
               @slot("addon_button")
               <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
-                  <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="授業追加">
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
                     <i class="fa fa-plus"></i>
-                    <span class="btn-label">追加</span>
+                    <span class="btn-label">{{__('labels.add')}}</span>
                   </a>
                 </li>
               </ul>
@@ -42,7 +54,7 @@
               @endif
                 ">
                 <div class="col-7 col-lg-4 col-md-4">
-                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="詳細" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
+                  <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
                     <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
                     <br>
                     <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
@@ -53,7 +65,7 @@
                 <div class="col-5 col-lg-4 col-md-4">
                   @foreach($calendar->members as $member)
                     @if($member->user->details('students')->role==="student")
-                      <a href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
+                      <a alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="mr-2" target=_blank>
                         <i class="fa fa-user-graduate"></i>
                         {{$member->user->details('students')->name}}
                       </a>
@@ -77,7 +89,7 @@
           </ul>
           @else
           <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
           </div>
           @endif
         </div>
@@ -91,7 +103,7 @@
   <div class="col-6 col-md-4">
     <div class="form-group">
       <label for="search_from_date" class="w-100">
-        日付 FROM
+        {{__('labels.date')}}(FROM)
       </label>
       <div class="input-group">
         <div class="input-group-prepend">
@@ -108,7 +120,7 @@
   <div class="col-6 col-md-4">
     <div class="form-group">
       <label for="search_to_date" class="w-100">
-        日付 TO
+        {{__('labels.date')}}(TO)
       </label>
       <div class="input-group">
         <div class="input-group-prepend">
@@ -125,34 +137,34 @@
   <div class="col-12">
     <div class="form-group">
       <label for="is_exchange" class="w-100">
-        表示順
+        {{__('labels.sort_no')}}
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
       @if(isset($filter['is_desc']) && $filter['is_desc']==true)
         checked
       @endif
-      >日付降順
+      >{{__('labels.date')}} {{__('labels.desc')}}
       </label>
     </div>
   </div>
   <div class="col-12">
     <div class="form-group">
       <label for="is_exchange" class="w-100">
-        振替対象
+        {{__('labels.to_exchange')}}
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
       @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
         checked
       @endif
-      >振替対象のみを表示
+      >{{__('labels.to_exchange')}}
       </label>
     </div>
   </div>
   <div class="col-12 col-md-4 mb-2">
     <label for="search_status" class="w-100">
-      ステータス
+      {{__('labels.status')}}
     </label>
     <div class="w-100">
       <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
@@ -168,7 +180,7 @@
   </div>
   <div class="col-12 col-md-4 mb-2">
     <label for="search_work" class="w-100">
-      作業
+      {{__('labels.work')}}
     </label>
     <div class="w-100">
       <select name="search_work[]" class="form-control select2" width=100% placeholder="検索作業" multiple="multiple" >
@@ -184,7 +196,7 @@
   </div>
   <div class="col-12 col-md-4 mb-2">
     <label for="search_place" class="w-100">
-      場所
+      {{__('labels.place')}}
     </label>
     <div class="w-100">
       <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
@@ -194,7 +206,7 @@
           @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
           selected
           @endif
-          >{{$floor->name}}</option>
+          >{{$floor->name()}}</option>
           @endforeach
         @endforeach
       </select>
