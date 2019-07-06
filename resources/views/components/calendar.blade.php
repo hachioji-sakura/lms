@@ -1,4 +1,4 @@
-<div class="card card-primary">
+<div class="card card">
   <div class="card-body p-0">
     <!-- THE CALENDAR -->
     @if(isset($id) && $id >0)

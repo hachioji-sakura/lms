@@ -158,8 +158,7 @@ EOT;
           inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
-          and um.rest_type = 'a2'
-          and um.remark != '規定回数以上'
+          and um.exchange_limit_date >= current_date
 EOT;
     if($user_id > 0){
       $where_raw .= <<<EOT
@@ -250,11 +249,7 @@ EOT;
     $c++;
     if(count($students)!=1) return false;
     $c++;
-    if($students[0]->status != 'rest') return false;
-    $c++;
-    if($students[0]->rest_type!='a2') return false;
-    $c++;
-    if($students[0]->is_limit_over()==true) return false;
+    if($students[0]->is_exchange_target()!=true) return false;
     //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
     $exchanged_calendar = $students[0]->exchanged_calendar;
     //振替登録済み（cancelを除く）

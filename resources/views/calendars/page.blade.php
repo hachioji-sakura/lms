@@ -30,7 +30,7 @@
               {{$field['label']}}
             </label>
             @foreach($item["students"] as $member)
-              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}" title="{{$member->exchange_limit_date}}">
                 @if($member->status=='new')
                 <i class="fa fa-question-circle mr-1"></i>
                 @elseif($member->status=='confirm')

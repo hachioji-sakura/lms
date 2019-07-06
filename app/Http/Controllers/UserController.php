@@ -41,9 +41,10 @@ class UserController extends Controller
   }
   protected function user_create($form)
   {
-    try {
-      if(!isset($form['status'])) $form['status']=0;
-      if(!isset($form['access_key'])) $form['access_key']='';
+
+    if(!isset($form['status'])) $form['status']=0;
+    if(!isset($form['access_key'])) $form['access_key']='';
+    $res = $this->transaction(function() use ($form){
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
@@ -52,14 +53,9 @@ class UserController extends Controller
           'access_key' => $form['access_key'],
           'password' => Hash::make($form['password']),
       ]);
-      return $this->api_response(200, "", "", $user);
-    }
-    catch (\Illuminate\Database\QueryException $e) {
-        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
-    catch(\Exception $e){
-        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
+      return $user;
+    }, 'ユーザー登録', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
   }
   protected function _search_pagenation(Request $request, $items)
   {
