@@ -9,7 +9,6 @@ class GeneralAttributeController extends UserController
 {
     public $domain = "attributes";
     public $table = "general_attributes";
-    public $domain_name = "定義属性";
     /**
      * Display a listing of the resource.
      *
@@ -60,7 +59,7 @@ class GeneralAttributeController extends UserController
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
       return [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         "user" => $user,
         "search_word"=>$request->search_word,
         "select_key"=>$attribute_key,
@@ -92,13 +91,13 @@ class GeneralAttributeController extends UserController
           "link" => "show",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ],
         "buttons" => [
-          "label" => "操作",
+          "label" => __('labels.control'),
           "button" => ["edit", "delete"]
         ]
       ];
@@ -215,10 +214,10 @@ class GeneralAttributeController extends UserController
           "label" => "名称",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ]
       ];
       return view('components.page', [
@@ -250,10 +249,10 @@ class GeneralAttributeController extends UserController
           "label" => "名称",
         ],
         "created_at" => [
-          "label" => "登録日時",
+          "label" => __('labels.add_datetime'),
         ],
         "updated_at" => [
-          "label" => "更新日時",
+          "label" => __('labels.upd_datetime'),
         ]
       ];
       return view($this->domain.'.create', [

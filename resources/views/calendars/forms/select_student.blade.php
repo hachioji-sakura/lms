@@ -1,11 +1,11 @@
 <div class="col-12 lesson_selected collapse">
   <div class="form-group">
     <label for="title" class="w-100">
-      生徒
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.students')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="担当生徒" required="true" onChange="select_student_change()">
-      <option value="">(選択)</option>
+    <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="select_student_change()">
+      <option value="">{{__('labels.selectable')}}</option>
       {{--
       @foreach($items as $student)
          <option
@@ -26,7 +26,7 @@
     @endif
   </div>
   <div id="select_student_none" class="alert">
-    <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+    <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
   </div>
 </div>
 <script>

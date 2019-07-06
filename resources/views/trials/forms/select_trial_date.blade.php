@@ -58,12 +58,12 @@
       @slot('event_click')
       eventClick: function(event, jsEvent, view) {
         $calendar.fullCalendar('unselect');
-        base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+        base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
       },
       @endslot
       @slot('event_render')
       eventRender: function(event, element) {
-        var title = '授業追加';
+        var title = '{{__('labels.schedule_dd')}}';
         if(event['student_name']){
           title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
         }
@@ -105,7 +105,7 @@
             {{-- 空いてない場合の表示はなくなる --}}
             <div class="form-check ml-2">
               @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
-              <a  href="javascript:void(0);" page_title="授業予定" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
+              <a  href="javascript:void(0);" page_title="{{__('labels.schedule_details')}}" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
               @endif
               <label class="form-check-label" for="trial_{{$i}}">
                 @if($_list['status']==='place_conflict')

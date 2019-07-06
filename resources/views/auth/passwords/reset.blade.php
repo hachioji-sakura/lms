@@ -1,9 +1,10 @@
 @extends('layouts.loginbox')
-@section('title', 'パスワードを忘れた方')
-@section('title_header', 'パスワードを忘れた方')
+@section('title', __('labels.forget_password'))
+@section('title_header', __('labels.forget_password'))
 @section('content')
 <form id="login_form" method="POST"  action="{{ route('password.update') }}">
     @csrf
+    <input type="hidden" name="locale" value="ja" >
     <div class="row mb-3">
       <div class="input-group col-12">
         <div class="input-group-prepend">
@@ -20,21 +21,21 @@
     <div class="row mb-3">
       <div class="col-12">
         <p class="small text-muted">
-          ご登録されたメールアドレスにパスワード再設定のご案内が送信されます。
+          {{__('messages.info_forget_password')}}
         </p>
       </div>
     </div>
     <div class="form-group row mb-3">
         <div class="col-12">
-          <button type="button" class="btn btn-submit btn-primary btn-block">送信する</button>
+          <button type="button" class="btn btn-submit btn-primary btn-block">__('labels.send_button')</button>
         </div>
     </div>
 </form>
 <h6 class="my-2">
-	<a href="{{ route('password.request') }}" class="small">パスワード忘れた方</a>
+	<a href="{{ route('password.request') }}" class="small">__('labels.forget_password')</a>
 </h6>
 <hr class="my-3">
 <p class="my-2">
-	<button type="button" class="btn btn-outline-success btn-block">新規登録する</button>
+	<button type="button" class="btn btn-outline-success btn-block">__('labels.add_button')</button>
 </p>
 @endsection

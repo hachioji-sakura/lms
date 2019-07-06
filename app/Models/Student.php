@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App;
 use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
@@ -35,14 +36,22 @@ class Student extends Model
    */
   public function name()
   {
-      return $this->name_last . ' ' .$this->name_first;
+    if(preg_match('/^[^ -~｡-ﾟ\x00-\x1f\t]+$/u', $this->name_last)){
+      if (App::isLocale('en')) {
+        return $this->romaji();
+      }
+    }
+    return $this->name_last . ' ' .$this->name_first;
   }
   /**
    *　プロパティ：氏名カナ
    */
   public function kana()
   {
-      return $this->kana_last . ' ' .$this->kana_first;
+    if (App::isLocale('en')) {
+      return "";
+    }
+    return $this->kana_last . ' ' .$this->kana_first;
   }
   /**
    *　プロパティ：アイコン
@@ -57,9 +66,9 @@ class Student extends Model
   public function gender()
   {
     if(isset($this->gender)){
-      if($this->gender===1) return "男性";
-      if($this->gender===2) return "女性";
-      return "その他";
+      if($this->gender===1) return __('labels.man');
+      if($this->gender===2) return __('labels.woman');
+      return __('labels.other');
     }
     return "-";
   }
@@ -68,6 +77,9 @@ class Student extends Model
    */
   public function birth_day($format='Y年m月d日')
   {
+    if (App::isLocale('en')) {
+      $format = 'Y-m-d';
+    }
     if(isset($this->birth_day)){
       return date($format, strtotime($this->birth_day));
     }

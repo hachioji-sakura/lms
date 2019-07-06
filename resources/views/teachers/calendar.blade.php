@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}ダッシュボード
+  {{__('labels.calendar_page')}}
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
@@ -46,7 +46,7 @@
             $calendar.fullCalendar('unselect');
             $calendar.fullCalendar('addEventSource', [{
               id:-1,
-              title: "授業追加",
+              title: "{{__('labels.schedule_add')}}",
               start: start,
               end : end,
               status : "new",
@@ -58,7 +58,7 @@
             param += "&start_hours="+start.hour();
             param += "&start_minutes="+start.minute();
             param += "&course_minutes="+_course_minutes;
-            base.showPage('dialog', "subDialog", "授業追加", "/calendars/create"+param, function(){
+            base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });
           },
@@ -68,19 +68,19 @@
             $calendar.fullCalendar('unselect');
             switch(event.total_status){
               case "new":
-                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
+                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
                 break;
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/status_update/remind");
+                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/status_update/presence");
+                base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
                 {{--TODO 休講は出欠と排反にする
                 if(event.is_passed==true){
-                  base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/status_update/presence");
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
                 }
                 else{
-                  base.showPage('dialog', "subDialog", "休講依頼", "/calendars/"+event.id+"/status_update/lecture_cancel");
+                  base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
                 }
                  --}}
                 break;
@@ -90,14 +90,14 @@
               case "presence":
               case "exchange":
               default:
-                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+                base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
                 break;
             }
           },
           @endslot
           @slot('event_render')
           eventRender: function(event, element) {
-            var title = '授業追加';
+            var title = '{{__('labels.schedule_add')}}';
             if(event['student_name']){
               title = event['student_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             }

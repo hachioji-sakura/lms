@@ -5,8 +5,8 @@
 @endif
   <div class="form-group">
     <label for="start_date" class="w-100">
-      日付
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.date')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       <div class="input-group-prepend">
@@ -28,15 +28,15 @@
 <div class="col-12 col-lg-6 col-md-6">
   <div class="form-group">
     <label for="start_hours" class="w-100">
-      開始時刻
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.start_time')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fa fa-clock"></i></span>
       </div>
       <select name="start_hours" class="form-control float-left mr-1" required="true">
-        <option value="">(選択)</option>
+        <option value="">{{__('labels.selectable')}}</option>
         @for ($i = 8; $i < 23; $i++)
           <option value="{{str_pad($i, 2, 0, STR_PAD_LEFT)}}"
           @if(isset($item) && isset($item['start_time']) && date('H', strtotime($item['start_time']))==str_pad($i, 2, 0, STR_PAD_LEFT))
@@ -48,7 +48,7 @@
         @endfor
       </select>
       <select name="start_minutes" class="form-control float-left mr-1" required="true">
-        <option value="">(選択)</option>
+        <option value="">{{__('labels.selectable')}}</option>
         @for ($i = 0; $i < 6; $i++)
         <option value="{{str_pad($i*10, 2, 0, STR_PAD_LEFT)}}"
         @if(isset($item) && isset($item['start_time']) && date('i', strtotime($item['start_time']))==str_pad($i*10, 2, 0, STR_PAD_LEFT))
@@ -66,15 +66,15 @@
 <div class="col-12 col-lg-6 col-md-6">
   <div class="form-group">
     <label for="end_hours" class="w-100">
-      終了時刻
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.end_time')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fa fa-clock"></i></span>
       </div>
       <select name="end_hours" class="form-control float-left mr-1" required="true">
-        <option value="">(選択)</option>
+        <option value="">{{__('labels.selectable')}}</option>
         @for ($i = 8; $i < 23; $i++)
           <option value="{{str_pad($i, 2, 0, STR_PAD_LEFT)}}"
           @if(isset($item) && isset($item['end_time']) && date('H', strtotime($item['end_time']))==str_pad($i, 2, 0, STR_PAD_LEFT))
@@ -86,7 +86,7 @@
         @endfor
       </select>
       <select name="end_minutes" class="form-control float-left mr-1" required="true">
-        <option value="">(選択)</option>
+        <option value="">{{__('labels.selectable')}}</option>
         @for ($i = 0; $i < 6; $i++)
         <option value="{{str_pad($i*10, 2, 0, STR_PAD_LEFT)}}"
         @if(isset($item) && isset($item['end_time']) && date('i', strtotime($item['end_time']))==str_pad($i*10, 2, 0, STR_PAD_LEFT))

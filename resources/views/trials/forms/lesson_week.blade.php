@@ -1,7 +1,7 @@
 <div class="col-12">
   <label for="charge_subject" class="w-100">
     曜日
-    <span class="right badge badge-danger ml-1">必須</span>
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
   </label>
   <?php $is_first=true; ?>
   @foreach($attributes['lesson_week'] as $week_day => $week_name)

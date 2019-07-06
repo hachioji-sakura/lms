@@ -8,7 +8,7 @@
       @else
       ご希望の科目
       @endif
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <table class="table table-striped" id="subject_table">
     <tr class="bg-gray">

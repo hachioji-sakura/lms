@@ -399,8 +399,14 @@ EOT;
     return $start_hour_minute.'～'.$end_hour_minute;
   }
   public function dateweek(){
-    $d = date('n月j日',  strtotime($this->start_time));
-    $d .= '('.config('week')[date('w',  strtotime($this->start_time))].')';
+    $format = "n月j日";
+    $weeks = config('week');
+    if(session('locale')=='en'){
+      $format = "n/j";
+      $weeks = config('week_en');
+    }
+    $d = date($format,  strtotime($this->start_time));
+    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
     return $d;
   }
   public function get_member($user_id){

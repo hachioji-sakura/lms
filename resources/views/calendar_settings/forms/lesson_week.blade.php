@@ -1,8 +1,8 @@
 <div class="col-10 mt-2">
   <div class="form-group">
     <label for="lesson_week" class="w-100">
-      曜日
-      <span class="right badge badge-danger ml-1">必須</span>
+      {{__('labels.week_day')}}
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['lesson_week'] as $index => $name)
       @if(isset($calendar) && isset($calendar['students']) && ($calendar['students'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true || $calendar['teachers'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true))

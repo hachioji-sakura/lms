@@ -6,7 +6,7 @@
       <div class="col-12 mb-4">
         アイコン：
         <select name="change_icon" class="form-control" placeholder="アバター" >
-          <option value="">選択してください</option>
+          <option value="">{{__('labels.selectable')}}</option>
           @if(isset($use_icons))
             @foreach($use_icons as $use_icon)
                <option value="{{ $use_icon->id }}">{{$use_icon->alias}}</option>

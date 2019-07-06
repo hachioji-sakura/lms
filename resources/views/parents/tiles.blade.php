@@ -10,7 +10,7 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタリング
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>

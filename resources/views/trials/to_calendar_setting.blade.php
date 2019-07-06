@@ -17,7 +17,7 @@
           <div class="col-md-4">
             <div class="card card-widget mb-2">
               <div class="card-header">
-                <i class="fa fa-user-tie mr-1"></i>担当講師
+                <i class="fa fa-user-tie mr-1"></i>{{__('labels.charge_teacher')}}
               </div>
               <div class="card-footer">
                 @component('trials.forms.charge_teacher', ['teacher' => $candidate_teacher,  'attributes' => $attributes, 'user' => $user,'is_detail'=>true])
@@ -34,12 +34,12 @@
                     eventClick: function(event, jsEvent, view) {
                       if(event.status == "trial") return false;
                       $calendar.fullCalendar('unselect');
-                      base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+                      base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
                     },
                     @endslot
                     @slot('event_render')
                     eventRender: function(event, element) {
-                      var title = '授業追加';
+                      var title = '{{__('labels.schedule_add')}}';
                       if(event['student_name']){
                         title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
                       }
@@ -58,7 +58,7 @@
           <div class="col-md-8">
             <div class="card card-widget mb-2">
               <div class="card-header">
-                <i class="fa fa-edit mr-1"></i>通常授業設定
+                <i class="fa fa-edit mr-1"></i>{{__('labels.regular_schedule_setting')}}
               </div>
               <div class="card-footer">
                 <div class="row">
@@ -78,13 +78,13 @@
                   <div class="col-6 mb-1">
                     <button type="button" class="btn btn-submit btn-primary btn-block">
                       <i class="fa fa-check mr-1"></i>
-                      通常授業設定
+                      {{__('labels.regular_schedule_setting')}}
                     </button>
                   </div>
                   <div class="col-6 mb-1">
                     <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn btn-secondary btn-block float-left mr-1">
                       <i class="fa fa-arrow-circle-left mr-1"></i>
-                      キャンセル
+                      {{__('labels.cancel_button')}}
                     </a>
                   </div>
                 </div>
@@ -99,7 +99,7 @@
       <div class="col-md-12">
         <div class="card card-widget mb-2">
           <div class="card-header">
-            <i class="fa fa-clock mr-1"></i>通常授業設定
+            <i class="fa fa-clock mr-1"></i>{{__('labels.regular_schedule_setting')}}
           </div>
           <div class="card-footer">
             @component('trials.forms.user_calendar_setting',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
@@ -109,7 +109,7 @@
       <div class="col-md-12">
         <div class="card card-widget mb-2">
           <div class="card-header">
-            <i class="fa fa-envelope-open-text mr-1"></i>体験授業履歴
+            <i class="fa fa-envelope-open-text mr-1"></i>{{__('labels.trials_schedule_history')}}
           </div>
           <div class="card-footer">
             @component('trials.forms.trial_calendar',['is_register' => true, 'item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent

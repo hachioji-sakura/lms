@@ -10,7 +10,7 @@ class ImageController extends UserController
 {
     public $domain = 'images';
     public $table = 'images';
-    public $domain_name = '画像';
+    
     /**
      * このdomainで管理するmodel
      *
@@ -37,7 +37,7 @@ class ImageController extends UserController
       }
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'user' => $user,
         'use_icons' => $this->get_image($request),
         'user_id' => $request->user_id,

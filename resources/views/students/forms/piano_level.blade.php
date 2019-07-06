@@ -6,7 +6,7 @@
       @else
       ピアノのご経験につきまして教えてください
       @endif
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['piano_level'] as $index => $name)
     <label class="mx-2">

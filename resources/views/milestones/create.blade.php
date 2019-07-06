@@ -26,7 +26,7 @@
         <div class="form-group">
           <label for="title" class="w-100">
             種別
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <select name="type" class="form-control" placeholder="種別" required="true">
             @foreach($attributes['milestone_type'] as $index => $name)
@@ -45,7 +45,7 @@
         <div class="form-group">
           <label for="title" class="w-100">
             概要
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <input type="text" id="title" name="title" class="form-control" required="true" maxlength=50
           @if(isset($_edit) && $_edit==true)
@@ -61,7 +61,7 @@
         <div class="form-group">
           <label for="body" class="w-100">
             目標詳細
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <textarea type="text" id="body" name="body" class="form-control" required="true"  maxlength=500
           @if(isset($_edit) && $_edit==true)
@@ -76,7 +76,7 @@
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
             @if(isset($_edit) && $_edit==true)
-              更新する
+              {{__('labels.update_button')}}
             @else
               登録する
             @endif

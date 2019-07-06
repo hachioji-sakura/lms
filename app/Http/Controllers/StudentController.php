@@ -21,7 +21,6 @@ class StudentController extends UserController
 {
   public $domain = "students";
   public $table = "students";
-  public $domain_name = "生徒";
   /**
    * このdomainで管理するmodel
    *
@@ -67,7 +66,7 @@ class StudentController extends UserController
     }
     $ret = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'user' => $user,
        'mode'=>$request->mode,
        'search_word'=>$request->get('search_word'),
@@ -304,7 +303,6 @@ class StudentController extends UserController
 
    $view = "schedule";
    $calendars = $this->get_schedule($request->all(), $item->user_id);
-   $param['list_title'] = $calendars["title"];
    $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
@@ -383,18 +381,14 @@ class StudentController extends UserController
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
-   $list_title = "授業予定";
    if(!isset($form['list'])) $form['list'] = '';
    switch($form['list']){
      case "history":
-       $list_title = '授業履歴';
        break;
      case "exchange":
-      $list_title = '振替対象';
        $form['is_exchange'] = 1;
        break;
      case "cancel":
-       $list_title = '休み・キャンセル';
        if(!isset($form['search_from_date'])){
          $form['search_from_date'] = date('Y-m-d', strtotime("now"));
        }
@@ -406,7 +400,6 @@ class StudentController extends UserController
        }
        break;
      case "confirm":
-       $list_title = '予定調整中';
        if(!isset($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
            $form['search_status'] = ['confirm'];
@@ -417,7 +410,6 @@ class StudentController extends UserController
        }
        break;
      case "recent":
-       $list_title = '直近予定';
        if(!isset($form['search_from_date'])){
          $form['search_from_date'] = date('Y-m-d', strtotime("now"));
        }
@@ -480,7 +472,7 @@ class StudentController extends UserController
    }
    //echo $calendars->toSql()."<br>";
    $calendars = $calendars->get();
-   return ["data" => $calendars, "count" => $count, "title" => $list_title];
+   return ["data" => $calendars, "count" => $count];
  }
  public function get_ask($form, $user_id){
    $list_title = "依頼一覧";
@@ -594,7 +586,7 @@ class StudentController extends UserController
     $param['item']['gender'] = $param['item']->gender();
     $fields = [
       'name' => [
-        'label' => '氏名',
+        'label' => __('labels.name'),
       ],
       'kana' => [
         'label' => 'フリガナ',
@@ -620,7 +612,7 @@ class StudentController extends UserController
         'label' => 'ID',
       ],
       'name' => [
-        'label' => '氏名',
+        'label' => __('labels.name'),
       ],
     ];
     return view('components.page', [

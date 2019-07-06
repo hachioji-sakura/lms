@@ -6,7 +6,7 @@
       @else
       英会話講師のご希望はございますか？
       @endif
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       @if(isset($_teacher) && $_teacher===true)
       <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
         ※英会話ご希望の生徒に必要な項目となります。

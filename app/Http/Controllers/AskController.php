@@ -12,7 +12,6 @@ class AskController extends MilestoneController
 {
   public $domain = 'asks';
   public $table = 'asks';
-  public $domain_name = '依頼';
   public $status_update_message = [
           'new' => '新規依頼を登録しました',
           'commit' => '依頼を承認しました',
@@ -20,20 +19,20 @@ class AskController extends MilestoneController
         ];
   public $list_fields = [
     'end_dateweek' => [
-      'label' => '締切',
+      'label' => __('labels.limit'),
     ],
     'type_name' => [
-      'label' => '依頼',
+      'label' => __('labels.ask_type'),
       'link' => 'show',
     ],
     'status_name' => [
-      'label' => 'ステータス',
+      'label' => __('labels.status'),
     ],
     'target_user_name' => [
-      'label' => '依頼者',
+      'label' => __('labels.target_user'),
     ],
     'charge_user_name' => [
-      'label' => '担当',
+      'label' => __('labels.charge_user'),
     ],
   ];
   public function model(){
@@ -42,26 +41,26 @@ class AskController extends MilestoneController
   public function show_fields(){
     $ret = [
       'type_name' => [
-        'label' => '依頼',
+        'label' => __('labels.asks'),
         'size' => 6,
       ],
       'status_name' => [
-        'label' => 'ステータス',
+        'label' => __('labels.status'),
         'size' => 6,
       ],
       'end_dateweek' => [
-        'label' => '期限',
+        'label' => __('labels.limit'),
       ],
       'charge_user_name' => [
-        'label' => '担当者',
+        'label' => __('labels.charge_user'),
         'size' => 6,
       ],
       'target_user_name' => [
-        'label' => '対象者',
+        'label' => __('labels.target_user'),
         'size' => 6,
       ],
       'body' => [
-        'label' => '備考',
+        'label' => __('labels.remark'),
       ],
     ];
     return $ret;
@@ -73,7 +72,7 @@ class AskController extends MilestoneController
     }
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'login_user' => $user,
       'origin' => $request->origin,

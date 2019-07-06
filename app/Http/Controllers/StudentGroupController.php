@@ -19,7 +19,7 @@ class StudentGroupController  extends MilestoneController
 {
   public $domain = 'student_groups';
   public $table = 'student_groups';
-  public $domain_name = '生徒グループ';
+  
   public function model(){
     return StudentGroup::query();
   }
@@ -38,7 +38,7 @@ class StudentGroupController  extends MilestoneController
         'size' => 6,
       ],
       'student_name' => [
-        'label' => '生徒',
+        'label' => __('labels.students'),
         'size' => 6,
       ],
       'remark' => [
@@ -56,7 +56,7 @@ class StudentGroupController  extends MilestoneController
     //$user = User::where('id', 607)->first()->details();
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'remind' => false,
       'token' => $this->create_token(1728000),    //token期限＝20日
@@ -237,10 +237,10 @@ class StudentGroupController  extends MilestoneController
         "label" => "タイプ",
       ],
       "student_name" => [
-        "label" => "生徒",
+        "label" => __('labels.students'),
       ],
       "buttons" => [
-        "label" => "操作",
+        "label" => __('labels.control'),
         "button" => [
           "edit",
           "delete"]

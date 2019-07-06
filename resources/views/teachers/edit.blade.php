@@ -12,13 +12,13 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
-                キャンセル
+                {{__('labels.cancel_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
+                {{__('labels.next_button')}}
               </a>
             </div>
           </div>
@@ -29,13 +29,13 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
+                {{__('labels.back_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
+                {{__('labels.next_button')}}
               </a>
             </div>
           </div>
@@ -46,19 +46,19 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
+                {{__('labels.back_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-times-circle mr-1"></i>
-                キャンセル
+                {{__('labels.cancel_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_edit">
                   <i class="fa fa-edit mr-1"></i>
-                    更新する
+                  {{__('labels.update_button')}}
                 </button>
             </div>
           </div>

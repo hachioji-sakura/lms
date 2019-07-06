@@ -12,7 +12,6 @@ class CommentController extends MilestoneController
 {
     public $domain = 'comments';
     public $table = 'comments';
-    public $domain_name = 'コメント';
     public function model(){
       return Comment::query();
     }
@@ -62,7 +61,7 @@ class CommentController extends MilestoneController
         'label' => '公開日',
       ];
       $fields['created_at'] = [
-        'label' => '登録日時',
+        'label' => __('labels.add_datetime'),
       ];
       $fields['buttons'] = [
         'label' => '操作',
@@ -169,10 +168,10 @@ class CommentController extends MilestoneController
         ];
       }
       $fields['created_at'] = [
-        'label' => '登録日時',
+        'label' => __('labels.add_datetime'),
       ];
       $fields['updated_at'] = [
-        'label' => '更新日時',
+        'label' => __('labels.upd_datetime'),
       ];
 
       return view('components.page', [

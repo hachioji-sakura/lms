@@ -16,7 +16,7 @@
           <div class="form-group">
             <label for="field1">
               氏名
-              <span class="right badge badge-danger ml-1">必須</span>
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <input type="text" id="name" name="name" class="form-control" placeholder="例：山田 太郎" required="true" inputtype="zenkaku">
           </div>
@@ -25,7 +25,7 @@
           <div class="form-group">
             <label for="field1">
               氏名（カナ）
-              <span class="right badge badge-danger ml-1">必須</span>
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <input type="text" id="kana" name="kana" class="form-control" placeholder="例：ヤマダ　タロウ" required="true" inputtype="zenkakukana">
           </div>
@@ -34,7 +34,7 @@
           <div class="form-group">
             <label for="email">
               メールアドレス
-              <span class="right badge badge-danger ml-1">必須</span>
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです">
           </div>
@@ -43,7 +43,7 @@
           <div class="form-group">
             <label for="password">
               パスワード
-              <span class="right badge badge-danger ml-1">必須</span>
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <input type="password" id="password" name="password" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true">
           </div>
@@ -52,7 +52,7 @@
           <div class="form-group">
             <label for="password-confirm">
               パスワード（確認）
-              <span class="right badge badge-danger ml-1">必須</span>
+              <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true" equal="password" equal_error="パスワードが一致しません">
           </div>

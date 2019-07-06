@@ -4,16 +4,16 @@
 @if(empty($result))
   @section('title_header')
   <ol class="step">
-    <li id="step_input" class="is-current">ご入力</li>
-    <li id="step_complete">完了</li>
+    <li id="step_input" class="is-current">{{__('labels.input')}}</li>
+    <li id="step_complete">{{__('labels.complete')}}</li>
   </ol>
   @endsection
   @include($domain.'.create_form')
 @else
   @section('title_header')
   <ol class="step">
-    <li id="step_input">ご入力</li>
-    <li id="step_complete" class="is-current">完了</li>
+    <li id="step_input">{{__('labels.input')}}</li>
+    <li id="step_complete" class="is-current">{{__('labels.complete')}}</li>
   </ol>
   @endsection
 @endif
@@ -52,7 +52,7 @@
       <div class="col-12">
         <p class="my-2">
           <a href="/logout?back=1" role="button" class="btn btn-secondary btn-block float-left mr-1">
-            ログアウトする
+            {{__('labels.logout_button')}}
           </a>
         </p>
     </div>
@@ -71,7 +71,7 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
+                {{__('labels.next_button')}}
               </a>
             </div>
           </div>
@@ -82,13 +82,13 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
+                {{__('labels.back_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
+                {{__('labels.next_button')}}
               </a>
             </div>
           </div>
@@ -99,13 +99,13 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
+                {{__('labels.back_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
+                {{__('labels.next_button')}}
               </a>
             </div>
           </div>
@@ -116,13 +116,13 @@
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                 <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
+                {{__('labels.back_button')}}
               </a>
             </div>
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_register">
                   <i class="fa fa-plus-circle mr-1"></i>
-                    登録する
+                  {{__('labels.add_button')}}
                 </button>
             </div>
           </div>

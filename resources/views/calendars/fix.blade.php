@@ -1,7 +1,7 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
   @if($user->role=="parent" || $user->role=="student")
-    この授業予定の確認連絡をしますか？
+    {{__('messages.confirm_calendar_fix')}}
   @endif
   @endslot
   @slot('forms')
@@ -15,16 +15,16 @@
       </div>
       <div class="row">
       <div class="col-12 mb-1">
-          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="この予定を確認済みに更新しますか？">
+          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('labels.confirm_calendar_fix')}}">
             <i class="fa fa-envelope mr-1"></i>
-            送信
+            {{__('labels.send_button')}}
           </button>
         </form>
       </div>
     @endif
     <div class="col-12 col-lg-12 col-md-12 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
-            閉じる
+          {{__('labels.close_button')}}
         </button>
     </div>
     <script>

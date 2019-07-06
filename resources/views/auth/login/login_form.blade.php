@@ -30,10 +30,6 @@
 $(function(){
   base.pageSettinged("login_form", null);
   //submit
-  var param = util.convQueryStringToJson();
-  if(!util.isEmpty(param["locale"])){
-    $("input[name='locale']").val(param["locale"]);
-  }
 
   $("button.btn-submit").on('click', function(e){
     console.log("login");

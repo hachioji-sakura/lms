@@ -12,7 +12,7 @@ class MilestoneController extends UserController
 {
     public $domain = 'milestones';
     public $table = 'milestones';
-    public $domain_name = '目標';
+    
     public $list_fields = [
       'id' => [
         'label' => 'ID',
@@ -127,7 +127,7 @@ class MilestoneController extends UserController
       }
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'user' => $user,
         'origin' => $request->origin,
         'item_id' => $request->item_id,
@@ -197,7 +197,7 @@ class MilestoneController extends UserController
         ];
       }
       $fields['created_at'] = [
-        'label' => '登録日時',
+        'label' => __('labels.add_datetime'),
       ];
       */
       $fields['buttons'] = [
@@ -319,10 +319,10 @@ class MilestoneController extends UserController
         ];
       }
       $fields['created_at'] = [
-        'label' => '登録日時',
+        'label' => __('labels.add_datetime'),
       ];
       $fields['updated_at'] = [
-        'label' => '更新日時',
+        'label' => __('labels.upd_datetime'),
       ];
       */
       return view('components.page', [

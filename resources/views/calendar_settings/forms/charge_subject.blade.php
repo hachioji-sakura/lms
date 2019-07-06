@@ -5,11 +5,11 @@
  <div class="col-6 mt-2">
    <div class="form-group">
      <label for="{{$key_name}}" class="w-100">
-       担当科目
-       <span class="right badge badge-danger ml-1">必須</span>
+       {{__('labels.charge_subject')}}
+       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
      </label>
      <select name="{{$key_name}}[]" class="form-control select2" placeholder="担当科目" required="true" multiple="multiple">
-       <option value="">(選択してください)</option>
+       <option value="">{{__('labels.selectable')}}</option>
        @foreach($candidate_teacher->enable_subject as $index=>$subject)
          <option value="{{$subject['subject_key']}}"
          @if(isset($calendar))

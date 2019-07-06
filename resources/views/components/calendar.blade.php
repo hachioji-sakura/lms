@@ -162,21 +162,21 @@
       },
       // タイトルの書式
       titleFormat: {
-        month: 'YYYY年M月',
-        week: "YYYY年M月",
-        day: ' M月D日[(]ddd[)]',
+        month: 'YYYY/M',
+        week: "YYYY/M",
+        day: ' M/D[(]ddd[)]',
       },
       //week: 'M月 D日',
       // ボタン文字列
       buttonText: {
           prev:     '＜',
           next:     '＞',
-          prevYear: '前年',
-          nextYear: '次年',
-          today:    '今日',
-          month:    '月',
-          week:     '週',
-          day:      '日'
+          prevYear: '{{__('labels.calendar_button_prev_year')}}',
+          nextYear: '{{__('labels.calendar_button_next_year')}}',
+          today:    '{{__('labels.calendar_button_today')}}',
+          month:    '{{__('labels.calendar_button_month')}}',
+          week:     '{{__('labels.calendar_button_week')}}',
+          day:      '{{__('labels.calendar_button_day')}}'
       },
       nowIndicator : true,
       editable  : false,
@@ -230,7 +230,7 @@
       // 月略称
       monthNamesShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
       // 曜日名称
-      dayNames: ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+      dayNames: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜'],
       // 曜日略称
       dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
       // 選択時にプレースホルダーを描画

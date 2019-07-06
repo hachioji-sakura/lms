@@ -26,15 +26,19 @@
     </div>
     <div class="form-group row mb-3">
         <div class="col-12">
-          <button type="button" class="btn btn-submit btn-primary btn-block">送信する</button>
+          <button type="button" class="btn btn-submit btn-primary btn-block">
+            {{__('labels.send_button')}}
+          </button>
         </div>
     </div>
 </form>
 <h6 class="my-2">
-	<a href="{{ route('login') }}" class="small">ログインへ戻る</a>
+	<a href="{{ route('login') }}" class="small">
+    {{__('labels.to_login')}}
+  </a>
 </h6>
 <hr class="my-3">
 <p class="my-2">
-	<a href="{{ route('register') }}" class="btn btn-outline-success btn-block">新規登録する</a>
+	<a href="{{ route('register') }}" class="btn btn-outline-success btn-block">登録する</a>
 </p>
 @endsection

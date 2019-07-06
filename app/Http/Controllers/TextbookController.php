@@ -9,7 +9,7 @@ class TextbookController extends MilestoneController
 {
     public $domain = 'textbooks';
     public $table = 'textbooks';
-    public $domain_name = '教科書・参考書';
+    
 
     public function model(){
       return Textbook::query();
@@ -25,7 +25,7 @@ class TextbookController extends MilestoneController
       $user = $this->login_details($request);
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'user' => $user,
         'search_word'=>$request->search_word,
         'search_status'=>$request->status

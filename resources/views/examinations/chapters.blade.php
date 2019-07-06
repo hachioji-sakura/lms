@@ -48,7 +48,7 @@
     @endforeach
   @else
   <div class="alert">
-    <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+    <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
   </div>
   @endif
 </div>
@@ -60,7 +60,7 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        フィルタリング
+        {{__('labels.filter')}}
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>

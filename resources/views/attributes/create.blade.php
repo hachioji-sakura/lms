@@ -23,7 +23,7 @@
         <div class="form-group">
           <label for="attribute_value" class="w-100">
             属性値
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           @if(isset($_edit) && $_edit==true)
           <input type="hidden" id="attribute_value_org" name="attribute_value_org" value="{{$item['attribute_value']}}">
@@ -39,7 +39,7 @@
         <div class="form-group">
           <label for="attribute_name" class="w-100">
             属性名
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           @if(isset($_edit) && $_edit==true)
           <input type="text" id="attribute_name" name="attribute_name" value="{{$item['attribute_name']}}" class="form-control" placeholder="(変更前) {{$item['attribute_name']}}" required="true" >
@@ -54,7 +54,7 @@
         <div class="form-group">
           <label for="sort_no" class="w-100">
             並び順
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           @if(isset($_edit) && $_edit==true)
           <input type="text" id="sort_no" name="sort_no" value="{{$item['sort_no']}}" class="form-control" placeholder="(変更前) {{$item['sort_no']}}" required="true" >
@@ -68,7 +68,7 @@
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
             @if(isset($_edit) && $_edit==true)
-              更新する
+              {{__('labels.update_button')}}
             @else
               登録する
             @endif

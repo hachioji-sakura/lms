@@ -27,6 +27,9 @@ class HomeController extends Controller
     {
       $user = Auth::user();
       if(isset($user)){
+        if($request->has('locale')){
+          session()->put('locale', $request->get('locale'));
+        }
         if($user->status==0){
           //ログイン済みであれば自動ログイン
           $user = $user->details();

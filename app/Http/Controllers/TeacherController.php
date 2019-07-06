@@ -16,7 +16,7 @@ class TeacherController extends StudentController
 {
   public $domain = "teachers";
   public $table = "teachers";
-  public $domain_name = "講師";
+
   public $default_image_id = 3;
   /**
    * このdomainで管理するmodel
@@ -40,7 +40,7 @@ class TeacherController extends StudentController
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'mode'=>$request->mode,
       'search_word'=>$request->get('search_word'),
@@ -167,8 +167,9 @@ class TeacherController extends StudentController
     $user = $param['user'];
     $view = "calendar_settings";
     $param['view'] = $view;
+    $calendar_settings = $item->get_calendar_settings($param['filter']);
     return view($this->domain.'.'.$view, [
-      'calendar_settings' => $item->get_calendar_settings($param['filter']),
+      'calendar_settings' => $calendar_settings,
     ])->with($param);
   }
   private function get_students(Request $request, $teacher_id){
@@ -207,7 +208,7 @@ class TeacherController extends StudentController
   {
     $param = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
@@ -223,7 +224,7 @@ class TeacherController extends StudentController
    {
      $param = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
      $send_to = "teacher";
@@ -300,7 +301,7 @@ class TeacherController extends StudentController
      $result = '';
      $param = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];
@@ -398,7 +399,7 @@ class TeacherController extends StudentController
           'label' => 'ID',
         ],
         'name' => [
-          'label' => '氏名',
+          'label' => __('labels.name'),
         ],
       ];
       $manager = Manager::where('name_last', $param['item']->name_last)->where('name_first', $param['item']->name_first)->first();
@@ -465,8 +466,9 @@ class TeacherController extends StudentController
         $enable_confirm = false;
       }
       $param["calendars"] = $calendars;
-      $list_title = date('Y年m月 勤務実績', strtotime($from_date));
-      $param['list_title'] = $list_title;
+
+      $param['year'] = date('Y', strtotime($from_date));
+      $param['month'] = date('m', strtotime($from_date));
       $param['view'] = $view;
       $param['is_checked'] = $is_checked;
       $param['enable_confirm'] = $enable_confirm;

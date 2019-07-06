@@ -8,7 +8,7 @@
     @else
     <label for="{{$prefix}}kana_last">
       名（カナ）
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <input type="text" id="kana_last" name="{{$prefix}}kana_last" class="form-control" placeholder="例：ハチオウジ" required="true" inputtype="zenkakukana" @isset($item) value="{{$item['kana_last']}}" @endisset>
     @endif
@@ -24,7 +24,7 @@
     @else
     <label for="{{$prefix}}kana_first">
       名（カナ）
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <input type="text" id="kana_first" name="{{$prefix}}kana_first" class="form-control" placeholder="例：サクラ" required="true" inputtype="zenkakukana" @isset($item) value="{{$item['kana_first']}}" @endisset>
     @endif

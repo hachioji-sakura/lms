@@ -17,9 +17,7 @@
 </form>
 <div class="my-2 row hr-1 bd-gray">
   <h6 class="col-12">
-  	<a href="/forget" class="small mr-2"><i class="fa fa-arrow-alt-circle-right mr-1"></i>
-      {{ __('labels.password_forget') }}
-    </a>
+    @component('auth.login.forget_link', []) @endcomponent
   </h6>
 </div>
 <div class="my-2 row">
@@ -29,7 +27,7 @@
 </div>
 <div class="my-2 row">
   <h6 class="col-12">
-  <a href="/managers/login" class="float-right small mr-2"><i class="fa fa-user-lock mr-1"></i>{{__('labels.admin_page')}}</a>
+  <a href="/managers/login" class="float-right small mr-2"><i class="fa fa-user-lock mr-1"></i>{{__('labels.to_admin_page')}}</a>
   </h6>
 </div>
 @endsection

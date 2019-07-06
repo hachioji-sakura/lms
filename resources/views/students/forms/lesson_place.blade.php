@@ -2,7 +2,7 @@
   <div class="form-group">
     <label for="lesson_place" class="w-100">
       ご希望の校舎
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['places'] as $place)
     <label class="mx-2">

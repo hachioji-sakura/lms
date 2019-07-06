@@ -12,7 +12,7 @@ class TrialController extends UserCalendarController
 {
   public $domain = "trials";
   public $table = "trials";
-  public $domain_name = "体験授業申し込み";
+
   private $show_fields = [
     'student_name' => [
       'label' => '生徒氏名',
@@ -139,7 +139,7 @@ class TrialController extends UserCalendarController
     }
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'origin' => $request->origin,
       'item_id' => $request->item_id,
@@ -209,7 +209,7 @@ class TrialController extends UserCalendarController
           'link' => 'show',
         ],
         'status_name' => [
-          'label' => 'ステータス',
+          'label' => __('labels.status'),
         ],
         'date1' => [
           'label' => '第１希望',
@@ -341,7 +341,7 @@ class TrialController extends UserCalendarController
   {
     $param = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'attributes' => $this->attributes(),
       'item' => [],
     ];
@@ -558,7 +558,7 @@ class TrialController extends UserCalendarController
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
      return view($this->domain.'.admission',
@@ -586,7 +586,7 @@ class TrialController extends UserCalendarController
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
      return view($this->domain.'.admission_mail',

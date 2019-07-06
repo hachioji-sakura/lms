@@ -2,14 +2,14 @@
   <div class="form-group">
     <label for="title" class="w-100">
       生徒
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="担当生徒" required="true">
-      <option value="">(選択)</option>
+    <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true">
+      <option value="">{{__('labels.selectable')}}</option>
     </select>
     @if(isset($_edit) && $_edit==true)
     <select name="__student_id[]" class="hide" multiple="multiple" >
-      <option value="">(選択)</option>
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($item->teacher->get_charge_students() as $student)
          <option
          value="{{ $student->id }}"

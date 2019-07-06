@@ -3,7 +3,7 @@
   <div class="form-group">
     <label for="course_type" class="w-100">
       レッスン
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       @foreach($teacher->get_tags('lesson') as $lesson)

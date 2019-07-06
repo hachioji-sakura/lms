@@ -4,7 +4,7 @@
       生徒グループ
     </label>
     <select name="student_group_id" class="form-control" width=100% placeholder="生徒グループ" onChange="select_student_group_change()">
-      <option value="">(選択)</option>
+      <option value="">{{__('labels.selectable')}}</option>
     </select>
   </div>
 </div>
@@ -35,7 +35,7 @@ function get_student_group(){
         var c = 0;
         var select_form = $("select[name='student_group_id']");
         select_form.empty();
-        select_form.append('<option value="">(選択)</option>');
+        select_form.append('<option value="">{{__('labels.selectable')}}</option>');
         $.each(result['data'], function(id, val){
           _student_group[val["id"]] =[];
           $.each(val["students"],function(i, s){

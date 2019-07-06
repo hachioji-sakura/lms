@@ -6,7 +6,7 @@
       @else
       ご希望のレッスン
       @endisset
-      <span class="right badge badge-danger ml-1">必須</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['lesson'] as $index => $name)
     <label class="mx-2">

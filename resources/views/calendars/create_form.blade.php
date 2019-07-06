@@ -33,16 +33,16 @@
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-file-invoice mr-1"></i>
-    登録内容確認
+    {{__('labels.confirm_title')}}
   </div>
     <?php
-      $form_data = ["teacher_name" => "講師",
-                    "start_time"=>"開始日時",
-                    "place_floor_id_name"=>"場所",
-                    "course_minutes_name"=>"授業時間",
-                    "course_type_name"=>"コース",
-                    "student_name"=>"生徒",
-                    "subject_name" => "科目"];
+      $form_data = ["teacher_name" => __('labels.teachers'),
+                    "start_time"=> __('labels.start_date'),
+                    "place_floor_id_name"=> __('labels.place'),
+                    "course_minutes_name"=> __('labels.lesson_time'),
+                    "course_type_name"=> __('labels.lesson_type'),
+                    "student_name"=> __('labels.students'),
+                    "subject_name" => __('labels.subject')];
     ?>
     @foreach($form_data as $key => $name)
     <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
@@ -51,7 +51,7 @@
       @if($key=="start_time")
         <span class="text-xs add_type add_type_new">
           <small class="badge badge-danger mt-1 mr-1">
-            追加授業
+            {{__('labels.schedule_add')}}
           </small>
         </span>
       @endif
@@ -61,7 +61,7 @@
           <span class="text-xs">
             <small class="badge badge-primary mt-1 mr-1 p-1">
               <i class="fa fa-exchange-alt mr-1"></i>
-              振替: <span id="exchanged_calendar_datetime"></span>
+              {{__('labels.exchange')}}: <span id="exchanged_calendar_datetime"></span>
             </small>
           </span>
         </div>

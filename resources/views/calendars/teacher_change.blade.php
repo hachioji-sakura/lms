@@ -11,10 +11,10 @@
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
-            代講を依頼する講師を選択してください
+            {{__('messages.warning_teacher_change')}}
           </label>
-          <select name="charge_user_id" class="form-control select2"  width=100% placeholder="講師" required="true" >
-            <option value="">(選択)</option>
+          <select name="charge_user_id" class="form-control select2"  width=100% required="true" >
+            <option value="">{{__('labels.selectable')}}</option>
             @foreach($teachers as $teacher)
                <option
                value="{{ $teacher->user_id }}"
@@ -26,14 +26,14 @@
     </div>
     <div class="row">
       <div class="col-12 mb-1">
-          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="代講依頼を連絡しますか？">
+          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_teacher_change')}}">
             <i class="fa fa-envelope mr-1"></i>
-            送信
+            {{__('labels.send_button')}}
           </button>
       </div>
       <div class="col-12 col-lg-12 col-md-12 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
-              閉じる
+              {{__('labels.close_button')}}
           </button>
       </div>
 

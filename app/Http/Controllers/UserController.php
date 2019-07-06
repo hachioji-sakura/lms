@@ -18,7 +18,7 @@ use DB;
 class UserController extends Controller
 {
   public $domain = "users";
-  public $domain_name = "ユーザー";
+
   protected $pagenation_line = 20;
   public function __construct()
   {
@@ -174,7 +174,9 @@ class UserController extends Controller
     $api_token = $request->header('api-token');
     \Log::warning("login_details:".session('locale'));
     App::setLocale(session('locale'));
-
+    if($request->has('locale')){
+      App::setLocale($request->get('locale'));
+    }
     if(!empty($api_token)){
       $user = User::where('access_key', $api_token)->first();
       if(isset($user))  Auth::loginUsingId($user->id);

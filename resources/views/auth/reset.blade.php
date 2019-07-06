@@ -1,34 +1,35 @@
 @extends('layouts.loginbox')
-@section('title', 'パスワード再設定')
-@section('title_header', 'パスワード再設定')
+@section('title', __('labels.password_setting'))
+@section('title_header', __('labels.password_setting'))
 @section('content')
 <form method="POST" action="/password/setting" id="reset_form">
     @csrf
+    <input type="hidden" name="locale" value="ja" >
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <div class="row">
       <div class="col-12">
         <div class="form-group">
           <label for="password">
-            パスワード
-            <span class="right badge badge-danger ml-1">必須</span>
+            {{__('labels.password')}}
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true">
+          <input type="password" id="password" name="password" class="form-control" placeholder="{{__('messages.error_validate_password')}}" minlength=8 maxlength=16 required="true">
         </div>
       </div>
       <div class="col-12">
         <div class="form-group">
           <label for="password-confirm">
-            パスワード（確認）
-            <span class="right badge badge-danger ml-1">必須</span>
+            {{__('labels.password_confirm')}}
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="半角英数8文字以上16文字未満" minlength=8 maxlength=16 required="true" equal="password" equal_error="パスワードが一致しません">
+          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="{{__('messages.error_validate_password')}}" minlength=8 maxlength=16 required="true" equal="password" equal_error="{{__('messages.error_validate_password_not_match')}}">
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-12">
           <button type="button" class="btn btn-submit btn-primary btn-block">
-              設定する
+            {{__('labels.update_button')}}
           </button>
       </div>
     </div>

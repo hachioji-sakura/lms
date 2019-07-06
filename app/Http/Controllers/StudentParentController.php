@@ -15,7 +15,7 @@ class StudentParentController extends TeacherController
 {
   public $domain = "parents";
   public $table = "student_parents";
-  public $domain_name = "ご契約者様";
+  
   public function model(){
     return StudentParent::query();
   }
@@ -32,7 +32,7 @@ class StudentParentController extends TeacherController
     $pagenation = '';
     $ret = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'mode'=>$request->mode,
       'search_word'=>$request->get('search_word'),
@@ -138,7 +138,7 @@ class StudentParentController extends TeacherController
   {
     $param = [
       'domain' => $this->domain,
-      'domain_name' => $this->domain_name,
+      'domain_name' => __('labels.'.$this->domain),
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
@@ -219,7 +219,7 @@ class StudentParentController extends TeacherController
      $result = '';
      $param = [
        'domain' => $this->domain,
-       'domain_name' => $this->domain_name,
+       'domain_name' => __('labels.'.$this->domain),
        'user' => $this->login_details($request),
        'attributes' => $this->attributes(),
      ];

@@ -100,7 +100,7 @@
         var d = (new Date()).getTime();
         var url = '/calendars/'+calendar_id+'?v='+d;
         console.log(url);
-        base.showPage("dialog", "subDialog", '詳細', url);
+        base.showPage("dialog", "subDialog", "{{__('labels.details')}}", url);
       }
     },
     function(xhr, st, err) {

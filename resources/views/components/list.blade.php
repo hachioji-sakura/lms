@@ -14,6 +14,6 @@
 </table>
 @else
 <div class="alert">
-  <h4><i class="icon fa fa-exclamation-triangle"></i>データがありません</h4>
+  <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
 </div>
 @endif

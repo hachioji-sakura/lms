@@ -58,7 +58,7 @@
         <div class="form-group">
           <label for="email">
             メールアドレス
-            <span class="right badge badge-danger ml-1">必須</span>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです">
         </div>
@@ -122,7 +122,8 @@
       <div class="col-12 mb-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
-          閉じる
+          {{__('labels.close_button')}}
+
         </a>
       </div>
     @endif

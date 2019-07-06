@@ -1,7 +1,7 @@
 <div class="col-12 mb-2">
   <label for="start_date" class="w-100">
-    設定有効日
-    <span class="right badge badge-secondary ml-1">任意</span>
+    {{__('labels.setting_enable_day')}}
+    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
   </label>
   <div class="input-group">
     <input type="text" id="enable_start_date" name="start_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01" minvalue="{{date('Y/m/d')}}"

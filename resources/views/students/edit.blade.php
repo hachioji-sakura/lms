@@ -76,7 +76,7 @@
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-edit mr-1"></i>
-                    更新する
+                    {{__('labels.update_button')}}
                 </button>
             </div>
           </div>

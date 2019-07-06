@@ -19,7 +19,7 @@ class UserCalendarSettingController extends UserCalendarController
 {
   public $domain = 'calendar_settings';
   public $table = 'user_calendar_settings';
-  public $domain_name = 'カレンダー設定';
+  
     public function model(){
       return UserCalendarSetting::query();
     }
@@ -27,18 +27,18 @@ class UserCalendarSettingController extends UserCalendarController
       if($work==9){
         $ret = [
           'title1' => [
-            'label' => '概要',
+            'label' => __('labels.title'),
             'size' => 6,
           ],
           'place_floor_name' => [
-            'label' => '場所',
+            'label' => __('labels.place'),
             'size' => 6,
           ],
           'title2' => [
-            'label' => '詳細',
+            'label' => __('labels.details'),
           ],
           'user_name' => [
-            'label' => '担当',
+            'label' => __('labels.charge_user'),
             'size' => 6,
           ],
         ];
@@ -46,26 +46,26 @@ class UserCalendarSettingController extends UserCalendarController
       else {
         $ret = [
           'title1' => [
-            'label' => '概要',
+            'label' => __('labels.title'),
             'size' => 6,
           ],
           'place_floor_name' => [
-            'label' => '場所',
+            'label' => __('labels.place'),
             'size' => 6,
           ],
           'title2' => [
-            'label' => '詳細',
+            'label' => __('labels.details'),
           ],
           'user_name' => [
-            'label' => '担当',
+            'label' => __('labels.charge_user'),
             'size' => 6,
           ],
           'student_name' => [
-            'label' => '生徒',
+            'label' => __('labels.students'),
             'size' => 6,
           ],
           'subject' => [
-            'label' => '科目',
+            'label' => __('labels.subject'),
             'size' => 12,
           ],
         ];
@@ -235,29 +235,29 @@ class UserCalendarSettingController extends UserCalendarController
           }
         ],
         "week_setting" => [
-          "label" => "曜日",
+          "label" => __('labels.week_day'),
           "link" => "show",
         ],
         "timezone" => [
-          "label" => "時間帯",
+          "label" => __('labels.timezone'),
         ],
         "place_floor_name" => [
-          "label" => "場所",
+          "label" => __('labels.place'),
         ],
         "work_name" => [
-          "label" => "作業",
+          "label" => __('labels.work'),
         ],
         "user_name" => [
-          "label" => "担当",
+          "label" => __('labels.charge_user'),
         ],
         "student_name" => [
-          "label" => "生徒",
+          "label" => __('labels.students'),
         ],
         "subject" => [
-          "label" => "科目",
+          "label" => __('labels.subject'),
         ],
         "buttons" => [
-          "label" => "操作",
+          "label" => __('labels.control'),
           "button" => [
             "to_calendar" => [
               "method" => "to_calendar",
@@ -302,7 +302,7 @@ class UserCalendarSettingController extends UserCalendarController
       //$user = User::where('id', 607)->first()->details();
       $ret = [
         'domain' => $this->domain,
-        'domain_name' => $this->domain_name,
+        'domain_name' => __('labels.'.$this->domain),
         'teacher_id' => $request->teacher_id,
         'user' => $user,
         '_page' => $request->get('_page'),
