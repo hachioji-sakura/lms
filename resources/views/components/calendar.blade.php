@@ -57,15 +57,17 @@
       if(_ret[status]) return _ret[status];
       return _ret['new'];
     }
-    function event_render(events, element, title){
+    function event_render(events, element, title, is_teacher){
       var _status_style = status_style(events.status);
-      if(events.status=="confirm" && events.total_status=="fix"){
+      if(is_teacher==false){
+        _status_style = status_style(events.status);
+      }
+      else {
         _status_style = status_style(events.total_status);
       }
-      else if(events.status=="confirm"){
-        _status_style = status_style(events.total_status);
-      }
-      if(events.status=="fix" && events.total_status=="rest"){
+      if(events.total_status=="rest" || events.total_status=="lecture_cancel" ||
+        //全体ステータス側が優先
+        events.total_status=="cancel"){
         _status_style = status_style(events.total_status);
       }
       var bgcolor = _status_style["color"];
