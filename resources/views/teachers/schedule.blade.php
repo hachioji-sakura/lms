@@ -56,6 +56,7 @@
                 <div class="col-7 col-lg-4 col-md-4">
                   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
                     <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
+                    <small title="{{$calendar["id"]}}" class="badge badge-{{config('status_style')[$calendar['status']]}} mt-1 mx-1">{{$calendar["status_name"]}}</small>
                     <br>
                     <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                     <br>

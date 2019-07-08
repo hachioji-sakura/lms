@@ -43,7 +43,7 @@
             var title = '授業追加';
             console.log(event);
             title = event['teacher_name']+'('+event['subject'].join('/')+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-            event_render(event, element, title);
+            event_render(event, element, title, false);
           },
           @endslot
         @endcomponent

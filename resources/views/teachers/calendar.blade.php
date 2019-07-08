@@ -101,7 +101,7 @@
             if(event['student_name']){
               title = event['student_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             }
-            event_render(event, element, title);
+            event_render(event, element, title, true);
           },
           @endslot
         @endcomponent

@@ -300,16 +300,19 @@ class UserCalendarMember extends Model
       $_url = $this->api_hosturl.'/'.$this->api_endpoint["GET"].'?id='.$schedule_id;
       $res = $this->call_api($_url, $_method, $postdata);
       */
-      if(isset($res) && isset($res["data"]) && count($res["data"])==1){
+
+      if(isset($res) && isset($res["data"])){
         $message = "";
-        foreach($res["data"][0] as $key => $val){
+        foreach($res["data"] as $key => $val){
           $message .= '['.$key.':'.$val.']';
         }
-        $remark = trim($res["data"][0]["cancel_reason"]);
+        \Log::info("事務システムAPI 休み判別:".$_url."\n".$message);
+
+        $remark = trim($res["data"]["cancel_reason"]);
         $cancel = "";
         $exchange_limit_date = "";
-        if(isset($res["data"][0]["cancel"])) $cancel = trim($res["data"][0]["cancel"]);
-        if(isset($res["data"][0]["altlimitdate"])) $exchange_limit_date = trim($res["data"][0]["altlimitdate"]);
+        if(isset($res["data"]["cancel"])) $cancel = trim($res["data"]["cancel"]);
+        if(isset($res["data"]["altlimitdate"])) $exchange_limit_date = trim($res["data"]["altlimitdate"]);
         $update = [];
         $is_update = false;
         if(!empty($remark)  && $this->remark != $remark){

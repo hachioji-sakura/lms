@@ -15,7 +15,7 @@
       </div>
       <div class="row">
       <div class="col-12 mb-1">
-          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('labels.confirm_calendar_fix')}}">
+          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_calendar_fix')}}">
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.send_button')}}
           </button>
