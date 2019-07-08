@@ -60,7 +60,7 @@
     function event_render(events, element, title){
       var _status_style = status_style(events.status);
       if(events.status=="confirm" && events.total_status=="fix"){
-        _status_style = status_style(events.status);
+        _status_style = status_style(events.total_status);
       }
       else if(events.status=="confirm"){
         _status_style = status_style(events.total_status);
