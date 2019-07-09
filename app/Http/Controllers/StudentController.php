@@ -80,7 +80,7 @@ class StudentController extends UserController
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
-      $lists = ['cancel', 'confirm', 'exchange', 'recent'];
+      $lists = ['cancel', 'confirm', 'exchange', 'month'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
@@ -409,12 +409,23 @@ class StudentController extends UserController
          }
        }
        break;
-     case "recent":
+     case "today":
        if(!isset($form['search_from_date'])){
          $form['search_from_date'] = date('Y-m-d', strtotime("now"));
        }
        if(!isset($form['search_to_date'])){
          $form['search_to_date'] = date('Y-m-d', strtotime("+1 day"));
+       }
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
+       }
+       break;
+     case "month":
+       if(!isset($form['search_from_date'])){
+         $form['search_from_date'] = date('Y-m-1', strtotime("now"));
+       }
+       if(!isset($form['search_to_date'])){
+         $form['search_to_date'] = date('Y-m-t', strtotime("now"));
        }
        if(!isset($form['search_status'])){
          $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];

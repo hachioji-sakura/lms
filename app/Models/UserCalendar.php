@@ -11,7 +11,7 @@ use App\Models\UserCalendarMember;
 use App\Models\Lecture;
 use App\Models\Trial;
 use App\User;
-
+use DB;
 class UserCalendar extends Model
 {
   protected $pagenation_line = 20;
@@ -67,11 +67,16 @@ class UserCalendar extends Model
   {
     $field = 'start_time';
     //日付検索
-    if(!empty($from_date)){
-      $query = $query->where($field, '>=', $from_date);
+    if($from_date == $to_date){
+      $query = $query->where(DB::raw('cast(start_time as date)'), $from_date);
     }
-    if(!empty($to_date)){
-      $query = $query->where($field, '<', $to_date);
+    else {
+      if(!empty($from_date)){
+        $query = $query->where($field, '>=', $from_date);
+      }
+      if(!empty($to_date)){
+        $query = $query->where($field, '<', $to_date);
+      }
     }
     return $query;
   }

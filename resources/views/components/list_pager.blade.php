@@ -14,7 +14,7 @@
     @endif
   @endif
   <li class="page-item">
-    <a class="page-link btn btn-float btn-default btn-sm" data-toggle="modal" data-target="#filter_form">
+    <a class="page-link btn btn-float btn-default btn-sm" data-toggle="modal" data-target="#filter_form" id="filter_button">
       <i class="fa fa-filter"></i>
       <span class="btn-label">{{__('labels.filter')}}</span>
     </a>

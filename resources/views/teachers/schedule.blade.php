@@ -13,8 +13,12 @@
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
             <i class="fa fa-calendar mr-1"></i>
-            @if($list=="recent")
+            @if($list=="today")
               {{__('labels.today_schedule_list')}}
+            @elseif($list=="month")
+              {{__('labels.month_schedule_list')}}
+            @elseif($list=="confirm")
+              {{__('labels.adjust_schedule_list')}}
             @elseif($list=="confirm")
               {{__('labels.adjust_schedule_list')}}
             @elseif($list=="cancel")
@@ -212,6 +216,7 @@
         @endforeach
       </select>
     </div>
+  </div>
   @endslot
 @endcomponent
 @endsection

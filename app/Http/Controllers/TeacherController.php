@@ -68,7 +68,7 @@ class TeacherController extends StudentController
         abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
-      $lists = ['cancel', 'confirm', 'exchange', 'recent'];
+      $lists = ['cancel', 'confirm', 'exchange', 'today'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
