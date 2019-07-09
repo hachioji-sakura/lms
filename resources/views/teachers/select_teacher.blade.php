@@ -10,7 +10,7 @@
     <div class="col-12">
       <div class="form-group">
         <label for="title" class="w-100">
-          講師
+          {{__('labels.teachers')}}
         </label>
         <select name="teacher_id" class="form-control select2"  width=100% required="true" >
           <option value="">{{__('labels.selectable')}}</option>
@@ -27,13 +27,13 @@
     <div class="col-12 col-lg-6 col-md-6 mb-1">
       <a href="javascript:void(0);" role="button" class="btn btn-primary btn-block" onClick="teacher_selected()">
         <i class="fa fa-arrow-circle-right mr-1"></i>
-        講師選択
+        {{__('labels.teachers')}}{{__('labels.select')}}
       </a>
     </div>
     <div class="col-12 col-lg-6 col-md-6 mb-1">
       <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
         <i class="fa fa-times-circle mr-1"></i>
-        キャンセル
+        {{__('labels.cancel_button')}}
       </a>
     </div>
   </div>

@@ -6,8 +6,8 @@
   <div class="info">
     <a href="/{{$domain}}/{{$item->id}}/" class="d-block text-light">
       <ruby style="ruby-overhang: none">
-        <rb>{{$item->name}}</rb>
-        <rt>{{$item->kana}}</rt>
+        <rb>{{$item->name()}}</rb>
+        <rt>{{$item->kana()}}</rt>
       </ruby>
     </a>
   </div>
@@ -15,25 +15,25 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item">
     <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar" && $list=="") active @endif">
-      <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
+      <i class="fa fa-calendar-alt nav-icon"></i>{{__('labels.calendar_page')}}
     </a>
   </li>
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-clock"></i>
     <p>
-      スケジュール
+      {{__('labels.schedule_list')}}
       <i class="right fa fa-angle-left"></i>
     </p>
     </a>
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=recent" class="nav-link @if($view=="schedule" && $list=="recent") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=month" class="nav-link @if($view=="schedule" && $list=="month") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
-            直近予定
-            @if($recent_count > 0)
-            <span class="badge badge-primary right">{{$recent_count}}</span>
+            {{__('labels.month_schedule_list')}}
+            @if($month_count > 0)
+            <span class="badge badge-primary right">{{$month_count}}</span>
             @endif
           </p>
         </a>
@@ -42,7 +42,7 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=confirm" class="nav-link  @if($view=="schedule" && $list=="confirm") active @endif">
           <i class="fa fa-hourglass nav-icon"></i>
           <p>
-            予定調整中
+            {{__('labels.adjust_schedule_list')}}
             @if($confirm_count > 0)
             <span class="badge badge-warning right">{{$confirm_count}}</span>
             @endif
@@ -53,7 +53,7 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
-            休み予定
+            {{__('labels.rest_schedule_list')}}
             @if($cancel_count > 0)
             <span class="badge badge-danger right">{{$cancel_count}}</span>
             @endif
@@ -64,7 +64,7 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=exchange" class="nav-link @if($view=="schedule" && $list=="exchange") active @endif">
           <i class="fa fa-exchange-alt nav-icon"></i>
           <p>
-            振替対象
+            {{__('labels.exchange_schedule_list')}}
             @if($exchange_count > 0)
             <span class="badge badge-danger right">{{$exchange_count}}</span>
             @endif
@@ -73,7 +73,8 @@
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
-          <i class="fa fa-history nav-icon "></i>授業履歴
+          <i class="fa fa-history nav-icon "></i>
+          {{__('labels.schedule_history')}}
         </a>
       </li>
     </ul>
@@ -89,23 +90,23 @@
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
-          <i class="fa fa-user-edit nav-icon"></i>{{$domain_name}}設定
+          <i class="fa fa-user-edit nav-icon"></i>{{__('labels.students')}}{{__('labels.setting')}}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="目標登録">
-          <i class="fa fa-flag nav-icon"></i>目標登録
+          <i class="fa fa-flag nav-icon"></i>{{__('labels.milestones')}}{{__('labels.add')}}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
-          <i class="fa fa-comment-dots nav-icon"></i>コメント登録
+          <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
         </a>
       </li>
       @if($user->role==="manager")
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="タグ設定">
-          <i class="fa fa-tags nav-icon"></i>タグ設定
+          <i class="fa fa-tags nav-icon"></i>{{__('labels.tags')}}{{__('labels.setting')}}
         </a>
       </li>
       @endif
@@ -138,18 +139,18 @@
 @section('page_footer')
 <dt>
   <a class="btn btn-app" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="目標登録">
-    <i class="fa fa-flag"></i>目標登録
+    <i class="fa fa-flag"></i>{{__('labels.milestones')}}{{__('labels.setting')}}
   </a>
 </dt>
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
-    <i class="fa fa-comment-dots"></i>コメント登録
+    <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>
 {{-- まだ対応しない
   <dt>
     <a class="btn btn-app" href="javascript:void(0);" accesskey="task_add" disabled>
-      <i class="fa fa-plus"></i>タスク登録
+      <i class="fa fa-plus"></i>{{__('labels.tasks')}}{{__('labels.add')}}
     </a>
   </dt>
 --}}

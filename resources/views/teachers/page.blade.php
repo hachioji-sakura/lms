@@ -233,26 +233,25 @@
                     @endif
                   @endif
                 </div>
+              </div>
             </li>
             @endforeach
           </ul>
           @else
-          <div class="alert">
-            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
-          </div>
+            <div class="alert">
+              <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+            </div>
           @endif
         </div>
-      {{--
-        <!-- /.card-body -->
-        <div class="card-footer clearfix">
-          <button type="button" class="btn btn-info btn-sm float-left">
-            <i class="fa fa-plus mr-2"></i>
-            {{__('labels.add')}}
-          </button>
-        </div>
-        --}}
-      </div>
       <!-- /.card -->
+      @if($user->role=="manager")
+      <div class="card-footer">
+        <a role="button" class="btn btn-info btn-sm float-left" href="javascript:void(0);" >
+          <i class="fa fa-plus mr-2"></i>
+          {{__('labels.charge_student')}}{{__('labels.add')}}
+        </a>
+      </div>
+      @endif
     </div>
   </div>
 </section>

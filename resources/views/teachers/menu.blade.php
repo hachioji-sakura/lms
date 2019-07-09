@@ -33,13 +33,13 @@
     </a>
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=recent" class="nav-link @if($view=="schedule" && $list=="recent") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=today" class="nav-link @if($view=="schedule" && $list=="today") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
             <p>
               {{__('labels.today_schedule_list')}}
-            @if($recent_count > 0)
-            <span class="badge badge-primary right">{{$recent_count}}</span>
+            @if($today_count > 0)
+            <span class="badge badge-primary right">{{$today_count}}</span>
             @endif
           </p>
         </a>

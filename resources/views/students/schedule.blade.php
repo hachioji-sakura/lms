@@ -12,7 +12,30 @@
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
             <i class="fa fa-calendar mr-1"></i>
-            授業予定
+            @if($list=="today")
+              {{__('labels.today_schedule_list')}}
+            @elseif($list=="month")
+              {{__('labels.month_schedule_list')}}
+            @elseif($list=="confirm")
+              {{__('labels.adjust_schedule_list')}}
+            @elseif($list=="confirm")
+              {{__('labels.adjust_schedule_list')}}
+            @elseif($list=="cancel")
+              {{__('labels.rest_schedule_list')}}
+            @elseif($list=="exchange")
+              {{__('labels.exchange_schedule_list')}}
+            @elseif($list=="history")
+              {{__('labels.schedule_history')}}
+            @else
+              {{__('labels.schedule_list')}}
+            @endif
+          </h3>
+          <div class="card-title text-sm">
+            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+              @slot("addon_button")
+              @endslot
+            @endcomponent
+          </div>
           </h3>
         </div>
         <!-- /.card-header -->
@@ -29,6 +52,7 @@
                 <div class="col-5 col-lg-4 col-md-4">
                   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
                   <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
+                  <small title="{{$calendar["id"]}}" class="badge badge-{{config('status_style')[$calendar['status']]}} mt-1 mx-1">{{$calendar["status_name"]}}</small>
                   <br>
                   <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
                   <br>
@@ -56,7 +80,7 @@
                     TODO　将来的に事務のみ代理連絡可能にする
                   @if($user->role!=="teacher" && $calendar->get_member($item->user_id)->status==="fix")
                   --}}
-                  @if($calendar->get_member($item->user_id)->status==="fix" && strtotime($calendar["start_time"]) > strtotime('now'))
+                  @if($calendar->get_member($item->user_id)->status==="fix" )
                   <a href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest?student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
                     <i class="fa fa-minus-circle mr-1"></i>休み連絡する
                     @if($user->role==="manager" || $user->role==="teacher")
@@ -94,4 +118,72 @@
   </div>
 </section>
 
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_from_date" class="w-100">
+        {{__('labels.date')}}(FROM)
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_from_date']))
+          value="{{$filter['search_from_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_to_date" class="w-100">
+        {{__('labels.date')}}(TO)
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['search_to_date']))
+          value="{{$filter['search_to_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4 mb-2">
+    <div class="form-group">
+      <label for="is_exchange" class="w-100">
+        {{__('labels.sort_no')}}
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
+      @if(isset($filter['is_desc']) && $filter['is_desc']==true)
+        checked
+      @endif
+      >{{__('labels.date')}} {{__('labels.desc')}}
+      </label>
+    </div>
+  </div>
+  <div class="col-12 mb-2">
+    <label for="search_status" class="w-100">
+      {{__('labels.status')}}
+    </label>
+    <div class="w-100">
+      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
+        @foreach(config('attribute.calendar_status') as $index => $name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  @endslot
+@endcomponent
 @endsection
