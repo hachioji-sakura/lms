@@ -91,7 +91,7 @@ class Milestone extends Model
     if(!isset($u)) return $controller->bad_request();
     $param['user'] = $u->details();
     $param['send_to'] = $param['user']->role;
-    $res = $controller->send_mail($this->get_mail_address($param['user']), $title, $param, $type, $template);
+    $res = $controller->send_mail($this->get_mail_address($param['user']), $title, $param, $type, $template, $u->locale());
     return $res;
   }
   private function get_mail_address($user){

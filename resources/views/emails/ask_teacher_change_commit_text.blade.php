@@ -1,6 +1,6 @@
 @include('emails.common')
 
-代講依頼を受けていただき、ありがとうございます。
+{{__('messages.info_teacher_change_thanks')}}
 
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent

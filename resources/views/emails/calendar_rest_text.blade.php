@@ -5,19 +5,19 @@
 以下の授業のお休み連絡を承りました。
 
 @elseif($send_to==='teacher')
-{{$user["name"]}}先生
+{{__('messages.mail_dear_teacher', ['user_name' => $user["name"]])}}
+
 @if($is_proxy===true)
-以下の 授業予定のお休み連絡をしました。
+{{__('messages.info_calendar_rest_proxy')}}
 @else
-{{$login_user["name"]}}様より、以下の 授業予定のお休み連絡をいただきました。
+{{__('messages.info_calendar_rest', ['user_name' => $login_user["name"]])}}
 @endif
 
 @if($item->is_group()==true)
 @if($item['status'] =='rest')
-また、この授業予定は休講となりますので、
-何卒、よろしくお願いいたします。
+{{__('messages.info_calendar_rest_to_cancel')}}
 @else
-引き続き、出席予定の生徒様への授業をよろしくお願いいたします。
+{{__('messages.info_calendar_rest_to_fix')}}
 @endif
 @endif
 

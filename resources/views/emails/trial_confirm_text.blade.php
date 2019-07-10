@@ -1,7 +1,7 @@
 @include('emails.common')
 
-体験授業の予定を追加いたしました。
-マイページにログインし、ご確認ください。
+{{__('messages.info_calendar_add', ['trial'=>__('labels.trial').' '])}}
+{{__('messages.info_login_confirm')])}}
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………

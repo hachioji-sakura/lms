@@ -244,14 +244,6 @@
           @endif
         </div>
       <!-- /.card -->
-      @if($user->role=="manager")
-      <div class="card-footer">
-        <a role="button" class="btn btn-info btn-sm float-left" href="javascript:void(0);" >
-          <i class="fa fa-plus mr-2"></i>
-          {{__('labels.charge_student')}}{{__('labels.add')}}
-        </a>
-      </div>
-      @endif
     </div>
   </div>
 </section>

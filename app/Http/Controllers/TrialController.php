@@ -485,7 +485,9 @@ class TrialController extends UserCalendarController
         'item' => $calendar
         ],
         'text',
-        $template);
+        $template,
+        $member->user->locale()
+      );
      }
      return true;
    }

@@ -1,23 +1,24 @@
 @include('emails.common')
 
 @if($send_to=="teacher")
-{{$user_name}}先生
-本メールにより、講師仮登録が完了しました。
+{{__('messages.mail_dear_teacher', ['user_name' => $user_name])}}
 
-引き続き、以下の URL より本登録を行ってください。
-※URLの有効期限はこのメールの受信から24時間以内となっています。
+{{__('messages.info_register1', ['domain' => __('labels.teachers')]}}
+
+{{__('messages.info_register2')}}
+{{__('messages.info_url_limit')}}
 …………………………………………………………………………………………
-本登録
+{{__('labels.regiser')}}
 {{config('app.url')}}/teachers/register?key={{$access_key}}
 …………………………………………………………………………………………
 @elseif($send_to=="manager")
-{{$user_name}}さん
-本メールにより、事務仮登録が完了しました。
+{{__('messages.mail_dear_manager', ['user_name' => $user_name])}}
+{{__('messages.info_register1', ['domain' => __('labels.managers')]}}
 
-引き続き、以下の URL より本登録を行ってください。
-※URLの有効期限はこのメールの受信から24時間以内となっています。
+{{__('messages.info_register2')}}
+{{__('messages.info_url_limit')}}
 …………………………………………………………………………………………
-本登録
+{{__('labels.regiser')}}
 {{config('app.url')}}/managers/register?key={{$access_key}}
 …………………………………………………………………………………………
 @else

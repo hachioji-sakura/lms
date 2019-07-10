@@ -1,6 +1,6 @@
 @include('emails.common')
 
-代講依頼をキャンセルしました。
+{{__('messages.info_teacher_change_cancel')}}
 
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent

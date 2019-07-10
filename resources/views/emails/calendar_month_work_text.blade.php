@@ -1,14 +1,10 @@
 @if($user->role==='teacher')
-{{$user->name}}先生
+{{__('messages.mail_dear_teacher', ['user_name' => $user->name])}}
 @elseif($user->role==='manager')
-{{$user->name}}さん
+{{__('messages.mail_dear_manager', ['user_name' => $user->name])}}
 @endif
-勤務実績を確定しました。
-
+{{__('messages.info_month_work_fix')}}
 …………………………………………………………………………………………
-対象年月
-{{date('Y年m月', strtotime($target_month.'-01'))}}
-
-勤務実績画面
+{{date('Y/m', strtotime($target_month.'-01'))}}{{__('labels.work_record')}}
 {{config('app.url')}}/{{$user->role}}s/{{$user->id}}/month_work/{{$target_month}}
 …………………………………………………………………………………………

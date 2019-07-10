@@ -766,7 +766,7 @@ EOT;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template);
+      $member->send_mail($title, $param, $type, $template, $member->user->locale());
     }
     return;
   }
@@ -779,7 +779,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template);
+      $member->send_mail($title, $param, $type, $template, $member->user->locale());
     }
     return;
   }
