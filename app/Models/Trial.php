@@ -89,7 +89,7 @@ EOT;
     return null;
   }
   public function status_name(){
-    if(session('locale')=='en') return $this->status;
+    if(app()->getLocale()=='en') return $this->status;
     $status_name = "";
     switch($this->status){
       case "complete":

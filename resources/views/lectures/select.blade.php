@@ -132,7 +132,7 @@ function get_lectures(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー"+messageParam);
+        alert("UI取得エラー(get_lectures)"+messageParam);
     }
   );
 }

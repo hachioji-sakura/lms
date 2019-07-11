@@ -28,7 +28,7 @@ class PlaceFloor extends Model
       return $this->hasMany('App\Models\PlaceFloorSheat', 'place_floor_id');
     }
     public function name(){
-      if(session('locale')=='en') return $this->name_en;
+      if(app()->getLocale()=='en') return $this->name_en;
       return $this->name;
     }
     public function get_free_seat($start_time, $end_time){

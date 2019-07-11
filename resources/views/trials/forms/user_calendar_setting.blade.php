@@ -7,7 +7,7 @@
           <span class="description-text mr-2">
             <a href="javascript:void(0);" title="{{$setting->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" >
               <i class="fa fa-clock mr-1"></i>
-              {{$setting["lesson_week_name"]}}曜日/
+              {{$setting->lesson_week()}}曜日/
               {{$setting->timezone()}}
             </a>
           </span>

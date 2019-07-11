@@ -73,7 +73,7 @@ function get_charge_students(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー");
+        alert("UI取得エラー(student_groups.get_charge_students)");
     }
   );
 }

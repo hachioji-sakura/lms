@@ -1044,7 +1044,7 @@ class UserCalendarController extends MilestoneController
          ],
          'text',
          $template,
-         $send_data['user']->locale()
+         $send_data['user']->user->locale()
        );
       }
 

@@ -52,7 +52,7 @@ function get_student_group(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー");
+        alert("UI取得エラー(api_student_groups)");
     }
   );
 }

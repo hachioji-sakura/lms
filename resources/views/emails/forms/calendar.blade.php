@@ -1,3 +1,6 @@
+<?php
+$item = $item->details(1);
+ ?>
 ■{{$item->teaching_name()}}
 {{__('labels.datetime')}}：{{$item['datetime']}}
 {{__('labels.place')}}：{{$item['place_floor_name']}}
@@ -11,7 +14,7 @@
 {{__('labels.students')}}：
 @foreach($item->members as $member)
 @if($member->user->details('students')->role=="student")
-{{$member->user->details('students')["name"]}}:  {{$member->status_name()}}
+{{$member->user->details('students')["name"]}}({{$member->status_name()}})
 @endif
 @endforeach
 @endif
