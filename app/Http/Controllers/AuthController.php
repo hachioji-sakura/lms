@@ -60,11 +60,6 @@ class AuthController extends UserController
     * @return view
     */
    public function reset_mail(Request $request){
-     $locale = session('locale');
-     if($request->has('locale')){
-       $locale  = $request->get('locale');
-     }
-     App::setLocale($locale);
 
      $email = trim($request->email);
      $_user = User::where('email',$email);
@@ -82,7 +77,9 @@ class AuthController extends UserController
       'access_key' => $access_key
       ],
       'text',
-      'password_reset');
+      'password_reset',
+      $_user->locale()
+    );
      return back()->with(['success_message' =>  __('messages.info_password_setting_send')]);
    }
    /**

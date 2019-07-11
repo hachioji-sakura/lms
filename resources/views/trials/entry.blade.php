@@ -25,15 +25,9 @@
   @if(!empty($result))
     <h4 class="bg-success p-3 text-sm">
       @if($result==="success")
-      体験授業をお申し込みいただきまして、<br>
-      誠にありがとうございます。<br><br>
-      1週間以内に当塾より授業予定のご連絡いたします。<br>
-      何卒宜しくお願い致します。
-      @else
-      体験授業をお申し込みいただきまして、<br>
-      誠にありがとうございます。<br><br>
-      ２営業日以内に、当塾よりご連絡いたしますので、<br>
-      何卒宜しくお願い致します。
+      {{__('messages.trial_entry1')}}
+  <br><br>
+      {{__('messages.trial_entry2')}}
       @endif
     </h4>
   @else

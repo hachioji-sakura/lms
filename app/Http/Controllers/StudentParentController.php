@@ -15,7 +15,7 @@ class StudentParentController extends TeacherController
 {
   public $domain = "parents";
   public $table = "student_parents";
-  
+
   public function model(){
     return StudentParent::query();
   }

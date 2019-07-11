@@ -12,15 +12,13 @@
 ご不明な点等ございましたら、下記までお問い合わせください。　
 
 @elseif($send_to==='teacher')
-以下の授業予定を生徒様にご連絡いたしました。
+{{__('messages.info_calendar_remind1')}}
 
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
-生徒様から授業予定の確定操作後に、
-予定は確定となります。
+{{__('messages.info_calendar_remind2')}}
 @endif
-
 
 @yield('signature')

@@ -312,7 +312,7 @@ EOT;
   }
   public function teaching_name(){
     $_teaching_names = ['体験授業', '通常授業', '振替授業', '追加授業', ];
-    if(session('locale')=='en'){
+    if(app()->getLocale()=='en'){
       $_teaching_names = ['Trial', 'Regular', 'Exchange', 'Add', ];
     }
     if($this->is_teaching()){
@@ -331,7 +331,7 @@ EOT;
   }
   public function status_name(){
     $status_name = "";
-    if(session('locale')=='en') return $this->status;
+    if(app()->getLocale()=='en') return $this->status;
 
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
@@ -407,7 +407,7 @@ EOT;
   public function dateweek(){
     $format = "n月j日";
     $weeks = config('week');
-    if(session('locale')=='en'){
+    if(app()->getLocale()=='en'){
       $format = "n/j";
       $weeks = config('week_en');
     }
@@ -766,7 +766,7 @@ EOT;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template);
+      $member->send_mail($title, $param, $type, $template, $member->user->locale());
     }
     return;
   }
@@ -779,7 +779,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template);
+      $member->send_mail($title, $param, $type, $template, $member->user->locale());
     }
     return;
   }

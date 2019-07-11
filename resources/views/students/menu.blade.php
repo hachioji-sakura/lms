@@ -83,30 +83,37 @@
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-cogs"></i>
     <p>
-      その他
+      {{__('labels.other')}}
       <i class="right fa fa-angle-left"></i>
     </p>
     </a>
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}設定">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
           <i class="fa fa-user-edit nav-icon"></i>{{__('labels.students')}}{{__('labels.setting')}}
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="目標登録">
+        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.milestones')}}{{__('labels.add')}}">
           <i class="fa fa-flag nav-icon"></i>{{__('labels.milestones')}}{{__('labels.add')}}
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
+        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
           <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
         </a>
       </li>
       @if($user->role==="manager")
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="タグ設定">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">
           <i class="fa fa-tags nav-icon"></i>{{__('labels.tags')}}{{__('labels.setting')}}
+        </a>
+      </li>
+      @endif
+      @if($user->role==="parent")
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.recess_or_unsubscribe')}}">
+          <i class="fa fa-tags nav-icon"></i>{{__('labels.recess_or_unsubscribe')}}
         </a>
       </li>
       @endif

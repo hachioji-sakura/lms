@@ -362,7 +362,9 @@ class TeacherController extends StudentController
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($email, '登録完了', $form, 'text', 'register');
+        $this->send_mail($email, '登録完了', $form, 'text', 'register',
+        $res['data']->user->locale()
+      );
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
         {
           abort(500);
@@ -430,7 +432,9 @@ class TeacherController extends StudentController
           'user_name' => $param['item']['name'],
           'access_key' => $access_key,
           'send_to' => 'manager',
-        ], 'text', 'entry');
+        ], 'text', 'entry',
+        $param['item']->user->locale()
+      );
       }
       return $this->save_redirect($res, $param, $message);
     }
@@ -537,5 +541,4 @@ class TeacherController extends StudentController
 
       return $this->api_response(200, "", "", $items);
     }
-
 }

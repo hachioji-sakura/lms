@@ -38,7 +38,7 @@ function get_exchange_calendar(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー");
+        alert("UI取得エラー(api_calendars)");
     }
   );
 }
@@ -142,7 +142,7 @@ function get_exchange_calendar(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー");
+        alert("UI取得エラー(api_calendars)");
     }
   );
 }

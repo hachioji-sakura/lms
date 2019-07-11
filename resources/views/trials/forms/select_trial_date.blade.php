@@ -63,7 +63,7 @@
       @endslot
       @slot('event_render')
       eventRender: function(event, element) {
-        var title = '{{__('labels.schedule_dd')}}';
+        var title = '{{__('labels.schedule_add')}}';
         if(event['student_name']){
           title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
         }

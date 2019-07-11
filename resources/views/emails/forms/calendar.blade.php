@@ -1,33 +1,31 @@
+<?php
+$item = $item->details(1);
+ ?>
 ■{{$item->teaching_name()}}
-日時：{{$item['datetime']}}
-場所：{{$item['place_floor_name']}}
+{{__('labels.datetime')}}：{{$item['datetime']}}
+{{__('labels.place')}}：{{$item['place_floor_name']}}
 --------------------------------------------
-（内容）
-講師：{{$item['teacher_name']}}
-レッスン：{{$item['lesson']}}
-コース：{{$item['course']}}
-科目：{{implode(',', $item['subject'])}}
+（{{__('labels.details')}}）
+{{__('labels.teachers')}}：{{$item['teacher_name']}}
+{{__('labels.lesson')}}：{{$item['lesson']}}
+{{__('labels.lesson_type')}}：{{$item['course']}}
+{{__('labels.subject')}}：{{implode(',', $item['subject'])}}
 @if($send_to!=='student')
-生徒：
+{{__('labels.students')}}：
 @foreach($item->members as $member)
 @if($member->user->details('students')->role=="student")
-{{$member->user->details('students')["name"]}}:  {{$member->status_name()}}
+{{$member->user->details('students')["name"]}}({{$member->status_name()}})
 @endif
 @endforeach
 @endif
 
 --------------------------------------------
 @isset($item['comment'])
-連絡事項：{{$item['comment']}}
+{{__('labels.notice')}}{{$item['comment']}}
 @endisset
 @if(isset($item['cancel_reason']) && !empty($item['cancel_reason']))
-キャンセル理由:{{$item['cancel_reason']}}
+{{__('labels.cencel_reason')}}:{{$item['cancel_reason']}}
 @endif
-{{--
-@if(isset($item['rest_reason']) && !empty($item['rest_reason']))
-休み理由:{{$item['rest_reason']}}
-@endif
---}}
 @if($send_to!=='student')
-(操作：{{$login_user["name"]}})
+({{__('labels.control')}}：{{$login_user["name"]}})
 @endif

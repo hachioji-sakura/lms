@@ -95,7 +95,7 @@
           <td class="p-1 text-center @if($loop->index===0) border-left @endif border-right" id="">
             @isset($teacher->match_schedule['count'][$index])
               @if($teacher->match_schedule['count'][$index] > 0)
-                @if(isset($is_detail) && $is_detail==true)
+                @if((isset($is_detail) && $is_detail==true))
                 {{-- 詳細表示 --}}
                   @foreach($teacher->match_schedule['detail'][$index] as $time_slot)
                     @if($time_slot["slot"]>0)

@@ -24,7 +24,7 @@ class Place extends Model
     return $this->hasMany('App\Models\PlaceFloor', 'place_id');
   }
   public function name(){
-    if(session('locale')=='en') return $this->name_en;
+    if(app()->getLocale()=='en') return $this->name_en;
     return $this->name;
   }
 }

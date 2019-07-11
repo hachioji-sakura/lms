@@ -52,7 +52,7 @@ class UserCalendarMember extends Model
     return false;
   }
   public function status_name(){
-    if(session('locale')=='en') return $this->status;
+    if(app()->getLocale()=='en') return $this->status;
     $status_name = "";
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
@@ -339,7 +339,7 @@ class UserCalendarMember extends Model
   public function send_mail($title, $param, $type, $template){
     $param['user'] = $this->user->details();
     $controller = new Controller;
-    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template);
+    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->user->locale());
     return $res;
   }
   private function get_mail_address(){

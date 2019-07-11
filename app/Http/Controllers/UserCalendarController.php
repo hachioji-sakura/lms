@@ -19,7 +19,7 @@ class UserCalendarController extends MilestoneController
 {
   public $domain = 'calendars';
   public $table = 'user_calendars';
-  
+
   public $status_update_message = [
           'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
@@ -1043,7 +1043,9 @@ class UserCalendarController extends MilestoneController
          'is_proxy' => $is_proxy
          ],
          'text',
-         $template);
+         $template,
+         $send_data['user']->user->locale()
+       );
       }
 
       return true;

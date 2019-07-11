@@ -77,7 +77,7 @@ function get_charge_students(){
       }
     },
     function(xhr, st, err) {
-        alert("UI取得エラー");
+        alert("UI取得エラー(calendars.get_charge_students)");
     }
   );
 }

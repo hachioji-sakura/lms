@@ -10,6 +10,7 @@ use App\Mail\CommonNotification;
 use App\User;
 use Illuminate\Http\Request;
 use Mail;
+use App;
 
 class Controller extends BaseController
 {
@@ -47,8 +48,10 @@ class Controller extends BaseController
     protected  function forbidden($message="forbidden", $description=""){
       return $this->api_response(403, $message, $description);
     }
-    public function send_mail($to, $title, $param, $type, $template)
+    public function send_mail($to, $title, $param, $type, $template, $locale="ja")
     {
+      App::setLocale($locale);
+
       $title = '【'.__('labels.app_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);

@@ -89,7 +89,7 @@ EOT;
     return null;
   }
   public function status_name(){
-    if(session('locale')=='en') return $this->status;
+    if(app()->getLocale()=='en') return $this->status;
     $status_name = "";
     switch($this->status){
       case "complete":
@@ -751,13 +751,13 @@ EOT;
       if(isset($next)) break;
     }
     if( (isset($prev) && isset($next)) ||
-         (isset($prev) && !isset($next) && count($next_settings)<1)){
+         (isset($prev) && !isset($next) && count($next_calendars)<1)){
        //１．上下隣接、２．上に隣接し下がない
        $ret['calendar'] = $prev;
        $ret['same_place'] = $prev->place_floor_id;
        $ret['review'] = 'primary';
     }
-    else if(!isset($prev) && isset($next) && count($prev_settings)<1){
+    else if(!isset($prev) && isset($next) && count($prev_calendars)<1){
       //３．下に隣接し上がない
       $ret['calendar'] = $next;
       $ret['same_place'] = $next->place_floor_id;
@@ -919,19 +919,18 @@ EOT;
       $c=0;
       for($i=0;$i<count($week_schedule);$i++){
         if($week_schedule[$i]["status"]!=="free") continue;
+        $c++;
         if($primary_count > 0){
           if($week_schedule[$i]["review"]==="primary") {
             $student_schedule[$week_day][$i]["show"] = true;
-            $c++;
           }
         }
         else {
           $student_schedule[$week_day][$i]["show"] = true;
-          $c++;
         }
         //echo $week_day."[".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["review"]."][".$student_schedule[$week_day][$i]["show"]."]<br>";
       }
-      $count[$week_day] = $c;
+      $count[$week_day] = intval($c/$minute_count);
     }
     return ["all_count" => $all_count, "count"=>$count, "detail" => $detail, "result" => $student_schedule];
   }

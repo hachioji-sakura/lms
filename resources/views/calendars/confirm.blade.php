@@ -39,7 +39,7 @@
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
-            {{__('labels.schedule_remind')}}
+            {{__('labels.schedule_fix')}}
         </button>
       </form>
     </div>

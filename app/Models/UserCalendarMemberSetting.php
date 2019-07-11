@@ -98,11 +98,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
     //TODO : 6/22 : 事務システム側の場所最適化すべき
     //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
     $place_text = "";
-    if(isset($this->calendar->place_floor)){
-      $place_text = $this->calendar->place_floor->_convert_offie_system_place();
+    if(isset($this->setting->place_floor)){
+      $place_text = $this->setting->place_floor->_convert_offie_system_place();
     }
-    else if($this->calendar->place_floor_id>0){
-      $place_floor = PlaceFloor::where('id', $this->calendar->place_floor_id)->first();
+    else if($this->setting->place_floor_id>0){
+      $place_floor = PlaceFloor::where('id', $this->setting->place_floor_id)->first();
       if(isset($place_floor)){
         $place_text = $place_floor->_convert_offie_system_place();
       }
