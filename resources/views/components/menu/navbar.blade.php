@@ -31,7 +31,7 @@
       </a>
       <div class="dropdown-menu dropdown-menu-lg">
         <a href="/teachers/{{$user->id}}/calendar" class="dropdown-item">{{__('labels.calendar_page')}}</a>
-        <a href="/teachers/{{$user->id}}/schedule?list=recent" class="dropdown-item">{{__('labels.today_schedule_list')}}</a>
+        <a href="/teachers/{{$user->id}}/schedule?list=today" class="dropdown-item">{{__('labels.today_schedule_list')}}</a>
         <a href="/teachers/{{$user->id}}/schedule?list=confirm" class="dropdown-item">{{__('labels.adjust_schedule_list')}}</a>
         <a href="/teachers/{{$user->id}}/schedule?list=cancel" class="dropdown-item">{{__('labels.rest_schedule_list')}}</a>
         <a href="/teachers/{{$user->id}}/schedule?list=history" class="dropdown-item">{{__('labels.schedule_history')}}</a>

@@ -13,6 +13,7 @@
     <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind" >
       @csrf
       @method('PUT')
+      <input type="hidden" value="1" name="is_all_student" />
       @if(isset($student_id))
         <input type="hidden" value="{{$student_id}}" name="student_id" />
       @endif

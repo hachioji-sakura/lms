@@ -47,8 +47,10 @@
                 <i class="fa fa-user-times mr-1"></i>
                 @endif
                 {{$member->user->details('students')->name}}
-                ({{$member->remark()}})
                 @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->remark())))
+                ({{$member->remark()}})
+                @else
+                <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
                 @endif
               </a>
               {{--

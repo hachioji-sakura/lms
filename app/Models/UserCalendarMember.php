@@ -12,7 +12,7 @@ use App\Models\Lecture;
 use App\Models\Trial;
 use App\Models\Ask;
 use App\Models\PlaceFloor;
-
+use App\User;
 class UserCalendarMember extends Model
 {
   protected $table = 'lms.user_calendar_members';
@@ -50,6 +50,91 @@ class UserCalendarMember extends Model
       return true;
     }
     return false;
+  }
+  public function status_update($status, $remark, $login_user_id){
+    $is_update = false;
+    $is_send_mail = false; //このユーザーにメールを送信
+    $is_send_teacher_mail = false; //担当講師にメールを送信
+    $login_user = User::where('id', $login_user_id)->first();
+    $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
+    if(!isset($login_user)){
+      return false;
+    }
+    switch($status){
+      case "remind":
+        if($this->status=='new'){
+          $is_send_teacher_mail = true;
+        }
+        else if($this->status=='confirm'){
+          $is_send_teacher_mail = true;
+          $is_send_mail = true;
+        }
+        break;
+      case "confirm":
+        if($this->status=='new' || $this->status=='confirm'){
+          $is_update = true;
+          $is_send_mail = true;
+        }
+        break;
+      case "fix":
+        if($this->status=='confirm'){
+          $is_update = true;
+          $is_send_teacher_mail = true;
+          $is_send_mail = true;
+        }
+        break;
+      case "cancel":
+        if($this->status=='confirm'){
+          $is_update = true;
+          $is_send_teacher_mail = true;
+          $is_send_mail = true;
+        }
+        break;
+      case "rest":
+        if($this->status=='fix'){
+          $is_update = true;
+          $is_send_teacher_mail = true;
+          $is_send_mail = true;
+        }
+        break;
+      case "presence":
+        if($this->status=='fix'){
+          $is_update = true;
+        }
+        break;
+      case "absence":
+        if($this->status=='fix'){
+          $is_update = true;
+          $is_send_mail = true;
+        }
+        break;
+    }
+    if($is_update){
+      $this->update($update_form);
+      $res = $this->_office_system_api('PUT');
+    }
+    $title = __('messages.mail_title_calendar_'.$status);
+    $type = 'text';
+    $template = 'calendar_'.$status;
+    $u = $this->user->details();
+    $param['login_user'] = $login_user->details();
+    $param['user'] = $u;
+    $param['token'] = $update_form['access_key'];
+    $param['user_name'] = $u->name();
+    $param['item'] = $this->calendar->details($this->user_id);
+    $param['send_to'] = $u->role;
+    $param['is_proxy'] = false;
+    if(($param['login_user']->role=='teacher' || $param['login_user']->role=='manager') && $u->role == 'student'){
+      $param['is_proxy'] = true;
+    }
+    if($is_send_mail){
+      //このユーザーにメール送信
+      $this->send_mail($title, $param, $type, $template);
+    }
+    if($is_send_teacher_mail){
+      //担当講師にメール送信
+      $this->calendar->teacher_mail($title, $param, $type, $template);
+    }
   }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
@@ -336,10 +421,15 @@ class UserCalendarMember extends Model
     }
     return $res;
   }
+  public function create_token($limit_second=86400){
+    $controller = new Controller;
+    $res = $controller->create_token($limit_second);
+    return $res;
+  }
   public function send_mail($title, $param, $type, $template){
     $param['user'] = $this->user->details();
     $controller = new Controller;
-    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->user->locale());
+    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->user->get_locale());
     return $res;
   }
   private function get_mail_address(){

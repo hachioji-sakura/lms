@@ -64,7 +64,6 @@ class StudentGroupController  extends MilestoneController
       'manager_id' => $request->manager_id,
       'student_id' => $request->student_id,
       'search_word'=>$request->search_word,
-      'access_key' => $request->key,
       'cancel_reason' => $request->cancel_reason,
       'rest_reason' => $request->rest_reason,
       '_page' => $request->get('_page'),
@@ -79,9 +78,6 @@ class StudentGroupController  extends MilestoneController
     $ret['is_proxy'] = false;
     if($request->has('is_proxy')){
       $ret['is_proxy'] = true;
-    }
-    if($request->has('access_key')){
-      $ret['token'] = $request->get('access_key');
     }
     if($request->has('rest_reason')){
       $ret['rest_reason'] = $request->get('rest_reason');

@@ -4,7 +4,7 @@
 {{$user["name"]}}様
 以下の授業のお休み連絡を承りました。
 
-@elseif($send_to==='teacher')
+@elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user["name"]])}}
 
 @if($is_proxy===true)

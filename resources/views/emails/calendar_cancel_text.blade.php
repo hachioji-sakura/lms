@@ -6,7 +6,7 @@
 以下の授業をキャンセルいたしました。
 ご不明な点等ございましたら、下記までお問い合わせください。　
 
-@elseif($send_to==='teacher')
+@elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.info_calendar_cancel')}}
 @endif
 …………………………………………………………………………………………

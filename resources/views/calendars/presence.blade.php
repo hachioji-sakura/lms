@@ -110,8 +110,8 @@
               <th class="p-1 pl-2">
                 {{$member->user->details()->name}}</th>
               <td class="p-1 text-sm text-center">
-                @if($member->status=="rest")
-                  <i class="fa fa-times mr-1"></i>{{__('labels.rest')}}
+                @if($member->status!="fix" )
+                  <i class="fa fa-times mr-1"></i>{{$member->status_name()}}
                 @else
                 <div class="input-group">
                   <div class="form-check">

@@ -17,7 +17,7 @@
   @endif
 @endsection
 @section('content')
-  @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
+  @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
     @slot('page_message')
       @if(!empty($result))
         <h4 class="bg-success p-3 text-sm">
@@ -44,10 +44,11 @@
     @slot('forms')
       @if(empty($result))
       <form method="POST" action="/calendars/{{$item['id']}}" id="_form">
-        @if($item['status']==="confirm" && $subpage==="fix")
+        @if(($item['status']==="confirm" || $item['status']==="fix") && $subpage==="fix")
           @csrf
           @method('PUT')
           <input type="hidden" value="{{$user->user_id}}" name="user" />
+          <input type="hidden" value="fix" name="name" />
           <div class="row">
             @component('calendars.forms.fix_form', ['item' => $item, 'user'=>$user]) @endcomponent
             @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'fix']) @endcomponent

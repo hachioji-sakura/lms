@@ -11,7 +11,7 @@ return [
  "confirm_calendar_fix" => "Do you want to confirm this class schedule?",
  "info_calendar_fix" => "We will be in touch with you,\nThe following class schedule has been decided.",
  "confirm_calendar_confirm" => "Do you decide the following class schedule and contact the students?",
- "confirm_calendar_confirm_mail" => "Do you want to send a confirmation email for the following class schedule?",
+ "confirm_calendar_confirm_for_teacher" => "Do you want to send a confirmation email for the following class schedule?",
  "info_calendar_confirm" => "Please confirm the following class schedule",
  "warning_lecture_cancel" => "After the cancellation application is approved it will be updated to the cancellation schedule.",
  "confirm_lecture_cancel" => "Do you want to send a cancellation request for this class?",

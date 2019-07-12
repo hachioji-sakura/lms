@@ -363,7 +363,7 @@ class TeacherController extends StudentController
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
         $this->send_mail($email, '登録完了', $form, 'text', 'register',
-        $res['data']->user->locale()
+        $res['data']->user->get_locale()
       );
         if (!Auth::attempt(['email' => $email, 'password' => $password]))
         {
@@ -433,7 +433,7 @@ class TeacherController extends StudentController
           'access_key' => $access_key,
           'send_to' => 'manager',
         ], 'text', 'entry',
-        $param['item']->user->locale()
+        $param['item']->user->get_locale()
       );
       }
       return $this->save_redirect($res, $param, $message);

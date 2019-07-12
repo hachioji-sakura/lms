@@ -277,6 +277,7 @@ EOT;
           $check[$d] = true;
         }
         \Log::warning("依頼は2日まで");
+        //今月承認された休講を取得
         $asks = Ask::where('type', 'lecture_cancel')
                   ->where('target_user_id', $this->target_user_id)
                   ->where('status', '=', 'commit')
