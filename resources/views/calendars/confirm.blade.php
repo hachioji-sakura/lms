@@ -2,7 +2,7 @@
   @slot('page_message')
     @if(isset($user) && $user->role==="teacher")
     @elseif(isset($user) && $user->role==="manager")
-    {{__('messages.confirm_calendar_confirm_mail')}}
+    {{__('messages.confirm_calendar_confirm_for_teacher')}}
     @else
     {{__('messages.info_calendar_confirm')}}
     @endif
@@ -37,6 +37,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
         @method('PUT')
+        <input type="hidden" value="1" name="is_all_student" />
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.schedule_fix')}}

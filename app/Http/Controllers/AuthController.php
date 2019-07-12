@@ -78,7 +78,7 @@ class AuthController extends UserController
       ],
       'text',
       'password_reset',
-      $_user->locale()
+      $_user->get_locale()
     );
      return back()->with(['success_message' =>  __('messages.info_password_setting_send')]);
    }

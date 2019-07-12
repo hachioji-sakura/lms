@@ -431,12 +431,13 @@ EOT;
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
 
-    $diff = strtotime($this->start_time) - strtotime('+1 day');
+    $diff = strtotime($this->start_time) - strtotime('now');
     //過ぎた予定かどうか
     $item['is_passed'] = true;
     if($diff > 0) {
       $item['is_passed'] = false;
     }
+
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
     $item['timezone'] = $this->timezone();
@@ -545,16 +546,23 @@ EOT;
     //A案：一人でも出席なら出席
     //B案：全員が出席なら出席（通知がかなり複雑）
     $status = $this->status;
+    $is_status_update = true;
     //rest_cancelは、ステータス更新しない
+    /*
     if(isset($form['status']) && $form['status']!='rest_cancel'  && $form['status']!='lecture_cancel'){
-      $is_status_update = true;
-      if($form['status']=='rest' || $form['status']=='cancel'){
+      if($form['status']=='rest' || $form['status']=='cancel' || $form['status']=='fix'){
         //status=restは生徒全員が休みの場合
         //status=fixは生徒全員が予定確認した場合
         //status=cancelは生徒全員が予定キャンセルした場合
         foreach($this->members as $member){
           if($member->user->details('students')->role == "student"){
-            if($member->status != $form['status']){
+            if($form['status']=='fix'){
+              //予定確認＝出席(fix)　or キャンセル(cancel)
+              if($member->status != 'fix' && $member->status != 'cancel'){
+                $is_status_update = false;
+              }
+            }
+            else if($member->status != $form['status']){
               $is_status_update = false;
             }
           }
@@ -562,13 +570,12 @@ EOT;
       }
       if($is_status_update === true)  $status = $form['status'];
     }
-
+    */
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
       $form['work'] = $work_data[$form["course_type"]];
     }
-
 
     //TODO lectureの補間どうにかしたい
     $lecture_id = 0;
@@ -607,15 +614,18 @@ EOT;
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
+    /*
     if(isset($form['status']) && $form['status']!='rest_cancel' && $form['status']!='lecture_cancel'){
-      if($status==="absence" || $status==="confirm"){
+      if($form['status']==="absence" || $form['status']==="confirm"){
         //absence = 全員欠席
         //confirm = 全員の予定確認中に変更
+        \Log::info("UserCalendarMember更新:".$status);
         UserCalendarMember::where('calendar_id', $this->id)->update(
-          ['status' => $status ]
+          ['status' => $form['status'] ]
         );
       }
     }
+    */
     //事務システムも更新
     $this->office_system_api("PUT");
     return $this;
@@ -766,7 +776,7 @@ EOT;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template, $member->user->locale());
+      $member->send_mail($title, $param, $type, $template, $member->user->get_locale());
     }
     return;
   }
@@ -779,7 +789,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template, $member->user->locale());
+      $member->send_mail($title, $param, $type, $template, $member->user->get_locale());
     }
     return;
   }
@@ -811,4 +821,77 @@ EOT;
   public function is_kids_lesson(){
     return $this->has_tag('lesson', 4);
   }
+  public function status_to_confirm($remark, $login_user_id){
+    if($this->status!='new') return false;
+    $status = 'confirm';
+    $this->update(['status' => $status]);
+  }
+
+  public function status_to_fix($remark, $login_user_id){
+    if($this->status!='confirm') return false;
+    $is_update = true;
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role != 'student') continue;
+      if($member->status!='fix' && $member->status!='cancel'){
+        //fix or cancel以外があれば全体更新なし
+        $is_update = false;
+      }
+    }
+    if($is_update){
+      //全員キャンセル or 一人以上出席
+      $this->update(['status' => 'fix']);
+    }
+  }
+  public function status_to_cancel($remark, $login_user_id){
+    if($this->status!='confirm') return false;
+    $status = 'cancel';
+    $is_update = true;
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role != 'student') continue;
+      if($member->status!='fix' && $member->status!='cancel'){
+        //fix or cancel以外があれば全体更新なし
+        $is_update = false;
+      }
+      if($member->status=='fix'){
+        //fix が1つ以上あれば fix
+        $status='fix';
+      }
+    }
+    if($is_update){
+      //全員キャンセル or 一人以上出席
+      $this->update(['status' => $status]);
+    }
+  }
+  public function status_to_rest($remark, $login_user_id){
+    if($this->status != 'fix') return false;
+    $status = 'rest';
+    $is_update = true;
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role != 'student') continue;
+      if($member->status!='rest'){
+        //fix or cancel以外があれば全体更新なし
+        $is_update = false;
+      }
+    }
+    if($is_update){
+      //全員休んだらカレンダー休み
+      $this->update(['status' => $status]);
+    }
+  }
+  public function status_to_absence($remark, $login_user_id){
+    if($this->status!='fix') return false;
+    $status = 'absence';
+    //カレンダー：欠席
+    $this->update(['status' => $status]);
+  }
+  public function status_to_presence(){
+    if($this->status!='fix') return false;
+    $status = 'presence';
+    //カレンダー：出席
+    $this->update(['status' => $status]);
+  }
+
 }

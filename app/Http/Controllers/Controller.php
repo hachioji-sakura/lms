@@ -174,7 +174,7 @@ class Controller extends BaseController
      * @param  int $key_length
      * @return string
      */
-    protected function create_token($limit_second=86400, $key_length=32){
+    public function create_token($limit_second=86400, $key_length=32){
       $key = str_random($key_length);
       $expire = time() + $limit_second;
       return $key.$expire;

@@ -272,7 +272,7 @@ EOT;
     {
       return $this->get_work_times('lesson', $minute);
     }
-    public function locale(){
+    public function get_locale(){
       if($this->has_tag('english_teacher', 'foreigner')) return "en";
       return "ja";
     }
