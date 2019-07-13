@@ -29,5 +29,6 @@ return array(
   'matching_decide' => 'マッチング決定理由',
   'teacher_character' => '講師特性',
   'student_character' => '生徒特性',
+  'faq_type' => 'FAQ種類',
 );
 ?>

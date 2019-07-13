@@ -12,13 +12,13 @@
 ご不明な点等ございましたら、下記までお問い合わせください。　
 
 @elseif($send_to==='teacher' || $send_to==='manager')
-{{__('messages.info_calendar_remind1')}}
+{!!nl2br(__('messages.info_calendar_remind1'))!!}
 
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
 …………………………………………………………………………………………
 
-{{__('messages.info_calendar_remind2')}}
+{!!nl2br(__('messages.info_calendar_remind2'))!!}
 @endif
 
 @yield('signature')

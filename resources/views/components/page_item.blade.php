@@ -38,7 +38,7 @@
               @empty($item[$key])
               ー
               @else
-              {{$item[$key]}}
+              {!!nl2br($item[$key])!!}
               @endempty
             @endif
           @endisset

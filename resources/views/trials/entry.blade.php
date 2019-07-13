@@ -25,9 +25,9 @@
   @if(!empty($result))
     <h4 class="bg-success p-3 text-sm">
       @if($result==="success")
-      {{__('messages.trial_entry1')}}
+      {!!nl2br(__('messages.trial_entry1'))!!}
   <br><br>
-      {{__('messages.trial_entry2')}}
+      {!!nl2br(__('messages.trial_entry2'))!!}
       @endif
     </h4>
   @else

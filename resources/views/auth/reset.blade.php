@@ -13,7 +13,7 @@
             {{__('labels.password')}}
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="{{__('messages.error_validate_password')}}" minlength=8 maxlength=16 required="true">
+          <input type="password" id="password" name="password" class="form-control" placeholder="{!!nl2br(__('messages.error_validate_password'))!!}" minlength=8 maxlength=16 required="true">
         </div>
       </div>
       <div class="col-12">
@@ -22,7 +22,7 @@
             {{__('labels.password_confirm')}}
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="{{__('messages.error_validate_password')}}" minlength=8 maxlength=16 required="true" equal="password" equal_error="{{__('messages.error_validate_password_not_match')}}">
+          <input type="password" id="password-confirm" name="password-confirm" class="form-control" placeholder="{!!nl2br(__('messages.error_validate_password')}}" minlength=8 maxlength=16 required="true" equal="password" equal_error="{{__('messages.error_validate_password_not_match'))!!}">
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}一覧
+  {{__('labels.asks')}}{{__('labels.list')}}
 @endsection
 @extends('dashboard.common')
 
@@ -49,11 +49,11 @@
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")
   <div class="col-6">
-    <label for="search_week" class="w-100">
+    <label for="search_type" class="w-100">
       依頼
     </label>
     <div class="w-100">
-      <select name="search_week[]" class="form-control select2" width=100% placeholder="依頼タイプ" multiple="multiple" >
+      <select name="search_type[]" class="form-control select2" width=100% placeholder="依頼タイプ" multiple="multiple" >
         @foreach(config('attribute.ask_type') as $index=>$name)
           <option value="{{$index}}"
           @if(isset($filter['search_type']) && in_array($index, $filter['search_type'])==true)
@@ -65,7 +65,7 @@
     </div>
   </div>
   <div class="col-6">
-    <label for="search_work" class="w-100">
+    <label for="search_status" class="w-100">
       ステータス
     </label>
     <div class="w-100">

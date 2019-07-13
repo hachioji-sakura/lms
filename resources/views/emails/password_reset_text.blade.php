@@ -1,10 +1,10 @@
 @include('emails.common')
 @yield('mail_title')
 
-{{__('messages.mail_dear', ['user_name' => $user_name])}}
+{!!nl2br(__('messages.mail_dear', ['user_name' => $user_name]))!!}
 
-{{__('messages.mail_password_reset1')}}
-{{__('messages.info_url_limit')}}
+{!!nl2br(__('messages.mail_password_reset1'))!!}
+{!!nl2br(__('messages.info_url_limit'))!!}
 
 …………………………………………………………………………………………
 {{__('labels.password_setting')}}

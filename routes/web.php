@@ -152,9 +152,21 @@ Route::put('icon/change','ImageController@icon_change');
 Route::post('students/{id}/comments/create','CommentController@student_comments_store');
 Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
+Route::get('students/{id}/unsubscribe','StudentController@unsubscribe');
+Route::get('students/{id}/recess','StudentController@recess');
+Route::get('students/{id}/resume','StudentController@resume');
+
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
+Route::get('teachers/{id}/unsubscribe','TeacherController@unsubscribe');
+Route::get('teachers/{id}/recess','TeacherController@recess');
+Route::get('teachers/{id}/resume','TeacherController@resume');
+
 Route::get('managers/{id}/calendar','ManagerController@calendar');
+Route::get('managers/{id}/unsubscribe','ManagerController@unsubscribe');
+Route::get('managers/{id}/recess','ManagerController@recess');
+Route::get('managers/{id}/resume','ManagerController@resume');
+
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('managers/{id}/ask','ManagerController@ask');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
@@ -182,6 +194,8 @@ Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change
 Route::resource('asks','AskController');
 
 
+Route::resource('faqs','FaqController');
+Route::get('faqs/{id}/page','FaqController@page');
 Route::get('home', 'HomeController@index')->name('home');
 
 //教科書を選択する画面

@@ -1,22 +1,22 @@
 @include('emails.common')
 
 @if($send_to=="teacher")
-{{__('messages.mail_dear_teacher', ['user_name' => $user_name])}}
+{!!nl2br(__('messages.mail_dear_teacher', ['user_name' => $user_name]))!!}
 
-{{__('messages.info_register1', ['domain' => __('labels.teachers')]}}
+{!!nl2br(__('messages.info_register1', ['domain' => __('labels.teachers')])!!}
 
-{{__('messages.info_register2')}}
-{{__('messages.info_url_limit')}}
+{!!nl2br(__('messages.info_register2'))!!}
+{!!nl2br(__('messages.info_url_limit'))!!}
 …………………………………………………………………………………………
 {{__('labels.regiser')}}
 {{config('app.url')}}/teachers/register?key={{$access_key}}
 …………………………………………………………………………………………
 @elseif($send_to=="manager")
-{{__('messages.mail_dear_manager', ['user_name' => $user_name])}}
-{{__('messages.info_register1', ['domain' => __('labels.managers')]}}
+{!!nl2br(__('messages.mail_dear_manager', ['user_name' => $user_name]))!!}
+{!!nl2br(__('messages.info_register1', ['domain' => __('labels.managers')])!!}
 
-{{__('messages.info_register2')}}
-{{__('messages.info_url_limit')}}
+{!!nl2br(__('messages.info_register2'))!!}
+{!!nl2br(__('messages.info_url_limit'))!!}
 …………………………………………………………………………………………
 {{__('labels.regiser')}}
 {{config('app.url')}}/managers/register?key={{$access_key}}

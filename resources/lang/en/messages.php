@@ -71,4 +71,11 @@ return [
  "info_lecture_cancel_to_commit" => "The following cancellation requests have been approved.",
  "info_lecture_cancel" => "I have notified of the following class schedule cancellation requests.\nAfter approving the request, it will be canceled.",
  'info_rest_cancel' => "The following class cancellation request has been registered.\nPlease operate approval or send back on the request screen",
+ 'warning_unsubscribe' => "If you unsubscribe, you will not be able to log in to the system. \nIn addition, all class schedules after the unsubscribed date will be canceled automatically.",
+ 'confirm_unsubscribe' => "Do you want to send a unsubscribed request?",
+ 'warning_recess' => "If you recess, you will not be able to log in to the system. \nIn addition, all class schedules after the recess date will be canceled automatically.",
+ 'warning_recess2' => "If you recess, you will not be able to log in to the system. \nIn addition, all class schedules after the recess date will be canceled automatically.",
+ 'confirm_recess' => "Do you want to send a recess request?",
+ 'warning_resume' => "When resuming from a break, the class schedule will be registered with the current schedule.\n If the instructor's schedule does not match at the time of resumption, it will be adjusted again.",
+ 'confirm_resume' => "Do you want to send a resume request?",
 ];

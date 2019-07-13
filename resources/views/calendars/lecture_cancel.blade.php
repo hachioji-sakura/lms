@@ -1,8 +1,8 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    {{__('messages.confirm_lecture_cancel')}}
+    {!!nl2br(__('messages.confirm_lecture_cancel'))!!}
     <div class="col-12 col-lg-12 col-md-12 mb-1">
-      <span class="text-danger">{{__('messages.warning_lecture_cancel')}}</span>
+      <span class="text-danger">{!!nl2br(__('messages.warning_lecture_cancel'))!!}</span>
     </div>
   @endslot
   @slot('forms')

@@ -11,7 +11,7 @@
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
-            {{__('messages.warning_teacher_change')}}
+            {!!nl2br(__('messages.warning_teacher_change'))!!}
           </label>
           <select name="charge_user_id" class="form-control select2"  width=100% required="true" >
             <option value="">{{__('labels.selectable')}}</option>

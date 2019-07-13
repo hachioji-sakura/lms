@@ -163,6 +163,8 @@ return [
   'additional_officer' => 'Add Officer',
   'register_ask' => 'Send Register',
   'delete' => 'Delete',
+  'reason' => 'Reason',
+  'contact' => 'Contact',
 
   'confirm_title' => 'Confirmation of registration contents',
   'calendar_button_year' => 'Y',
@@ -209,6 +211,10 @@ return [
   'charge_student' => 'Charge Student',
   'charge_teacher' => 'Charge Teacher',
   'recess_or_unsubscribe' => 'Recess Or Unsubscribe',
+  'unsubscribe' => 'Unsubscribe',
+  'recess' => 'Recess',
+  'to_recess' => 'Click to Recess Page',
+  'resume' => 'Resume',
   'remark' => 'Remark',
   'type' => 'Type',
   'list' => 'List',
@@ -216,4 +222,8 @@ return [
   'approval' => 'Approval',
   'rest_contact' => 'Rest Contact',
   'target_month' => 'Target Month',
+  'important' => 'Important',
+  'important_check' => 'I confirmed about important matter',
+  'faq_button' => 'FAQ Add',
+  'publiced_at' => 'Publiced At',
 ];

@@ -1,10 +1,10 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
     @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
-      {{__('messages.warning_calendar_presence')}}
+      {!!nl2br(__('messages.warning_calendar_presence'))!!}
     @else
       <div class="col-12 col-lg-12 col-md-12 mb-1">
-        <h4 class="text-danger">{{__('messages.warning_calendar_presence_time')}}</h4>
+        <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
       </div>
     @endif
   @endslot
@@ -20,20 +20,20 @@
           <div class="form-group">
             <label for="status">
               <i class="fa fa-question-circle mr-1 mt-2"></i>
-              {{__('messages.confirm_lecture_exec')}}
+              {!!nl2br(__('messages.confirm_lecture_exec'))!!}
               <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
             <div class="input-group">
               <div class="form-check">
                 <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_presence" value="presence" required="true" onChange="status_change();" validate="status_presence_check();">
                 <label class="form-check-label" for="status_presence">
-                    {{__('messages.lecture_exec')}}
+                    {!!nl2br(__('messages.lecture_exec'))!!}
                 </label>
               </div>
               <div class="form-check ml-2">
                 <input class="form-check-input icheck flat-red" type="radio" name="status" id="status_absence" value="absence" required="true" onChange="status_change();" validate="status_presence_check();">
                 <label class="form-check-label" for="status_absence">
-                    {{__('messages.not_lecture_exec')}}
+                    {!!nl2br(__('messages.not_lecture_exec'))!!}
                 </label>
               </div>
             </div>
@@ -67,7 +67,7 @@
             }
           });
           if(!_is_scceuss){
-            front.showValidateError('#presence_list_table', '{{__('messages.error_calendar_presence_not_student')}}');
+            front.showValidateError('#presence_list_table', '{!!nl2br(__('messages.error_calendar_presence_not_student'))!!}');
           }
         }
         else {
@@ -82,7 +82,7 @@
             }
           });
           if(!_is_scceuss){
-            front.showValidateError('#presence_list_table', '{{__('messages.error_calendar_presence_not_exec')}}');
+            front.showValidateError('#presence_list_table', '{!!nl2br(__('messages.error_calendar_presence_not_exec'))!!}');
           }
         }
         return _is_scceuss;
@@ -93,7 +93,7 @@
           <div class="form-group">
             <label for="status">
               <i class="fa fa-question-circle mr-1"></i>
-              {{__('messages.confirm_student_presence')}}
+              {!!nl2br(__('messages.confirm_student_presence'))!!}
               <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
           </div>

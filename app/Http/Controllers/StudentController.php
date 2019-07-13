@@ -249,6 +249,49 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
   }
+  public function unsubscribe(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   return view('asks.unsubscribe', [
+   ])->with($param);
+  }
+  public function recess(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   return view('asks.recess', [
+   ])->with($param);
+  }
+  public function resume(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   return view('asks.resume', [
+   ])->with($param);
+  }
+
   /**
    * 詳細画面表示
    *

@@ -1,15 +1,15 @@
 @include('emails.common')
 @yield('mail_title')
 @if($send_to=="teacher")
-{{__('messages.mail_dear_teacher', ['user_name' => $name_last])}}
+{!!nl2br(__('messages.mail_dear_teacher', ['user_name' => $name_last]))!!}
 
-{{__('messages.info_register_complete1', ['domain' => __('labels.teachers')])}}
-{{__('messages.info_register_complete2')}}
+{!!nl2br(__('messages.info_register_complete1', ['domain' => __('labels.teachers')]))!!}
+{!!nl2br(__('messages.info_register_complete2'))!!}
 @elseif($send_to=="manager")
-{{__('messages.mail_dear_manager', ['user_name' => $name_last])}}
+{!!nl2br(__('messages.mail_dear_manager', ['user_name' => $name_last]))!!}
 
-{{__('messages.info_register_complete1', ['domain' => __('labels.managers')])}}
-{{__('messages.info_register_complete2')}}
+{!!nl2br(__('messages.info_register_complete1', ['domain' => __('labels.managers')]))!!}
+{!!nl2br(__('messages.info_register_complete2'))!!}
 @elseif($send_to=="parent")
 {{$parent_name_last}} {{$parent_name_first}}様
 この度、入会お申込み誠にありがとうございます。

@@ -60,15 +60,15 @@
           @if($is_checked==true)
               <h6 class="text-sm p-1 pl-2 mt-2 bg-secondary" >
                 <i class="fa fa-info-circle mr-1"></i>
-                {{__('messages.info_work_record_all_check')}}
+                {!!nl2br(__('messages.info_work_record_all_check'))!!}
               </h6>
           @elseif($enable_confirm==false)
               <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
                 <i class="fa fa-exclamation-triangle mr-1"></i>
                 @if($user->user_id === $item->user_id)
-                {{__('messages.error_work_record')}}
+                {!!nl2br(__('messages.error_work_record'))!!}
                 @else
-                {{__('messages.error_work_record_not_owner')}}
+                {!!nl2br(__('messages.error_work_record_not_owner'))!!}
                 @endif
               </h6>
           @endif

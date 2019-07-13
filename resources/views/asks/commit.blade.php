@@ -1,6 +1,6 @@
 @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
   @slot('page_message')
-  {{__('messages.confirm_ask_commit')}}
+  {!!nl2br(__('messages.confirm_ask_commit'))!!}
   @endslot
   @slot('forms')
     <div class="row">

@@ -3,8 +3,8 @@
 {{$user_name}}様
 以下の授業予定を確定いたしました。
 @elseif($send_to==='teacher' || $send_to==='manager')
-{{__('messages.mail_dear_teacher', ['user_name' => $user->name()])}}
-{{__('messages.info_calendar_fix')}}
+{!!nl2br(__('messages.mail_dear_teacher', ['user_name' => $user->name()]))!!}
+{!!nl2br(__('messages.info_calendar_fix'))!!}
 @endif
 …………………………………………………………………………………………
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
