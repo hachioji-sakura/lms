@@ -1,6 +1,6 @@
 
 <div class="row mb-3">
-  <div class="col-6 mb-2">
+  <div class="col-12 mb-2">
     <label for="name" class="w-100">
       {{__('labels.'.$domain)}}{{__('labels.name')}}
     </label>
@@ -8,21 +8,21 @@
       {{$item->name()}}
     </span>
   </div>
-  <div class="col-12">
+  <div class="col-12 mb-2">
     <div class="form-group">
       <label for="start_date" class="w-100">
         {{__('labels.recess')}}{{__('labels.date')}}
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-        </div>
-        <input type="text" id="start_date" name="start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+      <input type="text" id="start_date" name="start_date" class="form-control float-left w-40" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+        minvalue="{{date('Y/m/d')}}"
+      >
+      <span class="float-left w-10 mx-2">～</span>
+      <input type="text" id="start_date" name="start_date" class="form-control float-left w-40" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
           minvalue="{{date('Y/m/d')}}"
+          validate = "recess_date_check()"
         >
       </div>
-    </div>
   </div>
   <div class="col-12">
     <div class="form-group">
