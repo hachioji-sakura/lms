@@ -23,6 +23,7 @@ return [
   'officers_list'             => '事務一覧',
   'trials_list'             => '体験申込一覧',
   'comments_list'             => 'コメント一覧',
+
   'milestones_list'             => '目標一覧',
   'attributes_list'             => '属性一覧',
   'events_list'             => 'イベント一覧',
@@ -47,11 +48,11 @@ return [
   'schedule_add' => '授業追加',
   'schedule_add_description' => '授業の追加・振替',
   'year_month' => ':year年:month月',
+
   'work_record' => '勤務実績',
   'work_record_description' => '月末の実績登録',
   'schedule_details' => '予定詳細',
   'schedule_delete' => '予定削除',
-  'schedule_remind' => '予定連絡',
   'schedule_remind' => '予定連絡',
   'schedule_rest_cancel' => '休み取り消し連絡',
   'schedule_fix' => '授業予定を確定する',
@@ -64,7 +65,6 @@ return [
   'exchange_schedule_list' => '振替対象',
   'schedule_history' => '授業履歴',
   'trials_schedule_history' => '体験授業履歴',
-
   'student_groups' => '生徒グループ',
   'student_groups_description' => 'グループ、ファミリーの管理',
   'regular_schedule_list' => '通常授業一覧',
@@ -73,8 +73,8 @@ return [
   'teacher_setting' => '講師設定',
   'teacher_setting_description' => '担当科目、授業可能曜日の設定',
   'charge_student' => '担当科目、授業可能曜日の設定',
-  'details' => '詳細',
 
+  'details' => '詳細',
   'name' => '氏名',
   'group_name' => 'グループ名',
   'title' => '概要',
@@ -93,13 +93,12 @@ return [
   'charge_lesson' => '担当可能なレッスン',
   'lesson_week_time' => '担当可能な曜日・時間帯',
   'week_day' => '曜日',
-
   'charge_subject' => '担当科目',
-
   'no_data' => 'データがありません',
   'add' => '追加',
   'edit' => '変更',
   'select' => '選択',
+
   'check' => '確認',
   'top' => 'トップ',
   'exchange' => '振替',
@@ -124,6 +123,7 @@ return [
   'to_exchange_only' => '振替対象のみを表示',
   'dashboard' => 'ダッシュボード',
   'comment_add' => 'コメント登録',
+
   'tags' => 'タグ',
   'start_date' => '開始日時',
   'start_time' => '開始時間',
@@ -143,13 +143,12 @@ return [
   'number_of_weeks' => '週（毎月）',
   'number_of_title' => '第',
   'setting_enable_day' => '設定有効日',
-
-
   'update_button' => '更新する',
   'add_button' => '登録する',
   'create_button' => 'この内容で登録する',
   'cancel_button' => 'キャンセル',
   'next_button' => '次へ',
+
   'prev_button' => '前へ',
   'back_button' => '戻る',
   'send_button' => '送信',
@@ -169,25 +168,23 @@ return [
   'delete' => '削除',
   'reason' => '理由',
   'contact' => '連絡',
-
   'confirm_title' => '登録内容確認',
   'calendar_button_year' => '年',
   'calendar_button_month' => '月',
   'calendar_button_day' => '日',
   'calendar_button_hour' => '時',
+
   'calendar_button_minute' => '分',
   'calendar_button_week' => '週',
   'calendar_button_today' => '今日',
   'calendar_button_prev_year' => '前年',
   'calendar_button_next_year' => '次年',
-
   'calendar_button_attendance' => '出欠',
   'calendar_button_working' => '出勤',
   'calendar_button_no_working' => '欠勤',
   'calendar_button_holiday' => '休暇',
   'calendar_button_presence' => '出席',
   'calendar_button_absence' => '欠席',
-
   'teachers' => '講師',
   'students' => '生徒',
   'asks' => '依頼',
@@ -201,6 +198,7 @@ return [
   'comments' => 'コメント',
   'milestones' => '目標',
   'attributes' => '定義属性',
+
   'events' => 'イベント',
   'parents' => '契約者',
   'calendars' => 'カレンダー',
@@ -220,13 +218,12 @@ return [
   'unsubscribe' => '退会',
   'recess' => '休会',
   'to_recess' => '休会についてはこちら',
-  'resume' => '再開',
-  'to_recess_cancel' => '休会から再開する場合はこちら',
   'remark' => '備考',
   'type' => 'タイプ',
   'list' => '一覧',
   'limit' => '期限',
   'approval' => '承認',
+
   'rest_contact' => '休み連絡',
   'target_month' => '対象年月',
   'important' => '重要',

@@ -23,6 +23,7 @@ return [
   'officers_list'             => 'Officers List',
   'trials_list'             => 'Trials List',
   'comments_list'             => 'Comments List',
+
   'milestones_list'             => 'Milestones List',
   'attributes_list'             => 'Attributes List',
   'events_list'             => 'Events List',
@@ -47,6 +48,7 @@ return [
   'schedule_add' => 'Add Schedule',
   'schedule_add_description' => 'Add Schedule Or Alternate Lesson',
   'year_month' => ':year/:month',
+
   'work_record' => 'Work Record',
   'work_record_description' => 'Entry of monthly attendance',
   'schedule_details' => 'Details',
@@ -56,13 +58,13 @@ return [
   'schedule_fix' => 'Fix',
   'schedule_edit' => 'Edit',
   'schedule_presence' => 'Schedule Presence',
-  'today_schedule_list' => 'Month Schedule',
+  'today_schedule_list' => 'Today Schedule',
+  'month_schedule_list' => 'Month Schedule',
   'adjust_schedule_list' => 'Adjusting Schedule',
   'rest_schedule_list' => 'Rest Schedule',
   'exchange_schedule_list' => 'Must be transferred',
   'schedule_history' => 'History',
   'trials_schedule_history' => 'Trials History',
-
   'student_groups' => 'Student Groups',
   'student_groups_description' => 'Student Group For Group Lesson & Family',
   'regular_schedule_list' => 'Regular Schedule',
@@ -71,8 +73,8 @@ return [
   'teacher_setting' => 'Teacher Setting',
   'teacher_setting_description' => 'Setting schedule for this teacher',
   'charge_student' => 'Charge Student',
-  'details' => 'Details',
 
+  'details' => 'Details',
   'name' => 'Name',
   'group_name' => 'Group Name',
   'title' => 'Title',
@@ -91,13 +93,12 @@ return [
   'charge_lesson' => 'Charge Lesson',
   'lesson_week_time' => 'Preferred time for work',
   'week_day' => 'WeekDay',
-
   'charge_subject' => 'Charge Subject',
-
   'no_data' => 'No Data',
   'add' => 'Add',
   'edit' => 'Edit',
   'select' => 'Select',
+
   'check' => 'Check',
   'top' => 'Top',
   'exchange' => 'Alternate',
@@ -122,6 +123,7 @@ return [
   'to_exchange_only' => 'Only Must be transferred',
   'dashboard' => 'Dashboard',
   'comment_add' => 'Comment Add',
+
   'tags' => 'Tags',
   'start_date' => 'Start Date',
   'start_time' => 'Start Time',
@@ -141,13 +143,12 @@ return [
   'number_of_weeks' => 'Number Of Weeks',
   'number_of_title' => '',
   'setting_enable_day' => 'Setting Enable Day',
-
-
   'update_button' => 'Update',
   'add_button' => 'Add',
   'create_button' => 'Create',
   'cancel_button' => 'Cancel',
   'next_button' => 'Next',
+
   'prev_button' => 'Prev',
   'back_button' => 'Back',
   'send_button' => 'Send',
@@ -167,25 +168,23 @@ return [
   'delete' => 'Delete',
   'reason' => 'Reason',
   'contact' => 'Contact',
-
   'confirm_title' => 'Confirmation of registration contents',
   'calendar_button_year' => 'Y',
   'calendar_button_month' => 'M',
   'calendar_button_day' => 'D',
   'calendar_button_hour' => 'h',
+
   'calendar_button_minute' => 'm',
   'calendar_button_week' => 'W',
   'calendar_button_today' => 'Today',
   'calendar_button_prev_year' => 'Last Year',
   'calendar_button_next_year' => 'Next Year',
-
   'calendar_button_attendance' => 'Attendance',
   'calendar_button_working' => 'Working',
   'calendar_button_no_working' => 'No Work',
   'calendar_button_holiday' => 'Holiday',
   'calendar_button_presence' => 'Presence',
   'calendar_button_absence' => 'Absence',
-
   'teachers' => 'Teacher',
   'students' => 'Student',
   'asks' => 'Asks',
@@ -199,6 +198,7 @@ return [
   'comments' => 'Comments',
   'milestones' => 'Milestones',
   'attributes' => 'Attributes',
+
   'events' => 'Events',
   'parents' => 'Parents',
   'calendars' => 'Calendars',
@@ -218,12 +218,12 @@ return [
   'unsubscribe' => 'Unsubscribe',
   'recess' => 'Recess',
   'to_recess' => 'Click to Recess Page',
-  'resume' => 'Resume',
   'remark' => 'Remark',
   'type' => 'Type',
   'list' => 'List',
   'limit' => 'Limit',
   'approval' => 'Approval',
+
   'rest_contact' => 'Rest Contact',
   'target_month' => 'Target Month',
   'important' => 'Important',
