@@ -139,7 +139,7 @@ EOT;
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id from user_calendar_members where user_id=$user_id)
+      user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
@@ -776,7 +776,7 @@ EOT;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
     }
     return;
   }
@@ -789,7 +789,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
     }
     return;
   }
@@ -828,7 +828,7 @@ EOT;
   }
 
   public function status_to_fix($remark, $login_user_id){
-    if($this->status!='confirm') return false;
+    if($this->status!='confirm' && $this->status!='cancel') return false;
     $is_update = true;
     foreach($this->members as $member){
       $_member = $member->user->details('students');
@@ -844,7 +844,7 @@ EOT;
     }
   }
   public function status_to_cancel($remark, $login_user_id){
-    if($this->status!='confirm') return false;
+    if($this->status!='confirm' && $this->status!='fix') return false;
     $status = 'cancel';
     $is_update = true;
     foreach($this->members as $member){

@@ -153,7 +153,7 @@
         <i class="fa fa-lock mr-2"></i>{{__('labels.password_setting')}}
       </a>
       <a href="/faqs" class="dropdown-item" >
-        <i class="fa fa-question-circle mr-2"></i>{{__('labels.faq')}}
+        <i class="fa fa-question-circle mr-2"></i>{{__('labels.faqs')}}
       </a>
       @if(app()->getLocale()=='en')
       <a href="/home?locale=ja" class="dropdown-item" >

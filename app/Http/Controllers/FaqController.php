@@ -82,22 +82,20 @@ class FaqController extends MilestoneController
       'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
       'origin' => $request->origin,
+      'action' => $request->action,
       'item_id' => $request->item_id,
       'teacher_id' => $request->teacher_id,
       'manager_id' => $request->manager_id,
       'student_id' => $request->student_id,
       'search_word'=>$request->search_word,
+      'search_type'=>$request->search_type,
       '_origin' => $request->get('_origin'),
       'attributes' => $this->attributes(),
     ];
-    $ret['filter'] = [
-      'search_type'=>$request->search_type,
-    ];
-
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $create_user = $item->create_user->details();
-      $item->create_user_name = $create_user->name;
+      $item->create_user_name = $create_user->name();
       unset($item->create_user);
       $item->_type_name = $item->type_name();
 

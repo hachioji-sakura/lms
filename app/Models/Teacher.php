@@ -28,6 +28,15 @@ class Teacher extends Student
   public function chargeStudents(){
     return $this->hasMany('App\Models\ChargeStudent', 'teacher_id');
   }
+  public function status_name(){
+    $status_name = "";
+    if(app()->getLocale()=='en') return $this->status;
+
+    if(isset(config('attribute.teacher_status')[$this->status])){
+      $status_name = config('attribute.teacher_status')[$this->status];
+    }
+    return $status_name;
+  }
 
   public function scopeFindChargeStudent($query, $id)
   {
@@ -81,6 +90,7 @@ EOT;
       'name_first' => $form['name_first'],
       'kana_last' => '',
       'kana_first' => '',
+      'status' => 'trial',
       'user_id' => $user->id,
       'create_user_id' => 1,
     ]);
@@ -99,7 +109,7 @@ EOT;
       'phone_no' => "",
       'address' => "",
     ];
-    $update_form = [];
+    $update_form = ['status' => 'regular'];
     foreach($update_field as $key => $val){
       if(isset($form[$key])){
         $update_form[$key] = $form[$key];

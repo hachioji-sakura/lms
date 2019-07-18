@@ -1,5 +1,5 @@
 @section('title')
-{{__('labels.faq')}}{{__('labels.list')}}
+{{__('labels.faqs')}}{{__('labels.list')}}
 @endsection
 @extends('dashboard.common')
 @extends('faqs.menu')
@@ -14,6 +14,8 @@
             <i class="fa fa-question-circle mr-1" ></i>
             @yield('title')
           </h3>
+          @component('components.search_word', ['search_word' => $search_word])
+          @endcomponent
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
@@ -30,8 +32,16 @@
                 <div class="col-6 mt-1 text-sm">
                   {{__('labels.publiced_at')}}： {{date('Y-m-d', strtotime($item["publiced_at"]))}}
                 </div>
+                @if(isset($user) && $user->role=='manager')
                 <div class="col-12 text-sm mt-1 text-right">
+                  <a class="btn btn-sm btn-success"  href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}/edit" role="button" >
+                    <i class="fa fa-edit mr-1"></i>{{__('labels.edit')}}
+                  </a>
+                  <a class="btn btn-sm btn-danger"  href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}?action=delete" role="button">
+                    <i class="fa fa-times mr-1"></i>{{__('labels.delete')}}
+                  </a>
                 </div>
+                @endif
             </li>
             @endforeach
           </ul>

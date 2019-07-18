@@ -11,5 +11,9 @@ return array(
   'new' => 'secondary',
   'cancel' => 'secondary',
   'complete' => 'secondary',
+  'trial' => 'warning',
+  'regular' => 'success',
+  'recess' => 'secondary',
+  'unsubscribe' => 'secondary',
   );
 ?>

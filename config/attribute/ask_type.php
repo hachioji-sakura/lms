@@ -4,5 +4,7 @@ return array(
   'presence_check' => '出欠確認',
   'lecture_cancel' => '休講申請',
   'teacher_change' => '代講依頼',
+  'recess' => '休会連絡',
+  'unsubscribe' => '退会連絡',
 );
 ?>

@@ -5,19 +5,19 @@
 以下の授業のお休み連絡を承りました。
 
 @elseif($send_to==='teacher' || $send_to==='manager')
-{!!nl2br(__('messages.mail_dear_teacher', ['user_name' => $user["name"]]))!!}
+{{__('messages.mail_dear_teacher', ['user_name' => $user["name"]])}}
 
 @if($is_proxy===true)
-{!!nl2br(__('messages.info_calendar_rest_proxy'))!!}
+{{__('messages.info_calendar_rest_proxy')}}
 @else
-{!!nl2br(__('messages.info_calendar_rest', ['user_name' => $login_user["name"]]))!!}
+{{__('messages.info_calendar_rest', ['user_name' => $login_user["name"]])}}
 @endif
 
 @if($item->is_group()==true)
 @if($item['status'] =='rest')
-{!!nl2br(__('messages.info_calendar_rest_to_cancel'))!!}
+{{__('messages.info_calendar_rest_to_cancel')}}
 @else
-{!!nl2br(__('messages.info_calendar_rest_to_fix'))!!}
+{{__('messages.info_calendar_rest_to_fix')}}
 @endif
 @endif
 

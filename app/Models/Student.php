@@ -113,6 +113,19 @@ class Student extends Model
   {
     return $this->tags_name('lesson');
   }
+  /**
+   *　プロパティ：ステータス名
+   */
+  public function status_name(){
+    $status_name = "";
+    if(app()->getLocale()=='en') return $this->status;
+
+    if(isset(config('attribute.student_status')[$this->status])){
+      $status_name = config('attribute.student_status')[$this->status];
+    }
+    return $status_name;
+  }
+
   public function tag_value($key)
   {
     $tag = $this->get_tag($key);
@@ -202,6 +215,7 @@ class Student extends Model
   /**
    *　スコープ：ユーザーステータス
    */
+   /*
   public function scopeFindStatuses($query, $statuses)
   {
     $where_raw = <<<EOT
@@ -209,6 +223,12 @@ class Student extends Model
 EOT;
     return $query->whereRaw($where_raw,[]);
   }
+  */
+  public function scopeFindStatuses($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+  }
+
   /**
    *　スコープ：タグを持っているか
    */
@@ -243,7 +263,7 @@ EOT;
 )
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
-    return $this->scopeFindStatuses($query, "0,1");
+    return $this->scopeFindStatuses($query, ["unsubscribe"], true);
   }
   /**
    *　スコープ：自身の子供
@@ -252,10 +272,11 @@ EOT;
   public function scopeFindChild($query, $id)
   {
     $where_raw = <<<EOT
-    student_id in (select student_id from common.student_relations where student_parent_id=?)
+    students.id in (select student_id from common.student_relations where student_parent_id=?)
+    AND students.status != 'unsubscribe'
 EOT;
     $query = $query->whereRaw($where_raw,[$id]);
-    return $this->scopeFindStatuses($query, "0,1");
+    return $this->scopeFindStatuses($query, ["unsubscribe"], true);
   }
   /**
    *　スコープ：メールアドレス　（生徒の場合は、生徒Noが入る）
@@ -284,6 +305,18 @@ EOT;
           ->orWhere('kana_first','like', $_like);
       }
     });
+    return $query;
+  }
+  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
+  {
+    if(count($vals) > 0){
+      if($is_not===true){
+        $query = $query->whereNotIn($field, $vals);
+      }
+      else {
+        $query = $query->whereIn($field, $vals);
+      }
+    }
     return $query;
   }
 
@@ -464,6 +497,13 @@ EOT;
       foreach($relations2 as $relation2){
         if($relation2->student_parent_id == $relation->student_parent_id) return true;
       }
+    }
+    return false;
+  }
+  public function is_parent($parent_id){
+    $relations = StudentRelation::where('student_id', $this->id)->get();
+    foreach($relations as $relation){
+      if($relation->student_parent_id == $parent_id) return true;
     }
     return false;
   }
@@ -655,5 +695,82 @@ EOT;
 
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
+  }
+  public function unsubscribe(){
+    if($this->status!='regular') return null;
+    $user_calendar_members = [];
+    $this->update(['status' => 'unsubscribe']);
+    $calendars = UserCalendar::rangeDate($this->unsubscribe_date)
+                  ->findUser($this->user_id)
+                  ->where('status', 'fix')
+                  ->get();
+
+    foreach($calendars as $calendar){
+      $is_update = false;
+      foreach($calendar->members as $member){
+        if($member->user_id != $this->user_id) continue;
+        $member->status_update('cancel', '退会のため', 1, false, true);
+        $user_calendar_members[$member->id] = $member;
+        $is_update = true;
+      }
+    }
+    return ['user_calendar_members' => $user_calendar_members,];
+  }
+  public function recess(){
+    if($this->status!='regular') return null;
+    $user_calendar_members = [];
+    $this->update(['status' => 'recess']);
+    $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date)
+                  ->findUser($this->user_id)
+                  ->where('status', 'fix')
+                  ->get();
+    foreach($calendars as $calendar){
+      $is_update = false;
+      foreach($calendar->members as $member){
+        if($member->user_id != $this->user_id) continue;
+        $member->status_update('cancel', '休会のため', 1, false, true);
+        $user_calendar_members[$member->id] = $member;
+        $is_update = true;
+      }
+    }
+    return ['user_calendar_members' => $user_calendar_members,];
+  }
+  public function recess_cancel(){
+    if($this->status!='recess') return null;
+    $param = [];
+    $user_calendar_members = [];
+    $conflict_calendar_members = [];
+
+    $this->update(['status' => 'regular']);
+    $calendars = UserCalendar::rangeDate($this->recess_end_date)
+                  ->findUser($this->user_id)
+                  ->findStatuses(['fix','cancel'])
+                  ->get();
+    foreach($calendars as $calendar){
+      $is_update = false;
+      foreach($calendar->members as $member){
+        if($member->user_id != $this->user_id) continue;
+        $conflicts = UserCalendar::searchDate($calendar->start_time, $calendar->end_time)
+                    ->where('id', '!=', $calendar->id)
+                    ->where('status', 'fix')
+                    ->where('user_id', $calendar->user_id)
+                    ->first();
+
+        //このカレンダーの予定と競合した予定がある場合は、再開できない
+        if(isset($conflicts)){
+          $conflict_calendar_members[$member->id] = $member;
+        }
+        else {
+          $member->status_update('fix', '休会から再開するため', 1, false, true);
+          $user_calendar_members[$member->id] = $member;
+          $is_update = true;
+        }
+      }
+    }
+    $param['user_calendar_members'] = $user_calendar_members;
+    $param['conflict_calendar_members'] = $conflict_calendar_members;
+    $param['send_to'] = 'student';
+    $this->user->send_mail('休会終了のお知らせ', $param, 'text', 'recess_end');
+    return ['user_calendar_members' => $user_calendar_members, 'conflict_calendar_members' => $conflict_calendar_members];
   }
 }

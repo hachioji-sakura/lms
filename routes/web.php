@@ -188,6 +188,7 @@ Route::get('teachers/{teacher_id?}/calendars/{id}','UserCalendarController@teach
 Route::get('teachers/{teacher_id?}/calendars/{id}/edit','UserCalendarController@teacher_edit');
 */
 
+Route::get('ask_daily_proc/{d?}','AskController@daily_proc');
 Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
 Route::put('asks/{id}/status_update/{status}','AskController@status_update');
 Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change_page');

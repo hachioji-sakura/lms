@@ -3,8 +3,8 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   @if(isset($user) && $user->role=='manager')
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
-      <i class="fa fa-plus nav-icon"></i>{{__('labels.faq_add')}}
+    <a href="javascript:void(0);" page_title="{{__('labels.faqs_add')}}" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
+      <i class="fa fa-plus nav-icon"></i>{{__('labels.faqs')}}{{__('labels.add')}}
     </a>
   </li>
   @endif
@@ -18,14 +18,18 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-         <a href="/{{$domain}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
+         <a href="/{{$domain}}" class="nav-link @if(!isset($search_type)) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>すべて
          </a>
        </li>
        @foreach($attributes['faq_type'] as $index => $name)
       <li class="nav-item">
-        @if($index=="teacher" || $index=="manager")
+        @if($index=="teacher")
           @if(!isset($user) || ($user->role!=="teacher" && $user->role!=="manager"))
+            @continue
+          @endif
+        @elseif($index=="manager")
+          @if(!isset($user) || $user->role!=="manager")
             @continue
           @endif
         @endif
@@ -41,8 +45,8 @@
 @section('page_footer')
 @if(isset($user) && $user->role=='manager')
 <dt>
-  <a class="btn btn-app"  href="javascript:void(0);" page_title="{{__('labels.faqs_add')}}" page_form="dialog" page_url="{{$domain}}/create">
-    <i class="fa fa-plus"></i>{{__('labels.faq_add')}}
+  <a class="btn btn-app"  href="javascript:void(0);" page_title="{{__('labels.faqs')}}{{__('labels.add')}}" page_form="dialog" page_url="{{$domain}}/create">
+    <i class="fa fa-plus"></i>{{__('labels.faqs')}}{{__('labels.add')}}
   </a>
 </dt>
 @endif

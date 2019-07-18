@@ -87,7 +87,7 @@
             <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
               <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$i}}"
                value="{{$_list['start_time']}}_{{$_list['end_time']}}"
-               dulation="{{$_list['dulation']}}"
+               duration="{{$_list['duration']}}"
                start_time="{{$_list['start_time']}}"
                end_time="{{$_list['end_time']}}"
                lesson_place_floor="{{$_list['free_place_floor']}}"
@@ -97,7 +97,7 @@
                @if($is_first==false) checked @endif
                >
               <label class="form-check-label" for="trial_{{$i}}" title="{{$_list['review']}}">
-                {{$_list['dulation']}}
+                {{$_list['duration']}}
               </label>
             </div>
             <?php $is_first=true; ?>
@@ -115,7 +115,7 @@
                 @else
                 <i class="fa fa-times-circle mr-1"></i>
                 @endif
-                {{$_list['dulation']}}
+                {{$_list['duration']}}
               </label>
               @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
               </a>

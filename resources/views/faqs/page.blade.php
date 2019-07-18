@@ -1,5 +1,5 @@
 @section('title')
-{{__('labels.faq')}}{{__('labels.list')}}
+{{__('labels.faqs')}}{{__('labels.list')}}
 @endsection
 @extends('dashboard.common')
 @extends('faqs.menu')
@@ -29,6 +29,7 @@
 @endsection
 @section('page_footer')
 @if(isset($user) && $user->role=='manager')
+{{--
 <dt>
   <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}/edit" role="button" >
     <i class="fa fa-edit"></i>{{__('labels.edit')}}
@@ -39,5 +40,6 @@
       <i class="fa fa-times"></i>{{__('labels.delete')}}
     </a>
   </dt>
+  --}}
 @endif
 @endsection

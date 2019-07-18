@@ -38,8 +38,6 @@
 <!-- Styles -->
 <!-- link href="{{asset('css/app.css') }}" rel="stylesheet" -->
 
-<!-- Theme style -->
-<link rel="stylesheet" href="{{asset('dist/css/adminlte.css')}}">
 <!-- Ion Slider -->
 <link rel="stylesheet" href="{{asset('js/plugins/ionslider/ion.rangeSlider.css')}}">
 <!-- ion slider Nice -->
@@ -47,9 +45,15 @@
 <!-- bootstrap slider -->
 <link rel="stylesheet" href="{{asset('js/plugins/bootstrap-slider/slider.css')}}">
 
+<link rel="stylesheet" href="{{asset('js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
 
 <!-- Google Font: Source Sans Pro -->
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+<!-- Theme style -->
+<link rel="stylesheet" href="{{asset('dist/css/adminlte.css')}}">
+
+
 <!-- jQuery -->
 <script src="{{asset('js/plugins/jquery/jquery.min.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
@@ -81,6 +85,11 @@
 <script src="{{asset('js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
 <!-- Ion Slider -->
 <script src="{{asset('js/plugins/ionslider/ion.rangeSlider.min.js')}}"></script>
+<!-- CK Editor -->
+<script src="{{asset('js/plugins/ckeditor/ckeditor.js')}}"></script>
+<!-- Bootstrap WYSIHTML5 -->
+<script src="{{asset('js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
+
 <!-- AdminLTE App -->
 <script src="{{asset('dist/js/adminlte.js')}}"></script>
 

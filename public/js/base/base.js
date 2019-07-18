@@ -127,6 +127,10 @@
 		*/
 		//日付入力
 		dom.setCalenderForm(form_id);
+
+		//html入力
+		dom.setEditorForm(form_id);
+
 		//値自動調整
 		front.setInputAdjust(form_id);
 		dom.setEditForm(formData, form_id, _isUpdate);

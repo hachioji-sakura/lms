@@ -24,6 +24,11 @@
                 <a href="./{{$domain}}/{{$item->id}}" class="">
                     {{$item->name()}}
                 </a>
+                <span class="text-xs mx-2">
+                  <small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
+                    {{$item->status_name()}}
+                  </small>
+                </span>
               </div>
               {{--
               <div class="col-12 text-sm">
@@ -56,10 +61,12 @@
                 </a>
               @endif
               @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9)
+              {{--
                 <a class="btn my-1 btn-danger btn-sm " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
-                  <i class="fa fa-trash-alt mr-1"></i>
-                  {{__('labels.delete')}}
+                  <i class="fa fa-lock mr-1"></i>
+                  {{__('labels.lock')}}
                 </a>
+              --}}
               @endif
             </div>
             </div>

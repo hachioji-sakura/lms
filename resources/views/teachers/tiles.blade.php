@@ -20,31 +20,18 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @if($mode==='trial')
-      @else
       <li class="nav-item">
-        <a href="/{{$domain}}?status=0" class="nav-link @if($_status==0) active @endif">
-          <i class="fa fa-user-check nav-icon"></i>登録済み
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?status=1" class="nav-link @if($_status==1) active @endif">
-          <i class="fa fa-user-lock nav-icon"></i>仮登録
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?status=9" class="nav-link @if($_status==9) active @endif">
-          <i class="fa fa-user-times nav-icon"></i>削除済み
-        </a>
-      </li>
-      {{--
-      <li class="nav-item">
-        <a href="/{{$domain}}" class="nav-link">
+        <a href="/{{$domain}}" class="nav-link @if(!isset($_status)) active @endif">
           <i class="fa fa-users nav-icon"></i>すべて
         </a>
       </li>
-      --}}
-      @endif
+      @foreach(config('attribute.teacher_status') as $index => $name)
+      <li class="nav-item">
+        <a href="/{{$domain}}?status={{$index}}" class="nav-link @if($_status==$index) active @endif">
+          <i class="fa fa-list-alt nav-icon"></i>{{$name}}
+        </a>
+      </li>
+      @endforeach
 </ul>
 <script>
 $(function(){

@@ -10,7 +10,7 @@
 {{config('app.url')}}/trials/{{$item['id']}}/admission?key={{$access_key}}
 
 当塾のシステムにつきまして
-{{config('app.url')}}/faq
+{{config('app.url')}}/faqs
 …………………………………………………………………………………………
 @if(!empty($comment))
 {{$comment}}

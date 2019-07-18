@@ -48,7 +48,7 @@
             内容
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <textarea type="text" id="body" name="body" class="form-control" required="true"  maxlength=500
+          <textarea type="text" id="body" name="body" class="" rows=5 required="true"  maxlength=500 uitype="ckeditor"
           @if(isset($_edit) && $_edit==true)
             placeholder="(変更前) {{$item['body']}}" >{{$item['body']}}</textarea>
           @else
@@ -67,10 +67,10 @@
               <span class="input-group-text"><i class="fa fa-calendar"></i></span>
             </div>
             <input type="text" id="publiced_at" name="publiced_at" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
-            @if(isset($_edit) && $_edit==true && isset($item) && isset($item['start_time']))
-              value="{{date('Y/m/d', strtotime($item['start_time']))}}"
+            @if(isset($_edit) && $_edit==true && isset($item) && isset($item['publiced_at']))
+              value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
             @elseif(isset($item) && isset($item['publiced_at']))
-              value="{{$item['publiced_at']}}"
+              value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
             @endif
             @if(!(isset($_edit) && $_edit==true))
             minvalue="{{date('Y/m/d')}}"

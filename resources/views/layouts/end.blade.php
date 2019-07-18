@@ -42,6 +42,56 @@ $(function(){
 <script src="{{asset('js/base/translate.js')}}"></script>
 <script src="{{asset('js/base/base.js')}}"></script>
 </body>
+<script>
+$(function(){
+  //キーワード検索
+  $("#search_button").on("click", function(e){
+    var _search_word = $("input[name=search_word]").val();
+    if(!util.isEmpty(_search_word)){
+      location.href = service.setQueryParam({"search_word" : _search_word});
+    }
+    else {
+      location.href = service.setQueryParam({"search_word" : ""});
+    }
+  });
+  $("input[name='search_word']").on("keypress", function(e){
+    if(e.keyCode==13){
+      //検索入力～Enterで、検索ボタン押下
+      $("#search_button").click();
+    }
+  });
+  $("input[name='search_word']").on("focusin", function(e){
+    $(this).animate({width:"260px"},500,"easeInOutExpo");
+  });
+  $("input[name='search_word']").on("focusout", function(e){
+    $(this).animate({width:"140px"},500,"easeInOutExpo");
+  });
+  //ダイアログでサブページを開く場合、
+  $("a[page_url][page_title][page_form=dialog]").on("click", function(e){
+    console.log($(this).attr('page_title'));
+    base.showPage("dialog", "subDialog", $(this).attr("page_title"), $(this).attr("page_url"));
+  });
+  //フッターから出てくるタイプのフォーム
+  $("a[page_url][page_title][page_form='footer_form'], a.nav-link[page_url][page_title][page_form='footer_form']").on("click", function(e){
+    base.showPage("footer", "footer_form", $(this).attr("page_title"), $(this).attr("page_url"));
+  });
+  // #で始まるアンカーをクリックした場合に処理
+  $("a[href^='#'][scroll]").on("click", function(){
+    var speed = 400; // ミリ秒
+	  // アンカーの値取得
+	  var href= jQuery(this).attr("href");
+	  // 移動先を取得
+	  var target = jQuery(href == "#" || href == "" ? 'html' : href);
+	  // 移動先を数値で取得
+    var h = target.height();
+	  var position = target.offset().top - (h/2);
+	  // スムーススクロール
+	  jQuery('body,html').animate({scrollTop:position}, speed, 'swing');
+    return false;
+  });
+});
+</script>
+
 </html>
 <!-- layouts.end end-->
 @endsection
