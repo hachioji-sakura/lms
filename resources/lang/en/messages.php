@@ -79,8 +79,8 @@ return [
  'warning_unsubscribe' => "If you unsubscribe, you will not be able to log in to the system. \nIn addition, all class schedules after the unsubscribed date will be canceled automatically.",
  'confirm_unsubscribe' => "Do you want to send a unsubscribed request?",
  'confirm_unsubscribe_cancel' => "Do you want to cancel the unsubscribed request?",
- 'warning_recess' => "If you recess, you will not be able to log in to the system. \nIn addition, all class schedules after the recess date will be canceled automatically.",
- 'warning_recess2' => "If you recess, you will not be able to log in to the system. \nIn addition, all class schedules after the recess date will be canceled automatically.",
  'confirm_recess' => "Do you want to send a recess request?",
  'confirm_recess_cancel' => "Do you want to cancel your request for an recess?",
+ 'info_recess_cancel' => "The recess request has been canceled.",
+ 'info_unsubscribe_cancel' => "The unsubscribe request has been canceled.",
 ];
