@@ -21,7 +21,7 @@
     <div class="row mb-3">
       <div class="col-12">
         <p class="small text-muted">
-          {{__('messages.info_forget_password')}}
+          {!!nl2br(__('messages.info_forget_password'))!!}
         </p>
       </div>
     </div>

@@ -54,6 +54,28 @@
           </p>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=recess" class="nav-link @if($view=="ask" && $list=="recess") active @endif">
+          <i class="fa fa-pause-circle nav-icon"></i>
+          <p>
+            休会連絡
+            @if($recess_count > 0)
+            <span class="badge badge-danger right">{{$recess_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=unsubscribe" class="nav-link @if($view=="ask" && $list=="unsubscribe") active @endif">
+          <i class="fa fa-user-slash nav-icon"></i>
+          <p>
+            退会連絡
+            @if($unsubscribe_count > 0)
+            <span class="badge badge-danger right">{{$unsubscribe_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
     </ul>
   </li>
   <li class="nav-item has-treeview menu-open">

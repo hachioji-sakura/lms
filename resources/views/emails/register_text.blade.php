@@ -27,8 +27,8 @@
 {{__('labels.manual')}}
 {{config('app.url')}}/manual
 
-{{__('labels.faq')}}
-{{config('app.url')}}/faq
+{{__('labels.faqs')}}
+{{config('app.url')}}/faqs
 
 …………………………………………………………………………………………
 

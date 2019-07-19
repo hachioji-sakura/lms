@@ -639,7 +639,7 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
 
-      $_teachers = Teacher::findStatuses('0')->get();
+      $_teachers = Teacher::findStatuses(["regular"])->get();
       $teachers = [];
       $lesson = $param['item']->get_tag('lesson')->tag_value;
       foreach($_teachers as $teacher){
@@ -820,26 +820,6 @@ class UserCalendarController extends MilestoneController
           $member_user_id = $param['item']->user_id;
         }
 
-        switch($status){
-          case "confirm":
-            $param['item']->status_to_confirm($_remark, $param['user']->user_id);
-            break;
-          case "fix":
-            $param['item']->status_to_fix($_remark, $param['user']->user_id);
-            break;
-          case "cancel":
-            $param['item']->status_to_fix($_remark, $param['user']->user_id);
-            break;
-          case "rest":
-            $param['item']->status_to_rest($_remark, $param['user']->user_id);
-            break;
-          case "absence":
-            $param['item']->status_to_absence($_remark, $param['user']->user_id);
-            break;
-          case "presence":
-            $param['item']->status_to_presence($_remark, $param['user']->user_id);
-            break;
-        }
         /*
         if(!empty($param['student_id'])){
           //保護者の場合は、student_id指定がある場合
@@ -1135,7 +1115,7 @@ class UserCalendarController extends MilestoneController
           }
         }
         if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-          $param["teachers"] = Teacher::findStatuses('0')->get();
+          $param["teachers"] = Teacher::findStatuses(["regular"])->get();
           return view('teachers.select_teacher',
             [ 'error_message' => '', '_edit' => false])
             ->with($param);

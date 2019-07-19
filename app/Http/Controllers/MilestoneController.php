@@ -12,7 +12,7 @@ class MilestoneController extends UserController
 {
     public $domain = 'milestones';
     public $table = 'milestones';
-    
+
     public $list_fields = [
       'id' => [
         'label' => 'ID',
@@ -112,6 +112,26 @@ class MilestoneController extends UserController
       $_table = $this->search($request);
       return view($this->domain.'.lists', $_table)
         ->with($param);
+    }
+    public function show_fields($type){
+      $ret = [
+        'type' => [
+          'label' => '種別',
+        ],
+        'title' => [
+          'label' => 'タイトル',
+        ],
+        'body' => [
+          'label' => '内容',
+        ],
+      ];
+      if($this->is_manager_or_teacher($param['user']->role)===true){
+        //生徒以外の場合は、対象者も表示する
+        $ret['target_user_name'] = [
+          'label' => 'ユーザー',
+        ];
+      }
+      return $ret;
     }
     /**
      * 共通パラメータ取得
@@ -310,7 +330,7 @@ class MilestoneController extends UserController
     {
       $param = $this->get_param($request, $id);
 
-      $fields = $this->show_fields();
+      $fields = $this->show_fields($param['item']->type);
       /*
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
@@ -390,7 +410,7 @@ class MilestoneController extends UserController
     public function _delete(Request $request, $id)
     {
       $form = $request->all();
-      $res = $this->transaction(function() use ($request, $form){
+      $res = $this->transaction(function() use ($request, $form, $id){
         $user = $this->login_details($request);
         $items = $this->model()->where('id',$id)->delete();
         return $items;

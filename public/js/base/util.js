@@ -895,6 +895,13 @@
 			strNum = (strNum + '').replace(/,/g, '');
 			return parseFloat(strNum);
 		},
+		parseDateToString : function(dt){
+			var y = dt.getFullYear();
+		  var m = ("00" + (dt.getMonth()+1)).slice(-2);
+		  var d = ("00" + dt.getDate()).slice(-2);
+		  var result = y + "/" + m + "/" + d;
+		  return result;
+		},
 		/**
 		* カンマを含む文字列型の数値に対応した parseFloat
 		* @method parseFloat

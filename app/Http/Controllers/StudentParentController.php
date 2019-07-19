@@ -116,9 +116,8 @@ class StudentParentController extends TeacherController
   }
   private function get_students(Request $request, $parent_id){
     $students =  StudentRelation::with('student')->findParent($parent_id)
-      ->likeStudentName($request->search_word)
       ->get();
-    foreach($students as $student){
+    foreach($students as $key => $student){
       $student['current_calendar_start_time'] = $student->current_calendar()['start_time'];
       if(empty($student['current_calendar_start_time'])){
         //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする

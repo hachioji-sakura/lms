@@ -2,10 +2,10 @@
   @slot('page_message')
     @if($user->role==="manager" || $user->role==="teacher")
     <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>{{__('messages.info_proxy_contact_for_student')}}
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_proxy_contact_for_student'))!!}
     </div>
     @endif
-    {{__('messages.confirm_rest_cancel')}}
+    {!!nl2br(__('messages.confirm_rest_cancel'))!!}
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">

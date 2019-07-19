@@ -153,11 +153,11 @@ function pre_exchange_validate(){
   front.clearValidateError('add_type_form');
   if(is_exchange){
     if(course_type=="group"){
-      front.showValidateError('#add_type_form', '{{__('messages.error_group_exchange')}}');
+      front.showValidateError('#add_type_form', '{!!nl2br(__('messages.error_group_exchange'))!!}');
       return false;
     }
     if(course_type=="single" && student_count>1){
-      front.showValidateError('#add_type_form', '{{__('messages.error_single_exchange_is_one_student')}}');
+      front.showValidateError('#add_type_form', '{!!nl2br(__('messages.error_single_exchange_is_one_student'))!!}');
       return false;
     }
   }
@@ -169,7 +169,7 @@ function exchange_validate(){
     if(pre_exchange_validate()==false) return false;
     var _exchanged_calendar_id = $('select[name=exchanged_calendar_id]').val()|0;
     if(_exchanged_calendar_id > 0) return true;
-    front.showValidateError('#add_type_form', '{{__('messages.error_exchange_target')}}');
+    front.showValidateError('#add_type_form', '{!!nl2br(__('messages.error_exchange_target'))!!}');
     return false;
   }
   return true;

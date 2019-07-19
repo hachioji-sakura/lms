@@ -80,6 +80,21 @@ class StudentController extends UserController
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
+      if($this->is_manager_or_teacher($user->role)==false){
+        //講師、事務以外のアクセス制御
+        if($this->is_student($user->role)){
+          //生徒の場合自身のみアクセス可能
+          if($ret['item']->id != $user->id) abort(403);
+        }
+        else {
+          //保護者の場合、自分の子供のみアクセス可能
+          if($ret['item']->is_parent($user->id)==false) abort(403);
+        }
+        if($ret['item']->status == 'unsubscribe'){
+          //退会済み
+          abort(403);
+        }
+      }
       $lists = ['cancel', 'confirm', 'exchange', 'month'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
@@ -87,7 +102,11 @@ class StudentController extends UserController
       }
       $asks = $this->get_ask([], $ret['item']->user_id);
       $ret['ask_count'] = $asks["count"];
-
+    }
+    else {
+      if(!$this->is_manager_or_teacher($user->role)){
+        abort(403);
+      }
     }
     return $ret;
   }
@@ -141,10 +160,7 @@ class StudentController extends UserController
     }
     //ステータス
     if(isset($request->status)){
-      $items = $items->findStatuses($request->status);
-    }
-    else {
-      $items = $items->findStatuses(0);
+      $items = $items->findStatuses(explode(',', $request->status.','));
     }
     return $items;
   }
@@ -249,6 +265,76 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
   }
+  public function unsubscribe(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+   $already_data = Ask::already_data('unsubscribe', [
+     'status' => 'commit',
+     'target_model' => $this->domain,
+     'target_model_id' => $param['item']->id,
+     'target_user_id' => $param['user']->user_id,
+   ]);
+   $param['already_data'] = $already_data;
+   $recess_data = Ask::already_data('recess', [
+     'status' => 'commit',
+     'target_model' => $this->domain,
+     'target_model_id' => $param['item']->id,
+     'target_user_id' => $param['user']->user_id,
+   ]);
+   $param['recess_data'] = $recess_data;
+   return view('asks.unsubscribe', [
+   ])->with($param);
+  }
+  public function recess(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   $already_data = Ask::already_data('recess', [
+     'status' => 'commit',
+     'target_model' => $this->domain,
+     'target_model_id' => $param['item']->id,
+     'target_user_id' => $param['user']->user_id,
+   ]);
+   $param['already_data'] = $already_data;
+   $unsubscribe_data = Ask::already_data('unsubscribe', [
+     'status' => 'commit',
+     'target_model' => $this->domain,
+     'target_model_id' => $param['item']->id,
+     'target_user_id' => $param['user']->user_id,
+   ]);
+   $param['unsubscribe_data'] = $unsubscribe_data;
+   return view('asks.recess', [
+   ])->with($param);
+  }
+  public function resume(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   return view('asks.resume', [
+   ])->with($param);
+  }
+
   /**
    * 詳細画面表示
    *
@@ -296,7 +382,6 @@ class StudentController extends UserController
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
-   $list_title = '授業予定';
    //status: new > confirm > fix >rest, presence , absence
    //other status : cancel
 
@@ -350,11 +435,9 @@ class StudentController extends UserController
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
-   $list_title = '授業予定';
 
    $view = "ask";
    $asks = $this->get_ask($request->all(), $item->user_id);
-   $param['list_title'] = $asks["title"];
    $page_data = $this->get_pagedata($asks["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
@@ -486,19 +569,29 @@ class StudentController extends UserController
    return ["data" => $calendars, "count" => $count];
  }
  public function get_ask($form, $user_id){
-   $list_title = "依頼一覧";
    if(!isset($form['list'])) $form['list'] = '';
+   $default_sttus = 'new';
    switch($form['list']){
      case "teacher_change":
-       $list_title = '代講依頼一覧';
        if(!isset($form['search_type'])){
          $form['search_type'] = ['teacher_change'];
        }
        break;
      case "lecture_cancel":
-       $list_title = '休講依頼一覧';
        if(!isset($form['search_type'])){
          $form['search_type'] = ['lecture_cancel'];
+       }
+       break;
+     case "unsubscribe":
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['unsubscribe'];
+         $default_sttus = 'commit';
+       }
+       break;
+     case "recess":
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['recess'];
+         $default_sttus = 'commit';
        }
        break;
    }
@@ -507,7 +600,7 @@ class StudentController extends UserController
      $form['search_type'] = [];
    }
    if(!isset($form['search_status'])){
-     $form['search_status'] = ['new'];
+     $form['search_status'] = [$default_sttus];
    }
    $form['_sort'] ='end_date';
 
@@ -538,7 +631,7 @@ class StudentController extends UserController
    }
    //echo $asks->toSql();
    $asks = $asks->get();
-   return ["data" => $asks, "count" => $count, "title" => $list_title];
+   return ["data" => $asks, "count" => $count];
  }
 
  /**

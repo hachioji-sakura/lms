@@ -112,7 +112,7 @@
       @endif
       @if($user->role==="parent")
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.recess_or_unsubscribe')}}">
+        <a class="nav-link" href="/{{$domain}}/{{$item->id}}/unsubscribe">
           <i class="fa fa-tags nav-icon"></i>{{__('labels.recess_or_unsubscribe')}}
         </a>
       </li>

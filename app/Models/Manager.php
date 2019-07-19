@@ -49,6 +49,7 @@ class Manager extends Teacher
         'kana_first' => '',
         'user_id' => $user->id,
         'create_user_id' => $user->id,
+        'status' => 'trial',
       ]);
     }
     UserTag::setTag($user->id,'manager_no',$manager_no,$user->id);

@@ -15,10 +15,6 @@
             <i class="fa fa-users mr-1"></i>
             登録生徒
           </h3>
-          <div class="card-tools">
-            @component('components.search_word', ['search_word' => $search_word])
-            @endcomponent
-          </div>
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
@@ -28,14 +24,23 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-6 text-center">
+                  @if($charge_student->student->status!='unsubscribe')
                   <a alt="student_name" href="/students/{{$charge_student->student->id}}">
+                  @endif
                     <img src="{{$charge_student->student->user->details()->icon}}" class="img-circle mw-64px w-50">
                     <br>
                     <ruby style="ruby-overhang: none">
                       <rb>{{$charge_student->student->name()}}</rb>
                       <rt>{{$charge_student->student->kana()}}</rt>
                     </ruby>
+                  @if($charge_student->student->status!='unsubscribe')
                   </a>
+                  @endif
+                  <span class="text-xs mx-2">
+                    <small class="badge badge-{{config('status_style')[$charge_student->student->status]}} mt-1 mr-1">
+                      {{$charge_student->student->status_name()}}
+                    </small>
+                  </span>
                 </div>
                 <div class="col-6 text-sm">
                   @if(!empty($charge_student->current_calendar()))

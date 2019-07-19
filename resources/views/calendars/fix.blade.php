@@ -1,7 +1,7 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
   @if($user->role=="parent" || $user->role=="student")
-    {{__('messages.confirm_calendar_fix')}}
+    {!!nl2br(__('messages.confirm_calendar_fix'))!!}
   @endif
   @if($user->role==="manager" || $user->role==="teacher")
   <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">

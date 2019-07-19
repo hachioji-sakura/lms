@@ -17,6 +17,10 @@
               {{__('labels.ask_lecture_cancel')}}
             @elseif($list=="teacher_change")
               {{__('labels.ask_teacher_change')}}
+            @elseif($list=="unsubscribe")
+              {{__('labels.ask_unsubscribe')}}
+            @elseif($list=="recess")
+              {{__('labels.ask_recess')}}
             @else
               {{__('labels.ask_list')}}
             @endif
@@ -58,9 +62,19 @@
                 <div class="col-6 mt-1 text-sm">
                   {{__('labels.charge_user')}}： {{$ask["charge_user_name"]}}
                 </div>
+                @if($ask->type=='recess')
+                <div class="col-6 mt-1 text-sm">
+                  {{__('labels.recess')}}{{__('labels.duration')}}：{{$ask["duration"]}}
+                </div>
+                @elseif($ask->type=='unsubscribe')
+                <div class="col-6 mt-1 text-sm">
+                  {{__('labels.unsubscribe')}}{{__('labels.day')}}：{{$ask["start_date"]}}
+                </div>
+                @else
                 <div class="col-6 mt-1 text-sm">
                   {{__('labels.limit')}}：{{$ask["end_dateweek"]}}
                 </div>
+                @endif
                 <div class="col-12 text-sm mt-1 text-right">
                   @component('teachers.forms.ask_button', ['teacher'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
                   @endcomponent

@@ -1,5 +1,7 @@
 @include('layouts.start')
 @include('layouts.end')
+@include('layouts.modal')
+@include('layouts.message')
 @yield('start')
 
 <body class="hold-transition login-page">
@@ -19,6 +21,11 @@
 		</div>
 		<div class="card-body login-card-body">
       @yield('content')
+
+			@yield('modal')
+
+			@yield('message')
+
 		</div>
   </div>
 </div>

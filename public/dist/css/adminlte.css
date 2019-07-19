@@ -13451,3 +13451,9 @@ span.select2-container--open{
 .row.calendar_rest {
 	background-color:#CCC;
 }
+ul.wysihtml5-toolbar{
+	display:none;
+}
+.ck-editor__editable_inline {
+    min-height: 240px;
+}

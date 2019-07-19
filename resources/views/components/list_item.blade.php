@@ -4,11 +4,11 @@
     @if($key==="buttons")
       @foreach($field["button"] as $button)
         @if($button==="edit")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}編集" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
+        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
           <i class="fa fa-edit"></i>
         </a>
         @elseif($button==="delete")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}削除" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
+        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
           <i class="fa fa-times"></i>
         </a>
         @elseif(isset($button['method']))

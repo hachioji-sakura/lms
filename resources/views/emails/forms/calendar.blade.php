@@ -4,6 +4,9 @@ $item = $item->details(1);
 ■{{$item->teaching_name()}}
 {{__('labels.datetime')}}：{{$item['datetime']}}
 {{__('labels.place')}}：{{$item['place_floor_name']}}
+@if($send_to!=='student')
+({{__('labels.status')}}：{{$item->status_name()}})
+@endif
 --------------------------------------------
 （{{__('labels.details')}}）
 {{__('labels.teachers')}}：{{$item['teacher_name']}}
@@ -11,12 +14,12 @@ $item = $item->details(1);
 {{__('labels.lesson_type')}}：{{$item['course']}}
 {{__('labels.subject')}}：{{implode(',', $item['subject'])}}
 @if($send_to!=='student')
-{{__('labels.students')}}：
-@foreach($item->members as $member)
-@if($member->user->details('students')->role=="student")
-{{$member->user->details('students')["name"]}}({{$member->status_name()}})
-@endif
-@endforeach
+  {{__('labels.students')}}：
+  @foreach($item->members as $member)
+    @if($member->user->details('students')->role=="student")
+    {{$member->user->details('students')["name"]}}({{$member->status_name()}})
+    @endif
+  @endforeach
 @endif
 
 --------------------------------------------

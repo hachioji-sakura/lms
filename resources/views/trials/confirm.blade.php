@@ -112,7 +112,7 @@ $(function(){
       var _teacher_schedule = $('input[name=teacher_schedule]:checked');
       form_data["teacher_id"] = _teacher_schedule.attr('teacher_id');
       form_data['teacher_name'] = _teacher_schedule.attr('teacher_name');
-      form_data["dulation"] = _teacher_schedule.attr('dulation');
+      form_data["duration"] = _teacher_schedule.attr('duration');
       form_data["start_time"] = _teacher_schedule.attr('start_time');
       form_data["end_time"] = _teacher_schedule.attr('end_time');
     }

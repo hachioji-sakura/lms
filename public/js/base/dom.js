@@ -19,6 +19,7 @@
 		setBarcodeForm : setBarcodeForm,
 		setPostnoForm : setPostnoForm,
 		setCalenderForm : setCalenderForm,
+		setEditorForm : setEditorForm,
 		setNumberForm : setNumberForm,
 		paramPageLoad : paramPageLoad,
 		confirmMessage : confirmMessage,
@@ -374,9 +375,34 @@
 					if(dateparam.length==3) option["defaultDate"] = util.nowDate(dateparam[0],dateparam[1],dateparam[2]);
 				}
 			}
+
 			$(this).datepicker(option);
+			if(!util.isEmpty(min)){
+				if(util.isDate(min)) {
+					$(this).datepicker("setDate", min);
+				}
+			}
+			$(this).attr('autocomplete', 'off');
 			if(util.isEmpty(inputtype)) $(this).attr("inputtype", "date");
 			if(util.isDate(val)) $(this).val(val);
+		});
+	};
+	function setEditorForm(formId){
+		$("textarea[uitype=ckeditor]", $("#"+formId)).each(function(){
+			ClassicEditor
+	      .create(this)
+	      .then(function (editor) {
+	        // The editor instance
+					console.log(editor);
+	      })
+	      .catch(function (error) {
+	        console.error(error)
+	      })
+
+	    // bootstrap WYSIHTML5 - text editor
+	    $(this).wysihtml5({
+	      toolbar: { fa: true }
+	    })
 		});
 	};
 

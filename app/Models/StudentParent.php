@@ -63,6 +63,7 @@ class StudentParent extends Teacher
         'kana_first' => '',
         'user_id' => $parent_user->id,
         'create_user_id' => 1,
+        'status' => 'trial',
       ]);
     }
     return $parent;

@@ -5,7 +5,10 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Student;
+use App\Models\StudentRelation;
 use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\UserTag;
@@ -276,4 +279,35 @@ EOT;
       if($this->has_tag('english_teacher', 'foreigner')) return "en";
       return "ja";
     }
+    public function send_mail($title, $param, $type, $template){
+      $param['user'] = $this->details();
+      $controller = new Controller;
+      $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
+      return $res;
+    }
+    public function get_mail_address(){
+      \Log::info("-----------------get_mail_address------------------");
+      $u = $this->details();
+      $email = '';
+      \Log::info($u->role);
+      if($u->role==='student'){
+        $student_id = $this->student->id;
+        $relations = StudentRelation::where('student_id', $student_id)->get();
+        foreach($relations as $relation){
+          //TODO 先にとれたユーザーを操作する親にする（修正したい）
+          $user_id = $relation->parent->user->id;
+          $email = $relation->parent->user->email;
+          \Log::info("relation=".$user_id.":".$email);
+          //TODO 安全策をとるテスト用メールにする
+          //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
+          break;
+        }
+      }
+      else {
+        $email = $u->email;
+      }
+      \Log::info("-----------------get_mail_address[$email]------------------");
+      return $email;
+    }
+
 }

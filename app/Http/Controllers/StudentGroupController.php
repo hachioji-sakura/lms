@@ -258,7 +258,7 @@ class StudentGroupController  extends MilestoneController
         $param['teachers'][] = $param['user'];
       }
       else if($param['user']->role==="manager"){
-        $teachers = Teacher::findStatuses("0,1");
+        $teachers = Teacher::findStatuses(["unsubscribe"], true);
         if($param['teacher_id'] > 0){
           $teachers = $teachers->where('id', $param['teacher_id']);
         }

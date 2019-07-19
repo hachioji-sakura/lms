@@ -1,3 +1,4 @@
+<div id="password_setting">
 <form method="POST" action="/password">
     @csrf
     <div class="row">
@@ -22,7 +23,7 @@
     </div>
     <div class="row">
       <div class="col-12">
-          <button type="button" class="btn btn-submit btn-primary btn-block">
+          <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="password_setting">
               設定する
           </button>
           @if(isset($error_message))
@@ -35,3 +36,4 @@
     </div>
   </div>
 </form>
+</div>

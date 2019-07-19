@@ -51,10 +51,8 @@ class UserCalendarMember extends Model
     }
     return false;
   }
-  public function status_update($status, $remark, $login_user_id){
+  public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
     $is_update = false;
-    $is_send_mail = false; //このユーザーにメールを送信
-    $is_send_teacher_mail = false; //担当講師にメールを送信
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
     if(!isset($login_user)){
@@ -63,55 +61,69 @@ class UserCalendarMember extends Model
     switch($status){
       case "remind":
         if($this->status=='new'){
-          $is_send_teacher_mail = true;
+          $is_send_mail = false;
         }
         else if($this->status=='confirm'){
-          $is_send_teacher_mail = true;
-          $is_send_mail = true;
         }
         break;
       case "confirm":
         if($this->status=='new' || $this->status=='confirm'){
           $is_update = true;
-          $is_send_mail = true;
+          $is_send_teacher_mail = false;
         }
         break;
       case "fix":
-        if($this->status=='confirm'){
+        if($this->status=='confirm' || $this->status=='cancel'){
           $is_update = true;
-          $is_send_teacher_mail = true;
-          $is_send_mail = true;
         }
         break;
       case "cancel":
-        if($this->status=='confirm'){
+        if($this->status=='confirm' || $this->status=='fix'){
           $is_update = true;
-          $is_send_teacher_mail = true;
-          $is_send_mail = true;
         }
         break;
       case "rest":
         if($this->status=='fix'){
           $is_update = true;
-          $is_send_teacher_mail = true;
-          $is_send_mail = true;
         }
         break;
       case "presence":
         if($this->status=='fix'){
           $is_update = true;
+          $is_send_mail = false;
+          $is_send_teacher_mail = false;
         }
         break;
       case "absence":
         if($this->status=='fix'){
           $is_update = true;
-          $is_send_mail = true;
+          $is_send_teacher_mail = false;
         }
         break;
     }
     if($is_update){
       $this->update($update_form);
       $res = $this->_office_system_api('PUT');
+      switch($status){
+        case "confirm":
+          $this->calendar->status_to_confirm($remark, $this->user_id);
+          break;
+        case "fix":
+          $this->calendar->status_to_fix($remark, $this->user_id);
+          break;
+        case "cancel":
+          $this->calendar->status_to_cancel($remark, $this->user_id);
+          break;
+        case "rest":
+          $this->calendar->status_to_rest($remark, $this->user_id);
+          break;
+        case "absence":
+          $this->calendar->status_to_absence($remark, $this->user_id);
+          break;
+        case "presence":
+          $this->calendar->status_to_presence($remark, $this->user_id);
+          break;
+      }
     }
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -129,11 +141,13 @@ class UserCalendarMember extends Model
     }
     if($is_send_mail){
       //このユーザーにメール送信
-      $this->send_mail($title, $param, $type, $template);
+      $this->user->send_mail($title, $param, $type, $template);
     }
     if($is_send_teacher_mail){
       //担当講師にメール送信
-      $this->calendar->teacher_mail($title, $param, $type, $template);
+      if(!($is_send_mail && $this->calendar->user_id == $this->user_id)){
+        $this->calendar->teacher_mail($title, $param, $type, $template);
+      }
     }
   }
   public function status_name(){
@@ -425,36 +439,6 @@ class UserCalendarMember extends Model
     $controller = new Controller;
     $res = $controller->create_token($limit_second);
     return $res;
-  }
-  public function send_mail($title, $param, $type, $template){
-    $param['user'] = $this->user->details();
-    $controller = new Controller;
-    $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->user->get_locale());
-    return $res;
-  }
-  private function get_mail_address(){
-    \Log::info("-----------------get_mail_address------------------");
-    $u = $this->user->details();
-    $email = '';
-    \Log::info($u->role);
-    if($u->role==='student'){
-      $student_id = $this->user->student->id;
-      $relations = StudentRelation::where('student_id', $student_id)->get();
-      foreach($relations as $relation){
-        //TODO 先にとれたユーザーを操作する親にする（修正したい）
-        $user_id = $relation->parent->user->id;
-        $email = $relation->parent->user->email;
-        \Log::info("relation=".$user_id.":".$email);
-        //TODO 安全策をとるテスト用メールにする
-        //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
-        break;
-      }
-    }
-    else {
-      $email = $u->email;
-    }
-    \Log::info("-----------------get_mail_address[$email]------------------");
-    return $email;
   }
   protected function send_slack($message, $msg_type, $username=null, $channel=null) {
     $controller = new Controller;

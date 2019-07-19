@@ -2,9 +2,9 @@
   @slot('page_message')
     @if(isset($user) && $user->role==="teacher")
     @elseif(isset($user) && $user->role==="manager")
-    {{__('messages.confirm_calendar_confirm_for_teacher')}}
+    {!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
     @else
-    {{__('messages.info_calendar_confirm')}}
+    {!!nl2br(__('messages.info_calendar_confirm'))!!}
     @endif
   @endslot
   @slot('forms')

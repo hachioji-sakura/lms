@@ -389,7 +389,7 @@ EOT;
         $english_talk_lesson[] = $tag->tag_value;
       }
     }
-    $teachers = Teacher::findStatuses('0');
+    $teachers = Teacher::findStatuses(["regular"]);
     if($lesson > 0){
       $teachers = $teachers->hasTag('lesson', $lesson);
       if($lesson===1){
@@ -598,7 +598,7 @@ EOT;
       if(strtotime($_end) > strtotime($trial_end_time)){
         break;
       }
-      $_dulation = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
+      $_duration = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
       foreach($this->get_calendar() as $calendar){
         if($calendar->is_conflict($_start, $_end)){
@@ -606,7 +606,7 @@ EOT;
           break;
         }
       }
-      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'dulation' => $_dulation];
+      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'duration' => $_duration];
       $_start = date("Y-m-d H:i:s", strtotime("+10 minute ".$_start));
     }
     return $time_list;
@@ -642,7 +642,7 @@ EOT;
             }
           }
           if($_time_list[$i]['is_time_conflict']===false && $_time_list[$i]['is_place_conflict']===false){
-            //echo "競合チェック：pass:[".$_time_list[$i]["dulation"]."][".$tag->tag_value."][".$now_calendar->place."]";
+            //echo "競合チェック：pass:[".$_time_list[$i]["duration"]."][".$tag->tag_value."][".$now_calendar->place."]";
             $_free_place = "";
             $is_place_conflict = true;
             foreach($this->get_tags('lesson_place') as $tag){

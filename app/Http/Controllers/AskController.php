@@ -15,30 +15,33 @@ class AskController extends MilestoneController
   public $status_update_message = [
           'new' => '新規依頼を登録しました。',
           'commit' => '依頼を承認しました。',
-          'cancel' => '依頼を差戻しました。',
+          'cancel' => '依頼を取り消しました。',
         ];
-  public $list_fields = [
-    'end_dateweek' => [
-      'label' => __('labels.limit'),
-    ],
-    'type_name' => [
-      'label' => __('labels.ask_type'),
-      'link' => 'show',
-    ],
-    'status_name' => [
-      'label' => __('labels.status'),
-    ],
-    'target_user_name' => [
-      'label' => __('labels.target_user'),
-    ],
-    'charge_user_name' => [
-      'label' => __('labels.charge_user'),
-    ],
-  ];
   public function model(){
     return Ask::query();
   }
-  public function show_fields(){
+  public function list_fields(){
+    $ret = [
+      'end_dateweek' => [
+        'label' => __('labels.limit'),
+      ],
+      'type_name' => [
+        'label' => __('labels.ask_type'),
+        'link' => 'show',
+      ],
+      'status_name' => [
+        'label' => __('labels.status'),
+      ],
+      'target_user_name' => [
+        'label' => __('labels.target_user'),
+      ],
+      'charge_user_name' => [
+        'label' => __('labels.charge_user'),
+      ],
+    ];
+    return $ret;
+  }
+  public function show_fields($type){
     $ret = [
       'type_name' => [
         'label' => __('labels.asks'),
@@ -48,9 +51,24 @@ class AskController extends MilestoneController
         'label' => __('labels.status'),
         'size' => 6,
       ],
-      'end_dateweek' => [
-        'label' => __('labels.limit'),
-      ],
+    ];
+    switch($type){
+      case 'recess':
+        $ret['duration'] = [
+         'label' => __('labels.recess').__('labels.duration'),
+        ];
+        break;
+      case 'unsubscribe':
+        $ret['start_date'] = [
+         'label' => __('labels.unsubscribe').__('labels.day'),
+       ];
+       break;
+      default:
+        $ret['end_dateweek'] = [
+         'label' => __('labels.limit'),
+       ];
+    }
+    $ret2 =[
       'charge_user_name' => [
         'label' => __('labels.charge_user'),
         'size' => 6,
@@ -63,6 +81,7 @@ class AskController extends MilestoneController
         'label' => __('labels.remark'),
       ],
     ];
+    $ret = array_merge($ret, $ret2);
     return $ret;
   }
   public function get_param(Request $request, $id=null){
@@ -145,7 +164,7 @@ class AskController extends MilestoneController
     $param = $this->get_param($request, $id);
 
     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-    $param['fields'] = $this->show_fields($param['item']->work);
+    $param['fields'] = $this->show_fields($param['item']->type);
     $param['action'] = '';
     return view($this->domain.'.'.$status, [])->with($param);
   }
@@ -219,8 +238,52 @@ class AskController extends MilestoneController
     }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
+  public function save_validate(Request $request)
+  {
+    $form = $request->all();
+    $param = $this->get_param($request);
+
+    switch($form['target_model']){
+      case "students":
+        //対象＝生徒への更新の場合、対象者＝保護者
+        if($this->is_parent($param['user']->role)==false){
+          $this->forbidden('この依頼は登録できません');
+        }
+        $target_model = Student::where('id',  $form['target_model_id'])->first();
+        if(!isset($target_model)){
+          $this->notfoubd('この依頼の対象者がみつかりません');
+        }
+        if($target_model->is_parent($param['user']->id)==false){
+          $this->forbidden('この依頼は登録できません');
+        }
+        break;
+      //対象＝事務 or 講師への更新の場合、対象者＝本人
+      case "managers":
+      case "teachers":
+        $target_model = null;
+        if($form['target_model']=='teachers'){
+          $target_model = Teacher::where('id',  $form['target_model_id'])->first();
+        }
+        else {
+          $target_model = Manager::where('id',  $form['target_model_id'])->first();
+        }
+        if(!isset($target_model)){
+          $this->notfoubd('この依頼の対象者がみつかりません');
+        }
+        if($target_model->user_id != $param['user']->user_id){
+          $this->forbidden('この依頼は登録できません');
+        }
+        break;
+    }
+    return $this->api_response(200, '', '');
+  }
   public function _store(Request $request)
   {
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+
     $res = $this->transaction(function() use ($request){
       $form = $request->all();
       $param = $this->get_param($request);
@@ -234,13 +297,89 @@ class AskController extends MilestoneController
     }
     return $res;
    }
+   public function destroy(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+
+     $res = $this->_delete($request, $id);
+     //生徒詳細からもCALLされる
+     return $this->save_redirect($res, $param, '依頼を取り消しました');
+   }
+
+   public function _delete(Request $request, $id)
+   {
+     $form = $request->all();
+     $res = $this->transaction(function() use ($request, $form, $id){
+       $item = $this->model()->where('id',$id)->first();
+       $item->dispose();
+       return $item;
+     }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
+   }
    public function teacher_chagne_page(Request $request, $id)
    {
      $param = $this->get_param($request, $id);
 
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-     $param['fields'] = $this->show_fields($param['item']->work);
+     $param['fields'] = $this->show_fields($param['item']->type);
      $param['action'] = '';
      return view('calendars.teacher_change', [])->with($param);
    }
+   public function daily_proc(Request $request, $d='')
+   {
+     set_time_limit(600);
+
+     if(empty($d)) $d = date('Y-m-d');
+     $res = $this->transaction(function() use ($request, $d){
+       $result = ['asks'=>[], 'recess'=>[],'unsubscribe'=>[]];
+       //退会・休会の処理
+       $asks = Ask::where('status', 'commit')->findTypes(['recess', 'unsubscribe'])
+         ->where('start_date', $d)
+         ->get();
+       foreach($asks as $ask){
+         $target_model_data = $ask->get_target_model_data();
+         if($target_model_data==null) continue;
+         $result['asks'][] = $ask;
+         if($ask->type=="recess"){
+           $ret = $target_model_data->recess();
+         }
+         else if($ask->type=="unsubscribe"){
+           $ret = $target_model_data->unsubscribe();
+         }
+         if($ret!=null){
+           if(isset($ret['user_calendar_members'])){
+             $target_model_data['user_calendar_members'] = $ret['user_calendar_members'];
+           }
+           $result[$ask->type][] = $target_model_data;
+           if($ask->type=="unsubscribe"){
+             $ask->complete();
+           }
+         }
+       }
+       //休会再開の処理（終了日が昨日）
+       $d = date("Y-m-d",strtotime("-1 day ".$d));
+
+       $asks = Ask::where('status', 'commit')->findTypes(['recess'])
+         ->where('end_date', $d)
+         ->get();
+       foreach($asks as $ask){
+         $target_model_data = $ask->get_target_model_data();
+         if($target_model_data==null) continue;
+         $result['asks'][] = $ask;
+         $ret = $target_model_data->recess_cancel();
+         if($ret!=null){
+           if(isset($ret['user_calendar_members'])){
+             $target_model_data['user_calendar_members'] = $ret['user_calendar_members'];
+           }
+           if(isset($ret['conflict_calendar_members'])){
+             $target_model_data['conflict_calendar_members'] = $ret['conflict_calendar_members'];
+           }
+           $result[$ask->type][] = $target_model_data;
+           $ask->complete();
+         }
+       }
+       return $result;
+     }, 'daily_proc', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+  }
 }

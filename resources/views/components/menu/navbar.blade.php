@@ -1,3 +1,4 @@
+@if(isset($user))
 <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
 <!-- Left navbar links -->
 <ul class="navbar-nav">
@@ -151,6 +152,9 @@
       <a href="javascript:void(0);" class="dropdown-item"  page_title="{{__('labels.password_setting')}}" page_form="dialog" page_url="/password" >
         <i class="fa fa-lock mr-2"></i>{{__('labels.password_setting')}}
       </a>
+      <a href="/faqs" class="dropdown-item" >
+        <i class="fa fa-question-circle mr-2"></i>{{__('labels.faqs')}}
+      </a>
       @if(app()->getLocale()=='en')
       <a href="/home?locale=ja" class="dropdown-item" >
         <i class="fa fa-exchange-alt mr-2"></i>日本語
@@ -168,3 +172,4 @@
   </li>
 </ul>
 </nav>
+@endif
