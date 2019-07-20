@@ -7,6 +7,7 @@ use App\Models\StudentRelation;
 use App\Models\StudentParent;
 use App\Models\Student;
 use App\Models\UserCalendarSetting;
+use App\Models\Ask;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -695,6 +696,24 @@ EOT;
 
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
+  }
+  public function already_recess_data($login_user_id){
+    $already_data = Ask::already_data('recess', [
+      'status' => 'commit',
+      'target_model' => str_replace('common.', '',$this->table),
+      'target_model_id' => $this->id,
+      'target_user_id' => $login_user_id,
+    ]);
+    return $already_data;
+  }
+  public function already_unsubscribe_data($login_user_id){
+    $already_data = Ask::already_data('unsubscribe', [
+      'status' => 'commit',
+      'target_model' => str_replace('common.', '',$this->table),
+      'target_model_id' => $this->id,
+      'target_user_id' => $login_user_id,
+    ]);
+    return $already_data;
   }
   public function unsubscribe(){
     if($this->status!='regular') return null;

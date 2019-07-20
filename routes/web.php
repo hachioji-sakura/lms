@@ -48,7 +48,6 @@ Route::resource('milestones','MilestoneController');
 Route::get('comments/{id}/publiced','CommentController@publiced_page');
 Route::put('comments/{id}/publiced','CommentController@publiced');
 Route::resource('comments','CommentController');
-Route::resource('parents','StudentParentController');
 
 Route::resource('calendar_settings','UserCalendarSettingController');
 Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
@@ -167,6 +166,10 @@ Route::get('managers/{id}/unsubscribe','ManagerController@unsubscribe');
 Route::get('managers/{id}/recess','ManagerController@recess');
 Route::get('managers/{id}/resume','ManagerController@resume');
 
+Route::get('parents/{id}/unsubscribe','StudentParentController@unsubscribe');
+Route::get('parents/{id}/recess','StudentParentController@recess');
+
+
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('managers/{id}/ask','ManagerController@ask');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
@@ -198,6 +201,8 @@ Route::resource('asks','AskController');
 Route::resource('faqs','FaqController');
 Route::get('faqs/{id}/page','FaqController@page');
 Route::get('home', 'HomeController@index')->name('home');
+Route::get('recess', 'HomeController@recess');
+Route::get('unsubscribe', 'HomeController@unsubscribe');
 
 //教科書を選択する画面
 Route::get('examinations', 'TextbookController@examination_textbook');
@@ -208,9 +213,3 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
-
-
-// 送信メール本文のプレビュー
-Route::get('sample/mailable/preview', function () {
-  return new App\Mail\SampleNotification();
-});

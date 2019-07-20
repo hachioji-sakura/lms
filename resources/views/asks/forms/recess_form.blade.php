@@ -6,7 +6,7 @@
 <div class="row mb-3">
   <div class="col-12 mb-2">
     <label for="name" class="w-100">
-      {{__('labels.'.$domain)}}{{__('labels.name')}}
+      {{__('labels.students')}}{{__('labels.name')}}
     </label>
     <span class="ml-3">
       {{$item->name()}}
