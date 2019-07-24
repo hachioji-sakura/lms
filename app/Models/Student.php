@@ -32,6 +32,7 @@ class Student extends Model
   public function age(){
     return floor((date("Ymd") - str_replace("-", "", $this->birth_day))/10000);
   }
+
   /**
    *　プロパティ：氏名
    */
@@ -206,6 +207,12 @@ class Student extends Model
    */
   public function chargeStudents(){
     return $this->hasMany('App\Models\ChargeStudent', 'student_id');
+  }
+  /**
+   *　リレーション：受講料データ
+   */
+  public function tuitions(){
+    return $this->hasMany('App\Models\Tution', 'student_id');
   }
   /**
    *　リレーション：家族関係
@@ -409,6 +416,19 @@ EOT;
 	    }
     }
     return $this;
+  }
+  public function is_juken(){
+    //事務システムから渡された受験生かどうか
+    if($this->user->has_tag('student_type', 'juken')) return true;
+    //中３、高３の場合
+    if($this->user->has_tag('grade', 'j3')) return true;
+    if($this->user->has_tag('grade', 'h3')) return true;
+    $subjects = $this->get_charge_subject();
+    foreach($subjects as $key => $subject){
+      //受験希望科目がある
+      if($subject > 1) return true;
+    }
+    return false;
   }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();
@@ -792,4 +812,52 @@ EOT;
     $this->user->send_mail('休会終了のお知らせ', $param, 'text', 'recess_end');
     return ['user_calendar_members' => $user_calendar_members, 'conflict_calendar_members' => $conflict_calendar_members];
   }
+  /**
+   *　プロパティ：標準学年（年齢から算出）
+   * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
+   */
+  public function default_grade(){
+    $birth = date('Ymd', strtotime($this->birth_day));
+    //今日の日付を取得
+    $now = date('Ymd');
+
+    //各月日を求める
+    $b_y = substr($birth, 0, 4);
+    $b_m = substr($birth, 4, 4);
+    $n_y = substr($now, 0, 4);
+    $n_m = substr($now, 4, 4);
+    if ($n_m < 400) { //前学期
+      $m = 6;
+    } else { //新学期
+      $m = 5;
+    }
+
+    if($b_m < 402) { //早生まれ
+      $n_y++;
+    }
+    //学年の計算
+    $grade = $n_y - $b_y - $m;
+
+    //結果を返す
+    if($grade < 1){
+      return 'toddler';
+    }
+    else if($grade>=1 && $grade<=6){
+      return 'e'.$grade;
+    }
+    else if($grade>=7 && $grade<=9){
+      return 'j'.($grade-7);
+    }
+    else if($grade>=10 && $grade<=12){
+      return 'h'.($grade-10);
+    }
+    else if($grade>=13 && $grade<=16){
+      return 'university';
+    }
+    else if($grade>17){
+      return 'adult';
+    }
+    return '';
+  }
+
 }

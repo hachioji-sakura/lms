@@ -1,7 +1,7 @@
 @if(count($item["calendars"])>0)
   @foreach($item["calendars"] as $calendar)
     <div class="row border-bottom">
-      <div class="col-sm-6 border-right">
+      <div class="col-sm-9 border-right">
         <div class="description-block">
           <h5 class="description-header">概要</h5>
           <span class="description-text mr-2">
@@ -53,6 +53,7 @@
           </span>
         </div>
       </div>
+      {{--
       <div class="col-sm-3 border-left">
         <div class="description-block">
           <h5 class="description-header">操作</h5>
@@ -66,6 +67,7 @@
           </span>
         </div>
       </div>
+      --}}
     </div>
   @endforeach
 @else

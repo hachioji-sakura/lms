@@ -70,5 +70,5 @@
   @endforeach
 @else
   <i class="fa fa-exclamation-triangle mr-1"></i>
-  授業予定が登録されていません
+  通常授業設定が登録されていません
 @endif

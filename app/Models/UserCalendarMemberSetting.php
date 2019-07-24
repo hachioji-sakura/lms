@@ -27,7 +27,10 @@ class UserCalendarMemberSetting extends UserCalendarMember
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
-
+  public function dispose(){
+    $this->delete();
+    $this->office_system_api('DELETE');
+  }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;
     if($this->setting_id_org == 0 && $method=="DELETE") return null;;

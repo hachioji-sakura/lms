@@ -23,7 +23,7 @@ class StudentGroupController  extends MilestoneController
   public function model(){
     return StudentGroup::query();
   }
-  public function show_fields(){
+  public function show_fields($type){
     $ret = [
       'title' => [
         'label' => 'グループ名',
@@ -354,7 +354,7 @@ class StudentGroupController  extends MilestoneController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields();
+      $param['fields'] = $this->show_fields($param['item']->type);
       return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])->with($param);

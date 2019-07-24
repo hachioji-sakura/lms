@@ -202,6 +202,7 @@ return [
   'events' => 'イベント',
   'parents' => '契約者',
   'calendars' => 'カレンダー',
+  'calendar_settings' => 'カレンダー設定',
   'calendar_members' => 'カレンダー・参加者',
   'users' => 'ユーザー',
   'ask_list' => '依頼一覧',

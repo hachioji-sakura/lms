@@ -109,11 +109,13 @@
    }
    if(_is_select_student){
      var course_type = $('input[type="radio"][name="course_type"]:checked').val();
-     if(course_type=="single"){
-       //マンツーの場合振替対象を取得
-       $('input[name=exchanged_calendar_datetime]').val('');
-       $('input[name=exchanged_calendar_id').val('');
-       get_exchange_calendar();
+     if($('input[name=exchanged_calendar_datetime]').length > 0){
+       if(course_type=="single"){
+         //マンツーの場合振替対象を取得
+         $('input[name=exchanged_calendar_datetime]').val('');
+         $('input[name=exchanged_calendar_id]').val('');
+         get_exchange_calendar();
+       }
      }
    }
  }

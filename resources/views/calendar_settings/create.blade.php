@@ -150,7 +150,7 @@ $(function(){
     });
     form_data["student_name"] = _snames;
 
-    var _names = ["place", "student_group", "lesson_week_count"];
+    var _names = ["place_floor_id", "student_group", "lesson_week_count"];
     $.each(_names, function(index, value) {
       if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();

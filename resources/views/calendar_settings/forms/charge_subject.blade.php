@@ -2,7 +2,7 @@
   $key_names = [0=>"", 1=>"charge_subject", 2=>"english_talk_lesson", 3=>"piano_lesson", 4=>"kids_lesson"];
   $key_name = $key_names[$select_lesson];
  ?>
- <div class="col-6 mt-2">
+ <div class="col-12 col-md-6 mt-2">
    <div class="form-group">
      <label for="{{$key_name}}" class="w-100">
        {{__('labels.charge_subject')}}

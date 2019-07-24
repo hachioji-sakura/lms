@@ -31,6 +31,11 @@
                 <small class="badge badge-dark mt-1 mr-1">
                   No.{{$item->tag_name('student_no')}}
                 </small>
+                @if($item->is_juken()==true)
+                <small class="badge badge-warning mt-1 mr-1" title="">
+                  受験生
+                </small>
+                @endif
                 <small class="badge badge-primary mt-1 mr-1">
                   {{$item->gender()}}
                 </small>

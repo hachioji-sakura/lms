@@ -31,7 +31,7 @@ function get_exchange_calendar(){
         if(result["data"].length>0){
           var val = result["data"][0];
           $('input[name=exchanged_calendar_datetime]').val(val['datetime']);
-          $('input[name=exchanged_calendar_id').val(val['id']);
+          $('input[name=exchanged_calendar_id]').val(val['id']);
           $('.add_type.add_type_new').hide();
           $('.add_type.add_type_exchange').show();
         }

@@ -252,8 +252,8 @@ class UserCalendarMember extends Model
     //レクチャー取得できない場合
     //TODO : lesson + courseからlectureを取得(subject=0)
     $lecture_id_org = 0;
-    if($this->lecture_id > 0){
-      $lecture = Lecture::where('id', $this->lecture_id)->first();
+    if($this->calendar->lecture_id > 0){
+      $lecture = Lecture::where('id', $this->calendar->lecture_id)->first();
       if(isset($lecture)){
         $lecture_id_org = $lecture->lecture_id_org;
       }
@@ -265,6 +265,7 @@ class UserCalendarMember extends Model
         }
       }
     }
+
     //TODO : 6/22 : 事務システム側の場所最適化すべき
     //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
     $place_text = "";

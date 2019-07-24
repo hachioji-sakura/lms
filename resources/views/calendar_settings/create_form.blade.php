@@ -45,7 +45,7 @@
     <?php
       $form_data = ["teacher_name" => __('labels.teachers'),
                     "schedule_name"=>__('labels.week_day'),
-                    "place_name"=>__('labels.place'),
+                    "place_floor_id_name"=>__('labels.place'),
                     "course_minutes_name"=>__('labels.lesson_time'),
                     "course_type_name"=>__('labels.lesson_type'),
                     "student_name"=>__('labels.students'),
