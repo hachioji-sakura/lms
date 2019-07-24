@@ -17,15 +17,24 @@
           <ul class="mailbox-attachments clearfix row">
             @foreach($items as $item)
             <li class="col-12" accesskey="" target="">
-              <a href="trials/{{$item->id}}">
                 <div class="row">
-                  <div class="col-12 col-lg-6 col-md-6 mt-1">
-                    <span class="time"><i class="fa fa-clock mx-1"></i>{{$item['create_date']}}申込</span>
-                    <span class="text-xs">
+                  <div class="col-12 col-lg-4 col-md-6 mt-1">
+                    <a href="trials/{{$item->id}}">
+                    @foreach($item->trial_students as $trial_student)
+                    <span class="text-xs ml-1">
+                        <i class="fa fa-user mr-1"></i>
+                        {{$trial_student->student->name()}}様
+                        （{{$trial_student->student->grade()}}）<br>
+                      </small>
+                    @endforeach
+                    </a>
+                    <span class="text-sm time">申込日:{{$item['create_date']}}</span>
+                    <span class="text-xs ml-2">
                       <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
-                        <i class="fa fa-file-alt mr-1"></i>{{$item['status_name']}}
+                        {{$item['status_name']}}
                       </small>
                     </span>
+                    <br>
                     @foreach($item["tagdata"]["lesson"] as $label)
                     <span class="text-xs">
                       <small class="badge badge-primary p-1 mr-1">
@@ -42,23 +51,32 @@
                       </small>
                     </span>
                     @endforeach
-                    @foreach($item->trial_students as $trial_student)
-                    <span class="text-xs">
-                      <small class="badge badge-info p-1 mr-1">
-                        <i class="fa fa-user mr-1"></i>
-                        {{$trial_student->student->name()}}
-                        （{{$trial_student->student->grade()}}）
-                      </small>
-                    </span>
-                    @endforeach
                   </div>
-                  <div class="col-12 col-lg-6 col-md-6 mt-1">
+                  <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
                       第1希望:{{$item['date1']}}</span><br>
                       第2希望:{{$item['date2']}}</span><br>
                       第3希望:{{$item['date3']}}</span>
                   </div>
+                  <div class="col-12 col-lg-4 mt-1 text-sm">
+                    <a href="trials/{{$item->id}}" role="button" class="btn btn-secondary btn-sm">
+                      <i class="fa fa-file mr-1"></i>
+                      {{__('labels.details')}}
+                    </a>
+                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="button" class="btn btn-success btn-sm">
+                      <i class="fa fa-edit mr-1"></i>
+                      {{__('labels.edit')}}
+                    </a>
+                    <br>
+                    <a href="trials/{{$item->id}}/to_calendar" role="button" class="btn btn-info btn-sm mt-1">
+                      <i class="fa fa-plus mr-1"></i>
+                      体験授業登録
+                    </a>
+                    <a href="trials/{{$item->id}}/to_calendar_setting" role="button" class="btn btn-primary btn-sm mt-1">
+                      <i class="fa fa-plus mr-1"></i>
+                      通常授業登録
+                    </a>
+                  </div>
                 </div>
-              </a>
             </li>
             @endforeach
           </ul>
@@ -122,9 +140,11 @@
 @endsection
 
 @section('page_footer')
+{{--
   <dt>
     <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="">
       <i class="fa fa-plus"></i>{{$domain_name}}登録
     </a>
   </dt>
+--}}
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
 use DB;
@@ -22,6 +23,19 @@ class UserCalendarSetting extends UserCalendar
 EOT;
 
     return $query->whereRaw($where_raw,[]);
+  }
+  public function scopeFindTrialStudent($query, $trial_id)
+  {
+    $where_raw = <<<EOT
+      lms.user_calendar_settings.id in (
+        select user_calendar_setting_id from
+        lms.user_calendar_member_settings ums
+        inner join common.students s on s.user_id = ums.user_id
+        inner join lms.trial_students ts on s.id = ts.student_id
+        where ts.trial_id=?)
+EOT;
+
+    return $query->whereRaw($where_raw,[$trial_id]);
   }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
@@ -139,6 +153,16 @@ EOT;
   static protected function add($form){
     $ret = [];
     $trial_id = 0;
+
+    $user = User::where('id', $form['user_id'])->first();
+    if(!isset($user)) return null;
+
+    foreach($user->calendar_settings as $setting){
+      if($setting->is_conflict_setting($form['lesson_week'], $form['from_time_slot'], $form['to_time_slot'], 0, $form['place_floor_id'])==true){
+        \Log::error("user_calendar_settings[id=".$setting->id."]:と競合");
+        return null;
+      }
+    }
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
     //TODO Workの補間どうにかしたい
@@ -178,6 +202,7 @@ EOT;
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
     ];
+    $form['lesson_week'] = $this->lesson_week;
     $form['from_time_slot'] = $this->from_time_slot;
     $form['to_time_slot'] = $this->to_time_slot;
 
@@ -211,6 +236,27 @@ EOT;
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
+
+    if(isset($data['from_time_slot']) && isset($data['to_time_slot'])){
+      $lesson_week = $this->lesson_week;
+      if(isset($data['lesson_week'])){
+        $lesson_week = $data['lesson_week'];
+      }
+      $place_floor_id = $this->place_floor_id;
+      if(isset($data['place_floor_id'])){
+        $place_floor_id = $data['place_floor_id'];
+      }
+      $user = User::where('id', $this->user_id)->first();
+      if(!isset($user)) return null;
+      foreach($user->calendar_settings as $setting){
+        if($setting->id == $this->id) continue;
+        if($setting->is_conflict_setting($lesson_week, $data['from_time_slot'], $data['to_time_slot'], 0, $place_floor_id)==true){
+          \Log::error("user_calendar_settings[id=".$setting->id."]:と競合");
+          return null;
+        }
+      }
+    }
+
     $this->update($data);
     $tag_names = ['course_minutes', 'course_type', 'lesson'];
     foreach($tag_names as $tag_name){
@@ -337,11 +383,18 @@ EOT;
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
   }
-  public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
+
+  /**
+   * 引数の値で登録時に競合する場合 trueを返す
+   */
+  public function is_conflict_setting($week, $start_time, $end_time, $place_id=0, $place_floor_id=0){
+    if($this->lesson_week != $week) return false;
+
     $start = strtotime('2000-01-01 '.$start_time);
     $end = strtotime('2000-01-01 '.$end_time);
     $calendar_starttime = strtotime('2000-01-01 '.$this->from_time_slot);
     $calendar_endtime = strtotime('2000-01-01 '.$this->to_time_slot);
+
     if($start > $calendar_starttime && $start < $calendar_endtime){
       //開始時刻が、範囲内
       return true;

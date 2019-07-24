@@ -12,6 +12,7 @@ use App\Models\UserTag;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
+use App\Models\UserCalendarMemberSetting;
 use DB;
 use View;
 
@@ -370,11 +371,19 @@ class UserCalendarSettingController extends UserCalendarController
     public function _update(Request $request, $id)
     {
       return $res = $this->transaction(function() use ($request, $id){
-        $form = $request->all();
+        $form = $this->create_form($request);
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
         $setting = UserCalendarSetting::where('id', $id)->first();
         $setting->change($form);
+        //生徒をカレンダーメンバーに追加
+        if(!empty($form['students'])){
+          UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->delete();
+          foreach($form['students'] as $student){
+            $setting->memberAdd($student->user_id, $form['create_user_id']);
+          }
+        }
+
         return $setting;
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }

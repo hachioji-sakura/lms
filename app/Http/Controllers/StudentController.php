@@ -275,20 +275,9 @@ class StudentController extends UserController
    $model = $model->first()->user;
    $item = $model->details();
    $user = $param['user'];
-   $already_data = Ask::already_data('unsubscribe', [
-     'status' => 'commit',
-     'target_model' => $this->domain,
-     'target_model_id' => $param['item']->id,
-     'target_user_id' => $param['user']->user_id,
-   ]);
-   $param['already_data'] = $already_data;
-   $recess_data = Ask::already_data('recess', [
-     'status' => 'commit',
-     'target_model' => $this->domain,
-     'target_model_id' => $param['item']->id,
-     'target_user_id' => $param['user']->user_id,
-   ]);
-   $param['recess_data'] = $recess_data;
+   //重複登録があるかチェック
+   $param['recess_data'] = $item->already_recess_data($param['user']->user_id);
+   $param['already_data'] = $item->already_unsubscribe_data($param['user']->user_id);
    return view('asks.unsubscribe', [
    ])->with($param);
   }
@@ -303,38 +292,12 @@ class StudentController extends UserController
    $item = $model->details();
    $user = $param['user'];
 
-   $already_data = Ask::already_data('recess', [
-     'status' => 'commit',
-     'target_model' => $this->domain,
-     'target_model_id' => $param['item']->id,
-     'target_user_id' => $param['user']->user_id,
-   ]);
-   $param['already_data'] = $already_data;
-   $unsubscribe_data = Ask::already_data('unsubscribe', [
-     'status' => 'commit',
-     'target_model' => $this->domain,
-     'target_model_id' => $param['item']->id,
-     'target_user_id' => $param['user']->user_id,
-   ]);
-   $param['unsubscribe_data'] = $unsubscribe_data;
+   //重複登録があるかチェック
+   $param['already_data'] = $item->already_recess_data($param['user']->user_id);
+   $param['unsubscribe_data'] = $item->already_unsubscribe_data($param['user']->user_id);
    return view('asks.recess', [
    ])->with($param);
   }
-  public function resume(Request $request, $id)
-  {
-   $param = $this->get_param($request, $id);
-   $model = $this->model()->where('id',$id);
-   if(!isset($model)){
-      abort(404);
-   }
-   $model = $model->first()->user;
-   $item = $model->details();
-   $user = $param['user'];
-
-   return view('asks.resume', [
-   ])->with($param);
-  }
-
   /**
    * 詳細画面表示
    *

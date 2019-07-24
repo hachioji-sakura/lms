@@ -18,7 +18,8 @@
           <div class="card-header">
             <i class="fa fa-calendar mr-1"></i>体験授業予定
             <a role="button" class="btn btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar">
-              <i class="fa fa-plus mr-1"></i>体験授業予定を設定する
+              <i class="fa fa-plus mr-1"></i>
+              体験授業予定を設定する
             </a>
           </div>
           <div class="card-footer">
@@ -29,8 +30,14 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>通常授業設定
+            {{--
             <a class="btn btn-flat btn-danger float-right" role="button"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
               <i class="fa fa-envelope mr-1"></i>入塾案内を出す
+            </a>
+            --}}
+            <a role="button" class="btn btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar_setting">
+              <i class="fa fa-plus mr-1"></i>
+              通常授業予定を設定する
             </a>
           </div>
           <div class="card-footer">

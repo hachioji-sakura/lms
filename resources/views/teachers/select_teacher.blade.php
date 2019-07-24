@@ -44,10 +44,13 @@ $(function(){
 });
 //ダイアログでサブページを開く場合、
 function teacher_selected(){
+  console.log("teacher_selected");
   var teacher_id = $("select[name='teacher_id'] option:selected").val();
   if(front.validateFormValue('select_teacher')){
     var _title = $('#subDialog .page_title').text();
-    base.showPage("dialog", "subDialog", _title, '/{{$domain}}/create?origin=teachers&item_id='+teacher_id);
+    var _url = '/{{$domain}}/create?origin=teachers&teacher_id='+teacher_id;
+    console.log(_url);
+    base.showPage("dialog", "subDialog", _title, _url);
   }
 }
 </script>

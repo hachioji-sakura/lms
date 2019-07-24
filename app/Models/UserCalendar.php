@@ -297,14 +297,24 @@ EOT;
     if(isset($item)) return $item->attribute_name;
     return "";
   }
-  public function lesson(){
-    return $this->get_tag_name('lesson');
+  public function lesson($is_value=false){
+    return $this->get_attribute('lesson', $is_value);
   }
-  public function course(){
-    return $this->get_tag_name('course_type');
+  public function course($is_value=false){
+    return $this->get_attribute('course_type', $is_value);
   }
-  public function course_minutes(){
-    return $this->get_tag_name('course_minutes');
+  public function course_minutes($is_value=false){
+    return $this->get_attribute('couse_minutes', $is_value);
+  }
+  public function get_attribute($key, $is_value=false){
+    if($is_value==true){
+      $t = $this->get_tag($key);
+      if(isset($t)){
+        return $t->tag_value;
+      }
+      return 0;
+    }
+    return $this->get_tag_name($key);
   }
   public function work(){
     if(!isset($this->work)) return "";
@@ -815,8 +825,14 @@ EOT;
     }
     return $teachers;
   }
+  public function is_school(){
+    return $this->has_tag('lesson', 1);
+  }
   public function is_english_talk_lesson(){
     return $this->has_tag('lesson', 2);
+  }
+  public function is_piano_lesson(){
+    return $this->has_tag('lesson', 3);
   }
   public function is_kids_lesson(){
     return $this->has_tag('lesson', 4);

@@ -71,8 +71,12 @@ function get_charge_students(){
         }
 
         var select_student_id_form = $("input[name='select_student_id[]']");
+        var select_student_ids = [];
         if(select_student_id_form.length > 0){
-          student_id_form.val(select_student_id_form.val()).trigger('change');
+          select_student_id_form.each(function(index, element){
+            select_student_ids.push($(element).val());
+          });
+          student_id_form.val(select_student_ids).trigger('change');
         }
       }
     },

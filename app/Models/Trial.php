@@ -162,7 +162,7 @@ EOT;
     }
     $item['calendars'] = $calendars;
     $calendar_settings = [];
-    $user_calendar_settings = UserCalendarSetting::where('trial_id', $this->id)->orderByWeek()->get();
+    $user_calendar_settings = UserCalendarSetting::findTrialStudent($this->id)->orderByWeek()->get();
     foreach($user_calendar_settings as $user_calendar_setting){
       $calendar_settings[] = $user_calendar_setting->details();
     }
@@ -582,8 +582,12 @@ EOT;
       if(!isset($form[$field])) continue;
       $calendar_setting[$field] = $form[$field];
     }
-
-    $setting = UserCalendarSetting::add($calendar_setting);
+    if($form['action'] == 'new'){
+      $setting = UserCalendarSetting::add($calendar_setting);
+    }
+    else {
+      $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
+    }
     foreach($this->trial_students as $trial_student){
       $student = Student::where('id', $trial_student->student_id)->first();
       $setting->memberAdd($student->user_id, $form['create_user_id']);
@@ -823,7 +827,7 @@ EOT;
           $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
           $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
           foreach($teacher->user->calendar_settings as $setting){
-            if($setting->is_conflict($f,$t)==true){
+            if($setting->is_conflict_setting($week_day, $f,$t)==true){
               //echo "conflict:".$week_day.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
               $is_free = false;
               $data["status"] = "time_conflict";

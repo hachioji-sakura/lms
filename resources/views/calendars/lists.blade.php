@@ -42,63 +42,64 @@
   </div>
 </div>
 <div class="card-body table-responsive p-0">
-  @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
-    @slot("search_form")
-    <div class="col-4">
-      <label for="search_week" class="w-100">
-        曜日
-      </label>
-      <div class="w-100">
-        <select name="search_week[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
-          @foreach($attributes['lesson_week'] as $index=>$name)
-            <option value="{{$index}}"
-            @if(isset($filter['search_week']) && in_array($index, $filter['search_week'])==true)
-            selected
-            @endif
-            >{{$name}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-4">
-      <label for="search_work" class="w-100">
-        {{__('labels.work')}}
-      </label>
-      <div class="w-100">
-        <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
-          @foreach($attributes['work'] as $index=>$name)
-            <option value="{{$index}}"
-            @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
-            selected
-            @endif
-            >{{$name}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-4">
-      <label for="search_place" class="w-100">
-        {{__('labels.place')}}
-      </label>
-      <div class="w-100">
-        <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
-          @foreach($attributes['places'] as $place)
-            @foreach($place->floors as $floor)
-            <option value="{{$floor->id}}"
-            @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
-            selected
-            @endif
-            >{{$floor->name()}}</option>
-            @endforeach
-          @endforeach
-        </select>
-      </div>
-    @endslot
-  @endcomponent
-
   @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
   @endcomponent
 </div>
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-4">
+    <label for="search_week" class="w-100">
+      曜日
+    </label>
+    <div class="w-100">
+      <select name="search_week[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
+        @foreach($attributes['lesson_week'] as $index=>$name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_week']) && in_array($index, $filter['search_week'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-4">
+    <label for="search_work" class="w-100">
+      {{__('labels.work')}}
+    </label>
+    <div class="w-100">
+      <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
+        @foreach($attributes['work'] as $index=>$name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-4">
+    <label for="search_place" class="w-100">
+      {{__('labels.place')}}
+    </label>
+    <div class="w-100">
+      <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
+        @foreach($attributes['places'] as $place)
+          @foreach($place->floors as $floor)
+          <option value="{{$floor->id}}"
+          @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
+          selected
+          @endif
+          >{{$floor->name()}}</option>
+          @endforeach
+        @endforeach
+      </select>
+    </div>
+  @endslot
+@endcomponent
+
+
 @endsection
 
 

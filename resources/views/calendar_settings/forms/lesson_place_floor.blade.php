@@ -1,10 +1,10 @@
-<div class="col-6 mt-2">
+<div class="col-12 col-md-6 mt-2">
   <div class="form-group">
     <label for="lesson_place_floor" class="w-100">
       {{__('labels.place')}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="place_floor_id" class="form-control" required="true">
+    <select name="place_floor_id" class="form-control" width="100%" required="true" >
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['places'] as $place)
         @foreach($place->floors as $floor)

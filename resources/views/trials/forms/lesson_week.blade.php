@@ -18,6 +18,25 @@
     @endif
   @endforeach
 </div>
+<div class="col-12 mt-2 couse_type_group">
+  <div class="form-group">
+    <label for="action" class="w-100">
+      追加方法
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+    </label>
+    <div class="input-group" >
+      <input class="form-check-input icheck flat-green" type="radio" name="action" id="action_new" value="new" required="true" onchange="action_change()" checked>
+      <label class="form-check-label mr-3" for="action_new">
+        新規追加
+      </label>
+      <input class="form-check-input icheck flat-green" type="radio" name="action" id="action_add" value="add" required="true" onchange="action_change()">
+      <label class="form-check-label mr-3" for="action_add">
+        生徒追加
+      </label>
+    </div>
+  </div>
+</div>
+
 <div class="col-8 mb-2">
   <div class="description-block">
     <h5 class="description-header">
@@ -27,6 +46,9 @@
     <span class="description-text">
       <table class="table table-striped border-bottom">
       <tr class="bg-secondary header calendar_setting_header">
+        <th class="p-1 text-center border-right  action_form action_add">
+          選択
+        </th>
         <th class="p-1 text-center border-right ">
           曜日/時間
         </th>
@@ -43,6 +65,9 @@
           @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
             @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
             <tr id="{{$week_day}}_{{$setting["from_time_slot"]}}_{{$setting["to_time_slot"]}}" class="calendar_setting_row {{$week_day}}">
+              <td class="action_form action_add">
+                <input class="form-check-input icheck flat-green" type="radio" name="calendar_setting_id" value="{{$setting->id}}" >
+              </td>
               <td>
                 {{$week_name}}
                 {{$setting->timezone()}}
@@ -58,6 +83,11 @@
                 <span class="text-xs mx-2">
                   <small class="badge badge-success mt-1 mr-1">
                     {{$setting["place_floor_name"]}}
+                  </small>
+                </span>
+                <span class="text-xs mx-2">
+                  <small class="badge badge-info mt-1 mr-1">
+                    {{$setting->course()}}
                   </small>
                 </span>
                 @foreach($setting->subject() as $index => $name)
@@ -77,7 +107,7 @@
     </span>
   </div>
 </div>
-<div class="col-4 mb-2">
+<div class="col-4 mb-2 action_form action_new">
   <div class="description-block">
     <h5 class="description-header">
         <i class="fa fa-check-circle mr-1"></i>
@@ -134,6 +164,7 @@
 $(function(){
   select_lesson_week_change();
   lesson_week_datetime_change();
+  action_change();
   $("select[name='charge_subject[]']").on('change', lesson_week_datetime_change);
   $("select[name='lesson_place_floor']").on('change', lesson_week_datetime_change);
 });
@@ -226,5 +257,18 @@ function select_lesson_week_change(){
   $(".teacher_schedule."+w).show();
   $(".calendar_setting_row").hide();
   $(".calendar_setting_row."+w).show();
+}
+function action_change(){
+  var a = $('input[name="action"]:checked').val();
+  if(!a) return ;
+  $('#new_row').remove();
+  $("input.lesson_week_datetime").val("");
+  $(".action_form").hide();
+  if(a=='new'){
+    $(".action_new").show();
+  }
+  else {
+    $(".action_add").show();
+  }
 }
 </script>
