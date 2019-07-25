@@ -390,7 +390,14 @@
 	function setEditorForm(formId){
 		$("textarea[uitype=ckeditor]", $("#"+formId)).each(function(){
 			ClassicEditor
-	      .create(this)
+	      .create(this,{
+					ckfinder: {
+  						uploadUrl: '/upload_images',
+	            options: {
+	                resourceType: 'Images'
+	            }
+	        }
+				})
 	      .then(function (editor) {
 	        // The editor instance
 					console.log(editor);

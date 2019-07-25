@@ -10,7 +10,7 @@ class ImageController extends UserController
 {
     public $domain = 'images';
     public $table = 'images';
-    
+
     /**
      * このdomainで管理するmodel
      *
@@ -97,6 +97,20 @@ class ImageController extends UserController
             ->withInput()
             ->withErrors(['file' => '画像がアップロードされていないか不正なデータです。']);
       }
+    }
+    public function upload_images(Request $request){
+      $s3 = $this->s3_upload($request->file('upload'), config('aws_s3.upload_folder'));
+
+      $json = [
+        "uploaded" => false,
+        "error" => ["message" => "Error message here"],
+      ];
+      $json = [
+        "uploaded" => true,
+        "url" => $s3['url'],
+      ];
+
+      return $json;
     }
     public function icon_change(Request $request){
       $param = $this->get_param($request);
@@ -193,7 +207,11 @@ class ImageController extends UserController
       $items = Image::where('id',$id)->delete();
       return redirect('/images');
     }
-
+    private function s3_upload($request_file, $save_folder=""){
+      $path = Storage::disk('s3')->putFile($save_folder, $request_file, 'public');
+      $s3_url = Storage::disk('s3')->url(config('aws_s3.bucket')."/".$path);
+      return ['url' => $s3_url, 'path' => $path];
+    }
     private function save_image($request, $request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
       $user = $this->login_details($request);
@@ -201,8 +219,7 @@ class ImageController extends UserController
 
       try {
         DB::beginTransaction();
-        $path = Storage::disk('s3')->putFile($save_folder, $request_file, 'public');
-        $s3_url = Storage::disk('s3')->url(config('aws_s3.bucket')."/".$path);
+        $s3 = $this->s3_upload($request_file, $save_folder);
         if(empty($alias)){
           $alias = $request_file->getClientOriginalName();
         }
@@ -210,7 +227,7 @@ class ImageController extends UserController
           "name" => $request_file->getClientOriginalName(),
           "type" => $request_file->guessClientExtension(),
           "size" => $request_file->getClientSize(),
-          "s3_url" => $s3_url,
+          "s3_url" => $s3['url'],
           "publiced_at" => $publiced_at,
           "create_user_id" => $user->user_id,
           "alias" => $alias
@@ -223,9 +240,11 @@ class ImageController extends UserController
         $message .= "guessClientExtension:".$request_file->guessClientExtension()."\n";
         $message .= "size:".filesize($request_file)."\n";
         $message .= "type:".filetype($request_file)."\n";
-        $message .= "s3_path:".$s3_url."\n";
-        $message .= "path:".$path."\n";
+        $message .= "s3_path:".$s3['url']."\n";
+        $message .= "path:".$s3['path']."\n";
         $this->send_slack($message, 'info');
+        \Log::info("ファイルアップロード:\n".$message);
+
         return $this->api_response(200, "", $message, $image);
       }
       catch (\Illuminate\Database\QueryException $e) {

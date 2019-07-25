@@ -78,7 +78,7 @@ class MilestoneController extends UserController
       $form['create_user_id'] = $user->user_id;
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
-      $form['body'] = $request->get('body');
+      $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
       $form['target_user_id'] = $this->get_target_user_id($request);
       return $form;
     }

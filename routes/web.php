@@ -36,6 +36,7 @@ Route::get('auth/mail','AuthController@mail_send');
 //Auth::routesのログアウトは、postのためgetのルーティングを追加
 Route::get('logout','Auth\LoginController@logout');
 
+Route::post('upload_images','ImageController@upload_images');
 Route::resource('images','ImageController');
 Route::resource('rest','RestController', ['only' => ['index', 'create', 'edit', 'store', 'destroy']]);
 Route::get('import/{object?}','ImportController@index');
