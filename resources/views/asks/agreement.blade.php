@@ -9,9 +9,10 @@
 @endsection
 @section('content')
 <div id="admission_mail">
-  <form method="POST"  action="/{{$domain}}/{{$item->id}}">
+  <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
     @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item->get_target_model_data(), 'domain' => $domain, 'input'=>false]) @endcomponent
     @csrf
+	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
     	<div class="container-fluid">
     		<div class="row">

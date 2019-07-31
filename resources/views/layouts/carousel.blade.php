@@ -1,6 +1,7 @@
 <div id="{{$domain}}_carousel" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div id="carousel_form" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">

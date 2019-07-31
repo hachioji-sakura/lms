@@ -61,6 +61,7 @@
 @else
   <form method="POST"  action="/{{$domain}}/register">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div id="teachers_register" class="carousel slide" data-ride="carousel" data-interval="false">
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="id" value="{{$item->id}}" />

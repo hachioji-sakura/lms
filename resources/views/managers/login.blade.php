@@ -4,6 +4,7 @@
 @section('content')
 <form id="login_form" method="POST" action="{{ route('login') }}">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @component('auth.login.login_form', [])
     @endcomponent
     <div class="form-group row mb-3">

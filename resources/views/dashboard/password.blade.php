@@ -1,6 +1,7 @@
 <div id="password_setting">
 <form method="POST" action="/password">
-    @csrf
+  @csrf
+  <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
       <div class="col-12">
         <div class="form-group">

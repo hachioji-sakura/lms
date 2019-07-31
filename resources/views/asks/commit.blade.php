@@ -7,6 +7,7 @@
     <div class="col-12 mb-1" id="commit_form">
       <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
         @csrf
+        <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form">
           <i class="fa fa-check mr-1"></i>

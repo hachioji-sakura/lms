@@ -6,6 +6,7 @@
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="title"
       @if(isset($_edit) && $_edit==true)
         value="{{$item->title}}"

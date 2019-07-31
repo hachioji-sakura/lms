@@ -15,6 +15,7 @@
 @else
 <form method="POST"  action="/teachers/entry">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
       @component('students.forms.name', ['attributes' => $attributes, 'prefix' => '']) @endcomponent
       @component('students.forms.email', ['attributes' => $attributes]) @endcomponent

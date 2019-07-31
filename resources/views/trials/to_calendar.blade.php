@@ -10,6 +10,7 @@
     @if($select_teacher_id > 0)
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/to_calendar">
       @csrf
+      <input type="text" name="dummy" style="display:none;" / >
       <input type="hidden" name="teacher_id" value="{{$candidate_teachers[0]->id}}">
       <input type="hidden" name="lesson" value="{{$select_lesson}}">
       <input type="hidden" name="start_time" value="">

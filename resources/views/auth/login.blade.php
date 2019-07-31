@@ -4,16 +4,17 @@
 @section('content')
 
 <form id="login_form" method="POST" action="{{ route('login') }}">
-    @csrf
-    @component('auth.login.login_form', [])
-    @endcomponent
-    <div class="form-group row mb-3">
-        <div class="col-12">
-            <button type="button" class="btn btn-submit btn-primary btn-block">
-              {{ __('labels.login') }}
-            </button>
-        </div>
-    </div>
+  @csrf
+  <input type="text" name="dummy" style="display:none;" / >
+  @component('auth.login.login_form', [])
+  @endcomponent
+  <div class="form-group row mb-3">
+      <div class="col-12">
+          <button type="button" class="btn btn-submit btn-primary btn-block">
+            {{ __('labels.login') }}
+          </button>
+      </div>
+  </div>
 </form>
 <div class="my-2 row hr-1 bd-gray">
   <h6 class="col-12">

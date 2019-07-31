@@ -63,7 +63,9 @@
     @else
       <form method="POST" action="/{{$domain}}/{{$item['id']}}">
     @endif
+    
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
   <div class="row">
     {{-- 共通form用のボタン --}}
     @if(isset($action) && $action=='delete')

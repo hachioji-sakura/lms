@@ -41,6 +41,7 @@
   </div>
   <form id="recess_form" method="POST" action="/asks">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @component('asks.forms.recess_form', ['item' => $item, 'domain'=>$domain, 'user' => $user, 'already_data' => $already_data])
     @endcomponent
   @elseif($already_data!=null && $unsubscribe_data==null)
@@ -48,6 +49,7 @@
   <form id="recess_form" method="POST" action="/asks/{{$already_data->id}}/status_update/cancel">
     @method('PUT')
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @component('asks.forms.recess_form', ['item' => $item, 'domain'=>$domain, 'user' => $user, 'already_data' => $already_data])
     @endcomponent
   @else

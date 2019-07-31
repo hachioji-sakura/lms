@@ -9,6 +9,7 @@
     <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_fix">
       <form method="POST" action="/trials/{{$item['id']}}/remind">
         @csrf
+        <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_fix">
           <i class="fa fa-envelope mr-1"></i>

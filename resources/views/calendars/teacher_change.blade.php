@@ -5,6 +5,7 @@
   <div id="_form">
   <form method="POST" action="/asks">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="parent_ask_id" value="{{$ask->id}}">
     <input type="hidden" name="type" value="teacher_change">
     <div class="row">

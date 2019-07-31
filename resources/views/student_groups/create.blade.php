@@ -6,6 +6,7 @@
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
   @csrf
+  <input type="text" name="dummy" style="display:none;" / >
   <div class="row">
     <div class="col-12">
       <div class="form-group">

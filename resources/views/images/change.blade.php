@@ -2,6 +2,7 @@
   <form id="edit" method="POST" action="/icon/change" enctype="multipart/form-data">
     @method('PUT')
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
       <div class="col-12 mb-4">
         アイコン：

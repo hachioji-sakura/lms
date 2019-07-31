@@ -49,6 +49,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div id="parents_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">

@@ -9,6 +9,7 @@
   <div id="{{$domain}}_action">
     <form method="POST" action="/calendars/{{$item['id']}}/status_update/lecture_cancel">
       @csrf
+      <input type="text" name="dummy" style="display:none;" / >
       @method('PUT')
       @if(isset($student_id))
         <input type="hidden" value="{{$student_id}}" name="student_id" />

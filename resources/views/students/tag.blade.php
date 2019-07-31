@@ -1,7 +1,9 @@
 @include($domain.'.create_form')
 <div class="direct-chat-msg">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
-    @csrf
+    
+@csrf
+		<input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     <div id="tag_edit" >
       @yield('tag_form')

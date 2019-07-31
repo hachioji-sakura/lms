@@ -2,6 +2,7 @@
 <div class="direct-chat-msg">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/confirm">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     <div id="trials_confirm" class="carousel slide" data-ride="carousel" data-interval="false">
       @yield('matching_form')

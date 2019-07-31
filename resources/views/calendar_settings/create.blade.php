@@ -6,16 +6,17 @@
   @else
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
-  @csrf
-  @if(isset($origin))
-    <input type="hidden" value="{{$origin}}" name="origin" />
-  @endif
-  @if(isset($student_id))
-    <input type="hidden" value="{{$student_id}}" name="student_id" />
-  @endif
-  @if(isset($manager_id))
-    <input type="hidden" value="{{$manager_id}}" name="manager_id" />
-  @endif
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
+    @if(isset($origin))
+      <input type="hidden" value="{{$origin}}" name="origin" />
+    @endif
+    @if(isset($student_id))
+      <input type="hidden" value="{{$student_id}}" name="student_id" />
+    @endif
+    @if(isset($manager_id))
+      <input type="hidden" value="{{$manager_id}}" name="manager_id" />
+    @endif
     <div id="calendar_settings_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">

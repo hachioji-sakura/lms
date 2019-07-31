@@ -11,6 +11,7 @@
       {{-- ２．体験授業を選択し、予定設定のテンプレートとして利用 --}}
       <form method="POST"  action="/{{$domain}}/{{$item->id}}/to_calendar_setting">
         @csrf
+        <input type="text" name="dummy" style="display:none;" / >
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
         <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">

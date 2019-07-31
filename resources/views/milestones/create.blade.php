@@ -6,6 +6,7 @@
   <form id="edit" method="POST" action="/{{$domain}}">
   @endif
   @csrf
+  <input type="text" name="dummy" style="display:none;" / >
   @if(isset($origin))
     <input type="hidden" value="{{$origin}}" name="origin" />
   @endif

@@ -19,7 +19,9 @@
   </h4>
 @else
   <form method="POST"  action="/{{$domain}}/entry">
-    @csrf
+    
+@csrf
+		<input type="text" name="dummy" style="display:none;" / >
     @yield('entry_form')
     <div class="row">
       <div class="col-12 mb-1">

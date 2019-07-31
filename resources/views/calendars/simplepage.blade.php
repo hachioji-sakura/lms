@@ -45,7 +45,8 @@
       @if(empty($result))
       <form method="POST" action="/calendars/{{$item['id']}}" id="_form">
         @if(($item['status']==="confirm" || $item['status']==="fix") && $subpage==="fix")
-          @csrf
+        @csrf
+		<input type="text" name="dummy" style="display:none;" / >
           @method('PUT')
           <input type="hidden" value="{{$user->user_id}}" name="user" />
           <input type="hidden" value="fix" name="name" />
@@ -63,7 +64,9 @@
             </div>
           </div>
         @elseif($item['status']==="fix" && $subpage==="rest")
-            @csrf
+            
+@csrf
+		<input type="text" name="dummy" style="display:none;" / >
             @method('PUT')
             <input type="hidden" value="{{$user->user_id}}" name="user" />
             <input type="hidden" value="{{$token}}" name="access_key" />

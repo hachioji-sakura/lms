@@ -8,7 +8,9 @@
 @section('contents')
 <section class="content">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work">
-  @csrf
+  
+@csrf
+		<input type="text" name="dummy" style="display:none;" / >
   <input type="hidden" name="target_month" value="{{$target_month}}" >
   <div class="row">
     <div class="col-12">

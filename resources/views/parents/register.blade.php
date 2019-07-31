@@ -64,6 +64,7 @@
 @else
   <form method="POST"  action="/register">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div id="parents_register" class="carousel slide" data-ride="carousel" data-interval="false">
       <input type="hidden" name="email" value="{{$parent->email}}" />
       <input type="hidden" name="access_key" value="{{$access_key}}" />

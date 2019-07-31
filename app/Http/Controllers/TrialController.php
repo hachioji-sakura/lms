@@ -599,11 +599,10 @@ class TrialController extends UserCalendarController
    }
    public function admission_mail_send(Request $request, $id){
      $param = $this->get_param($request, $id);
-
-      $res = $this->transaction(function() use ($request, $id, $param){
-        $trial = Trial::where('id', $id)->first();
-        $access_key = $this->create_token();
-        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+     $res = $this->transaction(function() use ($request, $id, $param){
+       $trial = Trial::where('id', $id)->first();
+       $access_key = $this->create_token();
+       $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
         //受講料初期設定
         foreach($trial->trial_students as $s){
           //受講料delete-insert
@@ -619,9 +618,10 @@ class TrialController extends UserCalendarController
                 elseif($setting->get_tag_value('lesson')==4){
                   $subject= $setting->get_tag_value('kids_lesson');
                 }
-                if($request->has($setting->id.'_tuition')!=true){
+                if(empty($request->get($setting->id.'_tuition'))){
                   continue;
                 }
+                \Log::warning("debug:".$setting->id.'_tuition');
                 Tuition::add([
                   'student_id' => $s->student_id,
                   'teacher_id' => $setting->user->details()->id,

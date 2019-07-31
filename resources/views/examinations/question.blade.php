@@ -23,6 +23,7 @@
     <div class="col-12 col-lg-6 col-md-6 mb-2">
     <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
       @csrf
+      <input type="text" name="dummy" style="display:none;" / >
       @if($result['success'] < $result['total'])
       <button type="button" class="btn btn-submit btn-block btn-info btn-lg">まちがえた問題のみ解く</button>
       @else
@@ -44,7 +45,9 @@
 </div>
 <div class="card-body">
   <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}/{{$item['id']}}" method="POST" autocomplete="off">
-    @csrf
+    
+@csrf
+		<input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" size=30 id="start_time" name="start_time" value="{{date('Y-m-d H:i:s')}}"/>
     <div class="row">
       <div class="col-12">

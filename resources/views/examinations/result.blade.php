@@ -50,6 +50,7 @@
           @if($result['success'] < $result['total'])
             <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}?retry=1" method="POST" autocomplete="off">
               @csrf
+              <input type="text" name="dummy" style="display:none;" / >
               <button type="button" class="btn btn-submit btn-block btn-info btn-lg">まちがえた問題のみ解く</button>
             </form>
           @else
