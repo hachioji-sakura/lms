@@ -171,6 +171,9 @@ Route::get('parents/{id}/unsubscribe','StudentParentController@unsubscribe');
 Route::get('parents/{id}/recess','StudentParentController@recess');
 
 
+Route::get('students/{id}/tuition','StudentController@tuition');
+Route::get('teachers/{id}/tuition','TeacherController@tuition');
+Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('managers/{id}/ask','ManagerController@ask');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
@@ -196,9 +199,11 @@ Route::get('ask_daily_proc/{d?}','AskController@daily_proc');
 Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
 Route::put('asks/{id}/status_update/{status}','AskController@status_update');
 Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change_page');
+Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
 Route::resource('asks','AskController');
 
 
+Route::resource('tuitions','TuitionController');
 Route::resource('faqs','FaqController');
 Route::get('faqs/{id}/page','FaqController@page');
 Route::get('home', 'HomeController@index')->name('home');

@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
-use App\Managers;
-use App\Teachers;
-use App\Students;
+use App\Models\Trial;
+use App\Models\Managers;
+use App\Models\Teachers;
+use App\Models\Students;
 use App\Models\UserCalendarMember;
 use View;
 class Ask extends Milestone
@@ -267,6 +268,7 @@ EOT;
     $target_model_data = $this->get_target_model_data();
     if($target_model_data==null) return false;
     switch($this->type){
+      case "agreement":
       case "recess":
       case "unsubscribe":
         $param['target_model'] = $target_model_data;
@@ -379,6 +381,9 @@ EOT;
   public function get_target_model_data(){
     $ret = null;
     switch($this->target_model){
+      case 'trials':
+        $ret = Trial::where('id', $this->target_model_id)->first();
+        break;
       case 'students':
         $ret = Student::where('id', $this->target_model_id)->first();
         break;

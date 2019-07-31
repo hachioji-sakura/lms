@@ -87,9 +87,9 @@
                       <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                     </div>
                     <input type="text" id="publiced_at" name="publiced_at" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
-                    @if(isset($_edit) && $_edit==true && isset($item) && isset($item['publiced_at']))
+                    @if(isset($_edit) && $_edit==true && isset($item) && isset($item['publiced_at']) && $item['publiced_at']!='9999-12-31')
                       value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
-                    @elseif(isset($item) && isset($item['publiced_at']))
+                    @elseif(isset($item) && isset($item['publiced_at']) && $item['publiced_at']!='9999-12-31')
                       value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
                     @endif
                     @if(!(isset($_edit) && $_edit==true))

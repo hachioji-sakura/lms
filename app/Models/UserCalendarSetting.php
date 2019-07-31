@@ -73,6 +73,9 @@ EOT;
   public function lesson_week(){
     return $this->get_attribute_name('lesson_week', $this->lesson_week);
   }
+  public function schedule_method(){
+    return $this->get_attribute_name('schedule_method', $this->schedule_method);
+  }
   public function week_setting(){
     $item = GeneralAttribute::where('attribute_key', 'schedule_method')
       ->where('attribute_value', $this->schedule_method)
@@ -91,7 +94,6 @@ EOT;
     $end_hour_minute = date('H:i',  strtotime($base_date.$this->to_time_slot));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
-
   public function details($user_id=0){
     $item = $this;
     $base_date = '2000-01-01 ';
@@ -109,12 +111,8 @@ EOT;
     }
     $item['work_name'] = $this->work();
     $item['subject'] = $this->subject();
-    $item['title1'] = $item['week_setting'].' / '.$item['timezone'];
-    $item['title2']  = "";
-    if($item->is_teaching()===true){
-      //授業について詳細を表示
-      $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
-    }
+    $item['status_name'] = $this->status_name();
+
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
@@ -147,6 +145,19 @@ EOT;
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($other_name,',');
     $item['user_name'] = $this->user->details()->name();
+
+    $item['title'] = $item['teacher_name'].'/'.$item['lesson'].'/'.$item['course'].'/'. $item["course_minutes_name"].'/';
+    foreach($this->subject() as $subject){
+      $item['title'].=$subject.'/';
+    }
+
+    $item['title'] = trim($item['title'], '/');
+    $item['title2']  = "";
+    if($item->is_teaching()===true){
+      //授業について詳細を表示
+      $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
+    }
+
     return $item;
   }
   //本モデルはcreateではなくaddを使う

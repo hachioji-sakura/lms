@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Models\Lecture;
 use App\Models\ChargeStudent;
 use App\Models\UserTag;
+use App\Models\Trial;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
@@ -306,6 +307,7 @@ class UserCalendarSettingController extends UserCalendarController
         'domain_name' => __('labels.'.$this->domain),
         'teacher_id' => $request->teacher_id,
         'user' => $user,
+        'trial_id' => $request->trial_id,
         '_page' => $request->get('_page'),
         '_line' => $request->get('_line'),
         'attributes' => $this->attributes(),
@@ -427,7 +429,24 @@ class UserCalendarSettingController extends UserCalendarController
     {
       return $res = $this->transaction(function() use ($request, $id){
         $setting = UserCalendarSetting::where('id', $id)->first();
-        $setting->dispose();
+        if($request->has('trial_id')){
+          $trial = Trial::where('id', $request->get('trial_id'))->first();
+          //体験ID指定あり＝体験生徒のみを削除
+          foreach($setting->members as $member){
+            $is_delete = false;
+            foreach($trial->trial_students as $trial_student){
+              \Log::warning("削除:".$member->user_id." == ".$trial_student->student->user_id);
+              if($member->user_id == $trial_student->student->user_id){
+                $is_delete = true;
+                break;
+              }
+            }
+            if($is_delete==true) $member->dispose();
+          }
+        }
+        else {
+          //$setting->dispose();
+        }
         return $setting;
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }

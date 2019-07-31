@@ -126,7 +126,7 @@
 		dom.setNumberForm(form_id);
 		*/
 		//日付入力
-		dom.setCalenderForm(form_id);
+		dom.setCalendarForm(form_id);
 
 		//html入力
 		dom.setEditorForm(form_id);

@@ -27,7 +27,7 @@ class StudentGroupSeeder extends Seeder
       }
       $settings = UserCalendarSetting::whereIn('work',[7,8])->get();
       foreach($settings as $setting){
-        $this->student_group_add($setting, "通常授業設定(".$setting["title1"].")");
+        $this->student_group_add($setting, "通常授業設定(".$setting['week_setting'].' / '.$setting['timezone'].")");
       }
     }
     private function student_group_add($calendar, $remark = ""){

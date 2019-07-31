@@ -9,6 +9,7 @@ use App\Models\UserCalendar;
 use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 use App\Models\Ask;
+use App\Models\Tuition;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -424,6 +425,37 @@ class StudentController extends UserController
      'item' => $item,
    ])->with($param);
  }
+
+ public function tuition(Request $request, $id)
+ {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+
+   $view = "tuition";
+   $tuitions = $this->get_tuition($request->all(), $item->id);
+   $tuitions = $tuitions["data"];
+   foreach($tuitions as $tuition){
+     $tuition = $tuition->details();
+   }
+   $param["tuitions"] = $tuitions;
+
+   $filter = [];
+   $filter_keys = ['search_lesson'];
+   foreach($filter_keys as $filter_key){
+     if($request->has($filter_key)){
+       $filter[$filter_key] = $request->get($filter_key);
+     }
+   }
+   $param['filter'] = $filter;
+   $param['view'] = $view;
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+   ])->with($param);
+ }
+
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
@@ -595,6 +627,42 @@ class StudentController extends UserController
    //echo $asks->toSql();
    $asks = $asks->get();
    return ["data" => $asks, "count" => $count];
+ }
+
+ public function get_tuition($form, $id){
+   if(!isset($form['list'])) $form['list'] = '';
+   $default_sttus = 'new';
+   switch($form['list']){
+   }
+
+   if(!isset($form['search_lesson'])){
+     $form['search_lesson'] = [];
+   }
+
+   $form['_sort'] ='lesson, course_type, kids_lesson';
+
+   $statuses = [];
+   $types = [];
+   $is_desc = false;
+
+   $sort = 'asc';
+   if(isset($form['is_desc']) && $form['is_desc']==1){
+     $sort = 'desc';
+   }
+
+   $tuitions = Tuition::where('tuition','>', '0');
+   if($this->domain == "students"){
+     $tuitions->where('student_id', $id);
+   }
+   else if($this->domain == "teachers"){
+     $tuitions->where('teacher_id', $id);
+   }
+
+   $count = $tuitions->count();
+
+   //echo $tuitions->toSql();
+   $tuitions = $tuitions->get();
+   return ["data" => $tuitions, "count" => $count];
  }
 
  /**

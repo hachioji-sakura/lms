@@ -15,7 +15,7 @@ class CreateTrialStudents extends Migration
     {
       Schema::create('trial_students', function (Blueprint $table) {
           $table->increments('id');
-          $table->integer('trial_id')->nullable(false)->index('index_trial_id')->comment('カレンダーID');
+          $table->integer('trial_id')->nullable(false)->index('index_trial_id')->comment('体験申し込みID');
           $table->integer('student_id')->nullable(false)->index('index_student_id')->comment('対象生徒ID');
           $table->timestamps();
       });

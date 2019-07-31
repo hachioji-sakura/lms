@@ -13,11 +13,13 @@
         @csrf
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
+        <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
+        <input type="hidden" name="lesson_week_count" value="{{$item->get_tag('lesson_week_count')->tag_value}}">
         <div class="row mb-1">
           <div class="col-md-12">
             <div class="card card-widget mb-2">
               <div class="card-header">
-                <i class="fa fa-edit mr-1"></i>{{__('labels.regular_schedule_setting')}}1
+                <i class="fa fa-edit mr-1"></i>{{__('labels.regular_schedule_setting')}}
               </div>
               <div class="card-footer">
                 <div class="row">
@@ -31,12 +33,9 @@
                       </span>
                     </div>
                   </div>
-
-                  @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
-                  <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
-
+                  @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                 </div>
               </div>
             </div>
@@ -45,7 +44,8 @@
           <div class="col-md-12">
             <div class="card card-widget mb-2">
               <div class="card-header">
-                <i class="fa fa-edit mr-1"></i>{{__('labels.regular_schedule_setting')}}2
+                <i class="fa fa-calendar-alrt mr-1"></i>
+                {{__('labels.regular_schedule_setting')}}
               </div>
               <div class="card-footer">
                 <div class="row">
@@ -103,6 +103,8 @@
     @endif
   </div>
 </section>
+@component('tuitions.forms.calc_script', []) @endcomponent
+
 <script>
 $(function(){
   base.pageSettinged("trial_to_register", null);

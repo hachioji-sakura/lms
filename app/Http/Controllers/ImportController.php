@@ -524,7 +524,7 @@ class ImportController extends UserController
       }
       else {
         //仮の生年月日
-        $item['_birth_day'] = '1900-01-01';
+        $item['_birth_day'] = '9999-12-31';
       }
 
       $item['status'] = 1; //インポートしただけで、アカウント通知が必要な状況

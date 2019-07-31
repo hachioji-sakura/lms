@@ -1,5 +1,5 @@
 @section('title')
-{{__('labels.comment_list')}}
+{{__('labels.comments_list')}}
 @endsection
 @extends('dashboard.common')
 @include('dashboard.lists')

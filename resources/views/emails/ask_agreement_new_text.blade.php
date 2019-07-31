@@ -20,7 +20,7 @@
 
 …………………………………………………………………………………………
 入会登録画面
-{{config('app.url')}}/asks/{{$ask->id}}/agreement?key={{$access_key}}
+{{config('app.url')}}/asks/{{$ask->id}}/agreement?key={{$target_model->parent->user->access_key}}
 
 【重要】欠席連絡について
 
