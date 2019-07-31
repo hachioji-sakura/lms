@@ -26,5 +26,6 @@ class VerifyCsrfToken extends Middleware
       'import/*',
       'export/*',
       'api_setting_to_calendar*',
+      'upload_images',
     ];
 }

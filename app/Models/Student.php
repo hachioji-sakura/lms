@@ -8,6 +8,7 @@ use App\Models\StudentParent;
 use App\Models\Student;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
+use App\Models\Tuition;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -82,7 +83,7 @@ class Student extends Model
     if (App::isLocale('en')) {
       $format = 'Y-m-d';
     }
-    if(isset($this->birth_day)){
+    if(isset($this->birth_day) && $this->birth_day!='9999-12-31'){
       return date($format, strtotime($this->birth_day));
     }
     return "-";
@@ -212,7 +213,7 @@ class Student extends Model
    *　リレーション：受講料データ
    */
   public function tuitions(){
-    return $this->hasMany('App\Models\Tution', 'student_id');
+    return $this->hasMany('App\Models\Tuition', 'student_id');
   }
   /**
    *　リレーション：家族関係
@@ -859,5 +860,23 @@ EOT;
     }
     return '';
   }
-
+  public function get_tuition($setting, $is_enable_only=true){
+    $tuitions = $this->tuitions->where('lesson', $setting->get_tag_value('lesson'))
+    ->where('course_type', $setting->get_tag_value('course_type'))
+    ->where('course_minutes', $setting->get_tag_value('course_minutes'))
+    ->where('teacher_id', $setting->user->details()->id);
+    if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
+      $tuitions =  $tuitions->where('subject', $setting->get_tag_value('subject'));
+    }
+    else if($setting->get_tag_value('lesson')==4){
+      $tuitions =  $tuitions->where('subject', $setting->get_tag_value('kids_lesson'));
+    }
+    $tuitions = $tuitions->sortByDesc('id');
+    if(!isset($tuitions)) return null;
+    foreach($tuitions as $tuition){
+      if($is_enable_only==true && $tuition->is_enable()==false) continue;
+      return $tuition->tuition;
+    }
+    return null;
+  }
 }

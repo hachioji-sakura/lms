@@ -13,16 +13,6 @@ class MilestoneController extends UserController
     public $domain = 'milestones';
     public $table = 'milestones';
 
-    public $list_fields = [
-      'id' => [
-        'label' => 'ID',
-      ],
-      'title' => [
-        'label' => 'タイトル',
-        'link' => 'show',
-      ],
-    ];
-
     /**
      * このdomainで管理するmodel
      *
@@ -78,7 +68,7 @@ class MilestoneController extends UserController
       $form['create_user_id'] = $user->user_id;
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
-      $form['body'] = $request->get('body');
+      $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
       $form['target_user_id'] = $this->get_target_user_id($request);
       return $form;
     }
@@ -208,18 +198,27 @@ class MilestoneController extends UserController
       foreach($items as $key => $item){
         $items[$key] = $item->details();
       }
-      $fields = $this->list_fields;
-      /*
-      if($this->is_manager_or_teacher($user->role)===true){
-        //生徒以外の場合は、対象者も表示する
-        $fields['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
-      }
+      $fields = [
+        'id' => [
+          'label' => 'ID',
+        ],
+        'title' => [
+          'label' => 'タイトル',
+          'link' => 'show',
+        ],
+      ];
+      $fields['target_user_name'] = [
+        'label' => '対象者',
+      ];
+      $fields['create_user_name'] = [
+        'label' => '起票者',
+      ];
+      $fields['publiced_at'] = [
+        'label' => '公開日',
+      ];
       $fields['created_at'] = [
         'label' => __('labels.add_datetime'),
       ];
-      */
       $fields['buttons'] = [
         'label' => '操作',
         'button' => ['edit', 'delete']

@@ -1,5 +1,5 @@
 @section('title')
-{{__('labels.milestone_list')}}
+{{__('labels.milestones_list')}}
 @endsection
 @extends('dashboard.common')
 @include('dashboard.lists')

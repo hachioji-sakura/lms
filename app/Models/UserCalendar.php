@@ -292,6 +292,13 @@ EOT;
     }
     return "";
   }
+  public function get_tag_value($tag_key){
+    $tag =  $this->get_tag($tag_key);
+    if(isset($tag)){
+      return $tag->tag_value;
+    }
+    return "";
+  }
   public function get_attribute_name($key, $val){
     $item = GeneralAttribute::findKeyValue($key,$val)->first();
     if(isset($item)) return $item->attribute_name;
@@ -304,7 +311,7 @@ EOT;
     return $this->get_attribute('course_type', $is_value);
   }
   public function course_minutes($is_value=false){
-    return $this->get_attribute('couse_minutes', $is_value);
+    return $this->get_attribute('course_minutes', $is_value);
   }
   public function get_attribute($key, $is_value=false){
     if($is_value==true){

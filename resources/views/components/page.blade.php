@@ -4,8 +4,14 @@
 <div id="{{$domain}}_">
 @endisset
 
-@if(isset($page_message))
-  <h6>{{$page_message}}</h6>
+@if(!empty($page_message))
+<div class="col-12 col-lg-12 col-md-12 mb-1">
+  @if(isset($action) && $action=='delete')
+    <h4 class="text-danger">{{$page_message}}</h4>
+  @else
+    <h6>{{$page_message}}</h6>
+  @endif
+</div>
 @elseif(isset($action) && $action=='delete')
 <div class="col-12 col-lg-12 col-md-12 mb-1">
   <h4 class="text-danger">削除してもよろしいですか？</h4>

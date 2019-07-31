@@ -86,9 +86,6 @@ class AskController extends MilestoneController
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    if(!isset($user)) {
-      abort(403);
-    }
     $ret = [
       'domain' => $this->domain,
       'domain_name' => __('labels.'.$this->domain),
@@ -99,6 +96,7 @@ class AskController extends MilestoneController
       'teacher_id' => $request->teacher_id,
       'manager_id' => $request->manager_id,
       'student_id' => $request->student_id,
+      'access_key' => $request->key,
       'search_word'=>$request->search_word,
       '_page' => $request->get('_page'),
       '_line' => $request->get('_line'),
@@ -109,9 +107,24 @@ class AskController extends MilestoneController
       'search_status'=>$request->status,
     ];
 
+    if(!isset($user)) {
+      if($request->has('key') && $this->is_enable_token($ret['access_key'])){
+        $user = User::where('access_key', $ret['access_key'])->first();
+        $user = $user->details();
+      }
+    }
+    if(!isset($user)) {
+      abort(403);
+    }
+
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $ret['item'] = $item->details();
+      if($this->is_manager($user->role)!=true &&
+        $ret['item']->target_user_id != $user->user_id &&
+        $ret['item']->charge_user_id != $user->user_id ){
+          abort(403);
+      }
     }
     return $ret;
   }
@@ -324,6 +337,16 @@ class AskController extends MilestoneController
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['action'] = '';
      return view('calendars.teacher_change', [])->with($param);
+   }
+   public function agreement_page(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+
+     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+     
+     $param['fields'] = $this->show_fields($param['item']->type);
+     $param['action'] = '';
+     return view('asks.agreement', [])->with($param);
    }
    public function daily_proc(Request $request, $d='')
    {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Trial;
+use App\Models\Tuition;
 use App\Models\UserCalendar;
 use DB;
 use View;
@@ -274,7 +275,6 @@ class TrialController extends UserCalendarController
       $items = $items->findStatuses($request->status);
     }
     else {
-      $items = $items->findStatuses("new");
     }
     //検索ワード
     if(isset($request->search_word)){
@@ -591,30 +591,67 @@ class TrialController extends UserCalendarController
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
+
      return view($this->domain.'.admission_mail',
        ['sended' => '',
         '_edit' => false])
        ->with($param);
    }
    public function admission_mail_send(Request $request, $id){
-      $access_key = $this->create_token();
-      $param = $this->get_param($request, $id);
-      $trial = Trial::where('id', $id)->first();
+     $param = $this->get_param($request, $id);
 
-      $res = $this->transaction(function() use ($trial, $access_key){
-        //保護者にアクセスキーを設定
-        $trial->parent->user->update(['access_key' => $access_key]);
-        //この体験に関してはいったん完了ステータス
-        $trial->update(['status' => 'complete']);
-        return $trial;
+      $res = $this->transaction(function() use ($request, $id, $param){
+        $trial = Trial::where('id', $id)->first();
+        $access_key = $this->create_token();
+        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+        //受講料初期設定
+        foreach($trial->trial_students as $s){
+          //受講料delete-insert
+          Tuition::where('student_id' , $s->student_id)->delete();
+          foreach($s->student->user->calendar_setting() as $schedule_method => $d1){
+            foreach($d1 as $lesson_week => $settings){
+              foreach($settings as $setting){
+                $setting = $setting->details();
+                $subject = '';
+                if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
+                  $subject= $setting->get_tag_value('subject');
+                }
+                elseif($setting->get_tag_value('lesson')==4){
+                  $subject= $setting->get_tag_value('kids_lesson');
+                }
+                if($request->has($setting->id.'_tuition')!=true){
+                  continue;
+                }
+                Tuition::add([
+                  'student_id' => $s->student_id,
+                  'teacher_id' => $setting->user->details()->id,
+                  'tuition' => $request->get($setting->id.'_tuition'),
+                  'title' => $setting['title'],
+                  'remark' => '',
+                  "lesson" => $setting->get_tag_value('lesson'),
+                  "course_type" => $setting->get_tag_value('course_type'),
+                  "course_minutes" => $setting->get_tag_value('course_minutes'),
+                  "grade" => $s->student->tag_value('grade'),
+                  "lesson_week_count" => $s->student->tag_value('lesson_week_count'),
+                  "subject" => $subject,
+                  "create_user_id" => $param['user']->user_id,
+                  "start_date" => '9999-12-31',
+                  "end_date" => '9999-12-31',
+                ]);
+              }
+            }
+          }
+        }
+        return $ask;
       }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-
+/*
       if($this->is_success_response($res)){
         $email = $param['item']['parent_email'];
         $user_name = $param['item']['parent_name'];
         $this->send_mail($email,
          '入会のご案内',
         [
+        'ask' => $res['data']->details(),
         'user_name' => $user_name,
         'access_key' => $access_key,
         'comment' => $request->get('comment'),
@@ -623,6 +660,7 @@ class TrialController extends UserCalendarController
         'text',
         'trial_register');
       }
+*/
       return $this->save_redirect($res, [], '入会案内メールを送信しました。');
     }
    public function admission_submit(Request $request, $id){

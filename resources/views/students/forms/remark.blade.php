@@ -1,6 +1,6 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="howto" class="w-100">
+    <label for="remark" class="w-100">
       その他、ご要望がございましたらこちらにご入力ください
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>

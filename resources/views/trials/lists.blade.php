@@ -123,7 +123,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=absence,presence" class="nav-link @if($_status=="absence,presence") active @endif">
+        <a href="/{{$domain}}" class="nav-link @if(empty($_status)) active @endif">
           <i class="fa fa-history nav-icon"></i>履歴
         </a>
       </li>

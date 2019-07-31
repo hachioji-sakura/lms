@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use App\Models\StudentParent;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
+use App\Models\Ask;
 
 class Trial extends Model
 {
@@ -588,9 +589,11 @@ EOT;
     else {
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
     }
-    foreach($this->trial_students as $trial_student){
-      $student = Student::where('id', $trial_student->student_id)->first();
-      $setting->memberAdd($student->user_id, $form['create_user_id']);
+    if(isset($setting)){
+      foreach($this->trial_students as $trial_student){
+        $student = Student::where('id', $trial_student->student_id)->first();
+        $setting->memberAdd($student->user_id, $form['create_user_id']);
+      }
     }
     return $setting;
   }
@@ -999,4 +1002,25 @@ EOT;
     }
     return $ret;
   }
+  public function agreement_ask($create_user_id, $access_key){
+    //この体験に関してはいったん完了ステータス
+    //保護者にアクセスキーを設定
+    $this->parent->user->update(['access_key' => $access_key]);
+    $this->update(['status' => 'complete']);
+
+    Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
+        ->where('status', 'new')->where('type', 'agreement')->delete();
+
+    $ask = Ask::add("agreement", [
+      "end_date" => date("Y-m-d", strtotime("30 day")),
+      "body" => "",
+      "target_model" => "trials",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->parent->user_id,
+      "charge_user_id" => 1,
+    ]);
+    return $ask;
+  }
+
 }

@@ -28,8 +28,24 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function dispose(){
-    $this->delete();
-    $this->office_system_api('DELETE');
+    $setting = $this->setting;
+    $student_count = 0;
+    foreach($setting->members as $member){
+      if($member->id == $this->id) continue;
+      $_m = $member->user->details('students');
+      if($_m->role=="student"){
+        $student_count++;
+      }
+    }
+    if($student_count==0){
+      //生徒がいなくなったのですべて削除
+      $setting->dispose();
+    }
+    else {
+      //生徒がまだ存在する
+      $this->delete();
+      $this->office_system_api('DELETE');
+    }
   }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;

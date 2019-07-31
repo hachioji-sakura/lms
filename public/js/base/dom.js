@@ -18,7 +18,7 @@
 		setPasswordForm : setPasswordForm,
 		setBarcodeForm : setBarcodeForm,
 		setPostnoForm : setPostnoForm,
-		setCalenderForm : setCalenderForm,
+		setCalendarForm : setCalendarForm,
 		setEditorForm : setEditorForm,
 		setNumberForm : setNumberForm,
 		paramPageLoad : paramPageLoad,
@@ -326,11 +326,11 @@
 	/**
 	* 日付入力フォーム設定
 	* uitype:datepickerに対し、datepickerを設定する
-	* @method setCalenderForm
+	* @method setCalendarForm
 	* @param formId {String}
 	* @return {void} return nothing
 	*/
-	function setCalenderForm(formId){
+	function setCalendarForm(formId){
 		$("input[type=text][uitype=datepicker]", $("#"+formId)).each(function(){
 			var val = $(this).val();
 			var max = $(this).attr("maxvalue");
@@ -390,7 +390,14 @@
 	function setEditorForm(formId){
 		$("textarea[uitype=ckeditor]", $("#"+formId)).each(function(){
 			ClassicEditor
-	      .create(this)
+	      .create(this,{
+					ckfinder: {
+  						uploadUrl: '/upload_images',
+	            options: {
+	                resourceType: 'Images'
+	            }
+	        }
+				})
 	      .then(function (editor) {
 	        // The editor instance
 					console.log(editor);

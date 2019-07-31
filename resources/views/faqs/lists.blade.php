@@ -34,7 +34,7 @@
                 </div>
                 @if(isset($user) && $user->role=='manager')
                 <div class="col-12 text-sm mt-1 text-right">
-                  <a class="btn btn-sm btn-success"  href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}/edit" role="button" >
+                  <a class="btn btn-sm btn-success"  href="/{{$domain}}/{{$item['id']}}/edit" role="button" >
                     <i class="fa fa-edit mr-1"></i>{{__('labels.edit')}}
                   </a>
                   <a class="btn btn-sm btn-danger"  href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}?action=delete" role="button">
@@ -55,6 +55,5 @@
     </div>
   </div>
 </section>
-
 
 @endsection
