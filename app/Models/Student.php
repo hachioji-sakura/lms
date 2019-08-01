@@ -31,6 +31,7 @@ class Student extends Model
    *　プロパティ：年齢
    */
   public function age(){
+    if($this->birth_day=='9999-12-31') return '-';
     return floor((date("Ymd") - str_replace("-", "", $this->birth_day))/10000);
   }
 
@@ -83,10 +84,12 @@ class Student extends Model
     if (App::isLocale('en')) {
       $format = 'Y-m-d';
     }
-    if(isset($this->birth_day) && $this->birth_day!='9999-12-31'){
-      return date($format, strtotime($this->birth_day));
-    }
-    return "-";
+    if(!isset($this->birth_day)) return '-';
+    if(empty($this->birth_day)) return '-';
+    if($this->birth_day=='9999-12-31') return '-';
+    if($this->birth_day=='9999/12/31') return '-';
+    $d = date($format, strtotime($this->birth_day));
+    return $d;
   }
   /**
    *　プロパティ：学年

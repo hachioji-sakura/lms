@@ -223,6 +223,11 @@ EOT;
           ]);
         }
         break;
+      case "agreement":
+        $ret = true;
+        $is_complete = true;
+        $target_model_data->agreement($is_commit);
+        break;
       case "rest_cancel":
         $ret = true;
         $is_complete = true;
@@ -302,7 +307,7 @@ EOT;
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
     if($this->target_user_id==1) return false;
-    $title = $this->type_name().':'.$this->status_name();
+    $title = $this->type_name();//.':'.$this->status_name();
     \Log::info("target_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
@@ -317,7 +322,7 @@ EOT;
 
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
-    $title = $this->type_name().':'.$this->status_name();
+    $title = $this->type_name();//.':'.$this->status_name();
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->charge_user->details('students')->role=='student'){

@@ -53,11 +53,6 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       lms.user_calendar_settings.status = 'fix'
-      AND (
-       (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
-       AND
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
-      )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
@@ -211,7 +206,7 @@ EOT;
   public function change($form){
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
-      'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
+      'remark', 'place', 'work', 'lecture_id', 'status',
     ];
     $form['lesson_week'] = $this->lesson_week;
     $form['from_time_slot'] = $this->from_time_slot;
@@ -312,13 +307,6 @@ EOT;
     $add_calendar_date = [];
     if(empty($start_date)) $start_date = date('Y-m-01'); //月初
 
-    if(isset($this->enable_start_date)){
-      if(strtotime($start_date) < strtotime($this->enable_start_date)){
-        //月初以降の有効開始日の場合、そちらを使う
-        $start_date = $this->enable_start_date;
-      }
-    }
-
     //1か月後の月末
     $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
 
@@ -369,13 +357,7 @@ EOT;
       $ret[$date] = [];
       $_calendars = $this->calendars->where('start_time', $date.' '.$this->from_time_slot)
         ->where('end_time', $date.' '.$this->to_time_slot);
-        /*
-      $_calendars = UserCalendar::where('user_id', $this->user_id)
-        ->where('place', $this->place)
-        ->where('work', $this->work)
-        ->where('start_time', $date.' '.$this->from_time_slot)
-        ->where('end_time', $date.' '.$this->to_time_slot)->get();
-        */
+
       $is_member = true;
       if(count($_calendars) > 0){
         //同じ日付のカレンダーがすでに作成済み

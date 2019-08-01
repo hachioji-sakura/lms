@@ -196,11 +196,24 @@ class UserCalendarSettingController extends UserCalendarController
         'teacher_user_id' => $setting->user_id,
         'create_user_id' => 1,
       ];
+      $start_date = $date;
+      $is_enable = false;
+      foreach($setting->members as $member){
+        if($member->is_enable($date)==true){
+          $is_enable = true;
+          break;
+        }
+      }
+      if($is_enable==false){
+        //有効なメンバーがいない
+        return null;
+      }
 
       $calendar = UserCalendar::add($form);
 
       foreach($setting->members as $member){
         if($setting->user_id == $member->user_id) continue;
+        if($member->is_enable != true) continue;
         //主催者以外を追加
         $calendar->memberAdd($member->user_id, 1, $default_status);
       }

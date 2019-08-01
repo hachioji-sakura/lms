@@ -13,6 +13,11 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
+          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/agreement" >
+            <i class="fa fa-file-invoice nav-icon"></i>ご契約情報
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
@@ -22,9 +27,11 @@
 </ul>
 @endsection
 @section('page_footer')
+{{--
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
     <i class="fa fa-comment-dots"></i>コメント登録
   </a>
 </dt>
+--}}
 @endsection

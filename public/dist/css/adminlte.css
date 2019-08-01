@@ -13457,3 +13457,7 @@ ul.wysihtml5-toolbar{
 .ck-editor__editable_inline {
     min-height: 240px;
 }
+.tab-link .active{
+	color:#FFFFFF;
+	background-color: #007bff !important;
+}
