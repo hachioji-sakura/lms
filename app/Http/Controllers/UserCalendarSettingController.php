@@ -139,7 +139,7 @@ class UserCalendarSettingController extends UserCalendarController
       return $form;
     }
     public function api_setting_to_calendar(Request $request, $id=0){
-      $settings = UserCalendarSetting::where('status', 'fix');
+      $settings = UserCalendarSetting::enable();
       if($id>0){
         $settings = $settings->where('id', $id);
       }

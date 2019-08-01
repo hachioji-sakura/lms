@@ -45,9 +45,8 @@
 </div>
 <div class="card-body">
   <form action="/examinations/{{$textbook_id}}/{{$chapter_id}}/{{$item['id']}}" method="POST" autocomplete="off">
-    
-@csrf
-		<input type="text" name="dummy" style="display:none;" / >
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" size=30 id="start_time" name="start_time" value="{{date('Y-m-d H:i:s')}}"/>
     <div class="row">
       <div class="col-12">

@@ -82,9 +82,8 @@
       </form>
     @else
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest_cancel">
-        
-@csrf
-		<input type="text" name="dummy" style="display:none;" / >
+        @csrf
+		    <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         @if(isset($student_id))
           <input type="hidden" value="{{$student_id}}" name="student_id" />

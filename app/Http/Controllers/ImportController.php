@@ -837,7 +837,6 @@ class ImportController extends UserController
         $member = UserCalendarMemberSetting::create([
             'user_calendar_setting_id' => $setting->id,
             'user_id' => $user_id,
-            'status' => 'fix',
             'remark' => '',
             'create_user_id' => 1,
             'setting_id_org' => $item['id'],
@@ -851,7 +850,6 @@ class ImportController extends UserController
           $__member = UserCalendarMemberSetting::create([
               'user_calendar_setting_id' => $setting->id,
               'user_id' => $student->user_id,
-              'status' => 'fix',
               'remark' => '',
               'create_user_id' => 1,
               'setting_id_org' => $item['id'],
@@ -1153,6 +1151,7 @@ class ImportController extends UserController
         ->where('work', $work)
         ->where('place_floor_id', $floor_id)
         ->where('lesson_week', $lesson_week)
+        ->enable()
         ->get();
       foreach($settings as $setting){
         $is_member = true;

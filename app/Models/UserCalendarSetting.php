@@ -211,7 +211,7 @@ EOT;
   public function change($form){
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
-      'remark', 'place', 'work', 'lecture_id', 'status',
+      'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
     ];
     $form['lesson_week'] = $this->lesson_week;
     $form['from_time_slot'] = $this->from_time_slot;
