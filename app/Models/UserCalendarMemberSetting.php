@@ -166,8 +166,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
           "kind" => $kind,
           "dayofweek" => $dayofweek,
           "dayofmonth" => $dayofmonth,
-          "startdate" => $this->enable_start_date,
-          "enddate" => $this->enable_end_date,
+          "startdate" => $this->setting->enable_start_date,
+          "enddate" => $this->setting->enable_end_date,
           "starttime" => $this->setting->from_time_slot,
           "endtime" => $this->setting->to_time_slot,
           "lecture_id" => $lecture_id_org,
@@ -207,13 +207,5 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     return $res;
   }
-  public function is_enable($date=''){
-    if(empty($date)) $date = date('Y/m/d H:i:s');
 
-    $s = strtotime($this->enable_start_date.' 00:00:00');
-    $e = strtotime($this->enable_end_date.' 00:00:00');
-    $now = strtotime($date);
-    if($s < $now && $e > $now) return true;
-    return false;
-  }
 }

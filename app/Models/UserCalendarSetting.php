@@ -53,6 +53,11 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       lms.user_calendar_settings.status = 'fix'
+      AND (
+       (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
+       AND
+       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
+      )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
@@ -307,6 +312,12 @@ EOT;
     $add_calendar_date = [];
     if(empty($start_date)) $start_date = date('Y-m-01'); //月初
 
+    if(isset($this->enable_start_date)){
+      if(strtotime($start_date) < strtotime($this->enable_start_date)){
+        //月初以降の有効開始日の場合、そちらを使う
+        $start_date = $this->enable_start_date;
+      }
+    }
     //1か月後の月末
     $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
 
@@ -314,6 +325,7 @@ EOT;
       //1か月後月末以前に設定が切れる場合、そちらを使う
       $end_date = $this->enable_end_date;
     }
+
     //echo $start_date."\n";
     $_w = date('w', strtotime($start_date));
     $_week_no = [

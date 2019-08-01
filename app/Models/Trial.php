@@ -1022,5 +1022,16 @@ EOT;
     ]);
     return $ask;
   }
+  public function agreement($is_commit=false){
+    if($is_commit==false){
+    }
+    else {
+      //①通常授業スケジュールをfix
+      foreach($this->trial_students as $trial_student){
 
+      }
+      //②受講料期限を更新し有効にする
+      //③保護者に本登録依頼メール（入会手続き完了メール）
+    }
+  }
 }

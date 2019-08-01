@@ -139,7 +139,7 @@ class UserCalendarSettingController extends UserCalendarController
       return $form;
     }
     public function api_setting_to_calendar(Request $request, $id=0){
-      $settings = UserCalendarSetting::enable();
+      $settings = UserCalendarSetting::where('status', 'fix');
       if($id>0){
         $settings = $settings->where('id', $id);
       }
@@ -173,6 +173,9 @@ class UserCalendarSettingController extends UserCalendarController
       return $this->api_response(200, "", "", $data);
     }
     private function _to_calendar($date, $setting){
+      //担当講師が本登録でない場合、登録できない
+      if($setting->user->status!='regular') return null;
+
       $start_time = $date.' '.$setting->from_time_slot;
       $end_time = $date.' '.$setting->to_time_slot;
       $c = UserCalendar::rangeDate($start_time, $end_time)
@@ -198,11 +201,12 @@ class UserCalendarSettingController extends UserCalendarController
       ];
       $start_date = $date;
       $is_enable = false;
+
       foreach($setting->members as $member){
-        if($member->is_enable($date)==true){
-          $is_enable = true;
-          break;
-        }
+        if($setting->user_id == $member->user_id) continue;
+        if($member->user->details()->status != 'regular') continue;
+        $is_enable = true;
+        break;
       }
       if($is_enable==false){
         //有効なメンバーがいない
@@ -213,7 +217,8 @@ class UserCalendarSettingController extends UserCalendarController
 
       foreach($setting->members as $member){
         if($setting->user_id == $member->user_id) continue;
-        if($member->is_enable != true) continue;
+        if(strtotime($member->user->created_at) > strtotime($date)) continue;
+        if($member->user->details()->status != 'regular') continue;
         //主催者以外を追加
         $calendar->memberAdd($member->user_id, 1, $default_status);
       }
@@ -222,9 +227,6 @@ class UserCalendarSettingController extends UserCalendarController
     public function search(Request $request, $user_id=0)
     {
       $items = $this->model();
-
-      //設定有効なものだけ表示（設定開始～終了）
-      //$items = $items->enable();
 
       //曜日検索
       if(isset($request->search_week)){

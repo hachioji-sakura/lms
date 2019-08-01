@@ -14,8 +14,8 @@ class DropEnableStartDateUserCalendarSettings extends Migration
     public function up()
     {
         Schema::table('user_calendar_settings', function (Blueprint $table) {
-          $table->dropColumn('enable_start_date');
-          $table->dropColumn('enable_end_date');
+          $table->date('enable_start_date')->after('status')->nullable(true)->comment('設定有効開始日')->change();
+          $table->date('enable_end_date')->after('enable_start_date')->nullable(true)->comment('設定有効終了日')->change();
         });
     }
 
@@ -27,8 +27,8 @@ class DropEnableStartDateUserCalendarSettings extends Migration
     public function down()
     {
         Schema::table('user_calendar_settings', function (Blueprint $table) {
-          $table->timestamp('enable_start_date')->after('status')->nullable(true)->comment('設定有効開始日');
-          $table->timestamp('enable_end_date')->after('enable_start_date')->nullable(true)->comment('設定有効終了日');
+          $table->date('enable_start_date')->after('status')->nullable(true)->comment('設定有効開始日')->change();
+          $table->date('enable_end_date')->after('enable_start_date')->nullable(true)->comment('設定有効終了日')->change();
         });
     }
 }

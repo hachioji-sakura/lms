@@ -767,6 +767,8 @@ class ImportController extends UserController
         'lesson_week' => $item["lesson_week"],
         'from_time_slot' => $item["starttime"],
         'to_time_slot' => $item["endtime"],
+        'enable_start_date' => $this->get_date($item["startdate"]),
+        'enable_end_date' => $this->get_date($item["enddate"]),
         'remark' => $item["comment"],
         'lecture_id' => $lecture_id,
         'place_floor_id' => $floor_id,
@@ -836,8 +838,6 @@ class ImportController extends UserController
             'user_calendar_setting_id' => $setting->id,
             'user_id' => $user_id,
             'status' => 'fix',
-            'enable_start_date' => $this->get_date($item["startdate"]),
-            'enable_end_date' => $this->get_date($item["enddate"]),
             'remark' => '',
             'create_user_id' => 1,
             'setting_id_org' => $item['id'],
@@ -852,8 +852,6 @@ class ImportController extends UserController
               'user_calendar_setting_id' => $setting->id,
               'user_id' => $student->user_id,
               'status' => 'fix',
-              'enable_start_date' => $this->get_date($item["startdate"]),
-              'enable_end_date' => $this->get_date($item["enddate"]),
               'remark' => '',
               'create_user_id' => 1,
               'setting_id_org' => $item['id'],
@@ -1155,7 +1153,6 @@ class ImportController extends UserController
         ->where('work', $work)
         ->where('place_floor_id', $floor_id)
         ->where('lesson_week', $lesson_week)
-        ->enable()
         ->get();
       foreach($settings as $setting){
         $is_member = true;

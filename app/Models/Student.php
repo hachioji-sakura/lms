@@ -535,7 +535,6 @@ EOT;
   public function get_calendar_settings($filter){
     $items = UserCalendarSetting::findUser($this->user_id);
     $items = $items->enable();
-
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
