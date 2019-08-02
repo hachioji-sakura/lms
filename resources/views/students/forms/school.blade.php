@@ -4,7 +4,7 @@
       学年
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="{{$prefix}}grade" class="form-control" placeholder="学年" required="true" onChange="{{$prefix}}grade_select_change(this)" accesskey="{{$prefix}}grade" @if(isset($item) && !empty($item)) value="{{$item->get_tag('grade')['value']}}" @endif>
+    <select name="{{$prefix}}grade" class="form-control grade" placeholder="学年" required="true" onChange="grade_select_change()" accesskey="{{$prefix}}grade" @if(isset($item) && !empty($item)) value="{{$item->get_tag('grade')['value']}}" @endif>
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
@@ -14,7 +14,7 @@
     </select>
   </div>
 </div>
-<div class="col-12 col-lg-9 col-md-9 collapse {{$prefix}}school_name_form">
+<div class="col-12 col-lg-9 col-md-9 collapse {{$prefix}}grade_school_name_form">
   <div class="form-group">
     <label for="{{$prefix}}school_name" class="w-100">
       学校名
@@ -26,43 +26,48 @@
   </div>
 </div>
 <script>
-function {{$prefix}}grade_select_change(obj){
-  var _name = $(obj).attr('name');
-  var grade_name = $('select[name="'+_name+'"] option:selected').text().trim();
-  var is_school_name_show = false;
-  var _grade_name = "";
-  if(grade_name.substring(0,1)=="高"){
-    _grade_name = "高校";
-    is_school_name_show = true;
-  }
-  else if(grade_name.substring(0,1)=="中"){
-    _grade_name = "中学";
-    is_school_name_show = true;
-  }
-  else if(grade_name.substring(0,1)=="小"){
-    _grade_name = "小学";
-    is_school_name_show = true;
-  }
-  else if(grade_name.substring(0,1)=="大"){
-    _grade_name = "高校";
-    is_school_name_show = true;
-  }
-  else if(grade_name.substring(0,1)=="成"){
-    _grade_name = "高校";
-  }
-  console.log("{{$prefix}}grade_select_change["+_name+"]:"+grade_name+":"+is_school_name_show);
-  @isset($noscript)
-  @else
-  $(".grade-subject").hide();
-  $(".grade-subject[alt='"+_grade_name+"']").show();
-  @endif
-  if(is_school_name_show){
-    $(".{{$prefix}}school_name_form").collapse("show");
-    $(".{{$prefix}}school_name_confirm").collapse("show");
-  }
-  else {
-    $(".{{$prefix}}school_name_form").collapse("hide");
-    $(".{{$prefix}}school_name_confirm").collapse("hide");
-  }
+function grade_select_change(){
+  console.log("grade_select_change");
+  $('select.grade').each(function(index, element){
+    var _name = $(this).attr('name');
+    var grade_name = $('select[name="'+_name+'"] option:selected').text().trim();
+    var is_school_name_show = false;
+    var _grade_name = "";
+    if(grade_name.substring(0,1)=="高"){
+      _grade_name = "高校";
+      is_school_name_show = true;
+    }
+    else if(grade_name.substring(0,1)=="中"){
+      _grade_name = "中学";
+      is_school_name_show = true;
+    }
+    else if(grade_name.substring(0,1)=="小"){
+      _grade_name = "小学";
+      is_school_name_show = true;
+    }
+    else if(grade_name.substring(0,1)=="大"){
+      _grade_name = "高校";
+      is_school_name_show = true;
+    }
+    else if(grade_name.substring(0,1)=="成"){
+      _grade_name = "高校";
+    }
+    console.log("grade_select_change["+_name+"]:"+grade_name+":"+is_school_name_show);
+    @isset($noscript)
+    @else
+    $(".grade-subject").hide();
+    $(".grade-subject[alt='"+_grade_name+"']").show();
+    @endif
+    if(is_school_name_show){
+      $("."+_name+"_school_name_form").collapse("show");
+      $("."+_name+"_school_name_confirm").collapse("show");
+    }
+    else {
+      $("."+_name+"_school_name_form").collapse("hide");
+      $("."+_name+"_school_name_confirm").collapse("hide");
+    }
+
+  });
+
 }
 </script>

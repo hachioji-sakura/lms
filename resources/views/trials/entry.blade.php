@@ -141,6 +141,7 @@
 $(function(){
   var form_data = util.getLocalData('trials_entry');
   base.pageSettinged("trials_entry", form_data);
+  grade_select_change();
   $('#trials_entry').carousel({ interval : false});
   if(form_data && !util.isEmpty(form_data['student2_name_last'])){
     $('.student2').collapse('show');

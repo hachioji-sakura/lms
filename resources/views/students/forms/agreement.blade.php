@@ -2,9 +2,10 @@
 	<div class="container-fluid">
 		<div class="card">
 	    <div class="card-header d-flex p-0">
-	    <h5 class="card-title p-3 text-sm">
+	    <h4 class="card-title p-3 text-sm">
+				<i class="fa fa-user-graduate"></i>
 				{{$item->name()}}　様
-	    </h5>
+	    </h4>
 	    <ul class="nav nav-pills ml-auto p-2">
 	        <li class="tab-link text-secondary mr-2"><a class="btn btn-sm btn-default
 						@if(!isset($active_tab) || $active_tab==1)
@@ -31,19 +32,27 @@
 							active
 						@endif
 						" id="tab_{{$item->id}}_1">
-							<div class="row bd-r bd-l bd-b">
+							<div class="row">
+								{{--
 								<div class="col-12 p-0">
-				          <h5 class="bg-gray color-palette p-2 mb-2">
+				          <h5 class="p-2 mb-2 border-secondary bd-b">
 										<i class="fa fa-file"></i>
 										生徒様情報
 									</h5>
 								</div>
+								--}}
 			          <div class="col-6 p-2 font-weight-bold" >氏名</div>
 			          <div class="col-6 p-2">
 									<ruby style="ruby-overhang: none">
 										<rb>{{$item->name()}}</rb>
 										<rt>{{$item->kana()}}</rt>
 									</ruby>
+									<span class="ml-2">様</span>
+									<span class="text-xs mx-2">
+										<small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
+											{{$item->status_name()}}
+										</small>
+									</span>
 			          </div>
 			          <div class="col-6 p-2 font-weight-bold" >性別</div>
 			          <div class="col-6 p-2">{{$item->gender()}}</div>
@@ -76,15 +85,18 @@
 							active
 						@endif
 						" id="tab_{{$item->id}}_2">
-							<div class="row bd-r bd-l bd-b">
+							<div class="row">
+								{{--
 								<div class="col-12 p-0">
-				          <h5 class="bg-gray color-palette p-2 mb-2">
+									<h5 class="p-2 mb-2 border-secondary bd-b">
 										<i class="fa fa-clock"></i>
 										通塾スケジュール
 									</h5>
 								</div>
+								--}}
 								<?php
 									$tuition_form = [];
+									$is_exist = false;
 								?>
 			          @foreach($item->user->calendar_setting() as $schedule_method => $d1)
 			            @foreach($d1 as $lesson_week => $settings)
@@ -117,6 +129,7 @@
 					              </div>
 					              <div class="col-12 p-2 pl-4" >
 													<?php
+													$is_exist = true;
 													$setting_key = $setting->get_tag_value('lesson').'_';
 													$setting_key .= $setting->get_tag_value('course_type').'_';
 													$setting_key .= $setting->get_tag_value('course_minutes').'_';
@@ -192,6 +205,12 @@
 			              @endforeach
 			            @endforeach
 			          @endforeach
+								@if($is_exist==false)
+								<div class="alert">
+								  <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+								</div>
+
+								@endif
 						</div>
 	        </div>
 		    </div>

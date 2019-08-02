@@ -231,4 +231,9 @@ return [
   'important_check' => '重要事項について確認しました',
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',
+
+  'sep_year' => '年',
+  'sep_month' => '月',
+  'sep_day' => '日',
+
 ];

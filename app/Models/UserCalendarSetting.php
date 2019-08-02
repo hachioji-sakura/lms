@@ -94,6 +94,15 @@ EOT;
     $end_hour_minute = date('H:i',  strtotime($base_date.$this->to_time_slot));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
+  public function enable_date(){
+    $start_date = '';
+    $end_date = '';
+    if(!empty($this->enable_start_date) && $this->enable_start_date != '9999-12-31') $start_date = date('Y/m/d', strtotime($this->enable_start_date));
+    if(!empty($this->enable_end_date) && $this->enable_end_date != '9999-12-31') $end_date = date('Y/m/d', strtotime($this->enable_end_date));
+    if(empty($start_date) && empty($end_date)) return '-';
+    return $start_date.'～'.$end_date;
+  }
+
   public function details($user_id=0){
     $item = $this;
     $base_date = '2000-01-01 ';
@@ -105,6 +114,7 @@ EOT;
     $item['subject'] = $this->subject();
     $item['course_minutes_name'] = $this->course_minutes();
     $item['week_setting'] = $this->week_setting();
+    $item['enable_date'] = $this->enable_date();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
       $item['place_floor_name'] = $this->place_floor->name();
@@ -430,4 +440,80 @@ EOT;
     }
     return false;
   }
+
+  public function setting_to_calendar($start_date="", $range_month=1, $month_week_count=5){
+    $data = [];
+    \Log::warning("setting_to_calendar:[".$start_date."]");
+
+    $schedules = $this->get_add_calendar_date($start_date, $range_month, $month_week_count);
+    foreach($schedules as $date => $already_calendar){
+      if(isset($already_calendar) && count($already_calendar)>0){
+        //作成済みの場合
+        continue;
+      }
+      $data[] = $this->_to_calendar($date);
+    }
+    \Log::warning("setting_to_calendar:res=[".count($data)."]");
+    return $data;
+  }
+
+  private function _to_calendar($date){
+    \Log::warning("_to_calendar:[".$date."]");
+
+    //担当講師が本登録でない場合、登録できない
+    if($this->user->status!='regular') return null;
+
+    $start_time = $date.' '.$this->from_time_slot;
+    $end_time = $date.' '.$this->to_time_slot;
+    $c = UserCalendar::rangeDate($start_time, $end_time)
+    ->where('user_id', $this->user_id)
+      ->get();
+    $default_status = 'fix';
+    if(isset($c)){
+      //通常授業設定と競合するカレンダーが存在
+      $default_status = 'new';
+    }
+    $form = [
+      'status' => $default_status,
+      'user_calendar_setting_id' => $this->id,
+      'start_time' => $start_time,
+      'end_time' => $end_time,
+      'lecture_id' => $this->lecture_id,
+      'place' => $this->place,
+      'work' => $this->work,
+      'exchanged_calendar_id' => 0,
+      'remark' => $this->remark,
+      'teacher_user_id' => $this->user_id,
+      'create_user_id' => 1,
+    ];
+    $start_date = $date;
+    $is_enable = false;
+
+    foreach($this->members as $member){
+      if($this->user_id == $member->user_id) continue;
+      if($member->user->details()->status != 'regular') continue;
+      $is_enable = true;
+      break;
+    }
+
+    \Log::warning(":is_enable[".$is_enable."]");
+
+    if($is_enable==false){
+      //有効なメンバーがいない
+      return null;
+    }
+
+    $calendar = UserCalendar::add($form);
+
+    foreach($this->members as $member){
+      if($this->user_id == $member->user_id) continue;
+      if(strtotime($member->user->created_at) > strtotime($date)) continue;
+      if($member->user->details()->status != 'regular') continue;
+      //主催者以外を追加
+      $calendar->memberAdd($member->user_id, 1, $default_status);
+    }
+    \Log::warning(":calendar[".$calendar->id."]");
+    return $calendar;
+  }
+
 }

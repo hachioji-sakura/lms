@@ -315,6 +315,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->target_user->details()["name"];
+    $param["access_key"] = $this->target_user->access_key;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
   public function charge_user_mail($param){
@@ -329,6 +330,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->charge_user->details()["name"];
+    $param["access_key"] = $this->charge_user->access_key;
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
   }
   public function is_auto_commit(){

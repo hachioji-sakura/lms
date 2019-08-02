@@ -12,7 +12,7 @@
 {{__('messages.info_register_complete2')}}
 @elseif($send_to=="parent")
 {{$parent_name_last}} {{$parent_name_first}}様
-この度、入会お申込み誠にありがとうございます。
+この度、学習管理システムへの本登録が完了しました。
 
 下記のログイン画面より、学習管理システムをご利用ください。
 @endif

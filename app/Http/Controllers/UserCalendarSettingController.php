@@ -28,7 +28,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function show_fields($work){
       if($work==9){
         $ret = [
-          'title1' => [
+          'title' => [
             'label' => __('labels.title'),
             'size' => 6,
           ],
@@ -43,11 +43,15 @@ class UserCalendarSettingController extends UserCalendarController
             'label' => __('labels.charge_user'),
             'size' => 6,
           ],
+          'enable_date' => [
+            'label' => __('labels.subject'),
+            'size' => 12,
+          ],
         ];
       }
       else {
         $ret = [
-          'title1' => [
+          'title' => [
             'label' => __('labels.title'),
             'size' => 6,
           ],
@@ -68,6 +72,14 @@ class UserCalendarSettingController extends UserCalendarController
           ],
           'subject' => [
             'label' => __('labels.subject'),
+            'size' => 12,
+          ],
+          'subject' => [
+            'label' => __('labels.subject'),
+            'size' => 12,
+          ],
+          'enable_date' => [
+            'label' => '設定有効日',
             'size' => 12,
           ],
         ];

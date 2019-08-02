@@ -10,7 +10,7 @@ return array(
   'presence' => 'success',
   'new' => 'secondary',
   'cancel' => 'secondary',
-  'complete' => 'secondary',
+  'complete' => 'success',
   'trial' => 'warning',
   'regular' => 'success',
   'recess' => 'secondary',

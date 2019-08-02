@@ -8,9 +8,10 @@
 </ol>
 @endsection
 @section('content')
+@if($item->status=='new')
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item->get_target_model_data(), 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $trial, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
@@ -87,4 +88,32 @@ $(function(){
   });
 });
 </script>
+@elseif($item->status=='commit')
+<h4 class="bg-success p-3 text-sm">
+  ご入会のご連絡を頂き、大変感謝致します。<br>
+  <br>
+  大変お手数ですが、システムへのユーザー登録をしていただけますと幸いです。  <br>
+  <br>
+</h4>
+  <div class="col-12 mb-1" id="commit_form">
+    <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$access_key}}">
+      <i class="fa fa-sign-in-alt mr-1"></i>
+      ユーザー登録画面
+    </a>
+  </div>
+
+
+@elseif($item->status=='cancel')
+<h4 class="bg-success p-3 text-sm">
+  この度はご連絡いただき、誠にありがとうございました。
+
+  ご入会キャンセルの件、承知しました。
+
+  また、生徒様の学習方法・進学について、
+  お困りごとがありましたら、いつでも相談にのりますので、
+  ご気軽にご連絡ください。
+
+  どうぞよろしくお願い申し上げます。
+</h4>
+@endif
 @endsection

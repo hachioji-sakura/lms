@@ -238,8 +238,7 @@ class StudentParentController extends TeacherController
        }
        $param['parent'] = $user->first()->details();
        $student = Student::findChild($param['parent']->id)->orderBy('id', 'desc')->first();
-       $param['trial'] = Trial::where('student_id', $student->id)->where('student_parent_id', $param['parent']->id)->first()->details();
-       $param['student'] = $student;
+       $param['trial'] = Trial::where('student_parent_id', $param['parent']->id)->where('student_parent_id', $param['parent']->id)->first()->details();
        $param['access_key'] = $access_key;
        $param['_edit'] = false;
      }
@@ -278,13 +277,13 @@ class StudentParentController extends TeacherController
       if($this->is_success_response($res)){
         if(empty($param['user'])){
           $form['send_to'] = 'parent';
-          $this->send_mail($email, 'ご入会お申込みありがとうございます', $form, 'text', 'register');
+          $this->send_mail($email, 'システムへの本登録が完了しました', $form, 'text', 'register');
           if (!Auth::attempt(['email' => $email, 'password' => $password]))
           {
-            abort(500);
+            abort(400, 'ログインできない['.$email.']['.$password.']['.$access_key.']');
           }
         }
-        return $this->save_redirect($res, $param, 'ご入会お申込みありがとうございます', '/home');
+        return $this->save_redirect($res, $param, 'システムへの本登録が完了しました', '/home');
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
@@ -298,41 +297,26 @@ class StudentParentController extends TeacherController
         $user = $user->first();
         DB::beginTransaction();
         $form['create_user_id'] = $user->id;
-
-        $parent = StudentParent::where('id', $form['parent_id'])->first();
+        $parent = StudentParent::where('user_id', $user->id)->first();
         $parent->profile_update([
           'name_last' => $form['parent_name_last'],
           'name_first' => $form['parent_name_first'],
           'kana_last' => $form['parent_kana_last'],
           'kana_first' => $form['parent_kana_first'],
           'phone_no' => $form['phone_no'],
+          'status' => 'regular',
           'create_user_id' => $form['create_user_id'],
         ]);
 
-        $student = Student::where('id', $form['student_id'])->first();
-        $student->profile_update([
-          'name_last' => $student->name_last,
-          'name_first' => $student->name_first,
-          'gender' => $student->gender,
-          'kana_last' => $form['student_kana_last'],
-          'kana_first' => $form['student_kana_first'],
-          'phone_no' => $form['phone_no'],
-          'create_user_id' => $form['create_user_id'],
-        ]);
-        $student->user->update(['status' => 0]);
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
-        if(!empty($form['remark'])){
-          Comment::create([
-            'title' => '入会時・ご要望',
-            'body' => $form['remark'],
-            'type' => 'study',
-            'status' => 'new',
-            'publiced_at' => date('Y-m-d'),
-            'target_user_id' => $student->user_id,
-            'create_user_id' => $form['create_user_id'],
-          ]);
+/*
+        $trial = Trial::where('id', $form['trial_id'])->first();
+        //体験申し込みの生徒を本登録
+        foreach($trial->trial_students as $trial_student){
+          $trial_student->student->regular();
         }
+*/
         DB::commit();
         return $this->api_response(200, __FUNCTION__);
       }

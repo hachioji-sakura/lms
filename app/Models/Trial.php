@@ -206,6 +206,7 @@ EOT;
       $form["kana_first"] = $form["student2_kana_first"];
       $form["name_last"] = $form["student2_name_last"];
       $form["name_first"] = $form["student2_name_first"];
+      $form["birth_day"] = $form["student2_birth_day"];
       $form["gender"] = $form["student2_gender"];
       $form["grade"] = $form["student2_grade"];
       $form["school_name"] = $form["student2_school_name"];
@@ -217,6 +218,7 @@ EOT;
       $form["kana_first"] = $form["student3_kana_first"];
       $form["name_last"] = $form["student3_name_last"];
       $form["name_first"] = $form["student3_name_first"];
+      $form["birth_day"] = $form["student3_birth_day"];
       $form["gender"] = $form["student3_gender"];
       $form["grade"] = $form["student3_grade"];
       $form["school_name"] = $form["student3_school_name"];
@@ -1026,12 +1028,10 @@ EOT;
     if($is_commit==false){
     }
     else {
-      //①通常授業スケジュールをfix
       foreach($this->trial_students as $trial_student){
-
+        $trial_student->student->regular();
       }
-      //②受講料期限を更新し有効にする
-      //③保護者に本登録依頼メール（入会手続き完了メール）
     }
+    return true;
   }
 }

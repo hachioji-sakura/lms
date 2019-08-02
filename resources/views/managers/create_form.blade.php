@@ -24,7 +24,7 @@
   @component('students.forms.name', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
   @component('students.forms.kana', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
   <div class="col-12 mb-2">
-    @component('components.select_birthday', ['_edit'=>$_edit, 'item'  => $item])
+    @component('components.select_birthday', ['_edit'=>$_edit, 'item'  => $item, 'prefix'=>''])
     @endcomponent
   </div>
   <div class="col-12 mb-2">

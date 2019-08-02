@@ -7,9 +7,11 @@
 
 @section('contents')
 <section class="content mb-2">
-    @foreach($item->relations as $relation)
-    @component('students.forms.agreement', ['item' => $relation->student, 'domain' => $domain]) @endcomponent
-    @endforeach
+  @component('parents.forms.agreement', ['item' => $item, 'domain' => $domain]) @endcomponent
+
+  @foreach($item->relations as $relation)
+  @component('students.forms.agreement', ['item' => $relation->student, 'domain' => $domain]) @endcomponent
+  @endforeach
 </section>
 
 {{--まだ対応しない

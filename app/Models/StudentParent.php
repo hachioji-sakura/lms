@@ -4,6 +4,7 @@ namespace App\Models;
 //データセット
 use App\User;
 use App\Models\Student;
+use App\Models\Trial;
 use App\Models\UserTag;
 use App\Models\StudentParent;
 use App\Models\StudentRelation;
@@ -95,15 +96,17 @@ class StudentParent extends Teacher
     return $student;
   }
   public function profile_update($form){
-    $update_form = [
+    $update_fields = [
       'name_last' => "",
       'name_first' => "",
       'kana_last' => "",
       'kana_first' => "",
       'phone_no' => "",
       'address' => "",
+      'status' => "",
     ];
-    foreach($update_form as $key => $val){
+    $update_form = [];
+    foreach($update_fields as $key => $val){
       if(isset($form[$key])){
         $update_form[$key] = $form[$key];
       }

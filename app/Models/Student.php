@@ -367,6 +367,7 @@ EOT;
       'kana_first' => $form['kana_first'],
       'birth_day' => $form['birth_day'],
       'gender' => $form['gender'],
+      'status' => 'trial',
       'user_id' => $user->id,
       'create_user_id' => $user->id,
     ]);
@@ -815,6 +816,23 @@ EOT;
     $this->user->send_mail('休会終了のお知らせ', $param, 'text', 'recess_end');
     return ['user_calendar_members' => $user_calendar_members, 'conflict_calendar_members' => $conflict_calendar_members];
   }
+  public function regular(){
+    $this->user->update(['status' => 0]);
+    $this->update(['status' => 'regular']);
+    //カレンダー設定を有効にする
+    UserCalendarSetting::findUser($this->user_id)
+                  ->where('status', 'new')
+                  ->update(['status' => 'fix']);
+    //受講料を有効にする
+    Tuition::where('student_id', $this->id)->update(['start_date'=>date('Y-m-d')]);
+
+    $settings = $this->get_calendar_settings([]);
+    $res = [];
+    foreach($settings as $setting){
+      $res = array_merge($res, $setting->setting_to_calendar(date('Y-m-d')));
+    }
+    return $res;
+  }
   /**
    *　プロパティ：標準学年（年齢から算出）
    * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
@@ -881,4 +899,5 @@ EOT;
     }
     return null;
   }
+
 }

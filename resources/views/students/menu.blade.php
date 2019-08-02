@@ -9,6 +9,7 @@
         <rb>{{$item->name()}}</rb>
         <rt>{{$item->kana()}}</rt>
       </ruby>
+      <span class="ml-2">様</span>
     </a>
   </div>
 </div>
