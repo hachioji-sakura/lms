@@ -5,6 +5,8 @@
 @yield('start')
 
 <body class="hold-transition login-page">
+	@component('components.action_message', [])
+	@endcomponent
 	<div class="card-header p-0 w-100" style="position:fixed; z-index:1;">
 		@yield('title_header')
 	</div>

@@ -10,7 +10,8 @@
 </div>
 <div class="card-body">
   <form id="edit" method="POST" action="/{{$domain}}">
-      @csrf
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
       <div class="row">
         <div class="col-12 col-lg-6 col-md-6">
           <div class="form-group">

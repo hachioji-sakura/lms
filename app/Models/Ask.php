@@ -223,6 +223,11 @@ EOT;
           ]);
         }
         break;
+      case "agreement":
+        $ret = true;
+        $is_complete = true;
+        $target_model_data->agreement($is_commit);
+        break;
       case "rest_cancel":
         $ret = true;
         $is_complete = true;
@@ -302,7 +307,7 @@ EOT;
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
     if($this->target_user_id==1) return false;
-    $title = $this->type_name().':'.$this->status_name();
+    $title = $this->type_name();//.':'.$this->status_name();
     \Log::info("target_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
@@ -310,6 +315,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->target_user->details()["name"];
+    $param["access_key"] = $this->target_user->access_key;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
   public function charge_user_mail($param){
@@ -317,13 +323,14 @@ EOT;
 
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
-    $title = $this->type_name().':'.$this->status_name();
+    $title = $this->type_name();//.':'.$this->status_name();
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->charge_user->details('students')->role=='student'){
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->charge_user->details()["name"];
+    $param["access_key"] = $this->charge_user->access_key;
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
   }
   public function is_auto_commit(){

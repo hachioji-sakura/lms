@@ -19,7 +19,7 @@
     <div class="col-6 p-3">{{$trial_student->student->birth_day()}}</div>
   --}}
   <div class="col-12">
-    @component('components.select_birthday', []) @endcomponent
+    @component('components.select_birthday', ['prefix'=>'']) @endcomponent
   </div>
   <div class="col-6 p-3 font-weight-bold" >学年</div>
   <div class="col-6 p-3">{{$trial_student->student->grade()}}</div>

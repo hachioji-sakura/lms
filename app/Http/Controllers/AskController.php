@@ -119,6 +119,9 @@ class AskController extends MilestoneController
 
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
+      if(!isset($item)){
+        abort(404);
+      }
       $ret['item'] = $item->details();
       if($this->is_manager($user->role)!=true &&
         $ret['item']->target_user_id != $user->user_id &&
@@ -343,8 +346,10 @@ class AskController extends MilestoneController
      $param = $this->get_param($request, $id);
 
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-     
+
      $param['fields'] = $this->show_fields($param['item']->type);
+     $param['trial'] = $param['item']->get_target_model_data();
+     $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
      return view('asks.agreement', [])->with($param);
    }

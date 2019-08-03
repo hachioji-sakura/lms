@@ -9,6 +9,14 @@
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">
+  @component('parents.forms.agreement', ['item' => $item, 'domain' => $domain]) @endcomponent
+  {{--
+  @foreach($item->relations as $relation)
+  @component('students.forms.agreement', ['item' => $relation->student, 'domain' => $domain]) @endcomponent
+  @endforeach
+  --}}
+  </div>
+  <div class="col-12">
       <div class="card">
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
@@ -78,7 +86,7 @@
                       </a>
                     @endif
                   @endif
-                  @if($user->role==="parent")
+                  @if($user->role!=="studdent")
                   <a title="生徒情報" href="javascript:void(0);" page_title="お申込み内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm w-100 mt-1">
                     <i class="fa fa-address-card mr-1"></i>お申込み内容
                   </a>
@@ -93,20 +101,11 @@
           </div>
           @endif
         </div>
-      {{--
-        <!-- /.card-body -->
-        <div class="card-footer clearfix">
-          <button type="button" class="btn btn-info btn-sm float-left">
-            <i class="fa fa-plus mr-2"></i>追加
-          </button>
-        </div>
-        --}}
       </div>
       <!-- /.card -->
     </div>
   </div>
 </section>
-
 {{--まだ対応しない
 <section class="content-header">
 	<div class="container-fluid">

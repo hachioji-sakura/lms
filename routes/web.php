@@ -118,6 +118,7 @@ Route::post('managers/{id}/month_work','ManagerController@month_work_confirm');
 
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
+Route::get('parents/{id}/agreement','StudentParentController@agreement_page');
 Route::get('parents/{id}/delete','StudentParentController@delete_page');
 Route::get('students/{id}/delete','StudentController@delete_page');
 Route::get('managers/{id}/delete','ManagerController@delete_page');

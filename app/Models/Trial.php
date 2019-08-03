@@ -206,6 +206,7 @@ EOT;
       $form["kana_first"] = $form["student2_kana_first"];
       $form["name_last"] = $form["student2_name_last"];
       $form["name_first"] = $form["student2_name_first"];
+      $form["birth_day"] = $form["student2_birth_day"];
       $form["gender"] = $form["student2_gender"];
       $form["grade"] = $form["student2_grade"];
       $form["school_name"] = $form["student2_school_name"];
@@ -217,6 +218,7 @@ EOT;
       $form["kana_first"] = $form["student3_kana_first"];
       $form["name_last"] = $form["student3_name_last"];
       $form["name_first"] = $form["student3_name_first"];
+      $form["birth_day"] = $form["student3_birth_day"];
       $form["gender"] = $form["student3_gender"];
       $form["grade"] = $form["student3_grade"];
       $form["school_name"] = $form["student3_school_name"];
@@ -1022,5 +1024,14 @@ EOT;
     ]);
     return $ask;
   }
-
+  public function agreement($is_commit=false){
+    if($is_commit==false){
+    }
+    else {
+      foreach($this->trial_students as $trial_student){
+        $trial_student->student->regular();
+      }
+    }
+    return true;
+  }
 }

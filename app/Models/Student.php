@@ -31,6 +31,7 @@ class Student extends Model
    *　プロパティ：年齢
    */
   public function age(){
+    if($this->birth_day=='9999-12-31') return '-';
     return floor((date("Ymd") - str_replace("-", "", $this->birth_day))/10000);
   }
 
@@ -83,10 +84,12 @@ class Student extends Model
     if (App::isLocale('en')) {
       $format = 'Y-m-d';
     }
-    if(isset($this->birth_day) && $this->birth_day!='9999-12-31'){
-      return date($format, strtotime($this->birth_day));
-    }
-    return "-";
+    if(!isset($this->birth_day)) return '-';
+    if(empty($this->birth_day)) return '-';
+    if($this->birth_day=='9999-12-31') return '-';
+    if($this->birth_day=='9999/12/31') return '-';
+    $d = date($format, strtotime($this->birth_day));
+    return $d;
   }
   /**
    *　プロパティ：学年
@@ -364,6 +367,7 @@ EOT;
       'kana_first' => $form['kana_first'],
       'birth_day' => $form['birth_day'],
       'gender' => $form['gender'],
+      'status' => 'trial',
       'user_id' => $user->id,
       'create_user_id' => $user->id,
     ]);
@@ -512,6 +516,24 @@ EOT;
     }
     return $ret;
   }
+  public function is_first_brother(){
+    $relations = StudentRelation::where('student_id', $this->id)->get();
+    $parent_id = [];
+    foreach($relations as $relation){
+      $parent_id[] = $relation->student_parent_id;
+    }
+    //自分と同じ親を持つ家族関係
+    $relations = StudentRelation::whereIn('student_parent_id', $parent_id)->get();
+    $c = 0;
+    foreach($relations as $relation){
+      if($relation->student_id < $this->id){
+        //自分より先に入った兄弟がいる場合
+        $c++;
+      }
+    }
+    if($c==0) return true;
+    return false;
+  }
   public function is_family($student_id){
     $relations = StudentRelation::where('student_id', $this->id)->get();
     $relations2 = StudentRelation::where('student_id', $student_id)->get();
@@ -532,7 +554,6 @@ EOT;
   public function get_calendar_settings($filter){
     $items = UserCalendarSetting::findUser($this->user_id);
     $items = $items->enable();
-
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
@@ -813,6 +834,23 @@ EOT;
     $this->user->send_mail('休会終了のお知らせ', $param, 'text', 'recess_end');
     return ['user_calendar_members' => $user_calendar_members, 'conflict_calendar_members' => $conflict_calendar_members];
   }
+  public function regular(){
+    $this->user->update(['status' => 0]);
+    $this->update(['status' => 'regular']);
+    //カレンダー設定を有効にする
+    UserCalendarSetting::findUser($this->user_id)
+                  ->where('status', 'new')
+                  ->update(['status' => 'fix']);
+    //受講料を有効にする
+    Tuition::where('student_id', $this->id)->update(['start_date'=>date('Y-m-d')]);
+
+    $settings = $this->get_calendar_settings([]);
+    $res = [];
+    foreach($settings as $setting){
+      $res = array_merge($res, $setting->setting_to_calendar(date('Y-m-d')));
+    }
+    return $res;
+  }
   /**
    *　プロパティ：標準学年（年齢から算出）
    * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
@@ -879,4 +917,5 @@ EOT;
     }
     return null;
   }
+
 }

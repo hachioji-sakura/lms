@@ -12,9 +12,10 @@
   @slot('forms')
   <form method="POST" action="/calendars/{{$item['id']}}" id="_form">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     @if($user->role==="manager" || $user->role==="teacher")
-    <input type="hidden" value="1" name="is_proxy">
+      <input type="hidden" value="1" name="is_proxy">
     @endif
     <div class="row">
       @component('calendars.forms.fix_form', ['item' => $item, 'user'=>$user]) @endcomponent

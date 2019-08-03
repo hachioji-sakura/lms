@@ -2,11 +2,11 @@
 @if(isset($_edit) && $_edit==true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
-  @else
+@else
   <form id="edit" method="POST" action="/{{$domain}}?key={{$select_key}}">
-  @endif
-  @csrf
-
+@endif
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
       <div class="col-12">
         <div class="form-group">

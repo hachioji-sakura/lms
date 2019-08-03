@@ -1457,7 +1457,6 @@ class ImportController extends UserController
       if(empty($str_date)) return null;
       if(strlen($str_date)!=10) return null;
       if($str_date=='0000-00-00') return null;
-      if(substr($str_date, 2)!='20') return null;
       return $str_date;
     }
     private function concealment(){

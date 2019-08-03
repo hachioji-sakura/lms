@@ -33,6 +33,7 @@
   @else
   <form method="POST"  action="/entry">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -140,6 +141,7 @@
 $(function(){
   var form_data = util.getLocalData('trials_entry');
   base.pageSettinged("trials_entry", form_data);
+  grade_select_change();
   $('#trials_entry').carousel({ interval : false});
   if(form_data && !util.isEmpty(form_data['student2_name_last'])){
     $('.student2').collapse('show');

@@ -379,7 +379,7 @@
 			$(this).datepicker(option);
 			if(!util.isEmpty(min)){
 				if(util.isDate(min)) {
-					$(this).datepicker("setDate", min);
+					//$(this).datepicker("setDate", min);
 				}
 			}
 			$(this).attr('autocomplete', 'off');

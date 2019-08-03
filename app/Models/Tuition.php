@@ -127,8 +127,10 @@ class Tuition extends Model
     ->where('grade' , $form['grade'])
     ->where('lesson_week_count' , $form['lesson_week_count'])
     ->where('subject' , $form['subject'])->get();
-    if(isset($already_data)) return null;
-
+    if(isset($already_data) && count($already_data)>0){
+      \Log::warning("tuition : already");
+      return null;
+    }
     $tuition = Tuition::create([
       'student_id' => $form['student_id'],
       'teacher_id' => $form['teacher_id'],
@@ -145,6 +147,7 @@ class Tuition extends Model
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],
     ]);
+    \Log::warning("tuition : insert");
     return $tuition;
   }
   //本モデルはdeleteではなくdisposeを使う

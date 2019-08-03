@@ -207,4 +207,5 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     return $res;
   }
+
 }

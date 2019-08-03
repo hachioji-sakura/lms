@@ -7,6 +7,7 @@
     <div class="col-12 mb-1" id="commit_form">
       <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
         @csrf
+        <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form">
           <i class="fa fa-check mr-1"></i>
@@ -17,7 +18,6 @@
     <div class="col-12 col-lg-12 col-md-12 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
             {{__('labels.close_button')}}
-
         </button>
     </div>
     <script>
@@ -26,7 +26,7 @@
       //submit
       $("#commit_form button.btn-submit").on('click', function(e){
         e.preventDefault();
-        if(front.validateFormValue('#commit_form')){
+        if(front.validateFormValue('commit_form')){
           $("#commit_form form").submit();
         }
       });

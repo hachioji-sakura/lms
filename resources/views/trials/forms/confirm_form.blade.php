@@ -27,16 +27,14 @@
       <rt><span id="student_kana_last"></span>&nbsp;<span id="student_kana_first"></span></rt>
     </ruby>
   </div>
+  <div class="col-6 p-3 font-weight-bold" >生年月日</div>
+  <div class="col-6 p-3"><span id="birth_day"></span></div>
   <div class="col-6 p-3 font-weight-bold" >性別</div>
   <div class="col-6 p-3"><span id="gender_name"></span></div>
-  {{--
-    <div class="col-6 p-3 font-weight-bold" >生年月日</div>
-    <div class="col-6 p-3"><span id="birth_day"></span></div>
-  --}}
   <div class="col-6 p-3 font-weight-bold" >学年</div>
   <div class="col-6 p-3"><span id="grade_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 school_name_confirm"><span id="school_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold grade_school_name_confirm" >学校名</div>
+  <div class="col-6 p-3 grade_school_name_confirm"><span id="school_name"></span></div>
 </div>
 <div class="row collapse student2">
   <div class="col-12 bg-info p-2 pl-4">
@@ -50,12 +48,14 @@
       <rt><span id="student2_kana_last"></span>&nbsp;<span id="student2_kana_first"></span></rt>
     </ruby>
   </div>
+  <div class="col-6 p-3 font-weight-bold" >生年月日</div>
+  <div class="col-6 p-3"><span id="student2_birth_day"></span></div>
   <div class="col-6 p-3 font-weight-bold" >性別</div>
   <div class="col-6 p-3"><span id="student2_gender_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >学年</div>
   <div class="col-6 p-3"><span id="student2_grade_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold student2_school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 school_name_confirm"><span id="student2_school_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold student2_grade_school_name_confirm" >学校名</div>
+  <div class="col-6 p-3 student2_grade_school_name_confirm"><span id="student2_school_name"></span></div>
 </div>
 <div class="row collapse student3">
   <div class="col-12 bg-info p-2 pl-4">
@@ -69,12 +69,14 @@
       <rt><span id="student3_kana_last"></span>&nbsp;<span id="student3_kana_first"></span></rt>
     </ruby>
   </div>
+  <div class="col-6 p-3 font-weight-bold" >生年月日</div>
+  <div class="col-6 p-3"><span id="student3_birth_day"></span></div>
   <div class="col-6 p-3 font-weight-bold" >性別</div>
   <div class="col-6 p-3"><span id="student3_gender_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >学年</div>
   <div class="col-6 p-3"><span id="student3_grade_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold student3_school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 school_name_confirm"><span id="student3_school_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold student3_grade_school_name_confirm" >学校名</div>
+  <div class="col-6 p-3 student3_grade_school_name_confirm"><span id="student3_school_name"></span></div>
 </div>
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">

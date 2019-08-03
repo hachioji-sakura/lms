@@ -5,8 +5,9 @@
   @slot('forms')
     <div class="row">
     <div class="col-12 mb-1" id="cancel_form">
-      <form method="POST" action="/asks/{{$item['id']}}/status_update/cancel">
+      <form method="POST" action="/asks/{{$item['id']}}/status_update/cancel">  
         @csrf
+        <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="cancel_form">
           <i class="fa fa-check mr-1"></i>

@@ -80,7 +80,9 @@ class StudentController extends UserController
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
-      $ret['item'] = $this->model()->where('id', $id)->first()->user->details($this->domain);
+      $ret['item'] = $this->model()->where('id', $id)->first();
+      if(!isset($ret['item'])) abort(404);
+      $ret['item'] = $ret['item']->user->details($this->domain);
       if($this->is_manager_or_teacher($user->role)==false){
         //講師、事務以外のアクセス制御
         if($this->is_student($user->role)){

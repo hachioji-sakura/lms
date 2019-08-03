@@ -62,6 +62,7 @@
 @else
   <form method="POST"  action="/{{$domain}}/register">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <input type="hidden" name="id" value="{{$item->id}}" />
 

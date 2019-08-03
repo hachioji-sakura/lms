@@ -1,7 +1,8 @@
 <div id="admission_mail">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/admission">
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true, 'active_tab' => 2]) @endcomponent
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
     	<div class="container-fluid">
         {{--

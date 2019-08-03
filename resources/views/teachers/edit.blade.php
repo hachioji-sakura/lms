@@ -2,6 +2,7 @@
 <div id="teachers_edit" class="direct-chat-msg">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">

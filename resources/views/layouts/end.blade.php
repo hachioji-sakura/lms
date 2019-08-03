@@ -6,9 +6,11 @@ $(function(){
     var href= $(this).attr("href");
     var scroll= $(this).attr("scroll");
     var target = $(href == "#" || href == "" ? 'html' : href);
-    var position = target.offset().top;
-    $('body,html').animate({scrollTop:position}, scroll, 'swing', function(){
-    });
+    if(target.length>0){
+      var position = target.offset().top;
+      $('body,html').animate({scrollTop:position}, scroll, 'swing', function(){
+      });
+    }
   });
   $('.toggle-btn').click(function() {
     //指定したidを閉じたり開いたり
@@ -83,10 +85,12 @@ $(function(){
 	  // 移動先を取得
 	  var target = jQuery(href == "#" || href == "" ? 'html' : href);
 	  // 移動先を数値で取得
-    var h = target.height();
-	  var position = target.offset().top - (h/2);
-	  // スムーススクロール
-	  jQuery('body,html').animate({scrollTop:position}, speed, 'swing');
+    if(target.length>0){
+      var h = target.height();
+  	  var position = target.offset().top - (h/2);
+  	  // スムーススクロール
+  	  jQuery('body,html').animate({scrollTop:position}, speed, 'swing');
+    }
     return false;
   });
 });

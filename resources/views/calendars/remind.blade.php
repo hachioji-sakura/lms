@@ -12,6 +12,7 @@
   <div id="{{$domain}}_action">
     <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind" >
       @csrf
+      <input type="text" name="dummy" style="display:none;" / >
       @method('PUT')
       <input type="hidden" value="1" name="is_all_student" />
       @if(isset($student_id))

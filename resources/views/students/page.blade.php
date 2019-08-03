@@ -23,13 +23,11 @@
             @endslot
             @slot('alias')
               <h6 class="widget-user-desc">
-                @if(!empty($item->user->status===1))
-                <small class="badge badge-danger mt-1 mr-1" title="仮登録の場合表示されます">
-                  体験
-                </small>
-                @endif
                 <small class="badge badge-dark mt-1 mr-1">
                   No.{{$item->tag_name('student_no')}}
+                </small>
+                <small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
+                  {{$item->status_name()}}
                 </small>
                 @if($item->is_juken()==true)
                 <small class="badge badge-warning mt-1 mr-1" title="">

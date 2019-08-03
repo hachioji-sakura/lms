@@ -230,4 +230,9 @@ return [
   'important_check' => 'I confirmed about important matter',
   'faq_button' => 'FAQ Add',
   'publiced_at' => 'Publiced At',
+
+  'sep_year' => '/',
+  'sep_month' => '/',
+  'sep_day' => '',
+
 ];

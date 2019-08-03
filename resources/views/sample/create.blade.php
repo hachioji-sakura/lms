@@ -21,6 +21,7 @@
 @endif
 <form method="post" action="/images" enctype="multipart/form-data">
   @csrf
+  <input type="text" name="dummy" style="display:none;" / >
   alias:<input type="text" name="alias"><br>
   <div class="form-row">
     <div class="form-group col-12">

@@ -8,6 +8,7 @@
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/register">
     @csrf
+		<input type="text" name="dummy" style="display:none;" / >
     <div id="students_add_form" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">

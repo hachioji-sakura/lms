@@ -37,12 +37,14 @@
   </div>
   <form id="unsubscribe_form" method="POST" action="/asks">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @component('asks.forms.unsubscribe_form', ['item' => $item, 'domain'=>$domain, 'user' => $user, 'already_data' => $already_data])
     @endcomponent
   @elseif($already_data!=null && $recess_data==null)
   {{-- 退会の登録がある --}}
   <form id="unsubscribe_form" method="POST" action="/asks/{{$already_data->id}}/status_update/cancel">
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     @component('asks.forms.unsubscribe_form', ['item' => $item, 'domain'=>$domain, 'user' => $user, 'already_data' => $already_data])
     @endcomponent

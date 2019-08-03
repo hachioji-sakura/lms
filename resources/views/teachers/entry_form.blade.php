@@ -13,8 +13,9 @@
     @endif
   </h4>
 @else
-<form method="POST"  action="/{{$domain}}/entry">
+<form method="POST"  action="/{{$domain}}/entry">    
     @csrf
+    <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
       @component('students.forms.name', ['attributes' => $attributes, 'prefix'=>'']) @endcomponent
       @component('students.forms.email', [ 'attributes' => $attributes, 'prefix'=>'']) @endcomponent

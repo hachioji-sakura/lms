@@ -13,6 +13,7 @@
       {{-- グループレッスン系 （生徒複数） --}}
       <form method="POST" action="/calendars/{{$item['id']}}">
       @csrf
+      <input type="text" name="dummy" style="display:none;" / >
       @method('PUT')
       <input type="hidden" value="rest" name="status" />
       <div class="row" id="rest_list">
@@ -82,6 +83,7 @@
     @else
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest_cancel">
         @csrf
+		    <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
         @if(isset($student_id))
           <input type="hidden" value="{{$student_id}}" name="student_id" />
