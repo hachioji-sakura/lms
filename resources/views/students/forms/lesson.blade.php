@@ -70,6 +70,31 @@ function lesson_checkbox_change(obj){
     $(".kids_lesson_form select").hide();
     $(".kids_lesson_confirm").hide();
   }
+  lesson_place_filter();
   //grade_select_change();
+}
+function lesson_place_filter(){
+  var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
+  var is_english = $('input[type="checkbox"][name="lesson[]"][value="2"]').prop("checked");
+  var is_piano = $('input[type="checkbox"][name="lesson[]"][value="3"]').prop("checked");
+  var is_kids_lesson = $('input[type="checkbox"][name="lesson[]"][value="4"]').prop("checked");
+  $("label.lesson_place").show();
+  if(!is_school && !is_english){
+    //ピアノ＝子安、
+    $("label.lesson_place:contains('八王子北口校')").hide();
+    $("label.lesson_place:contains('国立校')").hide();
+    $("label.lesson_place:contains('日野市豊田校')").hide();
+    $("label.lesson_place:contains('アローレ校')").hide();
+    $("label.lesson_place:contains('ダットッチ校')").hide();
+    if(!is_kids_lesson){
+      $("label.lesson_place:contains('八王子南口校')").hide();
+    }
+  }
+  else if(!is_school && is_english){
+    $("label.lesson_place:contains('アローレ校')").hide();
+  }
+  else if(is_school && !is_english){
+    $("label.lesson_place:contains('ダットッチ校')").hide();
+  }
 }
 </script>

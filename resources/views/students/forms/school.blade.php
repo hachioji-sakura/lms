@@ -14,13 +14,13 @@
     </select>
   </div>
 </div>
-<div class="col-12 col-lg-9 col-md-9 collapse {{$prefix}}grade_school_name_form">
+<div class="col-12 col-lg-9 col-md-9 {{$prefix}}grade_school_name_form">
   <div class="form-group">
     <label for="{{$prefix}}school_name" class="w-100">
       学校名
-      <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" placeholder="例：八王子市立サクラ中学校"
+    <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" required="true" placeholder="例：八王子市立サクラ中学校"
       @if(isset($item) && !empty($item)) value="{{$item->get_tag('school_name')['value']}}" @endif
       >
   </div>
