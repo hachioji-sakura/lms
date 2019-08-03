@@ -28,6 +28,7 @@
 <script>
 function grade_select_change(){
   console.log("grade_select_change");
+  $(".grade-subject").hide();
   $('select.grade').each(function(index, element){
     var _name = $(this).attr('name');
     var grade_name = $('select[name="'+_name+'"] option:selected').text().trim();
@@ -53,11 +54,7 @@ function grade_select_change(){
       _grade_name = "高校";
     }
     console.log("grade_select_change["+_name+"]:"+grade_name+":"+is_school_name_show);
-    @isset($noscript)
-    @else
-    $(".grade-subject").hide();
     $(".grade-subject[alt='"+_grade_name+"']").show();
-    @endif
     if(is_school_name_show){
       $("."+_name+"_school_name_form").collapse("show");
       $("."+_name+"_school_name_confirm").collapse("show");
@@ -66,7 +63,6 @@ function grade_select_change(){
       $("."+_name+"_school_name_form").collapse("hide");
       $("."+_name+"_school_name_confirm").collapse("hide");
     }
-
   });
 
 }

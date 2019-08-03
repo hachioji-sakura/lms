@@ -78,6 +78,27 @@
 			          <div class="col-6 p-2 font-weight-bold" >習い事コース</div>
 			          <div class="col-6 p-2">{{$item->tag_name('kids_lesson_course_type')}}</div>
 			          @endif
+								<div class="col-12 bd-b bd-gray"></div>
+								<div class="col-6 p-2 font-weight-bold" >入会金</div>
+			          <div class="col-6 p-2">
+									@if($item->is_first_brother()==true)
+										@if($item->user->has_tag('lesson',1)==false && $item->user->has_tag('lesson',2)==false)
+											1,0000円
+										@else
+											1,5000円
+				          	@endif
+									@else
+										0円
+									@endif
+			          </div>
+								<div class="col-6 p-2 font-weight-bold" >月会費</div>
+			          <div class="col-6 p-2">
+									@if($item->user->has_tag('lesson',1)==false && $item->user->has_tag('lesson',2)==false)
+										1,000円
+									@else
+										1,500円
+			          	@endif
+			          </div>
 			        </div>
 		        </div>
 		        <div class="tab-pane
@@ -187,7 +208,7 @@
 								                  @endif
 																>
 																	<i class="fa fa-yen-sign"></i>
-																	初期値
+																	自動設定
 																</a>
 															@endif
 														</div>

@@ -25,6 +25,7 @@ function calc_tuition(){
   });
   */
   var r = get_tuition(data["lesson"]|0, data["course_type"], grade, is_juken|0, lesson_week_count|0, data["subject"], data["course_minutes"]|0);
+  if(data["teacher_id"]==1) r+=1000; //teacher_id=1は+1000円
   $("input[name=tuition]").val(r);
 }
 function get_tuition(lesson, course_type, grade, is_juken, lesson_week_count, subject, minutes){

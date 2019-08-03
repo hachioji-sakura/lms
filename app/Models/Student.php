@@ -516,6 +516,24 @@ EOT;
     }
     return $ret;
   }
+  public function is_first_brother(){
+    $relations = StudentRelation::where('student_id', $this->id)->get();
+    $parent_id = [];
+    foreach($relations as $relation){
+      $parent_id[] = $relation->student_parent_id;
+    }
+    //自分と同じ親を持つ家族関係
+    $relations = StudentRelation::whereIn('student_parent_id', $parent_id)->get();
+    $c = 0;
+    foreach($relations as $relation){
+      if($relation->student_id < $this->id){
+        //自分より先に入った兄弟がいる場合
+        $c++;
+      }
+    }
+    if($c==0) return true;
+    return false;
+  }
   public function is_family($student_id){
     $relations = StudentRelation::where('student_id', $this->id)->get();
     $relations2 = StudentRelation::where('student_id', $student_id)->get();
