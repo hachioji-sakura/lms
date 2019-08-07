@@ -690,23 +690,31 @@ EOT;
   //primaryがついている場合、primaryのみに選択肢を削る
   private function get_time_list_review($user_id, $_time_list){
     $primary_count = 0;
+    $secondary_count = 0;
     //予定ありの次の時間の状態によって評価を設定
     for($i=0;$i<count($_time_list);$i++){
       $review = $this->schedule_review($user_id, $_time_list[$i])["review"];
+      /*
       if($i>0 && $review!="primary"){
         $_review = $this->schedule_review($user_id, $_time_list[$i])["review"];
         if($_review=="primary") $review = $_review;
       }
+      */
       if($review=="primary") $primary_count++;
+      if($review=="secondary") $secondary_count++;
       $_time_list[$i]["review"] = $review;
     }
-    //return $_time_list;
     //優先度の最も高いものから返却する
     $ret = [];
     foreach($_time_list as $_item){
       $is_add = false;
       if($primary_count > 0){
         if($_item["review"]==="primary"){
+          $is_add = true;
+        }
+      }
+      else if($secondary_count > 0){
+        if($_item["review"]==="secondary"){
           $is_add = true;
         }
       }
@@ -727,12 +735,14 @@ EOT;
   }
   private function schedule_review($user_id, $target){
     $ret = ['calendar'=>null, 'same_place'=>'', 'review'=>''];
+    $prev = null;
+    $next = null;
+
     if($target["status"]!=="free") return $ret;
     //上に隣接する授業設定を取得
     $prev_calendars = UserCalendar::where('user_id', $user_id)
                       ->where('start_time', $target["end_time"])
                       ->get();
-    $prev = null;
     foreach($prev_calendars as $calendar){
       foreach($this->get_tags('lesson_place') as $tag){
         //体験希望所在地のフロアと同じ場合隣接とみなす
@@ -747,31 +757,57 @@ EOT;
     $next_calendars = UserCalendar::where('user_id', $user_id)
                       ->where('end_time', $target["start_time"])
                       ->get();
-    $next = null;
     foreach($next_calendars as $calendar){
       $same_place = "";
       foreach($this->get_tags('lesson_place') as $tag){
         if($calendar->is_same_place($tag->tag_value)){
           $next  = $calendar;
-          return $ret;
         }
         if(isset($next)) break;
       }
       if(isset($next)) break;
     }
+
     if( (isset($prev) && isset($next)) ||
          (isset($prev) && !isset($next) && count($next_calendars)<1)){
        //１．上下隣接、２．上に隣接し下がない
        $ret['calendar'] = $prev;
        $ret['same_place'] = $prev->place_floor_id;
-       $ret['review'] = 'primary';
+       $ret['review'] = 'secondary';
     }
     else if(!isset($prev) && isset($next) && count($prev_calendars)<1){
       //３．下に隣接し上がない
       $ret['calendar'] = $next;
       $ret['same_place'] = $next->place_floor_id;
-      $ret['review'] = 'primary';
+      $ret['review'] = 'secondary';
     }
+
+    //echo $target["start_time"].":".$ret['review']."/(".isset($prev)." | ".isset($next).")".$target["conflict_calendar"]["id"]."<br>";
+    if($ret['review']=='secondary'){
+      $d = date('Y-m-d', strtotime($target["start_time"]));
+      //同日のスケジュール
+      $min_start_time = UserCalendar::where('user_id', $user_id)
+                        ->rangeDate($d." 00:00:00",  $d." 23:59:59")
+                        ->where('status', 'fix')
+                        ->min('start_time');
+      $max_end_time = UserCalendar::where('user_id', $user_id)
+                        ->rangeDate($d." 00:00:00",  $d." 23:59:59")
+                        ->where('status', 'fix')
+                        ->max('end_time');
+      $is_primary = true;
+      if(strtotime($target["start_time"]) < strtotime($min_start_time)){
+        //echo "・上端更新：".$target["start_time"] ."<". $min_start_time."<br>";
+        $is_primary = false;
+      }
+      if(strtotime($target["end_time"]) > strtotime($max_end_time)){
+        //echo "・下端更新：".$target["end_time"] ."<". $max_end_time."<br>";
+        $is_primary = false;
+      }
+      if($is_primary==true){
+        $ret['review'] = 'primary';
+      }
+    }
+
     return $ret;
   }
 

@@ -71,6 +71,7 @@ function lesson_checkbox_change(obj){
     $(".kids_lesson_confirm").hide();
   }
   lesson_place_filter();
+  course_minutes_filter();
   //grade_select_change();
 }
 function lesson_place_filter(){
@@ -95,6 +96,22 @@ function lesson_place_filter(){
   }
   else if(is_school && !is_english){
     $("label.lesson_place:contains('ダットッチ校')").hide();
+  }
+}
+function course_minutes_filter(){
+  var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
+  var is_english = $('input[type="checkbox"][name="lesson[]"][value="2"]').prop("checked");
+  var is_piano = $('input[type="checkbox"][name="lesson[]"][value="3"]').prop("checked");
+  var is_kids_lesson = $('input[type="checkbox"][name="lesson[]"][value="4"]').prop("checked");
+  $("label.course_minutes").show();
+  if(!is_school){
+    //塾以外＝90分、120分なし
+    $("label.course_minutes:contains('９０分')").hide();
+    $("label.course_minutes:contains('１２０分')").hide();
+  }
+  if(!is_piano && !is_english && !is_kids_lesson){
+    //習い事がない
+    $("label.course_minutes:contains('３０分')").hide();
   }
 }
 </script>

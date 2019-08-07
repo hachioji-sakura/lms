@@ -14,11 +14,11 @@
     function status_style(status){
       var _ret = {
         "trial" : {
-          "color" : "#6c757d",
+          "color" : "#6f42c1",
           "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
         },
         "new" : {
-          "color" : "#6c757d",
+          "color" : "#6f42c1",
           "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
         },
         "confirm" : {

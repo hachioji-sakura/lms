@@ -80,12 +80,12 @@
         予定が空いていません
       </h6>
       @else
-      <?php $is_first=false; ?>
+      <?php $is_first=false; $c=0; ?>
         @foreach($candidate_teacher->trial as $remark=>$_lists)
           @foreach($_lists as $i => $_list)
             @if($_list['status']==='free')
             <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
-              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$i}}"
+              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$c}}"
                value="{{$_list['start_time']}}_{{$_list['end_time']}}"
                duration="{{$_list['duration']}}"
                start_time="{{$_list['start_time']}}"
@@ -96,11 +96,11 @@
                validate="teacher_schedule_validate('#trial_select')"
                @if($is_first==false) checked @endif
                >
-              <label class="form-check-label" for="trial_{{$i}}" title="{{$_list['review']}}">
+              <label class="form-check-label" for="trial_{{$c}}" title="{{$_list['review']}}">
                 {{$_list['duration']}}
               </label>
             </div>
-            <?php $is_first=true; ?>
+            <?php $is_first=true; $c++; ?>
             @else
             {{-- 空いてない場合の表示はなくなる --}}
             <div class="form-check ml-2">
