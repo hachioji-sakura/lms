@@ -37,6 +37,7 @@
     <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
+          @yield('trial_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -207,7 +208,9 @@ $(function(){
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
         $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+          var t = $(this).parent().parent().text().trim();
+          t = t.replace('[MAP]', '');
+          form_data[value+"_name"] += t+'<br>';
         });
       }
     });

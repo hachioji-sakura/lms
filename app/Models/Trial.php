@@ -638,7 +638,7 @@ EOT;
       $_time_list[$i]["is_time_conflict"] = false;
       $_time_list[$i]["is_place_conflict"] = false;
       $_time_list[$i]["free_place_floor"] = "";
-      $_time_list[$i]["review"]="";
+      $_time_list[$i]["review"] = 0;
       $_time_list[$i]["remark"]=$remark;;
       if(isset($now_calendars)){
         //講師の予定との競合するかチェック
@@ -687,34 +687,22 @@ EOT;
     }
     return $_time_list;
   }
-  //primaryがついている場合、primaryのみに選択肢を削る
   private function get_time_list_review($user_id, $_time_list){
     $primary_count = 0;
     $secondary_count = 0;
     //予定ありの次の時間の状態によって評価を設定
+    $max_review = 0;
     for($i=0;$i<count($_time_list);$i++){
       $review = $this->schedule_review($user_id, $_time_list[$i])["review"];
-      /*
-      if($i>0 && $review!="primary"){
-        $_review = $this->schedule_review($user_id, $_time_list[$i])["review"];
-        if($_review=="primary") $review = $_review;
-      }
-      */
-      if($review=="primary") $primary_count++;
-      if($review=="secondary") $secondary_count++;
+      if($review > $max_review) $max_review = $review;
       $_time_list[$i]["review"] = $review;
     }
     //優先度の最も高いものから返却する
     $ret = [];
     foreach($_time_list as $_item){
       $is_add = false;
-      if($primary_count > 0){
-        if($_item["review"]==="primary"){
-          $is_add = true;
-        }
-      }
-      else if($secondary_count > 0){
-        if($_item["review"]==="secondary"){
+      if($max_review>0){
+        if($_item["review"]===$max_review){
           $is_add = true;
         }
       }
@@ -734,13 +722,15 @@ EOT;
     return $ret;
   }
   private function schedule_review($user_id, $target){
-    $ret = ['calendar'=>null, 'same_place'=>'', 'review'=>''];
+    $ret = ['calendar'=>null, 'same_place'=>'', 'review'=>0];
     $prev = null;
     $next = null;
 
     if($target["status"]!=="free") return $ret;
+
     //上に隣接する授業設定を取得
     $prev_calendars = UserCalendar::where('user_id', $user_id)
+                      ->where('status', 'fix')
                       ->where('start_time', $target["end_time"])
                       ->get();
     foreach($prev_calendars as $calendar){
@@ -753,8 +743,16 @@ EOT;
       }
       if(isset($prev)) break;
     }
+
+    //近い日にちであるほど優先度はあがる
+    $d = $this->day_diff($target["start_time"]);
+    //今週= 100、来週=95、再来週=90
+    $d = 100 - intval($d/7)*5;
+    $ret['review']+=$d;
+
     //下に隣接する授業設定を取得
     $next_calendars = UserCalendar::where('user_id', $user_id)
+                      ->where('status', 'fix')
                       ->where('end_time', $target["start_time"])
                       ->get();
     foreach($next_calendars as $calendar){
@@ -768,22 +766,55 @@ EOT;
       if(isset($next)) break;
     }
 
+    $is_adjacent = false;
+    //隣接：評価値+2、移動なし：評価値+1、
     if( (isset($prev) && isset($next)) ||
          (isset($prev) && !isset($next) && count($next_calendars)<1)){
        //１．上下隣接、２．上に隣接し下がない
        $ret['calendar'] = $prev;
        $ret['same_place'] = $prev->place_floor_id;
-       $ret['review'] = 'secondary';
+       $ret['review']+=3;
+       $is_adjacent = true;
     }
     else if(!isset($prev) && isset($next) && count($prev_calendars)<1){
       //３．下に隣接し上がない
       $ret['calendar'] = $next;
+      $ret['review']+=3;
       $ret['same_place'] = $next->place_floor_id;
-      $ret['review'] = 'secondary';
+      $is_adjacent = true;
+    }
+    else {
+      //隣接しない
+      $d = date('Y-m-d', strtotime($target["start_time"]));
+      //同日のスケジュール
+      $calendars = UserCalendar::where('user_id', $user_id)
+                        ->rangeDate($d." 00:00:00",  $d." 23:59:59")
+                        ->where('status', 'fix')
+                        ->get();
+
+      if(count($calendars) < 1){
+        //授業なし
+        $ret['review']+=1;
+      }
+      else {
+        $is_move_schedule = true;
+        foreach($calendars as $calendar){
+          $same_place = "";
+          foreach($this->get_tags('lesson_place') as $tag){
+            if(!$calendar->is_same_place($tag->tag_value)){
+              $is_move_schedule = false;
+            }
+          }
+        }
+        if($is_move_schedule===false){
+          //授業があり、移動の必要なし
+          $ret['review']+=2;
+        }
+      }
     }
 
     //echo $target["start_time"].":".$ret['review']."/(".isset($prev)." | ".isset($next).")".$target["conflict_calendar"]["id"]."<br>";
-    if($ret['review']=='secondary'){
+    if($is_adjacent===true){
       $d = date('Y-m-d', strtotime($target["start_time"]));
       //同日のスケジュール
       $min_start_time = UserCalendar::where('user_id', $user_id)
@@ -794,20 +825,20 @@ EOT;
                         ->rangeDate($d." 00:00:00",  $d." 23:59:59")
                         ->where('status', 'fix')
                         ->max('end_time');
-      $is_primary = true;
+      $is_inner = true;
       if(strtotime($target["start_time"]) < strtotime($min_start_time)){
         //echo "・上端更新：".$target["start_time"] ."<". $min_start_time."<br>";
-        $is_primary = false;
+        $is_inner = false;
       }
       if(strtotime($target["end_time"]) > strtotime($max_end_time)){
         //echo "・下端更新：".$target["end_time"] ."<". $max_end_time."<br>";
-        $is_primary = false;
+        $is_inner = false;
       }
-      if($is_primary==true){
-        $ret['review'] = 'primary';
+      if($is_inner==true){
+        //隣接し、かつ滞在時間拡大しない
+        $ret['review']+=1;
       }
     }
-
     return $ret;
   }
 
@@ -845,7 +876,7 @@ EOT;
       */
       $student_schedule[$week_day] = [];
       foreach($week_schedule as $time => $val){
-        $data = ["week_day"=>$week_day, "from" => $time, "to"=>"", "status"=>"free", "review"=>"", "place"=>"", "show"=>false];
+        $data = ["week_day"=>$week_day, "from" => $time, "to"=>"", "status"=>"free", "review"=>0, "place"=>"", "show"=>false];
 
         //３－１．生徒の希望スケジュールの場合、講師とのスケジュールを判定する
         if($val===false) {
@@ -933,7 +964,7 @@ EOT;
       }
     }
     //time_slotの評価
-    $primary_count = 0;
+    $max_review = 0;
     $minute_count = intval($this->course_minutes / 10);
     foreach($student_schedule as $week_day => $week_schedule){
       for($i=0;$i<count($week_schedule);$i++){
@@ -946,13 +977,15 @@ EOT;
           $from = substr($student_schedule[$week_day][$i]["from"], 0,2).':'.substr($student_schedule[$week_day][$i]["from"], -2).':00';
           $to = substr($student_schedule[$week_day][$i]["to"], 0,2).':'.substr($student_schedule[$week_day][$i]["to"], -2).':00';
           $review = $this->get_setting_review($teacher->user_id, $week_day, $from, $to);
-          if($review['review']=='place_conflict'){
+          if($review['status']=='place_conflict'){
             $student_schedule[$week_day][$i]["status"] = "place_conflict";
           }
-          else if($review['review']=='primary'){
-            $student_schedule[$week_day][$i]["review"] = "primary";
+          else {
+            $student_schedule[$week_day][$i]["review"] = $review['review'];
             $student_schedule[$week_day][$i]["place"] = $review['same_place'];
-            $primary_count++;
+            if($max_review < $review['review']){
+              $max_review = $review['review'];
+            }
           }
         }
 
@@ -965,8 +998,8 @@ EOT;
       for($i=0;$i<count($week_schedule);$i++){
         if($week_schedule[$i]["status"]!=="free") continue;
         $c++;
-        if($primary_count > 0){
-          if($week_schedule[$i]["review"]==="primary") {
+        if($max_review > 0){
+          if($week_schedule[$i]["review"]===$max_review) {
             $student_schedule[$week_day][$i]["show"] = true;
           }
         }
@@ -983,10 +1016,9 @@ EOT;
   private function get_setting_review($user_id, $lesson_week, $from_time_slot, $to_time_slot){
     //echo "[".$lesson_week."][".$from_time_slot."][".$to_time_slot."]<br>";
     $is_place_conflict = false;
-    $ret = ['setting'=>null, 'same_place'=>'', 'review'=>''];
+    $ret = ['setting'=>null, 'same_place'=>'', 'review'=>0, 'status'=>''];
     //上に隣接する通常授業設定を取得
     $prev_settings = UserCalendarSetting::where('user_id', $user_id)
-                      ->where('from_time_slot', $to_time_slot)
                       ->where('from_time_slot', $to_time_slot)
                       ->where('lesson_week', $lesson_week)
                       ->get();
@@ -1022,22 +1054,54 @@ EOT;
       }
       if(isset($next)) break;
     }
+
+    $is_adjacent = false;
     if($is_place_conflict==true){
-      $ret['review'] = 'place_conflict';
+      $ret['review'] = -1;
+      $ret['status'] = "place_conflict";
     }
     else if( (isset($prev) && isset($next)) ||
          (isset($prev) && !isset($next) && count($next_settings)<1)){
        //１．上下隣接、２．上に隣接し下がない
        $ret['setting'] = $prev;
        $ret['same_place'] = $prev->place_floor_id;
-       $ret['review'] = 'primary';
+       $ret['review']+=3;
+       $is_adjacent = true;
     }
     else if(!isset($prev) && isset($next) && count($prev_settings)<1){
       //３．下に隣接し上がない
       $ret['setting'] = $next;
       $ret['same_place'] = $next->place_floor_id;
-      $ret['review'] = 'primary';
+      $ret['review']+=3;
+      $is_adjacent = true;
     }
+
+    if($is_adjacent===true){
+      //同日のスケジュール
+      $min_from_time_slot = UserCalendarSetting::where('user_id', $user_id)
+                        ->where('lesson_week', $lesson_week)
+                        ->where('status', 'fix')
+                        ->min('from_time_slot');
+
+      $max_to_time_slot = UserCalendarSetting::where('user_id', $user_id)
+                        ->where('lesson_week', $lesson_week)
+                        ->where('status', 'fix')
+                        ->max('to_time_slot');
+      $is_inner = true;
+      if(strtotime("2000-01-01 ".$from_time_slot) < strtotime("2000-01-01 ".$min_from_time_slot)){
+        //echo "・上端更新：".$target["start_time"] ."<". $min_start_time."<br>";
+        $is_inner = false;
+      }
+      if(strtotime("2000-01-01 ".$to_time_slot) > strtotime("2000-01-01 ".$max_to_time_slot)){
+        //echo "・下端更新：".$target["end_time"] ."<". $max_end_time."<br>";
+        $is_inner = false;
+      }
+      if($is_inner==true){
+        //隣接し、かつ滞在時間拡大しない
+        $ret['review']+=1;
+      }
+    }
+
     return $ret;
   }
   public function agreement_ask($create_user_id, $access_key){
@@ -1069,5 +1133,12 @@ EOT;
       }
     }
     return true;
+  }
+  function day_diff($date1, $date2='now') {
+    $timestamp1 = strtotime($date1);
+    $timestamp2 = strtotime($date2);
+    $seconddiff = abs($timestamp2 - $timestamp1);
+    $daydiff = $seconddiff / (60 * 60 * 24);
+    return $daydiff;
   }
 }
