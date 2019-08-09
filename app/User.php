@@ -254,10 +254,10 @@ EOT;
           }
           else if(strlen($tag_value)==5){
             //nn_nn形式
-            $time = intval(substr($tag_value,0,2));
+            $hour = intval(substr($tag_value,0,2));
             $c = 0;
             while($c < 60){
-              $ret[$week_day][$time.sprintf('%02d', $c)] = true;
+              $ret[$week_day][$hour.sprintf('%02d', $c)] = true;
               $c+=$minute;
             }
           }
@@ -271,6 +271,10 @@ EOT;
      * @return array
      * ex. ["mon" => ["1000"=>true, "1030"=>true,...]
      */
+    public function get_trial_enable_times($minute=30)
+    {
+      return $this->get_work_times('trial', $minute);
+    }
     public function get_lesson_times($minute=30)
     {
       return $this->get_work_times('lesson', $minute);

@@ -313,6 +313,7 @@ EOT;
     }
   }
   public function get_calendar(){
+    //キャンセルではない、この体験授業の予定
     $calendar = UserCalendar::where('trial_id', $this->id)->findStatuses(['cancel'], true)->get();
     return $calendar;
   }
@@ -602,6 +603,7 @@ EOT;
   private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
     $_start = $trial_start_time;
     $time_list = [];
+    //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
@@ -610,12 +612,17 @@ EOT;
       $_duration = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
       foreach($this->get_calendar() as $calendar){
+        //この時間範囲にて体験授業がすでに登録されている場合は、無効
         if($calendar->is_conflict($_start, $_end)){
           $status = "trial_calendar_conflict";
           break;
         }
       }
-      $time_list[]=['start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'duration' => $_duration];
+      $time_list[]=[
+        'start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'duration' => $_duration,
+        'work_time_from' => date('Hi', strtotime($_start)),
+        'work_time_to' => date('Hi', strtotime($_end)),
+      ];
       $_start = date("Y-m-d H:i:s", strtotime("+10 minute ".$_start));
     }
     return $time_list;
@@ -626,22 +633,59 @@ EOT;
       return [];
     }
     */
+    $teacher = Teacher::where('user_id', $teacher_user_id)->first();
+
+    $w = date('w', strtotime($trial_date));
+    $week = ["sun", "mon", "tue", "wed", "thi", "fri", "sat"];
+    $lesson_week = $week[$w];
+    $trial_enable_times = $teacher->user->get_trial_enable_times(10);
+    if(isset($trial_enable_times[$lesson_week])) $trial_enable_times = $trial_enable_times[$lesson_week];
+    else $trial_enable_times = null;
     //講師の対象日のカレンダーを取得
     $now_calendars = UserCalendar::findUser($teacher_user_id)
                     ->findStatuses(['fix', 'confirm'])
                     ->searchDate($trial_date.' 00:00:00', $trial_date.' 23:59:59')
                     ->get();
     $_time_list = $time_list;
+    $minute_count = intval($this->course_minutes / 10);
     foreach($_time_list as $i => $_time){
-      $status = "free";
       $_time_list[$i]["conflict_calendar"] = null;
       $_time_list[$i]["is_time_conflict"] = false;
       $_time_list[$i]["is_place_conflict"] = false;
       $_time_list[$i]["free_place_floor"] = "";
       $_time_list[$i]["review"] = 0;
       $_time_list[$i]["remark"]=$remark;;
-      if(isset($now_calendars)){
-        //講師の予定との競合するかチェック
+      //講師の体験授業可能曜日・時間をチェック
+      if(isset($trial_enable_times)){
+        $find_start = false;
+        $from = $_time_list[$i]['work_time_from'];
+        $to = $_time_list[$i]['work_time_to'];
+        $c = 0;
+        foreach($trial_enable_times as $key => $val){
+          $find_end = true;
+          if($key == $from && $val===true) {
+            $find_start = true;
+          }
+          if($find_start==true){
+            if($val !== true){
+              break;
+            }
+            else {
+              $c++;
+            }
+          }
+          if($key == $to){
+            break;
+          }
+        }
+        if($find_start !== true || $c < $minute_count){
+          //体験授業不可能
+          $_time_list[$i]["status"] = "disabled";
+        }
+      }
+
+      if(isset($now_calendars) && $_time_list[$i]["status"] == "free"){
+        //講師の現在の授業予定との競合するかチェック
         foreach($now_calendars as $now_calendar){
           if($_time_list[$i]['is_time_conflict']===false){
             if($now_calendar->is_conflict($_time['start_time'], $_time['end_time'])){

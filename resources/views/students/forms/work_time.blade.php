@@ -33,9 +33,17 @@
       </td>
       @endforeach
     </tr>
-    @foreach($attributes[$prefix.'_time'] as $index => $name)
+    <?php
+      $attribute_name = $prefix.'_time';
+      if($prefix=='trial'){
+        $attribute_name = 'lesson_time';
+      }
+    ?>
+    @foreach($attributes[$attribute_name] as $index => $name)
     <tr class="">
-      <th class="p-1 text-center bg-gray text-sm week_time_label">{{$name}}</th>
+      <th class="p-1 text-center bg-gray text-sm week_time_label">
+        {{$name}}
+      </th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
         <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"

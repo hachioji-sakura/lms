@@ -136,6 +136,11 @@ EOT;
     foreach($lesson_weeks as $lesson_week){
       $tag_names[] = 'work_'.$lesson_week['attribute_value'].'_time';
     }
+    //体験授業シフト
+    foreach($lesson_weeks as $lesson_week){
+      $tag_names[] = 'trial_'.$lesson_week['attribute_value'].'_time';
+    }
+
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
