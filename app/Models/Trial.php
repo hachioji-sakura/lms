@@ -355,11 +355,11 @@ EOT;
     return $calendar;
   }
   public function candidate_teachers($teacher_id, $lesson){
-    $lessons = $this->tags->where('tag_key', 'lesson');
     if($teacher_id > 0 && $lesson > 0){
       return $this->_candidate_teachers($teacher_id, $lesson);
     }
     $ret = [];
+    $lessons = $this->tags->where('tag_key', 'lesson');
     foreach($lessons as $lesson){
       $_candidate_teachers = $this->_candidate_teachers($teacher_id, $lesson->tag_value);
       if(isset($_candidate_teachers) && count($_candidate_teachers) > 0){
@@ -496,6 +496,7 @@ EOT;
         }
         foreach($this->tags as $tag){
           if($tag->tag_key !== $key_name) continue;
+          //echo "[".$key_name."][".$tag->tag_value."]";
           if($teacher->user->has_tag($key_name, $tag->tag_value)){
             //対応可能
             $enable_subject[$tag->tag_value] = [

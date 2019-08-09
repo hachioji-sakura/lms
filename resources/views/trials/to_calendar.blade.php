@@ -71,8 +71,7 @@
       </div>
     </form>
     @else
-      @include('trials.forms.select_teacher')
-      @yield('select_teacher_form')
+      @component('trials.forms.select_teacher', ['item'=>$item,'select_lesson' => $select_lesson,'domain'=>$domain,'domain_name'=>$domain_name,'user'=>$user, 'candidate_teachers'=>$candidate_teachers, 'attributes' => $attributes, 'is_calendar_setting' => false]) @endcomponent
     @endif
   </div>
 </section>
