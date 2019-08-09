@@ -92,6 +92,7 @@ return [
   'email' => 'メールアドレス',
   'charge_lesson' => '担当可能なレッスン',
   'lesson_week_time' => '担当可能な曜日・時間帯',
+  'trial_week_time' => '体験授業可能な曜日・時間帯',
   'week_day' => '曜日',
   'charge_subject' => '担当科目',
   'no_data' => 'データがありません',

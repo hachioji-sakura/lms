@@ -91,6 +91,10 @@ class UserCalendarController extends MilestoneController
           'label' => __('labels.students'),
           'size' => 12,
         ],
+        'remark' => [
+          'label' => __('labels.remark'),
+          'size' => 12,
+        ],
       ];
     }
     return $ret;
@@ -429,6 +433,49 @@ class UserCalendarController extends MilestoneController
       }
 
       return $this->api_response(200, "", "", $items->toArray());
+    }
+    public function api_english_group(Request $request){
+      if(!$request->has('from_date')){
+        $request->merge([
+          'from_date' => date('Y-m-d', strtotime("+1 day")),
+        ]);
+      }
+      if(!$request->has('to_date')){
+        $request->merge([
+          'to_date' => date('Y-m-t', strtotime("+1 month")),
+        ]);
+      }
+
+      $param = $this->get_param($request);
+
+      $items = $this->model();
+      $items = $items->where('status', 'fix');
+      $items = $this->_search_scope($request, $items);
+      $items = $this->_search_pagenation($request, $items);
+      $items = $this->_search_sort($request, $items);
+      $items = $items->orderBy('start_time')->get();
+
+      $ret = [];
+      foreach($items as $item){
+        if($item->is_group()==false) continue;
+        if(!$item->is_english_talk_lesson()) continue;
+        if($request->has('english_teacher')){
+          if($item->user->has_tag('english_teacher', $request->get('english_teacher'))==false){
+            echo 'user_id='.$item->user_id.'/';
+            echo $item->user->get_tag('english_teacher')['tag_value'].'<br>';
+            continue;
+          }
+        }
+        if($request->has('english_talk_lesson')){
+          if($item->user->has_tag('english_talk_lesson', $request->get('english_talk_lesson'))==false){
+            continue;
+          }
+        }
+        $item = $item->details(0);
+        $ret[] = $item;
+      }
+      return "";
+      return $this->api_response(200, "", "", $ret);
     }
     public function search(Request $request)
     {

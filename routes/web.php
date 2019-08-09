@@ -68,6 +68,7 @@ Route::get('calendars/{id}/{status}/{user_id}','UserCalendarController@status_up
 Route::put('calendars/{id}/{status}/{user_id}','UserCalendarController@status_update_no_login');
 */
 Route::get('api_calendars/{user_id?}/{from_date?}/{to_date?}','UserCalendarController@api_index');
+Route::get('api_english_group_calendars','UserCalendarController@api_english_group');
 Route::resource('calendars','UserCalendarController');
 
 

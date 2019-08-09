@@ -208,7 +208,9 @@ $(function(){
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
         $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+          var t = $(this).parent().parent().text().trim();
+          t = t.replace('[MAP]', '');
+          form_data[value+"_name"] += t+'<br>';
         });
       }
     });

@@ -47,7 +47,9 @@
   </div>
   @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  {{--
   @component('students.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'prefix'=>'english_talk', 'attributes' => $attributes]) @endcomponent
+  --}}
   <div class="col-12 bg-info p-2 pl-4 mb-4 piano_form ">
     <i class="fa fa-music mr-1"></i>
     ピアノの授業内容につきまして
@@ -58,7 +60,9 @@
     習い事の授業内容につきまして
   </div>
   @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  {{--
   @component('students.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'prefix'=>'kids_lesson', 'attributes' => $attributes]) @endcomponent
+  --}}
 </div>
 @endsection
 
