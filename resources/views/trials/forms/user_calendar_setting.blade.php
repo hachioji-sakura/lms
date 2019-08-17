@@ -36,10 +36,8 @@
       <div class="col-12 col-md-2 my-1">
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="削除" role="button" class="btn btn-sm btn-danger float-left mx-1 text-center">
           <i class="fa fa-trash"></i>
-          {{__('labels.delete')}}
         </a>
       </div>
-
     </div>
   @endforeach
   <div class="row mt-2">

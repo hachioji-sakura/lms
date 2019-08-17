@@ -30,11 +30,9 @@ class UserCalendarSettingController extends UserCalendarController
         $ret = [
           'title' => [
             'label' => __('labels.title'),
-            'size' => 6,
           ],
           'place_floor_name' => [
             'label' => __('labels.place'),
-            'size' => 6,
           ],
           'title2' => [
             'label' => __('labels.details'),
@@ -53,26 +51,18 @@ class UserCalendarSettingController extends UserCalendarController
         $ret = [
           'title' => [
             'label' => __('labels.title'),
-            'size' => 6,
           ],
           'place_floor_name' => [
             'label' => __('labels.place'),
-            'size' => 6,
-          ],
-          'title2' => [
-            'label' => __('labels.details'),
-          ],
-          'user_name' => [
-            'label' => __('labels.charge_user'),
             'size' => 6,
           ],
           'student_name' => [
             'label' => __('labels.students'),
             'size' => 6,
           ],
-          'subject' => [
-            'label' => __('labels.subject'),
-            'size' => 12,
+          'user_name' => [
+            'label' => __('labels.charge_user'),
+            'size' => 6,
           ],
           'subject' => [
             'label' => __('labels.subject'),
@@ -456,19 +446,12 @@ class UserCalendarSettingController extends UserCalendarController
     {
       return $res = $this->transaction(function() use ($request, $id){
         $setting = UserCalendarSetting::where('id', $id)->first();
-        if($request->has('trial_id')){
-          $trial = Trial::where('id', $request->get('trial_id'))->first();
-          //体験ID指定あり＝体験生徒のみを削除
+        if($setting->is_group()==true){
+          $form = $request->all();
           foreach($setting->members as $member){
-            $is_delete = false;
-            foreach($trial->trial_students as $trial_student){
-              \Log::warning("削除:".$member->user_id." == ".$trial_student->student->user_id);
-              if($member->user_id == $trial_student->student->user_id){
-                $is_delete = true;
-                break;
-              }
+            if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
+              $member->dispose();
             }
-            if($is_delete==true) $member->dispose();
           }
         }
         else {

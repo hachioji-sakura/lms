@@ -344,9 +344,9 @@ class MilestoneController extends UserController
         'label' => __('labels.upd_datetime'),
       ];
       */
-      return view('components.page', [
-        'action' => $request->get('action'),
-        'fields'=>$fields])
+      $form = $request->all();
+      $form['fields'] = $fields;
+      return view('components.page', $form)
         ->with($param);
     }
 
@@ -400,9 +400,10 @@ class MilestoneController extends UserController
     public function destroy(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-
       $res = $this->_delete($request, $id);
-      //生徒詳細からもCALLされる
+      if($request->has('api')){
+        return $this->api_response(200, '削除しました。', '');
+      }
       return $this->save_redirect($res, $param, '削除しました。');
     }
 

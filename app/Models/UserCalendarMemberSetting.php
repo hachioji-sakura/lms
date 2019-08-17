@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\UserCalendarSetting;
+use App\Models\UserCalendarTagSetting;
 
 class UserCalendarMemberSetting extends UserCalendarMember
 {
@@ -28,23 +30,20 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function dispose(){
-    $setting = $this->setting;
-    $student_count = 0;
-    foreach($setting->members as $member){
+    $c = 0;
+    foreach($this->setting->members as $member){
       if($member->id == $this->id) continue;
-      $_m = $member->user->details('students');
-      if($_m->role=="student"){
-        $student_count++;
-      }
+      if($member->user->details('students')->role!='student') continue;
+      $c++;
     }
-    if($student_count==0){
-      //生徒がいなくなったのですべて削除
-      $setting->dispose();
+    $this->office_system_api("DELETE");
+    if($c===0){
+      UserCalendarSetting::where('id', $this->user_calendar_setting_id)->delete();
+      UserCalendarTagSetting::where('user_calendar_setting_id', $this->user_calendar_setting_id)->delete();
+      UserCalendarMemberSetting::where('user_calendar_setting_id', $this->user_calendar_setting_id)->delete();
     }
     else {
-      //生徒がまだ存在する
       $this->delete();
-      $this->office_system_api('DELETE');
     }
   }
   public function office_system_api($method){

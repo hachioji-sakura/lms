@@ -50,9 +50,15 @@
       <span id="{{$key}}"></span>
       @if($key=="start_time")
         <span class="text-xs add_type add_type_new">
+          @if($item->trial_id > 0)
+          <small class="badge badge-success mt-1 mr-1">
+            {{__('labels.trial_lesson')}}
+          </small>
+          @else
           <small class="badge badge-danger mt-1 mr-1">
             {{__('labels.schedule_add')}}
           </small>
+          @endif
         </span>
       @endif
      </div>

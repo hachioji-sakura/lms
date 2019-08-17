@@ -115,7 +115,9 @@
 			var disabled = $(this).attr("disabled");
 			if(!util.isEmpty(disabled)) return;
 			var ret = validate(this, formId);
-			if(!ret) _isSuccess=false;
+			if(!ret) {
+				_isSuccess=false;
+			}
 		});
 		if(!_isSuccess){
 			$("html,body").animate({scrollTop:$('.error_message').parent().offset().top});

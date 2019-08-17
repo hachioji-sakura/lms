@@ -15,6 +15,7 @@
       <input type="hidden" name="lesson" value="{{$select_lesson}}">
       <input type="hidden" name="start_time" value="">
       <input type="hidden" name="end_time" value="">
+      <input type="hidden" name="calendar_id" value="">
       <div class="row mb-1">
         <div class="col-md-4">
           @component('trials.forms.trial_detail',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
@@ -31,6 +32,8 @@
                 @endslot
               @endcomponent
               <div class="row">
+                @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent
+                @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
                 @component('trials.forms.select_trial_date', ['item'=>$item, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
                 @if(count($candidate_teachers[0]->trial) < 1)
                 <div class="col-6 mb-1">
@@ -46,7 +49,6 @@
                   </a>
                 </div>
                 @else
-                @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent
                 @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
                 @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
                 @component('trials.forms.matching_decide', ['attributes' => $attributes]) @endcomponent
@@ -84,7 +86,7 @@ $(function(){
     teacher_schedule_change();
     e.preventDefault();
     if(front.validateFormValue('trial_to_calendar')){
-      $("form").submit();
+      $("#trial_to_calendar form").submit();
     }
   });
 

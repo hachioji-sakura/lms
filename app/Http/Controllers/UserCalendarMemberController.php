@@ -10,7 +10,7 @@ class UserCalendarMemberController extends UserCalendarController
 {
   public $domain = 'calendar_members';
   public $table = 'user_calendar_members';
-  
+
   public function model(){
     return UserCalendarMember::query();
   }
@@ -105,6 +105,24 @@ class UserCalendarMemberController extends UserCalendarController
       return $item;
     }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
     $res["message"] = $rest_type;
+    return $res;
+  }
+  /**
+   * 授業予定削除処理
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function _delete(Request $request, $id)
+  {
+    $res = $this->transaction(function() use ($request, $id){
+      $param = $this->get_param($request, $id);
+      $calendar = $param["item"];
+      $item = $this->model()->where('id',$id)->first();
+      if(!isset($item)) return $this->not_found();
+      $this->send_slack('カレンダーメンバー削除/ id['.$id.']', 'info', 'カレンダーメンバー削除');
+      $item->dispose();
+      return $item;
+    }, 'カレンダーメンバー削除', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
 

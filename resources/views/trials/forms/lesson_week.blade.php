@@ -18,25 +18,6 @@
     @endif
   @endforeach
 </div>
-<div class="col-12 mt-2 couse_type_group">
-  <div class="form-group">
-    <label for="action" class="w-100">
-      追加方法
-      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-    </label>
-    <div class="input-group" >
-      <input class="form-check-input icheck flat-green" type="radio" name="action" id="action_new" value="new" required="true" onchange="action_change()" checked>
-      <label class="form-check-label mr-3" for="action_new">
-        新規追加
-      </label>
-      <input class="form-check-input icheck flat-green" type="radio" name="action" id="action_add" value="add" required="true" onchange="action_change()">
-      <label class="form-check-label mr-3" for="action_add">
-        生徒追加
-      </label>
-    </div>
-  </div>
-</div>
-
 <div class="col-8 mb-2">
   <div class="description-block">
     <h5 class="description-header">
@@ -257,18 +238,5 @@ function select_lesson_week_change(){
   $(".teacher_schedule."+w).show();
   $(".calendar_setting_row").hide();
   $(".calendar_setting_row."+w).show();
-}
-function action_change(){
-  var a = $('input[name="action"]:checked').val();
-  if(!a) return ;
-  $('#new_row').remove();
-  $("input.lesson_week_datetime").val("");
-  $(".action_form").hide();
-  if(a=='new'){
-    $(".action_new").show();
-  }
-  else {
-    $(".action_add").show();
-  }
 }
 </script>

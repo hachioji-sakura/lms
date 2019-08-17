@@ -163,7 +163,7 @@ EOT;
     }
     $item['calendars'] = $calendars;
     $calendar_settings = [];
-    $user_calendar_settings = UserCalendarSetting::findTrialStudent($this->id)->orderByWeek()->get();
+    $user_calendar_settings = $this->get_calendar_settings();
     foreach($user_calendar_settings as $user_calendar_setting){
       $calendar_settings[] = $user_calendar_setting->details();
     }
@@ -313,14 +313,25 @@ EOT;
     }
   }
   public function get_calendar(){
-    //キャンセルではない、この体験授業の予定
-    $calendar = UserCalendar::where('trial_id', $this->id)->findStatuses(['cancel'], true)->get();
+    //キャンセルではない、この体験授業生徒の予定
+    $calendar = UserCalendar::findTrialStudent($this->id)->findStatuses(['cancel'], true)->get();
     return $calendar;
+  }
+  public function get_calendar_settings(){
+    $user_calendar_settings = UserCalendarSetting::findTrialStudent($this->id)->orderByWeek()->get();
+    return $user_calendar_settings;
   }
   public function trial_to_calendar($form){
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
+    $course_minutes = $this->get_tag('course_minutes');
+    if(isset($course_minutes)){
+      $course_minutes = $course_minutes->tag_value;
+    }
+    else {
+      $course_minutes=0;
+    }
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
@@ -328,6 +339,7 @@ EOT;
       'place_floor_id' => $form['place_floor_id'],
       'lesson' => $form['lesson'],
       'course_type' => $form['course_type'],
+      'course_minutes' => $course_minutes,
       'remark' => $this->remark,
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],
@@ -344,7 +356,16 @@ EOT;
         $charge_student_form[$field] = $form[$field];
       }
     }
-    $calendar = UserCalendar::add($calendar_form);
+    if(isset($form['calendar_id']) && $form['calendar_id']>0){
+      $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
+      if(!isset($calendar)){
+        \Log::error("存在しないカレンダーへの参加者追加");
+        return null;
+      }
+    }
+    else {
+      $calendar = UserCalendar::add($calendar_form);
+    }
     //体験同時申し込み生徒数だけ追加
     foreach($this->trial_students as $trial_student){
       $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
@@ -527,9 +548,31 @@ EOT;
           $teacher->trial1 = $teacher_trial1;
           $teacher->trial2 = $teacher_trial2;
           */
-          $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], "trial_date1");
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], "trial_date2"));
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], "trial_date3"));
+          $calendars1 = UserCalendar::findUser($teacher->user_id)
+                          ->findStatuses(['fix', 'confirm', 'new'])
+                          ->searchDate($detail['trial_start_time1'], $detail['trial_end_time1'])
+                          ->orderBy('start_time')
+                          ->get();
+          $calendars2 = UserCalendar::findUser($teacher->user_id)
+                          ->findStatuses(['fix', 'confirm', 'new'])
+                          ->searchDate($detail['trial_start_time2'], $detail['trial_end_time2'])
+                          ->orderBy('start_time')
+                          ->get();
+          $calendars3 = UserCalendar::findUser($teacher->user_id)
+                          ->findStatuses(['fix', 'confirm', 'new'])
+                          ->searchDate($detail['trial_start_time3'], $detail['trial_end_time3'])
+                          ->orderBy('start_time')
+                          ->get();
+
+          $teacher->calendars=[
+            'trial_date1' => $calendars1,
+            'trial_date2' => $calendars2,
+            'trial_date3' => $calendars3,
+          ];
+
+          $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
           $teacher->trial = $this->get_time_list_review($teacher->user_id, $teacher->trial);
           $teacher->enable_point = $enable_point;
           $teacher->disable_point = $disable_point;
@@ -537,6 +580,7 @@ EOT;
           if($disable_point < 1) $teacher->subject_review = 'all';
           $teacher->enable_subject = $enable_subject;
           $teacher->disable_subject = $disable_subject;
+
           $ret[] = $teacher;
         }
 
@@ -628,7 +672,7 @@ EOT;
     }
     return $time_list;
   }
-  private function get_time_list_free($time_list, $teacher_user_id, $trial_date, $remark=""){
+  private function get_time_list_free($time_list, $teacher_user_id, $trial_date, $now_calendars, $remark=""){
     /*
     if(strtotime("now") > strtotime($trial_date)){
       return [];
@@ -643,10 +687,6 @@ EOT;
     if(isset($trial_enable_times[$lesson_week])) $trial_enable_times = $trial_enable_times[$lesson_week];
     else $trial_enable_times = null;
     //講師の対象日のカレンダーを取得
-    $now_calendars = UserCalendar::findUser($teacher_user_id)
-                    ->findStatuses(['fix', 'confirm'])
-                    ->searchDate($trial_date.' 00:00:00', $trial_date.' 23:59:59')
-                    ->get();
     $_time_list = $time_list;
     $minute_count = intval($this->course_minutes / 10);
     foreach($_time_list as $i => $_time){
@@ -775,7 +815,7 @@ EOT;
 
     //上に隣接する授業設定を取得
     $prev_calendars = UserCalendar::where('user_id', $user_id)
-                      ->where('status', 'fix')
+                      ->findStatuses(['fix', 'confirm'])
                       ->where('start_time', $target["end_time"])
                       ->get();
     foreach($prev_calendars as $calendar){
@@ -797,7 +837,7 @@ EOT;
 
     //下に隣接する授業設定を取得
     $next_calendars = UserCalendar::where('user_id', $user_id)
-                      ->where('status', 'fix')
+                      ->findStatuses(['fix', 'confirm'])
                       ->where('end_time', $target["start_time"])
                       ->get();
     foreach($next_calendars as $calendar){
@@ -834,7 +874,7 @@ EOT;
       //同日のスケジュール
       $calendars = UserCalendar::where('user_id', $user_id)
                         ->rangeDate($d." 00:00:00",  $d." 23:59:59")
-                        ->where('status', 'fix')
+                        ->findStatuses(['fix', 'confirm'])
                         ->get();
 
       if(count($calendars) < 1){
