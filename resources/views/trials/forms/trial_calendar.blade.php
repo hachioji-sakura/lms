@@ -1,9 +1,9 @@
 @if(count($item["calendars"])>0)
   @foreach($item["calendars"] as $calendar)
-    <div class="row border-bottom p-2">
-      <div class="col-12 border-right">
+    <div class="row border-bottom">
+      <div class="col-12 col-md-10 p-2">
         <span class="description-text mr-2">
-          <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" >
+          <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete&trial_id={{$item->id}}" >
           <i class="fa fa-clock mr-1"></i>
           {{$calendar["datetime"]}} /
           {{$calendar['lesson']}} /
@@ -30,6 +30,11 @@
           </small>
         </span>
         @endforeach
+      </div>
+      <div class="col-12 col-md-2 my-1">
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete&trial_id={{$item->id}}" page_title="削除" role="button" class="btn btn-sm btn-danger float-left mx-1 text-center">
+          <i class="fa fa-trash"></i>
+        </a>
       </div>
     </div>
   @endforeach

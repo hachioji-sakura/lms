@@ -209,7 +209,7 @@ $(function(){
       if(form_data[value+'[]']){
         $("input[name='"+value+'[]'+"']:checked").each(function() {
           var t = $(this).parent().parent().text().trim();
-          t = t.replace('[MAP]', '');
+          t = t.replace_all('[MAP]', '');
           form_data[value+"_name"] += t+'<br>';
         });
       }

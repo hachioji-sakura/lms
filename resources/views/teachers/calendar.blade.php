@@ -50,6 +50,7 @@
               start: start,
               end : end,
               status : "new",
+              selected : true,
             }]);
             var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
             var param ="";

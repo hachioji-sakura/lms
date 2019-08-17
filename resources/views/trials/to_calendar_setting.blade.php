@@ -37,6 +37,7 @@
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
+                  @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
                 </div>
               </div>
             </div>
@@ -88,8 +89,7 @@
       </div>
       <div class="col-md-12">
         <div class="card card-widget mb-2">
-          @include('trials.forms.select_teacher')
-          @yield('select_teacher_form')
+          @component('trials.forms.select_teacher', ['item'=>$item,'select_lesson' => $select_lesson,'domain'=>$domain,'domain_name'=>$domain_name,'user'=>$user, 'candidate_teachers'=>[], 'attributes' => $attributes, 'is_calendar_setting' => true]) @endcomponent
           {{--
           <div class="card-header">
             <i class="fa fa-envelope-open-text mr-1"></i>{{__('labels.trials_schedule_history')}}

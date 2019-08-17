@@ -84,10 +84,10 @@ class UserCalendar extends Model
   {
     $where_raw = <<<EOT
       ((user_calendars.start_time >= '$from_date'
-       AND user_calendars.start_time < '$to_date'
+       AND user_calendars.start_time <= '$to_date'
       )
       OR (user_calendars.end_time >= '$from_date'
-        AND user_calendars.end_time < '$to_date'
+        AND user_calendars.end_time <= '$to_date'
       ))
 EOT;
     return $query->whereRaw($where_raw,[$from_date, $to_date]);
@@ -135,6 +135,19 @@ EOT;
       }
     }
     return $query;
+  }
+  public function scopeFindTrialStudent($query, $trial_id)
+  {
+    $where_raw = <<<EOT
+      lms.user_calendars.id in (
+        select calendar_id from
+        lms.user_calendar_members um
+        inner join common.students s on s.user_id = um.user_id
+        inner join lms.trial_students ts on s.id = ts.student_id
+        where ts.trial_id=?)
+EOT;
+
+    return $query->whereRaw($where_raw,[$trial_id]);
   }
   public function scopeFindUser($query, $user_id)
   {
@@ -651,6 +664,7 @@ EOT;
     if(empty($user_id) || $user_id < 1) return null;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
+
     if(isset($memeber)){
       $member = $memeber->update(['status', $status]);
     }

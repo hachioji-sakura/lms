@@ -619,12 +619,15 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']->work);
+
+      $form = $request->all();
+      if(!isset($form['action'])){
+        $form['action'] = '';
+      }
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>'' ])->with($param);
       }
-      return view($this->domain.'.page', [
-        'action' => $request->get('action')
-      ])->with($param);
+      return view($this->domain.'.page', $form)->with($param);
     }
     /**
      * ステータス更新ページ
@@ -920,7 +923,6 @@ class UserCalendarController extends MilestoneController
         $status = $request->get('status');
         return $this->status_update($request, $id, $request->get('status'));
       }
-
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
         $param['fields'] = $this->show_fields($param['item']->work);
@@ -938,7 +940,8 @@ class UserCalendarController extends MilestoneController
       }
       $res = $this->transaction(function() use ($request,$id){
         $item = $this->model()->where('id',$id)->first();
-        $item->change($this->update_form($request, $id));
+        $form = $this->update_form($request, $id);
+        $item->change($form);
         return $item;
       }, '授業予定更新', __FILE__, __FUNCTION__, __LINE__ );
 
@@ -1265,11 +1268,21 @@ class UserCalendarController extends MilestoneController
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
         $calendar = $param["item"];
-        $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
-        $this->delete_mail($param);
-        $calendar->dispose();
+        if($calendar->is_group()==false){
+          $calendar->dispose();
+          $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
+        }
+        else {
+          $form = $request->all();
+          foreach($calendar->members as $member){
+            if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
+              $member->dispose();
+            }
+          }
+        }
         return $calendar;
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 
 

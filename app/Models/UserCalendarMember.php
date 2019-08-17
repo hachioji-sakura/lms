@@ -12,6 +12,8 @@ use App\Models\Lecture;
 use App\Models\Trial;
 use App\Models\Ask;
 use App\Models\PlaceFloor;
+use App\Models\UserCalendar;
+use App\Models\UserCalendarTag;
 use App\User;
 class UserCalendarMember extends Model
 {
@@ -187,6 +189,24 @@ class UserCalendarMember extends Model
     }
     return $remark;
   }
+  //本モデルはdeleteではなくdisposeを使う
+  public function dispose(){
+    $c = 0;
+    foreach($this->calendar->get_students() as $member){
+      if($member->id == $this->id) continue;
+      $c++;
+    }
+    $this->office_system_api("DELETE");
+    if($c===0){
+      UserCalendar::where('id', $this->calendar_id)->delete();
+      UserCalendarTag::where('calendar_id', $this->calendar_id)->delete();
+      UserCalendarMember::where('calendar_id', $this->calendar_id)->delete();
+    }
+    else {
+      $this->delete();
+    }
+  }
+
   public function office_system_api($method){
     return $this->_office_system_api($method);
   }

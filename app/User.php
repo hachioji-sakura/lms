@@ -91,6 +91,9 @@ class User extends Authenticatable
     public function target_milestones(){
       return $this->hasMany('App\Models\Milestone', 'target_user_id');
     }
+    public function calendars(){
+      return $this->hasMany('App\Models\UserCalendar');
+    }
     public function calendar_settings(){
       return $this->hasMany('App\Models\UserCalendarSetting');
     }

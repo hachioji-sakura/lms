@@ -12,17 +12,18 @@
 <script>
   $(function () {
     function status_style(status){
+      console.log('status_style('+status+')');
       var _ret = {
         "trial" : {
-          "color" : "#6f42c1",
-          "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
+          "color" : "#e83e8c",
+          "icon" : "<i class='fa fa-exclamation-circle mr-1'></i>",
         },
         "new" : {
-          "color" : "#6f42c1",
+          "color" : "#ffc107",
           "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
         },
         "confirm" : {
-          "color" : "#ffc107",
+          "color" : "#fd7e14",
           "icon" : "<i class='fa fa-question-circle mr-1'></i>",
         },
         "fix" : {
@@ -55,7 +56,7 @@
         },
       };
       if(_ret[status]) return _ret[status];
-      return _ret['new'];
+      return _ret['trial'];
     }
     function event_render(events, element, title, is_teacher){
       var _status_style = status_style(events.status);
@@ -87,6 +88,10 @@
         .css('background-color', bgcolor)
         .css('cursor', 'pointer')
         .html('<div class="p-1 text-center">'+icon+t1+'<span class="d-none d-sm-inline-block">'+t2+'</span></div>');
+
+      if(events.selected==true){
+        $(element[0]).css('filter', 'drop-shadow(4px 4px 4px rgba(60,60,60,0.6)) opacity(50%)')
+      }
       /*
       if(events.img){
         $(element[0])
