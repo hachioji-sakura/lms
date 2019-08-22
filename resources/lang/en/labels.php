@@ -194,6 +194,7 @@ return [
   'user_examinations' => 'Examinations',
   'user_answers' => 'Answers',
   'trials' => 'Trials',
+  'trial' => 'Trial',
   'images' => 'images',
   'lectures' => 'lecture',
   'managers' => 'Managers',
