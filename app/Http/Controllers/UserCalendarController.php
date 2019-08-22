@@ -852,6 +852,13 @@ class UserCalendarController extends MilestoneController
         else if($status==='rest'){
           $_remark = $request->get('rest_reason');
         }
+        //操作者のステータス更新
+        $member_user_id = $param['user']->user_id;
+        if($this->is_manager($param['user'])){
+          //事務による代理登録=カレンダー主催者（講師）のステータスを更新
+          $member_user_id = $param['item']->user_id;
+        }
+
         foreach($members as $member){
           //メンバーステータスの個別指定がある場合
           if(isset($form['is_all_student']) && $form['is_all_student']==1){
@@ -861,13 +868,9 @@ class UserCalendarController extends MilestoneController
           else if(!empty($form[$member->id.'_status'])){
             $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
           }
-        }
-
-        //操作者のステータス更新
-        $member_user_id = $param['user']->user_id;
-        if($this->is_manager($param['user'])){
-          //事務による代理登録=カレンダー主催者（講師）のステータスを更新
-          $member_user_id = $param['item']->user_id;
+          else if($member->user_id == $member_user_id){
+            $member->status_update($status, $_remark, $member_user_id);
+          }
         }
 
         /*

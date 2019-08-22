@@ -424,6 +424,15 @@ EOT;
     */
     return false;
   }
+  public function is_trial(){
+    if($this->trial_id > 0) return true;
+    if($this->is_group()==true){
+      foreach($this->members as $member){
+        if($member->status=='trial') return true;
+      }
+    }
+    return false;
+  }
   public function is_single(){
     $tag =  $this->get_tag('course_type');
     if(isset($tag) && $tag->tag_value=="single") return true;
@@ -861,7 +870,12 @@ EOT;
   public function status_to_confirm($remark, $login_user_id){
     if($this->status!='new') return false;
     $status = 'confirm';
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role != 'student') continue;
+    }
     $this->update(['status' => $status]);
+
   }
 
   public function status_to_fix($remark, $login_user_id){
