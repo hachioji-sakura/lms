@@ -51,6 +51,7 @@
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >
+        <input type="hidden" name="is_all_student" value="1" />
         @method('DELETE')
         <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="この予定を削除しますか？">
           <i class="fa fa-trash-alt mr-1"></i>
@@ -59,6 +60,7 @@
       </form>
     </div>
     @else
+    {{-- 体験授業の場合、予定削除はできない --}}
     <div class="col-12 col-lg-12 col-md-12 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf

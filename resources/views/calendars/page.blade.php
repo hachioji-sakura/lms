@@ -80,7 +80,7 @@
               {{$field['label']}}
             </label>
             @foreach($item[$key] as $_item)
-            <span class="text-xs mx-2">
+            <span class="text-xs">
               <small class="badge badge-primary mt-1 mr-1">
                 {{$_item}}
               </small>
