@@ -31,7 +31,7 @@
         </span>
         @endforeach
       </div>
-      @if($item->status=='new')
+      @if($calendar->status=='new')
       <div class="col-12 col-md-2 my-1">
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete&trial_id={{$item->id}}" page_title="削除" role="button" class="btn btn-sm btn-danger float-left mx-1 text-center">
           <i class="fa fa-trash"></i>

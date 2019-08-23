@@ -71,6 +71,7 @@ class RemindCommand extends Command
       $this->info("remind_trial_calendar:type=".$type.":count=".count($calendars));
       $now = strtotime('now');
       foreach($calendars as $calendar){
+        $title = '体験授業予定';
         if($calendar->is_trial()==false) continue;
         if($type!='tomorrow'){
           $hour0 = strtotime($calendar->start_time);
@@ -79,7 +80,6 @@ class RemindCommand extends Command
           $hour3 = strtotime('-3 hour '.$calendar->start_time);
           $hour8 = strtotime('-8 hour '.$calendar->start_time);
           $hour9 = strtotime('-9 hour '.$calendar->start_time);
-          $title = '体験授業予定';
           if($now > $hour1 && $now < $hour0){
             //1時間前リマインド
             $is_remind = true;
