@@ -719,10 +719,6 @@ class UserCalendarController extends MilestoneController
       $res = $this->api_response();
       $is_send = true;
       $calendar = UserCalendar::where('id', $id)->first();
-      $_status = $status;
-      if($status=="remind"){
-        $_status = $calendar->status;
-      }
       if($status=='rest_cancel'){
         //休み取り消し依頼
         $student = Student::where('id', $request->student_id)->first();
@@ -741,7 +737,7 @@ class UserCalendarController extends MilestoneController
         }
       }
       else {
-        $res = $this->_status_update($request, $param, $id, $_status);
+        $res = $this->_status_update($request, $param, $id, $status);
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
       }
       /*
@@ -852,6 +848,13 @@ class UserCalendarController extends MilestoneController
         else if($status==='rest'){
           $_remark = $request->get('rest_reason');
         }
+        //操作者のステータス更新
+        $member_user_id = $param['user']->user_id;
+        if($this->is_manager($param['user'])){
+          //事務による代理登録=カレンダー主催者（講師）のステータスを更新
+          $member_user_id = $param['item']->user_id;
+        }
+
         foreach($members as $member){
           //メンバーステータスの個別指定がある場合
           if(isset($form['is_all_student']) && $form['is_all_student']==1){
@@ -861,13 +864,9 @@ class UserCalendarController extends MilestoneController
           else if(!empty($form[$member->id.'_status'])){
             $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
           }
-        }
-
-        //操作者のステータス更新
-        $member_user_id = $param['user']->user_id;
-        if($this->is_manager($param['user'])){
-          //事務による代理登録=カレンダー主催者（講師）のステータスを更新
-          $member_user_id = $param['item']->user_id;
+          else if($member->user_id == $member_user_id){
+            $member->status_update($status, $_remark, $member_user_id);
+          }
         }
 
         /*

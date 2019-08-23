@@ -4,7 +4,12 @@
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="fa fa-user-alt"></i></span>
     </div>
-    <input id="email" type="text" class="form-control" name="email" value="{{ old('email') }}" required="true" autofocus placeholder="{{__('labels.input_login_id')}}" minlength="3" maxlength="32" inputtype="hankaku">
+    <input id="email" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required="true" autofocus placeholder="{{__('labels.input_login_id')}}" minlength="3" maxlength="32" inputtype="hankaku">
+    @if ($errors->has('email'))
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('email') }}</strong>
+        </span>
+    @endif
   </div>
 </div>
 
@@ -13,7 +18,13 @@
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="fa fa-key"></i></span>
     </div>
-    <input id="password" type="password" class="form-control" name="password" required="true" placeholder="{{__('labels.input_password')}}" accesskey="enter" minlength="8" maxlength="32" inputtype="hankaku">
+    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required="true" placeholder="{{__('labels.input_password')}}" accesskey="enter" minlength="8" maxlength="32" inputtype="hankaku">
+    @if ($errors->has('password'))
+        <span class="invalid-feedback" role="alert">
+            <strong>{{ $errors->first('password') }}</strong>
+        </span>
+    @endif
+
   </div>
 </div>
 <div class="form-group row mb-3">

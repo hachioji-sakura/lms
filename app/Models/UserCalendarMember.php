@@ -62,10 +62,11 @@ class UserCalendarMember extends Model
     }
     switch($status){
       case "remind":
-        if($this->status=='new'){
+        $is_send_teacher_mail = false;
+        $is_send_mail = false;
+        //リマインド操作＝事務 or 講師
+        if($this->status!='confirm'){
           $is_send_mail = false;
-        }
-        else if($this->status=='confirm'){
         }
         break;
       case "confirm":

@@ -59,11 +59,13 @@
       </form>
     </div>
     @else
+    {{-- 体験授業の場合、予定削除はできない --}}
     <div class="col-12 col-lg-12 col-md-12 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
+        <input type="hidden" name="is_all_student" value="1" />
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.schedule_remind')}}

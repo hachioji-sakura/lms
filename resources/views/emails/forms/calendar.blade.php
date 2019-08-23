@@ -14,12 +14,12 @@ $item = $item->details(1);
 {{__('labels.lesson_type')}}：{{$item['course']}}
 {{__('labels.subject')}}：{{implode(',', $item['subject'])}}
 @if($send_to!=='student')
-  {{__('labels.students')}}：
-  @foreach($item->members as $member)
-    @if($member->user->details('students')->role=="student")
-    {{$member->user->details('students')["name"]}}({{$member->status_name()}})
-    @endif
-  @endforeach
+{{__('labels.students')}}：
+@foreach($item->members as $member)
+@if($member->user->details('students')->role=="student")
+{{$member->user->details('students')["name"]}}({{$member->status_name()}})
+@endif
+@endforeach
 @endif
 
 --------------------------------------------
@@ -29,6 +29,6 @@ $item = $item->details(1);
 @if(isset($item['cancel_reason']) && !empty($item['cancel_reason']))
 {{__('labels.cencel_reason')}}:{{$item['cancel_reason']}}
 @endif
-@if($send_to!=='student')
+@if($send_to!=='student' && (!isset($is_control) || $is_control==false))
 ({{__('labels.control')}}：{{$login_user["name"]}})
 @endif

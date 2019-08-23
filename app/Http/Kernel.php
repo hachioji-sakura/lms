@@ -7,6 +7,14 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 class Kernel extends HttpKernel
 {
     /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        Commands\RemindCommand::class
+    ];
+    /**
      * The application's global HTTP middleware stack.
      *
      * These middleware are run during every request to your application.
