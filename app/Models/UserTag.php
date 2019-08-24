@@ -75,8 +75,7 @@ class UserTag extends Model
       $item['charge_subject_level_item'] = $charge_subject_level_item;
     }
 
-    if(!empty($item)){
-      $item->parent = $item->parent();
+    if(isset($item)){
       return $item;
     }
     return null;

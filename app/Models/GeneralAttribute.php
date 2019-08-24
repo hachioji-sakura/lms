@@ -51,7 +51,7 @@ class GeneralAttribute  extends Model
   {
       return $query->where('attribute_key', 'work')->findVal($val);
   }
-  public function parent(){
+  public function get_parent(){
     return GeneralAttribute::where('attribute_key', $this->parent_attribute_key)
       ->where('attribute_value', $this->parent_attribute_value)
       ->first();
