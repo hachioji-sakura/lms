@@ -226,7 +226,8 @@ return [
   'list' => 'List',
   'limit' => 'Limit',
   'approval' => 'Approval',
-
+  'schedule_remark' => 'Remark about schedule',
+  'schedule_remark_placeholder' => 'ex.On Monday, it is possible from 15:30',
   'rest_contact' => 'Rest Contact',
   'target_month' => 'Target Month',
   'important' => 'Important',

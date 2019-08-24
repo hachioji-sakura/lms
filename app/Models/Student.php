@@ -154,7 +154,7 @@ class Student extends Model
     $ret = "";
     if(isset($tags)){
       foreach($tags as $tag){
-        $ret .= $tag['tags_value'].',';
+        $ret .= $tag['value'].',';
       }
       return trim($ret, ',');
     }
