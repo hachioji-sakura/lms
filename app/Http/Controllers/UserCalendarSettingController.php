@@ -315,8 +315,11 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details($request);
-      if(!isset($user) || $this->is_manager($user->role)===false){
-        abort(403, 'このページにはアクセスできません(1)');
+      if(!isset($user)){
+        abort(403, 'このページにはアクセスできません(2)');
+      }
+      if($this->is_manager($user->role)===false && $this->is_teacher($user->role)===false){
+        abort(403, 'このページにはアクセスできません(3)');
       }
       //$user = User::where('id', 607)->first()->details();
       $ret = [
@@ -340,6 +343,10 @@ class UserCalendarSettingController extends UserCalendarController
         if(!isset($item)){
           abort(404, 'ページがみつかりません(1)');
         }
+        if($this->is_teacher($user->role)===true && $user->user_id != $item->user_id){
+          abort(403, 'このページにはアクセスできません(4)');
+        }
+
         $ret['item'] = $item->details($user->user_id);
         $ret['select_lesson'] = 0;
         if(!empty($item->get_tag('lesson'))){

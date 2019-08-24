@@ -435,6 +435,11 @@ EOT;
     }
     return false;
   }
+  public function is_fee_free(){
+    //受講料無料の場合
+    if($this->user->has_tag('student_type', 'fee_free')) return true;
+    return false;
+  }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();
     $parent_ids = [];

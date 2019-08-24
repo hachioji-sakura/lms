@@ -145,7 +145,6 @@
 $(function(){
   select_lesson_week_change();
   lesson_week_datetime_change();
-  action_change();
   $("select[name='charge_subject[]']").on('change', lesson_week_datetime_change);
   $("select[name='lesson_place_floor']").on('change', lesson_week_datetime_change);
 });

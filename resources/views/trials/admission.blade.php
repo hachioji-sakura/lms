@@ -1,3 +1,4 @@
+{{--
 @extends('layouts.simplepage')
 @section('title', 'ご入会お申込みフォーム')
 
@@ -187,3 +188,4 @@ $(function(){
 </script>
 @endif
 @endsection
+--}}
