@@ -108,6 +108,11 @@ EOT;
       'gender' => "",
       'phone_no' => "",
       'address' => "",
+      'bank_no' => "",
+      'bank_branch_no' => "",
+      'bank_account_type' => "",
+      'bank_account_no' => "",
+      'bank_account_name' => "",
     ];
     $update_form = ['status' => 'regular'];
     foreach($update_field as $key => $val){

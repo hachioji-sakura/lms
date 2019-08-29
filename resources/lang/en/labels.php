@@ -239,4 +239,10 @@ return [
   'sep_month' => '/',
   'sep_day' => '',
 
+  'bank_account' => 'Bank Account',
+  'bank_no' => 'Bank',
+  'bank_branch_no' => 'Branch',
+  'bank_account_no' => 'Account No',
+  'bank_account_type' => 'Account Type',
+  'bank_account_name' => 'Account Name',
 ];

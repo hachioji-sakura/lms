@@ -56,29 +56,4 @@ class Manager extends Teacher
 
     return $manager;
   }
-  /*
-  TODO: 現状だと、teachersと同じフィールドを持ち、
-  担当科目定義は、入力フォームがなければユーザータグには追加されない
-  public function profile_update($form){
-    $this->update([
-      'name_last' => $form['name_last'],
-      'name_first' => $form['name_first'],
-      'kana_last' => $form['kana_last'],
-      'kana_first' => $form['kana_first'],
-      'birth_day' => $form['birth_day'],
-      'gender' => $form['gender'],
-      'phone_no' => $form['phone_no'],
-    ]);
-    $tag_names = ['lesson'];
-    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
-    foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
-    }
-    foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-    }
-  }
-  */
 }

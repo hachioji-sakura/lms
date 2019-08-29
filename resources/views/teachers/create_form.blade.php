@@ -62,6 +62,10 @@
 </div>
 @endsection
 
+@section('bank_form')
+@component('teachers.forms.bank_form', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes,]) @endcomponent
+@endsection
+
 @section('tag_form')
 <div class="row">
   @component('students.forms.teacher_character', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent

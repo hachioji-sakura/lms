@@ -11,6 +11,9 @@
 </div>
 @endsection
 
+@section('bank_form')
+@component('teachers.forms.bank_form', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes,]) @endcomponent
+@endsection
 
 
 @section('item_form')

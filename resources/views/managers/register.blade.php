@@ -70,6 +70,7 @@
       <div class="carousel-inner" role="listbox">
         <div class="carousel-item active">
           @yield('item_form')
+          @yield('bank_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -81,6 +82,7 @@
         </div>
         <div class="carousel-item">
           @yield('account_form')
+          @yield('bank_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
