@@ -154,7 +154,7 @@ class Student extends Model
     $ret = "";
     if(isset($tags)){
       foreach($tags as $tag){
-        $ret .= $tag['tags_value'].',';
+        $ret .= $tag['value'].',';
       }
       return trim($ret, ',');
     }
@@ -433,6 +433,11 @@ EOT;
       //受験希望科目がある
       if($subject > 1) return true;
     }
+    return false;
+  }
+  public function is_fee_free(){
+    //受講料無料の場合
+    if($this->user->has_tag('student_type', 'fee_free')) return true;
     return false;
   }
   public function get_brother(){

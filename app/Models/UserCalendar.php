@@ -318,7 +318,10 @@ EOT;
     return "";
   }
   public function lesson($is_value=false){
-    return $this->get_attribute('lesson', $is_value);
+    $en = [1=>'School', 2=>'English Talk', 3=>'Piano', 4=>'Kids Lesson'];
+    $val = $this->get_attribute('lesson', $is_value);
+    if(is_numeric($val) && $is_value==false) return $en[intval($val)];
+    return $val;
   }
   public function course($is_value=false){
     return $this->get_attribute('course_type', $is_value);
@@ -327,7 +330,7 @@ EOT;
     return $this->get_attribute('course_minutes', $is_value);
   }
   public function get_attribute($key, $is_value=false){
-    if($is_value==true){
+    if($is_value==true || app()->getLocale()=='en'){
       $t = $this->get_tag($key);
       if(isset($t)){
         return $t->tag_value;

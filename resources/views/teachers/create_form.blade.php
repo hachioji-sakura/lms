@@ -40,6 +40,15 @@
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=> __('labels.charge_lesson')]) @endcomponent
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'trial', 'attributes' => $attributes, 'title' => __('labels.trial_week_time')]) @endcomponent
+  <div class="col-12">
+    <div class="form-group">
+      <label for="schedule_remark" class="w-100">
+        {{__('labels.schedule_remark')}}
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      </label>
+      <textarea type="text" name="schedule_remark" class="form-control" placeholder="{{__('labels.schedule_remark_placeholder')}}" maxlength=200>{{$item->tag_value('schedule_remark')}}</textarea>
+    </div>
+  </div>
 </div>
 @endsection
 
@@ -51,6 +60,10 @@
   @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
   @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => true,]) @endcomponent
 </div>
+@endsection
+
+@section('bank_form')
+@component('teachers.forms.bank_form', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes,]) @endcomponent
 @endsection
 
 @section('tag_form')

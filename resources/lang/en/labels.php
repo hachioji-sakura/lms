@@ -226,7 +226,8 @@ return [
   'list' => 'List',
   'limit' => 'Limit',
   'approval' => 'Approval',
-
+  'schedule_remark' => 'Remark about schedule',
+  'schedule_remark_placeholder' => 'ex.On Monday, it is possible from 15:30',
   'rest_contact' => 'Rest Contact',
   'target_month' => 'Target Month',
   'important' => 'Important',
@@ -238,4 +239,10 @@ return [
   'sep_month' => '/',
   'sep_day' => '',
 
+  'bank_account' => 'Bank Account',
+  'bank_no' => 'Bank',
+  'bank_branch_no' => 'Branch',
+  'bank_account_no' => 'Account No',
+  'bank_account_type' => 'Account Type',
+  'bank_account_name' => 'Account Name',
 ];

@@ -108,6 +108,11 @@ EOT;
       'gender' => "",
       'phone_no' => "",
       'address' => "",
+      'bank_no' => "",
+      'bank_branch_no' => "",
+      'bank_account_type' => "",
+      'bank_account_no' => "",
+      'bank_account_name' => "",
     ];
     $update_form = ['status' => 'regular'];
     foreach($update_field as $key => $val){
@@ -146,7 +151,7 @@ EOT;
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['piano_level', 'english_teacher',];
+    $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);

@@ -25,6 +25,9 @@
   </div>
 </div>
 <script>
+$(function(){
+  action_change();
+});
 function action_change(){
   var a = $('input[name="action"]:checked').val();
   if(!a) return ;
@@ -44,4 +47,13 @@ function action_change(){
 </script>
 @else
 <input type="hidden" name="action" value="new">
+<script>
+$(function(){
+  action_change();
+});
+function action_change(){
+  $(".action_form").hide();
+  $(".action_new").show();
+}
+</script>
 @endif

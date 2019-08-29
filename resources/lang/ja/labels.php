@@ -223,11 +223,12 @@ return [
   'recess' => '休会',
   'to_recess' => '休会についてはこちら',
   'remark' => '備考',
+  'schedule_remark' => '予定に関する備考',
+  'schedule_remark_placeholder' => '例:月曜は、15:30～可能、体験含め週2回以内にしたい。',
   'type' => 'タイプ',
   'list' => '一覧',
   'limit' => '期限',
   'approval' => '承認',
-
   'rest_contact' => '休み連絡',
   'target_month' => '対象年月',
   'important' => '重要',
@@ -239,4 +240,10 @@ return [
   'sep_month' => '月',
   'sep_day' => '日',
 
+  'bank_account' => '振込口座',
+  'bank_no' => '銀行番号',
+  'bank_branch_no' => '支店番号',
+  'bank_account_no' => '口座番号',
+  'bank_account_type' => '口座種類',
+  'bank_account_name' => '口座名義',
 ];
