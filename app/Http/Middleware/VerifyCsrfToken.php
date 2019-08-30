@@ -19,6 +19,13 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+      'rest*',
+      'credentials*',
+      'calendars/*/remind',
+      'trials/*/remind',
+      'import/*',
+      'export/*',
+      'api_setting_to_calendar*',
+      'upload_images',
     ];
 }

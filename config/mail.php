@@ -56,8 +56,9 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+      //ここの設定を追加
+      'address' => env('MAIL_FROM_ADDRESS', null),
+      'name' => env('MAIL_FROM_NAME', null)
     ],
 
     /*
@@ -120,4 +121,11 @@ return [
         ],
     ],
 
+    'stream' =>[
+      'ssl' =>[
+        'arrow_self_signed' => true,
+        'verify_peer' => false,
+        'verify_peer_name' => false,
+      ]
+    ]
 ];
