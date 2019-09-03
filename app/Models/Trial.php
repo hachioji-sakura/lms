@@ -979,13 +979,16 @@ EOT;
           }
         }
 
+        //echo "A:".$week_day.'['.$data["status"].'['.$is_free.']]'.$time."<br>";
         //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
         if($is_free===true){
           $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
           $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
+
           foreach($teacher->user->calendar_settings as $setting){
+            //echo "B:".$week_day.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
             if($setting->is_conflict_setting($week_day, $f,$t)==true){
-              //echo "conflict:".$week_day.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
+              //echo "conflict!!<br>";
               $is_free = false;
               $data["status"] = "time_conflict";
               $data["conflict_calendar_setting"] = $setting;
@@ -1009,6 +1012,7 @@ EOT;
             $from_time = $time;
           }
           $c+=10;
+          $student_schedule[$week_day][] = $data;
         }
         else {
           // 空きがない
@@ -1030,7 +1034,6 @@ EOT;
           $from_time = "";
           $c = 0;
         }
-        $student_schedule[$week_day][] = $data;
       }
       //最終値の処理
       if(!empty($from_time)){
@@ -1213,6 +1216,7 @@ EOT;
     if($is_commit==false){
     }
     else {
+      $this->parent->regular();
       foreach($this->trial_students as $trial_student){
         $trial_student->student->regular();
       }

@@ -457,6 +457,7 @@ EOT;
     return $data;
   }
 
+  //この設定を使って、引数＝日付でUserCalendarに登録する
   private function _to_calendar($date){
     \Log::warning("_to_calendar:[".$date."]");
 
@@ -465,30 +466,32 @@ EOT;
 
     $start_time = $date.' '.$this->from_time_slot;
     $end_time = $date.' '.$this->to_time_slot;
-    $c = UserCalendar::rangeDate($start_time, $end_time)
+
+    //通常授業設定と競合するカレンダーが存在するかチェック
+    $c = (new UserCalendar())->rangeDate($start_time, $end_time)
     ->where('user_id', $this->user_id)
-      ->get();
+      ->first();
     $default_status = 'fix';
     if(isset($c)){
       //通常授業設定と競合するカレンダーが存在
       $default_status = 'new';
     }
+
     $form = [
       'status' => $default_status,
       'user_calendar_setting_id' => $this->id,
       'start_time' => $start_time,
       'end_time' => $end_time,
       'lecture_id' => $this->lecture_id,
-      'place' => $this->place,
+      'place_floor_id' => $this->place_floor_id,
       'work' => $this->work,
       'exchanged_calendar_id' => 0,
       'remark' => $this->remark,
       'teacher_user_id' => $this->user_id,
       'create_user_id' => 1,
     ];
-    $start_date = $date;
-    $is_enable = false;
 
+    $is_enable = false;
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if($member->user->details()->status != 'regular') continue;

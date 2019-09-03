@@ -510,24 +510,15 @@ class TeacherController extends StudentController
        $template);
     }
     public function _month_work_confirm(Request $request){
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($request){
+        $form = $request->all();
         $check_date = date('Y-m-d H:i:s');
         foreach($form['calendar_id'] as $calendar_id){
           UserCalendar::where('id', $calendar_id)->first()->checked($check_date);
         }
-        DB::commit();
-        return $this->api_response(200, '', '');
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-         DB::rollBack();
-         return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-         DB::rollBack();
-         return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+
+        return $check_date;
+      }, '月次勤怠確定', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 生徒取得

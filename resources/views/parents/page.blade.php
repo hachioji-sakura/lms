@@ -87,8 +87,8 @@
                     @endif
                   @endif
                   @if($user->role!=="studdent")
-                  <a title="生徒情報" href="javascript:void(0);" page_title="お申込み内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm w-100 mt-1">
-                    <i class="fa fa-address-card mr-1"></i>お申込み内容
+                  <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm w-100 mt-1">
+                    <i class="fa fa-address-card mr-1"></i>ご契約内容
                   </a>
                   @endif
                 </div>

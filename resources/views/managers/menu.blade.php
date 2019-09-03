@@ -97,6 +97,11 @@
           <i class="fa fa-calendar nav-icon"></i>勤務予定
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:alert('開発中');">
+          <i class="fa fa-file-invoice-dollar nav-icon"></i>給与設定
+        </a>
+      </li>
     </ul>
   </li>
 </ul>

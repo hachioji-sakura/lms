@@ -246,4 +246,7 @@ return [
   'bank_account_no' => '口座番号',
   'bank_account_type' => '口座種類',
   'bank_account_name' => '口座名義',
+
+  'before_change' => '変更前',
+  'after_change' => '変更後', 
 ];

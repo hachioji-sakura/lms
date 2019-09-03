@@ -56,6 +56,7 @@ return [
   "trial_entry2" => "２営業日以内に、当塾よりご連絡いたしますので、\n何卒宜しくお願い致します。",
   "info_calendar_delete" => "以下の授業予定は削除されました。",
   "info_calendar_add" => ":trial授業の予定を追加いたしました。",
+  "info_calendar_update" => ":trial授業の予定を変更いたしました。",
   "info_login_confirm" => "マイページにログインし、ご確認ください。",
   "info_month_work_fix" => "勤務実績を確定しました。",
   "info_calendar_rest_proxy" => "以下の 授業予定のお休み連絡をしました。",

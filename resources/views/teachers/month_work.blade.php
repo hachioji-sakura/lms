@@ -160,13 +160,13 @@
                     <div class="input-group">
                       <div class="form-check">
                           <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_fix" value="fix" required="true" onChange="checked_at_type_radio_change()">
-                          <label class="form-check-label" for="checked_at_type_fixyes">
+                          <label class="form-check-label" for="checked_at_type_fix">
                               {{__('labels.yes')}}
                           </label>
                       </div>
                       <div class="form-check ml-2">
                           <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_cancel" value="cancel" required="true"  onChange="checked_at_type_radio_change()">
-                          <label class="form-check-label" for="checked_at_type_cancelno">
+                          <label class="form-check-label" for="checked_at_type_cancel">
                               {{__('labels.no')}}
                           </label>
                       </div>
@@ -198,7 +198,7 @@
                 <div class="col-12 mb-1">
                   <button type="button" class="btn btn-submit btn-info btn-block">
                     <i class="fa fa-envelope mr-1"></i>
-                    {{__('labels.send')}}
+                    {{__('labels.send_button')}}
                   </button>
                 </div>
               @endif
