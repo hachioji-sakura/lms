@@ -459,6 +459,11 @@ class ImportController extends UserController
       }
 
       $teacher = Teacher::hasTag('teacher_no', $item['teacher_no'])->first();
+      $bank_account_type = [1=>'normal', 2=>'current', 3=>'savings'];
+      $_bank_account_type = "";
+      if(isset($bank_account_type[intval($item['bank_acount_type'])])){
+        $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
+      }
       if(!isset($teacher)){
         //認証情報登録
         $res = $this->user_create([
@@ -468,11 +473,6 @@ class ImportController extends UserController
           'image_id' => $item['image_id'],
           'status' => $item['status'],
         ]);
-        $bank_account_type = [1=>'normal', 2=>'current', 3=>'savings'];
-        $_bank_account_type = "";
-        if(isset($bank_account_type[intval($item['bank_acount_type'])])){
-          $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
-        }
 
         if($this->is_success_response($res)){
           //講師情報登録
