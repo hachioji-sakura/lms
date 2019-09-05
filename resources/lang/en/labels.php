@@ -245,4 +245,7 @@ return [
   'bank_account_no' => 'Account No',
   'bank_account_type' => 'Account Type',
   'bank_account_name' => 'Account Name',
+
+  'before_change' => 'Before Change', 
+  'after_change' => 'After Change',
 ];

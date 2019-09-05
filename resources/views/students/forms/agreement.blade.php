@@ -48,11 +48,13 @@
 										<rt>{{$item->kana()}}</rt>
 									</ruby>
 									<span class="ml-2">様</span>
+									@if($domain!='asks')
 									<span class="text-xs mx-2">
 										<small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
 											{{$item->status_name()}}
 										</small>
 									</span>
+									@endif
 			          </div>
 			          <div class="col-6 p-2 font-weight-bold" >性別</div>
 			          <div class="col-6 p-2">{{$item->gender()}}</div>

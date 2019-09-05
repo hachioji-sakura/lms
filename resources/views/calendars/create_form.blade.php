@@ -73,5 +73,6 @@
         </div>
       @endif
     @endforeach
+    @component('calendars.forms.mail_send_confirm', ['item'=>$item]); @endcomponent
 </div>
 @endsection

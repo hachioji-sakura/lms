@@ -574,7 +574,6 @@ EOT;
   }
   //本モデルはupdateではなくchangeを使う
   public function change($form){
-
     $update_fields = [
       'status',
       'access_key',
@@ -639,6 +638,12 @@ EOT;
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
+
+
+    foreach($data as $field=>$val){
+      \Log::warning($field."=".$val);
+    }
+    if(isset($data['status_name']))  unset($data['status_name']);
     $this->update($data);
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
@@ -670,6 +675,27 @@ EOT;
     */
     //事務システムも更新
     $this->office_system_api("PUT");
+
+    if(isset($form['send_mail'])){
+      $old_item = $this->details(1);
+
+      $is_teacher_mail = false;
+      $is_student_mail = false;
+      if($form['send_mail']=='both'){
+        $is_teacher_mail = true;
+        $is_student_mail = true;
+      }
+      else if($form['send_mail']=='teacher'){
+        $is_teacher_mail = true;
+      }
+
+      if($is_teacher_mail==true){
+        $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
+      }
+      if($is_student_mail==true){
+        $this->student_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text',  'calendar_update');
+      }
+    }
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $status='new', $is_api=true){

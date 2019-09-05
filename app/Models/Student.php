@@ -481,7 +481,7 @@ EOT;
         if(isset($tag_data['charge_subject_level_item'])){
           if(intval($tag->tag_value) > 1){
             $subject_key = str_replace('_level', '', $tag->tag_key);
-            $grade = $tag_data['charge_subject_level_item']->parent();
+            $grade = $tag_data['charge_subject_level_item']->get_parent();
             if(isset($grade)) $grade = $grade->parent_attribute_value;
             else $grade = "";
             $ret[$subject_key] = [

@@ -36,7 +36,6 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=today" class="nav-link @if($view=="schedule" && $list=="today") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
-            <p>
               {{__('labels.today_schedule_list')}}
             @if($today_count > 0)
             <span class="badge badge-primary right">{{$today_count}}</span>
@@ -127,6 +126,11 @@
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">
           <i class="fa fa-tags nav-icon"></i>{{__('labels.tags')}} {{__('labels.setting')}}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:alert('開発中');">
+          <i class="fa fa-file-invoice-dollar nav-icon"></i>給与設定
         </a>
       </li>
       @endif

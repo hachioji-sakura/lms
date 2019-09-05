@@ -1,4 +1,7 @@
-  <?php $is_find = false; ?>
+  <?php
+  $is_find = false;
+  $find_teachers = [];
+  ?>
   @if($is_calendar_setting==false && isset($candidate_teachers) && count($candidate_teachers) > 0 && $select_lesson<1)
     @foreach($candidate_teachers as $lesson => $lesson_teachers)
     <ul class="mailbox-attachments clearfix row">
@@ -30,22 +33,24 @@
     </ul>
     @endforeach
   @elseif($is_calendar_setting==true && count($item->calendars)>0)
-    @foreach($item->calendars as $calendar)
-    <ul class="mailbox-attachments clearfix row">
-      <li class="col-12 bg-light" accesskey="" target="">
-        <div class="row">
-          <div class="col-12">
-            体験授業担当講師
-          </div>
+  <ul class="mailbox-attachments clearfix row">
+    <li class="col-12 bg-light" accesskey="" target="">
+      <div class="row">
+        <div class="col-12">
+          体験授業担当講師
         </div>
-      </li>
+      </div>
+    </li>
+    @foreach($item->calendars as $calendar)
       @foreach($calendar->teachers as $teacher)
       <?php
         $teacher = $teacher->user->details();
+        if(isset($find_teachers[$teacher->id])) continue;
         $ct = $item->_candidate_teachers($teacher->id, $calendar->lesson(true));
         if(count($ct)>0) $ct = $ct[0];
         else continue;
         $is_find = true;
+        $find_teachers[$teacher->id] = true;
       ?>
       <li class="col-6" accesskey="" target="">
         @component('trials.forms.charge_teacher', ['teacher' => $ct,  'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
