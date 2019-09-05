@@ -621,7 +621,6 @@ class TrialController extends UserCalendarController
                 if(empty($request->get($setting->id.'_tuition'))){
                   continue;
                 }
-                \Log::warning("debug:".$setting->id.'_tuition');
                 Tuition::add([
                   'student_id' => $s->student_id,
                   'teacher_id' => $setting->user->details()->id,

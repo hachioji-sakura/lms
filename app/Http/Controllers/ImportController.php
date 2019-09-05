@@ -367,8 +367,13 @@ class ImportController extends UserController
           $item['name_last'] = $names[0];
           $item['name_first'] = $names[1];
       }
-
+      //注意：APIは、acountとして送信される　→ 正しくは、account
       $manager = Manager::hasTag('manager_no', $item['staff_no'])->first();
+      $bank_account_type = [1=>'normal', 2=>'current', 3=>'savings'];
+      $_bank_account_type = "";
+      if(isset($bank_account_type[intval($item['bank_acount_type'])])){
+        $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
+      }
 
       if(!isset($manager)){
         //認証情報登録
@@ -387,6 +392,11 @@ class ImportController extends UserController
             'kana_last' => $item['kana_last'],
             'kana_first' => $item['kana_first'],
             'user_id' => $res['data']->id,
+            'bank_no' => $item['bank_no'],
+            'bank_branch_no' => $item['bank_branch_no'],
+            'bank_account_type' => $_bank_account_type,
+            'bank_account_no' => $item['bank_acount_no'],
+            'bank_account_name' => $item['bank_acount_name'],
             'create_user_id' => 1
           ]);
           $user_id = $res['data']->id;
@@ -403,6 +413,11 @@ class ImportController extends UserController
           'name_first' => $item['name_first'],
           'kana_last' => $item['kana_last'],
           'kana_first' => $item['kana_first'],
+          'bank_no' => $item['bank_no'],
+          'bank_branch_no' => $item['bank_branch_no'],
+          'bank_account_type' => $_bank_account_type,
+          'bank_account_no' => $item['bank_acount_no'],
+          'bank_account_name' => $item['bank_acount_name'],
         ]);
         $manager->user->update([
           'status' => $item['status'],
@@ -453,6 +468,12 @@ class ImportController extends UserController
           'image_id' => $item['image_id'],
           'status' => $item['status'],
         ]);
+        $bank_account_type = [1=>'normal', 2=>'current', 3=>'savings'];
+        $_bank_account_type = "";
+        if(isset($bank_account_type[intval($item['bank_acount_type'])])){
+          $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
+        }
+
         if($this->is_success_response($res)){
           //講師情報登録
           $Teacher = new Teacher;
@@ -462,6 +483,11 @@ class ImportController extends UserController
             'kana_last' => $item['kana_last'],
             'kana_first' => $item['kana_first'],
             'user_id' => $res['data']->id,
+            'bank_no' => $item['bank_no'],
+            'bank_branch_no' => $item['bank_branch_no'],
+            'bank_account_type' => $_bank_account_type,
+            'bank_account_no' => $item['bank_acount_no'],
+            'bank_account_name' => $item['bank_acount_name'],
             'create_user_id' => 1
           ]);
         }
@@ -480,6 +506,11 @@ class ImportController extends UserController
           'name_first' => $item['name_first'],
           'kana_last' => $item['kana_last'],
           'kana_first' => $item['kana_first'],
+          'bank_no' => $item['bank_no'],
+          'bank_branch_no' => $item['bank_branch_no'],
+          'bank_account_type' => $_bank_account_type,
+          'bank_account_no' => $item['bank_acount_no'],
+          'bank_account_name' => $item['bank_acount_name'],
         ]);
         $teacher->user->update([
           'status' => $item['status'],

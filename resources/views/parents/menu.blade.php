@@ -13,6 +13,25 @@
       </p>
       </a>
       <ul class="nav nav-treeview">
+        @foreach($charge_students as $charge_student)
+        <li class="nav-item">
+        <a class="nav-link" href="/students/{{$charge_student->id}}" >
+          <i class="fa fa-user-graduate nav-icon"></i>
+          <p>
+            <ruby style="ruby-overhang: none">
+              <rb>{{$charge_student->student->name()}}</rb>
+              <rt>{{$charge_student->student->kana()}}</rt>
+            </ruby>
+            <span class="badge badge-{{config('status_style')[$charge_student->student->status]}} right">
+              {{$charge_student->student->status_name()}}
+            </span>
+          </p>
+        </a>
+        </li>
+        @endforeach
+      </ul>
+      <ul class="nav nav-treeview">
+        {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。
         <li class="nav-item">
           <a class="nav-link" href="/{{$domain}}/{{$item->id}}/agreement" >
             <i class="fa fa-file-invoice nav-icon"></i>ご契約情報
@@ -23,6 +42,7 @@
             <i class="fa fa-comment-dots nav-icon"></i>コメント登録
           </a>
         </li>
+        --}}
       </ul>
     </li>
 </ul>

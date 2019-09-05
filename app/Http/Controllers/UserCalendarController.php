@@ -144,7 +144,11 @@ class UserCalendarController extends MilestoneController
       $form['remark'] = $request->get('remark');
     }
     if($request->has('user') && !empty($request->get('user'))) {
-      $form['user_id'] = $request->get('user');
+    }
+    $form['user_id'] = $request->get('user');
+    
+    if($request->has('send_mail')){
+      $form['send_mail'] = $request->get('send_mail');
     }
     unset($form['status']);
     return $form;

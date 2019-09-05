@@ -232,7 +232,11 @@ class AskController extends MilestoneController
     else {
       $this->send_slack('依頼ステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼ステータス更新');
     }
-    return $this->save_redirect($res, $param, $this->status_update_message[$status]);
+    $message = $this->status_update_message[$status];
+    if($param['item']->type =="agreement"){
+      $message = "";
+    }
+    return $this->save_redirect($res, $param, $message);
   }
 
   /**
@@ -251,7 +255,7 @@ class AskController extends MilestoneController
         'login_user_id' => $param['user']->user_id,
       ]);
       return $param['item'];
-    }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+    }, '依頼ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
   public function save_validate(Request $request)
