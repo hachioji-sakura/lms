@@ -462,7 +462,7 @@ class UserCalendarSettingController extends UserCalendarController
           }
         }
         else {
-          //$setting->dispose();
+          $setting->dispose();
         }
         return $setting;
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
