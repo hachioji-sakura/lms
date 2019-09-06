@@ -60,14 +60,14 @@
         </a>
       </div>
     @elseif(isset($action) && $action=='remind')
-      @if(isset($item['email']) && strpos($item['email'],'@') === false)
+      @if(isset($item['email']))
       <div class="col-12">
         <div class="form-group">
           <label for="email">
             メールアドレス
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです">
+          <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです" value="{{$item['email']}}">
         </div>
       </div>
       <div class="col-12">

@@ -65,7 +65,9 @@
       <input type="hidden" name="email" value="{{$parent->email}}" />
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="parent_id" value="{{$parent->id}}" />
+      @isset($trial)
       <input type="hidden" name="trial_id" value="{{$trial->id}}" />
+      @endisset
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
