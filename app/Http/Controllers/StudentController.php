@@ -788,10 +788,7 @@ class StudentController extends UserController
     }
 
     if($this->is_success_response($res)){
-      $title = "本登録のお願い";
-      if($this->domain==="parents"){
-        $title = "ご入会お申込みにつきましてご連絡";
-      }
+      $title = "システム本登録のお願い";
       $this->send_mail($email,
         $title, [
         'user_name' => $param['item']['name'],
