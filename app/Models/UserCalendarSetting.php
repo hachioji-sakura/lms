@@ -488,16 +488,16 @@ EOT;
 
     //通常授業設定と競合するカレンダーが存在するかチェック
     $c = (new UserCalendar())->rangeDate($start_time, $end_time)
-    ->where('user_id', $this->user_id)
-      ->first();
+        ->where('user_id', $this->user_id)
+        ->first();
     $default_status = 'fix';
     if(isset($c)){
+      \Log::warning("calendar:[".$c->id."]");
       //通常授業設定と競合するカレンダーが存在
       $default_status = 'new';
     }
 
     $form = [
-      'status' => $default_status,
       'user_calendar_setting_id' => $this->id,
       'start_time' => $start_time,
       'end_time' => $end_time,
@@ -510,6 +510,9 @@ EOT;
       'create_user_id' => 1,
     ];
 
+    foreach($this->tags as $tag){
+      $form[$tag->tag_key] = $tag->tag_value;
+    }
     $is_enable = $this->is_enable();
     if($is_enable===true){
       $is_enable = false;
@@ -521,15 +524,16 @@ EOT;
       }
     }
 
-    \Log::warning(":is_enable[".$is_enable."]");
 
     if($is_enable==false){
       //有効なメンバーがいない
       return null;
     }
 
+    foreach($form as $key => $v){
+      \Log::warning("param[".$key."] =".$v);
+    }
     $calendar = UserCalendar::add($form);
-
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
@@ -537,7 +541,11 @@ EOT;
       //主催者以外を追加
       $calendar->memberAdd($member->user_id, 1, $default_status);
     }
-    \Log::warning(":calendar[".$calendar->id."]");
+    if($default_status=='fix'){
+      $calendar->update(['status' => 'confirm']);
+      UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
+      $calendar->status_to_fix('', 1);
+    }
     return $calendar;
   }
 

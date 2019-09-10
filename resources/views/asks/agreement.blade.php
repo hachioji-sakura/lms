@@ -11,6 +11,7 @@
 @if($item->status=='new')
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
+    <input type="hidden" name="key" value="{{$access_key}}" />
     @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $trial, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >

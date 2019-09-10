@@ -986,8 +986,9 @@ EOT;
           $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
 
           foreach($teacher->user->calendar_settings as $setting){
-            //echo "B:".$week_day.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
-            if($setting->is_conflict_setting($week_day, $f,$t)==true){
+            if($setting->lesson_week != $week_day) continue;
+            //echo "B:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
+            if($setting->is_conflict_setting($week_day,$f,$t)==true){
               //echo "conflict!!<br>";
               $is_free = false;
               $data["status"] = "time_conflict";
@@ -995,14 +996,6 @@ EOT;
               break;
             }
           }
-          /*
-          if(isset($teacher_current_schedule) && isset($teacher_current_schedule[$week_day])
-            && isset($teacher_current_schedule[$week_day][$time]) && isset($teacher_current_schedule[$week_day][$time]->id)){
-              $is_free = false;
-              $data["status"] = "time_conflict";
-              $data["conflict_calendar_setting"] = $teacher_current_schedule[$week_day][$time];
-          }
-          */
         }
         //echo"[".$week_day."][".$time."][".$this->course_minutes."][".$is_free."]<br>";
         if($is_free===true){
@@ -1195,6 +1188,8 @@ EOT;
   public function agreement_ask($create_user_id, $access_key){
     //この体験に関してはいったん完了ステータス
     //保護者にアクセスキーを設定
+    \Log::warning("agreement_ask");
+
     $this->parent->user->update(['access_key' => $access_key]);
     $this->update(['status' => 'complete']);
 

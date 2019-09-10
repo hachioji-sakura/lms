@@ -187,9 +187,9 @@ EOT;
     $item["duration"] = $this->start_date().'～'.$this->end_date();
     $item["start_date"] = $this->start_date();
     if($this->charge_user_id==1) $item["charge_user_name"] = "事務";
-    else $item["charge_user_name"] = $this->charge_user->details()->name();
-    $item["create_user_name"] = $this->create_user->details()->name();
-    $item["target_user_name"] = $this->target_user->details()->name();
+    else $item["charge_user_name"] = $this->charge_user->name;
+    $item["create_user_name"] = $this->create_user->name;
+    $item["target_user_name"] = $this->target_user->name;
     $item["end_dateweek"] = $this->end_dateweek();
     return $item;
   }
@@ -226,6 +226,7 @@ EOT;
       case "agreement":
         $ret = true;
         $is_complete = true;
+        //Trial->agreement()を実行
         $target_model_data->agreement($is_commit);
         break;
       case "rest_cancel":

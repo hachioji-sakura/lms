@@ -157,6 +157,14 @@ class TrialController extends UserCalendarController
       }
       $ret['item'] = $item->details();
     }
+    else {
+      $lists = ['cancel', 'new', 'confirm', 'complete'];
+      foreach($lists as $list){
+        $_status = $list;
+        if($_status=='cancel') $_status='rest,cancel';
+        $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
+      }
+    }
     return $ret;
   }
 
@@ -597,17 +605,16 @@ class TrialController extends UserCalendarController
         '_edit' => false])
        ->with($param);
    }
-   public function admission_mail_send(Request $request, $id){
-     $param = $this->get_param($request, $id);
-     $res = $this->transaction(function() use ($request, $id, $param){
-       $trial = Trial::where('id', $id)->first();
-       $access_key = $this->create_token();
-       $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
-        //受講料初期設定
-        foreach($trial->trial_students as $s){
-          //受講料delete-insert
-          Tuition::where('student_id' , $s->student_id)->delete();
-          foreach($s->student->user->calendar_setting() as $schedule_method => $d1){
+  public function admission_mail_send(Request $request, $id){
+    $param = $this->get_param($request, $id);
+    $access_key = $this->create_token(2678400);
+    $res = $this->transaction(function() use ($request, $id, $param, $access_key){
+      $trial = Trial::where('id', $id)->first();
+      $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+      foreach($trial->trial_students as $s){
+        //受講料delete-insert
+        Tuition::where('student_id' , $s->student_id)->delete();
+        foreach($s->student->user->calendar_setting() as $schedule_method => $d1){
             foreach($d1 as $lesson_week => $settings){
               foreach($settings as $setting){
                 $setting = $setting->details();
@@ -640,28 +647,12 @@ class TrialController extends UserCalendarController
               }
             }
           }
-        }
-        return $ask;
-      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-/*
-      if($this->is_success_response($res)){
-        $email = $param['item']['parent_email'];
-        $user_name = $param['item']['parent_name'];
-        $this->send_mail($email,
-         '入会のご案内',
-        [
-        'ask' => $res['data']->details(),
-        'user_name' => $user_name,
-        'access_key' => $access_key,
-        'comment' => $request->get('comment'),
-        'item' => $param['item'],
-        ],
-        'text',
-        'trial_register');
       }
-*/
-      return $this->save_redirect($res, [], '入会案内メールを送信しました。');
-    }
+      //受講料初期設定
+      return $ask;
+    }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, [], '入会案内メールを送信しました。');
+  }
    public function admission_submit(Request $request, $id){
    }
 }

@@ -639,10 +639,11 @@ EOT;
       $data[$field] = $form[$field];
     }
 
-
+/*
     foreach($data as $field=>$val){
       \Log::warning($field."=".$val);
     }
+*/
     if(isset($data['status_name']))  unset($data['status_name']);
     $this->update($data);
     if($this->trial_id > 0 && isset($form['status'])){
