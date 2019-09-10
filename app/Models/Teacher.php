@@ -266,4 +266,9 @@ EOT;
     }
     return $items;
   }
+  public function regular(){
+    $this->user->update(['status' => 0]);
+    $this->update(['status' => 'regular']);
+    return $this;
+  }
 }

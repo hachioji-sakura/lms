@@ -111,6 +111,10 @@ class AskController extends MilestoneController
       if($request->has('key') && $this->is_enable_token($ret['access_key'])){
         $user = User::where('access_key', $ret['access_key'])->first();
         $user = $user->details();
+        $ret['user'] = $user;
+      }
+      else {
+        abort(403, 'このページへの操作期限が切れています');
       }
     }
     if(!isset($user)) {

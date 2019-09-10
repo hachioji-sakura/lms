@@ -40,13 +40,24 @@ class UserCalendarTag extends UserTag
   }
   //1 key = n tagの場合利用する(上書き差し替え）
   public static function setTags($calendar_id, $tag_key, $tag_values, $create_user_id){
+
     UserCalendarTag::where('calendar_id', $calendar_id)
       ->where('tag_key' , $tag_key)->delete();
-    foreach($tag_values as $tag_value){
+    if(gettype($tag_values) == 'array'){
+      foreach($tag_values as $tag_value){
+        $item = UserCalendarTag::create([
+          'calendar_id' => $calendar_id,
+          'tag_key' => $tag_key,
+          'tag_value' => $tag_value,
+          'create_user_id' => $create_user_id,
+        ]);
+      }
+    }
+    else {
       $item = UserCalendarTag::create([
         'calendar_id' => $calendar_id,
         'tag_key' => $tag_key,
-        'tag_value' => $tag_value,
+        'tag_value' => $tag_values,
         'create_user_id' => $create_user_id,
       ]);
     }
