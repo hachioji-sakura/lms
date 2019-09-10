@@ -58,6 +58,7 @@ class PlaceFloor extends Model
       //空き座席なし
       return null;
     }
+    //TODO 事務システムがcommon.place_floorsを参照するようになれば、この変換は不要
     //事務システム定義　→　本システム定義
     static protected function _offie_system_place_convert($place){
       $mapping_office_system_place = [
@@ -65,10 +66,11 @@ class PlaceFloor extends Model
         2=> '南口校',
         3=> '北口校3F',
         4=> '北口校4F',
-        5=> '北口校3F', //北口校
-        6=> '楢原・犬目校舎',//アローレ
+        5=> '北口校4F', //北口校
+        6=> 'アローレ校',//アローレ
         7=> 'ダットッチ校',
-        8=> '日野豊田校',
+        8=> '日野市豊田校',
+        9=> '国立校',
       ];
 
       if(isset($mapping_office_system_place[$place])){
@@ -77,6 +79,7 @@ class PlaceFloor extends Model
       }
       return null;
     }
+    //TODO 事務システムがcommon.place_floorsを参照するようになれば、この変換は不要
     //本システム定義　→　事務システム定義
     public function _convert_offie_system_place(){
       $mapping_office_system_place = [
@@ -84,15 +87,20 @@ class PlaceFloor extends Model
         2=> '南口校',
         3=> '北口校3F',
         4=> '北口校4F',
-        5=> '北口校3F', //北口校
-        6=> '楢原・犬目校舎',//アローレ
+        5=> '北口校4F', //北口校
+        6=> 'アローレ校',//アローレ
         7=> 'ダットッチ校',
-        8=> '日野豊田校',
+        8=> '日野市豊田校',
+        9=> '国立校',
       ];
 
       foreach($mapping_office_system_place as $i => $v){
         if($v==$this->name) return $v;
       }
       return 0;
+    }
+    public function is_arrowre(){
+      if($this->name_en == 'Arrowore') return true;
+      return false;
     }
 }
