@@ -103,28 +103,55 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?status=new" class="nav-link @if($_status=="new") active @endif">
-          <i class="fa fa-exclamation-triangle nav-icon"></i>未対応
+        <a href="/{{$domain}}?status=new" class="nav-link @if($_status=="today") active @endif">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          <p>
+            未対応
+            @if($new_count > 0)
+            <span class="badge badge-danger right">{{$new_count}}</span>
+            @endif
+          </p>
         </a>
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=confirm" class="nav-link @if($_status=="confirm") active @endif">
-          <i class="fa fa-check-circle nav-icon"></i>予定確認中
+          <i class="fa fa-calendar-plus nav-icon"></i>
+          <p>
+            体験授業登録済み
+            @if($confirm_count > 0)
+            <span class="badge badge-warning right">{{$confirm_count}}</span>
+            @endif
+          </p>
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=fix" class="nav-link @if($_status=="fix") active @endif">
-          <i class="fa fa-calendar-alt nav-icon"></i>授業予定
+        <a href="/{{$domain}}?status=complete" class="nav-link @if($_status=="complete") active @endif">
+          <i class="fa fa-check-circle nav-icon"></i>
+          <p>
+            入会案内連絡済
+            @if($complete_count > 0)
+            <span class="badge badge-success right">{{$complete_count}}</span>
+            @endif
+          </p>
         </a>
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=rest,cancel" class="nav-link @if($_status=="rest,cancel") active @endif">
-          <i class="fa fa-ban nav-icon"></i>キャンセル
+          <i class="fa fa-ban nav-icon"></i>
+          <p>
+            キャンセル
+            @if($cancel_count > 0)
+            <span class="badge badge-secondary right">{{$cancel_count}}</span>
+            @endif
+          </p>
         </a>
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link @if(empty($_status)) active @endif">
-          <i class="fa fa-history nav-icon"></i>履歴
+          <i class="fa fa-history nav-icon"></i>
+          <p>
+            履歴
+          </p>
         </a>
       </li>
       {{--

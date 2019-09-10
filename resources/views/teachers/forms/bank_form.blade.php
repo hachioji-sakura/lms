@@ -11,7 +11,7 @@
         {{__('labels.bank_no')}}
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <input type="text" id="bank_no" name="bank_no" class="form-control" placeholder="ex.0006" required="true" inputtype="number"
+      <input type="text" name="bank_no" class="form-control" placeholder="ex.0006" required="true" inputtype="number"
       @isset($item)
         value="{{$item['bank_no']}}"
       @else
@@ -26,7 +26,7 @@
         {{__('labels.bank_branch_no')}}
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <input type="text" id="bank_branch_no" name="bank_branch_no" class="form-control" placeholder="ex.215" required="true" inputtype="number"
+      <input type="text" name="bank_branch_no" class="form-control" placeholder="ex.215" required="true" inputtype="number"
       @isset($item)
         value="{{$item['bank_branch_no']}}"
       @endisset
@@ -56,7 +56,7 @@
         {{__('labels.bank_account_no')}}
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <input type="text" id="bank_account_no" name="bank_account_no" class="form-control" placeholder="ex.0012345" required="true" inputtype="number"
+      <input type="text" name="bank_account_no" class="form-control" placeholder="ex.0012345" required="true" inputtype="number"
       @isset($item)
         value="{{$item['bank_account_no']}}"
       @endisset
@@ -69,7 +69,7 @@
         {{__('labels.bank_account_name')}}
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <input type="text" id="bank_account_name" name="bank_account_name" class="form-control" placeholder="ex.ハチオウジ タロウ" required="true" inputtype="zenkakukana"
+      <input type="text" name="bank_account_name" class="form-control" placeholder="ex.ハチオウジ タロウ" required="true" inputtype="zenkakukana"
       @isset($item)
         value="{{$item['bank_account_name']}}"
       @endisset

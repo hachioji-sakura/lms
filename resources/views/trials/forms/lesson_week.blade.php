@@ -45,6 +45,7 @@
         @if($teacher->match_schedule['count'][$week_day] > 0)
           @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
             @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
+            @if($setting->is_enable()==false) @continue @endif
             <tr id="{{$week_day}}_{{$setting["from_time_slot"]}}_{{$setting["to_time_slot"]}}" class="calendar_setting_row {{$week_day}}">
               <td class="action_form action_add">
                 <input class="form-check-input icheck flat-green" type="radio" name="calendar_setting_id" value="{{$setting->id}}" >

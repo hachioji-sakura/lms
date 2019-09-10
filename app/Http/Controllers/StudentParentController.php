@@ -238,7 +238,8 @@ class StudentParentController extends TeacherController
        }
        $param['parent'] = $user->first()->details();
        $student = Student::findChild($param['parent']->id)->orderBy('id', 'desc')->first();
-       $param['trial'] = Trial::where('student_parent_id', $param['parent']->id)->where('student_parent_id', $param['parent']->id)->first()->details();
+       $trial = Trial::where('student_parent_id', $param['parent']->id)->where('student_parent_id', $param['parent']->id)->first();
+       if(isset($trial)) $param['trial'] = $trial->details();
        $param['access_key'] = $access_key;
        $param['_edit'] = false;
      }

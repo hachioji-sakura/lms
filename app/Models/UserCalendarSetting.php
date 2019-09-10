@@ -220,7 +220,7 @@ EOT;
   }
   public function change($form){
     $update_fields = [
-      'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method',
+      'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
     ];
     $form['lesson_week'] = $this->lesson_week;
@@ -398,11 +398,30 @@ EOT;
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
   }
-
+  public function is_enable(){
+    if(!empty($this->enable_start_date)){
+      $diff = strtotime($this->enable_start_date) - strtotime('now');
+      if($diff > 0){
+        //設定開始前
+        return false;
+      }
+    }
+    if(!empty($this->enable_end_date)){
+      $diff = strtotime($this->enable_end_date) - strtotime('now');
+      if($diff < 0){
+        //設定終了
+        return false;
+      }
+    }
+    return true;
+  }
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
   public function is_conflict_setting($week, $start_time, $end_time, $place_id=0, $place_floor_id=0){
+    //設定が有効じゃない＝競合は発生しない
+    if($this->is_enable() === false) return false;
+
     if($this->lesson_week != $week) return false;
 
     $start = strtotime('2000-01-01 '.$start_time);
@@ -469,16 +488,16 @@ EOT;
 
     //通常授業設定と競合するカレンダーが存在するかチェック
     $c = (new UserCalendar())->rangeDate($start_time, $end_time)
-    ->where('user_id', $this->user_id)
-      ->first();
+        ->where('user_id', $this->user_id)
+        ->first();
     $default_status = 'fix';
     if(isset($c)){
+      \Log::warning("calendar:[".$c->id."]");
       //通常授業設定と競合するカレンダーが存在
       $default_status = 'new';
     }
 
     $form = [
-      'status' => $default_status,
       'user_calendar_setting_id' => $this->id,
       'start_time' => $start_time,
       'end_time' => $end_time,
@@ -491,23 +510,30 @@ EOT;
       'create_user_id' => 1,
     ];
 
-    $is_enable = false;
-    foreach($this->members as $member){
-      if($this->user_id == $member->user_id) continue;
-      if($member->user->details()->status != 'regular') continue;
-      $is_enable = true;
-      break;
+    foreach($this->tags as $tag){
+      $form[$tag->tag_key] = $tag->tag_value;
+    }
+    $is_enable = $this->is_enable();
+    if($is_enable===true){
+      $is_enable = false;
+      foreach($this->members as $member){
+        if($this->user_id == $member->user_id) continue;
+        if($member->user->details()->status != 'regular') continue;
+        $is_enable = true;
+        break;
+      }
     }
 
-    \Log::warning(":is_enable[".$is_enable."]");
 
     if($is_enable==false){
       //有効なメンバーがいない
       return null;
     }
 
+    foreach($form as $key => $v){
+      \Log::warning("param[".$key."] =".$v);
+    }
     $calendar = UserCalendar::add($form);
-
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
@@ -515,7 +541,11 @@ EOT;
       //主催者以外を追加
       $calendar->memberAdd($member->user_id, 1, $default_status);
     }
-    \Log::warning(":calendar[".$calendar->id."]");
+    if($default_status=='fix'){
+      $calendar->update(['status' => 'confirm']);
+      UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
+      $calendar->status_to_fix('', 1);
+    }
     return $calendar;
   }
 

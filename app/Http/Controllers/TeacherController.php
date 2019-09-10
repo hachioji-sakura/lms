@@ -325,7 +325,7 @@ class TeacherController extends StudentController
        }
        $param['access_key'] = $access_key;
      }
-     $param['_edit'] = false;
+     $param['_edit'] = true;
      return view($this->domain.'.register',$param);
     }
     /**

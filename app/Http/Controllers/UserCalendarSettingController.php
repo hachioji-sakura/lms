@@ -401,15 +401,19 @@ class UserCalendarSettingController extends UserCalendarController
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
         $setting = UserCalendarSetting::where('id', $id)->first();
-        $setting->change($form);
+        $res = $setting->change($form);
+        if($res === null){
+          return $this->error_response('Query Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
+        }
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->delete();
+          $setting->memberAdd($setting->user_id, $form['create_user_id']);
           foreach($form['students'] as $student){
             $setting->memberAdd($student->user_id, $form['create_user_id']);
           }
         }
-
+        //TODO 更新失敗しても更新成功のエラーメッセージが表示されてしまう
         return $setting;
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
@@ -462,7 +466,7 @@ class UserCalendarSettingController extends UserCalendarController
           }
         }
         else {
-          //$setting->dispose();
+          $setting->dispose();
         }
         return $setting;
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
