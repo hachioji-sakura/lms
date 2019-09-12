@@ -179,16 +179,17 @@ class UserCalendarMember extends Model
     $res = $this->_office_system_api('PUT', $update_rest_type);
     return $this;
   }
-  public function remark(){
-    $remark = "";
-    if(!empty(trim($this->remark))) $remark = trim($this->remark);
+  public function rest_result(){
+    $rest_result = "";
+    if(!empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
     if($this->rest_type == 'a1'){
-      $remark = '休み1:'.$remark;
+      $rest_result = '休み1:'.$rest_result;
     }
     if($this->rest_type == 'a2'){
-      $remark = '休み2:'.$remark;
+      $rest_result = '休み2:'.$rest_result;
     }
-    return $remark;
+
+    return $rest_result;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
@@ -279,7 +280,7 @@ class UserCalendarMember extends Model
         $lecture_id_org = $lecture->lecture_id_org;
       }
       else {
-        //TODO:レクチャが取得できない=lesson ・ courseから取得
+        //レクチャが取得できない=lesson ・ courseから取得
         $lecture = Lecture::where('lesson', $lesson)->where('course', $course)->first();
         if(isset($lecture)){
           $lecture_id_org = $lecture->lecture_id_org;
@@ -415,13 +416,6 @@ class UserCalendarMember extends Model
       }
     }
     else {
-      //TODO 更新と新規でわける必要はない気がする
-      //cancel_reasonの取得
-      /*
-      $_url = $this->api_hosturl.'/'.$this->api_endpoint["GET"].'?id='.$schedule_id;
-      $res = $this->call_api($_url, $_method, $postdata);
-      */
-
       if(isset($res) && isset($res["data"])){
         $message = "";
         foreach($res["data"] as $key => $val){
@@ -429,29 +423,40 @@ class UserCalendarMember extends Model
         }
         \Log::info("事務システムAPI 休み判別:".$_url."\n".$message);
 
-        $remark = trim($res["data"]["cancel_reason"]);
         $cancel = "";
         $exchange_limit_date = "";
+        $comment = "";
+        $cancel_reason = "";
         if(isset($res["data"]["cancel"])) $cancel = trim($res["data"]["cancel"]);
         if(isset($res["data"]["altlimitdate"])) $exchange_limit_date = trim($res["data"]["altlimitdate"]);
+        if(isset($res["data"]["comment"])) $comment = trim($res["data"]["comment"]);
+        if(isset($res["data"]["cancel_reason"])) $cancel_reason = trim($res["data"]["cancel_reason"]);
+
         $update = [];
         $is_update = false;
-        if(!empty($remark)  && $this->remark != $remark){
-          $update['remark'] = $remark;
+        if(!empty($comment)  && $this->remark != $comment){
+          //comment -> remark
+          $update['remark'] = $comment;
           $is_update = true;
-          $this->update(['remark' => $remark]);
         }
         if(!empty($cancel)  && $this->rest_type != $cancel){
+          //cancel -> rest_type
           $update['rest_type'] = $cancel;
+          $is_update = true;
+        }
+        if(!empty($cancel_reason)  && $this->rest_result != $cancel_reason){
+          //cancel_reason -> rest_result
+          $update['rest_result'] = $cancel_reason;
           $is_update = true;
         }
         if(!empty($exchange_limit_date)  && $this->exchange_limit_date != $exchange_limit_date){
           $update['exchange_limit_date'] = $exchange_limit_date;
           $is_update = true;
         }
+
         if($is_update==true){
           $this->update($update);
-          @$this->send_slack("休み判別結果：".$cancel.':'.$remark."\ndata:\n".$message, 'warning', "事務システムAPI");
+          @$this->send_slack("休み判別結果：".$cancel.':'.$cancel_reason."\ndata:\n".$message, 'warning', "事務システムAPI");
         }
       }
     }

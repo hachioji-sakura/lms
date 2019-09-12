@@ -991,7 +991,7 @@ class ImportController extends UserController
           case 101:
           case 111:
             //生徒確認済み
-            //TODO : 101は生徒確認・講師未確認
+            // 101は生徒確認・講師未確認
             $status="fix";
             break;
           case 11:
@@ -1105,9 +1105,10 @@ class ImportController extends UserController
             'calendar_id' => $calendar_id,
             'user_id' => $student->user_id,
             'status' => $student_status,
-            'rest_type' => $item['cancel'],
+            'remark' => $item['comment'],
             'exchange_limit_date' => $item['altlimitdate'],
-            'remark' => $item['cancel_reason'],
+            'rest_type' => $item['cancel'],
+            'rest_result' => $item['cancel_reason'],
             'schedule_id' => $item['id'],
             'place_floor_sheat_id' => $sheat_id,
             'create_user_id' => 1
@@ -1116,7 +1117,8 @@ class ImportController extends UserController
         else {
           $_member->update([
             'status' => $student_status,
-            'remark' => $item['cancel_reason']
+            'remark' => $item['comment']
+            'rest_result' => $item['cancel_reason'],
           ]);
         }
       }
@@ -1132,7 +1134,8 @@ class ImportController extends UserController
           'status' => $teacher_status,
           'rest_type' => $item['cancel'],
           'exchange_limit_date' => $item['altlimitdate'],
-          'remark' => $item['cancel_reason'],
+          'remark' => $item['comment']
+          'rest_result' => '',
           'schedule_id' => $item['id'],
           'place_floor_sheat_id' => $sheat_id,
           'user_id' => $user_id,

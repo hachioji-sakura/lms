@@ -20,3 +20,21 @@
   </div>
 </div>
 --}}
+@if($item->place_floor->is_arrowre()==true)
+<div class="col-12">
+  <div class="form-group">
+    <label class="w-100">
+      お休みの理由をお知らせください
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+    </label>
+    <label class="mx-2">
+      <input type="radio" value="自己都合" name="rest_reason" class="icheck flat-green" required="true"
+      >自己都合
+    </label>
+    <label class="mx-2">
+      <input type="radio" value="アローレ都合" name="rest_reason" class="icheck flat-green" required="true"
+      >アローレ都合
+    </label>
+  </div>
+</div>
+@endif

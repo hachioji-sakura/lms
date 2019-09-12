@@ -583,35 +583,9 @@ EOT;
       'place_floor_id',
       'work'
     ];
-    //TODO : グループレッスンの予定確定方式
-    //A案：一人でも出席なら出席
-    //B案：全員が出席なら出席（通知がかなり複雑）
     $status = $this->status;
     $is_status_update = true;
-    //rest_cancelは、ステータス更新しない
-    /*
-    if(isset($form['status']) && $form['status']!='rest_cancel'  && $form['status']!='lecture_cancel'){
-      if($form['status']=='rest' || $form['status']=='cancel' || $form['status']=='fix'){
-        //status=restは生徒全員が休みの場合
-        //status=fixは生徒全員が予定確認した場合
-        //status=cancelは生徒全員が予定キャンセルした場合
-        foreach($this->members as $member){
-          if($member->user->details('students')->role == "student"){
-            if($form['status']=='fix'){
-              //予定確認＝出席(fix)　or キャンセル(cancel)
-              if($member->status != 'fix' && $member->status != 'cancel'){
-                $is_status_update = false;
-              }
-            }
-            else if($member->status != $form['status']){
-              $is_status_update = false;
-            }
-          }
-        }
-      }
-      if($is_status_update === true)  $status = $form['status'];
-    }
-    */
+
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -662,18 +636,6 @@ EOT;
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    /*
-    if(isset($form['status']) && $form['status']!='rest_cancel' && $form['status']!='lecture_cancel'){
-      if($form['status']==="absence" || $form['status']==="confirm"){
-        //absence = 全員欠席
-        //confirm = 全員の予定確認中に変更
-        \Log::info("UserCalendarMember更新:".$status);
-        UserCalendarMember::where('calendar_id', $this->id)->update(
-          ['status' => $form['status'] ]
-        );
-      }
-    }
-    */
     //事務システムも更新
     $this->office_system_api("PUT");
 
