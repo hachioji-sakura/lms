@@ -179,16 +179,17 @@ class UserCalendarMember extends Model
     $res = $this->_office_system_api('PUT', $update_rest_type);
     return $this;
   }
-  public function remark(){
-    $remark = "";
-    if(!empty(trim($this->remark))) $remark = trim($this->remark);
+  public function rest_result(){
+    $rest_result = "";
+    if(!empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
     if($this->rest_type == 'a1'){
-      $remark = '休み1:'.$remark;
+      $rest_result = '休み1:'.$rest_result;
     }
     if($this->rest_type == 'a2'){
-      $remark = '休み2:'.$remark;
+      $rest_result = '休み2:'.$rest_result;
     }
-    return $remark;
+
+    return $rest_result;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){

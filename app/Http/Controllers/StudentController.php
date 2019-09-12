@@ -773,10 +773,7 @@ class StudentController extends UserController
       //入力値としてemailがある場合はそちらを優先する
       $email = $form['email'];
       $already_user = User::where(['email' => $email])->first();
-      if(isset($already_user)){
-        $res = $this->error_response('このメールアドレスはすでにユーザー登録済みです。');
-      }
-      else {
+      if(!isset($already_user)){
         //既存のユーザーに同じメールアドレスが存在しない
         $param['item']->user->update(['email' => $email]);
       }
