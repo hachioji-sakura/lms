@@ -7,7 +7,7 @@
     @for($i=date('Y');$i>=(intval(date('Y'))-100);$i--)
     <option value="{{$i}}"
       @if(isset($_edit) && $_edit==true && $i == intval(date('Y', strtotime($item->birth_day))))
-        checked
+        selected
       @endif
       >{{$i}}</option>
     @endfor
@@ -20,7 +20,7 @@
     @for($i=1;$i<13;$i++)
     <option value="{{$i}}"
       @if(isset($_edit) && $_edit==true && $i == intval(date('m', strtotime($item->birth_day))))
-        checked
+      selected
       @endif
       >{{$i}}</option>
     @endfor
@@ -32,7 +32,7 @@
     @for($i=1;$i<32;$i++)
     <option value="{{$i}}"
       @if(isset($_edit) && $_edit==true && $i == intval(date('d', strtotime($item->birth_day))))
-        checked
+      selected
       @endif
       >{{$i}}</option>
     @endfor

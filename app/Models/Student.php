@@ -396,7 +396,7 @@ EOT;
     }
     $this->update($update_form);
     //1:nタグ
-    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character'];
+    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     foreach($lesson_weeks as $lesson_week){
@@ -423,16 +423,25 @@ EOT;
     return $this;
   }
   public function is_juken(){
-    //事務システムから渡された受験生かどうか
-    if($this->user->has_tag('student_type', 'juken')) return true;
-    //中３、高３の場合
-    if($this->user->has_tag('grade', 'j3')) return true;
-    if($this->user->has_tag('grade', 'h3')) return true;
-    $subjects = $this->get_charge_subject();
-    foreach($subjects as $key => $subject){
-      //受験希望科目がある
-      if($subject > 1) return true;
+    $grade = $this->tag_value('grade');
+    //中３、高３の場合＝受験
+    if($grade == 'j3' || $grade == 'h3') return true;
+
+    //小4,5,6の場合かつ、受験希望＝受験
+    if($grade == 'e4' || $grade == 'e5' || $grade == 'e6'){
+      //事務システムから渡された受験生かどうか
+      if($this->user->has_tag('student_type', 'j_juken')) return true;
+      //TODO　中２、高２でも受験の場合があるかもしれない
+      $subjects = $this->get_charge_subject();
+      foreach($subjects as $key => $subject){
+        //受験希望科目がある
+        if($subject > 1) return true;
+      }
     }
+    return false;
+  }
+  public function is_arrowre(){
+    if($this->user->has_tag('student_type', 'arrowre')) return true;
     return false;
   }
   public function is_fee_free(){
@@ -557,6 +566,8 @@ EOT;
     return false;
   }
   public function get_calendar_settings($filter){
+    \Log::warning("get_calendar_settings start");
+
     $items = UserCalendarSetting::findUser($this->user_id);
     $items = $items->enable();
     if(isset($filter["search_place"])){

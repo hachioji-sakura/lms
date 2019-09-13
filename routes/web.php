@@ -178,6 +178,7 @@ Route::get('teachers/{id}/tuition','TeacherController@tuition');
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('managers/{id}/ask','ManagerController@ask');
+Route::get('students/{id}/calendar_settings','StudentController@calendar_settings');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
 Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
 

@@ -34,6 +34,16 @@
                   受験生
                 </small>
                 @endif
+                @if($item->is_fee_free()==true)
+                <small class="badge badge-secondary mt-1 mr-1" title="">
+                  受講料無料
+                </small>
+                @endif
+                @if($item->is_arrowre()==true)
+                <small class="badge badge-secondary mt-1 mr-1" title="">
+                  アローレ所属
+                </small>
+                @endif
                 <small class="badge badge-primary mt-1 mr-1">
                   {{$item->gender()}}
                 </small>

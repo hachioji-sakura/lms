@@ -1,4 +1,4 @@
-@include('parents.create_form')
+@include('students.create_form')
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf
@@ -7,24 +7,25 @@
     <div id="students_edit" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('student_form')
           <div class="row">
-            <div class="col-12 mb-1">
-              <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                キャンセル
-              </a>
+            <div class="col-12">
+              <h5 class="bg-info p-1 pl-2 mb-4">
+                <i class="fa fa-user-graduate mr-1"></i>
+                生徒様情報
+              </h5>
             </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
-              </a>
+            @component('students.forms.name', ['_edit'=>$_edit, 'item' => $student, 'prefix' => '']) @endcomponent
+            @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $student, 'prefix' => '']) @endcomponent
+            <div class="col-12">
+              @component('components.select_birthday', ['_edit'=>$_edit, 'item' => $student,'prefix' => ''])
+              @endcomponent
             </div>
+            <div class="col-12">
+              @component('components.select_gender', ['_edit'=>$_edit, 'item' => $student,'prefix' => ''])
+              @endcomponent
+            </div>
+            @component('students.forms.school', ['_edit'=>$_edit, 'item' => $student, 'attributes' => $attributes,'prefix' => '']) @endcomponent
           </div>
-        </div>
-        <div class="carousel-item">
-          @yield('subject_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -32,48 +33,6 @@
                 戻る
               </a>
             </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
-                次へ
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          @yield('lesson_week_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                  <i class="fa fa-check-circle mr-1"></i>
-                  内容確認
-                </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item" id="confirm_form">
-          @yield('confirm_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
-            @if(isset($user->role))
-            <div class="col-12 mb-1">
-              <a href="/" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                キャンセル
-              </a>
-            </div>
-            @endif
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
                   <i class="fa fa-edit mr-1"></i>
@@ -89,6 +48,7 @@
 
 <script>
 $(function(){
+  grade_select_change();
   base.pageSettinged("students_edit", []);
   $('#students_edit').carousel({ interval : false});
 
@@ -120,31 +80,18 @@ $(function(){
     if(form_data["grade"]){
       form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
     }
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
+    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
         $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+          var t = $(this).parent().parent().text().trim();
+          t = t.replace_all('[MAP]', '');
+          form_data[value+"_name"] += t+'<br>';
         });
       }
     });
-    _names = ["english_teacher", "piano_level", "english_talk_course_type", "kids_lesson_course_type", "course_minutes", "gender"];
-    $.each(_names, function(index, value) {
-      form_data[value+"_name"] = "";
-      if(form_data[value]){
-        $("input[name='"+value+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
-        });
-      }
-    });
-    form_data["subject_level_name"] = "";
-    $("input.subject_level[type='radio'][value!=1]:checked").each(function(index, value){
-      var val = $(this).val();
-      var name = $(this).attr("name");
-      name = name.replace('[]', '');
-      form_data[name+"_"+val+"_name"] = "〇";
-    });
+
     return form_data;
   }
 });

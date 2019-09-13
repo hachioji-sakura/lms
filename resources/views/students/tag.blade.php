@@ -1,11 +1,12 @@
-@include($domain.'.create_form')
 <div class="direct-chat-msg">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
     <div id="tag_edit" >
-      @yield('tag_form')
+      <div class="row">
+        @component('students.forms.student_type', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+      </div>
       <div class="row">
         <div class="col-12 mb-1">
           <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
