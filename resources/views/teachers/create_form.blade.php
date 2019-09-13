@@ -68,6 +68,6 @@
 
 @section('tag_form')
 <div class="row">
-  @component('students.forms.teacher_character', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  @component('teachers.forms.teacher_character', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection

@@ -105,13 +105,11 @@
         </a>
       </li>
       @if($user->role==="manager")
-      {{--
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">
           <i class="fa fa-tags nav-icon"></i>{{__('labels.tags')}}{{__('labels.setting')}}
         </a>
       </li>
-      --}}
       <li class="nav-item">
         <a class="nav-link" href="javascript:alert('開発中');">
           <i class="fa fa-file-invoice-dollar nav-icon"></i>受講料設定

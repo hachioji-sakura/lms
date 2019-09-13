@@ -90,7 +90,7 @@
       </form>
     @else
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/rest">
-        
+
 @csrf
 		<input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
@@ -102,7 +102,7 @@
         @endif
 
       <div class="row">
-        @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
+        @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user, 'student_id' => $student_id]) @endcomponent
         @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest', 'student_id' => $student_id]) @endcomponent
       </div>
 
