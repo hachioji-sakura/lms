@@ -1,6 +1,6 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="howto" class="w-100">
+    <label for="teacher_character" class="w-100">
       この講師に当てはまる属性を選択してください
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>

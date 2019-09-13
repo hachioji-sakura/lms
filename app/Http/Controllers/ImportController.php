@@ -528,19 +528,6 @@ class ImportController extends UserController
       $item['student_no'] = intval($item['student_no']);
 
       $item['email'] = $item['mail_address'];
-      if(is_numeric($item['jyukensei']) && $item['jyukensei']=='1'){
-        $item['jyukensei'] = 'jyuken';
-      }
-      else {
-        $item['jyukensei'] = '';
-      }
-      if(is_numeric($item['fee_free']) && $item['fee_free']=='1'){
-        $item['fee_free'] = 'fee_free';
-      }
-      else {
-        $item['fee_free'] = '';
-      }
-
       if(!is_numeric($item['gender'])){
         $item['image_id'] = 4;
         $item['gender'] = 3;
@@ -670,11 +657,21 @@ class ImportController extends UserController
       //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
       //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
       $this->store_user_tag($student->user_id, 'student_no', $item['student_no'], false);
-      $this->store_user_tag($student->user_id, 'grade', $item['grade']);
+      $grade_tag = $this->store_user_tag($student->user_id, 'grade', $item['grade']);
       //TODO :以下の属性は申し込み時点でとっていない
+      if(isset($grade_tag) && isset($grade_tag->tag_value)){
+        if(is_numeric($item['jyukensei']) && $item['jyukensei']=='1'){
+          $this->store_user_tag($student->user_id, 'student_type', 'juken', false);
+          //中学受験タグの設定
+          if($grade_tag->tag_value=='e4' || $grade_tag->tag_value=='e5' || $grade_tag->tag_value=='e6'){
+            $this->store_user_tag($student->user_id, 'student_type', 'j_juken', false);
+          }
+        }
+      }
+      if(is_numeric($item['fee_free']) && $item['fee_free']=='1'){
+        $this->store_user_tag($student->user_id, 'student_type', 'fee_free', false);
+      }
       $this->store_user_tag($student->user_id, 'grade_adj', $item['grade_adj']);
-      $this->store_user_tag($student->user_id, 'student_type', $item['fee_free']);
-      $this->store_user_tag($student->user_id, 'student_type', $item['jyukensei']);
       return true;
     }
     /**
@@ -896,6 +893,7 @@ class ImportController extends UserController
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
           if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
+          $this->store_user_tag($student->user_id, $tag_name, $tags[$tag_name]);
         }
       }
       if(isset($student) && isset($teacher)){
@@ -1117,7 +1115,7 @@ class ImportController extends UserController
         else {
           $_member->update([
             'status' => $student_status,
-            'remark' => $item['comment']
+            'remark' => $item['comment'],
             'rest_result' => $item['cancel_reason'],
           ]);
         }
@@ -1134,7 +1132,7 @@ class ImportController extends UserController
           'status' => $teacher_status,
           'rest_type' => $item['cancel'],
           'exchange_limit_date' => $item['altlimitdate'],
-          'remark' => $item['comment']
+          'remark' => $item['comment'],
           'rest_result' => '',
           'schedule_id' => $item['id'],
           'place_floor_sheat_id' => $sheat_id,
@@ -1248,13 +1246,12 @@ class ImportController extends UserController
         return false;
       }
 
-      UserTag::create([
+      return UserTag::create([
         'user_id' => $user_id,
         'tag_key' => $key,
         'tag_value' => $val,
         'create_user_id' => 1
       ]);
-      return true;
     }
     /**
      * textbookタグ登録

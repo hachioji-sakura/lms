@@ -99,8 +99,4 @@ class PlaceFloor extends Model
       }
       return 0;
     }
-    public function is_arrowre(){
-      if($this->name_en == 'Arrowore') return true;
-      return false;
-    }
 }

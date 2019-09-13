@@ -77,6 +77,11 @@ class StudentController extends UserController
        'list' => $request->get('list'),
        'attributes' => $this->attributes(),
     ];
+    $ret['filter'] = [
+      'search_week'=>$request->search_week,
+      'search_work' => $request->search_work,
+      'search_place' => $request->search_place,
+    ];
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(is_numeric($id) && $id > 0){
@@ -457,7 +462,21 @@ class StudentController extends UserController
      'item' => $item,
    ])->with($param);
  }
+ public function calendar_settings(Request $request, $id)
+ {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
 
+   $user = $param['user'];
+   $view = "calendar_settings";
+   $param['view'] = $view;
+   $calendar_settings = $item->get_calendar_settings($param['filter']);
+   return view($this->domain.'.'.$view, [
+     'calendar_settings' => $calendar_settings,
+   ])->with($param);
+ }
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
@@ -813,29 +832,18 @@ class StudentController extends UserController
 
   public function _update(Request $request, $id)
   {
-   $res = $this->save_validate($request);
-   if(!$this->is_success_response($res)){
-     return $res;
-   }
-   $form = $request->all();
-   try {
-     DB::beginTransaction();
-     $user = $this->login_details($request);
-     $form = $request->all();
-     $form['create_user_id'] = $user->user_id;
-     $item = $this->model()->where('id',$id)->first();
-     $item = $item->profile_update($form);
-     DB::commit();
-     return $this->api_response(200, '', '', $item);
-   }
-   catch (\Illuminate\Database\QueryException $e) {
-      DB::rollBack();
-      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
-   catch(\Exception $e){
-      DB::rollBack();
-      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+    return $res;
+    }
+    return $this->transaction(function() use ($request, $id){
+       $user = $this->login_details($request);
+       $form = $request->all();
+       $form['create_user_id'] = $user->user_id;
+       $item = $this->model()->where('id',$id)->first();
+       $item = $item->profile_update($form);
+       return $item;
+    }, '生徒情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
    * Remove the specified resource from storage.

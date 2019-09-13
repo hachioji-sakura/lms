@@ -20,7 +20,8 @@
   </div>
 </div>
 --}}
-@if($item->place_floor->is_arrowre()==true)
+@if(isset($student_id) && $student_id>0 && $item->own_member->user->student->is_arrowre()==true)
+  {{-- student_idが指定されている場合、かつ、アローレの場合 --}}
 <div class="col-12">
   <div class="form-group">
     <label class="w-100">
