@@ -134,10 +134,7 @@ class User extends Authenticatable
           $item = Manager::where('user_id', $this->id)->first();
           if(isset($item)){
             $item['manager_id'] = $item['id'];
-            if($item->is_admin()==true){
-              $item['role'] = 'manager';
-            }
-            else if(session('login_role') == 'manager'){
+            if(session('login_role') == 'manager' && $item->is_admin()==true){
               $item['role'] = 'manager';
             }
             else {

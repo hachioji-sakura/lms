@@ -54,7 +54,7 @@ class LoginController extends Controller
       }
       if(isset($manager) && !isset($teacher)){
         //事務権限しかない場合
-        if($manager->is_admin()==true) session()->put('login_role', "manager");
+        //if($manager->is_admin()==true) session()->put('login_role', "manager");
         //session()->put('login_role', "manager");
       }
 
