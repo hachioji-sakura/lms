@@ -136,6 +136,7 @@ $(function(){
   //次へ
   $('#managers_register .carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('managers_register .carousel-item.active')){
+      $('body, html').scrollTop(0);
       var form_data = front.getFormValue('managers_register');
       $('#managers_register').carousel('next');
       $('#managers_register').carousel({ interval : false});
@@ -143,6 +144,7 @@ $(function(){
   });
   //戻る
   $('#managers_register .carousel-item .btn-prev').on('click', function(e){
+    $('body, html').scrollTop(0);
     $('#managers_register').carousel('prev');
     $('#managers_register').carousel({ interval : false});
   });
