@@ -28,7 +28,7 @@ return array(
   'piano_level' => 'ピアノ経験',
   'matching_decide' => 'マッチング決定理由',
   'teacher_character' => '講師特性',
-  'student_character' => '生徒特性',
+  'manager_type' => '事務種別',
   'faq_type' => 'FAQ種類',
   'bank_account_type' => '口座種類',
 );

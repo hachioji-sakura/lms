@@ -136,6 +136,8 @@ Route::get('students/{id}/tag','StudentController@tag_page');
 Route::post('students/{id}/tag','StudentController@update');
 Route::get('teachers/{id}/tag','TeacherController@tag_page');
 Route::post('teachers/{id}/tag','TeacherController@update');
+Route::get('managers/{id}/tag','ManagerController@tag_page');
+Route::post('managers/{id}/tag','ManagerController@update');
 
 
 Route::get('students/{id}/subject','StudentController@get_subject');

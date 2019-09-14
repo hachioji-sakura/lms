@@ -37,6 +37,9 @@ class HomeController extends Controller
             case "manager" :
               return redirect('/managers/'.$user->id);
               break;
+            case "staff" :
+              return redirect('/managers/'.$user->id);
+              break;
             case "teacher" :
               return redirect('/teachers/'.$user->id);
               break;

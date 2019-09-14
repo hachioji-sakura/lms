@@ -17,8 +17,8 @@ class GeneralAttributeUpdateSeeder extends Seeder
       $_add_items = [];
       foreach(config('attribute.keys') as $_config => $_config_name){
         $sort_no = 1;
-        GeneralAttribute::findKey($_config)->delete();
         if(empty(config('attribute.'.$_config))) continue;
+        GeneralAttribute::findKey($_config)->delete();
         foreach(config('attribute.'.$_config) as $index => $name){
           $_add_items[] = [
             'attribute_key' => $_config,
