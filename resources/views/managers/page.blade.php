@@ -96,6 +96,7 @@
         </div>
         </a>
       </div>
+      {{--
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/comments">
         <div class="info-box">
@@ -135,6 +136,7 @@
         </div>
         </a>
       </div>
+      --}}
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/attributes">
         <div class="info-box">
