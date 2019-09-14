@@ -782,7 +782,7 @@ class StudentController extends UserController
     $result = '';
     $form = $request->all();
     $res = $this->api_response(200);
-    $access_key = $this->create_token();
+    $access_key = $this->create_token(1728000);    //token期限＝20日
     $param = $this->get_param($request, $id);
     $result = '';
     $email = $param['item']['email'];
