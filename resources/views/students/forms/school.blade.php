@@ -8,7 +8,7 @@
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
-        @if(isset($item) && !empty($item) && $index==$item->get_tag('grade')['value']) selected @endif
+        @if(isset($item) && !empty($item) && $index==$item->tag_value('grade')) selected @endif
         >{{$name}}</option>
       @endforeach
     </select>
@@ -21,7 +21,7 @@
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" required="true" placeholder="例：八王子市立サクラ中学校"
-      @if(isset($item) && !empty($item)) value="{{$item->get_tag('school_name')['value']}}" @endif
+      @if(isset($item) && !empty($item->tag_value('school_name'))) value="{{$item->tag_value('school_name')}}" @endif
       >
   </div>
 </div>

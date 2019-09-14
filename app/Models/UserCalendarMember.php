@@ -236,7 +236,7 @@ class UserCalendarMember extends Model
         $teacher_no = $user->get_tag('teacher_no')["value"];
       }
       $user = $_member->user->details('managers');
-      if($user->role==="manager"){
+      if($user->role==="manager" || $user->role==="staff"){
         $manager_no = $user->get_tag('manager_no')["value"];
       }
     }
@@ -301,13 +301,11 @@ class UserCalendarMember extends Model
       }
     }
     $__user_id = $student_no;
-    switch($this->calendar->work){
-      case 9:
-        //事務のスケジュール
-        $__user_id = $manager_no;
-        $teacher_no = "";
-        $student_no = "";
-        break;
+    if($this->calendar->is_management()==true){
+      //事務のスケジュール
+      $__user_id = $manager_no;
+      $teacher_no = "";
+      $student_no = "";
     }
     //振替のカレンダーID・事務システムのスケジュールIDに置き換え
     $altsched_id = 0;

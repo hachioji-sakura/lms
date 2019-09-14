@@ -196,6 +196,18 @@ class UserController extends Controller
     return false;
   }
   /**
+    * roleが事務の場合 true
+    * @param string role
+    * @return boolean
+  */
+  protected function is_staff($role)
+  {
+    if($role==="staff"){
+      return true;
+    }
+    return false;
+  }
+  /**
     * roleが講師の場合 true
     * @param string role
     * @return boolean

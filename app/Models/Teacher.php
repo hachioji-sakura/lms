@@ -131,7 +131,7 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character',];
+    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
     $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
     //講師用の希望シフト
     foreach($lesson_weeks as $lesson_week){

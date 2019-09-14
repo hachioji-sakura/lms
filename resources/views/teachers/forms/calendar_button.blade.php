@@ -1,4 +1,4 @@
-@if($user->role==="teacher" || $user->role==="manager" )
+@if($user->role==="teacher" || $user->role==="manager" || $user->role=='staff')
 {{--
   @if($calendar["status"]==="fix")
 --}}

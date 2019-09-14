@@ -23,6 +23,7 @@
       <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
     </a>
   </li>
+  @if($user->role==="manager")
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-clock"></i>
@@ -78,6 +79,7 @@
       </li>
     </ul>
   </li>
+  @endif
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
     <i class="nav-icon fa fa-cogs"></i>
@@ -88,13 +90,13 @@
     </a>
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="講師設定">
-          <i class="fa fa-user-edit nav-icon"></i>事務設定
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="勤務設定">
+          <i class="fa fa-user-edit nav-icon"></i>勤務設定
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar_settings">
-          <i class="fa fa-calendar nav-icon"></i>勤務予定
+          <i class="fa fa-user-clock nav-icon"></i>シフト一覧
         </a>
       </li>
       <li class="nav-item">
@@ -102,6 +104,13 @@
           <i class="fa fa-file-invoice-dollar nav-icon"></i>給与設定
         </a>
       </li>
+      @if($user->role==="manager")
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="権限設定">
+          <i class="fa fa-key nav-icon"></i>権限設定
+        </a>
+      </li>
+      @endif
     </ul>
   </li>
 </ul>

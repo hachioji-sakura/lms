@@ -13,7 +13,11 @@
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
             <i class="fa fa-clock mr-1"></i>
+            @if($domain=='teachers')
             {{__('labels.regular_schedule_list')}}
+            @else
+            シフト一覧
+            @endif
           </h3>
           <div class="card-tools">
             <a class="page-link btn btn-float btn-default btn-sm" data-toggle="modal" data-target="#filter_form">
