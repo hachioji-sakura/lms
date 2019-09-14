@@ -53,8 +53,7 @@
                 <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
                 @endif
               </a>
-              {{--
-              @if(isset($user) && ($user->role=="teacher" || $user->role=="manager"))
+              @if(isset($user) && $user->role=="manager")
                 @if($member->rest_type=='a2')
                 <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2">
                   <i class="fa fa-exchange-alt mr-1"></i>
@@ -67,6 +66,7 @@
                 </a>
                 @endif
               @endif
+              {{--
               @if($action=='delete' && $item->is_group()==true && $member->status=='new')
               <a href="javascript:void(0);" onClick="member_delete({{$member->calendar_id}}, {{$member->id}});" class="ml-2 text-dark">
                 <i class="fa fa-times"></i>
