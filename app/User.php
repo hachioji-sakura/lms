@@ -134,7 +134,15 @@ class User extends Authenticatable
           $item = Manager::where('user_id', $this->id)->first();
           if(isset($item)){
             $item['manager_id'] = $item['id'];
-            $item['role'] = 'manager';
+            if($item->is_admin()==true){
+              $item['role'] = 'manager';
+            }
+            else if(session('login_role') == 'manager'){
+              $item['role'] = 'manager';
+            }
+            else {
+              $item['role'] = 'staff';
+            }
           }
         }
       }
@@ -165,6 +173,16 @@ class User extends Authenticatable
           }
         }
       }
+      if(!isset($item)){
+        if(empty($domain) ){
+          $item = Manager::where('user_id', $this->id)->first();
+          if(isset($item)){
+            $item['manager_id'] = $item['id'];
+            $item['role'] = 'staff';
+          }
+        }
+      }
+
       if(isset($item)){
         $item['name'] = $item->name();
         $item['kana'] = $item->kana();

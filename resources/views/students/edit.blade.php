@@ -1,4 +1,3 @@
-@include('students.create_form')
 <div id="students_register" class="direct-chat-msg">
   <form method="POST"  action="/students/{{$item->id}}">
     @csrf

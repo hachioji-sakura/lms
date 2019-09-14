@@ -1,21 +1,21 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="student_type" class="w-100">
-      生徒の属性を選択してください
+    <label for="manager_type" class="w-100">
+      事務員の設定を選択してください
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
     <label class="mx-2">
-      <input type="checkbox" value="disabled" name="student_type[]" class="icheck flat-grey"
+      <input type="checkbox" value="disabled" name="manager_type[]" class="icheck flat-grey"
         onChange="tag_change(this);"
-      @if(isset($item) && $item->user->has_tag('student_type', 'disabled')===true)
+      @if(isset($item) && $item->user->has_tag('manager_type', 'disabled')===true)
       checked
       @endif
-       >タグ無し
+       >無し
     </label>
-    @foreach($attributes['student_type'] as $index => $name)
+    @foreach($attributes['manager_type'] as $index => $name)
     <label class="mx-2">
-      <input type="checkbox" value="{{ $index }}" name="student_type[]" class="icheck flat-green"
-      @if(isset($item) && $item->user->has_tag('student_type', $index)===true)
+      <input type="checkbox" value="{{ $index }}" name="manager_type[]" class="icheck flat-green"
+      @if(isset($item) && $item->user->has_tag('manager_type', $index)===true)
       checked
       @endif
        >{{$name}}
