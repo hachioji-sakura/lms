@@ -9,7 +9,7 @@ return array(
       [
       'name' => '日野市豊田校',
       'name_en' => 'Hinotoyota',
-      'sheat_count' => 10,
+      'sheat_count' => 4,
       ]
     ],
   ],
@@ -17,17 +17,22 @@ return array(
     'name' => '八王子北口校',
     'name_en' => 'North',
     'postno' => '192-0046',
-    'address' => '東京都八王子市明神町４ー７ー４ 須藤ビル3F/4F',
+    'address' => '東京都八王子市明神町４ー７ー４ 須藤ビル2F/3F/4F',
     'floors' => [
+      [
+      'name' => '北口校2F',
+      'name_en' => 'North2F',
+      'sheat_count' => 4,
+      ],
       [
       'name' => '北口校3F',
       'name_en' => 'North3F',
-      'sheat_count' => 5,
+      'sheat_count' => 4,
       ],
       [
       'name' => '北口校4F',
       'name_en' => 'North4F',
-      'sheat_count' => 5,
+      'sheat_count' => 4,
       ]
     ],
   ],
@@ -53,7 +58,7 @@ return array(
       [
       'name' => '国立校',
       'name_en' => 'Kunitachi',
-      'sheat_count' => 10,
+      'sheat_count' => 8,
       ]
     ],
   ],
@@ -66,7 +71,7 @@ return array(
       [
       'name' => '子安校',
       'name_en' => 'Koyasu',
-      'sheat_count' => 10,
+      'sheat_count' => 1,
       ]
     ],
   ],
@@ -79,7 +84,7 @@ return array(
       [
       'name' => 'ダットッチ校',
       'name_en' => 'Dattochi',
-      'sheat_count' => 10,
+      'sheat_count' => 6,
       ]
     ],
   ],
@@ -92,20 +97,7 @@ return array(
       [
       'name' => 'アローレ校',
       'name_en' => 'Arrowore',
-      'sheat_count' => 10,
-      ]
-    ],
-  ],
-  'sakura' => [
-    'name' => '本校',
-    'name_en' => 'Main',
-    'postno' => '',
-    'address' => '',
-    'floors' => [
-      [
-      'name' => '本校',
-      'name_en' => 'Main',
-      'sheat_count' => 1,
+      'sheat_count' => 6,
       ]
     ],
   ],
