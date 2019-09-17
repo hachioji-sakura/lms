@@ -192,5 +192,9 @@ class Controller extends BaseController
        }
        return false;
      }
-
+     public function test(Request $request, $key)
+     {
+       echo "判定[".$this->is_enable_token($key)."]";
+       return "key=".$key;
+     }
 }
