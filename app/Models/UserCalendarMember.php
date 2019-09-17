@@ -358,12 +358,23 @@ class UserCalendarMember extends Model
     if($type != $this->status){
       if($type=='new') $type = $this->calendar->status;
     }
-    $postdata['type'] = $type;
 
-    if($is_rest_cancel==true){
-      //休み取り消しをAPIで送信
-      $postdata['type'] = "rest_cancel";
+
+    //休み１⇔休み２の変更のための対応
+    if(!empty($update_rest_type)) {
+      \Log::info("事務システムAPI 休み種別強制変更:".$update_rest_type);
+      @$this->send_slack("事務システムAPI 休み種別強制変更:".$update_rest_type, 'warning', "事務システムAPI");
+      $postdata['cancel'] = $update_rest_type;
     }
+    else {
+      //休み種別の変更ではない場合、タイプを指定する
+      $postdata['type'] = $type;
+      if($is_rest_cancel==true){
+        //休み取り消しをAPIで送信
+        $postdata['type'] = "rest_cancel";
+      }
+    }
+
     if($this->calendar->status==6 || $this->calendar->status==7 || $this->calendar->status==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
@@ -379,17 +390,13 @@ class UserCalendarMember extends Model
       $postdata['updateuser'] = $__user_id;
     }
 
-    //休み１⇔休み２の変更のための対応
-    if(!empty($update_rest_type)) {
-      //$postdata['cancel'] = $update_rest_type;
-    }
     $message = "";
     foreach($postdata as $key => $val){
       $message .= '['.$key.':'.$val.']';
     }
     $res = $this->call_api($_url, $_method, $postdata);
-    $str_res = json_encode($res);
     \Log::info("事務システムAPI Request:".$_url."\n".$message);
+    $str_res = json_encode($res);
     \Log::info("事務システムAPI Response:".$_url."\n".$str_res);
     @$this->send_slack("事務システムAPI Request:".$_url."\n".$message, 'warning', "事務システムAPI");
     @$this->send_slack("事務システムAPI Response:".$_url."\n".$str_res, 'warning', "事務システムAPI");
