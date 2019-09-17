@@ -17,7 +17,7 @@ if(isset($_GET["locale"]) && !empty($_GET["locale"])){
 }
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
-Route::get('test/{key}','Controller@test');
+Route::get('token_test/{key}','Controller@token_test');
 
 Route::get('managers/login','ManagerController@login');
 Route::get('auth','AuthController@auth');
