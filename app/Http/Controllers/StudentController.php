@@ -802,7 +802,9 @@ class StudentController extends UserController
       $param['item']->user->update( ['access_key' => $access_key]);
       $result = 'success';
     }
-
+    $send_to = $param['item']->role;
+    if($send_to=='staff') $send_to = 'manager';
+    
     if($this->is_success_response($res)){
       $title = "システム本登録のお願い";
       $this->send_mail($email,
@@ -810,7 +812,7 @@ class StudentController extends UserController
         'user_name' => $param['item']['name'],
         'access_key' => $access_key,
         'remind' => true,
-        'send_to' => $param['item']->role,
+        'send_to' => $send_to,
       ], 'text', 'entry');
     }
     return $this->save_redirect($res, $param, $message);
