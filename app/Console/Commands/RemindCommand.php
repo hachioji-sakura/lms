@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
+use App\Http\Controllers\Controller;
 
 class RemindCommand extends Command
 {
@@ -69,6 +70,8 @@ class RemindCommand extends Command
 
       \Log::warning("remind_trial_calendar:type=".$type.":count=".count($calendars));
       $this->info("remind_trial_calendar:type=".$type.":count=".count($calendars));
+      @$this->send_slack("remind_trial_calendar:type=".$type.":count=".count($calendars), 'warning', "remind_trial_calendar");
+
       $now = strtotime('now');
       foreach($calendars as $calendar){
         $title = '体験授業予定';
@@ -107,6 +110,7 @@ class RemindCommand extends Command
     }
     private function remind_calendar($calendar, $title){
       $this->info("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."]--");
+      @$this->send_slack("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."]--", 'warning', "remind_trial_calendar");
       $this->teacher1->user->send_mail($title.'確認', [
         'calendar' => $calendar,
         'login_user' => $this->teacher1->user->details(),

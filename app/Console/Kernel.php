@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+      \App\Console\Commands\RemindCommand::class,
+      \App\Console\Commands\DailyProcCommand::class,   
     ];
 
     /**
@@ -30,6 +31,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('remind:trial today')->hourly();
 
         $schedule->command('remind:trial tomorrow')->dailyAt('18:00');
+
+        $schedule->command('dailywork:ask')->dailyAt('18:00');
     }
 
     /**
