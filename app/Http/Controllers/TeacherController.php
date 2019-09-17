@@ -320,9 +320,13 @@ class TeacherController extends StudentController
          abort(404);
        }
        $param['item'] = $user->first()->details($this->domain);
-       if($param['item']->role.'s' != $this->domain){
+       if($param['item']->role == 'teacher' && $this->domain!='teachers'){
          abort(403, 'このページの有効期限がきれています');
        }
+       if(($param['item']->role == 'staff' || $param['item']->role == 'manager') && $this->domain!='managers'){
+         abort(403, 'このページの有効期限がきれています');
+       }
+
        $param['access_key'] = $access_key;
      }
      $param['_edit'] = true;
