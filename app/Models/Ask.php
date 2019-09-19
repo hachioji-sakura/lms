@@ -360,7 +360,7 @@ EOT;
       case "lecture_cancel":
         $check = [];
         if($target_model_data->calendar->is_group()==true && $target_model_data->calendar->is_english_talk_lesson()==true) return false;
-        \Log::warning("休講自動承認：calendar[".$m->calendar->id."]");
+        \Log::warning("休講自動承認：calendar[".$target_model_data->calendar->id."]");
         $d = date('Ymd',  strtotime($m->calendar->start_time));
         $check[$d] = true;
         \Log::warning("依頼は2日まで");
