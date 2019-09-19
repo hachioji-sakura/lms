@@ -168,7 +168,12 @@ class StudentController extends UserController
     }
     //ステータス
     if(isset($request->status)){
-      $items = $items->findStatuses(explode(',', $request->status.','));
+      if($request->status!='all'){
+        $items = $items->findStatuses(explode(',', $request->status.','));
+      }
+    }
+    else {
+      $items = $items->findStatuses(['regular']);
     }
     return $items;
   }
@@ -804,7 +809,7 @@ class StudentController extends UserController
     }
     $send_to = $param['item']->role;
     if($send_to=='staff') $send_to = 'manager';
-    
+
     if($this->is_success_response($res)){
       $title = "システム本登録のお願い";
       $this->send_mail($email,

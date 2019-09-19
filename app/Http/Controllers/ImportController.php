@@ -367,6 +367,11 @@ class ImportController extends UserController
           $item['name_last'] = $names[0];
           $item['name_first'] = $names[1];
       }
+      $status = 'regular';
+      if(isset($item['unsubscribe']) && is_numeric($item['unsubscribe']) && intval($item['unsubscribe']) > 0){
+        $status = 'unsubscribe';
+      }
+
       //注意：APIは、acountとして送信される　→ 正しくは、account
       $manager = Manager::hasTag('manager_no', $item['staff_no'])->first();
       $bank_account_type = [1=>'normal', 2=>'current', 3=>'savings'];
@@ -387,6 +392,7 @@ class ImportController extends UserController
         if($this->is_success_response($res)){
           //講師情報登録
           $manager = Manager::create([
+            'status' => $status,
             'name_last' => $item['name_last'],
             'name_first' => $item['name_first'],
             'kana_last' => $item['kana_last'],
@@ -409,6 +415,7 @@ class ImportController extends UserController
       }
       else {
         $manager->update([
+          'status' => $status,
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],
           'kana_last' => $item['kana_last'],
@@ -464,6 +471,10 @@ class ImportController extends UserController
       if(isset($bank_account_type[intval($item['bank_acount_type'])])){
         $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
       }
+      $status = 'regular';
+      if(isset($item['unsubscribe']) && is_numeric($item['unsubscribe']) && intval($item['unsubscribe']) > 0){
+        $status = 'unsubscribe';
+      }
       if(!isset($teacher)){
         //認証情報登録
         $res = $this->user_create([
@@ -484,6 +495,7 @@ class ImportController extends UserController
             'kana_first' => $item['kana_first'],
             'user_id' => $res['data']->id,
             'bank_no' => $item['bank_no'],
+            'status' => $status,
             'bank_branch_no' => $item['bank_branch_no'],
             'bank_account_type' => $_bank_account_type,
             'bank_account_no' => $item['bank_acount_no'],
@@ -507,6 +519,7 @@ class ImportController extends UserController
           'kana_last' => $item['kana_last'],
           'kana_first' => $item['kana_first'],
           'bank_no' => $item['bank_no'],
+          'status' => $status,
           'bank_branch_no' => $item['bank_branch_no'],
           'bank_account_type' => $_bank_account_type,
           'bank_account_no' => $item['bank_acount_no'],
@@ -549,6 +562,11 @@ class ImportController extends UserController
       if(isset($item['del_flag']) && intval($item['del_flag'])===2){
         $item['status'] = 9;
       }
+      $status = 'regular';
+      if(isset($item['unsubscribe']) && is_numeric($item['unsubscribe']) && intval($item['unsubscribe']) > 0){
+        $status = 'unsubscribe';
+        $item['status'] = 9;
+      }
 
       if(empty($item['email'])){
         if($item['status']!==9){
@@ -585,6 +603,7 @@ class ImportController extends UserController
             $parent_user = $res['data'];
             $StudentParent = new StudentParent;
             $parent = $StudentParent->create([
+              'status' => $status,
               'name_last' => $item['family_name'],
               'name_first' => $item['first_name'],
               'kana_last' => $item['kana_last'],
@@ -614,6 +633,7 @@ class ImportController extends UserController
           $user = $res['data'];
           $Student = new Student;
           $student = $Student->create([
+            'status' => $status,
             'name_last' => $item['family_name'],
             'name_first' => $item['first_name'],
             'kana_last' => $item['kana_last'],
@@ -644,11 +664,32 @@ class ImportController extends UserController
           'birth_day' => $item['_birth_day'],
           'gender' => $item['gender'],
         ]);
-        if($item['status']===9){
+        if($status == 'unsubscribe'){
+          @$this->remind("退会生徒:email=".$item['email']." / name=".$item['student_no'], 'info', $this->logic_name);
           //削除時のみ更新
           $student->user->update([
             'status' => $item['status'],
           ]);
+          $student->update([
+            'status' => $status,
+          ]);
+          foreach($student->relations as $relation){
+            if($relation->parent->status == 'unsubscribe') continue;
+            $_status = 'unsubscribe';
+            foreach($relation->parent->relation() as $relation){
+              if($relation->student->status != 'unsubscribe'){
+                //有効な生徒が一人以上いる
+                $_status = 'regular';
+                break;
+              }
+            }
+            if($_status == 'unsubscribe'){
+              //有効な生徒が一人もいない
+              $relation->parent->update([
+                'status' => $_status,
+              ]);
+            }
+          }
         }
       }
       //@$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);

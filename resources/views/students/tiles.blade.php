@@ -38,7 +38,7 @@
       @elseif($user->role==="manager")
       @foreach(config('attribute.student_status') as $index => $name)
       <li class="nav-item">
-        <a href="/{{$domain}}?status={{$index}}" class="nav-link @if($_status==$index) active @endif">
+        <a href="/{{$domain}}?status={{$index}}" class="nav-link @if((!isset($_status) && $index=='regular') || ($_status==$index)) active @endif">
           <i class="fa fa-list-alt nav-icon"></i>{{$name}}
         </a>
       </li>
