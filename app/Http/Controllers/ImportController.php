@@ -414,6 +414,9 @@ class ImportController extends UserController
         $this->store_user_tag($manager->user_id, 'manager_no', $item['staff_no'], false);
       }
       else {
+        if($item['status']==1 && $manager->user->status==0){
+          $item['status'] = 0;
+        }
         $manager->update([
           'status' => $status,
           'name_last' => $item['name_last'],
@@ -513,6 +516,9 @@ class ImportController extends UserController
         if($item['lesson_id2']!='0') $this->store_user_tag($teacher->user_id, 'lesson', $item['lesson_id2'], false);
       }
       else {
+        if($item['status']==1 && $teacher->user->status==0){
+          $item['status'] = 0;
+        }
         $teacher->update([
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],

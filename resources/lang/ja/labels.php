@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'system_name' => '学習管理システム',
+  'system_name' => 'SaKuRa One Net',
   'yes' => 'はい',
   'no' => 'いいえ',
   'man' => '男性',
@@ -39,7 +39,6 @@ return [
   'password_forget' => 'パスワード忘れた場合 ',
   'admin_page' => '管理者ログインページ',
   'to_admin_page' => '管理者ログインページへ',
-  'app_name' => config('app.name'),
   'lock' => '認証不能にする',
   'calendar_page' => 'カレンダー',
   'calendar_page_description' => '授業予定をカレンダー表示',
@@ -248,5 +247,5 @@ return [
   'bank_account_name' => '口座名義',
 
   'before_change' => '変更前',
-  'after_change' => '変更後', 
+  'after_change' => '変更後',
 ];

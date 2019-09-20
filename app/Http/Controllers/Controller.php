@@ -52,7 +52,7 @@ class Controller extends BaseController
     {
       App::setLocale($locale);
 
-      $title = '【'.__('labels.app_name').'】'.$title;
+      $title = '【'.__('labels.system_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);
 
