@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'system_name' => 'Learning Management',
+  'system_name' => 'SaKuRa One Net',
   'yes' => 'Yes',
   'no' => 'No',
   'man' => 'Man',
@@ -39,7 +39,6 @@ return [
   'password_forget' => 'Forgot your password? ',
   'admin_page' => 'Admin page',
   'to_admin_page' => 'Click to Admin page',
-  'app_name' => 'Hachioji Sakura',
   'lock' => 'User Lock',
   'calendar_page' => 'Calendar page',
   'calendar_page_description' => 'Calendar display of class schedule',
@@ -246,6 +245,6 @@ return [
   'bank_account_type' => 'Account Type',
   'bank_account_name' => 'Account Name',
 
-  'before_change' => 'Before Change', 
+  'before_change' => 'Before Change',
   'after_change' => 'After Change',
 ];

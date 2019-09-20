@@ -13,7 +13,7 @@
 </div>
 <div class="login-box">
 	<div class="login-logo">
-	<a href="./"><b>{{__('labels.app_name')}}</b></a>
+	<a href="./"><b>{{__('labels.system_name')}}</b></a>
 	</div>
 	<div class="card">
 		<div class="card-header">

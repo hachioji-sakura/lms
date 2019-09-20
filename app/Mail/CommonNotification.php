@@ -19,7 +19,7 @@ class CommonNotification extends Mailable
      *
      * @return void
      */
-    public function __construct($title='学習管理システム（自動送信メール）',
+    public function __construct($title='SaKuRa One Net（自動送信メール）',
                                 $param=['text' => 'このメールはシステムより自動送信しています。'],
                                 $type="text", $template="sample")
     {
