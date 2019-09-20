@@ -9,5 +9,5 @@
 {{__('labels.phone_no')}}　：080-7726-2443 (042-649-3976)
 http://hachiojisakura.com/
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Copyright © 八王子・日野の個別指導塾・個別塾【さくら個別アカデミー】八王子・豊田駅前 All Rights Reserved.
+Copyright © 国立・八王子・日野の個別指導塾 さくら One All Rights Reserved.
 @endsection
