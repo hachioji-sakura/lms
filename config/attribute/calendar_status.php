@@ -7,7 +7,7 @@ return array(
   'absence' => '欠席',
   'rest' => '休み',
   'rest_cancel' => '休み取消(確認待ち)',
-  'lecture_cancel' => '休講',
+  'lecture_cancel' => '休み',
   'cancel' => 'キャンセル',
 );
 ?>

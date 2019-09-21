@@ -187,9 +187,10 @@ EOT;
     $item["duration"] = $this->start_date().'～'.$this->end_date();
     $item["start_date"] = $this->start_date();
     if($this->charge_user_id==1) $item["charge_user_name"] = "事務";
-    else $item["charge_user_name"] = $this->charge_user->name;
-    $item["create_user_name"] = $this->create_user->name;
-    $item["target_user_name"] = $this->target_user->name;
+    else $item["charge_user_name"] = $this->charge_user->get_name();
+
+    $item["target_user_name"] = $this->target_user->get_name();
+    $item["create_user_name"] = $this->create_user->get_name();
     $item["end_dateweek"] = $this->end_dateweek();
     return $item;
   }
