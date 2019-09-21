@@ -13,9 +13,16 @@
                 </span>
               </span>
               <div class="comment-text">
-                {{$comment->title}}<br>
-                {{$comment->body}}<br>
+                {{$comment->body}}
               </div>
+              @if(!empty($comment->s3_url))
+              <span class="mr-1">
+                <a href="{{$comment->s3_url}}" target="_blank">
+                  <i class="fa fa-link mr-1"></i>
+                  {{$comment->s3_alias}}
+                </a>
+              </span>
+              @endif
               @if($user->user_id === $comment->create_user_id)
               <span class="float-right mr-1">
                 <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
@@ -24,7 +31,6 @@
                 <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                   <i class="fa fa-trash"></i>
                 </a>
-              </span>
               @endif
             </div>
           @endif

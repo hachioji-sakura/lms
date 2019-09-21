@@ -301,21 +301,11 @@ class UserController extends Controller
     if(!is_numeric($user_id) || !is_numeric($image_id)){
       return $this->bad_request("", "user_id($user_id),image_id($image_id)");
     }
-    try {
-      DB::beginTransaction();
-      User::where('id', $user_id)->update(['image_id' => $image_id]);
-      DB::commit();
-      return $this->api_response(200, "", "");
-    }
-    catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
-    catch(\Exception $e){
-        echo $e->getMessage();
-        DB::rollBack();
-        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
+    return $this->transaction(function() use ($user_id, $image_id){
+      $user = User::where('id', $user_id)->first();
+      $user->update(['image_id' => $image_id]);
+      return $user;
+    }, 'アイコン変更', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
    * パスワード更新
@@ -327,21 +317,11 @@ class UserController extends Controller
     if(!is_numeric($user_id) || empty($password)){
       return $this->bad_request("", "user_id($user_id)");
     }
-    try {
-      DB::beginTransaction();
-      User::where('id', $user_id)->first()->set_password($password);
-      DB::commit();
-      return $this->api_response(200, "", "");
-    }
-    catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
-    catch(\Exception $e){
-        echo $e->getMessage();
-        DB::rollBack();
-        return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-    }
+    return $this->transaction(function() use ($user_id, $password){
+      $user = User::where('id', $user_id)->first();
+      $user->set_password($password);
+      return $user;
+    }, 'パスワード設定', __FILE__, __FUNCTION__, __LINE__ );
   }
   public function transaction($callback, $logic_name, $__file, $__function, $__line){
     if(config("app.env")==="product"){
@@ -353,12 +333,12 @@ class UserController extends Controller
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
-          $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
+          $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', $logic_name);
           return $this->error_response('Query Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
       }
       catch(\Exception $e){
           DB::rollBack();
-          $this->send_slack($logic_name.'更新エラー:'.$e->getMessage(), 'error', '体験授業ステータス更新');
+          $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', $logic_name);
           return $this->error_response('DB Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
       }
     }

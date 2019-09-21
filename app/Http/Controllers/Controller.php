@@ -6,6 +6,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\CommonNotification;
 use App\User;
 use Illuminate\Http\Request;
@@ -197,4 +198,20 @@ class Controller extends BaseController
        echo "判定[".$this->is_enable_token($key)."]";
        return "key=".$key;
      }
+
+     public function s3_upload($request_file, $save_folder=""){
+       $path = Storage::disk('s3')->putFile($save_folder, $request_file, 'public');
+       $s3_url = Storage::disk('s3')->url(config('aws_s3.bucket')."/".$path);
+       $this->send_slack("ファイルアップロード:\n".$path."\n".$s3_url, "info", "s3_upload");
+       return ['url' => $s3_url, 'path' => $path];
+     }
+     public function s3_delete($s3_url){
+       $path = explode('/', $s3_url);
+       $file = $path[count($path)-2].'/'.$path[count($path)-1];
+       //Path=Rootバケット/フォルダ名/ファイル名となっている前提
+       $ret = Storage::disk('s3')->delete($file);
+       $this->send_slack("アップロードファイル削除:\n".$file, "info", "s3_delete");
+       return $ret;
+     }
+
 }
