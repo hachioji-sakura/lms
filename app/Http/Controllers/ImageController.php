@@ -4,7 +4,6 @@ use App\Models\Image;
 use App\Models\Student;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use DB;
 class ImageController extends UserController
 {
@@ -54,7 +53,7 @@ class ImageController extends UserController
      */
     public function create()
     {
-        return view('sample.create');
+      return view('sample.create');
     }
     public function icon_change_page(Request $request){
       $param = $this->get_param($request);
@@ -98,6 +97,7 @@ class ImageController extends UserController
             ->withErrors(['file' => '画像がアップロードされていないか不正なデータです。']);
       }
     }
+    //CKEditorからuploadする場合
     public function upload_images(Request $request){
       $s3 = $this->s3_upload($request->file('upload'), config('aws_s3.upload_folder'));
 
@@ -156,7 +156,7 @@ class ImageController extends UserController
         }
       }
       if(!empty($image_id)){
-        $res = $this->update_user_image($user->user_id, $image_id);
+        $res = $this->update_user_image($request->user_id, $image_id);
       }
       return $res;
     }
@@ -207,18 +207,11 @@ class ImageController extends UserController
       $items = Image::where('id',$id)->delete();
       return redirect('/images');
     }
-    private function s3_upload($request_file, $save_folder=""){
-      $path = Storage::disk('s3')->putFile($save_folder, $request_file, 'public');
-      $s3_url = Storage::disk('s3')->url(config('aws_s3.bucket')."/".$path);
-      return ['url' => $s3_url, 'path' => $path];
-    }
     private function save_image($request, $request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
-      $user = $this->login_details($request);
-      $image = new Image;
-
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($request, $request_file, $publiced_at, $alias, $save_folder){
+        $user = $this->login_details($request);
+        $image = new Image;
         $s3 = $this->s3_upload($request_file, $save_folder);
         if(empty($alias)){
           $alias = $request_file->getClientOriginalName();
@@ -233,7 +226,6 @@ class ImageController extends UserController
           "alias" => $alias
         ];
         $image->fill($image_data)->save();
-        DB::commit();
         $message = "name:".basename($request_file)."\n";
         $message .= "alias:".$request_file->getClientOriginalName()."\n";
         $message .= "getClientSize:".$request_file->getClientSize()."\n";
@@ -242,20 +234,9 @@ class ImageController extends UserController
         $message .= "type:".filetype($request_file)."\n";
         $message .= "s3_path:".$s3['url']."\n";
         $message .= "path:".$s3['path']."\n";
-        $this->send_slack($message, 'info');
         \Log::info("ファイルアップロード:\n".$message);
-
-        return $this->api_response(200, "", $message, $image);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          echo $e->getMessage();
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        $this->send_slack($message, 'info');
+        return $image;
+      }, '画像アップロード', __FILE__, __FUNCTION__, __LINE__ );
     }
-
 }

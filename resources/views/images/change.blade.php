@@ -3,6 +3,7 @@
     @method('PUT')
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
+    <input type="hidden" name="user_id" value="{{$user_id}}" / >
     <div class="row">
       <div class="col-12 mb-4">
         アイコン：

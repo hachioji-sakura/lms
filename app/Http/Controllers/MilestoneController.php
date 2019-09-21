@@ -299,6 +299,15 @@ class MilestoneController extends UserController
         return $res;
       }
       $res = $this->transaction(function() use ($request, $form){
+        $form['s3_url'] = "";
+        $form['s3_alias'] = "";
+        if($request->hasFile('upload_file')){
+          if ($request->file('upload_file')->isValid([])) {
+            $form['s3_alias'] = $request->file('upload_file')->getClientOriginalName();
+            $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.upload_folder'));
+            $form['s3_url'] = $s3['url'];
+          }
+        }
         $item = $this->model()->create($form);
         return $item;
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -386,7 +395,29 @@ class MilestoneController extends UserController
       }
       $res =  $this->transaction(function() use ($request, $id){
         $user = $this->login_details($request);
-        $item = $this->model()->where('id',$id)->update($this->update_form($request));
+        $form = $this->update_form($request);
+        $item = $this->model()->where('id', $id)->first();
+        $form['s3_url'] = $item->s3_url;
+        $form['s3_alias'] = $item->s3_alias;
+        if($request->get('upload_file_delete')==1){
+          $form['s3_url'] = "";
+          $form['s3_alias'] = "";
+        }
+        if($request->hasFile('upload_file')){
+          if ($request->file('upload_file')->isValid([])) {
+            $form['s3_alias'] = $request->file('upload_file')->getClientOriginalName();
+            $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.upload_folder'));
+            $form['s3_url'] = $s3['url'];
+          }
+        }
+        if((isset($item['s3_url']) && !empty($item['s3_url']))){
+          //添付ファイルがある場合
+          if($request->get('upload_file_delete')==1 || $form['s3_url']!=$item->s3_url){
+            //削除指示がある、もしくは、更新する場合、S3から削除
+            $this->s3_delete($item['s3_url']);
+          }
+        }
+        $item->update($form);
         return $item;
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
@@ -412,8 +443,13 @@ class MilestoneController extends UserController
       $form = $request->all();
       $res = $this->transaction(function() use ($request, $form, $id){
         $user = $this->login_details($request);
-        $items = $this->model()->where('id',$id)->delete();
-        return $items;
+        $item = $this->model()->where('id', $id)->first();
+        if(isset($item['s3_url']) && !empty($item['s3_url'])){
+          //S3アップロードファイルがある場合は削除
+          $this->s3_delete($item['s3_url']);
+        }
+        $item->delete();
+        return $item;
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
