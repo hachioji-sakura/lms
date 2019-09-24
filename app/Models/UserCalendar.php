@@ -656,7 +656,7 @@ EOT;
         $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
       }
       if($is_student_mail==true){
-        $this->student_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text',  'calendar_update');
+        $this->student_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
       }
     }
     return $this;

