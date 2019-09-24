@@ -47,9 +47,7 @@
   {{__('labels.exchange_add')}}
 </a>
 @endif
-@if($calendar["status"]=="new")
 <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm mx-1">
   <i class="fa fa-edit mr-1"></i>
   {{__('labels.schedule_edit')}}
 </a>
-@endif

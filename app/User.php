@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\StudentRelation;
@@ -308,6 +309,7 @@ EOT;
     }
     public function send_mail($title, $param, $type, $template){
       $param['user'] = $this->details();
+      if(!isset($param['login_user'])) $param['login_user'] = Auth::user()->details();
       $controller = new Controller;
       $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
       return $res;
