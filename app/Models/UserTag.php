@@ -32,9 +32,15 @@ class UserTag extends Model
     if(!empty($item)) return $item->attribute_name;
 
     $item = $this->details();
+    /*
     if(isset($item->charge_subject_level_item)){
       return $item->charge_subject_level_item->attribute_name;
     }
+    */
+
+    $item = GeneralAttribute::where('attribute_key', 'charge_subject_level_item')
+    ->where('attribute_value', $key)->first();
+    if(!empty($item)) return $item->attribute_name;
 
     return $this->tag_key;
   }
@@ -117,6 +123,9 @@ class UserTag extends Model
   public function name(){
     $item = $this->details();
     if(!isset($item) || empty($item)) return $this->tag_value;
-    return $item->attribute_name;
+    if(isset($item->attribute_name)){
+      return $item->attribute_name;
+    }
+    return "";
   }
 }
