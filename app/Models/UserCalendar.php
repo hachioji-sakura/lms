@@ -163,6 +163,7 @@ EOT;
     //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
     //かつ、振替が未登録(cancelは除く）
     $query = $this->scopeSearchDate($query, $from, $to);
+    $param = [];
     $where_raw = <<<EOT
       user_calendars.id not in (
         select exchanged_calendar_id
@@ -179,8 +180,9 @@ EOT;
           and um.exchange_limit_date >= current_date
 EOT;
     if($user_id > 0){
+      $param[] = $user_id;
       $where_raw .= <<<EOT
-       and um.user_id = $user_id
+       and um.user_id = ?
 EOT;
     }
     $where_raw .= <<<EOT
@@ -192,15 +194,16 @@ EOT;
           )
 EOT;
     if($lesson > 0){
+      $param[] = $lesson;
       $where_raw .= <<<EOT
           and user_calendars.id in (
             select calendar_id from user_calendar_tags where
-              tag_value = $lesson
+              tag_value = ?
               and tag_key = 'lesson'
             )
 EOT;
     }
-    return $query->whereRaw($where_raw,[1]);
+    return $query->whereRaw($where_raw,$param);
   }
   public function get_access_member($user_id){
     $user = User::where('id', $user_id)->first();

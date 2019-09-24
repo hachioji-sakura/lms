@@ -362,7 +362,7 @@ EOT;
         $check = [];
         if($target_model_data->calendar->is_group()==true && $target_model_data->calendar->is_english_talk_lesson()==true) return false;
         \Log::warning("休講自動承認：calendar[".$target_model_data->calendar->id."]");
-        $d = date('Ymd',  strtotime($m->calendar->start_time));
+        $d = date('Ymd',  strtotime($target_model_data->calendar->start_time));
         $check[$d] = true;
         \Log::warning("依頼は2日まで");
         //今月承認された休講を取得

@@ -575,10 +575,10 @@ class StudentController extends UserController
    $calendars = $calendars->findStatuses($statuses);
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
+   $calendars = $calendars->findUser($user_id);
    if($is_exchange==true){
      $calendars = $calendars->findExchangeTarget();
    }
-   $calendars = $calendars->findUser($user_id);
    $count = $calendars->count();
    $calendars = $calendars->sortStarttime($sort);
 
