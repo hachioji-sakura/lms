@@ -288,19 +288,6 @@ class UserCalendarMember extends Model
         }
       }
     }
-
-    //TODO : 6/22 : 事務システム側の場所最適化すべき
-    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
-    $place_text = "";
-    if(isset($this->calendar->place_floor)){
-      $place_text = $this->calendar->place_floor->_convert_offie_system_place();
-    }
-    else if($this->calendar->place_floor_id>0){
-      $place_floor = PlaceFloor::where('id', $this->calendar->place_floor_id)->first();
-      if(isset($place_floor)){
-        $place_text = $place_floor->_convert_offie_system_place();
-      }
-    }
     $__user_id = $student_no;
     if($this->calendar->is_management()==true){
       //事務のスケジュール
@@ -343,7 +330,7 @@ class UserCalendarMember extends Model
           "lecture_id" => $lecture_id_org,
           "subject_expr" => implode (',', $this->calendar->subject()),
           "work_id" => $this->calendar->work,
-          "place_id" => $place_text,
+          "place_id" => $this->calendar->place_floor_id,
           "altsched_id" => $altsched_id,
           //"cancel" => "",
           //"confirm" => "",

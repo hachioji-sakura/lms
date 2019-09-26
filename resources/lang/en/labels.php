@@ -221,6 +221,7 @@ return [
   'recess' => 'Recess',
   'to_recess' => 'Click to Recess Page',
   'remark' => 'Remark',
+  'body' => 'Body',
   'type' => 'Type',
   'list' => 'List',
   'limit' => 'Limit',
