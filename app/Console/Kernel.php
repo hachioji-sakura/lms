@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
       \App\Console\Commands\RemindCommand::class,
-      \App\Console\Commands\DailyProcCommand::class,   
+      \App\Console\Commands\DailyProcCommand::class,
     ];
 
     /**
