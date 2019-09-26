@@ -15,6 +15,7 @@ use App\Models\PlaceFloor;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarTag;
 use App\User;
+use View;
 class UserCalendarMember extends Model
 {
   protected $table = 'lms.user_calendar_members';
@@ -287,19 +288,6 @@ class UserCalendarMember extends Model
         }
       }
     }
-
-    //TODO : 6/22 : 事務システム側の場所最適化すべき
-    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
-    $place_text = "";
-    if(isset($this->calendar->place_floor)){
-      $place_text = $this->calendar->place_floor->_convert_offie_system_place();
-    }
-    else if($this->calendar->place_floor_id>0){
-      $place_floor = PlaceFloor::where('id', $this->calendar->place_floor_id)->first();
-      if(isset($place_floor)){
-        $place_text = $place_floor->_convert_offie_system_place();
-      }
-    }
     $__user_id = $student_no;
     if($this->calendar->is_management()==true){
       //事務のスケジュール
@@ -342,7 +330,7 @@ class UserCalendarMember extends Model
           "lecture_id" => $lecture_id_org,
           "subject_expr" => implode (',', $this->calendar->subject()),
           "work_id" => $this->calendar->work,
-          "place_id" => $place_text,
+          "place_id" => $this->calendar->place_floor_id,
           "altsched_id" => $altsched_id,
           //"cancel" => "",
           //"confirm" => "",
@@ -511,10 +499,17 @@ class UserCalendarMember extends Model
     }
   }
   public function lecture_cancel_ask($create_user_id){
+    $user = User::where('id', $create_user_id)->first();
     //期限＝予定前日まで
+    $body = View::make('emails.forms.calendar')->with([
+      'item'=>$this->calendar,
+      'send_to' => 'manager',
+      'login_user' => $user->details(),
+      ])->render();
+
     $ask = Ask::add("lecture_cancel", [
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
-      "body" => "",
+      "body" => $body,
       "target_model" => "user_calendar_members",
       "target_model_id" => $this->id,
       "create_user_id" => $create_user_id,

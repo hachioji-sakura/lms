@@ -841,9 +841,6 @@ class ImportController extends UserController
       //繰り返し曜日
       if(isset($week[$item["dayofweek"]])) $item["lesson_week"] = $week[$item["dayofweek"]];
 
-      $floor_id = 0;
-      $floor = PlaceFloor::_offie_system_place_convert($item['place_id']);
-      if(isset($floor)) $floor_id = $floor->id;
       $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
       $work = $_attr->attribute_value;
       $setting_data = [
@@ -856,7 +853,7 @@ class ImportController extends UserController
         'enable_end_date' => $this->get_date($item["enddate"]),
         'remark' => $item["comment"],
         'lecture_id' => $lecture_id,
-        'place_floor_id' => $floor_id,
+        'place_floor_id' => $item['place_id'],
         'work' => $work,
         'status' => 'fix',
         'create_user_id' => 1
@@ -882,7 +879,7 @@ class ImportController extends UserController
             ->where('from_time_slot', $item['starttime'])
             ->where('to_time_slot', $item['endtime'])
             ->where('work' , $work)
-            ->where('place_floor_id', $floor_id)
+            ->where('place_floor_id', $item['place_id'])
             ->first();
           if(isset($__setting)){
             //おそらく同一のグループレッスンと思われる予定が見つかった
@@ -1084,11 +1081,9 @@ class ImportController extends UserController
         $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
       }
       //場所
-      $floor = PlaceFloor::_offie_system_place_convert($item['place_id']);
-      $floor_id = 0;
+      $floor = PlaceFloor::where('id', $item['place_id'])->first();
       $sheat_id = 0;
       if(isset($floor)){
-        $floor_id = $floor->id;
         $sheat = $floor->get_free_seat($start_time, $end_time);
         if(isset($sheat)){
           $sheat_id = $sheat->id;
@@ -1108,7 +1103,7 @@ class ImportController extends UserController
           ->where('end_time' , $end_time)
           ->where('work' , $work)
           ->where('lecture_id' , $lecture_id)
-          ->where('place_floor_id', $floor_id)
+          ->where('place_floor_id', $item['place_id'])
           ->first();
         if(isset($__items)){
           //おそらく同一のグループレッスンと思われる予定が見つかった
@@ -1123,7 +1118,7 @@ class ImportController extends UserController
         'exchanged_calendar_id' => $exchanged_calendar_id,
         'remark' => $remark,
         'status' => $status,
-        'place_floor_id' => $floor_id,
+        'place_floor_id' => $item['place_id'],
         'work' => $work,
       ];
       if(isset($items)){
@@ -1238,7 +1233,7 @@ class ImportController extends UserController
         ->where('from_time_slot', $item['starttime'])
         ->where('to_time_slot', $item['endtime'])
         ->where('work', $work)
-        ->where('place_floor_id', $floor_id)
+        ->where('place_floor_id', $item['place_id'])
         ->where('lesson_week', $lesson_week)
         ->enable()
         ->get();
