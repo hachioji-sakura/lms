@@ -130,7 +130,7 @@ class User extends Authenticatable
       }
       //id=1はroot
       if($this->id==1 || session('login_role') == 'manager' || $domain=="managers"){
-        //TODO 事務でない権限で事務の情報を取得できない（例えば、事務からの通達など）
+        //事務でない権限で事務の情報を取得できない（例えば、事務からの通達など）
         if(empty($domain) || $domain=="managers"){
           $item = Manager::where('user_id', $this->id)->first();
           if(isset($item)){
@@ -327,8 +327,6 @@ EOT;
           $user_id = $relation->parent->user->id;
           $email = $relation->parent->user->email;
           \Log::info("relation=".$user_id.":".$email);
-          //TODO 安全策をとるテスト用メールにする
-          //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
           break;
         }
       }

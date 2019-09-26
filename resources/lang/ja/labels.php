@@ -222,6 +222,7 @@ return [
   'recess' => '休会',
   'to_recess' => '休会についてはこちら',
   'remark' => '備考',
+  'body' => '内容',
   'schedule_remark' => '予定に関する備考',
   'schedule_remark_placeholder' => '例:月曜は、15:30～可能、体験含め週2回以内にしたい。',
   'type' => 'タイプ',

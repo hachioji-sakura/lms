@@ -113,18 +113,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $lecture_id_org = $lecture->lecture_id_org;
       }
     }
-    //TODO : 6/22 : 事務システム側の場所最適化すべき
-    //Googleカレンダー名：フロアに変換する（フロアIDが取れる想定）
-    $place_text = "";
-    if(isset($this->setting->place_floor)){
-      $place_text = $this->setting->place_floor->_convert_offie_system_place();
-    }
-    else if($this->setting->place_floor_id>0){
-      $place_floor = PlaceFloor::where('id', $this->setting->place_floor_id)->first();
-      if(isset($place_floor)){
-        $place_text = $place_floor->_convert_offie_system_place();
-      }
-    }
 
     $__user_id = $student_no;
     switch($this->setting->work){
@@ -172,7 +160,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
           "lecture_id" => $lecture_id_org,
           "subject_expr" => implode (',', $this->setting->subject()),
           "work_id" => $this->setting->work,
-          "place_id" => $place_text,
+          "place_id" => $this->setting->place_floor_id,
         ];
         break;
     }

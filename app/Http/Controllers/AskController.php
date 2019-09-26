@@ -78,7 +78,7 @@ class AskController extends MilestoneController
         'size' => 6,
       ],
       'body' => [
-        'label' => __('labels.remark'),
+        'label' => __('labels.body'),
       ],
     ];
     $ret = array_merge($ret, $ret2);
