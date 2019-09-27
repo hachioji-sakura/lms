@@ -25,8 +25,13 @@
                 base.showPage('dialog', "subDialog", "お休み連絡", "/calendars/"+event.id+"/status_update/rest?student_id={{$item->id}}");
                 console.log("/calendars/"+event.id+"/status_update/rest?student_id={{$item->id}}");
                 break;
-              case "new":
               case "rest":
+                if(event.is_passed==false){
+                  base.showPage('dialog', "subDialog", "休み取り消し連絡", "/calendars/"+event.id+"/status_update/rest_cancel?student_id={{$item->id}}");
+                  console.log("/calendars/"+event.id+"/status_update/rest_cancel?student_id={{$item->id}}");
+                  break;
+                }
+              case "new":
               case "cancel":
               case "absence":
               case "presence":

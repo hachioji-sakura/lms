@@ -947,7 +947,7 @@ class ImportController extends UserController
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
           if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
-          $this->store_user_tag($student->user_id, $tag_name, $tags[$tag_name]);
+          $this->store_user_tag($student->user_id, $tag_name, $tags[$tag_name], false);
         }
       }
       if(isset($student) && isset($teacher)){

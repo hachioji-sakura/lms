@@ -472,10 +472,17 @@ class UserCalendarMember extends Model
     return $res;
   }
   public function rest_cancel_ask($create_user_id){
+    $user = User::where('id', $create_user_id)->first();
+    $body = View::make('emails.forms.calendar')->with([
+      'item'=>$this->calendar,
+      'send_to' => 'teacher',
+      'login_user' => $user->details(),
+      ])->render();
+
     //期限＝予定前日まで
     $ask = Ask::add("rest_cancel", [
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
-      "body" => "",
+      "body" => $body,
       "target_model" => "user_calendar_members",
       "target_model_id" => $this->id,
       "create_user_id" => $create_user_id,

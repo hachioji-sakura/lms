@@ -68,7 +68,8 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
+                  confirm="{{__('messages.confirm_update')}}">
                   @if(isset($_edit) && $_edit==true)
                     {{__('labels.update_button')}}
                   @else
