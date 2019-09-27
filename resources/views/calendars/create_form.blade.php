@@ -6,8 +6,8 @@
   @endif
   @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
   @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-  {{-- TODO:ステータス更新はまだ追加しない
-  @if(isset($_edit) && $_edit==true)
+  {{--ステータス更新は、API、ステータスフロー制御を考慮する必要があり、自由に変更はできない
+  @if(isset($_edit) && $_edit==true && $user->is_admin()==true)
     @component('calendars.forms.select_status', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
   @endif
   --}}

@@ -75,15 +75,12 @@
                 base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
                 break;
               case "fix":
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
-                {{--TODO 休講は出欠と排反にする
                 if(event.is_passed==true){
                   base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
                 }
                 else{
                   base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
                 }
-                 --}}
                 break;
               case "rest":
               case "cancel":

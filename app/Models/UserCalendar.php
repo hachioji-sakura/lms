@@ -507,7 +507,7 @@ EOT;
         $teachers[] = $member;
       }
       $_member = $member->user->details('managers');
-      if($_member->role === 'manager'){
+      if($_member->role === 'manager' || $_member->role === 'staff'){
         $manager_name.=$_member['name'].',';
         $managers[] = $member;
       }

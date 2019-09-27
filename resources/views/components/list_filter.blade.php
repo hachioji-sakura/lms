@@ -41,10 +41,14 @@ $(function(){
   $("a.page-link[accesskey='pager']").on('click', function(){
     var page = $(this).attr("page");
     $("input[name=_page]").val(page);
+    //subDialog側にformが残っているとsubmitされる対策
+    $("#subDialog .modal-dialog").remove();
     $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=button]").on('click', function(e){
     $("input[name=_page]").val("1");
+    //subDialog側にformが残っているとsubmitされる対策
+    $("#subDialog .modal-dialog").remove();
     $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=reset]").on('click', function(e){

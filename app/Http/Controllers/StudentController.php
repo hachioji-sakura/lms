@@ -525,6 +525,7 @@ class StudentController extends UserController
        }
        break;
      case "month":
+       //当月指定
        if(!isset($form['search_from_date'])){
          $form['search_from_date'] = date('Y-m-1', strtotime("now"));
        }

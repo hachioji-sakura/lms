@@ -146,7 +146,7 @@ class UserCalendarController extends MilestoneController
     if($request->has('user') && !empty($request->get('user'))) {
     }
     $form['user_id'] = $request->get('user');
-    
+
     if($request->has('send_mail')){
       $form['send_mail'] = $request->get('send_mail');
     }
@@ -725,11 +725,20 @@ class UserCalendarController extends MilestoneController
       $calendar = UserCalendar::where('id', $id)->first();
       if($status=='rest_cancel'){
         //休み取り消し依頼
-        $student = Student::where('id', $request->student_id)->first();
-        $member = $calendar->members->where('user_id', $student->user_id)->first();
-        $ask = $member->rest_cancel_ask($param['user']->user_id);
-        if($ask==null){
-          $res = $this->error_response("この依頼は登録済みです");
+        if($param['item']->is_management()==true){
+          $member = $calendar->members->where('user_id', $param['item']->user_id)->first();
+          $ask = $member->rest_cancel_ask($param['user']->user_id);
+          if($ask==null){
+            $res = $this->error_response("この依頼は登録済みです");
+          }
+        }
+        else {
+          $student = Student::where('id', $request->student_id)->first();
+          $member = $calendar->members->where('user_id', $student->user_id)->first();
+          $ask = $member->rest_cancel_ask($param['user']->user_id);
+          if($ask==null){
+            $res = $this->error_response("この依頼は登録済みです");
+          }
         }
       }
       else if($status=='lecture_cancel'){
@@ -744,83 +753,6 @@ class UserCalendarController extends MilestoneController
         $res = $this->_status_update($request, $param, $id, $status);
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
       }
-      /*
-      if($status=="remind"){
-        foreach($calendar->members as $member){
-          if($member->user_id == $calendar->user_id){
-            $member->update(['access_key' => $param['token']]);
-            break;
-          }
-        }
-      }
-      else {
-        //remind以外はステータスの更新
-        $res = $this->_status_update($request, $param, $id, $status);
-        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
-        if($calendar->status == $status){
-          //TODO: カレンダー更新が2重で動作することがある
-          $is_send = false;
-        }
-      }
-      */
-
-
-/*
-      if($calendar->status == $_status){
-        //TODO: カレンダー更新が2重で動作することがある
-        $is_send = false;
-      }
-      $slack_type = 'error';
-      $slack_message = '更新エラー';
-      if($this->is_success_response($res)){
-        $slack_type = 'info';
-        $slack_message = $this->status_update_message[$status];
-        switch($status){
-          case "rest":
-            //お休み連絡メール通知
-            if($is_send) $this->rest_mail($param);
-            break;
-          case "confirm":
-            //授業追加確認メール通知
-            if($is_send) $this->confirm_mail($param);
-            break;
-          case "cancel":
-            //授業キャンセル連絡メール通知
-            if($is_send) $this->cancel_mail($param);
-            break;
-          case "fix":
-            //授業追加確定メール通知
-            if($is_send) $this->fix_mail($param);
-            break;
-          case "absence":
-            //欠席メール通知
-            if($is_send) $this->absence_mail($param);
-            break;
-          case "remind":
-            //メール通知の再送
-            $param['remind'] = true;
-            if($param['item']['status']==='fix'){
-              $this->fix_mail($param);
-            }
-            else if($param['item']['status']==='confirm'){
-              $this->confirm_mail($param);
-            }
-            else if($param['item']['status']==='rest'){
-              $this->rest_mail($param);
-            }
-            else if($param['item']['status']==='new'){
-              $this->new_mail($param);
-            }
-            break;
-        }
-        if($status==="remind"){
-          $this->send_slack('カレンダーリマインド['.$param['item']['status'].']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーリマインド');
-        }
-        else {
-          $this->send_slack('カレンダーステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', 'カレンダーステータス更新');
-        }
-      }
-      */
 
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
@@ -852,42 +784,34 @@ class UserCalendarController extends MilestoneController
         else if($status==='rest'){
           $_remark = $request->get('rest_reason');
         }
+
         //操作者のステータス更新
         $member_user_id = $param['user']->user_id;
         if($this->is_manager($param['user'])){
           //事務による代理登録=カレンダー主催者（講師）のステータスを更新
           $member_user_id = $param['item']->user_id;
         }
-
-        foreach($members as $member){
-          //メンバーステータスの個別指定がある場合
-          if(isset($form['is_all_student']) && $form['is_all_student']==1){
-            //全生徒指定がある場合
-            $member->status_update($status, $_remark, $param['user']->user_id);
+        if($param['item']->is_management()==false){
+          foreach($members as $member){
+            //メンバーステータスの個別指定がある場合
+            if(isset($form['is_all_student']) && $form['is_all_student']==1){
+              //全生徒指定がある場合
+              $member->status_update($status, $_remark, $param['user']->user_id);
+            }
+            else if(!empty($form[$member->id.'_status'])){
+              $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
+            }
+            else if($member->user_id == $member_user_id){
+              $member->status_update($status, $_remark, $member_user_id);
+            }
           }
-          else if(!empty($form[$member->id.'_status'])){
-            $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
-          }
-          else if($member->user_id == $member_user_id){
+        }
+        else {
+          foreach($members as $member){
             $member->status_update($status, $_remark, $member_user_id);
+            break;
           }
         }
-
-        /*
-        if(!empty($param['student_id'])){
-          //保護者の場合は、student_id指定がある場合
-          $student = Student::where('id', $param['student_id'])->first();
-          if(isset($student)) $member_user_id = $student->user_id;
-        }
-        $_m = UserCalendarMember::where('calendar_id', $param['item']->id)
-            ->where('user_id', $member_user_id)->first();
-        if(isset($_m)){
-          $_m->status_update($status, $_remark, $param['login_user']->user_id);
-        }
-        $param['item'] = $param['item']->change([
-          'status'=>$status
-        ]);
-        */
         return $param['item'];
       }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
       return $res;

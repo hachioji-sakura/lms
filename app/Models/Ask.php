@@ -356,7 +356,11 @@ EOT;
         }
         $ret = true;
         break;
-      case "rest_canel":
+      case "rest_cancel":
+        //事務作業の休み取り消しは可能
+        if($target_model_data->calendar->is_management()==true){
+          $ret = true;
+        }
         break;
       case "lecture_cancel":
         $check = [];
