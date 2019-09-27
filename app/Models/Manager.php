@@ -60,5 +60,4 @@ class Manager extends Teacher
     if($this->user->has_tag('manager_type', 'admin')) return true;
     return false;
   }
-
 }

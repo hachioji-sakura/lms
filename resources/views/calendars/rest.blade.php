@@ -1,19 +1,23 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
-      {{-- 授業当日9時を過ぎたら休み連絡はできない
-      <div class="col-12 col-lg-12 col-md-12 mb-1">
-        <h4 class="text-danger">授業当日AM9:00以降の休み連絡はできません。</h4>
+    @if($item->is_management()==false)
+      @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
+        {{-- 授業当日9時を過ぎたら休み連絡はできない
+        <div class="col-12 col-lg-12 col-md-12 mb-1">
+          <h4 class="text-danger">授業当日AM9:00以降の休み連絡はできません。</h4>
+        </div>
+        --}}
+      @else
+      @endif
+      @if($user->role==="manager" || $user->role==="teacher")
+      <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+        <i class="fa fa-exclamation-triangle mr-1"></i>生徒の代わりに連絡をします。
       </div>
-      --}}
+      @endif
+      この授業予定をお休みしますか？
     @else
+      この勤務予定をお休みしますか？
     @endif
-    @if($user->role==="manager" || $user->role==="teacher")
-    <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>生徒の代わりに連絡をします。
-    </div>
-    @endif
-    この授業予定をお休みしますか？
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
@@ -24,6 +28,7 @@
       <input type="text" name="dummy" style="display:none;" / >
       @method('PUT')
       <input type="hidden" value="rest" name="status" />
+
       <div class="row" id="rest_list">
         <div class="col-12">
           <table class="table table-striped w-80" id="rest_list_table">

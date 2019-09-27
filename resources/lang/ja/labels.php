@@ -183,7 +183,7 @@ return [
   'calendar_button_attendance' => '出欠',
   'calendar_button_working' => '出勤',
   'calendar_button_no_working' => '欠勤',
-  'calendar_button_holiday' => '休暇',
+  'calendar_button_holiday' => '休講',
   'calendar_button_presence' => '出席',
   'calendar_button_absence' => '欠席',
   'teachers' => '講師',

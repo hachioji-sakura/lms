@@ -1,11 +1,13 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    @if($user->role==="manager" || $user->role==="teacher")
-    <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_proxy_contact_for_student'))!!}
-    </div>
+    @if($item->is_management()==false)
+      @if($user->role==="manager" || $user->role==="teacher")
+      <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+        <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_proxy_contact_for_student'))!!}
+      </div>
+      @endif
+      {!!nl2br(__('messages.confirm_rest_cancel'))!!}
     @endif
-    {!!nl2br(__('messages.confirm_rest_cancel'))!!}
   @endslot
   @slot('forms')
   <div id="{{$domain}}_action">
