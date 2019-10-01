@@ -154,13 +154,35 @@ class UserCalendarMember extends Model
       }
     }
   }
-  public function status_name(){
-    if(app()->getLocale()=='en') return $this->status;
-    $status_name = "";
-    if(isset(config('attribute.calendar_status')[$this->status])){
-      $status_name = config('attribute.calendar_status')[$this->status];
+  public function is_recess_or_unsubscribe(){
+    $u = $this->user->details();
+    if($u->role=='student'){
+      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
+        if(strtotime($this->calendar->start_time) > strtotime($u->recess_start_date) &&
+          strtotime($this->calendar->start_time) < strtotime($u->recess_end_date)){
+            return true;
+        }
+      }
+      if(!empty($u->unsubscribe_date)){
+        if(strtotime($this->calendar->start_time) > strtotime($u->unsubscribe_date)){
+            return true;
+        }
+      }
     }
-    switch($this->status){
+    return false;
+  }
+  public function status_name(){
+    $status = $this->status;
+    if($this->is_recess_or_unsubscribe()==true){
+      //生徒が退会日以降、休会日範囲の場合、cancel表記
+      $status = 'cancel';
+    }
+    if(app()->getLocale()=='en') return $status;
+    $status_name = "";
+    if(isset(config('attribute.calendar_status')[$status])){
+      $status_name = config('attribute.calendar_status')[$status];
+    }
+    switch($status){
       case "fix":
         if($this->work==9) return "勤務予定";
       case "absence":

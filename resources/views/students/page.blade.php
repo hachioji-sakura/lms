@@ -63,6 +63,20 @@
                 @endif
                 @endforeach
               </h6>
+              <div class="card-footer p-0">
+                <ul class="nav flex-column">
+                  @if(!empty($item->recess_duration()))
+                  <li class="nav-item pl-1">
+                    休会予定：{{$item->recess_duration()}}
+                  </li>
+                  @endif
+                  @if(!empty($item->unsubscribe_date_label()))
+                  <li class="nav-item pl-1">
+                    退会予定：{{$item->unsubscribe_date_label()}}
+                  </li>
+                  @endif
+                </ul>
+              </div>
               {{--
               <div class="card-footer p-0">
                 <ul class="nav flex-column">

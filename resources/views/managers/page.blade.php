@@ -21,6 +21,20 @@
             @slot('courtesy')
             @endslot
             @slot('alias')
+            <h6 class="widget-user-desc">
+              @foreach($item->user->tags as $tag)
+                @if($tag->tag_key=="manager_no")
+                  <small class="badge badge-dark mt-1 mr-1">
+                    No.{{$tag->name()}}
+                  </small>
+                @endif
+                @if($tag->tag_key=="manager_type")
+                  <small class="badge badge-primary mt-1 mr-1">
+                    {{$tag->name()}}
+                  </small>
+                @endif
+              @endforeach
+            </h6>
             @endslot
         @endcomponent
 			</div>

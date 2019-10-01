@@ -1,6 +1,7 @@
 @include('emails.common')
 
-{{__('messages.info_recess')}}
+{{$user->name()}}様
+以下の、休会依頼をキャンセルいたしました。
 
 …………………………………………………………………………………………
 {{__('labels.'.$ask->target_model)}}{{__('labels.name')}}: {{$target_model->name()}}
