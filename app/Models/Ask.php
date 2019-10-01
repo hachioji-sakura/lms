@@ -213,15 +213,10 @@ EOT;
           $end_date = $this->end_date;
         }
         if($this->type=="recess"){
-          $target_model_data->update([
-            'recess_start_date' => $start_date,
-            'recess_end_date' => $end_date,
-          ]);
+          $target_model_data->recess_commit($is_commit, $start_date, $end_date);
         }
         else if($this->type=="unsubscribe"){
-          $target_model_data->update([
-            'unsubscribe_date' => $start_date,
-          ]);
+          $target_model_data->unsubscribe_commit($is_commit, $start_date);
         }
         break;
       case "agreement":

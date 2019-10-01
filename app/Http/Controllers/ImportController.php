@@ -365,9 +365,9 @@ class ImportController extends UserController
       $item['kana_last'] = '';
       $item['kana_first'] = '';
       if(!empty($item['staff_furigana'])){
-          $kanas = explode(' ', $item['staff_furigana'].' ');
-          $item['kana_last'] = $kanas[0];
-          $item['kana_first'] = $kanas[1];
+        $kanas = explode(' ', $item['staff_furigana'].' ');
+        $item['kana_last'] = mb_convert_kana($kanas[0], "KVC");
+        $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
 
       $item['name_last'] = '';
@@ -466,8 +466,8 @@ class ImportController extends UserController
       $item['kana_first'] = '';
       if(!empty($item['teacher_furigana'])){
           $kanas = explode(' ', $item['teacher_furigana'].' ');
-          $item['kana_last'] = $kanas[0];
-          $item['kana_first'] = $kanas[1];
+          $item['kana_last'] = mb_convert_kana($kanas[0], "KVC");
+          $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
 
       $item['name_last'] = '';
@@ -598,8 +598,8 @@ class ImportController extends UserController
       $item['kana_first'] = '';
       if(!empty($item['student_furigana'])){
           $kanas = explode(' ', $item['student_furigana'].' ');
-          $item['kana_last'] = $kanas[0];
-          $item['kana_first'] = $kanas[1];
+          $item['kana_last'] = mb_convert_kana($kanas[0], "KVC");
+          $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
       //student_noを持った生徒が登録済みかどうか
       $student = Student::hasTag('student_no', $item['student_no'])->first();

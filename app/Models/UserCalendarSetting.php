@@ -331,7 +331,7 @@ EOT;
     //1か月後の月末
     $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
 
-    if(strtotime($end_date) < strtotime($this->enable_end_date)){
+    if(strtotime($end_date) > strtotime($this->enable_end_date)){
       //1か月後月末以前に設定が切れる場合、そちらを使う
       $end_date = $this->enable_end_date;
     }
