@@ -51,7 +51,6 @@ class DailyProcCommand extends Command
       $this->info("daily_proc[d=".$d."]");
       @$this->send_slack("daily_proc[d=".$d."]", 'warning', "daily_proc");
       $asks = Ask::where('status', 'commit')->findTypes(['recess', 'unsubscribe'])
-        ->where('start_date', $d)
         ->get();
       foreach($asks as $ask){
         //対象のモデルを取得
@@ -67,13 +66,15 @@ class DailyProcCommand extends Command
           //退会（退職）
           $ret = $target_model_data->unsubscribe();
         }
+
         if($ret!=null){
           //成功した場合
           if(isset($ret['user_calendar_members'])){
             $target_model_data['user_calendar_members'] = $ret['user_calendar_members'];
           }
           $result[$ask->type][] = $target_model_data;
-          if($ask->type=="unsubscribe"){
+          if(($ask->type=="unsubscribe" && $target_model_data->status=='unsubscribe') ||
+              ($ask->type=="recess" && $target_model_data->status=='regular')){
             //退会の場合は、承認済み→完了
             $ask->complete();
             $this->info("success[id=".$ask->id."]");
@@ -82,23 +83,30 @@ class DailyProcCommand extends Command
         }
         else {
           //失敗
-          $this->info("failed[id=".$ask->id."]");
+          $this->info("failed[id=".$ask->id."][".$target_model_data->status."]");
           @$this->send_slack("failed[id=".$ask->id."][type=".$ask->type."]", 'warning', "daily_proc");
         }
       }
-      //休会再開の処理（終了日が昨日）
-      $d = date("Y-m-d",strtotime("-1 day ".$d));
-      //
-      $asks = Ask::where('status', 'commit')->findTypes(['recess'])
-        ->where('end_date', $d)
+      //休会キャンセルの処理
+      //$d = date("Y-m-d",strtotime("-1 day ".$d));
+      $asks = Ask::where('status', 'cancel')->findTypes(['recess', 'unsubscribe'])
         ->get();
       foreach($asks as $ask){
         //対象のモデルを取得
         $target_model_data = $ask->get_target_model_data();
         if($target_model_data==null) continue;
         $result['asks'][] = $ask;
-        //休会→復帰
-        $this->info("休会→復帰　ask proc[id=".$ask->id."]");
+
+        $this->info("ask cancel proc[id=".$ask->id."]");
+        if($ask->type=="recess"){
+          //休会（休職）
+          $ret = $target_model_data->recess_cancel();
+        }
+        else if($ask->type=="unsubscribe"){
+          //退会（退職）
+          $ret = $target_model_data->unsubscribe_cancel();
+        }
+
         $ret = $target_model_data->recess_cancel();
         if($ret!=null){
           if(isset($ret['user_calendar_members'])){

@@ -162,7 +162,6 @@ EOT;
     $to = date("Y-m-01", strtotime("+2 month ".$from));
     //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
     //かつ、振替が未登録(cancelは除く）
-    $query = $this->scopeSearchDate($query, $from, $to);
     $param = [];
     $where_raw = <<<EOT
       user_calendars.id not in (
@@ -203,7 +202,9 @@ EOT;
             )
 EOT;
     }
-    return $query->whereRaw($where_raw,$param);
+    $query = $query->whereRaw($where_raw,$param);
+    $query = $this->scopeSearchDate($query, $from, $to);
+    return $query;
   }
   public function get_access_member($user_id){
     $user = User::where('id', $user_id)->first();
