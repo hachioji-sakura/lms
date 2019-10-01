@@ -588,6 +588,14 @@ class StudentController extends UserController
    }
    //echo $calendars->toSql()."<br>";
    $calendars = $calendars->get();
+   if($this->domain=='students'){
+     foreach($calendars as $i=>$calendar){
+       $calendars[$i]->own_member = $calendars[$i]->get_member($user_id);
+       $calendars[$i]->status = $calendars[$i]->own_member->status;
+     }
+   }
+
+
    return ["data" => $calendars, "count" => $count];
  }
  public function get_ask($form, $user_id){
@@ -842,7 +850,7 @@ class StudentController extends UserController
   {
     $res = $this->save_validate($request);
     if(!$this->is_success_response($res)){
-    return $res;
+      return $res;
     }
     return $this->transaction(function() use ($request, $id){
        $user = $this->login_details($request);

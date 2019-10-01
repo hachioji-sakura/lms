@@ -309,7 +309,12 @@ EOT;
     }
     public function send_mail($title, $param, $type, $template){
       $param['user'] = $this->details();
-      if(!isset($param['login_user'])) $param['login_user'] = Auth::user()->details();
+      if(!isset($param['login_user'])){
+        $u = Auth::user();
+        if(isset($u)){
+          $param['login_user'] = $u->details();
+        }
+      }
       $controller = new Controller;
       $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
       return $res;

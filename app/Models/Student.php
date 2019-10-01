@@ -530,6 +530,18 @@ EOT;
     }
     return $ret;
   }
+  public function recess_duration(){
+    if(empty($this->recess_start_date)) return "";
+    $ret = date('Y年m月d日',  strtotime($this->recess_start_date));
+    $ret .=  '～'.date('Y年m月d日',  strtotime($this->recess_end_date));
+    return $ret;
+  }
+  public function unsubscribe_date_label(){
+    if(empty($this->unsubscribe_date)) return "";
+    $ret = date('Y年m月d日',  strtotime($this->unsubscribe_date));
+    return $ret;
+  }
+
   public function is_first_brother(){
     $relations = StudentRelation::where('student_id', $this->id)->get();
     $parent_id = [];
@@ -751,7 +763,6 @@ EOT;
       foreach($kana as $value){
           $patterns[] = '/' . $value . '/';
       }
-
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
   }
@@ -773,46 +784,146 @@ EOT;
     ]);
     return $already_data;
   }
+  public function unsubscribe_commit($is_commit, $start_date=''){
+    if($is_commit==true){
+      $this->update([
+        'unsubscribe_date' => $start_date,
+      ]);
+    }
+  }
   public function unsubscribe(){
     if($this->status!='regular') return null;
     $user_calendar_members = [];
-    $this->update(['status' => 'unsubscribe']);
+
+    //退会以降の授業予定をキャンセルにする
     $calendars = UserCalendar::rangeDate($this->unsubscribe_date)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
                   ->get();
 
     foreach($calendars as $calendar){
-      $is_update = false;
       foreach($calendar->members as $member){
         if($member->user_id != $this->user_id) continue;
         $member->status_update('cancel', '退会のため', 1, false, true);
         $user_calendar_members[$member->id] = $member;
-        $is_update = true;
       }
+    }
+    if(strtotime($this->unsubscribe_date) <= strtotime(date('Y-m-d'))){
+      //退会開始日経過＝ステータスを退会
+      $this->update(['status' => 'unsubscribe']);
     }
     return ['user_calendar_members' => $user_calendar_members,];
   }
+  public function recess_commit($is_commit, $start_date='', $end_date=''){
+    if($is_commit==true){
+      $this->update([
+        'recess_start_date' => $start_date,
+        'recess_end_date' => $end_date,
+      ]);
+    }
+  }
   public function recess(){
+
+    if(strtotime($this->recess_end_date) < strtotime(date('Y-m-d'))){
+      //休会終了の場合
+      return $this->recess_end();
+    }
+
     if($this->status!='regular') return null;
+
     $user_calendar_members = [];
-    $this->update(['status' => 'recess']);
+    //休会範囲の授業予定をキャンセルにする
     $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
                   ->get();
     foreach($calendars as $calendar){
-      $is_update = false;
       foreach($calendar->members as $member){
         if($member->user_id != $this->user_id) continue;
         $member->status_update('cancel', '休会のため', 1, false, true);
         $user_calendar_members[$member->id] = $member;
-        $is_update = true;
       }
+    }
+    if(strtotime($this->recess_start_date) <= strtotime(date('Y-m-d'))){
+      //休会開始日経過＝ステータスを休会
+      $this->update(['status' => 'recess']);
     }
     return ['user_calendar_members' => $user_calendar_members,];
   }
   public function recess_cancel(){
+    return $this->_recess_cancel();
+  }
+  public function unsubscribe_cancel(){
+    return $this->_recess_cancel('unsubscribe');
+  }
+  public function _recess_cancel($type='recess'){
+    $type_name = '休会';
+    if($type=='unsubscribe') $type_name = '退会';
+    \Log::warning("d0:".$type);
+    $param = [];
+    $user_calendar_members = [];
+    $conflict_calendar_members = [];
+
+    if($type=='unsubscribe'){
+      $calendars = UserCalendar::rangeDate($this->unsubscribe_date);
+    }
+    else {
+      $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date);
+    }
+
+    $calendars = $calendars->findUser($this->user_id)
+                  ->findStatuses(['fix','cancel'])
+                  ->get();
+
+    foreach($calendars as $calendar){
+      $is_update = false;
+      foreach($calendar->members as $member){
+        if($member->user_id != $this->user_id) continue;
+        if($member->remark != $type_name.'のため') continue;
+        $conflicts = null;
+
+        if($calendar->is_group()==false){
+          $conflicts = UserCalendar::searchDate($calendar->start_time, $calendar->end_time)
+                      ->where('id', '!=', $calendar->id)
+                      ->where('status', 'fix')
+                      ->where('user_id', $calendar->user_id)
+                      ->first();
+        }
+
+
+        if(isset($conflicts)){
+          //このカレンダーの予定と競合した予定がある場合は、再開できない
+          $conflict_calendar_members[$member->id] = $member;
+        }
+        else {
+          $member->status_update('fix', '', 1, false, true);
+          $user_calendar_members[$member->id] = $member;
+          $is_update = true;
+        }
+      }
+    }
+    $param['user_calendar_members'] = $user_calendar_members;
+    $param['conflict_calendar_members'] = $conflict_calendar_members;
+    $param['send_to'] = 'student';
+    $param['type'] = $type;
+
+    if($type=='unsubscribe'){
+      $this->update([
+        'status' => 'regular',
+        'unsubscribe_date' => null,
+      ]);
+    }
+    else {
+      $this->update([
+        'status' => 'regular',
+        'recess_start_date' => null,
+        'recess_end_date' => null,
+      ]);
+    }
+    $this->user->send_mail($type_name.'依頼取り消し', $param, 'text', 'recess_cancel');
+    return ['user_calendar_members' => $user_calendar_members, 'conflict_calendar_members' => $conflict_calendar_members];
+  }
+  public function recess_end(){
     if($this->status!='recess') return null;
     $param = [];
     $user_calendar_members = [];
