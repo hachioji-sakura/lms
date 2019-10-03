@@ -54,11 +54,11 @@ class CommentController extends MilestoneController
       $fields['target_user_name'] = [
         'label' => '対象者',
       ];
-      $fields['create_user_name'] = [
-        'label' => '起票者',
-      ];
       $fields['publiced_at'] = [
         'label' => '公開日',
+      ];
+      $fields['create_user_name'] = [
+        'label' => '起票者',
       ];
       $fields['created_at'] = [
         'label' => __('labels.add_datetime'),
@@ -145,11 +145,8 @@ class CommentController extends MilestoneController
       $param = $this->get_param($request, $id);
 
       $fields = [
-        '_type_name' => [
+        'type_name' => [
           'label' => '種別',
-        ],
-        'title' => [
-          'label' => 'タイトル',
         ],
         'body' => [
           'label' => '内容',
@@ -163,14 +160,14 @@ class CommentController extends MilestoneController
         $fields['create_user_name'] = [
           'label' => '起票者',
         ];
-        $fields['publiced_at'] = [
+        $fields['publiced_date'] = [
           'label' => '公開日',
         ];
       }
-      $fields['created_at'] = [
+      $fields['created_date'] = [
         'label' => __('labels.add_datetime'),
       ];
-      $fields['updated_at'] = [
+      $fields['updated_date'] = [
         'label' => __('labels.upd_datetime'),
       ];
 

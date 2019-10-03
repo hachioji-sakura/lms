@@ -74,9 +74,10 @@ class CalendarSettingCommand extends Command
     private function _to_calendar($date, $setting){
       //担当講師が本登録でない場合、登録できない
       if($setting->user->status!='regular') return null;
-
+      if($setting->is_enable($date)==false) return null;
       $this->info('--------------------------------');
       $this->info('setting:id='.$setting->id);
+      $this->info('setting:enable_date='.$setting->enable_date());
       $start_time = $date.' '.$setting->from_time_slot;
       $end_time = $date.' '.$setting->to_time_slot;
       $calendars = UserCalendar::rangeDate($start_time, $end_time)

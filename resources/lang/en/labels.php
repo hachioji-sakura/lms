@@ -30,6 +30,7 @@ return [
   'student_groups_list'             => 'StudentGroups List',
   'account'             => 'Account',
   'register' => 'Register',
+  'created' => 'Created',
   'trial_entry'      => 'Click to Experience application',
   'keep_login'      => 'Keep Login Status',
   'input_login_id' => 'login_id or your e-mail',
@@ -198,7 +199,9 @@ return [
   'lectures' => 'lecture',
   'managers' => 'Managers',
   'comments' => 'Comments',
+  'comment_type' => 'Comment Type',
   'milestones' => 'Milestones',
+  'milestone_type' => 'Milestone Type',
   'attributes' => 'Attributes',
 
   'events' => 'Events',

@@ -105,7 +105,7 @@ class MilestoneController extends UserController
     }
     public function show_fields($type){
       $ret = [
-        'type' => [
+        'type_name' => [
           'label' => '種別',
         ],
         'title' => [
@@ -115,12 +115,6 @@ class MilestoneController extends UserController
           'label' => '内容',
         ],
       ];
-      if($this->is_manager_or_teacher($param['user']->role)===true){
-        //生徒以外の場合は、対象者も表示する
-        $ret['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
-      }
       return $ret;
     }
     /**
@@ -155,6 +149,8 @@ class MilestoneController extends UserController
             //生徒は自分の起票したものしか編集できない
             abort(404);
         }
+        $item = $item->details();
+        /*
         $create_user = $item->create_user->details();
         $item->create_user_name = $create_user->name;
         unset($item->create_user);
@@ -163,7 +159,8 @@ class MilestoneController extends UserController
         $target_user = $item->target_user->details();
         $item->target_user_name = $target_user->name;
         unset($item->target_user);
-        $ret['item'] = $item;
+        */
+        $ret['item'] = $item->details();
       }
       return $ret;
     }
@@ -299,9 +296,9 @@ class MilestoneController extends UserController
         return $res;
       }
       $res = $this->transaction(function() use ($request, $form){
+        $form['s3_url'] = "";
+        $form['s3_alias'] = "";
         if($request->hasFile('upload_file')){
-          $form['s3_url'] = "";
-          $form['s3_alias'] = "";
           if ($request->file('upload_file')->isValid([])) {
             $form['s3_alias'] = $request->file('upload_file')->getClientOriginalName();
             $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.upload_folder'));
@@ -339,6 +336,12 @@ class MilestoneController extends UserController
       $param = $this->get_param($request, $id);
 
       $fields = $this->show_fields($param['item']->type);
+      if($this->is_manager_or_teacher($param['user']->role)===true){
+        //生徒以外の場合は、対象者も表示する
+        $fields['target_user_name'] = [
+          'label' => 'ユーザー',
+        ];
+      }
       /*
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
@@ -346,13 +349,13 @@ class MilestoneController extends UserController
           'label' => 'ユーザー',
         ];
       }
-      $fields['created_at'] = [
+      */
+      $fields['created_date'] = [
         'label' => __('labels.add_datetime'),
       ];
-      $fields['updated_at'] = [
+      $fields['updated_date'] = [
         'label' => __('labels.upd_datetime'),
       ];
-      */
       $form = $request->all();
       $form['fields'] = $fields;
       return view('components.page', $form)
