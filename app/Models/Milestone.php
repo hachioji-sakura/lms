@@ -51,6 +51,15 @@ class Milestone extends Model
     }
     return $query;
   }
+  protected function _date_label($date, $format='Y年m月d日 H:i'){
+    return date($format, strtotime($date));
+  }
+  public function created_at_label(){
+    return $this->_date_label($this->created_at);
+  }
+  public function updated_at_label(){
+    return $this->_date_label($this->updated_at);
+  }
   public function scopePagenation($query, $page, $line){
     $_line = $this->pagenation_line;
     if(is_numeric($line)){
@@ -81,6 +90,8 @@ class Milestone extends Model
   public function details(){
     $item = $this;
     $item["type_name"] = $this->type_name();
+    $item["created_date"] = $this->created_at_label();
+    $item["updated_date"] = $this->updated_at_label();
     $item["create_user_name"] = $this->create_user->details()->name();
     $item["target_user_name"] = $this->target_user->details()->name();
     return $item;

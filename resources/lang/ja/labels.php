@@ -30,6 +30,7 @@ return [
   'student_groups_list'             => '生徒グループ一覧',
   'account'             => 'アカウント',
   'register' => '本登録',
+  'created' => '登録',
   'trial_entry'      => '体験授業お申込みはこちら',
   'keep_login'      => 'ログイン状態を維持する',
   'input_login_id' => 'ログインID またはメールアドレス',
@@ -198,7 +199,9 @@ return [
   'lectures' => 'レクチャー',
   'managers' => '事務',
   'comments' => 'コメント',
+  'comment_type' => 'コメント種別',
   'milestones' => '目標',
+  'milestone_type' => '目標種別',
   'attributes' => '定義属性',
 
   'events' => 'イベント',

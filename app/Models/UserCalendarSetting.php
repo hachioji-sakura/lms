@@ -398,16 +398,20 @@ EOT;
       $w = ($saturday - $w) + $d;
       return ceil($w/$week_day);
   }
-  public function is_enable(){
+  public function is_enable($date=""){
+    $strtotime = -1;
+    if(empty($date)) $strtotime = strtotime('now');
+    else $strtotime = strtotime($date);
+
     if(!empty($this->enable_start_date)){
-      $diff = strtotime($this->enable_start_date) - strtotime('now');
+      $diff = strtotime($this->enable_start_date) - $strtotime;
       if($diff > 0){
         //設定開始前
         return false;
       }
     }
     if(!empty($this->enable_end_date)){
-      $diff = strtotime($this->enable_end_date) - strtotime('now');
+      $diff = strtotime($this->enable_end_date) - $strtotime;
       if($diff < 0){
         //設定終了
         return false;
