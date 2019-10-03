@@ -55,12 +55,12 @@
               </a>
               @if(isset($user) && $user->role=="manager")
                 @if($member->rest_type=='a2')
-                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2">
+                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2" title="休み２を休み１に変更します。">
                   <i class="fa fa-exchange-alt mr-1"></i>
                   休み１変更
                 </a>
                 @elseif($member->rest_type=='a1')
-                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a2');" class="btn btn-sm btn-default mr-2">
+                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a2');" class="btn btn-sm btn-default mr-2"　title="休み１を、休み２に変更します。">
                   <i class="fa fa-exchange-alt mr-1"></i>
                   休み2変更
                 </a>

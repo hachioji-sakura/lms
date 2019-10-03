@@ -18,6 +18,14 @@ class Comment extends Milestone
   {
     return $this->attribute_name('comment_type', $this->type);
   }
+  public function publiced_date(){
+    return $this->_date_label($this->publiced_at, 'Y年m月d日');
+  }
+  public function details(){
+    $item =  parent::details();
+    $item["publiced_date"] = $this->publiced_date();
+    return $item;
+  }
   /*
   public function scopeStatus($query, $val)
   {

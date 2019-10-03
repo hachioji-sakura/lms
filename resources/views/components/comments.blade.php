@@ -3,13 +3,14 @@
   <div class="card card-widget">
     <div class="card-comments">
         @foreach($comments as $comment)
+          <?php $comment = $comment->details(); ?>
           @if($comment_type==='all' || $comment->type===$comment_type)
             <?php $__c++; ?>
             <div class="card-comment">
               <img class="img-circle img-sm mr-1" src="{{$comment->create_user->details()->icon}}" alt="User Image">
               <span class="username">{{$comment->create_user->details()->name}}
                 <span class="text-muted float-right">
-                  {{$comment->created_at}}
+                  {{$comment["created_date"]}}
                 </span>
               </span>
               <div class="comment-text">

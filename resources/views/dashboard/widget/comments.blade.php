@@ -5,13 +5,13 @@
   <div class="card-header d-flex p-0">
     <h3 id="comments" class="card-title p-2">
       <i class="fa fa-comments mr-1"></i>
-      コメン
+      {{__('labels.comments')}}
     </h3>
     <br>
     <ul class="nav nav-pills ml-auto p-2">
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-          コメント種別 <span class="caret"></span>
+          {{__('labels.comment_type')}} <span class="caret"></span>
         </a>
         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 40px, 0px); top: 0px; left: 0px; will-change: transform;">
           <a class="dropdown-item" tabindex="all" href="#comments_tab_all" data-toggle="tab">すべて</a>
