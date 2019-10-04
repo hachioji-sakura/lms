@@ -1186,6 +1186,7 @@ class UserCalendarController extends MilestoneController
         }
 
         $calendar = UserCalendar::add($form);
+        if($calendar==null) return null;
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
@@ -1198,6 +1199,10 @@ class UserCalendarController extends MilestoneController
         $this->new_mail($param);
         return $calendar;
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
+
+      if($res["data"]==null){
+        return $this->error_response('競合する予定がすでに登録されています');
+      }
       return $res;
     }
     /**

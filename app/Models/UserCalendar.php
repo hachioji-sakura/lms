@@ -550,6 +550,13 @@ EOT;
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
+    $calendar = UserCalendar::where('start_time', $form['start_time'])
+      ->where('end_time', $form['end_time'])
+      ->where('user_id', $form['teacher_user_id'])->first();
+
+    if(isset($calendar)){
+      return null;
+    }
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -753,7 +760,6 @@ EOT;
       //内包しているケース
       return true;
     }
-
     if($end == $calendar_starttime || $start == $calendar_endtime){
       //開始終了が一致した場合、場所をチェック
       if(!empty($place_id) && $this->is_same_place($place_id)===false){

@@ -30,7 +30,7 @@
               {{$field['label']}}
             </label>
             @foreach($item["students"] as $member)
-              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}" title="{{$member->exchange_limit_date}}">
+              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
                 @if($member->status=='new')
                 <i class="fa fa-question-circle mr-1"></i>
                 @elseif($member->status=='confirm')
@@ -44,7 +44,7 @@
                 @elseif($member->status=='absence')
                 <i class="fa fa-calendar-times mr-1"></i>
                 @elseif($member->status=='rest')
-                <i class="fa fa-user-times mr-1"></i>
+                <i class="fa fa-user-times mr-1" title="{{$member->exchange_limit_date}}"></i>
                 @endif
                 {{$member->user->details('students')->name}}
                 @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->rest_result())))
