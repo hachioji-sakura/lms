@@ -78,16 +78,20 @@
             </small>
           </span>
           @endforeach
+          @foreach($item["tagdata"]['lesson_week_count'] as $label)
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              週{{$item->trial_students->first()->student->tag_name("lesson_week_count")}}回
+              週{{$label}}回
             </small>
           </span>
+          @endforeach
+          @foreach($item["tagdata"]['course_minutes'] as $label)
           <span class="text-xs mx-2">
             <small class="badge badge-info mt-1 mr-1">
-              {{$item->trial_students->first()->student->tag_name("course_minutes")}}授業
+              {{$label}}授業
             </small>
           </span>
+          @endforeach
         </div>
       </li>
       <li class="nav-item text-light ml-2 hr-1 bd-light mb-2">

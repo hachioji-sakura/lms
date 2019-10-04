@@ -937,7 +937,7 @@ EOT;
     }
     if($this->couser_minutes==0){
       if(!isset($student)) $student = $this->trial_students->first()->student;
-      $this->course_minutes = intval($student->user->get_tag('course_minutes')['tag_value']);
+      $this->course_minutes = intval($this->get_tag('course_minutes')['tag_value']);
     }
 
     //２．講師の勤務可能スケジュール、通常授業スケジュールを取得
