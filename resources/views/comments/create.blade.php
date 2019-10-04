@@ -132,3 +132,8 @@
     </div>
   </form>
 </div>
+<script>
+$(function(){
+  base.pageSettinged('{{$domain}}_create', null);
+});
+</script>
