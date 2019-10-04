@@ -643,10 +643,28 @@ class UserCalendarController extends MilestoneController
     public function status_update_page(Request $request, $id, $status)
     {
       $param = $this->page_access_check($request, $id);
+      if(!$request->has('user')){
+        if (!View::exists($this->domain.'.'.$status)) {
+            abort(404, 'ページがみつかりません(81)');
+        }
+      }
+
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
       return view($this->domain.'.'.$status, [])->with($param);
+    }
+    /**
+     * ステータス更新ページ
+     *
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function rest_change_page(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+      return view($this->domain.'.rest_change', [])->with($param);
     }
     public function teacher_changpe_page(Request $request, $ask_id)
     {
@@ -679,27 +697,7 @@ class UserCalendarController extends MilestoneController
       $param['ask'] = $ask;
       return view($this->domain.'.teacher_change', [])->with($param);
     }
-    /**
-     * ステータス更新ページ
-     *
-     * @param  int  $id
-     * @param  string  $status
-     * @return \Illuminate\Http\Response
-     */
-    public function rest_change_page(Request $request, $id)
-    {
-      $param = $this->page_access_check($request, $id);
-      if($request->has('user')){
-        return view($this->domain.'.rest_change', ["subpage"=>$status ])->with($param);
-      }
-      return view($this->domain.'.'.$status, [])->with($param);
-    }
     private function page_access_check(Request $request, $id){
-      if(!$request->has('user')){
-        if (!View::exists($this->domain.'.'.$status)) {
-            abort(404, 'ページがみつかりません(81)');
-        }
-      }
       if($request->has('user') && !$request->has('key')){
           abort(404, 'ページがみつかりません(82)');
       }
