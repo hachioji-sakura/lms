@@ -295,10 +295,19 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
+      $item = $this->model();
+      foreach($form as $key=>$val){
+        $item = $item->where($key, $val);
+      }
+      $item = $item->first();
+      if(isset($item)){
+        return $this->error_response('すでに登録済みです');
+      }
+
       $res = $this->transaction(function() use ($request, $form){
-        $form['s3_url'] = "";
-        $form['s3_alias'] = "";
         if($request->hasFile('upload_file')){
+          $form['s3_url'] = "";
+          $form['s3_alias'] = "";
           if ($request->file('upload_file')->isValid([])) {
             $form['s3_alias'] = $request->file('upload_file')->getClientOriginalName();
             $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.upload_folder'));

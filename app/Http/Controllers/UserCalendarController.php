@@ -642,42 +642,13 @@ class UserCalendarController extends MilestoneController
      */
     public function status_update_page(Request $request, $id, $status)
     {
-      if(!$request->has('user')){
-        if (!View::exists($this->domain.'.'.$status)) {
-            abort(404, 'ページがみつかりません(21)');
-        }
-      }
-      if($request->has('user') && !$request->has('key')){
-          abort(404, 'ページがみつかりません(31)');
-      }
-      if($request->has('user') && $request->has('key')){
-        if(!$this->is_enable_token($request->get('key'))){
-          abort(403, '有効期限が切れています(31)');
-        }
-      }
-      $param = $this->get_param($request, $id);
-
-      if($request->has('user') && $request->has('key')){
-        $is_find = false;
-        foreach($param['item']->get_access_member($request->get('user')) as $member){
-          if($member->access_key == $request->get('key')){
-              $is_find = true;
-              break;
-          }
-        }
-        if($is_find === false){
-            abort(403, '有効期限が切れています(41)');
-        }
-      }
-      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-      $param['fields'] = $this->show_fields($param['item']->work);
-      $param['action'] = '';
+      $param = $this->page_access_check($request, $id);
       if($request->has('user')){
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
       return view($this->domain.'.'.$status, [])->with($param);
     }
-    public function teacher_change_page(Request $request, $ask_id)
+    public function teacher_changpe_page(Request $request, $ask_id)
     {
       $ask = Ask::where('id', $ask_id)->first();
       if(!isset($ask)){
@@ -708,7 +679,54 @@ class UserCalendarController extends MilestoneController
       $param['ask'] = $ask;
       return view($this->domain.'.teacher_change', [])->with($param);
     }
+    /**
+     * ステータス更新ページ
+     *
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function rest_change_page(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+      if($request->has('user')){
+        return view($this->domain.'.rest_change', ["subpage"=>$status ])->with($param);
+      }
+      return view($this->domain.'.'.$status, [])->with($param);
+    }
+    private function page_access_check(Request $request, $id){
+      if(!$request->has('user')){
+        if (!View::exists($this->domain.'.'.$status)) {
+            abort(404, 'ページがみつかりません(81)');
+        }
+      }
+      if($request->has('user') && !$request->has('key')){
+          abort(404, 'ページがみつかりません(82)');
+      }
+      if($request->has('user') && $request->has('key')){
+        if(!$this->is_enable_token($request->get('key'))){
+          abort(403, '有効期限が切れています(83)');
+        }
+      }
+      $param = $this->get_param($request, $id);
 
+      if($request->has('user') && $request->has('key')){
+        $is_find = false;
+        foreach($param['item']->get_access_member($request->get('user')) as $member){
+          if($member->access_key == $request->get('key')){
+              $is_find = true;
+              break;
+          }
+        }
+        if($is_find === false){
+            abort(403, '有効期限が切れています(41)');
+        }
+      }
+      if(!isset($param['item'])) abort(404, 'ページがみつかりません(84)');
+      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['action'] = '';
+      return $param;
+    }
     /**
      * ステータス更新
      *
