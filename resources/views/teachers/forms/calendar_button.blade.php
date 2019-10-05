@@ -41,10 +41,16 @@
     {{__('labels.schedule_remind')}}
   </a>
   @elseif($calendar["status"]==="rest" && $calendar->is_management()==true)
-  {{-- 生徒へ再度通知連絡 --}}
+  {{-- 事務作業で休みの場合、休み取り消し --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休み取り消し" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm">
     <i class="fa fa-minus-circle mr-1"></i>
     休み取り消し
+  </a>
+  @elseif($calendar["is_passed"]==true && $calendar->exist_rest_student()==true)
+  {{-- TODO 休み種別変更 --}}
+  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.rest_change')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest_change?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm">
+    <i class="fa fa-exclamation-circle mr-1" title="{{$calendar["status"]}}"></i>
+    {{__('labels.rest_change')}}
   </a>
   @else
   {{-- 参照のみ --}}

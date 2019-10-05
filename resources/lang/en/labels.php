@@ -232,6 +232,7 @@ return [
   'schedule_remark' => 'Remark about schedule',
   'schedule_remark_placeholder' => 'ex.On Monday, it is possible from 15:30',
   'rest_contact' => 'Rest Contact',
+  'rest_change' => 'Rest Type Change',
   'target_month' => 'Target Month',
   'important' => 'Important',
   'important_check' => 'I confirmed about important matter',

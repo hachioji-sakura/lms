@@ -189,6 +189,9 @@ EOT;
     //１．保護者情報登録：無名のアカウント＋電話番号、メールアドレスを保存
     //同じ送信内容の場合は登録しない
     $parent = StudentParent::entry($form);
+
+    if($parent==null) return null;
+
     $form["create_user_id"] = $parent->user_id;
     $parent = $parent->profile_update($form);
     $form["kana_last"] = $form["student_kana_last"];
