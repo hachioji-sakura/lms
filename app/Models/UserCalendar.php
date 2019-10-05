@@ -550,13 +550,17 @@ EOT;
     if(isset($form['trial_id'])){
       $trial_id = $form['trial_id'];
     }
-    $calendar = UserCalendar::where('start_time', $form['start_time'])
-      ->where('end_time', $form['end_time'])
+
+    //TODO 重複登録、競合登録の防止が必要
+    /*
+    $calendar = UserCalendar::searchDate($form['start_time'], $form['end_time'])
+      ->findStatuses(['rest', 'cancel', 'lecture_cancel'], true)
       ->where('user_id', $form['teacher_user_id'])->first();
 
     if(isset($calendar)){
       return null;
     }
+    */
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -946,5 +950,13 @@ EOT;
     //カレンダー：出席
     $this->update(['status' => $status]);
   }
-
+  public function exist_rest_student(){
+    foreach($this->members as $member){
+      $_member = $member->user->details('students');
+      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel')){
+        return true;
+      }
+    }
+    return false;
+  }
 }

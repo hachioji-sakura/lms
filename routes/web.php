@@ -63,7 +63,7 @@ Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_
 Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
-Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
+Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
 
 
 

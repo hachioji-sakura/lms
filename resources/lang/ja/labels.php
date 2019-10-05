@@ -233,6 +233,7 @@ return [
   'limit' => '期限',
   'approval' => '承認',
   'rest_contact' => '休み連絡',
+  'rest_change' => '休み種別変更',
   'target_month' => '対象年月',
   'important' => '重要',
   'important_check' => '重要事項について確認しました',

@@ -43,7 +43,7 @@
                 <i class="fa fa-check-circle mr-1"></i>
                 @elseif($member->status=='absence')
                 <i class="fa fa-calendar-times mr-1"></i>
-                @elseif($member->status=='rest')
+                @elseif($member->status=='rest' || $member->status=='lecture_cancel')
                 <i class="fa fa-user-times mr-1" title="{{$member->exchange_limit_date}}"></i>
                 @endif
                 {{$member->user->details('students')->name}}
@@ -53,6 +53,7 @@
                 <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
                 @endif
               </a>
+              {{-- TODO この処理は使わなくなったのでいずれ削除
               @if(isset($user) && $user->role=="manager")
                 @if($member->rest_type=='a2')
                 <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2" title="休み２を休み１に変更します。">
@@ -66,6 +67,7 @@
                 </a>
                 @endif
               @endif
+              --}}
               {{--
               @if($action=='delete' && $item->is_group()==true && $member->status=='new')
               <a href="javascript:void(0);" onClick="member_delete({{$member->calendar_id}}, {{$member->id}});" class="ml-2 text-dark">

@@ -1060,6 +1060,10 @@ class ImportController extends UserController
         //それ以外、何等か休暇(a :休暇、a1:休み1、休み2, c:別の日時に変更された）。
         //$_attr = $this->get_save_general_attribute('absence_type', '', $item['cancel']);
         //$yasumi = $_attr->attribute_value;
+
+        //TODO 2019.10.5 問題点
+        //a1と来た場合、lecture_cancelとなるが、実際、忖度で休み１にした場合、status=rest / a1とすべきだが、
+        //inputが明確に取れないので、a1はすべてlecture_cancelにするしかない
         $remark.='[cancel='.$item['cancel'].']';
         if($item['cancel']==='c')  $status = 'cancel';
         else if($item['cancel']==='a1')  $status = 'lecture_cancel';

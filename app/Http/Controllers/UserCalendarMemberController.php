@@ -93,6 +93,7 @@ class UserCalendarMemberController extends UserCalendarController
    */
   public function rest_type_update(Request $request, $id)
   {
+    /*TODO この処理は使わなくなったので削除する予定
     $param = $this->get_param($request, $id);
 
     if(!$request->has('rest_type')) return $this->bad_request();
@@ -106,6 +107,7 @@ class UserCalendarMemberController extends UserCalendarController
     }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
     $res["message"] = $rest_type;
     return $res;
+    */
   }
   /**
    * 授業予定削除処理
