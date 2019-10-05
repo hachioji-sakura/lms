@@ -138,13 +138,14 @@ class CalendarSettingCommand extends Command
         return null;
       }
       $calendar = UserCalendar::add($form);
-
-      foreach($setting->members as $member){
-        if($setting->user_id == $member->user_id) continue;
-        if(strtotime($member->user->created_at) > strtotime($date)) continue;
-        if($member->user->details()->status != 'regular') continue;
-        //主催者以外を追加
-        $calendar->memberAdd($member->user_id, 1, $default_status);
+      if($calendar!=null){
+        foreach($setting->members as $member){
+          if($setting->user_id == $member->user_id) continue;
+          if(strtotime($member->user->created_at) > strtotime($date)) continue;
+          if($member->user->details()->status != 'regular') continue;
+          //主催者以外を追加
+          $calendar->memberAdd($member->user_id, 1, $default_status);
+        }
       }
       return $calendar;
     }

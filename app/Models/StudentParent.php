@@ -46,6 +46,7 @@ class StudentParent extends Teacher
     $parent = null;
     if(isset($parent_user)){
       $parent = StudentParent::where('user_id', $parent_user->id)->first();
+      if(!isset($parent)) return null;
     }
     else {
       $parent_user = User::create([

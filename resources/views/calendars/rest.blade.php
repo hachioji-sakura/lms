@@ -115,7 +115,7 @@
         <div class="col-12 col-lg-6 col-md-6 mb-1">
             <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="休み連絡を送信しますか？">
               <i class="fa fa-envelope mr-1"></i>
-                休み連絡
+              {{__('labels.rest_contact')}}
             </button>
         </div>
         <div class="col-12 col-lg-6 col-md-6 mb-1">

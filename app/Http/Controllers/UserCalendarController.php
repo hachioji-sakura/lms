@@ -664,6 +664,14 @@ class UserCalendarController extends MilestoneController
     public function rest_change_page(Request $request, $id)
     {
       $param = $this->page_access_check($request, $id);
+      if($param['item']["is_passed"]==false) abort(403);
+      unset($param['fields']['remark']);
+      unset($param['fields']['status_name']);
+      unset($param['fields']['lesson']);
+      unset($param['fields']['course']);
+      unset($param['fields']['subject']);
+      unset($param['fields']['teaching_name']);
+      unset($param['fields']['place_floor_name']);
       return view($this->domain.'.rest_change', [])->with($param);
     }
     public function teacher_changpe_page(Request $request, $ask_id)
@@ -770,14 +778,41 @@ class UserCalendarController extends MilestoneController
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
       }
 
-      if($request->has('user')){
-        $param['result'] = $this->status_update_message[$status];
-        $param['fields'] = $this->show_fields($param['item']->work);
-        return $this->save_redirect($res, $param, $this->status_update_message[$status], '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
+      return $this->save_redirect($res, $param, $this->status_update_message[$status]);
+    }
+    public function rest_change(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $res = $this->api_response();
+      $is_send = true;
+
+      $res = $this->_rest_change($request, $param, $id);
+
+      $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+
+      return $this->save_redirect($res, $param, '休み判定結果を変更しました');
+    }
+    public function _rest_change(Request $request, $param, $id){
+      $form = $request->all();
+      if($form['rest_type']!='a2' && $form['rest_type']!='a1') abort(400);
+      if(empty($form['student_id']) || !is_numeric($form['student_id']) || $form['student_id']<1) abort(400);
+
+      $calendar = UserCalendar::where('id', $id)->first();
+      $student = Student::where('id', $form['student_id'])->first();
+      if(!isset($student)) abort(400);
+      $update_member = null;
+      foreach($calendar->members as $member){
+        if($member->user_id == $student->user_id){
+          $update_member = $member;
+        }
       }
-      else {
-        return $this->save_redirect($res, $param, $this->status_update_message[$status]);
-      }
+      if($update_member==null) abort(400);
+
+      $res = $this->transaction(function() use ($update_member, $form){
+        $res = $update_member->update_rest_type($form['rest_type'], $form['rest_result']);
+        return $update_member;
+      }, '休み種類変更', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 
     /**
@@ -1186,6 +1221,7 @@ class UserCalendarController extends MilestoneController
         }
 
         $calendar = UserCalendar::add($form);
+        if($calendar==null) return null;
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
@@ -1198,6 +1234,10 @@ class UserCalendarController extends MilestoneController
         $this->new_mail($param);
         return $calendar;
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
+
+      if($res["data"]==null){
+        return $this->error_response('競合する予定がすでに登録されています');
+      }
       return $res;
     }
     /**

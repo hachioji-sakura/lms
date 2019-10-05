@@ -198,8 +198,12 @@ class UserCalendarMember extends Model
     if($this->status=='lecture_cancel') return false;
     return true;
   }
-  public function update_rest_type($update_rest_type){
-    $res = $this->_office_system_api('PUT', $update_rest_type);
+  public function update_rest_type($update_rest_type, $update_rest_result){
+    $this->update([
+      'rest_type' => $update_rest_type,
+      'rest_result' => $update_rest_result,
+    ]);
+    $res = $this->_office_system_api('PUT', $update_rest_type, $update_rest_result);
     return $this;
   }
   public function rest_result(){
@@ -235,7 +239,7 @@ class UserCalendarMember extends Model
   public function office_system_api($method){
     return $this->_office_system_api($method);
   }
-  public function _office_system_api($method, $update_rest_type="", $is_rest_cancel=false){
+  public function _office_system_api($method, $update_rest_type="", $update_rest_result='', $is_rest_cancel=false){
     if($this->schedule_id == 0 && $method=="PUT") return null; ;
     if($this->schedule_id == 0 && $method=="DELETE") return null;
     if($this->schedule_id > 0 && $method=="POST") return null;
@@ -372,9 +376,12 @@ class UserCalendarMember extends Model
 
     //休み１⇔休み２の変更のための対応
     if(!empty($update_rest_type)) {
-      \Log::info("事務システムAPI 休み種別強制変更:".$update_rest_type);
-      @$this->send_slack("事務システムAPI 休み種別強制変更:".$update_rest_type, 'warning', "事務システムAPI");
+      \Log::info("事務システムAPI 休み種別強制変更:".$update_rest_type.'('.$update_rest_result.')');
+      @$this->send_slack("事務システムAPI 休み種別強制変更:".$update_rest_type.'('.$update_rest_result.')', 'warning', "事務システムAPI");
       $postdata['cancel'] = $update_rest_type;
+      $postdata['cancel_reason'] = $update_rest_result;
+      //TODO type指定なしであれば、cancel + cancel_reasonの編集をAPI側で対応してくれる？
+      //$postdata['type'] = 'special_cancel_reason';
     }
     else {
       //休み種別の変更ではない場合、タイプを指定する
@@ -520,7 +527,7 @@ class UserCalendarMember extends Model
       if($this->calendar->status=='rest'){
         $this->calendar->update(['status' =>'fix']);
       }
-      $this->_office_system_api('PUT', '', true);
+      $this->_office_system_api('PUT', '', '', true);
     }
     else {
       //休みに戻す

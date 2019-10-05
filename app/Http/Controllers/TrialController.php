@@ -371,6 +371,13 @@ class TrialController extends UserCalendarController
      ]);
      $form = $request->all();
 
+     $u = User::where('email', $form['email'])->first();
+     if(isset($u)){
+       if($u->details()->role != 'parent'){
+         abort(403, 'このメールアドレスは登録済みです。');
+       }
+     }
+     \Log::warning("d3");
      $res = $this->transaction(function() use ($request){
        $form = $request->all();
        $form["accesskey"] = '';
@@ -382,6 +389,10 @@ class TrialController extends UserCalendarController
        return $trial;
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
+     if($res["data"]==null){
+       $this->error_response('体験授業申し込みに失敗しました。');
+     }
+
      if($this->is_success_response($res)){
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [
@@ -392,9 +403,7 @@ class TrialController extends UserCalendarController
        return view($this->domain.'.entry',
          ['result' => "success"]);
      }
-     else {
-       return $this->save_redirect($res, [], '', $this->domain.'/entry');
-     }
+     return $this->save_redirect($res, [], '', $this->domain.'/entry');
    }
    /**
     * 詳細画面表示
