@@ -192,9 +192,10 @@ $(function(){
     });
     if(lesson==3) _snames = "ピアノ";
     form_data["subject_name"] = _snames;
-    get_conflict_calendar(form_data);
+    //get_conflict_calendar(form_data);
     return form_data;
   }
+
   function get_conflict_calendar(form_data){
     console.log("--get_conflict_calendar--");
     console.log(form_data);
