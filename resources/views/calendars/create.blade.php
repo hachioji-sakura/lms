@@ -192,8 +192,47 @@ $(function(){
     });
     if(lesson==3) _snames = "ピアノ";
     form_data["subject_name"] = _snames;
-
+    get_conflict_calendar(form_data);
     return form_data;
+  }
+  function get_conflict_calendar(form_data){
+    console.log("--get_conflict_calendar--");
+    console.log(form_data);
+    var teacher_id = form_data['teacher_id'];
+    var lesson = form_data['lesson'];
+    var course_minutes = form_data['course_minutes'][0];
+    var start_time = form_data['start_time'];
+    var lesson = form_data['lesson'];
+    if(lesson==0){
+      lesson = ($('input[name=lesson]').val())|0;
+    }
+    return false;
+    //振替対象の予定を取得
+    service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&course_minutes='+course_minutes+'&lesson='+lesson, null,
+      function(result, st, xhr) {
+        console.log(result["data"]);
+        if(result['status']===200){
+          var c = 0;
+          $.each(result['data'], function(id, val){
+            var _option = '<option value="'+val['id']+'">'+val['datetime']+'</option>';
+            $("select[name='exchanged_calendar_id']").append(_option);
+            c++;
+          });
+          if(c>0){
+            $('select[name=exchanged_calendar_id]').show();
+            $("#exchanged_calendar_none").hide();
+          }
+          else {
+            $('select[name=exchanged_calendar_id]').hide();
+            $("#exchanged_calendar_none").show();
+          }
+          $("#exchanged_calendar").collapse("show");
+        }
+      },
+      function(xhr, st, err) {
+          alert("UI取得エラー(api_calendars)");
+      }
+    );
   }
 });
 </script>
