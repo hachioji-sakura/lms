@@ -938,20 +938,24 @@ class ImportController extends UserController
           ]);
         }
       }
-
-      //事務システムから取得した科目
-      if(!empty(trim($item['subject_expr']))){
-        $tags['subject_expr'] = $item['subject_expr'];
-      }
-      $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
-      foreach($tag_names as $tag_name){
-        if(!empty($tags[$tag_name])){
-          if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
-          $this->store_user_tag($student->user_id, $tag_name, $tags[$tag_name], false);
+      if($work!=9){
+        //事務システムから取得した科目
+        if(!empty(trim($item['subject_expr']))){
+          $tags['subject_expr'] = $item['subject_expr'];
         }
-      }
-      if(isset($student) && isset($teacher)){
-        $this->store_charge_student($student->id,$teacher->id,$tags);
+        $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+        foreach($tag_names as $tag_name){
+          if(!empty($tags[$tag_name])){
+            if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
+            if(!isset($student->user_id)){
+              continue;
+            }
+            $this->store_user_tag($student->user_id, $tag_name, $tags[$tag_name], false);
+          }
+        }
+        if(isset($student) && isset($teacher)){
+          $this->store_charge_student($student->id,$teacher->id,$tags);
+        }
       }
       return true;
     }
