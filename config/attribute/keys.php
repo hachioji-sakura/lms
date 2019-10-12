@@ -18,6 +18,7 @@ return array(
   'student_type' => '生徒種別',
   'comment_type' => 'コメント種別',
   'milestone_type' => '目標種別',
+  'importance' => '重要度',
   'howto' => '当塾をお知りになった方法は何でしょうか',
   'lesson_subject' => 'レッスン希望科目',
   'lesson_subject_level' => '科目希望対応',

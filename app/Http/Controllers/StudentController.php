@@ -10,6 +10,7 @@ use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 use App\Models\Ask;
 use App\Models\Tuition;
+use App\Models\Comment;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,9 @@ class StudentController extends UserController
        'attributes' => $this->attributes(),
     ];
     $ret['filter'] = [
+      'is_asc'=>$request->is_asc,
+      'is_desc'=>$request->is_desc,
+      'search_comment_type'=>$request->search_comment_type,
       'search_week'=>$request->search_week,
       'search_work' => $request->search_work,
       'search_place' => $request->search_place,
@@ -260,21 +264,25 @@ class StudentController extends UserController
    $user = $param['user'];
 
    //コメントデータ取得
+   $form = $request->all();
+   $comments = $this->get_comments($form, $item->user_id);
+   $star_comments = $this->get_comments(['is_star' => true], $item->user_id);
+   /*
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
      //講師の場合、公開されたコメントのみ閲覧可能
      $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
    }
    $comments = $comments->sortByDesc('created_at');
-
+   */
    //目標データ取得
    $milestones = $model->target_milestones;
    $view = "page";
-
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'comments'=>$comments,
+     'star_comments'=>$star_comments,
      'milestones'=>$milestones,
    ])->with($param);
   }
@@ -482,6 +490,56 @@ class StudentController extends UserController
      'calendar_settings' => $calendar_settings,
    ])->with($param);
  }
+ public function get_comments($form, $user_id, $from_date = '', $to_date = ''){
+   $user = User::where('id', $user_id)->first()->details();
+   $form['_sort'] ='created_at';
+   $comment_types = [];
+   $is_exchange = false;
+   $is_desc = false;
+   if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
+   if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
+
+   $sort = 'desc';
+   if(isset($form['is_asc']) && $form['is_asc']==1){
+     $sort = 'asc';
+   }
+
+   $is_star = false;
+   if(isset($form['is_star']) && $form['is_star']==1){
+     $is_star = true;
+   }
+
+   if(isset($form['search_from_date'])){
+     $from_date = $form['search_from_date'];
+   }
+   if(isset($form['search_to_date'])){
+     $to_date = $form['search_to_date'];
+   }
+   if(isset($form['search_comment_type'])){
+     $comment_types = $form['search_comment_type'];
+   }
+   $comments = Comment::rangeDate($from_date, $to_date);
+   $comments = $comments->findTypes($comment_types);
+   $comments = $comments->findTargetUser($user_id);
+   if($is_star==true){
+     $comments = $comments->where('importance', '>', 0);
+   }
+   else {
+     $comments = $comments->findDefaultTypes();
+   }
+   $count = $comments->count();
+   if($is_star==true){
+     $comments = $comments->orderBy('importance', 'desc')
+                          ->orderBy('created_at', 'desc');
+   }
+   else {
+     $comments = $comments->sortCreatedAt($sort);
+   }
+
+   $comments = $comments->get();
+   return ["data" => $comments, "count" => $count];
+ }
+
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';

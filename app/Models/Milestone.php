@@ -23,7 +23,24 @@ class Milestone extends Model
   {
     return $this->attribute_name('milestone_type', $this->type);
   }
-  public function scopeMydata($query, $val)
+  public function scopeRangeDate($query, $from_date, $to_date=null)
+  {
+    $field = 'created_at';
+    //日付検索
+    if($from_date == $to_date){
+      $query = $query->where(DB::raw('cast(created_at as date)'), $from_date);
+    }
+    else {
+      if(!empty($from_date)){
+        $query = $query->where($field, '>=', $from_date);
+      }
+      if(!empty($to_date)){
+        $query = $query->where($field, '<', $to_date);
+      }
+    }
+    return $query;
+  }
+  public function scopeFindTargetUser($query, $val)
   {
       return $query->where('target_user_id', $val);
   }
@@ -50,6 +67,10 @@ class Milestone extends Model
       }
     }
     return $query;
+  }
+  public function scopeSortCreatedAt($query, $sort){
+    if(empty($sort)) $sort = 'asc';
+    return $query->orderBy('created_at', $sort);
   }
   protected function _date_label($date, $format='Y年m月d日 H:i'){
     return date($format, strtotime($date));
@@ -81,11 +102,16 @@ class Milestone extends Model
   }
   protected function attribute_name($key, $value){
     $_attribute = GeneralAttribute::where('attribute_key', $key)->where('attribute_value', $value)->first();
-    return $_attribute['attribute_name'];
+    if(isset($_attribute))  return $_attribute['attribute_name'];
+    return "";
   }
   protected function config_attribute_name($key, $value){
     $_lists = config('attribute.'.$key);
-    return $_lists[$value];
+    if(isset($_lists) && isset($_lists[$value])) return $_lists[$value];
+    return "";
+  }
+  public function importance_name(){
+    return $this->attribute_name('comment_importance', $this->importance);
   }
   public function details(){
     $item = $this;
@@ -94,6 +120,7 @@ class Milestone extends Model
     $item["updated_date"] = $this->updated_at_label();
     $item["create_user_name"] = $this->create_user->details()->name();
     $item["target_user_name"] = $this->target_user->details()->name();
+    $item["importance_label"] = $this->importance_name();
     return $item;
   }
   public function send_mail($user_id, $title, $param, $type, $template){
