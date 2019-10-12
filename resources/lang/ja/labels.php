@@ -117,6 +117,7 @@ return [
   'upd_datetime' => '更新日時',
   'timezone' => '時間帯',
   'sort_no' => '表示順',
+  'asc' => '昇順',
   'desc' => '降順',
   'status' => 'ステータス',
   'selectable' => '(選択)',
@@ -253,4 +254,8 @@ return [
 
   'before_change' => '変更前',
   'after_change' => '変更後',
+
+  'trial_comment' => '体験申込時',
+  'entry_comment' => '入会時',
+  'season_comment' => '季節講習申込時',
 ];

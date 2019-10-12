@@ -28,22 +28,26 @@
       @include('components.comments', [
         'comments'=>$comments,
         'comment_type'=> 'all',
-        'is_active' => 'active'
+        'is_active' => 'active',
+        'is_edit' => true
         ])
       @include('components.comments', [
         'comments'=>$comments,
         'comment_type'=> 'study',
-        'is_active' => ''
+        'is_active' => '',
+        'is_edit' => true
         ])
         @include('components.comments', [
           'comments'=>$comments,
           'comment_type'=> 'promotion',
-          'is_active' => ''
+          'is_active' => '',
+          'is_edit' => true
           ])
         @include('components.comments', [
           'comments'=>$comments,
           'comment_type'=> 'other',
-          'is_active' => ''
+          'is_active' => '',
+          'is_edit' => true
           ])
     </div>
   </div>

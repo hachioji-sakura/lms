@@ -16,7 +16,11 @@ class Comment extends Milestone
   );
   public function type_name()
   {
-    return $this->attribute_name('comment_type', $this->type);
+    $ret = $this->attribute_name('comment_type', $this->type);
+    if(!empty($ret)) return $ret;
+    $ret =  __('labels.'.$this->type.'_comment');
+    if(!empty($ret)) return $ret;
+    return "";
   }
   public function publiced_date(){
     return $this->_date_label($this->publiced_at, 'Y年m月d日');
@@ -26,6 +30,16 @@ class Comment extends Milestone
     $item["publiced_date"] = $this->publiced_date();
     return $item;
   }
+  public function scopeFindDefaultTypes($query)
+  {
+    $_types = config('attribute.comment_type');
+    $types = [];
+    foreach($_types as $index => $val){
+      $types[] = $index;
+    }
+    return $this->scopeFindTypes($query, $types);
+  }
+
   /*
   public function scopeStatus($query, $val)
   {

@@ -117,7 +117,8 @@ return [
   'upd_datetime' => 'Updated At',
   'timezone' => 'Timezone',
   'sort_no' => 'Display sort',
-  'desc' => 'Desc',
+  'asx' => 'Ascending',
+  'desc' => 'Descending',
   'status' => 'Status',
   'selectable' => 'Please Select',
   'to_exchange' => 'To Alternate',
@@ -252,4 +253,8 @@ return [
 
   'before_change' => 'Before Change',
   'after_change' => 'After Change',
+
+  'trial_comment' => 'Trial Lesson Comment',
+  'entry_comment' => 'Entry Comment',
+  'season_comment' => 'Season Lesson Comment',
 ];
