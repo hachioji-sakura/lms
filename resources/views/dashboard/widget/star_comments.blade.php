@@ -10,11 +10,14 @@
       </button>
     </div>
   </div>
-  <!-- /.card-body -->
   <div class="card-footer card-comments">
+    <?php $is_exist=false; ?>
     @foreach($star_comments["data"] as $comment)
-    <?php $comment = $comment->details(); ?>
-    <!-- /.card-comment -->
+    <?php
+      $comment = $comment->details();
+      $is_exist = true;
+    ?>
+
     <div class="card-comment">
       <!-- User image -->
       {{--
@@ -55,6 +58,11 @@
       </div>
     </div>
     @endforeach
+    @if($is_exist == false)
+    <div class="alert">
+      <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+    </div>
+    @endif
   </div>
 </div>
 @endsection
@@ -77,14 +85,21 @@
       </button>
     </div>
   </div>
-  <!-- /.card-header -->
   <div class="card-body">
     <div class="direct-chat-messages" id="comment_list">
+      <?php $is_exist=false; ?>
       @foreach($comments["data"] as $comment)
-      <?php $comment = $comment->details(); ?>
-      <div class="direct-chat-msg ">
+      <?php
+        $comment = $comment->details();
+        $is_exist = true;
+      ?>
+      <div class="direct-chat-msg
+      @if($comment->create_user->details()->role=="student" || $comment->create_user->details()->role=="parent")
+       right
+      @endif
+      ">
         <div class="direct-chat-info clearfix">
-            <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
+          <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
         </div>
         <img class="direct-chat-img" src="{{$comment->create_user->details()->icon}}" alt="message user image">
         <div class="direct-chat-text p-2 pb-5">
@@ -92,7 +107,6 @@
           <br>
 
           {!!nl2br($comment->body)!!}
-
 
           @if(!empty($comment->s3_url))
           <br>
@@ -117,13 +131,15 @@
           </span>
           @endif
 
-
-
         </div>
       </div>
       @endforeach
+      @if($is_exist == false)
+      <div class="alert">
+        <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+      </div>
+      @endif
     </div>
-    <!-- /.card-body -->
   </div>
 </div>
 
