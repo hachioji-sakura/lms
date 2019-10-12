@@ -344,6 +344,10 @@ class UserCalendarController extends MilestoneController
      */
     public function index(Request $request)
     {
+      $user = $this->login_details($request);
+      if(!isset($user)) abort(403);
+      if($this->is_manager($user->role)!=true) abort(403);
+
       if(!$request->has('_origin')){
         $request->merge([
           '_origin' => $this->domain,
@@ -374,6 +378,7 @@ class UserCalendarController extends MilestoneController
       */
       $param = $this->get_param($request);
       $_table = $this->search($request);
+      $_table["count"] = 0;
       $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
       foreach($page_data as $key => $val){
         $param[$key] = $val;
@@ -381,6 +386,51 @@ class UserCalendarController extends MilestoneController
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
+    public function space_calendars(Request $request)
+    {
+      $user = $this->login_details($request);
+      if(!isset($user)) abort(403);
+      if($this->is_manager($user->role)!=true) abort(403);
+
+      if(!$request->has('_origin')){
+        $request->merge([
+          '_origin' => $this->domain,
+        ]);
+      }
+      if(!$request->has('_line')){
+        $request->merge([
+          '_line' => $this->pagenation_line,
+        ]);
+      }
+      if(!$request->has('_page')){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      else if($request->get('_page')==0){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      /*
+      if(!$request->has('_sort')){
+        $request->merge([
+          '_sort' => 'start_time',
+          '_sort_order' => 'desc',
+        ]);
+      }
+      */
+      $param = $this->get_param($request);
+      $_table = $this->search($request);
+      $_table["count"] = 0;
+      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
+      foreach($page_data as $key => $val){
+        $param[$key] = $val;
+      }
+      return view($this->domain.'.space_lists', $_table)
+        ->with($param);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -677,7 +727,7 @@ class UserCalendarController extends MilestoneController
       unset($param['fields']['place_floor_name']);
       return view($this->domain.'.rest_change', [])->with($param);
     }
-    public function teacher_changpe_page(Request $request, $ask_id)
+    public function teacher_change_page(Request $request, $ask_id)
     {
       $ask = Ask::where('id', $ask_id)->first();
       if(!isset($ask)){

@@ -109,6 +109,27 @@
         </div>
       </div>
     </div>
+    @if(isset($_edit)  && $_edit==true && ($user->role=='manager' || $user->role=='teacher'))
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="title" class="w-100">
+            重要度
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+          </label>
+          <select name="importance" class="form-control" placeholder="重要度" required="true">
+            @foreach($attributes['importance'] as $index => $name)
+               <option value="{{ $index }}"
+               @if(isset($_edit)  && $_edit==true && $item['importance'] == $index)
+               selected
+               @endif
+               >{{$name}}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+    </div>
+    @endif
     <div class="row">
       <div class="col-12 col-lg-6 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">

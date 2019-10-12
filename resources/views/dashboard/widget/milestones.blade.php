@@ -4,6 +4,11 @@
     <h3 class="card-title">
       <i class="fa fa-flag mr-1"></i>{{__('labels.milestones')}}
     </h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+          <i class="fa fa-minus"></i>
+      </button>
+    </div>
   </div>
   <!-- /.card-header -->
   <div class="card-body">

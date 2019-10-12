@@ -121,6 +121,7 @@ class CommentController extends MilestoneController
       $form['title'] = $request->get('title');
       $form['body'] = $request->get('body');
       $form['target_user_id'] = $this->get_target_user_id($request);
+      $form['importance'] = 0;
       return $form;
     }
     public function update_form(Request $request){
@@ -130,6 +131,7 @@ class CommentController extends MilestoneController
       }
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
+      $form['importance'] = $request->get('importance');
       $form['body'] = $request->get('body');
       return $form;
     }

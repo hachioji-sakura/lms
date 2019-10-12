@@ -5,7 +5,7 @@
 @include($domain.'.menu')
 @include('dashboard.widget.milestones')
 
-@include('dashboard.widget.comments')
+@include('dashboard.widget.star_comments')
 
 {{--まだ対応しない
 @include('dashboard.widget.events')
@@ -16,7 +16,7 @@
 <section id="member" class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-md-4 mb-2">
         @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
             @slot('courtesy')
             　様
@@ -100,15 +100,12 @@
 	</div>
 </section>
 
-
 <section class="content-header">
 	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12 ">
-				@yield('comments')
-			</div>
-
-		</div>
+    <div class="row">
+      @yield('star_comments')
+      @yield('comments')
+    </div>
 	</div>
 </section>
 
