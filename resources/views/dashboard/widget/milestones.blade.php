@@ -13,8 +13,12 @@
   <!-- /.card-header -->
   <div class="card-body">
     <div id="milestone_list">
+      <?php $is_exist=false; ?>
       @foreach($milestones as $milestone)
-      <?php $milestone = $milestone->details(); ?>
+      <?php
+        $milestone = $milestone->details();
+        $is_exist = true;
+      ?>
       <div class="small-box bg-light">
         <div class="inner">
           <a data-toggle="collapse" data-parent="#milestone_list" href="#m1" class="" aria-expanded="true">
@@ -51,6 +55,11 @@
         </div>
       </div>
       @endforeach
+      @if($is_exist == false)
+      <div class="alert">
+        <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+      </div>
+      @endif
     </div>
     <!-- /.card-body -->
   </div>
