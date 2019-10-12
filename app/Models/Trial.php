@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
 use App\Models\StudentParent;
+use App\Models\Comment;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
 use App\Models\Ask;
@@ -201,6 +202,18 @@ EOT;
     //２．生徒情報登録：氏名・カナ・学年・学校名
     //同じ送信内容の場合は登録しない
     $student = $parent->brother_add($form, 1);
+    $comment = [
+      'title' => '-',
+      'body' => $form["remark"],
+      'type' => 'trial',
+      'create_user_id' => $parent->user_id,
+      'target_user_id' => $student->user_id,
+      'importance' => 10,
+      'publiced_at' => date('Y-m-d'),
+    ];
+    if(!empty($form["remark"])){
+      Comment::create($comment);
+    }
     $ret = [];
 
     if(!empty($form['student2_name_last'])){
@@ -214,6 +227,10 @@ EOT;
       $form["grade"] = $form["student2_grade"];
       $form["school_name"] = $form["student2_school_name"];
       $student2 = $parent->brother_add($form, 1);
+      if(!empty($form["remark"])){
+        $comment['target_user_id'] = $student2->user_id;
+        Comment::create($comment);
+      }
     }
     if(!empty($form['student3_name_last'])){
       //兄弟３人目
@@ -226,6 +243,10 @@ EOT;
       $form["grade"] = $form["student3_grade"];
       $form["school_name"] = $form["student3_school_name"];
       $student3 = $parent->brother_add($form, 1);
+      if(!empty($form["remark"])){
+        $comment['target_user_id'] = $student3->user_id;
+        Comment::create($comment);
+      }
     }
 
     //申し込み情報登録
