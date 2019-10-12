@@ -138,5 +138,4 @@ class Milestone extends Model
     $res = $controller->send_slack($message, $msg_type, $username, $channel);
     return $res;
   }
-
 }
