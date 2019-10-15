@@ -12,7 +12,7 @@
         @foreach($attributes['places'] as $place)
           @foreach($place->floors as $floor)
           <option value="{{ $floor->id }}"
-            @if(isset($item['place']) && $item['place'] == $floor->id)
+            @if(isset($item['place_floor_id']) && $item['place_floor_id'] == $floor->id)
              selected
             @endif>{{$floor->name()}}
           </option>
