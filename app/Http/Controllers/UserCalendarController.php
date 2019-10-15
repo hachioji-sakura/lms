@@ -276,6 +276,7 @@ class UserCalendarController extends MilestoneController
       '_line' => $request->get('_line'),
       '_origin' => $request->get('_origin'),
       'attributes' => $this->attributes(),
+      'is_exchange_add' => false,
     ];
     $ret['filter'] = [
       'search_status'=>$request->status,
@@ -1165,6 +1166,8 @@ class UserCalendarController extends MilestoneController
    {
       $param = $this->get_param($request);
       if($request->has('exchanged_calendar_id')){
+        $param['is_exchange_add'] = true;
+
         $exchanged_calendar_id = intval($request->get('exchanged_calendar_id'));
         $exchanged_calendar = UserCalendar::where('id', $exchanged_calendar_id)->first();
         if(!isset($exchanged_calendar)) abort(404);
