@@ -227,6 +227,7 @@ class UserCalendarMember extends Model
     }
     $this->office_system_api("DELETE");
     if($c===0){
+      //最後に削除した生徒の場合、カレンダーも削除
       UserCalendar::where('id', $this->calendar_id)->delete();
       UserCalendarTag::where('calendar_id', $this->calendar_id)->delete();
       UserCalendarMember::where('calendar_id', $this->calendar_id)->delete();
@@ -234,6 +235,8 @@ class UserCalendarMember extends Model
     else {
       $this->delete();
     }
+    $this->user->send_mail($title, $param, $type, $template);
+
   }
 
   public function office_system_api($method){
