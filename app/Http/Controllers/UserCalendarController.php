@@ -52,6 +52,10 @@ class UserCalendarController extends MilestoneController
           'label' => __('labels.place'),
           'size' => 6,
         ],
+        'work_name' => [
+          'label' => __('labels.work'),
+          'size' => 6,
+        ],
       ];
     }
     else {

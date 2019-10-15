@@ -157,6 +157,11 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
+    $tag_names = ['schedule_remark'];
+    foreach($tag_names as $tag_name){
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+    }
     $this->user->update(['status' => 0]);
   }
   /*
