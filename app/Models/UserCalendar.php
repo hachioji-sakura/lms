@@ -43,6 +43,9 @@ class UserCalendar extends Model
   public function setting(){
     return $this->belongsTo('App\Models\UserCalendarSetting', 'user_calendar_setting_id');
   }
+  public function exchanged_calendar(){
+    return $this->belongsTo('App\Models\UserCalendar', 'exchanged_calendar_id');
+  }
   public function trial(){
     return $this->belongsTo('App\Models\Trial');
   }
@@ -347,22 +350,30 @@ EOT;
     if(!isset($this->work)) return "";
     return $this->get_attribute_name('work', $this->work);
   }
-  public function teaching_name(){
-    $_teaching_names = ['体験授業', '通常授業', '振替授業', '追加授業', ];
-    if(app()->getLocale()=='en'){
-      $_teaching_names = ['Trial', 'Regular', 'Exchange', 'Add', ];
-    }
+  public function teaching_code(){
+    $_teaching_type = ['trial', 'regular', 'exchange', 'add' ];
     if($this->is_teaching()){
       if($this->trial_id > 0){
-        return $_teaching_names[0];
+        return $_teaching_type[0];
       }
       if(intval($this->user_calendar_setting_id) > 0){
-        return $_teaching_names[1];
+        return $_teaching_type[1];
       }
       if($this->exchanged_calendar_id > 0){
-        return $_teaching_names[2];
+        return $_teaching_type[2];
       }
-      return $_teaching_names[3];
+      return $_teaching_type[3];
+    }
+    return "";
+  }
+  public function teaching_name(){
+    $_code = $this->teaching_code();
+    $_teaching_names = ['trial' => '体験授業', 'regular' => '通常授業', 'exchange' => '振替授業', 'add' => '追加授業', ];
+    if(app()->getLocale()=='en'){
+      return $_code;
+    }
+    if(isset($_teaching_names[$_code])){
+      return $_teaching_names[$_code];
     }
     return "";
   }
@@ -467,6 +478,8 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
+    $item['teaching_code'] = $this->teaching_code();
+    $item['teaching_name'] = $this->teaching_name();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
       $item['place_floor_name'] = $this->place_floor->name();
