@@ -118,7 +118,7 @@ class UserAnswerController extends UserExaminationController
      */
     public function save_answer(Request $request)
     {
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $user = $this->login_details($request);
 
@@ -152,7 +152,7 @@ class UserAnswerController extends UserExaminationController
     }
     public function _store(Request $request)
     {
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $user = $this->login_details($request);
         $_item = $this->model()->create($form);

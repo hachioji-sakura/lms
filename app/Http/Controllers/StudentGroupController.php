@@ -324,7 +324,7 @@ class StudentGroupController  extends MilestoneController
       if(!$this->is_success_response($res)) return $res;
       $param = $this->get_param($request);
       $form['create_user_id'] = $param['user']->user_id;
-      $res = $this->transaction(function() use ($form){
+      $res = $this->transaction($request, function() use ($form){
         $student_group = StudentGroup::add($form);
         return $student_group;
       }, '追加しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -337,7 +337,7 @@ class StudentGroupController  extends MilestoneController
      */
     public function _delete(Request $request, $id)
     {
-      $res = $this->transaction(function() use ($request, $id){
+      $res = $this->transaction($request, function() use ($request, $id){
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
         $student_group = $param["item"];
@@ -392,7 +392,7 @@ class StudentGroupController  extends MilestoneController
       $res = $this->save_validate($request);
       if(!$this->is_success_response($res)) return $res;
 
-      $res = $this->transaction(function() use ($request,$id){
+      $res = $this->transaction($request, function() use ($request,$id){
         $form = $request->all();
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;

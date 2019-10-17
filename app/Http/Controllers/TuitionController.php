@@ -234,7 +234,7 @@ class TuitionController extends MilestoneController
   public function _store(Request $request)
   {
     $form = $this->create_form($request);
-    $res = $this->transaction(function() use ($request, $form){
+    $res = $this->transaction($request, function() use ($request, $form){
       $item = Tuition::add($form);
       return $item;
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -242,7 +242,7 @@ class TuitionController extends MilestoneController
    }
    public function _update(Request $request, $id)
    {
-     $res =  $this->transaction(function() use ($request, $id){
+     $res =  $this->transaction($request, function() use ($request, $id){
        $item = Tuition::where('id',$id)->first();
        $item->change($this->update_form($request));
        return $item;

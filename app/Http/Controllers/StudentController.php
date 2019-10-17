@@ -910,7 +910,7 @@ class StudentController extends UserController
     if(!$this->is_success_response($res)){
       return $res;
     }
-    return $this->transaction(function() use ($request, $id){
+    return $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
@@ -935,7 +935,7 @@ class StudentController extends UserController
 
   public function _delete(Request $request, $id)
   {
-    return $this->transaction(function() use ($request){
+    return $this->transaction($request, function() use ($request){
       $form = $request->all();
       $item = $this->model()->where('id', $id)->first();
       $item->user->update(['status' => 9]);

@@ -207,7 +207,7 @@ class UserExaminationController extends TextbookChapterController
 
     public function _store(Request $request)
     {
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $user = $this->login_details($request);
         $item = $this->model()->create([
@@ -223,7 +223,7 @@ class UserExaminationController extends TextbookChapterController
 
     public function _update(Request $request, $id)
     {
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $user = $this->login_details($request);
         $item = $this->model()::where('id',$id)->update([

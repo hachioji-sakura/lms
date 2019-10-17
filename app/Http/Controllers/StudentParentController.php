@@ -231,7 +231,7 @@ class StudentParentController extends TeacherController
         abort(403);
       }
       $user = $user->first();
-      return $this->transaction(function() use ($form, $user){
+      return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $parent = StudentParent::where('user_id', $user->id)->first();
         $parent->profile_update([

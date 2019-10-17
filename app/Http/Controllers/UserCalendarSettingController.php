@@ -310,7 +310,7 @@ class UserCalendarSettingController extends UserCalendarController
     }
     public function _update(Request $request, $id)
     {
-      return $res = $this->transaction(function() use ($request, $id){
+      return $res = $this->transaction($request, function() use ($request, $id){
         $form = $this->create_form($request);
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
@@ -350,7 +350,7 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function _store(Request $request)
     {
-      $res = $this->transaction(function() use ($request){
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
 
         $setting = UserCalendarSetting::add($form);
@@ -369,7 +369,7 @@ class UserCalendarSettingController extends UserCalendarController
     }
     public function _delete(Request $request, $id)
     {
-      return $res = $this->transaction(function() use ($request, $id){
+      return $res = $this->transaction($request, function() use ($request, $id){
         $setting = UserCalendarSetting::where('id', $id)->first();
         if($setting->is_group()==true){
           $form = $request->all();

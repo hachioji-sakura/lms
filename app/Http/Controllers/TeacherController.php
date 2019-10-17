@@ -272,7 +272,7 @@ class TeacherController extends StudentController
    }
    public function _entry_store(Request $request)
    {
-     return $this->transaction(function() use ($request){
+     return $this->transaction($request, function() use ($request){
        $form = $request->all();
        $form["password"] = 'sakusaku';
        $item = null;
@@ -379,7 +379,7 @@ class TeacherController extends StudentController
       if(!isset($user)){
         abort(403);
       }
-      return $this->transaction(function() use ($form, $user){
+      return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);
@@ -506,7 +506,7 @@ class TeacherController extends StudentController
        $template);
     }
     public function _month_work_confirm(Request $request){
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $check_date = date('Y-m-d H:i:s');
         foreach($form['calendar_id'] as $calendar_id){

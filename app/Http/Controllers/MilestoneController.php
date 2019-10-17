@@ -304,7 +304,7 @@ class MilestoneController extends UserController
         return $this->error_response('すでに登録済みです');
       }
 
-      $res = $this->transaction(function() use ($request, $form){
+      $res = $this->transaction($request, function() use ($request, $form){
         if($request->hasFile('upload_file')){
           $form['s3_url'] = "";
           $form['s3_alias'] = "";
@@ -405,7 +405,7 @@ class MilestoneController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $res =  $this->transaction(function() use ($request, $id){
+      $res =  $this->transaction($request, function() use ($request, $id){
         $user = $this->login_details($request);
         $form = $this->update_form($request);
         $item = $this->model()->where('id', $id)->first();
@@ -455,7 +455,7 @@ class MilestoneController extends UserController
     public function _delete(Request $request, $id)
     {
       $form = $request->all();
-      $res = $this->transaction(function() use ($request, $form, $id){
+      $res = $this->transaction($request, function() use ($request, $form, $id){
         $user = $this->login_details($request);
         $item = $this->model()->where('id', $id)->first();
         if(isset($item['s3_url']) && !empty($item['s3_url'])){

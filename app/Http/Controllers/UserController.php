@@ -44,7 +44,7 @@ class UserController extends Controller
 
     if(!isset($form['status'])) $form['status']=0;
     if(!isset($form['access_key'])) $form['access_key']='';
-    $res = $this->transaction(function() use ($form){
+    $res = $this->transaction($request, function() use ($form){
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
@@ -301,7 +301,7 @@ class UserController extends Controller
     if(!is_numeric($user_id) || !is_numeric($image_id)){
       return $this->bad_request("", "user_id($user_id),image_id($image_id)");
     }
-    return $this->transaction(function() use ($user_id, $image_id){
+    return $this->transaction($request, function() use ($user_id, $image_id){
       $user = User::where('id', $user_id)->first();
       $user->update(['image_id' => $image_id]);
       return $user;
@@ -317,18 +317,19 @@ class UserController extends Controller
     if(!is_numeric($user_id) || empty($password)){
       return $this->bad_request("", "user_id($user_id)");
     }
-    return $this->transaction(function() use ($user_id, $password){
+    return $this->transaction($request, function() use ($user_id, $password){
       $user = User::where('id', $user_id)->first();
       $user->set_password($password);
       return $user;
     }, 'パスワード設定', __FILE__, __FUNCTION__, __LINE__ );
   }
-  public function transaction($callback, $logic_name, $__file, $__function, $__line){
-    if(config("app.env")==="product"){
+  public function transaction(Request $request, $callback, $logic_name, $__file, $__function, $__line){
       try {
         DB::beginTransaction();
         $result = $callback();
         DB::commit();
+        // 二重送信対策
+        $request->session()->regenerateToken();
         return $this->api_response(200, '', '', $result);
       }
       catch (\Illuminate\Database\QueryException $e) {
@@ -341,10 +342,5 @@ class UserController extends Controller
           $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', $logic_name);
           return $this->error_response('DB Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
       }
-    }
-    else {
-      $result = $callback();
-      return $this->api_response(200, '', '', $result);
-    }
   }
 }
