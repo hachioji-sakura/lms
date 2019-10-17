@@ -272,24 +272,14 @@ class TeacherController extends StudentController
    }
    public function _entry_store(Request $request)
    {
-     $form = $request->all();
-     try {
-       DB::beginTransaction();
+     return $this->transaction($request, function() use ($request){
+       $form = $request->all();
        $form["password"] = 'sakusaku';
        $item = null;
        if($this->domain==="teachers") $item = Teacher::entry($form);
        else $item = Manager::entry($form);
-       DB::commit();
-       return $this->api_response(200, __FUNCTION__, __LINE__, $item);
-     }
-     catch (\Illuminate\Database\QueryException $e) {
-       DB::rollBack();
-       return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
-     catch(\Exception $e){
-       DB::rollBack();
-       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
+       return $item;
+     }, __('labels.'.$this->domain).'登録', __FILE__, __FUNCTION__, __LINE__ );
    }
    /**
     * 本登録ページ
@@ -389,7 +379,7 @@ class TeacherController extends StudentController
       if(!isset($user)){
         abort(403);
       }
-      return $this->transaction(function() use ($form, $user){
+      return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);
@@ -516,7 +506,7 @@ class TeacherController extends StudentController
        $template);
     }
     public function _month_work_confirm(Request $request){
-      return $this->transaction(function() use ($request){
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $check_date = date('Y-m-d H:i:s');
         foreach($form['calendar_id'] as $calendar_id){

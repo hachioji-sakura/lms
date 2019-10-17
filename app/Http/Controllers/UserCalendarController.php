@@ -866,7 +866,7 @@ class UserCalendarController extends MilestoneController
       }
       if($update_member==null) abort(400);
 
-      $res = $this->transaction(function() use ($update_member, $form){
+      $res = $this->transaction($request, function() use ($update_member, $form){
         $res = $update_member->update_rest_type($form['rest_type'], $form['rest_result']);
         return $update_member;
       }, '休み種類変更', __FILE__, __FUNCTION__, __LINE__ );
@@ -881,7 +881,7 @@ class UserCalendarController extends MilestoneController
      * @return \Illuminate\Http\Response
      */
     private function _status_update(Request $request, $param, $id, $status){
-      $res = $this->transaction(function() use ($request, $param, $id, $status){
+      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
         $form = $request->all();
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
         $members = $param['item']->members;
@@ -974,7 +974,7 @@ class UserCalendarController extends MilestoneController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $res = $this->transaction(function() use ($request,$id){
+      $res = $this->transaction($request, function() use ($request,$id){
         $item = $this->model()->where('id',$id)->first();
         $form = $this->update_form($request, $id);
         $item->change($form);
@@ -1274,7 +1274,7 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
-      $res = $this->transaction(function() use ($request){
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {
           abort(400, "日時パラメータ不正");
@@ -1309,7 +1309,7 @@ class UserCalendarController extends MilestoneController
      */
     public function _delete(Request $request, $id)
     {
-      $res = $this->transaction(function() use ($request, $id){
+      $res = $this->transaction($request, function() use ($request, $id){
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
         $calendar = $param["item"];

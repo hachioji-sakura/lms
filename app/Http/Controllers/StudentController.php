@@ -276,7 +276,7 @@ class StudentController extends UserController
    $comments = $comments->sortByDesc('created_at');
    */
    //目標データ取得
-   $milestones = $model->target_milestones;
+   $milestones = $model->target_milestones->sortByDesc('created_at');
    $view = "page";
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
@@ -334,7 +334,7 @@ class StudentController extends UserController
    $user = $param['user'];
 
    //目標データ取得
-   $milestones = $model->target_milestones;
+   $milestones = $model->target_milestones->sortByDesc('created_at');
 
    $view = "calendar";
    $param['view'] = $view;
@@ -910,7 +910,7 @@ class StudentController extends UserController
     if(!$this->is_success_response($res)){
       return $res;
     }
-    return $this->transaction(function() use ($request, $id){
+    return $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
@@ -935,20 +935,11 @@ class StudentController extends UserController
 
   public function _delete(Request $request, $id)
   {
-   $form = $request->all();
-   try {
-     DB::beginTransaction();
-     $item = $this->model()->where('id', $id)->first()->user->update(['status' => 9]);
-     DB::commit();
-     return $this->api_response(200, '', '', $item);
-   }
-   catch (\Illuminate\Database\QueryException $e) {
-      DB::rollBack();
-      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
-   catch(\Exception $e){
-      DB::rollBack();
-      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
+    return $this->transaction($request, function() use ($request){
+      $form = $request->all();
+      $item = $this->model()->where('id', $id)->first();
+      $item->user->update(['status' => 9]);
+      return $item;
+    }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
 }

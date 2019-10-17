@@ -145,70 +145,6 @@ class StudentParentController extends TeacherController
       ->with($param);
    }
    /**
-    * 体験授業申し込みページ
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function entry_store(Request $request)
-   {
-     $result = '';
-     $form = $request->all();
-     $res = $this->api_response(200);
-     $access_key = $this->create_token();
-     $request->merge([
-       'access_key' => $access_key,
-     ]);
-     $user = User::where('email', $form['email'])->first();
-     $result = '';
-     if(!isset($user)){
-       $res = $this->_entry_store($request);
-       $result = 'success';
-     }
-     else {
-       if($user->status===1){
-         //すでにユーザーが仮登録されている場合は、tokenを更新
-         $user->update( ['access_key' => $access_key]);
-         $result = 'already';
-       }
-       else {
-         //本登録済み
-         $res = $this->error_response('このメールアドレスは本登録が完了しております。');
-       }
-     }
-     if($this->is_success_response($res)){
-       $this->send_mail($form['email'],
-         'お申込み仮受付完了', [
-         'user_name' => $form['name_last'].' '.$form['name_first'],
-         'access_key' => $access_key,
-         'send_to' => 'parent',
-       ], 'text', 'entry');
-       return view($this->domain.'.entry',
-         ['result' => $result]);
-     }
-     else {
-       return $this->save_redirect($res, [], '', $this->domain.'/entry');
-     }
-   }
-   public function _entry_store(Request $request)
-   {
-     $form = $request->all();
-     try {
-       DB::beginTransaction();
-       $form["password"] = 'sakusaku';
-       $items = StudentParent::entry($form);
-       DB::commit();
-       return $this->api_response(200, __FUNCTION__);
-     }
-     catch (\Illuminate\Database\QueryException $e) {
-       DB::rollBack();
-       return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
-     catch(\Exception $e){
-       DB::rollBack();
-       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
-   }
-   /**
     * 本登録ページ
     *
     * @return \Illuminate\Http\Response
@@ -294,9 +230,8 @@ class StudentParentController extends TeacherController
       if($user->count() < 1){
         abort(403);
       }
-      try {
-        $user = $user->first();
-        DB::beginTransaction();
+      $user = $user->first();
+      return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $parent = StudentParent::where('user_id', $user->id)->first();
         $parent->profile_update([
@@ -318,17 +253,8 @@ class StudentParentController extends TeacherController
           $trial_student->student->regular();
         }
 */
-        DB::commit();
-        return $this->api_response(200, __FUNCTION__);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-        DB::rollBack();
-        return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
-      catch(\Exception $e){
-        DB::rollBack();
-        return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-      }
+        return $user;
+      }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 
 }

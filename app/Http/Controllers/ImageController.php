@@ -209,7 +209,7 @@ class ImageController extends UserController
     }
     private function save_image($request, $request_file, $publiced_at='9999-12-31', $alias='', $save_folder="")
     {
-      return $this->transaction(function() use ($request, $request_file, $publiced_at, $alias, $save_folder){
+      return $this->transaction($request, function() use ($request, $request_file, $publiced_at, $alias, $save_folder){
         $user = $this->login_details($request);
         $image = new Image;
         $s3 = $this->s3_upload($request_file, $save_folder);

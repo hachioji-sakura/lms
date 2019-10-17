@@ -251,7 +251,7 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-    $res = $this->transaction(function() use ($request, $param, $id, $status){
+    $res = $this->transaction($request, function() use ($request, $param, $id, $status){
       $form = $request->all();
       $param['item'] = Ask::where('id', $param['item']->id)->first();
       $param['item'] = $param['item']->change([
@@ -308,7 +308,7 @@ class AskController extends MilestoneController
       return $res;
     }
 
-    $res = $this->transaction(function() use ($request){
+    $res = $this->transaction($request, function() use ($request){
       $form = $request->all();
       $param = $this->get_param($request);
       $form["create_user_id"] = $param["user"]->user_id;
@@ -333,7 +333,7 @@ class AskController extends MilestoneController
    public function _delete(Request $request, $id)
    {
      $form = $request->all();
-     $res = $this->transaction(function() use ($request, $form, $id){
+     $res = $this->transaction($request, function() use ($request, $form, $id){
        $item = $this->model()->where('id',$id)->first();
        $item->dispose();
        return $item;
@@ -366,7 +366,7 @@ class AskController extends MilestoneController
      set_time_limit(600);
 
      if(empty($d)) $d = date('Y-m-d');
-     $res = $this->transaction(function() use ($request, $d){
+     $res = $this->transaction($request, function() use ($request, $d){
        $result = ['asks'=>[], 'recess'=>[],'unsubscribe'=>[]];
        //退会・休会の処理
        $asks = Ask::where('status', 'commit')->findTypes(['recess', 'unsubscribe'])

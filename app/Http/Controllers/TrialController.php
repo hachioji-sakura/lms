@@ -378,7 +378,7 @@ class TrialController extends UserCalendarController
        }
      }
      \Log::warning("d3");
-     $res = $this->transaction(function() use ($request){
+     $res = $this->transaction($request, function() use ($request){
        $form = $request->all();
        $form["accesskey"] = '';
        $form["password"] = 'sakusaku';
@@ -445,7 +445,7 @@ class TrialController extends UserCalendarController
      $item = $param['item'];
      $user = $this->login_details($request);
 
-     $res = $this->transaction(function() use ($request, $id, $user){
+     $res = $this->transaction($request, function() use ($request, $id, $user){
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
        //カレンダーステータス変更
@@ -548,7 +548,7 @@ class TrialController extends UserCalendarController
     * @return boolean
     */
   public function to_calendar_setting_update(Request $request, $id){
-    $res =  $this->transaction(function() use ($request, $id){
+    $res =  $this->transaction($request, function() use ($request, $id){
       $form = $request->all();
       $user = $this->login_details($request);
       $form['create_user_id'] = $user->user_id;
@@ -588,7 +588,7 @@ class TrialController extends UserCalendarController
    }
    public function _update(Request $request, $id)
    {
-     $res =  $this->transaction(function() use ($request, $id){
+     $res =  $this->transaction($request, function() use ($request, $id){
        $form = $request->all();
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
@@ -617,7 +617,7 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
-    $res = $this->transaction(function() use ($request, $id, $param, $access_key){
+    $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
       $trial = Trial::where('id', $id)->first();
       $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
       foreach($trial->trial_students as $s){
