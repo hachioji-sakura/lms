@@ -50,6 +50,7 @@
               start: start,
               end : end,
               status : "new",
+              teaching_code : "add",
               selected : true,
             }]);
             var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
@@ -95,9 +96,12 @@
           @endslot
           @slot('event_render')
           eventRender: function(event, element) {
-            var title = event['work_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+            var title = "{{__('labels.schedule_add')}}";
             if(event['student_name']){
               title = event['student_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+            }
+            if(event['teaching_code']==""){
+              title = event['work_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
             }
             console.log(event);
             event_render(event, element, title, true);

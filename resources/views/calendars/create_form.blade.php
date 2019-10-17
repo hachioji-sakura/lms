@@ -54,20 +54,33 @@
           <small class="badge badge-success mt-1 mr-1">
             {{__('labels.trial_lesson')}}
           </small>
+          @elseif($_edit==true)
+          <small class="badge badge-secondary mt-1 mr-1">
+            {{$item["teaching_name"]}}
+          </small>
           @else
-          <small class="badge badge-danger mt-1 mr-1">
+          <small class="badge badge-secondary mt-1 mr-1">
             {{__('labels.schedule_add')}}
           </small>
           @endif
         </span>
       @endif
      </div>
-      @if($key=="start_time")
+      @if($key=="start_time" && $_edit == false)
         <div class="col-12 add_type add_type_exchange px-3" >
           <span class="text-xs">
             <small class="badge badge-primary mt-1 mr-1 p-1">
               <i class="fa fa-exchange-alt mr-1"></i>
               {{__('labels.exchange')}}: <span id="exchanged_calendar_datetime"></span>
+            </small>
+          </span>
+        </div>
+      @elseif($key=="start_time" && $_edit == true && $item["is_exchange"]==true)
+        <div class="col-12 px-3" >
+          <span class="text-xs">
+            <small class="badge badge-primary mt-1 mr-1 p-1">
+              <i class="fa fa-exchange-alt mr-1"></i>
+              {{__('labels.exchange')}}: {{$item->exchanged_calendar->details(1)["datetime"]}}
             </small>
           </span>
         </div>
