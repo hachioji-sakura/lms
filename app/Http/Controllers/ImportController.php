@@ -240,7 +240,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function general_attributes_import($items, $key_name, $id_column, $idname_column){
-        return $this->transaction(function() use ($items, $key_name, $id_column, $idname_column){
+        return $this->transaction($request, function() use ($items, $key_name, $id_column, $idname_column){
           $c=0;
           foreach($items as $item){
             if($this->store_general_attribute($key_name, $item[$id_column], $item[$idname_column])) $c++;
@@ -254,7 +254,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function students_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_student($item)) $c++;
@@ -268,7 +268,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function teachers_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_teacher($item)) $c++;
@@ -282,7 +282,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function managers_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
@@ -296,7 +296,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function repeat_schedules_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_repeat_schedule($item)) $c++;
@@ -310,7 +310,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function textbooks_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_textbook($item)) $c++;
@@ -324,7 +324,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function schedules_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
@@ -338,7 +338,7 @@ class ImportController extends UserController
      * @return boolean
      */
     private function lectures_import($items){
-      return $this->transaction(function() use ($items){
+      return $this->transaction($request, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_lecture($item)) $c++;

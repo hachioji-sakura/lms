@@ -13,7 +13,7 @@ class UserAnswerController extends UserExaminationController
 {
     public $domain = 'user_answers';
     public $table = 'user_answers';
-    
+
 
     public function model(){
       return UserAnswer::query();
@@ -108,7 +108,7 @@ class UserAnswerController extends UserExaminationController
       ->with($param);
     }
     private function answer_judge($input, $answer){
-      
+
     }
     /**
      * 回答を保存する（採点も行う）
@@ -118,8 +118,7 @@ class UserAnswerController extends UserExaminationController
      */
     public function save_answer(Request $request)
     {
-      try {
-        DB::beginTransaction();
+      return $this->transaction($request, function() use ($request){
         $form = $request->all();
         $user = $this->login_details($request);
 
@@ -142,40 +141,22 @@ class UserAnswerController extends UserExaminationController
           //次の問題がなければ終了
           $status = 10;
         }
-        $_item = UserExamination::where('id',$form['user_examination_id'])->update([
+        $item = UserExamination::where('id',$form['user_examination_id'])->update([
           'status' => $status,
           'current_question_id' => $next_question_id
         ]);
 
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        return $item;
+      }, '回答保存', __FILE__, __FUNCTION__, __LINE__ );
+
     }
     public function _store(Request $request)
     {
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction($request, function() use ($request){
+        $form = $request->all();
         $user = $this->login_details($request);
         $_item = $this->model()->create($form);
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        return $_item;
+      }, '回答登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

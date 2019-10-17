@@ -101,7 +101,7 @@ class UserCalendarMemberController extends UserCalendarController
     if(!isset($item)) return $this->not_found();
 
     $rest_type = $request->get('rest_type');
-    $res = $this->transaction(function() use ($item,$rest_type){
+    $res = $this->transaction($request, function() use ($item,$rest_type){
       $item->update_rest_type($rest_type);
       return $item;
     }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -116,7 +116,7 @@ class UserCalendarMemberController extends UserCalendarController
    */
   public function _delete(Request $request, $id)
   {
-    $res = $this->transaction(function() use ($request, $id){
+    $res = $this->transaction($request, function() use ($request, $id){
       $param = $this->get_param($request, $id);
       $calendar = $param["item"];
       $item = $this->model()->where('id',$id)->first();

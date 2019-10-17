@@ -14,7 +14,7 @@ class UserExaminationController extends TextbookChapterController
 {
     public $domain = 'user_examinations';
     public $table = 'user_examinations';
-    
+
 
     public function model(){
       return UserExamination::query();
@@ -207,51 +207,31 @@ class UserExaminationController extends TextbookChapterController
 
     public function _store(Request $request)
     {
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction($request, function() use ($request){
+        $form = $request->all();
         $user = $this->login_details($request);
-        $_item = $this->model()->create([
+        $item = $this->model()->create([
           'user_id' => $user->user_id,
           'parent_id' => $form['parent_id'],
           'chapter_id' => $form['chapter_id'],
           'status' => $form['status'],
           'current_question_id' => $form['question_id'],
         ]);
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        return $item;
+      }, 'テスト実施登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 
     public function _update(Request $request, $id)
     {
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction($request, function() use ($request){
+        $form = $request->all();
         $user = $this->login_details($request);
-        $_item = $this->model()::where('id',$id)->update([
+        $item = $this->model()::where('id',$id)->update([
           'status' => $form['status'],
           'current_question_id' => $form['question_id']
         ]);
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        return $item;
+      }, 'テスト実施更新', __FILE__, __FUNCTION__, __LINE__ );
     }
 
 }
