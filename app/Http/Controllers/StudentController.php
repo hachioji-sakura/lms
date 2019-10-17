@@ -276,7 +276,7 @@ class StudentController extends UserController
    $comments = $comments->sortByDesc('created_at');
    */
    //目標データ取得
-   $milestones = $model->target_milestones;
+   $milestones = $model->target_milestones->sortByDesc('created_at');
    $view = "page";
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
@@ -334,7 +334,7 @@ class StudentController extends UserController
    $user = $param['user'];
 
    //目標データ取得
-   $milestones = $model->target_milestones;
+   $milestones = $model->target_milestones->sortByDesc('created_at');
 
    $view = "calendar";
    $param['view'] = $view;
