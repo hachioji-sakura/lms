@@ -935,20 +935,11 @@ class StudentController extends UserController
 
   public function _delete(Request $request, $id)
   {
-   $form = $request->all();
-   try {
-     DB::beginTransaction();
-     $item = $this->model()->where('id', $id)->first()->user->update(['status' => 9]);
-     DB::commit();
-     return $this->api_response(200, '', '', $item);
-   }
-   catch (\Illuminate\Database\QueryException $e) {
-      DB::rollBack();
-      return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
-   catch(\Exception $e){
-      DB::rollBack();
-      return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-   }
+    return $this->transaction(function() use ($request){
+      $form = $request->all();
+      $item = $this->model()->where('id', $id)->first();
+      $item->user->update(['status' => 9]);
+      return $item;
+    }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
 }

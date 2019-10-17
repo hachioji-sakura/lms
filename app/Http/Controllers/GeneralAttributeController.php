@@ -90,6 +90,9 @@ class GeneralAttributeController extends UserController
           "label" => "名称",
           "link" => "show",
         ],
+        "sort_no" => [
+          "label" => "並順",
+        ],
         "created_at" => [
           "label" => __('labels.add_datetime'),
         ],
@@ -153,25 +156,18 @@ class GeneralAttributeController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($request){
+        $form = $request->all();
         $user = $this->login_details($request);
-        $form["create_user_id"] = $user->user_id;
-        unset($form['_token']);
-        unset($form['key']);
-        $_item = GeneralAttribute::create($form);
-        DB::commit();
-        return $this->api_response(200, "", "", $_item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        $item = GeneralAttribute::create([
+          'attribute_key' => $form['attribute_key'],
+          'attribute_name' => $form['attribute_name'],
+          'attribute_value' => $form['attribute_value'],
+          'sort_no' => $form['sort_no'],
+          'create_user_id' => $user->user_id,
+        ]);
+        return $item;
+      }, '汎用コード登録', __FILE__, __FUNCTION__, __LINE__ );
     }
     public function save_validate(Request $request)
     {
@@ -284,26 +280,17 @@ class GeneralAttributeController extends UserController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($request, $id){
         $user = $this->login_details($request);
         $form = $request->all();
-        $item = GeneralAttribute::findId($id)->update([
+        $item = GeneralAttribute::where('id', $id)->first();
+        $item->update([
           'attribute_name' => $form['attribute_name'],
           'attribute_value' => $form['attribute_value'],
+          'sort_no' => $form['sort_no'],
         ]);
-        DB::commit();
-        return $this->api_response(200, "", "", $item);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        return $item;
+      }, '汎用コード更新', __FILE__, __FUNCTION__, __LINE__ );
     }
 
     /**
@@ -323,21 +310,12 @@ class GeneralAttributeController extends UserController
     }
     public function _delete(Request $request, $id)
     {
-      $form = $request->all();
-      try {
-        DB::beginTransaction();
+      return $this->transaction(function() use ($request, $id){
         $user = $this->login_details($request);
-        $items = GeneralAttribute::findId($id)->delete();
-        DB::commit();
-        return $this->api_response(200, "", "", $items);
-      }
-      catch (\Illuminate\Database\QueryException $e) {
-          DB::rollBack();
-          return $this->error_response("Query Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
-      catch(\Exception $e){
-          DB::rollBack();
-          return $this->error_response("DB Exception", "[".__FILE__."][".__FUNCTION__."[".__LINE__."]"."[".$e->getMessage()."]");
-      }
+        $form = $request->all();
+        $item = GeneralAttribute::where('id', $id)->first();
+        $item->delete();
+        return $item;
+      }, '汎用コード削除', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

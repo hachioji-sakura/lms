@@ -272,24 +272,14 @@ class TeacherController extends StudentController
    }
    public function _entry_store(Request $request)
    {
-     $form = $request->all();
-     try {
-       DB::beginTransaction();
+     return $this->transaction(function() use ($request){
+       $form = $request->all();
        $form["password"] = 'sakusaku';
        $item = null;
        if($this->domain==="teachers") $item = Teacher::entry($form);
        else $item = Manager::entry($form);
-       DB::commit();
-       return $this->api_response(200, __FUNCTION__, __LINE__, $item);
-     }
-     catch (\Illuminate\Database\QueryException $e) {
-       DB::rollBack();
-       return $this->error_response('Query Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
-     catch(\Exception $e){
-       DB::rollBack();
-       return $this->error_response('DB Exception', '['.__FILE__.']['.__FUNCTION__.'['.__LINE__.']'.'['.$e->getMessage().']');
-     }
+       return $item;
+     }, __('labels.'.$this->domain).'登録', __FILE__, __FUNCTION__, __LINE__ );
    }
    /**
     * 本登録ページ
