@@ -602,6 +602,8 @@ EOT;
   }
   //本モデルはupdateではなくchangeを使う
   public function change($form){
+    $old_item = $this->replicate();
+
     $update_fields = [
       'status',
       'access_key',
@@ -668,7 +670,6 @@ EOT;
     $this->office_system_api("PUT");
 
     if(isset($form['send_mail'])){
-      $old_item = $this->details(1);
 
       $is_teacher_mail = false;
       $is_student_mail = false;
