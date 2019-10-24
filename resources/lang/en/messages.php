@@ -2,6 +2,7 @@
 
 return [
  "confirm_update" => "Do you want to update?",
+ "confirm_add" => "Do you want to register?",
  "error_exchange_target" => "Please select classes for transfer",
  "error_single_exchange_is_one_student" => "Please leave only one student for transfer",
  "error_group_exchange" => "Group lessons can not be transferred",

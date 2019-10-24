@@ -69,10 +69,11 @@
             </div>
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
-                  confirm="{{__('messages.confirm_update')}}">
                   @if(isset($_edit) && $_edit==true)
+                  confirm="{{__('messages.confirm_update')}}">
                     {{__('labels.update_button')}}
                   @else
+                  confirm="{{__('messages.confirm_add')}}">
                     {{__('labels.create_button')}}
                   @endif
                     <i class="fa fa-caret-right ml-1"></i>
