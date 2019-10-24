@@ -6,7 +6,7 @@
   @endif
   @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
   @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-  {{--ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ›´æ–°ã¯ã€APIã€ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ•ãƒ­ãƒ¼åˆ¶å¾¡ã‚’è€ƒæ…®ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã€è‡ªç”±ã«å¤‰æ›´ã¯ã§ããªã„
+  {{--ƒXƒe[ƒ^ƒXXV‚ÍAAPIAƒXƒe[ƒ^ƒXƒtƒ[§Œä‚ðl—¶‚·‚é•K—v‚ª‚ ‚èAŽ©—R‚É•ÏX‚Í‚Å‚«‚È‚¢
   @if(isset($_edit) && $_edit==true && $user->is_admin()==true)
     @component('calendars.forms.select_status', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
   @endif
