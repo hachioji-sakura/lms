@@ -323,13 +323,15 @@ class UserController extends Controller
       return $user;
     }, 'パスワード設定', __FILE__, __FUNCTION__, __LINE__ );
   }
-  public function transaction(Request $request, $callback, $logic_name, $__file, $__function, $__line){
+  public function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
       try {
         DB::beginTransaction();
         $result = $callback();
         DB::commit();
         // 二重送信対策
-        $request->session()->regenerateToken();
+        if($request!=null){
+          $request->session()->regenerateToken();
+        }
         return $this->api_response(200, '', '', $result);
       }
       catch (\Illuminate\Database\QueryException $e) {

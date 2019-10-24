@@ -3,7 +3,7 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   @if(isset($user) && $user->role=='manager')
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{__('labels.faqs_add')}}" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
+    <a href="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{__('labels.faqs')}}{{__('labels.add')}}
     </a>
   </li>

@@ -2,6 +2,7 @@
 
 return [
   "confirm_update" => "更新しますか？",
+  "confirm_add" => "登録しますか？",
   "error_exchange_target" => "振替対象の授業を選択してください",
   "error_single_exchange_is_one_student" => "振替対象の生徒を一人にしてください",
   "error_group_exchange" => "グループレッスンの振替はできません",
