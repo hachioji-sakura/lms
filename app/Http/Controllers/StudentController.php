@@ -107,7 +107,7 @@ class StudentController extends UserController
           abort(403);
         }
       }
-      $lists = ['cancel', 'confirm', 'exchange', 'month'];
+      $lists = ['cancel', 'confirm', 'exchange', 'month', 'rest_contact'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
