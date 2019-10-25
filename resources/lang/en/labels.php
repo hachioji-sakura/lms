@@ -62,7 +62,7 @@ return [
   'today_schedule_list' => 'Today Schedule',
   'month_schedule_list' => 'Month Schedule',
   'adjust_schedule_list' => 'Adjusting Schedule',
-  'rest_schedule_list' => 'Rest Schedule',
+  'rest_contact' => 'Rest Contact',
   'exchange_schedule_list' => 'Must be transferred',
   'schedule_history' => 'History',
   'trials_schedule_history' => 'Trials History',

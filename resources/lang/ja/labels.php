@@ -62,7 +62,7 @@ return [
   'today_schedule_list' => '本日授業予定',
   'month_schedule_list' => '今月授業予定',
   'adjust_schedule_list' => '予定調整中',
-  'rest_schedule_list' => '休み予定',
+  'rest_contact' => '休み連絡',
   'exchange_schedule_list' => '振替対象',
   'schedule_history' => '授業履歴',
   'trials_schedule_history' => '体験授業履歴',

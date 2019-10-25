@@ -561,6 +561,17 @@ class StudentController extends UserController
          $form['search_status'] = ['cancel', 'rest', 'lecture_cancel'];
        }
        break;
+     case "rest_contact":
+       if(!isset($form['search_from_date'])){
+         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
+       }
+       if(!isset($form['search_to_date'])){
+         $form['search_to_date'] = date('Y-m-d', strtotime("+14 day"));
+       }
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['fix'];
+       }
+       break;
      case "confirm":
        if(!isset($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
@@ -680,6 +691,11 @@ class StudentController extends UserController
        if(!isset($form['search_type'])){
          $form['search_type'] = ['recess'];
          $default_sttus = 'commit';
+       }
+     case "phone":
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['schedule_change', 'schedule_add', 'request_other'];
+         $default_sttus = 'new';
        }
        break;
    }
