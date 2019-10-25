@@ -68,14 +68,14 @@ class TeacherController extends StudentController
         abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
-      $lists = ['cancel', 'confirm', 'exchange', 'today'];
+      $lists = ['cancel', 'confirm', 'exchange', 'today', 'rest_contact'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
       }
       $asks = $this->get_ask([], $ret['item']->user_id);
       $ret['ask_count'] = $asks["count"];
-      $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe'];
+      $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe', 'phone'];
       foreach($lists as $list){
         $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $asks["count"];
