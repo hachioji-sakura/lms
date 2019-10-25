@@ -63,6 +63,7 @@ return [
   'month_schedule_list' => 'Month Schedule',
   'adjust_schedule_list' => 'Adjusting Schedule',
   'rest_contact' => 'Rest Contact',
+  'rest_schedule_list' => 'Rest Schedule',
   'exchange_schedule_list' => 'Must be transferred',
   'schedule_history' => 'History',
   'trials_schedule_history' => 'Trials History',

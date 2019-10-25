@@ -52,7 +52,7 @@ return [
 
   'work_record' => '勤務実績',
   'work_record_description' => '月末の実績登録',
-  'schedule_details' => '予定詳細',
+  'schedule_details' ｕ '予定詳細',
   'schedule_delete' => '予定削除',
   'schedule_remind' => '予定連絡',
   'schedule_rest_cancel' => '休み取り消し連絡',
@@ -63,6 +63,7 @@ return [
   'month_schedule_list' => '今月授業予定',
   'adjust_schedule_list' => '予定調整中',
   'rest_contact' => '休み連絡',
+  'rest_schedule_list' => '休み予定',
   'exchange_schedule_list' => '振替対象',
   'schedule_history' => '授業履歴',
   'trials_schedule_history' => '体験授業履歴',
