@@ -44,7 +44,7 @@ class UserController extends Controller
 
     if(!isset($form['status'])) $form['status']=0;
     if(!isset($form['access_key'])) $form['access_key']='';
-    $res = $this->transaction($request, function() use ($form){
+    $res = $this->transaction(null, function() use ($form){
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
