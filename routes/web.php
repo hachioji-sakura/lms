@@ -178,6 +178,7 @@ Route::get('managers/{id}/resume','ManagerController@resume');
 
 Route::get('parents/{id}/unsubscribe','StudentParentController@unsubscribe');
 Route::get('parents/{id}/recess','StudentParentController@recess');
+Route::get('parents/{id}/students','StudentParentController@get_charge_students');
 
 
 Route::get('students/{id}/tuition','StudentController@tuition');
@@ -185,9 +186,21 @@ Route::get('teachers/{id}/tuition','TeacherController@tuition');
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('teachers/{id}/ask','TeacherController@ask');
 Route::get('managers/{id}/ask','ManagerController@ask');
+Route::get('parents/{id}/ask','StudentParentController@ask');
+
+Route::get('parents/{id}/ask/create','StudentParentController@ask_create_page');
+Route::post('parents/{id}/ask','StudentParentController@ask_create');
+Route::get('parents/{id}/ask/{ask_id}','StudentParentController@ask_details');
+Route::get('parents/{id}/ask/{ask_id}/edit','StudentParentController@ask_edit');
+Route::put('parents/{id}/ask/{ask_id}','StudentParentController@ask_update');
+
 Route::get('students/{id}/calendar_settings','StudentController@calendar_settings');
 Route::get('teachers/{id}/calendar_settings','TeacherController@calendar_settings');
 Route::get('managers/{id}/calendar_settings','ManagerController@calendar_settings');
+
+Route::resource('ask_comments','AskCommentController');
+Route::get('asks/{ask_id}/comments/create','AskCommentController@comment_create');
+Route::get('asks/{ask_id}/comments/{id}/edit','AskCommentController@comment_edit');
 
 
 Route::resource('student_groups','StudentGroupController');

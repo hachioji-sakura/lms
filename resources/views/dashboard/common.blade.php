@@ -17,7 +17,9 @@
 		<section id="main" class="content">
 			@component('components.action_message', [])
 			@endcomponent
-		  <div class="container-fluid">
+		  <div class="container-fluid pt-1">
+				@yield('contents')
+			{{--
 		    <div class="row p-1">
 					<div class="col-12">
 					  <div class="card">
@@ -25,6 +27,7 @@
 						</div>
 					</div>
 				</div>
+			--}}
 			</div>
 			</section>
 

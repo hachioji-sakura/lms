@@ -10,7 +10,7 @@
       </button>
     </div>
   </div>
-  <div class="card-footer card-comments">
+  <div class="card-footer card-comments" id="star_comment_list">
     <?php $is_exist=false; ?>
     @foreach($star_comments["data"] as $comment)
     <?php

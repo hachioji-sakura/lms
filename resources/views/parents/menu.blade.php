@@ -2,13 +2,34 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-item has-treeview menu-open">
       <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-user"></i>
+      <i class="nav-icon fa fa-id-card"></i>
       <p>
         <ruby style="ruby-overhang: none">
           <rb>{{$item->name()}}</rb>
           <rt>{{$item->kana()}}</rt>
         </ruby>
         <span class="ml-2">様</span>
+        <i class="right fa fa-angle-left"></i>
+      </p>
+      </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a class="nav-link @if($view=="page") active @endif" href="/parents/{{$item->id}}"  >
+            <i class="fa fa-home nav-icon"></i>トップ
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link @if($view=="ask") active @endif" href="/parents/{{$item->id}}/ask"  >
+            <i class="fa fa-phone nav-icon"></i>お問い合わせ
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-item has-treeview menu-open">
+      <a href="#" class="nav-link">
+      <i class="nav-icon fa fa-users"></i>
+      <p>
+        登録生徒
         <i class="right fa fa-angle-left"></i>
       </p>
       </a>

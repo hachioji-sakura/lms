@@ -7,6 +7,7 @@ use App\Models\StudentParent;
 use App\Models\StudentRelation;
 use App\Models\Trial;
 use App\Models\Comment;
+use App\Models\Ask;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use DB;
@@ -31,6 +32,7 @@ class StudentParentController extends TeacherController
     $user = $this->login_details($request);
     $pagenation = '';
     $ret = [
+      'view' => '',
       'domain' => $this->domain,
       'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
@@ -42,6 +44,12 @@ class StudentParentController extends TeacherController
       'list' => $request->get('list'),
       'attributes' => $this->attributes(),
     ];
+    $ret['attributes']['ask_type'] = [
+      'new_schedule' => '通塾スケジュールの追加',
+      'change_schedule' => '通塾スケジュールの変更',
+      'other_request' => 'その他',
+    ];
+
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(!isset($user)){
@@ -54,7 +62,12 @@ class StudentParentController extends TeacherController
         //講師事務以外は自分のidしか閲覧できない
         abort(403);
       }
-      $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      //$ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      $ret['item'] = $this->model()->where('id',$id)->first();
+      if(!isset($ret['item'])) abort(404);
+      $ret['item'] = $ret['item']->details();
+      $ret['charge_students'] = $this->get_students($request, $id);
+
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -106,12 +119,8 @@ class StudentParentController extends TeacherController
     $item['tags'] = $model->tags();
     */
     $user = $param['user'];
-
-
-    $charge_students = $this->get_students($request, $id);
-
+    $param['view'] = "page";
     return view($this->domain.'.page', [
-      'charge_students'=>$charge_students,
     ])->with($param);
   }
   private function get_students(Request $request, $parent_id){
@@ -256,5 +265,49 @@ class StudentParentController extends TeacherController
         return $user;
       }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }
+    public function ask_create_page(Request $request, $id){
+      $param = $this->get_param($request, $id);
 
+      return view($this->domain.'.ask_create',['_edit' => false])
+        ->with($param);
+    }
+    public function ask_create(Request $request, $id){
+      $param = $this->get_param($request, $id);
+      $form = $request->all();
+      $res = $this->transaction($request, function() use ($request, $param){
+        $form = $request->all();
+        $form["target_user_id"] = $param["item"]->user_id;
+        $form["create_user_id"] = $param["user"]->user_id;
+        $ask = Ask::add($form['type'], $form);
+        return $ask;
+      }, '問い合わせ登録', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, '登録しました。');
+    }
+    public function ask_edit(Request $request, $id, $ask_id){
+      $param = $this->get_param($request, $id);
+      $ask = Ask::where('id', $ask_id)->first();
+      if(!isset($ask)) abort(404);
+      $param['ask'] = $ask->details();
+      return view($this->domain.'.ask_create',['_edit' => true])
+        ->with($param);
+    }
+    public function ask_update(Request $request, $id, $ask_id){
+      $param = $this->get_param($request, $id);
+      $ask = Ask::where('id', $ask_id)->first();
+      if(!isset($ask)) abort(404);
+      $res = $this->transaction($request, function() use ($request, $ask){
+        $form = $request->all();
+        $ask->update(['body'=>$form['body']]);
+        return $ask;
+      }, '問い合わせ更新', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, '更新しました。');
+    }
+    public function ask_details(Request $request, $id, $ask_id){
+      $param = $this->get_param($request, $id);
+      $ask = Ask::where('id', $ask_id)->first();
+      if(!isset($ask)) abort(404);
+      $param['ask'] = $ask->details();
+      return view($this->domain.'.ask_details',['_edit' => true])
+        ->with($param);
+    }
 }

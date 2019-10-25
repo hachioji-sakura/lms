@@ -7,5 +7,8 @@ return array(
   'agreement' => '入会のご案内',
   'recess' => '休会連絡',
   'unsubscribe' => '退会連絡',
+  'schedule_add' => '授業追加依頼',
+  'schedule_change' => '授業変更依頼',
+  'request_other' => 'その他',
 );
 ?>

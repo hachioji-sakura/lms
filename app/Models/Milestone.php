@@ -75,11 +75,11 @@ class Milestone extends Model
   protected function _date_label($date, $format='Y年m月d日 H:i'){
     return date($format, strtotime($date));
   }
-  public function created_at_label(){
-    return $this->_date_label($this->created_at);
+  public function created_at_label($format='Y年m月d日 H:i'){
+    return $this->_date_label($this->created_at, $format);
   }
-  public function updated_at_label(){
-    return $this->_date_label($this->updated_at);
+  public function updated_at_label($format='Y年m月d日 H:i'){
+    return $this->_date_label($this->updated_at, $format);
   }
   public function scopePagenation($query, $page, $line){
     $_line = $this->pagenation_line;
