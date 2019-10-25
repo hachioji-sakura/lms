@@ -51,12 +51,12 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=rest_contact" class="nav-link @if($view=="schedule" && $list=="rest_contact") active @endif">
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
-            {{__('labels.rest_schedule_list')}}
-            @if($cancel_count > 0)
-            <span class="badge badge-danger right">{{$cancel_count}}</span>
+            {{__('labels.rest_contact')}}
+            @if($rest_contact_count > 0)
+            <span class="badge badge-danger right">{{$rest_contact_count}}</span>
             @endif
           </p>
         </a>
