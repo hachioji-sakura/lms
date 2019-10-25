@@ -233,8 +233,10 @@ class StudentParentController extends TeacherController
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
-    public function _register_update($form)
+    public function _register_update(Request $request)
     {
+      $form = $request->all();
+
       $user = User::where('access_key',$form['access_key']);
       if($user->count() < 1){
         abort(403);

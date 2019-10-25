@@ -373,13 +373,15 @@ class TeacherController extends StudentController
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
-    public function _register_update($form)
+    public function _register_update(Request $request)
     {
+      $form = $request->all();
+
       $user = User::where('access_key',$form['access_key'])->first();
       if(!isset($user)){
         abort(403);
       }
-      return $this->transaction($request, function() use ($form, $user){
+      return $this->transaction(null, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);
