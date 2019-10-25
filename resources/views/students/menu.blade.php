@@ -54,6 +54,7 @@
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=rest_contact" class="nav-link @if($view=="schedule" && $list=="rest_contact") active @endif">
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
+            {{__('labels.rest_contact')}}
           </p>
         </a>
       </li>
