@@ -19,7 +19,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link @if($view=="ask") active @endif" href="/parents/{{$item->id}}/ask"  >
+          <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >
             <i class="fa fa-phone nav-icon"></i>お問い合わせ
           </a>
         </li>

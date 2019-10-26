@@ -39,7 +39,10 @@
               <div class="row">
                 <div class="col-8 mt-1">
                   <a href="/parents/{{$item->id}}/ask/{{$ask->id}}" >
-                    <i class="fa fa-phone mx-1"></i>{{$ask["type_name"]}}<br>
+                    <i class="fa fa-phone mx-1"></i>{{$ask["type_name"]}}
+                    <small title="{{$item["id"]}}" class="badge badge-info mr-1 ml-2">
+                      <i class="fa fa-comment-dots"></i> {{count($ask->comments)}}
+                    </small>
                   </a>
                 </div>
                 @if($ask->type=='recess')
@@ -58,7 +61,6 @@
                 <div class="col-12 my-1 text-sm text-right text-muted">
                   <i class="ml-2 fa fa-user"></i> {{$ask["create_user_name"]}}
                   <i class="ml-2 fa fa-clock"></i> {{$ask->created_at_label('Y年m月d日')}}
-                  <i class="ml-2 fa fa-comment-dots"></i> {{count($ask->comments)}}
                 </div>
                 <div class="col-12 text-sm mt-1 text-right">
                   {{--

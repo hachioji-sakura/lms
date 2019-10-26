@@ -309,6 +309,7 @@ class StudentParentController extends TeacherController
       $ask = Ask::where('id', $ask_id)->first();
       if(!isset($ask)) abort(404);
       $param['ask'] = $ask->details();
+      $param['view'] = 'ask_details';
       return view($this->domain.'.ask_details',['_edit' => true])
         ->with($param);
     }
