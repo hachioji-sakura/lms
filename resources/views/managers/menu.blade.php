@@ -56,6 +56,17 @@
         </a>
       </li>
       <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=phone" class="nav-link @if($view=="ask" && $list=="phone") active @endif">
+          <i class="fa fa-phone nav-icon"></i>
+          <p>
+            お問い合わせ
+            @if($phone_count > 0)
+            <span class="badge badge-danger right">{{$phone_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=recess" class="nav-link @if($view=="ask" && $list=="recess") active @endif">
           <i class="fa fa-pause-circle nav-icon"></i>
           <p>
@@ -120,8 +131,8 @@
 @section('page_footer')
 {{--
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create??origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
-    <i class="fa fa-comment-dots"></i>コメント登録
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create??origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
+    <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>
 --}}

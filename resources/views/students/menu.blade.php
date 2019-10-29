@@ -51,13 +51,10 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=cancel" class="nav-link @if($view=="schedule" && $list=="cancel") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=rest_contact" class="nav-link @if($view=="schedule" && $list=="rest_contact") active @endif">
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
-            {{__('labels.rest_schedule_list')}}
-            @if($cancel_count > 0)
-            <span class="badge badge-danger right">{{$cancel_count}}</span>
-            @endif
+            {{__('labels.rest_contact')}}
           </p>
         </a>
       </li>
@@ -156,7 +153,7 @@
   </a>
 </dt>
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
     <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>

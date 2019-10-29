@@ -21,6 +21,9 @@ class Ask extends Milestone
   public function parent_ask(){
     return $this->belongsTo('App\Models\Ask', 'parent_ask_id');
   }
+  public function comments(){
+    return $this->hasMany('App\Models\AskComment');
+  }
   public function scopeRangeDate($query, $from_date, $to_date=null, $field='start_time')
   {
     //日付検索
@@ -36,7 +39,6 @@ class Ask extends Milestone
   {
     $where_raw = <<<EOT
       (target_user_id = $user_id
-      or create_user_id = $user_id
       or charge_user_id = $user_id
       )
 EOT;
@@ -97,6 +99,12 @@ EOT;
     }
     if(!isset($form['start_date'])){
       $form['start_date'] = date('Y-m-d');
+      if(!isset($form['start_date'])){
+        $form['start_date'] = date('Y-m-d');
+      }
+    }
+    if(!isset($form['end_date'])){
+      $form['end_date'] = '9999-12-31';
     }
     if(!isset($form['body'])){
       $form['body'] = '';
@@ -165,6 +173,7 @@ EOT;
   }
   public function dispose(){
     $target_model = null;
+    AskComment::where('ask_id', $this->id)->delete();
     $this->delete();
   }
   public function end_dateweek(){
@@ -181,7 +190,7 @@ EOT;
     return $this->config_attribute_name('ask_status', $this->status);
   }
   public function details(){
-    $item = $this;
+    $item = parent::details();
     $item["type_name"] = $this->type_name();
     $item["status_name"] = $this->status_name();
     $item["duration"] = $this->start_date().'～'.$this->end_date();

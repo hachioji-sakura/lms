@@ -114,6 +114,14 @@
         </div>
       </div>
       <!-- /.card -->
+      <div class="card-header">
+        <div class="card-title text-sm">
+          @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+            @slot("addon_button")
+            @endslot
+          @endcomponent
+        </div>
+      </div>
     </div>
   </div>
 </section>

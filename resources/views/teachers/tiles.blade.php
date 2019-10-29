@@ -1,5 +1,9 @@
 @section('title')
+  @if($domain=='teachers')
   {{__('labels.teachers_list')}}
+  @elseif($domain=='managers')
+  {{__('labels.officers_list')}}
+  @endif
 @endsection
 @extends('dashboard.common')
 @include('dashboard.tiles')

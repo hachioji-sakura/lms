@@ -359,12 +359,14 @@ class MilestoneController extends UserController
         ];
       }
       */
+      /*
       $fields['created_date'] = [
         'label' => __('labels.add_datetime'),
       ];
       $fields['updated_date'] = [
         'label' => __('labels.upd_datetime'),
       ];
+      */
       $form = $request->all();
       $form['fields'] = $fields;
       return view('components.page', $form)

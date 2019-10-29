@@ -44,7 +44,7 @@ class UserController extends Controller
 
     if(!isset($form['status'])) $form['status']=0;
     if(!isset($form['access_key'])) $form['access_key']='';
-    $res = $this->transaction($request, function() use ($form){
+    $res = $this->transaction(null, function() use ($form){
       $user = User::create([
           'name' => $form['name'],
           'email' => $form['email'],
@@ -301,7 +301,7 @@ class UserController extends Controller
     if(!is_numeric($user_id) || !is_numeric($image_id)){
       return $this->bad_request("", "user_id($user_id),image_id($image_id)");
     }
-    return $this->transaction($request, function() use ($user_id, $image_id){
+    return $this->transaction(null, function() use ($user_id, $image_id){
       $user = User::where('id', $user_id)->first();
       $user->update(['image_id' => $image_id]);
       return $user;

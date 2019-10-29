@@ -64,9 +64,11 @@ class AskController extends MilestoneController
        ];
        break;
       default:
+      /*
         $ret['end_dateweek'] = [
          'label' => __('labels.limit'),
        ];
+       */
     }
     $ret2 =[
       'charge_user_name' => [
