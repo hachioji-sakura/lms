@@ -27,7 +27,6 @@
           @elseif($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time')===false)
           checked
           @elseif($_edit===false)
-           checked
           @endif
          >
       </td>
@@ -50,7 +49,6 @@
         @if($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
        @elseif($_edit==false)
-        disabled = "disabled"
         @endif
         >
       </td>
@@ -60,6 +58,8 @@
     </table>
     <script>
     function week_change(obj){
+      return true;
+      //TODO disableのチェック処理を外す
       var _name = $(obj).attr("name");
       var _val = $(obj).val();
       var _checked = $(obj).prop("checked");
