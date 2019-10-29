@@ -395,7 +395,9 @@ class UserCalendarMember extends Model
       }
     }
 
-    if($this->calendar->status==6 || $this->calendar->status==7 || $this->calendar->status==8){
+    //TODO 更新者を取得しても、事務システム側のデータ単位が異なるので適切に設定することができない
+    //このロジックはあまり意味がない
+    if($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
         case "fix":
@@ -452,10 +454,18 @@ class UserCalendarMember extends Model
         $exchange_limit_date = "";
         $comment = "";
         $cancel_reason = "";
-        if(isset($res["data"]["cancel"])) $cancel = trim($res["data"]["cancel"]);
-        if(isset($res["data"]["altlimitdate"])) $exchange_limit_date = trim($res["data"]["altlimitdate"]);
-        if(isset($res["data"]["comment"])) $comment = trim($res["data"]["comment"]);
-        if(isset($res["data"]["cancel_reason"])) $cancel_reason = trim($res["data"]["cancel_reason"]);
+        if(isset($res["data"]["cancel"])) {
+          $cancel = trim($res["data"]["cancel"]);
+        }
+        if(isset($res["data"]["altlimitdate"])){
+          $exchange_limit_date = trim($res["data"]["altlimitdate"]);
+        }
+        if(isset($res["data"]["comment"])){
+          $comment = trim($res["data"]["comment"]);
+        }
+        if(isset($res["data"]["cancel_reason"])){
+          $cancel_reason = trim($res["data"]["cancel_reason"]);
+        }
 
         $update = [];
         $is_update = false;
@@ -469,7 +479,8 @@ class UserCalendarMember extends Model
           $update['rest_type'] = $cancel;
           $is_update = true;
         }
-        if(!empty($cancel_reason)  && $this->rest_result != $cancel_reason){
+        //cancel_reasonは空になる可能性がある
+        if($this->rest_result != $cancel_reason){
           //cancel_reason -> rest_result
           $update['rest_result'] = $cancel_reason;
           $is_update = true;

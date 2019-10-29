@@ -35,6 +35,7 @@
 
 
 @section('contents')
+<div class="card">
 <div class="card-header">
   <h3 class="card-title">@yield('title')</h3>
   <div class="card-tools pt-2">
@@ -44,6 +45,7 @@
 <div class="card-body table-responsive p-0">
   @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
   @endcomponent
+</div>
 </div>
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")

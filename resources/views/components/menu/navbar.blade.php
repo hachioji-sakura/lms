@@ -24,6 +24,26 @@
       <span class="d-none d-sm-inline-block">{{__('labels.schedule_list')}}</span>
     </a>
   </li>
+  @elseif($user->role==="parent")
+  <li class="nav-item">
+    <a href="/parents/{{$user->id}}/ask" class="nav-link">
+      <i class="fa fa-phone"></i>
+      <span class="d-none d-sm-inline-block">お問い合わせ一覧</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+      <i class="fa fa-user-graduate"></i>
+      <span class="d-none d-sm-inline-block">登録生徒</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg">
+      @foreach($user->relation() as $relation)
+      <a href="/students/{{$relation->student->id}}" class="dropdown-item">
+        {{$relation->student->name()}}
+      </a>
+      @endforeach
+    </div>
+  </li>
   @elseif($user->role==="teacher")
     <li class="nav-item">
       <a class="nav-link" data-toggle="dropdown" href="#">
@@ -166,6 +186,9 @@
         <i class="fa fa-exchange-alt mr-2"></i>English
       </a>
       @endif
+      <a class="dropdown-item" page_form="dialog" page_url="/icon/change?origin={{$domain}}&item_id={{$user->id}}&user_id={{$user->user_id}}" page_title="{{__('labels.icons')}}">
+        <i class="fa fa-portrait mr-2"></i>{{__('labels.icons')}}
+      </a>
       <div class="dropdown-divider"></div>
       <a href="/logout" class="dropdown-item">
         <i class="fa fa-sign-out-alt mr-2"></i>{{__('labels.logout')}}

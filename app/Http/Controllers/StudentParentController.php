@@ -7,6 +7,7 @@ use App\Models\StudentParent;
 use App\Models\StudentRelation;
 use App\Models\Trial;
 use App\Models\Comment;
+use App\Models\Ask;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use DB;
@@ -31,6 +32,7 @@ class StudentParentController extends TeacherController
     $user = $this->login_details($request);
     $pagenation = '';
     $ret = [
+      'view' => '',
       'domain' => $this->domain,
       'domain_name' => __('labels.'.$this->domain),
       'user' => $user,
@@ -42,6 +44,12 @@ class StudentParentController extends TeacherController
       'list' => $request->get('list'),
       'attributes' => $this->attributes(),
     ];
+    $ret['attributes']['ask_type'] = [
+      'new_schedule' => '通塾スケジュールの追加',
+      'change_schedule' => '通塾スケジュールの変更',
+      'other_request' => 'その他',
+    ];
+
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(!isset($user)){
@@ -54,7 +62,12 @@ class StudentParentController extends TeacherController
         //講師事務以外は自分のidしか閲覧できない
         abort(403);
       }
-      $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      //$ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
+      $ret['item'] = $this->model()->where('id',$id)->first();
+      if(!isset($ret['item'])) abort(404);
+      $ret['item'] = $ret['item']->details();
+      $ret['charge_students'] = $this->get_students($request, $id);
+
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -106,12 +119,8 @@ class StudentParentController extends TeacherController
     $item['tags'] = $model->tags();
     */
     $user = $param['user'];
-
-
-    $charge_students = $this->get_students($request, $id);
-
+    $param['view'] = "page";
     return view($this->domain.'.page', [
-      'charge_students'=>$charge_students,
     ])->with($param);
   }
   private function get_students(Request $request, $parent_id){
@@ -224,8 +233,10 @@ class StudentParentController extends TeacherController
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
-    public function _register_update($form)
+    public function _register_update(Request $request)
     {
+      $form = $request->all();
+
       $user = User::where('access_key',$form['access_key']);
       if($user->count() < 1){
         abort(403);
@@ -256,5 +267,4 @@ class StudentParentController extends TeacherController
         return $user;
       }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }
-
 }

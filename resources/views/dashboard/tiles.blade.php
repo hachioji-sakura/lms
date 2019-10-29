@@ -5,11 +5,11 @@
     <div class="card-body">
       @component('components.search_word', ['search_word' => $search_word])
       @endcomponent
-      <div id="listTable" class="card-body card-list mt-1" alt="CardTable">
+      <div id="listTable" class="card-body card-list mt-1 " alt="CardTable">
         @if(count($items) > 0)
         <ul class="mailbox-attachments clearfix row">
           @foreach($items as $item)
-          <li class="col-lg-4 col-md-4 col-12 @if($item->user->status===9) bg-gray @endif" accesskey="" target="">
+          <li class="col-lg-4 col-md-4 col-12 @if($item->user->status===9) bg-gray @else bg-white @endif" accesskey="" target="">
             <input type="hidden" value="{{$loop->index}}" name="__index__" id="__index__">
             <input type="hidden" value="{{$item->id}}" name="id">
             <div class="row">

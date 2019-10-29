@@ -68,14 +68,14 @@ class TeacherController extends StudentController
         abort(403);
       }
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
-      $lists = ['cancel', 'confirm', 'exchange', 'today'];
+      $lists = ['cancel', 'confirm', 'exchange', 'today', 'rest_contact'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $calendars["count"];
       }
       $asks = $this->get_ask([], $ret['item']->user_id);
       $ret['ask_count'] = $asks["count"];
-      $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe'];
+      $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe', 'phone'];
       foreach($lists as $list){
         $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $asks["count"];
@@ -373,13 +373,15 @@ class TeacherController extends StudentController
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
-    public function _register_update($form)
+    public function _register_update(Request $request)
     {
+      $form = $request->all();
+
       $user = User::where('access_key',$form['access_key'])->first();
       if(!isset($user)){
         abort(403);
       }
-      return $this->transaction($request, function() use ($form, $user){
+      return $this->transaction(null, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);

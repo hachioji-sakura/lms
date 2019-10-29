@@ -13461,3 +13461,8 @@ ul.wysihtml5-toolbar{
 	color:#FFFFFF;
 	background-color: #007bff !important;
 }
+.box-text {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #17a2b8;
+}

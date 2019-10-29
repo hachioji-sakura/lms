@@ -101,7 +101,7 @@
       </li>
       --}}
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/ask" class="nav-link @if($view=="ask") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" || $view=="ask_details") active @endif">
           <i class="fa fa-envelope-square nav-icon"></i>
           <p>
             {{__('labels.ask_list')}}
