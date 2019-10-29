@@ -669,7 +669,7 @@ class StudentController extends UserController
  }
  public function get_ask($form, $user_id){
    if(!isset($form['list'])) $form['list'] = '';
-   $default_sttus = 'new';
+   $default_status = 'new';
    switch($form['list']){
      case "teacher_change":
        if(!isset($form['search_type'])){
@@ -684,19 +684,16 @@ class StudentController extends UserController
      case "unsubscribe":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['unsubscribe'];
-         $default_sttus = 'commit';
+         $default_status = 'commit';
        }
        break;
      case "recess":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['recess'];
-         $default_sttus = 'commit';
+         $default_status = 'commit';
        }
      case "phone":
-       if(!isset($form['search_type'])){
-         $form['search_type'] = ['schedule_change', 'schedule_add', 'request_other'];
-         $default_sttus = 'new';
-       }
+       $form['search_status'] = ['new', 'commit', 'cancel'];
        break;
    }
 
@@ -704,7 +701,7 @@ class StudentController extends UserController
      $form['search_type'] = [];
    }
    if(!isset($form['search_status'])){
-     $form['search_status'] = [$default_sttus];
+     $form['search_status'] = [$default_status];
    }
    $form['_sort'] ='end_date';
 
@@ -724,9 +721,8 @@ class StudentController extends UserController
    }
    $asks = Ask::findStatuses($statuses);
    $asks = $asks->findTypes($types);
-   $asks = $asks->findStatuses($statuses);
    $u = User::where('id', $user_id)->first()->details('managers');
-   if(!$this->is_manager($u->role)) $asks = $asks->findUser($user_id);
+   if($this->domain!="managers" && !$this->is_manager($u->role)) $asks = $asks->findUser($user_id);
    $count = $asks->count();
    $asks = $asks->sortEnddate($sort);
 
@@ -740,7 +736,7 @@ class StudentController extends UserController
 
  public function get_tuition($form, $id){
    if(!isset($form['list'])) $form['list'] = '';
-   $default_sttus = 'new';
+   $default_status = 'new';
    switch($form['list']){
    }
 
@@ -958,4 +954,52 @@ class StudentController extends UserController
       return $item;
     }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
+
+  public function ask_create_page(Request $request, $id){
+    $param = $this->get_param($request, $id);
+
+    return view($this->domain.'.ask_create',['_edit' => false])
+      ->with($param);
+  }
+  public function ask_create(Request $request, $id){
+    $param = $this->get_param($request, $id);
+    $form = $request->all();
+    $res = $this->transaction($request, function() use ($request, $param){
+      $form = $request->all();
+      $form["target_user_id"] = $param["item"]->user_id;
+      $form["create_user_id"] = $param["user"]->user_id;
+      $ask = Ask::add($form['type'], $form);
+      return $ask;
+    }, '問い合わせ登録', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param, '登録しました。');
+  }
+  public function ask_edit(Request $request, $id, $ask_id){
+    $param = $this->get_param($request, $id);
+    $ask = Ask::where('id', $ask_id)->first();
+    if(!isset($ask)) abort(404);
+    $param['ask'] = $ask->details();
+    return view($this->domain.'.ask_create',['_edit' => true])
+      ->with($param);
+  }
+  public function ask_update(Request $request, $id, $ask_id){
+    $param = $this->get_param($request, $id);
+    $ask = Ask::where('id', $ask_id)->first();
+    if(!isset($ask)) abort(404);
+    $res = $this->transaction($request, function() use ($request, $ask){
+      $form = $request->all();
+      $ask->update(['body'=>$form['body']]);
+      return $ask;
+    }, '問い合わせ更新', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param, '更新しました。');
+  }
+  public function ask_details(Request $request, $id, $ask_id){
+    $param = $this->get_param($request, $id);
+    $ask = Ask::where('id', $ask_id)->first();
+    if(!isset($ask)) abort(404);
+    $param['ask'] = $ask->details();
+    $param['view'] = 'ask_details';
+    return view($this->domain.'.ask_details',['_edit' => true])
+      ->with($param);
+  }
+
 }

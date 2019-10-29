@@ -45,6 +45,7 @@ return [
   'calendar_page_description' => 'Calendar display of class schedule',
   'schedule_list' => 'Schedule List',
   'schedule_list_description' => 'List of class schedule',
+  'today_schedule_list_description' => 'List of todays class schedule',
   'schedule_add' => 'Add Schedule',
   'trial_lesson' => 'Trial Lesson',
   'schedule_add_description' => 'Add Schedule Or Alternate Lesson',

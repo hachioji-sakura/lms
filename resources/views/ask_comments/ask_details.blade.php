@@ -57,10 +57,14 @@
           </p>
         </div>
         <div class="col-12 text-right">
+          @component('teachers.forms.ask_button', ['teacher'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+          @endcomponent
+          @if($user->id == $item->create_user_id)
           <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼内容編集" page_form="dialog" page_url="/parents/{{$item->id}}/ask/{{$ask->id}}/edit" role="button" class="btn btn-success btn-sm">
             <i class="fa fa-edit mr-1"></i>
             編集
           </a>
+          @endif
         </div>
       </div>
     </div>
@@ -77,9 +81,9 @@
             <span >
               コメント数:{{count($ask->comments)}}
             </span>
-            <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼へのコメント" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" role="button" class="btn btn-outline-primary btn-sm float-right">
+            <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼へのコメント" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" role="button" class="btn btn-outline-info btn-sm float-right">
               <i class="fa fa-comment-dots mr-1"></i>
-              コメント登録
+              {{__('labels.comment_add')}}
             </a>
           </div>
         </div>
@@ -162,8 +166,8 @@
   </a>
 </dt>
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" page_title="依頼へのコメント">
-    <i class="fa fa-comment-dots"></i>コメント登録
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" page_title="{{__('labels.comment_add')}}">
+    <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>
 @endsection

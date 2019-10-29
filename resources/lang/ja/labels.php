@@ -45,6 +45,7 @@ return [
   'calendar_page_description' => '授業予定をカレンダー表示',
   'schedule_list' => '授業予定一覧',
   'schedule_list_description' => '授業予定をリスト表示',
+  'today_schedule_list_description' => '本日の授業予定をリスト表示',
   'schedule_add' => '授業追加',
   'trial_lesson' => '体験授業',
   'schedule_add_description' => '授業の追加・振替',

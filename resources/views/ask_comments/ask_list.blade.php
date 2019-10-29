@@ -37,36 +37,45 @@
             @foreach($asks as $ask)
             <li class="col-12" accesskey="" target="">
               <div class="row">
-                <div class="col-8 mt-1">
+                <div class="col-7 mt-1">
                   <a href="/parents/{{$item->id}}/ask/{{$ask->id}}" >
                     <i class="fa fa-phone mx-1"></i>{{$ask["type_name"]}}
-                    <small title="{{$item["id"]}}" class="badge badge-info mr-1 ml-2">
-                      <i class="fa fa-comment-dots"></i> {{count($ask->comments)}}
-                    </small>
                   </a>
                 </div>
+                <div class="col-5 mt-1 text-right">
+                  <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$ask->status]}} mr-1">
+                    {{$ask->status_name()}}
+                  </small>
+                  <small title="{{$item["id"]}}" class="badge badge-info mr-1">
+                    <i class="fa fa-comment-dots"></i> {{count($ask->comments)}}
+                  </small>
+                </div>
+                <div class="col-12 mt-1 text-sm">
+                @if($ask->target_model=='students')
+                  生徒:{{$ask->get_target_model_data()->name()}}様<br>
+                @endif
                 @if($ask->type=='recess')
-                <div class="col-4 mt-1 text-sm">
-                  {{__('labels.recess')}}{{__('labels.duration')}}：{{$ask["duration"]}}
-                </div>
+                  {{__('labels.duration')}}:{{$ask["duration"]}}
                 @elseif($ask->type=='unsubscribe')
-                <div class="col-4 mt-1 text-sm">
-                  {{__('labels.unsubscribe')}}{{__('labels.day')}}：{{$ask["start_date"]}}
-                </div>
+                  {{__('labels.unsubscribe')}}{{__('labels.day')}}:{{$ask["start_date"]}}
                 @else
                 @endif
-                <div class="col-12 text-xs mt-1 p-2">
-                  {!!nl2br($ask->body)!!}
+                </div>
+                <div class="col-12 text-xs mt-1 p-2 bd-t bd-gray" title="{{$ask->body}}">
+
+                  {!!nl2br(str_limit($ask->body, 42,'...'))!!}
                 </div>
                 <div class="col-12 my-1 text-sm text-right text-muted">
+                  @if($user->role=="teacher" || $user->role=="manager")
                   <i class="ml-2 fa fa-user"></i> {{$ask["create_user_name"]}}
+                  @endif
                   <i class="ml-2 fa fa-clock"></i> {{$ask->created_at_label('Y年m月d日')}}
                 </div>
                 <div class="col-12 text-sm mt-1 text-right">
                   {{--
-                  <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼へのコメント" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" role="button" class="btn btn-outline-primary btn-sm">
+                  <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼へのコメント" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" role="button" class="btn btn-outline-info btn-sm">
                     <i class="fa fa-comment-dots mr-1"></i>
-                    コメント登録
+                    {{__('labels.comment_add')}}
                   </a>
                   --}}
                   <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼内容編集" page_form="dialog" page_url="/parents/{{$item->id}}/ask/{{$ask->id}}/edit" role="button" class="btn btn-success btn-sm">

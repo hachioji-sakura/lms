@@ -153,7 +153,7 @@
   </a>
 </dt>
 <dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
     <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>

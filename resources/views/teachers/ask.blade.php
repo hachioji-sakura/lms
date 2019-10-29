@@ -52,7 +52,7 @@
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-8 mt-1">
-                  <a href="javascript:void(0);" title="{{$ask["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/asks/{{$ask["id"]}}" >
+                  <a href="/{{$domain}}/{{$item->id}}/ask/{{$ask["id"]}}" >
                     <i class="fa fa-envelope-square mx-1"></i>{{$ask["type_name"]}}<br>
                   </a>
                 </div>

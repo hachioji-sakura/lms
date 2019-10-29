@@ -39,7 +39,6 @@ class Ask extends Milestone
   {
     $where_raw = <<<EOT
       (target_user_id = $user_id
-      or create_user_id = $user_id
       or charge_user_id = $user_id
       )
 EOT;

@@ -24,6 +24,26 @@
       <span class="d-none d-sm-inline-block">{{__('labels.schedule_list')}}</span>
     </a>
   </li>
+  @elseif($user->role==="parent")
+  <li class="nav-item">
+    <a href="/parents/{{$user->id}}/ask" class="nav-link">
+      <i class="fa fa-phone"></i>
+      <span class="d-none d-sm-inline-block">お問い合わせ一覧</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+      <i class="fa fa-user-graduate"></i>
+      <span class="d-none d-sm-inline-block">登録生徒</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg">
+      @foreach($user->relation() as $relation)
+      <a href="/students/{{$relation->student->id}}" class="dropdown-item">
+        {{$relation->student->name()}}
+      </a>
+      @endforeach
+    </div>
+  </li>
   @elseif($user->role==="teacher")
     <li class="nav-item">
       <a class="nav-link" data-toggle="dropdown" href="#">

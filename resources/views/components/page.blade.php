@@ -7,18 +7,18 @@
 @if(!empty($page_message))
 <div class="col-12 col-lg-12 col-md-12 my-1">
   @if(isset($action) && $action=='delete')
-    <h4 class="text-danger">{{$page_message}}</h4>
+    <h5 class="text-danger">{{$page_message}}</h5>
   @else
     <h6>{{$page_message}}</h6>
   @endif
 </div>
 @elseif(isset($action) && $action=='delete')
 <div class="col-12 col-lg-12 col-md-12 my-1">
-  <h4 class="text-danger">削除してもよろしいですか？</h4>
+  <h5 class="text-danger">削除してもよろしいですか？</h5>
 </div>
 @elseif(isset($action) && $action=='remind')
 <div class="col-12 col-lg-12 col-md-12 my-1">
-  <h4 class="text-success">本登録依頼メールを送信しますがよろしいですか？</h4>
+  <h5 class="text-success">本登録依頼メールを送信しますがよろしいですか？</h5>
 </div>
 @endif
   {{-- 詳細表示項目を羅列する --}}

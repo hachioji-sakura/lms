@@ -74,7 +74,7 @@
         <i class="fa fa-comment-dots mr-1"></i>{{__('labels.comments')}}
       </h3>
       <div class="card-tools">
-        <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="コメント登録">
+        <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
             <i class="fa fa-pen nav-icon"></i>
         </a>
         <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
