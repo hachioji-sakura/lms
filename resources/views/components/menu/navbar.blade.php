@@ -186,6 +186,9 @@
         <i class="fa fa-exchange-alt mr-2"></i>English
       </a>
       @endif
+      <a class="dropdown-item" page_form="dialog" page_url="/icon/change?origin={{$domain}}&item_id={{$user->id}}&user_id={{$user->user_id}}" page_title="{{__('labels.icons')}}">
+        <i class="fa fa-portrait mr-2"></i>{{__('labels.icons')}}
+      </a>
       <div class="dropdown-divider"></div>
       <a href="/logout" class="dropdown-item">
         <i class="fa fa-sign-out-alt mr-2"></i>{{__('labels.logout')}}

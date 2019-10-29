@@ -77,7 +77,7 @@
         </div>
         <div class="carousel-item" id="confirm_form">
           <div class="row">
-            <div class="col-12 p-3 font-weight-bold" >依頼種別</div>
+            <div class="col-12 font-weight-bold" >依頼種別</div>
             <div class="col-12 p-3">
               @if(isset($_edit) && $_edit==true)
                 {{$ask->type_name()}}
@@ -85,7 +85,7 @@
               <span id="type_name"></span>
               @endif
             </div>
-            <div class="col-12 p-3 font-weight-bold" >内容</div>
+            <div class="col-12 font-weight-bold" >内容</div>
             <div class="col-12 p-3"><span id="body"></span></div>
           </div>
           <div class="row">

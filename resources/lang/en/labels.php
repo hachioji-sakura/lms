@@ -11,6 +11,7 @@ return [
   'login'             => 'Login',
   'manual'             => 'Manual',
   'faqs'             => 'FAQ',
+  'icons'             => 'Setting Icon',
   'to_login'             => 'Click to Login Page',
   'account_setting' => 'Account Setting',
   'password_setting' => 'Password Setting',

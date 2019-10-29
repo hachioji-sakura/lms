@@ -693,6 +693,7 @@ class StudentController extends UserController
          $default_status = 'commit';
        }
      case "phone":
+       $form['search_type'] = ['schedule_add', 'schedule_change', 'request_other'];
        $form['search_status'] = ['new', 'commit', 'cancel'];
        break;
    }

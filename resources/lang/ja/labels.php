@@ -11,6 +11,7 @@ return [
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
   'faqs'             => 'FAQ',
+  'icons'             => 'アイコン変更',
   'to_login'             => 'ログインへ',
   'account_setting' => 'アカウント設定',
   'password_setting' => 'パスワード設定',

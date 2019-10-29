@@ -37,7 +37,7 @@
             @foreach($asks as $ask)
             <li class="col-12" accesskey="" target="">
               <div class="row">
-                <div class="col-7 mt-1">
+                <div class="col-7 mt-1 text-lg">
                   <a href="/parents/{{$item->id}}/ask/{{$ask->id}}" >
                     <i class="fa fa-phone mx-1"></i>{{$ask["type_name"]}}
                   </a>
@@ -61,15 +61,14 @@
                 @else
                 @endif
                 </div>
-                <div class="col-12 text-xs mt-1 p-2 bd-t bd-gray" title="{{$ask->body}}">
-
+                <div class="col-12 text-xs mt-1" title="{{$ask->body}}">
                   {!!nl2br(str_limit($ask->body, 42,'...'))!!}
                 </div>
-                <div class="col-12 my-1 text-sm text-right text-muted">
+                <div class="col-12 my-1 text-right text-muted" style="font-size:0.7rem;">
                   @if($user->role=="teacher" || $user->role=="manager")
-                  <i class="ml-2 fa fa-user"></i> {{$ask["create_user_name"]}}
+                  <i class="ml-2 fa fa-user"></i> 依頼者:{{$ask["create_user_name"]}}
                   @endif
-                  <i class="ml-2 fa fa-clock"></i> {{$ask->created_at_label('Y年m月d日')}}
+                  <i class="ml-2 fa fa-clock"></i>起票日:{{$ask->created_at_label('Y年m月d日')}}
                 </div>
                 <div class="col-12 text-sm mt-1 text-right">
                   {{--
