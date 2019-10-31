@@ -141,8 +141,7 @@ EOT;
     $ask->remind_mail($form['create_user_id']);
     return $ask;
   }
-  public function start_date(){
-    $format = "Y年n月j日";
+  public function start_date($format = "Y年n月j日"){
     $weeks = config('week');
     if(app()->getLocale()=='en'){
       $format = "Y/n/j";
@@ -152,8 +151,7 @@ EOT;
     $d .= '('.$weeks[date('w',  strtotime($this->start_date))].')';
     return $d;
   }
-  public function end_date(){
-    $format = "Y年n月j日";
+  public function end_date($format = "Y年n月j日"){
     $weeks = config('week');
     if(app()->getLocale()=='en'){
       $format = "Y/n/j";
@@ -193,7 +191,7 @@ EOT;
     $item = parent::details();
     $item["type_name"] = $this->type_name();
     $item["status_name"] = $this->status_name();
-    $item["duration"] = $this->start_date().'～'.$this->end_date();
+    $item["duration"] = $this->start_date().'～'.$this->end_date("n月j日");
     $item["start_date"] = $this->start_date();
     if($this->charge_user_id==1) $item["charge_user_name"] = "事務";
     else $item["charge_user_name"] = $this->charge_user->get_name();

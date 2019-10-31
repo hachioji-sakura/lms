@@ -221,6 +221,7 @@ return [
   'ask_type' => 'Ask Type',
   'target_user' => 'client',
   'charge_user' => 'charge',
+  'create_user' => 'create',
   'charge_student' => 'Charge Student',
   'charge_teacher' => 'Charge Teacher',
   'recess_or_unsubscribe' => 'Recess Or Unsubscribe',

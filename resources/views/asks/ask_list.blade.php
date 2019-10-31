@@ -12,26 +12,30 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title" id="charge_students">
-            <i class="fa fa-envelope-square mr-1"></i>
             @if($list=="lecture_cancel")
+              <i class="fa fa-envelope-square mr-1"></i>
               {{__('labels.ask_lecture_cancel')}}
             @elseif($list=="teacher_change")
+              <i class="fa fa-exchange-alt mr-1"></i>
               {{__('labels.ask_teacher_change')}}
             @elseif($list=="unsubscribe")
+              <i class="fa fa-user-slash mr-1"></i>
               {{__('labels.ask_unsubscribe')}}
             @elseif($list=="recess")
+              <i class="fa fa-pause-circle mr-1"></i>
               {{__('labels.ask_recess')}}
             @else
+              <i class="fa fa-phone mr-1"></i>
               {{__('labels.ask_list')}}
             @endif
           </h3>
           <div class="card-title text-sm">
             @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
               @slot("addon_button")
-              {{--
+              @if($user->role=='parent')
               <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
-                  <a class="btn btn-info btn-sm" href="#">
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/ask/create" page_title="お問い合わせ登録">
                     <i class="fa fa-plus"></i>
                     <span class="btn-label">
                       {{__('labels.add')}}
@@ -39,7 +43,7 @@
                   </a>
                 </li>
               </ul>
-              --}}
+              @endif
               @endslot
             @endcomponent
           </div>
@@ -51,32 +55,43 @@
             @foreach($asks as $ask)
             <li class="col-12" accesskey="" target="">
               <div class="row">
-                <div class="col-8 mt-1">
-                  <a href="/{{$domain}}/{{$item->id}}/ask/{{$ask["id"]}}" >
-                    <i class="fa fa-envelope-square mx-1"></i>{{$ask["type_name"]}}<br>
+                <div class="col-7 mt-1 text-lg">
+                  <a href="/{{$domain}}/{{$item->id}}/ask/{{$ask->id}}" >
+                    {{$ask["type_name"]}}
                   </a>
                 </div>
-                <div class="col-6 mt-1 text-sm">
-                  {{__('labels.target_user')}}：{{$ask["target_user_name"]}}
+                <div class="col-5 mt-1 text-right">
+                  <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$ask->status]}} mr-1">
+                    {{$ask->status_name()}}
+                  </small>
+                  <small title="{{$item["id"]}}" class="badge badge-info mr-1">
+                    <i class="fa fa-comment-dots"></i> {{count($ask->comments)}}
+                  </small>
                 </div>
-                <div class="col-6 mt-1 text-sm">
-                  {{__('labels.charge_user')}}： {{$ask["charge_user_name"]}}
+                <div class="col-12 col-md-5 text-muted">
+                  @if($ask->target_model=='students')
+                    生徒氏名:{{$ask->get_target_model_data()->name()}}様<br>
+                  @endif
+                  @if($ask->type=='recess')
+                    {{__('labels.duration')}}:{{$ask["duration"]}}
+                  @elseif($ask->type=='unsubscribe')
+                    {{__('labels.unsubscribe')}}{{__('labels.day')}}:{{$ask["start_date"]}}
+                  @else
+                  @endif
                 </div>
-                @if($ask->type=='recess')
-                <div class="col-6 mt-1 text-sm">
-                  {{__('labels.recess')}}{{__('labels.duration')}}：{{$ask["duration"]}}
+                <div class="col-12 col-md-7 text-muted text-right " style="font-size:0.7rem;">
+                  @if(($domain=="teachers" || $domain=="managers") && ($user->role=="teacher" || $user->role=="manager"))
+                  <i class="ml-2 fa fa-user-edit"></i> {{__('labels.charge_user')}}：{{$ask["charge_user_name"]}}
+                  <i class="ml-2 fa fa-user-check"></i> {{__('labels.target_user')}}：{{$ask["target_user_name"]}}
+                  <i class="ml-2 fa fa-pen"></i> {{__('labels.create_user')}}：{{$ask["create_user_name"]}}
+                  @endif
+                  <i class="ml-2 fa fa-clock"></i>起票日:{{$ask->created_at_label('Y年m月d日')}}
                 </div>
-                @elseif($ask->type=='unsubscribe')
-                <div class="col-6 mt-1 text-sm">
-                  {{__('labels.unsubscribe')}}{{__('labels.day')}}：{{$ask["start_date"]}}
+                <div class="col-12 text-xs mt-1" title="{{$ask->body}}">
+                  {!!nl2br(str_limit($ask->body, 42,'...'))!!}
                 </div>
-                @else
-                <div class="col-6 mt-1 text-sm">
-                  {{__('labels.limit')}}：{{$ask["end_dateweek"]}}
-                </div>
-                @endif
                 <div class="col-12 text-sm mt-1 text-right">
-                  @component('teachers.forms.ask_button', ['teacher'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+                  @component('teachers.forms.ask_button', ['item'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
                   @endcomponent
                 </div>
             </li>
