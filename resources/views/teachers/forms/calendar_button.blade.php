@@ -69,7 +69,7 @@
   <i class="fa fa-edit"></i>
 </a>
 {{--
-<a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/1?action=delete" role="button" class="btn btn-default btn-sm mx-1">
+<a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" role="button" class="btn btn-default btn-sm mx-1">
   <i class="fa fa-times"></i>
 </a>
 --}}

@@ -129,9 +129,12 @@ class UserCalendarMember extends Model
           break;
       }
     }
+
+    //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
     $template = 'calendar_'.$status;
+
     $u = $this->user->details();
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
@@ -140,15 +143,18 @@ class UserCalendarMember extends Model
     $param['item'] = $this->calendar->details($this->user_id);
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
+
     if(($param['login_user']->role=='teacher' || $param['login_user']->role=='manager') && $u->role == 'student'){
+      //代理の場合
       $param['is_proxy'] = true;
     }
+
     if($is_send_mail){
       //このユーザーにメール送信
       $this->user->send_mail($title, $param, $type, $template);
     }
-    if($is_send_teacher_mail){
-      //担当講師にメール送信
+    if($is_send_teacher_mail && $u->role!="teacher"){
+      //※このmemberが講師の場合はすでに送信しているため、送らない
       if(!($is_send_mail && $this->calendar->user_id == $this->user_id)){
         $this->calendar->teacher_mail($title, $param, $type, $template);
       }

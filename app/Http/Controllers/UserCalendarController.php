@@ -783,7 +783,7 @@ class UserCalendarController extends MilestoneController
           }
         }
         if($is_find === false){
-            abort(403, '有効期限が切れています(41)');
+            abort(403, '有効期限が切れています(43)');
         }
       }
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(84)');
@@ -910,7 +910,7 @@ class UserCalendarController extends MilestoneController
             else if(!empty($form[$member->id.'_status'])){
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
-            else if($member->user_id == $member_user_id){
+            else if($member->user_id == $member_user_id && $param['is_proxy']==false){
               $member->status_update($status, $_remark, $member_user_id);
             }
           }
