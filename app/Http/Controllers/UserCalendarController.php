@@ -1170,6 +1170,7 @@ class UserCalendarController extends MilestoneController
    {
       $param = $this->get_param($request);
       if($request->has('exchanged_calendar_id')){
+        //振替元指定あり
         $param['is_exchange_add'] = true;
 
         $exchanged_calendar_id = intval($request->get('exchanged_calendar_id'));
@@ -1185,6 +1186,7 @@ class UserCalendarController extends MilestoneController
         $param['student_id'] = $student->id;
       }
       else {
+        //新規
         $param['item'] = new UserCalendar();
         $param['item']->work = "";
         $param['item']->place = "";
