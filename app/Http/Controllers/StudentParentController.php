@@ -267,4 +267,5 @@ class StudentParentController extends TeacherController
         return $user;
       }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }
+
 }
