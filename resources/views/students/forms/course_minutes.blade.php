@@ -12,8 +12,6 @@
         <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
         @if(isset($item) && isset($item->id) && $item->has_tag("course_minutes", $index))
         checked
-        @elseif(isset($item) && property_exists($item, "course_minutes") && $index==$item["course_minutes"])
-        checked
         @endif
         id="course_minutes_{{$index}}"
       required="true">
