@@ -77,6 +77,8 @@ return [
   'teacher_setting' => '講師設定',
   'teacher_setting_description' => '担当科目、授業可能曜日の設定',
   'charge_student' => '担当科目、授業可能曜日の設定',
+  'emergency_lecture_cancel_description' => '当日、緊急で休講とする場合',
+
 
   'details' => '詳細',
   'name' => '氏名',
@@ -114,6 +116,7 @@ return [
   'setting' => '設定',
   'day' => '日',
   'date' => '日付',
+  'all_day' => '終日',
   'duration' => '期間',
   'datetime' => '日時',
   'add_datetime' => '登録日時',
@@ -229,6 +232,7 @@ return [
   'recess_or_unsubscribe' => '休会・退会',
   'unsubscribe' => '退会',
   'recess' => '休会',
+  'emergency_lecture_cancel' => '緊急休講連絡',
   'to_recess' => '休会についてはこちら',
   'remark' => '備考',
   'body' => '内容',
@@ -241,7 +245,7 @@ return [
   'rest_contact' => '休み連絡',
   'rest_change' => '休み種別変更',
   'target_month' => '対象年月',
-  'important' => '重要',
+  'important' => '重要事項',
   'important_check' => '重要事項について確認しました',
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',

@@ -377,7 +377,6 @@ class TrialController extends UserCalendarController
          abort(403, 'このメールアドレスは登録済みです。');
        }
      }
-     \Log::warning("d3");
      $res = $this->transaction($request, function() use ($request){
        $form = $request->all();
        $form["accesskey"] = '';

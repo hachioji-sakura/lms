@@ -77,6 +77,7 @@ return [
   'teacher_setting' => 'Teacher Setting',
   'teacher_setting_description' => 'Setting schedule for this teacher',
   'charge_student' => 'Charge Student',
+  'emergency_lecture_cancel_description' => 'In case of emergency rest on the day',
 
   'details' => 'Details',
   'name' => 'Name',
@@ -114,6 +115,7 @@ return [
   'setting' => 'Setting',
   'day' => 'Day',
   'date' => 'Date',
+  'all_day' => 'All Day',
   'duration' => 'Duration',
   'datetime' => 'DateTime',
   'add_datetime' => 'Created At',
@@ -227,6 +229,7 @@ return [
   'recess_or_unsubscribe' => 'Recess Or Unsubscribe',
   'unsubscribe' => 'Unsubscribe',
   'recess' => 'Recess',
+  'emergency_lecture_cancel' => 'Emergency Cancellation',
   'to_recess' => 'Click to Recess Page',
   'remark' => 'Remark',
   'body' => 'Body',

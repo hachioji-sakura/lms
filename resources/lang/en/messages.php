@@ -84,4 +84,8 @@ return [
  'confirm_recess_cancel' => "Do you want to cancel your request for an recess?",
  'info_recess_cancel' => "The recess request has been canceled.",
  'info_unsubscribe_cancel' => "The unsubscribe request has been canceled.",
+ 'confirm_emergency_lecture_cancel' => "Do you want to send a emergency cancellation request?",
+ 'confirm_emergency_lecture_cancel_cancel' => "Do you want to cancel your request for an emergency cancellation?",
+ 'info_emergency_lecture_cancel_cancel' => "The emergency cancellation request has been canceled.",
+
 ];
