@@ -5,7 +5,7 @@
   </label>
   <?php $is_first=true; ?>
   @foreach($attributes['lesson_week'] as $week_day => $week_name)
-    @if($teacher->match_schedule['count'][$week_day] > 0)
+    @if(count($teacher->match_schedule['result'][$week_day]) > 0)
     <label class="mx-2">
       <input type="radio" name="select_lesson_week" value="{{$week_day}}" class="icheck flat-green" required="true"
       onChange="select_lesson_week_change()"
@@ -42,7 +42,7 @@
       </tr>
       @foreach($attributes['lesson_week'] as $week_day => $week_name)
         {{-- 必要な曜日の予定のみ表示 --}}
-        @if($teacher->match_schedule['count'][$week_day] > 0)
+        @if(count($teacher->match_schedule['result'][$week_day]) > 0)
           @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
             @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
             @if($setting->is_enable()==false) @continue @endif
@@ -101,7 +101,7 @@
       ?>
       @foreach($attributes['lesson_week'] as $week_day => $week_name)
         {{-- 必要な曜日の予定のみ表示 --}}
-        @if($teacher->match_schedule['count'][$week_day] > 0)
+        @if(count($teacher->match_schedule['result'][$week_day]) > 0)
             @foreach($teacher->match_schedule['result'][$week_day] as $time_slot)
               @if($time_slot["show"]==true)
               @else

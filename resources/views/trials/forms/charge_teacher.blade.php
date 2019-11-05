@@ -96,8 +96,7 @@
         <tr class="">
           @foreach($attributes['lesson_week'] as $index => $name)
           <td class="p-1 text-center @if($loop->index===0) border-left @endif border-right" id="">
-            @isset($teacher->match_schedule['count'][$index])
-              @if($teacher->match_schedule['count'][$index] > 0)
+              @if(count($teacher->match_schedule['result'][$index]) > 0)
                 @if((isset($is_detail) && $is_detail==true))
                 {{-- 詳細表示 --}}
                   @foreach($teacher->match_schedule['detail'][$index] as $time_slot)
@@ -110,22 +109,19 @@
                   @endforeach
                 @else
                   {{-- 簡易表示 --}}
-                  @if($teacher->match_schedule['count'][$index]<2)
+                  @if(count($teacher->match_schedule['result'][$index])<2)
                   <small class="badge badge-danger mx-2">
-                  @elseif($teacher->match_schedule['count'][$index]<3)
+                  @elseif(count($teacher->match_schedule['result'][$index])<3)
                   <small class="badge badge-warning mx-2">
                   @else
                   <small class="badge badge-primary mx-2">
                   @endif
-                    空き{{$teacher->match_schedule['count'][$index]}}コマ
+                    空き{{count($teacher->match_schedule['result'][$index])}}コマ
                   </small>
                 @endif
               @else
               -
               @endif
-            @else
-            -
-            @endisset
           </td>
           @endforeach
         </tr>
