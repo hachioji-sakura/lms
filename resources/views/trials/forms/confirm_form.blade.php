@@ -8,7 +8,7 @@
   <div class="col-6 p-3 font-weight-bold" >第１希望日時</div>
   <div class="col-6 p-3"><span id="trial_date_time1"></span></div>
   <div class="col-6 p-3 font-weight-bold" >第２希望日時</div>
-  <div class="col-6 p-3"><span id="trial_date_time3"></span></div>
+  <div class="col-6 p-3"><span id="trial_date_time2"></span></div>
   <div class="col-6 p-3 font-weight-bold" >第３希望日時</div>
   <div class="col-6 p-3"><span id="trial_date_time3"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
