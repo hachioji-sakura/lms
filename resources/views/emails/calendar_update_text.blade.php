@@ -1,7 +1,7 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user["name"]}}様
+{{$user["name"]}} 様
 {{__('messages.info_calendar_update', ['trial'=>''])}}
 @elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user["name"]])}}

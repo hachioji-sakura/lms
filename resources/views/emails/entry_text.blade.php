@@ -22,7 +22,7 @@
 {{config('app.url')}}/managers/register?key={{$access_key}}
 …………………………………………………………………………………………
 @else
-{{$user_name}}様
+{{$user_name}} 様
 
 いつも授業をお受けいただき、誠に感謝いたします。
 

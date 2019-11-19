@@ -1,7 +1,7 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user_name}}様
+{{$user_name}} 様
 
 @if($item['trial_id'] > 0)
 この度は、体験授業のお申込み、誠にありがとうございます。

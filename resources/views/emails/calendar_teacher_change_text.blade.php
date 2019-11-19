@@ -1,6 +1,6 @@
 @include('emails.common')
 
-{{$user_name}}様
+{{$user_name}} 様
 いつも授業をお受け頂き、誠にありがとうございます。
 
 以下の授業予定について、

@@ -1,5 +1,5 @@
 @include('emails.common')
-{{$user_name}}様
+{{$user_name}} 様
 
 {{__('messages.trial_entry1')}}
 
