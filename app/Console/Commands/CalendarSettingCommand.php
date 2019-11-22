@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
+use App\Http\Controllers\Controller;
 
 class CalendarSettingCommand extends Command
 {
@@ -13,7 +14,7 @@ class CalendarSettingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'calendarsetting:make {--range=} {--start_date=} {--week_count=} {--id=}';
+    protected $signature = 'calendarsetting:make {--range_month=} {--start_date=} {--week_count=} {--id=}';
 
     /**
      * The console command description.
@@ -39,13 +40,16 @@ class CalendarSettingCommand extends Command
      */
     public function handle()
     {
-      $this->to_calendar($this->option("start_date"), $this->option("range"), $this->option("week_count"), $this->option("id"));
+      $this->to_calendar($this->option("start_date"), $this->option("range_month"), $this->option("week_count"), $this->option("id"));
     }
-    public function to_calendar($start_date='', $range=1, $week_count=5, $id=0)
+    public function to_calendar($start_date='', $range_month=1, $week_count=5, $id=0)
     {
-      $this->info('to_calendar('.$start_date.','.$range.','.$week_count.','.$id.')');
-      if(empty($range)) $range=1;
+      $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
+      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month, 'warning', "remind_trial_calendar");
+
+      if(empty($range_month)) $range_month=2;
       if(empty($week_count)) $week_count=5;
+      if(empty($start_date)) $start_date=date('Y-m-d');
 
       $settings = UserCalendarSetting::enable();
       if(!empty($id)){
@@ -58,7 +62,7 @@ class CalendarSettingCommand extends Command
       }
       $data = [];
       foreach($settings as $setting){
-        $schedules = $setting->get_add_calendar_date($start_date, $range, $week_count);
+        $schedules = $setting->get_add_calendar_date($start_date, $range_month, $week_count);
         foreach($schedules as $date => $already_calendar){
           if(isset($already_calendar) && count($already_calendar)>0){
             //作成済みの場合
@@ -69,6 +73,7 @@ class CalendarSettingCommand extends Command
           if($ret!=null) $data[] = $ret;
         }
       }
+      @$this->send_slack("calendarsetting:to_calendar:end", 'warning', "remind_trial_calendar");
       return false;
     }
     private function _to_calendar($date, $setting){
@@ -149,5 +154,9 @@ class CalendarSettingCommand extends Command
       }
       return $calendar;
     }
-
+    protected function send_slack($message, $msg_type, $username=null, $channel=null) {
+      $controller = new Controller;
+      $res = $controller->send_slack($message, $msg_type, $username, $channel);
+      return $res;
+    }
 }
