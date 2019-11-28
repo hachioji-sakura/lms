@@ -1,5 +1,5 @@
 @include('emails.common')
-{{$user->name()}}様
+{{$user->name()}} 様
 
 休会期間の終了について、ご連絡をいたします。
 

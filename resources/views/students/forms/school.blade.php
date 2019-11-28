@@ -53,6 +53,9 @@ function grade_select_change(){
     else if(grade_name.substring(0,1)=="成"){
       _grade_name = "高校";
     }
+    else if(grade_name.substring(0,1)=="幼"){
+      _grade_name = "小学";
+    }
     console.log("grade_select_change["+_name+"]:"+grade_name+":"+is_school_name_show);
     $(".grade-subject[alt='"+_grade_name+"']").show();
     if(is_school_name_show){

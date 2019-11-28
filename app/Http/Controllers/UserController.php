@@ -317,7 +317,7 @@ class UserController extends Controller
     if(!is_numeric($user_id) || empty($password)){
       return $this->bad_request("", "user_id($user_id)");
     }
-    return $this->transaction($request, function() use ($user_id, $password){
+    return $this->transaction(null, function() use ($user_id, $password){
       $user = User::where('id', $user_id)->first();
       $user->set_password($password);
       return $user;

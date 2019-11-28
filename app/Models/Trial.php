@@ -566,6 +566,7 @@ EOT;
       if($enable_point > 0){
         $match_schedule = $this->get_match_schedule($teacher);
         if($match_schedule['all_count'] >= 0){
+          //var_dump($match_schedule['result']);
           //$teacher->brother_schedule = $this->get_brother_schedule($teacher);
           $teacher->match_schedule = $match_schedule;
           /*
@@ -1003,7 +1004,7 @@ EOT;
           }
         }
 
-        //echo "A:".$week_day.'['.$data["status"].'['.$is_free.']]'.$time."<br>";
+        //echo "候補:曜日[".$week_day.'][st='.$data["status"].'is_free=['.$is_free.']]'.$time."<br>";
         //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
         if($is_free===true){
           $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
@@ -1011,7 +1012,7 @@ EOT;
 
           foreach($teacher->user->calendar_settings as $setting){
             if($setting->lesson_week != $week_day) continue;
-            //echo "B:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
+            //echo "conflict?:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
             if($setting->is_conflict_setting($week_day,$f,$t)==true){
               //echo "conflict!!<br>";
               $is_free = false;
@@ -1021,8 +1022,8 @@ EOT;
             }
           }
         }
-        //echo"[".$week_day."][".$time."][".$this->course_minutes."][".$is_free."]<br>";
         if($is_free===true){
+          //echo"空き[".$week_day."][".$time."][".$this->course_minutes."][".$is_free."]<br>";
           // 空き
           if(empty($from_time)){
             //どこからどこまでの時間が空いているか記録
@@ -1094,7 +1095,7 @@ EOT;
           }
         }
 
-        //echo "[$week_day][$c][".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["status"]."][".$student_schedule[$week_day][$i]["review"]."]<br>";
+        //echo "隣接チェック後：[$week_day][$c][".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["status"]."][".$student_schedule[$week_day][$i]["review"]."]<br>";
       }
     }
     //優先度に応じた、設定可能な曜日×開始時間リストを返す
@@ -1111,11 +1112,10 @@ EOT;
         else {
           $student_schedule[$week_day][$i]["show"] = true;
         }
-        //echo $week_day."[".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["review"]."][".$student_schedule[$week_day][$i]["show"]."]<br>";
+        //echo "最終候補：".$week_day."[".$student_schedule[$week_day][$i]["from"]."][".$student_schedule[$week_day][$i]["review"]."][".$student_schedule[$week_day][$i]["show"]."]<br>";
       }
-      $count[$week_day] = intval($c/$minute_count);
     }
-    return ["all_count" => $all_count, "count"=>$count, "detail" => $detail, "result" => $student_schedule];
+    return ["all_count" => $all_count, "detail" => $detail, "result" => $student_schedule];
   }
   //コマの評価づけ：隣接するスケジュールを優先とする
   private function get_setting_review($user_id, $lesson_week, $from_time_slot, $to_time_slot){

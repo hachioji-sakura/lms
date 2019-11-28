@@ -23,15 +23,15 @@
                 {{$ask->type_name()}}
               @else
                 <label class="mx-2" for="rest_type_1">
-                  <input type="radio" value="schedule_add" name="type" class="icheck flat-green">
+                  <input type="radio" value="schedule_add" name="type" class="icheck flat-green" required="true">
                   通塾スケジュールの追加
                 </label>
                 <label class="mx-2" for="rest_type_2">
-                  <input type="radio" value="schedule_change" name="type" class="icheck flat-green">
+                  <input type="radio" value="schedule_change" name="type" class="icheck flat-green" required="true">
                   通塾スケジュールの変更
                 </label>
                 <label class="mx-2" for="rest_type_2">
-                  <input type="radio" value="request_other" name="type" class="icheck flat-green">
+                  <input type="radio" value="request_other" name="type" class="icheck flat-green" required="true">
                   その他
                 </label>
               @endif
@@ -57,7 +57,7 @@
                 内容
                 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
               </label>
-              <textarea type="text" id="body" name="body" class="form-control" style="height:240px;" placeholder="例：毎週水曜日 19:00～20:00の予定を、金曜日 18:00～19:00に変更したい" >@if(isset($_edit) && $_edit==true){{$ask->body}}@endif</textarea>
+              <textarea type="text" id="body" name="body" required="true" class="form-control" style="height:240px;" placeholder="例：毎週水曜日 19:00～20:00の予定を、金曜日 18:00～19:00に変更したい" >@if(isset($_edit) && $_edit==true){{$ask->body}}@endif</textarea>
             </div>
           </div>
           <div class="row">

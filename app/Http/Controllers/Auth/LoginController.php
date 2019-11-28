@@ -49,7 +49,7 @@ class LoginController extends Controller
       $manager = Manager::where('user_id', $user->id)->first();
       $teacher = Teacher::where('user_id', $user->id)->first();
       if(isset($manager) && strpos(url()->previous(), 'managers/login')){
-        //ログインモードを記録
+        //ログインモードを管理者ページからのログインとして記録
         session()->put('login_role', "manager");
       }
       if(isset($manager) && !isset($teacher)){

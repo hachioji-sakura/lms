@@ -1,6 +1,6 @@
 @include('emails.common')
 @if($send_to==='student')
-{{$user_name}}様
+{{$user_name}} 様
 以下の授業予定を確定いたしました。
 @elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user->name()])}}

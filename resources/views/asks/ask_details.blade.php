@@ -2,6 +2,7 @@
 {{__('labels.ask_list')}}
 @endsection
 @extends('dashboard.common')
+@include($domain.'.menu')
 
 @section('contents')
 <section class="content">
@@ -10,8 +11,10 @@
     <div class="card card-widget">
       <div class="card-header">
         <div class="user-block">
-          <i class="fa fa-phone mx-1 float-left" style="font-size:24px;"></i>
-          <span class="username">
+          <span class="">
+            <a href="{{url()->previous()}}">
+              <i class="fa fa-angle-double-left mr-2"></i>
+            </a>
             依頼詳細
           </span>
         </div>
@@ -57,14 +60,8 @@
           </p>
         </div>
         <div class="col-12 text-right">
-          @component('teachers.forms.ask_button', ['teacher'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
+          @component('teachers.forms.ask_button', ['item'=>$item, 'ask' => $ask, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
           @endcomponent
-          @if($user->id == $item->create_user_id)
-          <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼内容編集" page_form="dialog" page_url="/parents/{{$item->id}}/ask/{{$ask->id}}/edit" role="button" class="btn btn-success btn-sm">
-            <i class="fa fa-edit mr-1"></i>
-            編集
-          </a>
-          @endif
         </div>
       </div>
     </div>
@@ -152,6 +149,13 @@
         </div>
       </div>
       <!-- /.card-body -->
+      <div class="card-header">
+          <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼へのコメント" page_form="dialog" page_url="/asks/{{$ask->id}}/comments/create" role="button" class="btn btn-outline-info btn-sm float-right">
+            <i class="fa fa-comment-dots mr-1"></i>
+            {{__('labels.comment_add')}}
+          </a>
+      </div>
+
     </div>
   </div>
 </div>

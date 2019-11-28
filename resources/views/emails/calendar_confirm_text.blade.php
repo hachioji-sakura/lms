@@ -1,12 +1,17 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user_name}}様
+{{$user_name}} 様
 
 @if($item['trial_id'] > 0)
 この度は、体験授業のお申込み、誠にありがとうございます。
 @endif
-以下のURLより、授業予定のご確認をお願いいたします。
+
+授業予定を登録いたしました。
+現時点では、まだ、授業予定は確定しておりません。
+
+以下のURLより、授業予定の承認をしていただけますと、この予定は確定します。
+
 {{config('app.url')}}/calendars/{{$item['id']}}/status_update/fix?key={{$token}}&user={{$user->user_id}}
 
 ご不明な点等ございましたら、下記までお問い合わせください。　

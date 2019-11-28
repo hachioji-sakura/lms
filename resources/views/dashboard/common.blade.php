@@ -17,7 +17,7 @@
 		<section id="main" class="content">
 			@component('components.action_message', [])
 			@endcomponent
-		  <div class="container-fluid pt-1">
+		  <div class="pt-1">
 				@yield('contents')
 			{{--
 		    <div class="row p-1">

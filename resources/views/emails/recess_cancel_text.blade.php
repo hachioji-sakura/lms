@@ -1,5 +1,5 @@
 @include('emails.common')
-{{$user->name()}}様
+{{$user->name()}} 様
 
 @if($type=='unsubscribe')
 退会依頼キャンセルについて、了承いたしました。

@@ -113,6 +113,7 @@
         </a>
       </li>
       @endif
+      {{--
       @if($user->role==="parent")
       <li class="nav-item">
         <a class="nav-link" href="/{{$domain}}/{{$item->id}}/unsubscribe">
@@ -120,6 +121,7 @@
         </a>
       </li>
       @endif
+      --}}
     </ul>
   </li>
 </ul>

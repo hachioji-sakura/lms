@@ -28,7 +28,7 @@
                     No.{{$tag->name()}}
                   </small>
                 @endif
-                @if($tag->tag_key=="manager_type")
+                @if($tag->tag_key=="manager_type" && $tag->tag_value!='disabled')
                   <small class="badge badge-primary mt-1 mr-1">
                     {{$tag->name()}}
                   </small>
