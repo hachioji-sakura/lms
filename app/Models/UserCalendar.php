@@ -429,7 +429,9 @@ EOT;
     return $ret;
   }
   public function is_management(){
-    if($this->work==9) return true;
+    if(empty($this->work)) return false;
+    if(intval($this->work)==9) return true;
+    if(intval($this->work)<6) return true;
     return false;
   }
   public function is_group(){

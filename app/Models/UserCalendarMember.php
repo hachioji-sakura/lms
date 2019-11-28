@@ -54,7 +54,12 @@ class UserCalendarMember extends Model
     }
     return false;
   }
+  public function remind($login_user_id){
+    \Log::warning("member.remind");
+    $this->status_update("remind", "", $login_user_id);
+  }
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
+    \Log::warning("member.status_update");
     $is_update = false;
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
@@ -64,7 +69,7 @@ class UserCalendarMember extends Model
     switch($status){
       case "remind":
         $is_send_teacher_mail = false;
-        $is_send_mail = false;
+        $is_send_mail = true;
         //リマインド操作＝事務 or 講師
         if($this->status!='confirm'){
           $is_send_mail = false;
@@ -529,7 +534,8 @@ class UserCalendarMember extends Model
       ])->render();
 
     //期限＝予定前日まで
-    $ask = Ask::add("rest_cancel", [
+    $ask = Ask::add([
+      "type" => "rest_cancel",
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
       "body" => $body,
       "target_model" => "user_calendar_members",
@@ -563,7 +569,8 @@ class UserCalendarMember extends Model
       'login_user' => $user->details(),
       ])->render();
 
-    $ask = Ask::add("lecture_cancel", [
+    $ask = Ask::add([
+      "type" => "lecture_cancel",
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
       "body" => $body,
       "target_model" => "user_calendar_members",

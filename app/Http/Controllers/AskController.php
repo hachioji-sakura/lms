@@ -314,12 +314,11 @@ class AskController extends MilestoneController
       $form = $request->all();
       $param = $this->get_param($request);
       $form["create_user_id"] = $param["user"]->user_id;
-      $item = Ask::add($form['type'], $form);
+      $item = Ask::add($form);
       return $item;
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
-
     if($res["data"]==null){
-      $res = $this->error_response("同じ依頼内容がすでに登録されています。");
+      $res = $this->error_response("同じ内容がすでに登録されています。");
     }
     return $res;
    }

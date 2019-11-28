@@ -79,8 +79,10 @@ class StudentController extends UserController
        'attributes' => $this->attributes(),
     ];
     $ret['filter'] = [
+      'is_unchecked' => $request->is_unchecked,
       'is_asc'=>$request->is_asc,
       'is_desc'=>$request->is_desc,
+      'search_keyword' => $request->search_keyword,
       'search_comment_type'=>$request->search_comment_type,
       'search_week'=>$request->search_week,
       'search_work' => $request->search_work,
@@ -110,10 +112,10 @@ class StudentController extends UserController
       $lists = ['cancel', 'confirm', 'exchange', 'month', 'rest_contact'];
       foreach($lists as $list){
         $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
-        $ret[$list.'_count'] = $calendars["count"];
+        $ret[$list.'_count'] = $calendars['count'];
       }
       $asks = $this->get_ask([], $ret['item']->user_id);
-      $ret['ask_count'] = $asks["count"];
+      $ret['ask_count'] = $asks['count'];
     }
     else {
       if(!$this->is_manager_or_teacher($user->role)){
@@ -265,8 +267,8 @@ class StudentController extends UserController
 
    //コメントデータ取得
    $form = $request->all();
-   $comments = $this->get_comments($form, $item->user_id);
-   $star_comments = $this->get_comments(['is_star' => true], $item->user_id);
+   $comments = $model->get_comments($form, $item->user_id);
+   $star_comments = $model->get_comments(['is_star' => true], $item->user_id);
    /*
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
@@ -286,6 +288,35 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
   }
+  public function emergency_lecture_cancel(Request $request, $id)
+  {
+     $param = $this->get_param($request, $id);
+     $model = $this->model()->where('id',$id);
+     if(!isset($model)){
+        abort(404);
+     }
+     $model = $model->first()->user;
+     $item = $model->details();
+     $user = $param['user'];
+     //重複登録があるかチェック
+     $from_date = date('Y-m-d 00:00:00');
+     $to_date = date('Y-m-d 23:59:59');
+     $param['already_data'] = $item->already_ask_data('emergency_lecture_cancel',$param['user']->user_id);
+     if($param['already_data']!=null){
+       $from_date = $param['already_data']->start_date.' '.$param['already_data']->from_time_slot;
+       $to_date = $param['already_data']->start_date.' '.$param['already_data']->to_time_slot;
+     }
+     $calendars = $this->get_schedule(
+       [
+         'search_from_date' =>  $from_date,
+         'search_to_date' =>  $to_date,
+         'search_status' => ['fix'],
+       ], $param['item']->user_id);
+     $param['calendars'] = $calendars['data'];
+     $view = 'asks.emergency_lecture_cancel';
+     return view($view, [
+     ])->with($param);
+  }
   public function unsubscribe(Request $request, $id)
   {
    $param = $this->get_param($request, $id);
@@ -297,8 +328,8 @@ class StudentController extends UserController
    $item = $model->details();
    $user = $param['user'];
    //重複登録があるかチェック
-   $param['recess_data'] = $item->already_recess_data($param['user']->user_id);
-   $param['already_data'] = $item->already_unsubscribe_data($param['user']->user_id);
+   $param['recess_data'] = $item->already_ask_data('recess',$param['user']->user_id);
+   $param['already_data'] = $item->already_ask_data('unsubscribe',$param['user']->user_id);
    return view('asks.unsubscribe', [
    ])->with($param);
   }
@@ -314,10 +345,42 @@ class StudentController extends UserController
    $user = $param['user'];
 
    //重複登録があるかチェック
-   $param['already_data'] = $item->already_recess_data($param['user']->user_id);
-   $param['unsubscribe_data'] = $item->already_unsubscribe_data($param['user']->user_id);
+   $param['already_data'] = $item->already_ask_data('recess', $param['user']->user_id);
+   $param['unsubscribe_data'] = $item->already_ask_data('unsubscribe', $param['user']->user_id);
    return view('asks.recess', [
    ])->with($param);
+  }
+  public function late_arrival(Request $request, $id)
+  {
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id);
+   if(!isset($model)){
+      abort(404);
+   }
+   if($this->domain=="parents" && count($param['item']->relations)==1){
+     return redirect('/students/'.$param['item']->relations[0]->student->id.'/late_arrival');
+   }
+   $model = $model->first()->user;
+   $item = $model->details();
+   $user = $param['user'];
+
+   //重複登録があるかチェック
+   $from_date = date('Y-m-d 00:00:00');
+   $to_date = date('Y-m-d 23:59:59');
+   $param['already_data'] = $item->already_ask_data('late_arrival',$param['user']->user_id);
+   if($param['already_data'] != null){
+     $from_date = $param['already_data']->start_date.' '.$param['already_data']->from_time_slot;
+     $to_date = $param['already_data']->start_date.' '.$param['already_data']->to_time_slot;
+   }
+   $calendars = $this->get_schedule(
+     [
+       'search_from_date' =>  $from_date,
+       'search_to_date' =>  $to_date,
+       'search_status' => ['fix'],
+     ], $param['item']->user_id);
+
+   $param['calendars'] = $calendars['data'];
+   return view('asks.late_arrival', [])->with($param);
   }
   /**
    * 詳細画面表示
@@ -343,6 +406,57 @@ class StudentController extends UserController
      'milestones'=>$milestones,
    ])->with($param);
  }
+ public function announcements(Request $request, $id)
+ {
+   if(!$request->has('_line')){
+     $request->merge([
+       '_line' => $this->pagenation_line,
+     ]);
+   }
+   if(!$request->has('_page')){
+     $request->merge([
+       '_page' => 1,
+     ]);
+   }
+   else if($request->get('_page')==0){
+     $request->merge([
+       '_page' => 1,
+     ]);
+   }
+
+   $param = $this->get_param($request, $id);
+   $model = $this->model()->where('id',$id)->first()->user;
+   $item = $model->details();
+   $item['tags'] = $model->tags();
+   $user = $param['user'];
+   //status: new > confirm > fix >rest, presence , absence
+   //other status : cancel
+
+   $view = "comments";
+   $form = $request->all();
+   $comments = $model->get_comments($form, $item->user_id);
+   $star_comments = $model->get_comments(['is_star' => true], $item->user_id);
+
+   $page_data = $this->get_pagedata($comments['count'] , $param['_line'], $param['_page']);
+   foreach($page_data as $key => $val){
+     $param[$key] = $val;
+   }
+   $param["comments"] = $comments;
+   /*
+   $filter_keys = ['search_from_date', 'search_to_date', 'importance', 'is_desc', ''];
+   foreach($filter_keys as $filter_key){
+     if($request->has($filter_key)){
+       $param['filter'][$filter_key] = $request->get($filter_key);
+     }
+   }
+   $param['view'] = $view;
+   */
+   return view('comments.announcements', [
+     'item' => $item,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+ }
+
  public function schedule(Request $request, $id)
  {
    if(!$request->has('_line')){
@@ -372,7 +486,7 @@ class StudentController extends UserController
 
    $view = "schedule";
    $calendars = $this->get_schedule($request->all(), $item->user_id);
-   $page_data = $this->get_pagedata($calendars["count"] , $param['_line'], $param["_page"]);
+   $page_data = $this->get_pagedata($calendars['count'] , $param['_line'], $param['_page']);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
    }
@@ -421,7 +535,7 @@ class StudentController extends UserController
    $user = $param['user'];
 
    $asks = $this->get_ask($request->all(), $item->user_id);
-   $page_data = $this->get_pagedata($asks["count"] , $param['_line'], $param["_page"]);
+   $page_data = $this->get_pagedata($asks['count'] , $param['_line'], $param['_page']);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
    }
@@ -470,9 +584,29 @@ class StudentController extends UserController
    }
    $param['filter'] = $filter;
    $param['view'] = $view;
+
+
+   switch($this->domain){
+     case "students":
+      $no = $item->tag_value('student_no');
+      $url = 'https://hachiojisakura.com/sakura/schedule/student_fee_list.php?student_id='.$no.'&api-token='.$this->token;
+      break;
+     case "teachers":
+      $no = $item->tag_value('teacher_no');
+      $url = 'https://hachiojisakura.com/sakura/schedule/teacher_list.php?teacher_id='.$no.'&api-token='.$this->token;
+      break;
+    case "managers":
+     $no = $item->tag_value('manager_no');
+     $url = 'https://hachiojisakura.com/sakura/schedule/staff_list.php?staff_id='.$no.'&api-token='.$this->token;
+     break;
+   }
+   return redirect($url, 301, [], true);
+
+   /*
    return view($this->domain.'.'.$view, [
      'item' => $item,
    ])->with($param);
+   */
  }
  public function calendar_settings(Request $request, $id)
  {
@@ -489,56 +623,6 @@ class StudentController extends UserController
      'calendar_settings' => $calendar_settings,
    ])->with($param);
  }
- public function get_comments($form, $user_id, $from_date = '', $to_date = ''){
-   $user = User::where('id', $user_id)->first()->details();
-   $form['_sort'] ='created_at';
-   $comment_types = [];
-   $is_exchange = false;
-   $is_desc = false;
-   if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
-   if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
-
-   $sort = 'desc';
-   if(isset($form['is_asc']) && $form['is_asc']==1){
-     $sort = 'asc';
-   }
-
-   $is_star = false;
-   if(isset($form['is_star']) && $form['is_star']==1){
-     $is_star = true;
-   }
-
-   if(isset($form['search_from_date'])){
-     $from_date = $form['search_from_date'];
-   }
-   if(isset($form['search_to_date'])){
-     $to_date = $form['search_to_date'];
-   }
-   if(isset($form['search_comment_type'])){
-     $comment_types = $form['search_comment_type'];
-   }
-   $comments = Comment::rangeDate($from_date, $to_date);
-   $comments = $comments->findTypes($comment_types);
-   $comments = $comments->findTargetUser($user_id);
-   if($is_star==true){
-     $comments = $comments->where('importance', '>', 0);
-   }
-   else {
-     $comments = $comments->findDefaultTypes();
-   }
-   $count = $comments->count();
-   if($is_star==true){
-     $comments = $comments->orderBy('importance', 'desc')
-                          ->orderBy('created_at', 'desc');
-   }
-   else {
-     $comments = $comments->sortCreatedAt($sort);
-   }
-
-   $comments = $comments->get();
-   return ["data" => $comments, "count" => $count];
- }
-
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
@@ -664,7 +748,7 @@ class StudentController extends UserController
    }
 
 
-   return ["data" => $calendars, "count" => $count];
+   return ["data" => $calendars, 'count' => $count];
  }
  public function get_ask($form, $user_id){
    if(!isset($form['list'])) $form['list'] = '';
@@ -734,9 +818,8 @@ class StudentController extends UserController
    }
    //echo $asks->toSql();
    $asks = $asks->get();
-   return ["data" => $asks, "count" => $count];
+   return ["data" => $asks, 'count' => $count];
  }
-
  public function get_tuition($form, $id){
    if(!isset($form['list'])) $form['list'] = '';
    $default_status = 'new';
@@ -770,7 +853,7 @@ class StudentController extends UserController
 
    //echo $tuitions->toSql();
    $tuitions = $tuitions->get();
-   return ["data" => $tuitions, "count" => $count];
+   return ["data" => $tuitions, 'count' => $count];
  }
 
  /**
@@ -893,10 +976,10 @@ class StudentController extends UserController
     if($send_to=='staff') $send_to = 'manager';
 
     if($this->is_success_response($res)){
-      $title = "システム本登録のお願い";
+      $title = __('labels.system_register_request');
       $this->send_mail($email,
         $title, [
-        'user_name' => $param['item']['name'],
+        'user_name' => $param['item']->name(),
         'access_key' => $access_key,
         'remind' => true,
         'send_to' => $send_to,
@@ -971,7 +1054,7 @@ class StudentController extends UserController
       $form = $request->all();
       $form["target_user_id"] = $param["item"]->user_id;
       $form["create_user_id"] = $param["user"]->user_id;
-      $ask = Ask::add($form['type'], $form);
+      $ask = Ask::add($form);
       return $ask;
     }, '問い合わせ登録', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, '登録しました。');

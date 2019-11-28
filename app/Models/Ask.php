@@ -66,8 +66,11 @@ EOT;
       $form['status'] = 'new';
     }
     $ask = Ask::where('type', $type)
-      ->where('status', $form['status'])
-      ->where('target_model', $form['target_model'])
+      ->where('status', $form['status']);
+    if(isset($form['start_date'])){
+      $ask = $ask->where('start_date', $form['start_date']);
+    }
+    $ask = $ask->where('target_model', $form['target_model'])
       ->where('target_model_id', $form['target_model_id'])
       ->where('target_user_id', $form['target_user_id'])->first();
     if(isset($ask)) {
@@ -76,11 +79,12 @@ EOT;
     }
     return null;
   }
-  static protected function add($type, $form){
+  static protected function add($form, $file=null){
+
     $parent_ask_id = 0;
     if(isset($form['parent_ask_id'])){
       $parent_ask_id = $form['parent_ask_id'];
-      if($type=="teacher_change"){
+      if($form['type']=="teacher_change"){
         if(!isset($form['target_user_id'])){
           //担当者・対象者は一緒
           $form['target_user_id'] = $form['charge_user_id'];
@@ -116,17 +120,35 @@ EOT;
     if(!isset($form['target_model_id'])){
       $form['target_model_id'] = 0;
     }
+
+    if(!isset($form['from_time_slot'])){
+      $form['from_time_slot'] = "";
+    }
+    if(!isset($form['to_time_slot'])){
+      $form['to_time_slot'] = "";
+    }
+    if(!isset($form['status'])){
+      $form['status'] = "new";
+    }
+
+    \Log::warning("a1");
+    /*
     if(Ask::already_data($type, $form)!=null){
+      \Log::warning("競合！");
       return null;
     }
+    */
+    var_dump($form);
     $ask = Ask::create([
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],
-      'type' => $type,
+      'type' => $form['type'],
       'parent_ask_id' => $parent_ask_id,
-      'status' => 'new',
+      'status' => $form['status'],
       'title' => $form['title'],
       'body' => $form['body'],
+      'from_time_slot' => $form['from_time_slot'],
+      'to_time_slot' => $form['to_time_slot'],
       'target_model' => $form['target_model'],
       'target_model_id' => $form['target_model_id'],
       'charge_user_id' => $form['charge_user_id'],
@@ -162,7 +184,7 @@ EOT;
     return $d;
   }
 
-  public function change($form){
+  public function change($form, $file=null, $is_file_delete = false){
     if(isset($form["status"]) && isset($form["login_user_id"])){
       $this->_change($form['status'], $form['login_user_id']);
       $this->update(['status'=>$form['status']]);
@@ -272,6 +294,7 @@ EOT;
   public function remind_mail($login_user_id, $is_remind=false){
     $res = false;
     $param = [];
+    $param['ask'] = $this->details();
     $param['send_to'] = 'teacher';
     $param['login_user'] = User::where('id', $login_user_id)->first()->details();
     $target_model_data = $this->get_target_model_data();
@@ -285,6 +308,8 @@ EOT;
       case "teacher_change":
       case "rest_cancel":
       case "lecture_cancel":
+      case "emergency_lecture_cancel":
+      case "late_arrival":
         $param["item"] = $target_model_data->calendar->details($this->target_user_id);
         break;
     }
