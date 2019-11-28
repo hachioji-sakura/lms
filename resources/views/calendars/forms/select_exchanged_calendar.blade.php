@@ -5,6 +5,12 @@ $(function(){
   get_exchange_calendar();
 });
 function get_exchange_calendar(){
+  var schedule_type = $('input[name=schedule_type]:checked').val();
+  if(schedule_type!="class"){
+    $('input[name=exchanged_calendar_datetime]').val("");
+    $('input[name=exchanged_calendar_id]').val("");
+    return false;
+  }
   var teacher_id = ($('*[name=teacher_id]').val())|0;
   var student_id = $('select[name="student_id[]"]').val()|0;
   var lesson = ($('input[name=lesson]:checked').val())|0;

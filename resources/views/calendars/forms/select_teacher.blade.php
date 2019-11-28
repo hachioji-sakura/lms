@@ -1,5 +1,5 @@
 @if(isset($teachers) && count($teachers)==1)
-<div class="col-12">
+<div class="col-6">
   <div class="form-group">
     <label for="start_date" class="w-100">
       {{__('labels.teachers')}}

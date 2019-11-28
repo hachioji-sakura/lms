@@ -12,7 +12,7 @@
       <div class="card-header">
         <div class="user-block">
           <span class="">
-            <a href="{{url()->previous()}}">
+            <a href="/{{$domain}}/{{$item->id}}/ask">
               <i class="fa fa-angle-double-left mr-2"></i>
             </a>
             依頼詳細
@@ -166,7 +166,7 @@
 @section('page_footer')
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_form="dialog" page_url="/parents/{{$item->id}}/ask/{{$ask->id}}/edit" page_title="依頼内容編集">
-    <i class="fa fa-edit"></i>依頼編集
+    <i class="fa fa-edit"></i>{{__('labels.asks')}}{{__('labels.edit')}}
   </a>
 </dt>
 <dt>

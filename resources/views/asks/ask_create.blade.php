@@ -22,18 +22,12 @@
               @if(isset($_edit) && $_edit==true)
                 {{$ask->type_name()}}
               @else
+                @foreach($attributes['ask_type'] as $index => $name)
                 <label class="mx-2" for="rest_type_1">
-                  <input type="radio" value="schedule_add" name="type" class="icheck flat-green" required="true">
-                  通塾スケジュールの追加
+                  <input type="radio" value="{{$index}}" name="type" class="icheck flat-green" required="true">
+                  {{$name}}
                 </label>
-                <label class="mx-2" for="rest_type_2">
-                  <input type="radio" value="schedule_change" name="type" class="icheck flat-green" required="true">
-                  通塾スケジュールの変更
-                </label>
-                <label class="mx-2" for="rest_type_2">
-                  <input type="radio" value="request_other" name="type" class="icheck flat-green" required="true">
-                  その他
-                </label>
+                @endforeach
               @endif
             </div>
           </div>

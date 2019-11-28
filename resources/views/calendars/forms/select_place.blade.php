@@ -1,4 +1,4 @@
-<div class="col-12 col-lg-6">
+<div class="col-12 col-md-6">
   <div class="form-group">
     <label for='place_floor_id' class="w-100">
       {{__('labels.place')}}
