@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 Auth::routes();
 
 if(isset($_GET["locale"]) && !empty($_GET["locale"])){
@@ -48,7 +50,15 @@ Route::resource('attributes','GeneralAttributeController');
 Route::resource('milestones','MilestoneController');
 Route::get('comments/{id}/publiced','CommentController@publiced_page');
 Route::put('comments/{id}/publiced','CommentController@publiced');
+Route::put('comments/{id}/checked','CommentController@checked');
+Route::put('comments/{id}/importanced','CommentController@importanced');
 Route::resource('comments','CommentController');
+
+Route::get('announcements/{id}/publiced','AnnouncementController@publiced_page');
+Route::put('announcements/{id}/publiced','AnnouncementController@publiced');
+Route::put('announcements/{id}/checked','AnnouncementController@checked');
+Route::resource('announcements','AnnouncementController');
+
 
 Route::resource('calendar_settings','UserCalendarSettingController');
 Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
@@ -60,6 +70,7 @@ Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_
 
 Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
+Route::put('calendars/{id}/remind','UserCalendarController@remind');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
 Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
 Route::get('space_calendars','UserCalendarController@space_calendars');
@@ -101,8 +112,6 @@ Route::resource('lectures','LectureController');
 Route::resource('publisher','PublisherController');
 Route::resource('textbooks','TextbookController');
 */
-Route::get('teachers/{id}/month_work/{target_moth?}','TeacherController@month_work');
-Route::post('teachers/{id}/month_work','TeacherController@month_work_confirm');
 Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
 Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
 Route::get('teachers/{id}/students','TeacherController@get_charge_students');
@@ -113,6 +122,9 @@ Route::get('teachers/entry','TeacherController@entry');
 Route::post('teachers/entry','TeacherController@entry_store');
 Route::get('teachers/register','TeacherController@register');
 Route::post('teachers/register','TeacherController@register_update');
+Route::get('teachers/{id}/month_work/{target_moth?}','TeacherController@month_work');
+Route::post('teachers/{id}/month_work','TeacherController@month_work_confirm');
+
 Route::get('managers/entry','ManagerController@entry');
 Route::post('managers/entry','ManagerController@entry_store');
 Route::get('managers/register','ManagerController@register');
@@ -156,17 +168,20 @@ Route::get('icon/change','ImageController@icon_change_page');
 Route::put('icon/change','ImageController@icon_change');
 
 
-Route::post('students/{id}/comments/create','CommentController@student_comments_store');
+//Route::post('students/{id}/comments/create','CommentController@student_comments_store');
 Route::get('students/{id}/calendar','StudentController@calendar');
 Route::get('students/{id}/schedule','StudentController@schedule');
 Route::get('students/{id}/unsubscribe','StudentController@unsubscribe');
 Route::get('students/{id}/recess','StudentController@recess');
+Route::get('students/{id}/late_arrival','StudentController@late_arrival');
 Route::get('students/{id}/resume','StudentController@resume');
 Route::get('students/{id}/tuition','StudentController@tuition');
+Route::get('students/{id}/announcements','StudentController@show');
+
 
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
 Route::get('teachers/{id}/schedule','TeacherController@schedule');
-Route::get('teachers/{id}/unsubscribe','TeacherController@unsubscribe');
+Route::get('teachers/{id}/emergency_lecture_cancel','TeacherController@emergency_lecture_cancel');
 Route::get('teachers/{id}/recess','TeacherController@recess');
 Route::get('teachers/{id}/resume','TeacherController@resume');
 Route::get('teachers/{id}/tuition','TeacherController@tuition');
@@ -176,20 +191,24 @@ Route::post('teachers/{id}/ask','TeacherController@ask_create');
 Route::get('teachers/{id}/ask/{ask_id}','TeacherController@ask_details');
 Route::get('teachers/{id}/ask/{ask_id}/edit','TeacherController@ask_edit');
 Route::put('teachers/{id}/ask/{ask_id}','TeacherController@ask_update');
+Route::get('teachers/{id}/announcements','TeacherController@announcements');
 
 Route::get('managers/{id}/calendar','ManagerController@calendar');
 Route::get('managers/{id}/unsubscribe','ManagerController@unsubscribe');
 Route::get('managers/{id}/recess','ManagerController@recess');
 Route::get('managers/{id}/resume','ManagerController@resume');
+Route::get('managers/{id}/tuition','ManagerController@tuition');
 Route::get('managers/{id}/ask','ManagerController@ask');
 Route::get('managers/{id}/ask/create','ManagerController@ask_create_page');
 Route::post('managers/{id}/ask','ManagerController@ask_create');
 Route::get('managers/{id}/ask/{ask_id}','ManagerController@ask_details');
 Route::get('managers/{id}/ask/{ask_id}/edit','ManagerController@ask_edit');
 Route::put('managers/{id}/ask/{ask_id}','ManagerController@ask_update');
+Route::get('managers/{id}/announcements','ManagerController@announcements');
 
 Route::get('parents/{id}/unsubscribe','StudentParentController@unsubscribe');
 Route::get('parents/{id}/recess','StudentParentController@recess');
+Route::get('parents/{id}/late_arrival','StudentParentController@late_arrival');
 Route::get('parents/{id}/students','StudentParentController@get_charge_students');
 Route::get('parents/{id}/ask','StudentParentController@ask');
 Route::get('parents/{id}/ask/create','StudentParentController@ask_create_page');
@@ -197,6 +216,7 @@ Route::post('parents/{id}/ask','StudentParentController@ask_create');
 Route::get('parents/{id}/ask/{ask_id}','StudentParentController@ask_details');
 Route::get('parents/{id}/ask/{ask_id}/edit','StudentParentController@ask_edit');
 Route::put('parents/{id}/ask/{ask_id}','StudentParentController@ask_update');
+Route::get('parents/{id}/announcements','StudentParentController@announcements');
 
 
 
@@ -238,6 +258,7 @@ Route::get('faqs/{id}/page','FaqController@page');
 Route::get('home', 'HomeController@index')->name('home');
 Route::get('recess', 'HomeController@recess');
 Route::get('unsubscribe', 'HomeController@unsubscribe');
+Route::get('late_arrival', 'HomeController@late_arrival');
 
 //教科書を選択する画面
 Route::get('examinations', 'TextbookController@examination_textbook');

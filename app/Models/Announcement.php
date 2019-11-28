@@ -3,37 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CommentCheck;
 
-class Comment extends Milestone
+class Announcement extends Comment
 {
-  protected $table = 'lms.comments';
+  protected $table = 'lms.announcements';
   protected $guarded = array('id');
 
   public static $rules = array(
-      'title' => 'required',
       'body' => 'required',
       'type' => 'required'
   );
   public function type_name()
   {
-    $ret = $this->attribute_name('comment_type', $this->type);
+    $ret = $this->attribute_name('announcement_type', $this->type);
     if(!empty($ret)) return $ret;
     $ret =  __('labels.'.$this->type.'_comment');
     if(!empty($ret)) return $ret;
     return "";
   }
-  public function publiced_date(){
-    return $this->_date_label($this->publiced_at, 'Y年m月d日');
-  }
-  public function details(){
-    $item =  parent::details();
-    $item["publiced_date"] = $this->publiced_date();
-    return $item;
-  }
   public function scopeFindDefaultTypes($query, $domain)
   {
-    $_types = config('attribute.comment_type');
+    $_types = config('attribute.announcement_type');
     $types = [];
     foreach($_types as $index => $val){
       $types[] = $index;
@@ -43,24 +33,24 @@ class Comment extends Milestone
   public function scopeUnChecked($query, $user_id)
   {
     $where_raw = <<<EOT
-      id not in (select comment_id from lms.comment_checks where check_user_id = ? and is_checked=1)
+      id not in (select comment_id from lms.announcement_checks where check_user_id = ? and is_checked=1)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
 
   public function comment_checks(){
-    return $this->hasMany('App\Models\CommentCheck');
+    return $this->hasMany('App\Models\AnnouncementCheck');
   }
   public function is_check($user_id){
-    $check = CommentCheck::where('comment_id', $this->id)->where('check_user_id', $user_id)->first();
+    $check = AnnouncementCheck::where('announcement_id', $this->id)->where('check_user_id', $user_id)->first();
     if(!isset($check)) return false;
     return $check->is_checked;
   }
   public function check($user_id, $val=1){
-    $check = CommentCheck::where('comment_id', $this->id)->where('check_user_id', $user_id)->first();
+    $check = AnnouncementCheck::where('announcement_id', $this->id)->where('check_user_id', $user_id)->first();
     if(!isset($check)){
-      $check = CommentCheck::create([
-        'comment_id' => $this->id,
+      $check = AnnouncementCheck::create([
+        'announcement_id' => $this->id,
         'check_user_id' => $user_id,
         'is_checked' => $val
       ]);

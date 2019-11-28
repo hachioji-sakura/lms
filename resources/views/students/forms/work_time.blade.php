@@ -17,21 +17,6 @@
       </th>
       @endforeach
     </tr>
-    <tr class="">
-      <th class="p-1 text-center week_time_label" alt="disabled">不可</th>
-      @foreach($attributes['lesson_week'] as $week_code => $week_name)
-      <td class="p-1 text-center">
-        <input type="checkbox" value="disabled" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-grey week_time"  onChange="week_change(this)"  validate="week_validate()"
-          @if($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time', 'disabled')===true)
-          checked
-          @elseif($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time')===false)
-          checked
-          @elseif($_edit===false)
-          @endif
-         >
-      </td>
-      @endforeach
-    </tr>
     <?php
       $attribute_name = $prefix.'_time';
       if($prefix=='trial'){

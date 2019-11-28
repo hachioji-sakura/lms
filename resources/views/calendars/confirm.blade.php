@@ -11,7 +11,7 @@
   @method('PUT')
   <div class="row">
 @if(isset($user) && $user->role==="manager")
-<div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_action">
+<div class="col-12 col-md-6 mb-1" id="{{$domain}}_action">
   <form method="POST" action="/calendars/{{$item['id']}}">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
@@ -22,8 +22,8 @@
     </button>
   </form>
 </div>
-<div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-  <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind">
+<div class="col-12 col-md-6 mb-1" id="{{$domain}}_confirm">
+  <form method="POST" action="/calendars/{{$item['id']}}/remind">
     @csrf
 		<input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
@@ -35,7 +35,7 @@
 </div>
 @elseif(isset($user) && $user->role==="teacher")
     @if($item['trial_id'] < 1 && $item['status']==='new')
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
+    <div class="col-12 col-md-6 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >
@@ -47,7 +47,7 @@
         </button>
       </form>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_action">
+    <div class="col-12 col-md-6 mb-1" id="{{$domain}}_action">
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >

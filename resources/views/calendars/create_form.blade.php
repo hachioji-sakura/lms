@@ -1,25 +1,25 @@
 @section('first_form')
 <div class="row">
-  @if($item->work!=9)
+  @if($item->is_management()==false)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
-  @endif
-  @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-  @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-  {{--
-  @if(isset($_edit) && $_edit==true && $user->is_admin()==true)
-    @component('calendars.forms.select_status', ['item'=>$item, 'attributes' => $attributes]); @endcomponent
-  @endif
-  --}}
-  @if($item->work!=9)
+    @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+  @else
+    @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
   @endif
 </div>
 @endsection
 @section('second_form')
 <div class="row">
-  @if($item->work!=9)
+  @if($item->is_management()==false)
     @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_work', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
     @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
     @if(isset($teachers) && count($teachers)==1)
@@ -38,18 +38,34 @@
     <?php
       $form_data = ["teacher_name" => __('labels.teachers'),
                     "start_time"=> __('labels.start_date'),
+                    "work_time"=> __('labels.timezone'),
                     "place_floor_id_name"=> __('labels.place'),
                     "course_minutes_name"=> __('labels.lesson_time'),
                     "course_type_name"=> __('labels.lesson_type'),
+                    "work_name"=> __('labels.work'),
+                    "work_time"=> __('labels.datetime'),
                     "student_name"=> __('labels.students'),
-                    "subject_name" => __('labels.subject')];
+                    "subject_name" => __('labels.subject')
+                  ];
     ?>
     @foreach($form_data as $key => $name)
-    <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
-    <div class="col-6 p-3">
+    <div class="col-6 p-3 font-weight-bold
+    @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
+     schedule_type schedule_type_class
+     @elseif($key=="work_name" || $key=="work_time")
+     schedule_type schedule_type_other
+    @endif
+    " >{{$name}}</div>
+    <div class="col-6 p-3
+    @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
+     schedule_type schedule_type_class
+     @elseif($key=="work_name" || $key=="work_time")
+      schedule_type schedule_type_other
+    @endif
+    ">
       <span id="{{$key}}"></span>
       @if($key=="start_time")
-        <span class="text-xs add_type add_type_new">
+        <span class="text-xs add_type add_type_new schedule_type schedule_type_class">
           @if($item->trial_id > 0)
           <small class="badge badge-success mt-1 mr-1">
             {{__('labels.trial_lesson')}}
@@ -67,7 +83,7 @@
       @endif
      </div>
       @if($key=="start_time" && $_edit == false)
-        <div class="col-12 add_type add_type_exchange px-3" >
+        <div class="col-12 add_type add_type_exchange px-3 schedule_type schedule_type_class" >
           <span class="text-xs">
             <small class="badge badge-primary mt-1 mr-1 p-1">
               <i class="fa fa-exchange-alt mr-1"></i>
@@ -76,7 +92,7 @@
           </span>
         </div>
       @elseif($key=="start_time" && $_edit == true && $item["is_exchange"]==true)
-        <div class="col-12 px-3" >
+        <div class="col-12 px-3 schedule_type schedule_type_class" >
           <span class="text-xs">
             <small class="badge badge-primary mt-1 mr-1 p-1">
               <i class="fa fa-exchange-alt mr-1"></i>

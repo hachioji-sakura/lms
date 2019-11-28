@@ -118,7 +118,7 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="/teachers/{{$item->id}}/calendar_settings" >
+        <a class="" href="/{{$domain}}/{{$item->id}}/calendar_settings" >
         <div class="info-box">
           <span class="info-box-icon bg-secondary">
             <i class="fa fa-calendar-alt"></i>
@@ -143,6 +143,21 @@
         </div>
         </a>
       </div>
+      {{--
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/emergency_lecture_cancel" page_title="{{__('labels.emergency_lecture_cancel')}}">
+        <div class="info-box">
+          <span class="info-box-icon bg-danger">
+            <i class="fa fa-exclamation-triangle"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">{{__('labels.emergency_lecture_cancel')}}</b>
+            <span class="text-sm">{{__('labels.emergency_lecture_cancel_description')}}</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      --}}
     </div>
 	</div>
 </section>
@@ -209,7 +224,7 @@
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
                       {{-- 予定確認 --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                         <i class="fa fa-envelope mr-1"></i>/
                         {{__('labels.details')}}
                       </a>
@@ -252,10 +267,10 @@
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-12 col-lg-6 col-md-6">
+			<div class="col-12 col-md-6">
 				@yield('milestones')
 			</div>
-			<div class="col-12 col-lg-6 col-md-6">
+			<div class="col-12 col-md-6">
 				@yield('events')
 			</div>
 		</div>

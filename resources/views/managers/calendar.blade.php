@@ -6,32 +6,6 @@
 
 
 @section('contents')
-{{--
-<section id="member" class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
-            @slot('courtesy')
-            @endslot
-            @slot('alias')
-              <h6 class="widget-user-desc">
-                @foreach($item["tags"] as $tag)
-                <small class="badge badge-secondary mt-1 mr-1">
-                  {{$tag->name()}}
-                </small>
-                @endforeach
-              </h6>
-            @endslot
-        @endcomponent
-			</div>
-			<div class="col-md-8">
-				@yield('comments')
-			</div>
-		</div>
-	</div>
-</section>
---}}
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
@@ -41,6 +15,7 @@
           // 選択可
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
+            var _course_minutes = end.diff(start, 'minutes');
             $calendar.fullCalendar("removeEvents", -1);
             $calendar.fullCalendar('unselect');
             $calendar.fullCalendar('addEventSource', [{
@@ -60,6 +35,7 @@
             param += "&end_date="+end_date;
             param += "&end_hours="+end.hour();
             param += "&end_minutes="+end.minute();
+            param += "&course_minutes="+_course_minutes;
             base.showPage('dialog', "subDialog", "勤務追加", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });
@@ -73,7 +49,7 @@
                 base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
                 break;
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/status_update/remind");
+                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/remind");
                 break;
               case "fix":
                 if(event.is_passed==true){
