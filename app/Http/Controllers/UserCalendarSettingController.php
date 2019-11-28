@@ -25,8 +25,8 @@ class UserCalendarSettingController extends UserCalendarController
     public function model(){
       return UserCalendarSetting::query();
     }
-    public function show_fields($work){
-      if($work==9){
+    public function show_fields($item){
+      if($item->is_management()==true){
         $ret = [
           'title' => [
             'label' => __('labels.title'),
@@ -282,7 +282,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
       if($param['item']->is_teaching()===false){
         unset($param['fields']['subject']);
         unset($param['fields']['student_name']);
@@ -301,7 +301,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function to_calendar_page(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
       $param['add_dates'] = $param['item']->get_add_calendar_date();
 
       return view($this->domain.'.to_calendar', [
