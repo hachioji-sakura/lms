@@ -44,10 +44,15 @@ class StudentParentController extends TeacherController
       'list' => $request->get('list'),
       'attributes' => $this->attributes(),
     ];
-    $ret['attributes']['ask_type'] = [
-      'new_schedule' => '通塾スケジュールの追加',
-      'change_schedule' => '通塾スケジュールの変更',
-      'other_request' => 'その他',
+    $ret['filter'] = [
+      'is_unchecked' => $request->is_unchecked,
+      'is_asc'=>$request->is_asc,
+      'is_desc'=>$request->is_desc,
+      'search_keyword'=>$request->search_keyword,
+      'search_comment_type'=>$request->search_comment_type,
+      'search_week'=>$request->search_week,
+      'search_work' => $request->search_work,
+      'search_place' => $request->search_place,
     ];
 
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
@@ -67,7 +72,6 @@ class StudentParentController extends TeacherController
       if(!isset($ret['item'])) abort(404);
       $ret['item'] = $ret['item']->details();
       $ret['charge_students'] = $this->get_students($request, $id);
-
     }
     else {
       //id指定がない、かつ、事務以外はNG
