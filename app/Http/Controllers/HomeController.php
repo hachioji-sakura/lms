@@ -66,44 +66,16 @@ class HomeController extends Controller
       }
     }
     public function unsubscribe(Request $request){
-      $user = Auth::user();
-      $view = 'unsubscribe';
-      if(isset($user)){
-        if($request->has('locale')){
-          session()->put('locale', $request->get('locale'));
-        }
-        //ログイン済みであれば自動ログイン
-        $user = $user->details();
-        switch($user->role){
-          /*
-          case "manager" :
-            return redirect('/managers/'.$user->id.'/'.$view);
-            break;
-          case "teacher" :
-            return redirect('/teachers/'.$user->id.'/'.$view);
-            break;
-          */
-          case "parent" :
-            if(count($user->relations)==1){
-              return redirect('/students/'.$user->relations[0]->student_id.'/'.$view);
-            }
-            else if($request->has('student_id')){
-              return redirect('/students/'.$request->get('student_id').'/'.$view);
-            }
-            else {
-              return redirect('/parents/'.$user->id.'/'.$view);
-            }
-            break;
-          case "student" :
-            return redirect('/students/'.$user->id.'/'.$view);
-            break;
-        }
-      }
-      abort(403);
+      return $this->student_parent_view($request, 'unsubscribe');
     }
     public function recess(Request $request){
+      return $this->student_parent_view($request, 'recess');
+    }
+    public function late_arrival(Request $request){
+      return $this->student_parent_view($request, 'late_arrival');
+    }
+    public function student_parent_view(Request $request, $view){
       $user = Auth::user();
-      $view = 'recess';
       if(isset($user)){
         if($request->has('locale')){
           session()->put('locale', $request->get('locale'));

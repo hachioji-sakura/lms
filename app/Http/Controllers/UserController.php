@@ -37,6 +37,14 @@ class UserController extends Controller
     }
     $places = Place::orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
+
+    $attributes['ask_type'] = [
+      'new_schedule' => '通塾スケジュールの追加',
+      'change_schedule' => '通塾スケジュールの変更',
+      'study_request' => '授業に関するご要望',
+      'other_request' => 'その他',
+    ];
+
     return $attributes;
   }
   protected function user_create($form)

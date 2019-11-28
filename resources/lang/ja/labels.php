@@ -31,6 +31,7 @@ return [
   'student_groups_list'             => '生徒グループ一覧',
   'account'             => 'アカウント',
   'register' => '本登録',
+  'system_register_request' => 'システム本登録のお願い',
   'created' => '登録',
   'trial_entry'      => '体験授業お申込みはこちら',
   'keep_login'      => 'ログイン状態を維持する',

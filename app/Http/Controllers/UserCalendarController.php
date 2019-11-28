@@ -34,22 +34,25 @@ class UserCalendarController extends MilestoneController
   public function model(){
     return UserCalendar::query();
   }
-  public function show_fields($work){
-    if($work==9){
+  public function show_fields($item){
+    $base_ret = [
+      'datetime' => [
+        'label' => __('labels.datetime'),
+      ],
+      'status_name' => [
+        'label' => __('labels.status'),
+        'size' => 6,
+      ],
+      'place_floor_name' => [
+        'label' => __('labels.place'),
+        'size' => 6,
+      ],
+    ];
+    if($item->work==9){
+      //事務作業
       $ret = [
-        'datetime' => [
-          'label' => __('labels.datetime'),
-        ],
-        'status_name' => [
-          'label' => __('labels.status'),
-          'size' => 6,
-        ],
         'manager_name' => [
           'label' => __('labels.charge_user'),
-          'size' => 6,
-        ],
-        'place_floor_name' => [
-          'label' => __('labels.place'),
           'size' => 6,
         ],
         'work_name' => [
@@ -58,21 +61,28 @@ class UserCalendarController extends MilestoneController
         ],
       ];
     }
-    else {
+    else if($item->is_management()==true){
+      //授業予定以外
       $ret = [
-        'datetime' => [
-          'label' => __('labels.datetime'),
-        ],
-        'status_name' => [
-          'label' => __('labels.status'),
-          'size' => 6,
-        ],
         'teacher_name' => [
           'label' => __('labels.teachers'),
           'size' => 6,
         ],
-        'place_floor_name' => [
-          'label' => __('labels.place'),
+        'work_name' => [
+          'label' => __('labels.work'),
+          'size' => 6,
+        ],
+        'student_name' => [
+          'label' => __('labels.students'),
+          'size' => 12,
+        ],
+      ];
+    }
+    else {
+      //授業予定
+      $ret = [
+        'teacher_name' => [
+          'label' => __('labels.teachers'),
           'size' => 6,
         ],
         'lesson' => [
@@ -95,12 +105,13 @@ class UserCalendarController extends MilestoneController
           'label' => __('labels.students'),
           'size' => 12,
         ],
-        'remark' => [
-          'label' => __('labels.remark'),
-          'size' => 12,
-        ],
       ];
     }
+    $ret['remark'] = [
+      'label' => __('labels.remark'),
+      'size' => 12,
+    ];
+    $ret = array_merge($base_ret, $ret);
     return $ret;
   }
 
@@ -195,6 +206,7 @@ class UserCalendarController extends MilestoneController
     if($request->has('start_date') && $request->has('start_hours')
         && $request->has('start_minutes') && $request->has('course_minutes')){
       $form['course_minutes'] = $request->get('course_minutes');
+      $form['work'] = $request->get('work');
       $form['start_date'] = $request->get('start_date');
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
@@ -318,9 +330,9 @@ class UserCalendarController extends MilestoneController
         $ret['user'] = $user;
       }
       if(isset($user)){
-        if($this->is_manager($user->role)===false){
-          if($item->is_access($user->user_id)===false){
-            abort(403, 'このページにはアクセスできません(1)');
+        if($this->is_manager($user->role)!=true){
+          if($item->is_access($user->user_id)!=true){
+            abort(403, 'このページにはアクセスできません(1)'.$user->role);
           }
         }
       }
@@ -476,14 +488,30 @@ class UserCalendarController extends MilestoneController
         ]);
       }
       $user = $this->login_details($request);
-      if(!isset($user)) return $this->forbidden();
-
+      if(!isset($user)){
+        return $this->forbidden();
+      }
       $items = $this->model();
       if($this->is_student_or_parent($user->role)){
         $items = $items->where('status', '!=', 'new');
       }
+      if($user_id==0 && $this->is_manager($user->role)!=true){
+         return $this->forbidden("you are not manager");
+      }
+
+      if($user_id > 0){
+        if($this->is_student($user->role) && $user->user_id != $user_id) return $this->forbidden("is not owner");
+        if($this->is_parent($user->role)){
+          $s = Student::where('user_id', $user_id)->first();
+          if(!isset($s) || $s->is_parent($user->id)!=true) return $this->forbidden("is not family");
+        }
+        $items = $items->findUser($user_id);
+      }
+
+      if($request->is_all==1){
+        $user_id = 0;
+      }
       $items = $this->_search_scope($request, $items);
-      if($user_id > 0)  $items = $items->findUser($user_id);
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
@@ -680,7 +708,7 @@ class UserCalendarController extends MilestoneController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
 
       $form = $request->all();
       if(!isset($form['action'])){
@@ -756,7 +784,7 @@ class UserCalendarController extends MilestoneController
         if(!$teacher->user->has_tag('lesson', $lesson)) continue;
         $teachers[] = $teacher;
       }
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
       $param['action'] = '';
       $param['_edit'] = false;
       $param['teachers'] = $teachers;
@@ -787,14 +815,41 @@ class UserCalendarController extends MilestoneController
         }
       }
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(84)');
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
       $param['action'] = '';
       return $param;
+    }
+    /**
+     * カレンダー通知
+     *
+     * @param  Request  $request
+     * @param  integer  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function remind(Request $request, $id){
+      \Log::warning("calendar_controller.remind");
+      $param = $this->get_param($request, $id);
+      $res = $this->transaction($request, function() use ($param){
+        if($param['item']->status=='new'){
+          $this->new_mail($param);
+        }
+        else {
+          foreach($param['item']->members as $member){
+            $u = $member->user->details();
+            if($this->is_manager_or_teacher($u->role) == true){
+              $member->remind($param['user']->user_id);
+            }
+          }
+        }
+        return $param['item'];
+      }, 'カレンダー通知', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, $this->status_update_message["remind"]);
     }
     /**
      * ステータス更新
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  int  $id
      * @param  string  $status
      * @return \Illuminate\Http\Response
@@ -961,7 +1016,7 @@ class UserCalendarController extends MilestoneController
       }
       if($request->has('user')){
         $param['result'] = $this->status_update_message[$status];
-        $param['fields'] = $this->show_fields($param['item']->work);
+        $param['fields'] = $this->show_fields($param['item']);
         return $this->save_redirect($res, $param, '更新しました。', '/calendars/'.$param['item']['id'].'?user='.$param['user']->user_id.'&key='.$param['token']);
       }
       else {
@@ -1201,10 +1256,11 @@ class UserCalendarController extends MilestoneController
             $param['teacher_id'] = $request->get('teacher_id');
           }
           else if($request->has('manager_id')){
+            //事務からの登録の場合、作業内容＝9 (事務作業）
             $param['item']->work = 9;
           }
         }
-        if($param['item']->work!=9 && !isset($param['teacher_id'])) {
+        if($param['item']->is_management()==false && !isset($param['teacher_id'])) {
           $param["teachers"] = Teacher::findStatuses(["regular"])->get();
           return view('teachers.select_teacher',
             [ 'error_message' => '', '_edit' => false])
@@ -1218,6 +1274,7 @@ class UserCalendarController extends MilestoneController
       $param['item']['start_date'] = $start_date;
       $param['item']['start_hours'] = intval($request->get('start_hours'));
       $param['item']['start_minutes'] = intval($request->get('start_minutes'));
+      $param['item']['course_minutes'] = 0;
       if($request->has('course_minutes')){
         $param['item']['course_minutes'] = $request->get('course_minutes');
       }

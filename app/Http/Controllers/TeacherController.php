@@ -51,6 +51,11 @@ class TeacherController extends StudentController
       'attributes' => $this->attributes(),
     ];
     $ret['filter'] = [
+      'is_unchecked' => $request->is_unchecked,
+      'is_asc'=>$request->is_asc,
+      'is_desc'=>$request->is_desc,
+      'search_keyword'=>$request->search_keyword,
+      'search_comment_type'=>$request->search_comment_type,
       'search_week'=>$request->search_week,
       'search_work' => $request->search_work,
       'search_place' => $request->search_place,
