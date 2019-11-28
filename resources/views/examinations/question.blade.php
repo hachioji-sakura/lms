@@ -4,6 +4,8 @@
 @extends('dashboard.common')
 
 @section('contents')
+<section class="content">
+<div class="card" id="examination">
 <div class="card-header mb-4">
   <div class="row">
     <div class="col-12 text-sm mb-4" style="border-bottom:solid 1px #AAA;">
@@ -67,7 +69,18 @@
 @endif
 </div>
 <script>
+$(function(){
+  $("button.btn-submit").on('click', function(e){
+    e.preventDefault();
+    if(front.validateFormValue('examination')){
+      $("form").submit();
+    }
+  });
+
+});
 </script>
+</div>
+</section>
 @endsection
 
 @section('page_sidemenu')

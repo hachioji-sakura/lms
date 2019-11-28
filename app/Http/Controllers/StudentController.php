@@ -420,7 +420,6 @@ class StudentController extends UserController
    $item['tags'] = $model->tags();
    $user = $param['user'];
 
-   $view = "ask";
    $asks = $this->get_ask($request->all(), $item->user_id);
    $page_data = $this->get_pagedata($asks["count"] , $param['_line'], $param["_page"]);
    foreach($page_data as $key => $val){
@@ -440,8 +439,8 @@ class StudentController extends UserController
      }
    }
    $param['filter'] = $filter;
-   $param['view'] = $view;
-   return view($this->domain.'.'.$view, [
+   $param['view'] = "ask";
+   return view('asks.ask_list', [
      'item' => $item,
    ])->with($param);
  }
@@ -692,9 +691,12 @@ class StudentController extends UserController
          $form['search_type'] = ['recess'];
          $default_status = 'commit';
        }
+       break;
      case "phone":
        $form['search_type'] = ['schedule_add', 'schedule_change', 'request_other'];
-       $form['search_status'] = ['new', 'commit', 'cancel'];
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['new', 'commit', 'cancel'];
+       }
        break;
    }
 
@@ -959,7 +961,7 @@ class StudentController extends UserController
   public function ask_create_page(Request $request, $id){
     $param = $this->get_param($request, $id);
 
-    return view($this->domain.'.ask_create',['_edit' => false])
+    return view('asks.ask_create',['_edit' => false])
       ->with($param);
   }
   public function ask_create(Request $request, $id){
@@ -979,7 +981,7 @@ class StudentController extends UserController
     $ask = Ask::where('id', $ask_id)->first();
     if(!isset($ask)) abort(404);
     $param['ask'] = $ask->details();
-    return view($this->domain.'.ask_create',['_edit' => true])
+    return view('asks.ask_create',['_edit' => true])
       ->with($param);
   }
   public function ask_update(Request $request, $id, $ask_id){
@@ -999,7 +1001,7 @@ class StudentController extends UserController
     if(!isset($ask)) abort(404);
     $param['ask'] = $ask->details();
     $param['view'] = 'ask_details';
-    return view($this->domain.'.ask_details',['_edit' => true])
+    return view('asks.ask_details',['_edit' => true])
       ->with($param);
   }
 

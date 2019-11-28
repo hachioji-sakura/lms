@@ -19,7 +19,7 @@
           <!-- /.card-header -->
           <div class="card-body table-responsive p-0">
             @if(count($charge_students) > 0)
-            <ul class="mailbox-attachments clearfix row">
+            <ul class="mailbox-attachments p-0 clearfix row">
               @foreach($charge_students as $charge_student)
               <li class="col-12" accesskey="" target="">
                 <div class="row">
@@ -62,29 +62,60 @@
                   <div class="col-12 text-sm">
                     @if(!empty($charge_student->current_calendar()) && $user->role==="teacher")
                       @if($charge_student->current_calendar()->details()->status==="fix" && date('Ymd', strtotime($charge_student->current_calendar()->details()->start_time)) === date('Ymd'))
-                        <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$charge_student->student->id}}" role="button" class="btn btn-info btn-sm w-100 mt-1">
+                        <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="出欠を取る" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}/presence?origin={{$domain}}&item_id={{$item->id}}&student_id={{$charge_student->student->id}}" role="button" class="btn btn-info btn-sm btn-flat">
                           <i class="fa fa-user-check mr-1"></i>
                           {{$charge_student->current_calendar()->details()->status_name}}
                         </a>
                       @elseif($charge_student->current_calendar()->details()->status==="presence")
                         {{-- 出席済み --}}
-                        <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm w-100 mt-1">
+                        <a title="{{$charge_student->calendar_id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->calendar_id}}" role="button" class="btn btn-success btn-sm btn-flat">
                           <i class="fa fa-check-circle mr-1"></i>
                           {{$charge_student->current_calendar()->details()->status_name}}
                         </a>
                       @else
-                        <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}" role="button" class="btn btn-secondary btn-sm w-100 mt-1">
+                        <a title="{{$charge_student->current_calendar()->details()->id}}" href="javascript:void(0);" page_title="予定詳細" page_form="dialog" page_url="/calendars/{{$charge_student->current_calendar()->details()->id}}" role="button" class="btn btn-secondary btn-sm btn-flat">
                           {{$charge_student->current_calendar()->details()->status_name}}
                         </a>
                       @endif
                     @endif
-                    @if($user->role!=="studdent")
-                    <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm w-100 mt-1">
-                      <i class="fa fa-address-card mr-1"></i>ご契約内容
-                    </a>
-                    @endif
                   </div>
                 </div>
+
+                <div calss="row text-sm">
+                  @if($user->role!=="student")
+                  <div class="col-6 float-left mt-1">
+                    <a href="/students/{{$charge_student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                      <i class="fa fa-calendar-check mr-1"></i>{{__('labels.month_schedule_list')}}
+                    </a>
+                  </div>
+                  <div class="col-6 float-left mt-1">
+                    <a href="/students/{{$charge_student->id}}/schedule?list=confirm" role="button" class="btn btn-warning btn-sm btn-flat btn-block">
+                      <i class="fa fa-hourglass mr-1"></i>{{__('labels.adjust_schedule_list')}}
+                    </a>
+                  </div>
+                  <div class="col-6 float-left mt-1">
+                    <a href="/students/{{$charge_student->id}}/schedule?list=rest_contact" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
+                      <i class="fa fa-calendar-times mr-1"></i>{{__('labels.rest_contact')}}
+                    </a>
+                  </div>
+                  <div class="col-6 float-left mt-1">
+                    <a href="/students/{{$charge_student->id}}/schedule?list=exchange" role="button" class="btn btn-success btn-sm btn-flat btn-block">
+                      <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.exchange_schedule_list')}}
+                    </a>
+                  </div>
+                  <div class="col-6 float-left mt-1">
+                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                      <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}
+                    </a>
+                  </div>
+                  <div class="col-6 float-left mt-1">
+                    <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                      <i class="fa fa-address-card mr-1"></i>ご契約内容
+                    </a>
+                  </div>
+                  @endif
+                </div>
+
               </li>
               @endforeach
             </ul>

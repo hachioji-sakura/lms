@@ -766,17 +766,8 @@ EOT;
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
   }
-  public function already_recess_data($login_user_id){
-    $already_data = Ask::already_data('recess', [
-      'status' => 'commit',
-      'target_model' => str_replace('common.', '',$this->table),
-      'target_model_id' => $this->id,
-      'target_user_id' => $login_user_id,
-    ]);
-    return $already_data;
-  }
-  public function already_unsubscribe_data($login_user_id){
-    $already_data = Ask::already_data('unsubscribe', [
+  public function already_ask_data($type, $login_user_id){
+    $already_data = Ask::already_data($type, [
       'status' => 'commit',
       'target_model' => str_replace('common.', '',$this->table),
       'target_model_id' => $this->id,

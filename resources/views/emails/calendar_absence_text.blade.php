@@ -1,7 +1,7 @@
 @include('emails.common')
 
 @if($send_to==='student')
-{{$user_name}}様
+{{$user_name}} 様
 @endif
 以下の授業は欠席となりました。
 

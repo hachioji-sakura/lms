@@ -103,7 +103,10 @@
           </div>
           <img class="direct-chat-img" src="{{$comment->create_user->details()->icon}}" alt="message user image">
           <div class="direct-chat-text p-2 pb-5">
-            <span class="text-sm text-muted float-right mb-1">{{$comment["created_date"]}}</span>
+            <span class="text-sm text-muted float-right mb-1">
+              <i class="fa fa-clock"></i>
+              {{$comment["created_date"]}}
+            </span>
             <br>
 
             {!!nl2br($comment->body)!!}
@@ -130,7 +133,6 @@
               </a>
             </span>
             @endif
-
           </div>
         </div>
         @endforeach

@@ -84,4 +84,11 @@ return [
  'confirm_recess_cancel' => "Do you want to cancel your request for an recess?",
  'info_recess_cancel' => "The recess request has been canceled.",
  'info_unsubscribe_cancel' => "The unsubscribe request has been canceled.",
+ 'confirm_emergency_lecture_cancel' => "Do you want to send a emergency cancellation request?",
+ 'confirm_emergency_lecture_cancel_cancel' => "Do you want to cancel your request for an emergency cancellation?",
+ 'info_emergency_lecture_cancel_cancel' => "The emergency cancellation request has been canceled.",
+ 'ex_emergency_lecture_cancel' => "ex.Today ’s class will be canceled due to a cold.",
+ 'ex_late_arrival_reason' => "ex.Because of the train delay",
+ "info_late_arrival" => "The student contacted us,\nThey was late for the following class schedule\nThey arrive at :to_time_slot.",
+ "info_late_arrival_cancel" => "The student contacted us,\nThey canceled the late contact for the following class schedule.",
 ];

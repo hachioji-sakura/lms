@@ -1,7 +1,7 @@
 @include('emails.common')
 
 
-{{$user_name}}様
+{{$user_name}} 様
 
 ご連絡頂き、感謝致します。
 休会の件、承知致しました。

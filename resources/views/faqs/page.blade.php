@@ -12,7 +12,7 @@
         <div class="card-header">
           <h3 class="card-title">
             <a href="{{url()->previous()}}">
-              <i class="fa fa-arrow-left mr-2"></i>
+              <i class="fa fa-angle-double-left mr-2"></i>
             </a>
             {{$item['title']}}
           </h3>

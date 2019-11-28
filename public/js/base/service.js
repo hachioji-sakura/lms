@@ -104,7 +104,7 @@
 		if(_loadTimer!=null){
 			clearTimeout(_loadTimer);
 		}
-		_loadTimer = setTimeout(loadOpen, 1);
+		_loadTimer = setTimeout(loadOpen, 500);
 		return;
 	}
 	/**

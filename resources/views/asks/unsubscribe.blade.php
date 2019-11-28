@@ -3,7 +3,7 @@
 @section('title_header', __('labels.unsubscribe').__('labels.contact'))
 
 @section('content')
-@if($item->role=='parent')
+@if($item->user->details()->role=='parent')
 <form id="unsubscribe_form" method="POST" action="/unsubscribe">
   @method('GET')
   <div class="row mb-3">
@@ -11,7 +11,7 @@
       <label for="name" class="w-100">
         {{__('labels.students')}}{{__('labels.name')}}
       </label>
-      @if(count($item->relations) > 0)
+      @if(count($item->relations) > 1)
       <select name="student_id" class="form-control select2" required="true">
         @foreach($item->relations as $relation)
          <option value="{{ $relation->student->id }}">

@@ -81,8 +81,16 @@ return [
   'warning_unsubscribe' => "退会日は1か月以降の日にちを指定してください。\n\n退会すると、システムへのログインができなくなります。\nなお、退会日以降の授業予定はすべて自動的にキャンセルとなります。",
   'confirm_unsubscribe' => "退会連絡を送信しますか？",
   'confirm_unsubscribe_cancel' => "退会連絡を取り消しますか？",
+  'info_unsubscribe_cancel' => "退会連絡を取り消しました。",
   'confirm_recess' => "休会連絡を送信しますか？",
   'confirm_recess_cancel' => "休会連絡を取り消しますか？",
   'info_recess_cancel' => "休会連絡を取り消しました。",
-  'info_unsubscribe_cancel' => "退会連絡を取り消しました。",
+  'confirm_emergency_lecture_cancel' => "緊急休講申請を送信しますか？",
+  'confirm_emergency_lecture_cancel_cancel' => "緊急休講申請を取り消しますか？",
+  'info_emergency_lecture_cancel_cancel' => "緊急休講申請を取り消しました。",
+  'ex_emergency_lecture_cancel_reason' => "例：風邪を引いたため、本日の授業を休講とさせていただきます。",
+  'ex_late_arrival_reason' => "例：列車遅延のため、遅刻します。",
+  "info_late_arrival" => "生徒様よりご連絡があり、\n以下の 授業予定に遅刻するとのことです。\n:to_time_slotに到着するとのことです。",
+  "info_late_arrival_cancel" => "生徒様よりご連絡があり、\n以下の 授業予定の遅刻連絡をキャンセルするとのことです。",
+
 ];

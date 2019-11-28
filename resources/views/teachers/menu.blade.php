@@ -105,8 +105,8 @@
           <i class="fa fa-envelope-square nav-icon"></i>
           <p>
             {{__('labels.ask_list')}}
-            @if($ask_count > 0)
-            <span class="badge badge-danger right">{{$ask_count}}</span>
+            @if($lecture_cancel_count > 0)
+            <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
             @endif
           </p>
         </a>

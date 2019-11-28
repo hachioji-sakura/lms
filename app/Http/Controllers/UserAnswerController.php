@@ -131,9 +131,15 @@ class UserAnswerController extends UserExaminationController
         if($form['is_traning']===1){
           $form['score'] = 0;
         }
-        unset($form['next_question_id']);
-        unset($form['_token']);
-        $_item = $this->model()->create($form);
+        $_item = $this->model()->create([
+          'start_time' => $form['start_time'],
+          'answer_text' => $form['answer_text'],
+          'question_id' => $form['question_id'],
+          'user_examination_id' => $form['user_examination_id'],
+          'judge' => $form['judge'],
+          'is_traning' => $form['is_traning'],
+          'score' => $form['score'],
+        ]);
 
         $next_question_id = $this->get_next_question_id($form['user_examination_id']);
         $status = 1;
@@ -154,8 +160,18 @@ class UserAnswerController extends UserExaminationController
     {
       return $this->transaction($request, function() use ($request){
         $form = $request->all();
+
         $user = $this->login_details($request);
-        $_item = $this->model()->create($form);
+
+        $_item = $this->model()->create([
+          'start_time' => $form['start_time'],
+          'answer_text' => $form['answer_text'],
+          'question_id' => $form['question_id'],
+          'user_examination_id' => $form['user_examination_id'],
+          'judge' => $form['judge'],
+          'is_traning' => $form['is_traning'],
+          'score' => $form['score'],
+        ]);
         return $_item;
       }, '回答登録', __FILE__, __FUNCTION__, __LINE__ );
     }
