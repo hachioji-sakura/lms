@@ -24,13 +24,13 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-12 col-lg-6 col-md-6 mb-1">
+    <div class="col-12 col-md-6 mb-1">
       <a href="javascript:void(0);" role="button" class="btn btn-primary btn-block" onClick="teacher_selected()">
         <i class="fa fa-arrow-circle-right mr-1"></i>
         {{__('labels.teachers')}}{{__('labels.select')}}
       </a>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1">
+    <div class="col-12 col-md-6 mb-1">
       <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
         <i class="fa fa-times-circle mr-1"></i>
         {{__('labels.cancel_button')}}

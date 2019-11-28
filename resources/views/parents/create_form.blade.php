@@ -8,7 +8,7 @@
   @component('students.forms.name', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
   @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
 
-  <div class="col-12 col-lg-6 col-md-6">
+  <div class="col-12 col-md-6">
     <div class="form-group">
       <label for="email" class="w-100">
         メールアドレス

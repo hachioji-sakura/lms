@@ -7,13 +7,13 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
-    <div class="col-12 col-lg-6 col-md-6 mb-1">
+    <div class="col-12 col-md-6 mb-1">
         <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="{{$domain}}_action">
           <i class="fa fa-lock-open mr-1"></i>
             公開する
         </button>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1">
+    <div class="col-12 col-md-6 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
             {{__('labels.close_button')}}
 

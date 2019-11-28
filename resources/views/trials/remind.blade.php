@@ -6,7 +6,7 @@
   @method('PUT')
 
   <div class="row">
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_fix">
+    <div class="col-12 col-md-6 mb-1" id="{{$domain}}_fix">
       <form method="POST" action="/trials/{{$item['id']}}/remind">
         @csrf
         <input type="text" name="dummy" style="display:none;" / >
@@ -17,7 +17,7 @@
         </button>
       </form>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1">
+    <div class="col-12 col-md-6 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
             {{__('labels.close_button')}}
 

@@ -1,4 +1,4 @@
-<div class="col-12">
+<div class="col-12 schedule_type schedule_type_class">
     <label for="course_minutes" class="w-100">
       @if(isset($_teacher) && $_teacher===true)
       {{__('labels.lesson_time')}}
@@ -11,6 +11,8 @@
       <label class="mx-2 course_minutes" for="course_minutes_{{$index}}">
         <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
         @if(isset($item) && isset($item->id) && $item->has_tag("course_minutes", $index))
+        checked
+        @elseif(!empty($item) && isset($item["course_minutes"]) && $index==$item["course_minutes"])
         checked
         @endif
         id="course_minutes_{{$index}}"

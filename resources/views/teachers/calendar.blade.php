@@ -6,32 +6,6 @@
 
 
 @section('contents')
-{{--
-<section id="member" class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
-            @slot('courtesy')
-            @endslot
-            @slot('alias')
-              <h6 class="widget-user-desc">
-                @foreach($item["tags"] as $tag)
-                <small class="badge badge-secondary mt-1 mr-1">
-                  {{$tag->name()}}
-                </small>
-                @endforeach
-              </h6>
-            @endslot
-        @endcomponent
-			</div>
-			<div class="col-md-8">
-				@yield('comments')
-			</div>
-		</div>
-	</div>
-</section>
---}}
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
@@ -53,13 +27,19 @@
               teaching_code : "add",
               selected : true,
             }]);
+
             var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
+            var end_date = util.format("{0}/{1}/{2}", end.year(), (end.month()+1) , end.date());
             var param ="";
             param += "?teacher_id={{$item->id}}";
             param += "&start_date="+start_date;
             param += "&start_hours="+start.hour();
             param += "&start_minutes="+start.minute();
+            param += "&end_date="+end_date;
+            param += "&end_hours="+end.hour();
+            param += "&end_minutes="+end.minute();
             param += "&course_minutes="+_course_minutes;
+            console.log(param);
             base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });
@@ -73,7 +53,7 @@
                 base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
                 break;
               case "confirm":
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
+                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/remind");
                 break;
               case "fix":
                 if(event.is_passed==true){

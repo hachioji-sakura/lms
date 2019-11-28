@@ -1,4 +1,4 @@
-<div class="col-6 col-lg-6 col-md-6">
+<div class="col-6 col-md-6">
   <div class="form-group">
     @if(isset($is_label) && $is_label===true)
     <label for="{{$prefix}}kana_last" class="w-100">
@@ -14,7 +14,7 @@
     @endif
   </div>
 </div>
-<div class="col-6 col-lg-6 col-md-6">
+<div class="col-6 col-md-6">
   <div class="form-group">
     @if(isset($is_label) && $is_label===true)
     <label for="student_kana_first" class="w-100">

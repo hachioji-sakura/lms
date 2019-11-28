@@ -33,7 +33,7 @@
       maxlength=3>
     </div>
   </div>
-  <div class="col-6 col-lg-6 col-md-6">
+  <div class="col-6 col-md-6">
     <div class="form-group">
       <label for="bank_account_type" class="w-100">
         {{__('labels.bank_account_type')}}
@@ -50,7 +50,7 @@
       @endforeach
     </div>
   </div>
-  <div class="col-6 col-lg-6 col-md-6">
+  <div class="col-6 col-md-6">
     <div class="form-group">
       <label for="bank_account_no">
         {{__('labels.bank_account_no')}}
@@ -63,7 +63,7 @@
       maxlength=7>
     </div>
   </div>
-  <div class="col-6 col-lg-6 col-md-6">
+  <div class="col-6 col-md-6">
     <div class="form-group">
       <label for="bank_account_name">
         {{__('labels.bank_account_name')}}

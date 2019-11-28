@@ -6,6 +6,43 @@
 
 
 @section('contents')
+{{--
+<section class="content-header">
+	<div class="container-fluid">
+		<div class="row">
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/ask" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-phone"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">{{__('labels.contact_page')}}</b>
+            <span class="text-sm">{{__('labels.contact_page_description')}}</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/faqs" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-question"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">{{__('labels.faqs')}}</b>
+            <span class="text-sm">{{__('labels.faqs_description')}}</span>
+            <b class="info-box-text text-lg"></b>
+            <span class="text-sm"></span>
+          </div>
+        </div>
+        </a>
+      </div>
+    </div>
+	</div>
+</section>
+--}}
+
 <section class="content mb-2">
   <div class="row">
     <div class="col-12">
@@ -21,7 +58,7 @@
             @if(count($charge_students) > 0)
             <ul class="mailbox-attachments p-0 clearfix row">
               @foreach($charge_students as $charge_student)
-              <li class="col-12" accesskey="" target="">
+              <li class="col-12 col-lg-6" accesskey="" target="">
                 <div class="row">
                   <div class="col-6 text-center">
                     @if($charge_student->student->status!='unsubscribe')
@@ -108,11 +145,18 @@
                       <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}
                     </a>
                   </div>
+                  {{--
+                  <div class="col-6 float-left mt-1">
+                    <a title="{{__('labels.late_arrival_description')}}" href="javascript:void(0);" page_title="{{__('labels.late_arrival')}}" page_form="dialog" page_url="/students/{{$charge_student->id}}/late_arrival" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
+                      <i class="fa fa-exclamation-triangle mr-1"></i>{{__('labels.late_arrival')}}
+                    </a>
+                  </div>
                   <div class="col-6 float-left mt-1">
                     <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                       <i class="fa fa-address-card mr-1"></i>ご契約内容
                     </a>
                   </div>
+                  --}}
                   @endif
                 </div>
 
@@ -141,10 +185,10 @@
 {{--まだ対応しない
 <section class="content-header">
 	<div class="row">
-		<div class="col-12 col-lg-6 col-md-6">
+		<div class="col-12 col-md-6">
 			@yield('milestones')
 		</div>
-		<div class="col-12 col-lg-6 col-md-6">
+		<div class="col-12 col-md-6">
 			@yield('events')
 		</div>
 	</div>

@@ -186,13 +186,13 @@
     </div>
     <div class="row">
       @method('DELETE')
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
             <i class="fa fa-trash mr-1"></i>
               削除する
           </button>
       </div>
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
           キャンセル

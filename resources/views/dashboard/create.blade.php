@@ -13,7 +13,7 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6">
+        <div class="col-12 col-md-6">
           <div class="form-group">
             <label for="field1">
               氏名
@@ -22,7 +22,7 @@
             <input type="text" id="name" name="name" class="form-control" placeholder="例：山田 太郎" required="true" inputtype="zenkaku">
           </div>
         </div>
-        <div class="col-12 col-lg-6 col-md-6">
+        <div class="col-12 col-md-6">
           <div class="form-group">
             <label for="field1">
               氏名（カナ）
@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6">
+        <div class="col-12 col-md-6">
             <button type="button" class="btn btn-submit btn-primary btn-block">
               <i class="fa fa-plus-circle mr-1"></i>
                 登録する
@@ -71,7 +71,7 @@
               </span>
             @endif
         </div>
-        <div class="col-12 col-lg-6 col-md-6">
+        <div class="col-12 col-md-6">
             <button type="button" class="btn btn-secondary btn-block" accesskey="cancel" onClick="history.back();">
                 キャンセル
             </button>
