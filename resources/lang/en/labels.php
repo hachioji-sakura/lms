@@ -30,6 +30,7 @@ return [
   'events_list'             => 'Events List',
   'student_groups_list'             => 'StudentGroups List',
   'account'             => 'Account',
+  'system_register_request' => 'Request for system registration',
   'register' => 'Register',
   'created' => 'Created',
   'trial_entry'      => 'Click to Experience application',

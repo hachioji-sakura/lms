@@ -17,6 +17,7 @@ return array(
   'grade_adj' => '学年調整値(留年など)',
   'student_type' => '生徒種別',
   'comment_type' => 'コメント種別',
+  'announcement_type' => 'おしらせ種別',
   'milestone_type' => '目標種別',
   'importance' => '重要度',
   'howto' => '当塾をお知りになった方法は何でしょうか',
