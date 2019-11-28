@@ -13,6 +13,7 @@ use App\Models\StudentRelation;
 use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\UserTag;
+use App\Models\Comment;
 use App\Models\Image;
 use App\Models\StudentParent;
 use App\Notifications\CustomPasswordReset;
@@ -104,7 +105,6 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
-
     /**
      * パスワードリセット通知の送信
      *
@@ -185,6 +185,26 @@ class User extends Authenticatable
         $item['name'] = $item->name();
         $item['kana'] = $item->kana();
         $item['icon'] = $s3_url;
+        $item['email'] = $this->email;
+        switch($item['role']){
+          case 'manager':
+          case 'staff':
+            $item['domain'] = 'managers';
+            $item['role_name'] = '事務員';
+            break;
+          case 'teacher':
+            $item['domain'] = 'teachers';
+            $item['role_name'] = '講師';
+            break;
+          case 'parent':
+            $item['domain'] = 'parents';
+            $item['role_name'] = '契約者';
+            break;
+          case 'student':
+            $item['domain'] = 'students';
+            $item['role_name'] = '生徒';
+            break;
+        }
         $item['email'] = $this->email;
         if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
         return $item;
@@ -341,5 +361,57 @@ EOT;
       \Log::info("-----------------get_mail_address[$email]------------------");
       return $email;
     }
+    public function get_comments($form){
+      $u = $this->details();
+      $form['_sort'] ='created_at';
+      $comment_types = [];
+      $is_desc = false;
+      $sort = 'desc';
+      if(isset($form['is_asc']) && $form['is_asc']==1){
+        $sort = 'asc';
+      }
+      $is_star = false;
+      if(isset($form['is_star']) && $form['is_star']==1){
+        $is_star = true;
+      }
+      $form_date = "";
+      $to_date = "";
+      if(isset($form['search_from_date'])){
+        $from_date = $form['search_from_date'];
+      }
+      if(isset($form['search_to_date'])){
+        $to_date = $form['search_to_date'];
+      }
+      if(isset($form['search_comment_type'])){
+        $comment_types = $form['search_comment_type'];
+      }
+      $comments = Comment::findTargetUser($this->id);
+      $comments = $comments->findTypes($comment_types);
+      $comments = $comments->findDefaultTypes($u->domain);
 
+      if($is_star==true){
+        $comments = $comments->where('importance', '>', 0);
+      }
+      if(!empty($from_date) || !empty($to_date)){
+        $comments = $comments->rangeDate($from_date, $to_date);
+      }
+      if(isset($form['is_unchecked']) && $form['is_unchecked']==1){
+        $comments = $comments->unChecked($this->id);
+      }
+      if(isset($form['search_keyword']) && !empty($form['search_keyword'])){
+        $comments = $comments->searchWord($form['search_keyword']);
+      }
+
+      $count = $comments->count();
+      if($is_star==true){
+        $comments = $comments->orderBy('importance', 'desc')
+                             ->orderBy('created_at', 'desc');
+      }
+      else {
+        $comments = $comments->sortCreatedAt($sort);
+      }
+
+      $comments = $comments->get();
+      return ["data" => $comments, 'count' => $count];
+    }
 }
