@@ -76,8 +76,12 @@ class StudentController extends UserController
        '_page' => $request->get('_page'),
        '_line' => $request->get('_line'),
        'list' => $request->get('list'),
+       'list_month' => $request->get('list_month'),
        'attributes' => $this->attributes(),
     ];
+    if(empty($ret['list_month'])){
+      $ret['list_month'] = date('Y-m-1');
+    }
     $ret['filter'] = [
       'is_unchecked' => $request->is_unchecked,
       'is_asc'=>$request->is_asc,
@@ -626,6 +630,9 @@ class StudentController extends UserController
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
+   $statuses = [];
+   $from_date = "";
+   $to_date = "";
    if(!isset($form['list'])) $form['list'] = '';
    switch($form['list']){
      case "history":
@@ -634,96 +641,99 @@ class StudentController extends UserController
        $form['is_exchange'] = 1;
        break;
      case "cancel":
-       if(!isset($form['search_from_date'])){
-         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
+       if(empty($form['search_from_date'])){
+         $from_date = date('Y-m-d', strtotime("now"));
        }
-       if(!isset($form['search_to_date'])){
-         $form['search_to_date'] = date('Y-m-d', strtotime("+14 day"));
+       if(empty($form['search_to_date'])){
+         $to_date = date('Y-m-d', strtotime("+14 day"));
        }
        if(!isset($form['search_status'])){
-         $form['search_status'] = ['cancel', 'rest', 'lecture_cancel'];
+         $statuses = ['cancel', 'rest', 'lecture_cancel'];
        }
        break;
      case "rest_contact":
-       if(!isset($form['search_from_date'])){
-         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
+       if(empty($form['search_from_date'])){
+         $from_date = date('Y-m-d', strtotime("now"));
        }
-       if(!isset($form['search_to_date'])){
-         $form['search_to_date'] = date('Y-m-d', strtotime("+14 day"));
+       if(empty($form['search_to_date'])){
+         $to_date = date('Y-m-d', strtotime("+14 day"));
        }
-       if(!isset($form['search_status'])){
-         $form['search_status'] = ['fix'];
+       if(empty($form['search_status'])){
+         $statuses = ['fix'];
        }
        break;
      case "confirm":
-       if(!isset($form['search_status'])){
+       if(empty($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
-           $form['search_status'] = ['confirm'];
+           $statuses = ['confirm'];
          }
          else {
-           $form['search_status'] = ['new', 'confirm'];
+           $statuses = ['new', 'confirm'];
          }
        }
        break;
      case "today":
-       if(!isset($form['search_from_date'])){
-         $form['search_from_date'] = date('Y-m-d', strtotime("now"));
+       if(empty($form['search_from_date'])){
+         $from_date = date('Y-m-d', strtotime("now"));
        }
-       if(!isset($form['search_to_date'])){
-         $form['search_to_date'] = date('Y-m-d', strtotime("+1 day"));
+       if(empty($form['search_to_date'])){
+         $to_date = date('Y-m-d', strtotime("+1 day"));
        }
-       if(!isset($form['search_status'])){
-         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
+       if(empty($form['search_status'])){
+         $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
        }
        break;
      case "month":
        //当月指定
-       if(!isset($form['search_from_date'])){
-         $form['search_from_date'] = date('Y-m-1', strtotime("now"));
+       if(empty($form['list_month'])) $form['list_month'] = date('Y-m-1');
+       if(empty($form['search_from_date'])){
+         $from_date =$form['list_month'];
        }
-       if(!isset($form['search_to_date'])){
-         $form['search_to_date'] = date('Y-m-t', strtotime("now"));
+       if(empty($form['search_to_date'])){
+         $to_date = date('Y-m-t', strtotime($form['list_month']));
        }
-       if(!isset($form['search_status'])){
-         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
+       if(empty($form['search_status'])){
+         $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
        }
        break;
      default:
        if(!isset($form['search_status'])){
-         $form['search_status'] = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
+         $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
        }
        break;
    }
-   $statuses = [];
    $is_exchange = false;
    $is_desc = false;
-   if(empty($from_date)) $from_date = date('Y-m-1', strtotime("-1 month"));
-   if(empty($to_date)) $to_date = date('Y-m-t', strtotime("+1 month"));
 
-   if(isset($form['is_exchange']) && $form['is_exchange']==1){
+   if(!empty($form['is_exchange']) && $form['is_exchange']==1){
      $is_exchange = true;
    }
    $sort = 'asc';
-   if(isset($form['is_desc']) && $form['is_desc']==1){
+   if(!empty($form['is_desc']) && $form['is_desc']==1){
      $sort = 'desc';
    }
-   if(isset($form['search_from_date'])){
+   if(!empty($form['search_from_date'])){
      $from_date = $form['search_from_date'];
+     $to_date = "";
    }
-   if(isset($form['search_to_date'])){
+   if(!empty($form['search_to_date'])){
      $to_date = $form['search_to_date'];
+     if(empty($form['search_from_date'])){
+       $from_date = "";
+     }
    }
-   if(isset($form['search_status'])){
+   if(!empty($form['search_status'])){
      $statuses = $form['search_status'];
    }
    $works =[];
-   if(isset($form['search_work'])){
+   if(!empty($form['search_work'])){
      $works = $form['search_work'];
    }
    $places =[];
-   if(isset($form['search_place'])){
+   if(!empty($form['search_place'])){
      $places = $form['search_place'];
    }
+
    $calendars = UserCalendar::rangeDate($from_date, $to_date);
    $calendars = $calendars->findStatuses($statuses);
    $calendars = $calendars->findWorks($works);

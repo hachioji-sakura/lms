@@ -104,14 +104,14 @@ class UserCalendarMember extends Model
       case "presence":
         $is_send_mail = false;
         $is_send_teacher_mail = false;
-        if($this->status=='fix'){
+        if($this->status=='fix' || $this->status=='absence'){
           $is_update = true;
         }
         break;
       case "absence":
         $is_send_mail = false;
         $is_send_teacher_mail = false;
-        if($this->status=='fix'){
+        if($this->status=='fix' || $this->status=='presence'){
           $is_update = true;
         }
         break;
@@ -217,10 +217,27 @@ class UserCalendarMember extends Model
   }
   public function update_rest_type($update_rest_type, $update_rest_result){
     $this->update([
+      'status' => 'rest',
       'rest_type' => $update_rest_type,
       'rest_result' => $update_rest_result,
     ]);
     $res = $this->_office_system_api('PUT', $update_rest_type, $update_rest_result);
+
+    if($this->calendar->status=='absence'){
+      //欠席→休みに変更する場合
+      $is_absence = false;
+      foreach($this->calendar->get_students() as $member){
+        if($member->status == 'absence'){
+          $is_absence = true;
+          break;
+        }
+      }
+      if($is_absence==false){
+        //生徒の欠席ステータスがない場合、休みステータスに変更
+        $this->calendar->update(['status' => 'rest']);
+      }
+    }
+
     return $this;
   }
   public function rest_result(){

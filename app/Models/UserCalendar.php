@@ -501,6 +501,7 @@ EOT;
 
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
+    $item['course_minutes'] = $this->course_minutes(true);
     $item['timezone'] = $this->timezone();
     $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
     if($this->lecture_id > 0){
@@ -955,13 +956,15 @@ EOT;
     }
   }
   public function status_to_absence($remark, $login_user_id){
-    if($this->status!='fix') return false;
+    //授業予定→出席、　出席（間違えた場合）→欠席
+    if($this->status!='fix' && $this->status!="presence") return false;
     $status = 'absence';
     //カレンダー：欠席
     $this->update(['status' => $status]);
   }
   public function status_to_presence(){
-    if($this->status!='fix') return false;
+    //授業予定→出席、　欠席（間違えた場合）→出席
+    if($this->status!='fix' && $this->status!="absence") return false;
     $status = 'presence';
     //カレンダー：出席
     $this->update(['status' => $status]);

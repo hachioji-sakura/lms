@@ -24,7 +24,6 @@ return [
   'officers_list'             => '事務一覧',
   'trials_list'             => '体験申込一覧',
   'comments_list'             => 'コメント一覧',
-
   'milestones_list'             => '目標一覧',
   'attributes_list'             => '属性一覧',
   'events_list'             => 'イベント一覧',
@@ -283,4 +282,6 @@ return [
   'trial_comment' => '体験申込時',
   'entry_comment' => '入会時',
   'season_comment' => '季節講習申込時',
+  'schedule_type'           => '予定タイプ',
+  'interview_etc' => '面談など',
 ];

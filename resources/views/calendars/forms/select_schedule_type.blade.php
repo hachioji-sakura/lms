@@ -1,7 +1,7 @@
 <div class="col-6 mt-2">
   <div class="form-group">
     <label for="schedule_type" class="w-100">
-      予定タイプ
+      {{__('labels.schedule_type')}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
@@ -14,7 +14,7 @@
           @endif
           >
           <label class="form-check-label" for="schedule_type_class">
-            授業
+            {{__('labels.school_lesson')}}
           </label>
       </div>
       <div class="form-check ml-2">
@@ -24,7 +24,7 @@
           @endif
           >
           <label class="form-check-label" for="schedule_type_other">
-            面談等
+            {{__('labels.interview_etc')}}
           </label>
       </div>
     </div>

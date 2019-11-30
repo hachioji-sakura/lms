@@ -277,4 +277,6 @@ return [
   'trial_comment' => 'Trial Lesson Comment',
   'entry_comment' => 'Entry Comment',
   'season_comment' => 'Season Lesson Comment',
+  'schedule_type'           => 'Schedule Type',
+  'interview_etc' => 'Interview etc.',
 ];

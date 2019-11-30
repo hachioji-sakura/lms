@@ -123,6 +123,8 @@ EOT;
     $item['subject'] = $this->subject();
     $item['status_name'] = $this->status_name();
 
+    $item['repeat_setting_name'] = $this->schedule_method().$this->week_setting().'/'.$item['timezone'];
+
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
