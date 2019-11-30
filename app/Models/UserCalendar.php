@@ -591,6 +591,8 @@ EOT;
       'status' => 'new'
     ]);
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    //新規登録時に変更メールを送らない
+    unset($form['send_mail']);
     $calendar = $calendar->change($form);
     return $calendar;
   }
@@ -608,7 +610,6 @@ EOT;
 
     $update_fields = [
       'status',
-      'access_key',
       'start_time',
       'end_time',
       'remark',
@@ -672,7 +673,6 @@ EOT;
     $this->office_system_api("PUT");
 
     if(isset($form['send_mail'])){
-
       $is_teacher_mail = false;
       $is_student_mail = false;
       if($form['send_mail']=='both'){
@@ -967,9 +967,10 @@ EOT;
     $this->update(['status' => $status]);
   }
   public function exist_rest_student(){
+    //欠席 or 休み or　休講
     foreach($this->members as $member){
       $_member = $member->user->details('students');
-      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel')){
+      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel' || $member->status == 'absence')){
         return true;
       }
     }

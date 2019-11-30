@@ -172,6 +172,8 @@ EOT;
   }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
+    \Log::warning("UserCalendar::add");
+
     $ret = [];
     $trial_id = 0;
 
@@ -219,6 +221,7 @@ EOT;
     $this->delete();
   }
   public function change($form){
+    \Log::warning("UserCalendar::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',

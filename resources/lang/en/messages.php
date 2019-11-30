@@ -1,6 +1,7 @@
 <?php
 
 return [
+"validate_timezone_error" => "Wrong time zone input",
  "confirm_update" => "Do you want to update?",
  "confirm_add" => "Do you want to register?",
  "error_exchange_target" => "Please select classes for transfer",

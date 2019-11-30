@@ -59,7 +59,6 @@ class UserCalendarMember extends Model
     $this->status_update("remind", "", $login_user_id);
   }
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
-    \Log::warning("member.status_update");
     $is_update = false;
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
@@ -71,8 +70,14 @@ class UserCalendarMember extends Model
         $is_send_teacher_mail = false;
         $is_send_mail = true;
         //リマインド操作＝事務 or 講師
-        if($this->status!='confirm'){
+        if($this->calendar->status!='confirm'){
           $is_send_mail = false;
+        }
+        $status = $this->calendar->status;
+        $param['token'] = $this->access_key;
+        if(empty($param['token'])){
+          $this->update(['access_key' => $update_form['access_key']]);
+          $param['token'] = $update_form['access_key'];
         }
         break;
       case "confirm":
@@ -82,7 +87,7 @@ class UserCalendarMember extends Model
         }
         break;
       case "fix":
-        if($this->status=='confirm' || $this->status=='cancel'){
+        if($this->calendar->status=='confirm'){
           $is_update = true;
         }
         break;
@@ -112,6 +117,7 @@ class UserCalendarMember extends Model
     }
     if($is_update){
       $this->update($update_form);
+      $param['token'] = $update_form['access_key'];
       $res = $this->_office_system_api('PUT');
       switch($status){
         case "confirm":
@@ -135,6 +141,7 @@ class UserCalendarMember extends Model
       }
     }
 
+    \Log::warning("UserCalendarMember::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -143,12 +150,10 @@ class UserCalendarMember extends Model
     $u = $this->user->details();
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
-    $param['token'] = $update_form['access_key'];
     $param['user_name'] = $u->name();
     $param['item'] = $this->calendar->details($this->user_id);
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
-
     if(($param['login_user']->role=='teacher' || $param['login_user']->role=='manager') && $u->role == 'student'){
       //代理の場合
       $param['is_proxy'] = true;
@@ -158,7 +163,7 @@ class UserCalendarMember extends Model
       //このユーザーにメール送信
       $this->user->send_mail($title, $param, $type, $template);
     }
-    if($is_send_teacher_mail && $u->role!="teacher"){
+    if($is_send_teacher_mail==true && $u->role!="teacher"){
       //※このmemberが講師の場合はすでに送信しているため、送らない
       if(!($is_send_mail && $this->calendar->user_id == $this->user_id)){
         $this->calendar->teacher_mail($title, $param, $type, $template);
@@ -329,7 +334,8 @@ class UserCalendarMember extends Model
       }
     }
     $__user_id = $student_no;
-    if($this->calendar->is_management()==true){
+    if(empty($__user_id)) $__user_id = $teacher_no;
+    if($this->calendar->is_management()==true && !empty($manager_no)){
       //事務のスケジュール
       $__user_id = $manager_no;
       $teacher_no = "";
@@ -408,6 +414,9 @@ class UserCalendarMember extends Model
 
     //TODO 更新者を取得しても、事務システム側のデータ単位が異なるので適切に設定することができない
     //このロジックはあまり意味がない
+    $postdata['updateuser'] = $__user_id;
+    \Log::warning("debug:".$__user_id);
+
     if($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
@@ -418,9 +427,6 @@ class UserCalendarMember extends Model
           $postdata['updateuser'] = $student_no;
           break;
       }
-    }
-    else {
-      $postdata['updateuser'] = $__user_id;
     }
 
     $message = "";

@@ -32,6 +32,7 @@
         --}}
         <div class="">
           <span class="username mb-1">
+            <i class="fa fa-marker mr-1"></i>
             {{$comment["type_name"]}}
             {{--
             {{$comment->create_user->details()->name}}
@@ -137,7 +138,8 @@
 
             <br>
             <span class="float-right mr-1">
-              @if($user->role=="manager")
+              @if($user->role=="manager" || $comment->create_user_id == $user->user_id)
+              {{-- 起票者 or 管理者のみ 操作可能 --}}
               <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                 <i class="fa fa-edit"></i>
               </a>

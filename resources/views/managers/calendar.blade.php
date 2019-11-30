@@ -49,7 +49,7 @@
                 base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
                 break;
               case "confirm":
-                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/remind");
+                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/status_update/remind");
                 break;
               case "fix":
                 if(event.is_passed==true){

@@ -45,7 +45,7 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fa fa-clock"></i></span>
       </div>
-      <select name="end_hours" class="form-control float-left mr-1" required="true">
+      <select name="end_hours" class="form-control float-left mr-1" required="true" greater="start_hours" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time1" not_equal_error="{{__('messages.validate_timezone_error')}}">
         <option value="">{{__('labels.selectable')}}</option>
         @for ($i = 8; $i < 23; $i++)
           <option value="{{str_pad($i, 2, 0, STR_PAD_LEFT)}}"

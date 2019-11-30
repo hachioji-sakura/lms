@@ -224,7 +224,7 @@
                     @elseif($student->current_calendar->status==="confirm")
                     {{-- @elseif($student->current_calendar->status==="fix" || $student->current_calendar->status==="confirm") --}}
                       {{-- 予定確認 --}}
-                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
+                      <a title="{{$student->current_calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$student->current_calendar->id}}/status_update/remind" role="button" class="btn btn-warning btn-sm w-100 mt-1">
                         <i class="fa fa-envelope mr-1"></i>/
                         {{__('labels.details')}}
                       </a>

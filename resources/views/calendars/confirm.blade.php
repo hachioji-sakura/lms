@@ -40,7 +40,7 @@
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
-        <input type="hidden" value="1" name="is_all_student" />
+        <input type="hidden" name="is_all_student" value="1" />
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.schedule_fix')}}

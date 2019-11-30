@@ -1,6 +1,7 @@
 <?php
 
 return [
+  "validate_timezone_error" => '時間帯範囲が間違っています',
   "confirm_update" => "更新しますか？",
   "confirm_add" => "登録しますか？",
   "error_exchange_target" => "振替対象の授業を選択してください",
