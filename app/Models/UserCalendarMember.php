@@ -102,16 +102,17 @@ class UserCalendarMember extends Model
         }
         break;
       case "presence":
+        $is_send_mail = false;
+        $is_send_teacher_mail = false;
         if($this->status=='fix'){
           $is_update = true;
-          $is_send_mail = false;
-          $is_send_teacher_mail = false;
         }
         break;
       case "absence":
+        $is_send_mail = false;
+        $is_send_teacher_mail = false;
         if($this->status=='fix'){
           $is_update = true;
-          $is_send_teacher_mail = false;
         }
         break;
     }

@@ -746,8 +746,10 @@ class UserCalendarController extends MilestoneController
         }
       }
       $param = $this->page_access_check($request, $id);
-      if($status=='fix' && $param['item']->statu
       if($request->has('user')){
+        if($status=='fix' && $param['item']->status=='fix'){
+          return redirect('/calendars/'.$param['item']->id.'?user='.$request->get('user'));
+        }
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
       return view($this->domain.'.'.$status, [])->with($param);
