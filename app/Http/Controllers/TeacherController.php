@@ -427,7 +427,7 @@ class TeacherController extends StudentController
       $message = '事務登録依頼メールを送信しました。';
       $already_manager_id = 0;
       if(isset($form['already_manager_id'])) $already_manager_id = $form['already_manager_id'];
-      $manager = $param['item']->to_manager($access_key, $already_manager_id);
+      $manager = $param['item']->to_manager($access_key, $already_manager_id, $param['user']->user_id);
       if(isset($manager)){
         $title = "事務兼務仮登録受付";
         $this->send_mail($email,
