@@ -16,6 +16,7 @@ class AskController extends MilestoneController
           'new' => '新規依頼を登録しました。',
           'commit' => '依頼を承認しました。',
           'cancel' => '依頼を取り消しました。',
+          'remind' => '依頼を再送しました。',
         ];
   public function model(){
     return Ask::query();
@@ -238,7 +239,7 @@ class AskController extends MilestoneController
     else {
       $this->send_slack('依頼ステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼ステータス更新');
     }
-    $message = $this->status_update_message[$status];
+    $message = $slack_message;
     if($param['item']->type =="agreement"){
       $message = "";
     }
@@ -361,6 +362,18 @@ class AskController extends MilestoneController
      $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
      return view('asks.agreement', [])->with($param);
+   }
+
+   public function commit_page(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+
+     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+     if(!$request->has('user'))  abort(404, 'ページがみつかりません(33)');
+     if($param['item']->charge_user_id != $request->get('user')) abort(403);
+     $param['fields'] = $this->show_fields($param['item']->type);
+     $param['action'] = '';
+     return view('asks.simplepage', [])->with($param);
    }
    public function daily_proc(Request $request, $d='')
    {

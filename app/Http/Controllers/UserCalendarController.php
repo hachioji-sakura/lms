@@ -752,7 +752,38 @@ class UserCalendarController extends MilestoneController
         }
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
+
+      $param['ask'] = $this->get_ask_data($request, $param, $status);
       return view($this->domain.'.'.$status, [])->with($param);
+    }
+    private function get_ask_data(Request $request, $param, $status){
+      $ask = null;
+      if($status!="rest_cancel" && $status!="lecture_cancel") return null;
+      //休み取り消し依頼 or 休講申請
+      $ask_form = [
+        'type'=>$status,
+        'status'=>'new'
+      ];
+      if($status=="lecture_cancel"){
+        //休講申請の場合の担当はuser_id=1(事務)
+        $ask_form['charge_user_id'] = 1;
+      }
+      $member = $this->get_member_data($request, $param);
+      if($member!=null){
+        $ask = $member->already_ask_data($ask_form);
+      }
+      return $ask;
+    }
+    private function get_member_data(Request $request, $param){
+      $member = null;
+      if($param['item']->is_management()==true){
+        $member = $param['item']->members->where('user_id', $param['item']->user_id)->first();
+      }
+      else {
+        $student = Student::where('id', $request->student_id)->first();
+        $member = $param['item']->members->where('user_id', $student->user_id)->first();
+      }
+      return $member;
     }
     /**
      * ステータス更新ページ
@@ -871,30 +902,21 @@ class UserCalendarController extends MilestoneController
       $res = $this->api_response();
       $is_send = true;
       $calendar = UserCalendar::where('id', $id)->first();
-      if($status=='rest_cancel'){
-        //休み取り消し依頼
-        if($param['item']->is_management()==true){
-          $member = $calendar->members->where('user_id', $param['item']->user_id)->first();
-          $ask = $member->rest_cancel_ask($param['user']->user_id);
-          if($ask==null){
-            $res = $this->error_response("この依頼は登録済みです");
+      if($status=='rest_cancel' || $status=="lecture_cancel"){
+        $ask = $this->get_ask_data($request, $param, $status);
+        if($ask==null){
+          $member = $this->get_member_data($request, $param);
+          switch($status){
+            case "rest_cancel":
+              $member->rest_cancel_ask($param['user']->user_id);
+              break;
+            case "lecture_cancel":
+              $member->lecture_cancel_ask($param['user']->user_id);
+              break;
           }
         }
         else {
-          $student = Student::where('id', $request->student_id)->first();
-          $member = $calendar->members->where('user_id', $student->user_id)->first();
-          $ask = $member->rest_cancel_ask($param['user']->user_id);
-          if($ask==null){
-            $res = $this->error_response("この依頼は登録済みです");
-          }
-        }
-      }
-      else if($status=='lecture_cancel'){
-        //休講依頼
-        $member = $calendar->members->where('user_id', $calendar->user_id)->first();
-        $ask = $member->lecture_cancel_ask($param['user']->user_id);
-        if($ask==null){
-          $res = $this->error_response("この依頼は登録済みです");
+          $ask->remind_mail($param['user']->user_id);
         }
       }
       else {

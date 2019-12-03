@@ -76,11 +76,16 @@ class StudentController extends UserController
        '_page' => $request->get('_page'),
        '_line' => $request->get('_line'),
        'list' => $request->get('list'),
-       'list_month' => $request->get('list_month'),
+       'list_date' => $request->get('list_date'),
        'attributes' => $this->attributes(),
     ];
-    if(empty($ret['list_month'])){
-      $ret['list_month'] = date('Y-m-1');
+    if(empty($ret['list_date'])){
+      if($ret['list']=='month'){
+        $ret['list_date'] = date('Y-m-1');
+      }
+      else if($ret['list']=='month'){
+        $ret['list_date'] = date('Y-m-d');
+      }
     }
     $ret['filter'] = [
       'is_unchecked' => $request->is_unchecked,
@@ -631,8 +636,6 @@ class StudentController extends UserController
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
    $statuses = [];
-   $from_date = "";
-   $to_date = "";
    if(!isset($form['list'])) $form['list'] = '';
    switch($form['list']){
      case "history":
@@ -645,24 +648,31 @@ class StudentController extends UserController
          $from_date = date('Y-m-d', strtotime("now"));
        }
        if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-d', strtotime("+14 day"));
+         $to_date = date('Y-m-d', strtotime("+1 month"));
        }
        if(!isset($form['search_status'])){
          $statuses = ['cancel', 'rest', 'lecture_cancel'];
        }
        break;
      case "rest_contact":
+        //休み連絡対象予定＝本日以降の授業予定
        if(empty($form['search_from_date'])){
          $from_date = date('Y-m-d', strtotime("now"));
        }
        if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-d', strtotime("+14 day"));
+         $to_date = date('Y-m-d', strtotime("+1 month"));
        }
        if(empty($form['search_status'])){
          $statuses = ['fix'];
        }
        break;
      case "confirm":
+       if(empty($form['search_from_date'])){
+         $from_date = date('Y-m-d', strtotime("now"));
+       }
+       if(empty($form['search_to_date'])){
+         $to_date = date('Y-m-d', strtotime("+1 month"));
+       }
        if(empty($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
            $statuses = ['confirm'];
@@ -673,8 +683,9 @@ class StudentController extends UserController
        }
        break;
      case "today":
+      if(empty($form['list_date'])) $form['list_date'] = date('Y-m-d');
        if(empty($form['search_from_date'])){
-         $from_date = date('Y-m-d', strtotime("now"));
+         $from_date =$form['list_date'];
        }
        if(empty($form['search_to_date'])){
          $to_date = date('Y-m-d', strtotime("+1 day"));
@@ -685,12 +696,12 @@ class StudentController extends UserController
        break;
      case "month":
        //当月指定
-       if(empty($form['list_month'])) $form['list_month'] = date('Y-m-1');
+       if(empty($form['list_date'])) $form['list_date'] = date('Y-m-1');
        if(empty($form['search_from_date'])){
-         $from_date =$form['list_month'];
+         $from_date =$form['list_date'];
        }
        if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-t', strtotime($form['list_month']));
+         $to_date = date('Y-m-t', strtotime($form['list_date']));
        }
        if(empty($form['search_status'])){
          $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
@@ -819,7 +830,9 @@ class StudentController extends UserController
    $asks = Ask::findStatuses($statuses);
    $asks = $asks->findTypes($types);
    $u = User::where('id', $user_id)->first()->details('managers');
-   if($this->domain!="managers" && !$this->is_manager($u->role)) $asks = $asks->findUser($user_id);
+   if($this->domain!="managers" || !$this->is_manager($u->role)){
+     $asks = $asks->findUser($user_id);
+   }
    $count = $asks->count();
    $asks = $asks->sortEnddate($sort);
 

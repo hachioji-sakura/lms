@@ -60,19 +60,27 @@ EOT;
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('end_date', $sort);
   }
-  static protected function already_data($type, $form){
+  static protected function already_data($form){
+    $type = $form['type'];
     //重複チェック
     if(!isset($form['status'])){
       $form['status'] = 'new';
     }
     $ask = Ask::where('type', $type)
-      ->where('status', $form['status']);
+      ->where('status', $form['status'])
+      ->where('target_model', $form['target_model'])
+      ->where('target_model_id', $form['target_model_id']);
+
     if(isset($form['start_date'])){
       $ask = $ask->where('start_date', $form['start_date']);
     }
-    $ask = $ask->where('target_model', $form['target_model'])
-      ->where('target_model_id', $form['target_model_id'])
-      ->where('target_user_id', $form['target_user_id'])->first();
+    if(isset($form['target_user_id'])){
+      $ask = $ask->where('target_user_id', $form['target_user_id']);
+    }
+    if(isset($form['charge_user_id'])){
+      $ask = $ask->where('charge_user_id', $form['charge_user_id']);
+    }
+    $ask = $ask->first();
     if(isset($ask)) {
       //重複登録あり
       return $ask;
@@ -80,7 +88,6 @@ EOT;
     return null;
   }
   static protected function add($form, $file=null){
-
     $parent_ask_id = 0;
     if(isset($form['parent_ask_id'])){
       $parent_ask_id = $form['parent_ask_id'];
@@ -95,6 +102,7 @@ EOT;
           $form["target_model"] = $parent_ask->target_model;
           $form["target_model_id"] = $parent_ask->target_model_id;
           $form["end_date"] = $parent_ask->end_date;
+          $form["body"] = $parent_ask->body;
         }
       }
     }
@@ -138,7 +146,7 @@ EOT;
       return null;
     }
     */
-    var_dump($form);
+
     $ask = Ask::create([
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],

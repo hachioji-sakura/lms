@@ -48,6 +48,7 @@ class TeacherController extends StudentController
       '_page' => $request->get('_page'),
       '_line' => $request->get('_line'),
       'list' => $request->get('list'),
+      'list_date' => $request->get('list_date'),
       'attributes' => $this->attributes(),
     ];
     $ret['filter'] = [
@@ -60,6 +61,15 @@ class TeacherController extends StudentController
       'search_work' => $request->search_work,
       'search_place' => $request->search_place,
     ];
+    if(empty($ret['list_date'])){
+      if($ret['list']=='month'){
+        $ret['list_date'] = date('Y-m-1');
+      }
+      else if($ret['list']=='month'){
+        $ret['list_date'] = date('Y-m-d');
+      }
+    }
+
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
     if(empty($user)){
@@ -80,7 +90,7 @@ class TeacherController extends StudentController
       }
       $asks = $this->get_ask([], $ret['item']->user_id);
       $ret['ask_count'] = $asks["count"];
-      $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe', 'phone'];
+      $lists = ['lecture_cancel', 'rest_cancel'];
       foreach($lists as $list){
         $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $asks["count"];

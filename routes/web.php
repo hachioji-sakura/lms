@@ -249,6 +249,7 @@ Route::get('asks/{id}/status_update/{status}','AskController@status_update_page'
 Route::put('asks/{id}/status_update/{status}','AskController@status_update');
 Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change_page');
 Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
+Route::get('asks/{ask_id}/commit','AskController@commit_page');
 Route::resource('asks','AskController');
 
 

@@ -31,7 +31,7 @@ return [
   "confirm_teacher_change" => "代講依頼を連絡しますか？",
   "warning_teacher_change" => "代講を依頼する講師を選択してください",
   "info_teacher_change1" => "以下の授業予定の代講依頼をご連絡いたしました。",
-  "info_teacher_change2" => "代講可能な場合、代講依頼を承認してください。",
+  "info_teacher_change2" => "URLより、代講依頼を承認or差戻し操作をしてください。",
   "info_teacher_change_thanks" => "代講依頼を受けていただき、ありがとうございます。",
   "info_teacher_change_cancel" => "この代講依頼はキャンセルされました。",
   "about_student_group" => "（このグループに関する説明など）",
@@ -53,6 +53,7 @@ return [
   "info_url_limit" => "※URLの有効期限はお申込みから24時間以内となっています。",
   "confirm_ask_cancel" => "この依頼内容を差戻しますか？",
   "confirm_ask_commit" => "この依頼内容を承認しますか？",
+  "confirm_ask_remind" => "この依頼内容を再送しますか？",
   "warning_calendar_rest" => "振替対象外となることを確認しました。",
   "trial_entry1" => "体験授業をお申し込みいただきまして、\n誠にありがとうございます。",
   "trial_entry2" => "２営業日以内に、当塾よりご連絡いたしますので、\n何卒宜しくお願い致します。",
@@ -93,5 +94,7 @@ return [
   'ex_late_arrival_reason' => "例：列車遅延のため、遅刻します。",
   "info_late_arrival" => "生徒様よりご連絡があり、\n以下の 授業予定に遅刻するとのことです。\n:to_time_slotに到着するとのことです。",
   "info_late_arrival_cancel" => "生徒様よりご連絡があり、\n以下の 授業予定の遅刻連絡をキャンセルするとのことです。",
+  "confirm_remind_already_ask_data" => "この依頼は登録済みですが、再送しますか？",
+  "confirm_ask_data" => "承認もしくは、差し戻し操作を行ってください。",
 
 ];

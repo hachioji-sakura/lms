@@ -47,16 +47,28 @@
             {!!nl2br($ask->body)!!}
           </p>
         </div>
-        <div class="col-12">
+        <div class="col-6">
           <b>起票者</b>
           <p class="ml-3">
             {{$ask["create_user_name"]}}
           </p>
         </div>
-        <div class="col-12">
+        <div class="col-6">
           <b>起票日</b>
           <p class="ml-3">
             {{$ask->created_at_label('Y年m月d日')}}
+          </p>
+        </div>
+        <div class="col-6">
+          <b>対象者</b>
+          <p class="ml-3">
+            {{$ask["target_user_name"]}}
+          </p>
+        </div>
+        <div class="col-6">
+          <b>担当者</b>
+          <p class="ml-3">
+            {{$ask["charge_user_name"]}}
           </p>
         </div>
         <div class="col-12 text-right">

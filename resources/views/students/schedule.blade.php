@@ -10,13 +10,13 @@
   @if($list=="month")
   <ul class="pagination pagination-sm m-0 float-left text-sm">
     <li class="page-item float-left">
-      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_month={{date('Y-m-1', strtotime('-1 month '.$list_month))}}">
+      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_date={{date('Y-m-1', strtotime('-1 month '.$list_date))}}">
         <i class="fa fa-chevron-left mr-1"></i>
         <span class="btn-label">前月</span>
       </a>
     </li>
     <li class="page-item ml-1">
-      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_month={{date('Y-m-1', strtotime('+1 month '.$list_month))}}">
+      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_date={{date('Y-m-1', strtotime('+1 month '.$list_date))}}">
         <span class="btn-label">次月</span>
         <i class="fa fa-chevron-right ml-1"></i>
       </a>

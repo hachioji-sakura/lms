@@ -619,11 +619,48 @@ class UserCalendarMember extends Model
       $this->update(['status' => 'fix']);
     }
   }
+  public function teacher_change_ask($create_user_id, $target_user_id){
+    $user = User::where('id', $create_user_id)->first();
+    //期限＝予定前日まで
+    $body = View::make('emails.forms.calendar')->with([
+      'item'=>$this->calendar,
+      'send_to' => 'manager',
+      'login_user' => $user->details(),
+      ])->render();
+
+    $ask = Ask::add([
+      "type" => "lecture_cancel",
+      "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
+      "body" => $body,
+      "target_model" => "user_calendar_members",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $target_user_id,
+      "charge_user_id" => 1,
+    ]);
+    return $ask;
+  }
   public function teacher_change($is_exec=true, $change_user_id){
     if($is_exec==true){
       //休講に更新
       $this->update(['user_id' => $change_user_id]);
       $this->calendar->update(['user_id' => $change_user_id]);
     }
+  }
+  public function already_ask_data($data){
+    $form = [
+      'type' => $data['type'],
+      'status' => $data['status'],
+      'target_model' => str_replace('lms.', '',$this->table),
+      'target_model_id' => $this->id,
+    ];
+    if(isset($data['charge_user_id'])){
+      $form['charge_user_id'] = $data['charge_user_id'];
+    }
+    else {
+      $form['charge_user_id'] = $this->calendar->user_id;
+    }
+    $already_data = Ask::already_data($form);
+    return $already_data;
   }
 }

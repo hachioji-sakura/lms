@@ -101,10 +101,21 @@
       </li>
       --}}
       <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" || $view=="ask_details") active @endif">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=rest_cancel" class="nav-link @if($view=="ask" && $list=="rest_cancel") active @endif">
           <i class="fa fa-envelope-square nav-icon"></i>
           <p>
-            {{__('labels.ask_list')}}
+            {{__('labels.schedule_rest_cancel')}}
+            @if($rest_cancel_count > 0)
+            <span class="badge badge-danger right">{{$rest_cancel_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
+          <i class="fa fa-envelope-square nav-icon"></i>
+          <p>
+            {{__('labels.ask_lecture_cancel')}}
             @if($lecture_cancel_count > 0)
             <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
             @endif

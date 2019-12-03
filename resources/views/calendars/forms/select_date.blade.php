@@ -15,7 +15,6 @@
         value="{{$item['start_date']}}"
       @endif
       @if(!(isset($_edit) && $_edit==true))
-      minvalue="{{date('Y/m/d')}}"
       @endif
       >
     </div>

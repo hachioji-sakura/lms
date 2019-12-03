@@ -77,11 +77,13 @@
           @slot('event_render')
           eventRender: function(event, element) {
             var title = "{{__('labels.schedule_add')}}";
+            var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+
             if(event['student_name']){
-              title = event['student_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+              title = event['student_name']+remark;
             }
-            if(event['teaching_code']==""){
-              title = event['work_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+            else if(event['teaching_code']==""){
+              title = event['work_name']+remark;
             }
             console.log(event);
             event_render(event, element, title, true);

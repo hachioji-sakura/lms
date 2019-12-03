@@ -1,6 +1,13 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
+    @if($ask!=null)
+    <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>{{__('messages.confirm_remind_already_ask_data')}}
+    </div>
+    @else
     {!!nl2br(__('messages.confirm_lecture_cancel'))!!}
+    @endif
+
     <div class="col-12 col-lg-12 col-md-12 mb-1">
       <span class="text-danger">
         {!!nl2br(__('messages.warning_lecture_cancel'))!!}
