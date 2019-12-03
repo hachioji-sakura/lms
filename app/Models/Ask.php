@@ -360,7 +360,9 @@ EOT;
 
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
+
     $title = $this->type_name();//.':'.$this->status_name();
+    \Log::info("charge_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->charge_user->details('students')->role=='student'){
@@ -393,7 +395,7 @@ EOT;
         break;
       case "rest_cancel":
         //事務作業の休み取り消しは可能
-        if($target_model_data->calendar->is_management()==true){
+        if($target_model_data->calendar->work==9){
           $ret = true;
         }
         break;

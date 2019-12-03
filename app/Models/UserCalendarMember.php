@@ -353,7 +353,7 @@ class UserCalendarMember extends Model
     }
     $__user_id = $student_no;
     if(empty($__user_id)) $__user_id = $teacher_no;
-    if($this->calendar->is_management()==true && !empty($manager_no)){
+    if($this->calendar->work==9 && !empty($manager_no)){
       //事務のスケジュール
       $__user_id = $manager_no;
       $teacher_no = "";

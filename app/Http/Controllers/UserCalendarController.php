@@ -776,7 +776,7 @@ class UserCalendarController extends MilestoneController
     }
     private function get_member_data(Request $request, $param){
       $member = null;
-      if($param['item']->is_management()==true){
+      if($param['item']->work==9){
         $member = $param['item']->members->where('user_id', $param['item']->user_id)->first();
       }
       else {
@@ -1293,7 +1293,7 @@ class UserCalendarController extends MilestoneController
             $param['item']->work = 9;
           }
         }
-        if($param['item']->is_management()==false && !isset($param['teacher_id'])) {
+        if($param['item']->work!=9 && !isset($param['teacher_id'])) {
           $param["teachers"] = Teacher::findStatuses(["regular"])->get();
           return view('teachers.select_teacher',
             [ 'error_message' => '', '_edit' => false])
