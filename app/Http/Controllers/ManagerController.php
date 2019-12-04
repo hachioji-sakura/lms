@@ -26,7 +26,7 @@ class ManagerController extends TeacherController
       $user = $ret['user'];
       if(is_numeric($id) && $id > 0){
         //id指定がある
-        if(!$this->is_manager($user->role) && $id!==$user->id){
+        if(!$this->is_manager($user->role) && $id!=$user->id){
           //講師は自分のidしか閲覧できない
           abort(403);
         }

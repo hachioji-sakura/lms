@@ -32,9 +32,9 @@ class StudentParentController extends TeacherController
     $user = $ret['user'];
     if(is_numeric($id) && $id > 0){
       //id指定がある
-      if(!($this->is_manager($user->role) || $this->is_manager($user->role)) && $id!==$user->id){
+      if(!($this->is_manager($user->role) || $this->is_manager($user->role)) && $id!=$user->id){
         //講師事務以外は自分のidしか閲覧できない
-        abort(403);
+        abort(403, $id."!==".$user->id);
       }
       //$ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
       $ret['item'] = $this->model()->where('id',$id)->first();
