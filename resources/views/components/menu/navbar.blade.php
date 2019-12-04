@@ -1,7 +1,7 @@
+@if(isset($user))
 @include('components.menu.navbar.account_nav')
 @include('components.menu.navbar.user_nav')
 @include('components.menu.navbar.announcement_nav')
-@if(isset($user))
 <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
 <!-- Left navbar links -->
 <ul class="navbar-nav">
