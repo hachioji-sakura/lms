@@ -1,6 +1,7 @@
 <?php
 
 return [
+"validate_timezone_error" => "Wrong time zone input",
  "confirm_update" => "Do you want to update?",
  "confirm_add" => "Do you want to register?",
  "error_exchange_target" => "Please select classes for transfer",
@@ -30,7 +31,7 @@ return [
  "confirm_teacher_change" => "Do you want to make a request for a substitute?",
  "warning_teacher_change" => "Please select a instructor to request a lecture",
  "info_teacher_change1" => "We have notified you of the following scheduled class requests.",
- "info_teacher_change2" => "If it is possible, please approve the request.",
+ "info_teacher_change2" => "Please approve or send back the substitute request from the URL.",
  "info_teacher_change_thanks" => "Thank you for receiving a request for a substitute lecture.",
  "info_teacher_change_cancel" => "This substitute request has been canceled.",
  "about_student_group" => "(Such as a description of this group)",
@@ -91,4 +92,6 @@ return [
  'ex_late_arrival_reason' => "ex.Because of the train delay",
  "info_late_arrival" => "The student contacted us,\nThey was late for the following class schedule\nThey arrive at :to_time_slot.",
  "info_late_arrival_cancel" => "The student contacted us,\nThey canceled the late contact for the following class schedule.",
-];
+ "confirm_remind_already_ask_data" => "This request has been registered, but will you resend it?",
+ "confirm_ask_data" => "Please approve or send back this request.",
+ ];

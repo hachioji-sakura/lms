@@ -1,9 +1,15 @@
-@section('comments')
+@section('star_comments')
 <div class="col-12 col-md-4 mb-2">
   <div class="card card-widget">
     <div class="card-header">
       <h3 class="card-title">
-        <i class="fa fa-thumbtack mr-1"></i>重要{{__('labels.comments')}}
+        <i class="fa fa-thumbtack mr-1"></i>
+        {{__('labels.star')}}
+        @if($domain!="students")
+        {{__('labels.announcements')}}
+        @else
+        {{__('labels.comments')}}
+        @endif
       </h3>
       <div class="card-tools">
         <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -26,6 +32,7 @@
         --}}
         <div class="">
           <span class="username mb-1">
+            <i class="fa fa-marker mr-1"></i>
             {{$comment["type_name"]}}
             {{--
             {{$comment->create_user->details()->name}}
@@ -67,11 +74,18 @@
     </div>
   </div>
 </div>
+@endsection
+@section('comments')
 <div class="col-12 col-md-8 mb-2 mb-2">
   <div class="card direct-chat">
     <div class="card-header">
       <h3 class="card-title">
-        <i class="fa fa-comment-dots mr-1"></i>{{__('labels.comments')}}
+        <i class="fa fa-comment-dots mr-1"></i>
+        @if($domain!="students")
+        {{__('labels.announcements')}}
+        @else
+        {{__('labels.comments')}}
+        @endif
       </h3>
       <div class="card-tools">
         <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
@@ -122,17 +136,86 @@
             @endif
 
 
-            @if($user->user_id === $comment->create_user_id)
             <br>
             <span class="float-right mr-1">
+              @if($user->role=="manager" || $comment->create_user_id == $user->user_id)
+              {{-- 起票者 or 管理者のみ 操作可能 --}}
               <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                 <i class="fa fa-edit"></i>
               </a>
               <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                 <i class="fa fa-trash"></i>
               </a>
+              @endif
+              <a id="importance_button_{{$comment->id}}" href="javascript:void(0);" onClick="importance_comment({{$comment->id}});" role="button" class="btn
+                @if($comment->importance > 5  )
+                  btn-danger
+                @elseif($comment->importance > 1)
+                  btn-warning
+                @else
+                  btn-secondary
+                @endif
+                btn-sm float-left mr-1">
+                <i class="fa fa-thumbtack"></i>
+              </a>
+              <a id="check_button_{{$comment->id}}" href="javascript:void(0);" onClick="comment_check({{$comment->id}});" role="button" class="btn
+                @if($comment->is_check($user->user_id)==false)
+                btn-outline-secondary
+                @else
+                btn-outline-primary
+                @endif
+                btn-sm float-left mr-1">
+                <i class="fa fa-check-circle"></i>
+              </a>
+              <script>
+              function importance_comment(id){
+                  service.postAjax('/comments/'+id+'/importanced',{},
+                  function(result, st, xhr) {
+                    if(result['status']===200){
+                      console.log(result['data']);
+                      $("#importance_button_"+id).removeClass("btn-secondary");
+                      $("#importance_button_"+id).removeClass("btn-danger");
+                      $("#importance_button_"+id).removeClass("btn-warning");
+                      if(result['data']['importance']>5){
+                        $("#importance_button_"+id).addClass("btn-danger");
+                      }
+                      else if(result['data']['importance']>1){
+                        $("#importance_button_"+id).addClass("btn-warning");
+                      }
+                      else{
+                        $("#importance_button_"+id).addClass("btn-secondary");
+                      }
+                    }
+                  },
+                  function(xhr, st, err) {
+                      messageCode = "error";
+                      messageParam= "\n"+err.message+"\n"+xhr.responseText;
+                      alert("システムエラーが発生しました\n"+messageParam);
+                  }, "PUT");
+              }
+              function comment_check(id){
+                  service.postAjax('/comments/'+id+'/checked',{},
+                  function(result, st, xhr) {
+                    if(result['status']===200){
+                      console.log(result['data']);
+                      if(result['data']['is_checked'] == false){
+                        $("#check_button_"+id).removeClass("btn-outline-primary");
+                        $("#check_button_"+id).addClass("btn-outline-secondary");
+                      }
+                      else {
+                        $("#check_button_"+id).removeClass("btn-outline-secondary");
+                        $("#check_button_"+id).addClass("btn-outline-primary");
+                      }
+                    }
+                  },
+                  function(xhr, st, err) {
+                      messageCode = "error";
+                      messageParam= "\n"+err.message+"\n"+xhr.responseText;
+                      alert("システムエラーが発生しました\n"+messageParam);
+                  }, "PUT");
+              }
+              </script>
             </span>
-            @endif
           </div>
         </div>
         @endforeach
@@ -147,6 +230,7 @@
 </div>
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")
+  <input type="hidden" name="check_user_id" value="{{$user->user_id}}">
   <div class="col-6 col-md-4">
     <div class="form-group">
       <label for="search_from_date" class="w-100">
@@ -181,10 +265,39 @@
       </div>
     </div>
   </div>
-  <div class="col-12 col-md-4 mb-2">
+  <div class="col-12 mb-2">
+    <label for="search_status" class="w-100">
+      {{__('labels.comments')}}
+      {{__('labels.type')}}
+    </label>
+    <div class="w-100">
+      <select name="search_comment_type[]" class="form-control select2" width=100% placeholder="検索タイプ" multiple="multiple" >
+          @foreach(config('attribute.comment_type') as $index => $name)
+            <option value="{{$index}}"
+            @if(isset($filter['search_comment_type']) && in_array($index, $filter['search_comment_type'])==true)
+            selected
+            @endif
+            >{{$name}}</option>
+          @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 mb-2">
     <div class="form-group">
-      <label for="is_exchange" class="w-100">
-        {{__('labels.sort_no')}}
+      <label for="search_keyword" class="w-100">
+        {{__('labels.search_keyword')}}
+      </label>
+      <input type="text" name="search_keyword" class="form-control" placeholder="{{__('labels.search_keyword')}}"
+      @if(isset($filter['search_keyword']))
+        value="{{$filter['search_keyword']}}"
+      @endif
+      >
+    </div>
+  </div>
+  <div class="col-12 mb-2">
+    <div class="form-group">
+      <label for="is_asc" class="w-100">
+        {{__('labels.other')}}
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_asc" class="icheck flat-green"
@@ -193,23 +306,20 @@
       @endif
       >{{__('labels.date')}} {{__('labels.asc')}}
       </label>
-    </div>
-  </div>
-  <div class="col-12 mb-2">
-    <label for="search_status" class="w-100">
-      {{__('labels.comments')}}
-      {{__('labels.type')}}
-    </label>
-    <div class="w-100">
-      <select name="search_comment_type[]" class="form-control select2" width=100% placeholder="検索タイプ" multiple="multiple" >
-        @foreach(config('attribute.comment_type') as $index => $name)
-          <option value="{{$index}}"
-          @if(isset($filter['search_comment_type']) && in_array($index, $filter['search_comment_type'])==true)
-          selected
-          @endif
-          >{{$name}}</option>
-        @endforeach
-      </select>
+      <label class="mx-2">
+        <input type="checkbox" value="1" name="is_checked_only" class="icheck flat-green"
+        @if(isset($filter['is_checked_only']) && $filter['is_checked_only']==1)
+          checked
+        @endif
+        >{{__('labels.checked_only')}}
+        </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_unchecked_only" class="icheck flat-green"
+      @if(isset($filter['is_unchecked_only']) && $filter['is_unchecked_only']==1)
+        checked
+      @endif
+      >{{__('labels.unchecked_only')}}
+      </label>
     </div>
   </div>
   @endslot

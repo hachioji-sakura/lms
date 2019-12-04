@@ -217,6 +217,7 @@ return [
   'comment_type' => 'Comment Type',
   'unchecked_announcements' => 'Unchecked Announcements',
   'all_announcements' => 'ALL Announcements',
+  'checked_only' => 'Checked only',
   'unchecked_only' => 'Unchecked only',
   'milestones' => 'Milestones',
   'milestone_type' => 'Milestone Type',
@@ -277,4 +278,6 @@ return [
   'trial_comment' => 'Trial Lesson Comment',
   'entry_comment' => 'Entry Comment',
   'season_comment' => 'Season Lesson Comment',
+  'schedule_type'           => 'Schedule Type',
+  'interview_etc' => 'Interview etc.',
 ];

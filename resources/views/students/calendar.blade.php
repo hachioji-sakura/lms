@@ -45,9 +45,18 @@
           @endslot
           @slot('event_render')
           eventRender: function(event, element, view) {
-            var title = '授業追加';
             console.log(event);
-            title = event['teacher_name']+'('+event['subject'].join('/')+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+            var title = "{{__('labels.schedule_add')}}";
+            var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+
+            if(event['teacher_name']){
+              title = event['teacher_name']+remark;
+            }
+            else if(event['teaching_code']==""){
+              title = event['work_name']+remark;
+            }
+            console.log(event);
+
             event_render(event, element, title, false);
           },
           @endslot

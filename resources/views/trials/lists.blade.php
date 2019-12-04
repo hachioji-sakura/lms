@@ -23,7 +23,7 @@
                     @foreach($item->trial_students as $trial_student)
                     <span class="text-xs ml-1">
                         <i class="fa fa-user mr-1"></i>
-                        {{$trial_student->student->name()}}様
+                        {{$trial_student->student->name()}} 様
                         （{{$trial_student->student->grade()}}）<br>
                       </small>
                     @endforeach

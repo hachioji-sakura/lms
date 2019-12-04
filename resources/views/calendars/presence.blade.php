@@ -147,14 +147,14 @@
         @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
           {{-- 当日開始15分前～終了15分後までの表示 --}}
           <div class="row">
-            <div class="col-12 col-lg-6 col-md-6 mb-1">
+            <div class="col-12 col-md-6 mb-1">
               <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence" {{__('labels.close_button')}}
                   confirm="{{__('messages.confirm_update')}}">
                   <i class="fa fa-check-circle mr-1"></i>
                   {{__('labels.schedule_presence')}}
               </button>
             </div>
-            <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_presence">
+            <div class="col-12 col-md-6 mb-1" id="{{$domain}}_presence">
               <button type="reset" class="btn btn-secondary btn-block">
                   {{__('labels.close_button')}}
               </button>
@@ -173,7 +173,7 @@
     @else
       {{-- マンツーマン系 --}}
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_single_presence">
+        <div class="col-12 col-md-6 mb-1" id="{{$domain}}_single_presence">
           <form method="POST" action="/calendars/{{$item['id']}}/status_update/presence">
             @csrf
 		        <input type="text" name="dummy" style="display:none;" / >
@@ -190,7 +190,7 @@ confirm="{{__('messages.confirm_update')}}">
             </button>
           </form>
         </div>
-        <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_single_absence">
+        <div class="col-12 col-md-6 mb-1" id="{{$domain}}_single_absence">
           <form method="POST" action="/calendars/{{$item['id']}}/status_update/absence">
             @csrf
 		        <input type="text" name="dummy" style="display:none;" / >

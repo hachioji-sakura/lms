@@ -42,7 +42,7 @@
   </div>
   @component('students.forms.name', [ 'prefix' => 'student_', 'item' => $item->student, 'is_label'=>true]) @endcomponent
   @component('students.forms.kana', [ 'prefix' => 'student_', 'item' => $item->student, 'is_label'=>true]) @endcomponent
-  <div class="col-12 col-lg-6 col-md-6">
+  <div class="col-12 col-md-6">
     {{$item->student->gender()}}
   </div>
   @component('students.forms.school', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item->student]) @endcomponent

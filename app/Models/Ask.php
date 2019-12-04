@@ -60,7 +60,8 @@ EOT;
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('end_date', $sort);
   }
-  static protected function already_data($type, $form){
+  static protected function already_data($form){
+    $type = $form['type'];
     //重複チェック
     if(!isset($form['status'])){
       $form['status'] = 'new';
@@ -68,19 +69,29 @@ EOT;
     $ask = Ask::where('type', $type)
       ->where('status', $form['status'])
       ->where('target_model', $form['target_model'])
-      ->where('target_model_id', $form['target_model_id'])
-      ->where('target_user_id', $form['target_user_id'])->first();
+      ->where('target_model_id', $form['target_model_id']);
+
+    if(isset($form['start_date'])){
+      $ask = $ask->where('start_date', $form['start_date']);
+    }
+    if(isset($form['target_user_id'])){
+      $ask = $ask->where('target_user_id', $form['target_user_id']);
+    }
+    if(isset($form['charge_user_id'])){
+      $ask = $ask->where('charge_user_id', $form['charge_user_id']);
+    }
+    $ask = $ask->first();
     if(isset($ask)) {
       //重複登録あり
       return $ask;
     }
     return null;
   }
-  static protected function add($type, $form){
+  static protected function add($form, $file=null){
     $parent_ask_id = 0;
     if(isset($form['parent_ask_id'])){
       $parent_ask_id = $form['parent_ask_id'];
-      if($type=="teacher_change"){
+      if($form['type']=="teacher_change"){
         if(!isset($form['target_user_id'])){
           //担当者・対象者は一緒
           $form['target_user_id'] = $form['charge_user_id'];
@@ -91,6 +102,7 @@ EOT;
           $form["target_model"] = $parent_ask->target_model;
           $form["target_model_id"] = $parent_ask->target_model_id;
           $form["end_date"] = $parent_ask->end_date;
+          $form["body"] = $parent_ask->body;
         }
       }
     }
@@ -116,17 +128,35 @@ EOT;
     if(!isset($form['target_model_id'])){
       $form['target_model_id'] = 0;
     }
+
+    if(!isset($form['from_time_slot'])){
+      $form['from_time_slot'] = "";
+    }
+    if(!isset($form['to_time_slot'])){
+      $form['to_time_slot'] = "";
+    }
+    if(!isset($form['status'])){
+      $form['status'] = "new";
+    }
+
+    \Log::warning("a1");
+    /*
     if(Ask::already_data($type, $form)!=null){
+      \Log::warning("競合！");
       return null;
     }
+    */
+
     $ask = Ask::create([
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],
-      'type' => $type,
+      'type' => $form['type'],
       'parent_ask_id' => $parent_ask_id,
-      'status' => 'new',
+      'status' => $form['status'],
       'title' => $form['title'],
       'body' => $form['body'],
+      'from_time_slot' => $form['from_time_slot'],
+      'to_time_slot' => $form['to_time_slot'],
       'target_model' => $form['target_model'],
       'target_model_id' => $form['target_model_id'],
       'charge_user_id' => $form['charge_user_id'],
@@ -162,7 +192,7 @@ EOT;
     return $d;
   }
 
-  public function change($form){
+  public function change($form, $file=null, $is_file_delete = false){
     if(isset($form["status"]) && isset($form["login_user_id"])){
       $this->_change($form['status'], $form['login_user_id']);
       $this->update(['status'=>$form['status']]);
@@ -272,6 +302,7 @@ EOT;
   public function remind_mail($login_user_id, $is_remind=false){
     $res = false;
     $param = [];
+    $param['ask'] = $this->details();
     $param['send_to'] = 'teacher';
     $param['login_user'] = User::where('id', $login_user_id)->first()->details();
     $target_model_data = $this->get_target_model_data();
@@ -285,6 +316,8 @@ EOT;
       case "teacher_change":
       case "rest_cancel":
       case "lecture_cancel":
+      case "emergency_lecture_cancel":
+      case "late_arrival":
         $param["item"] = $target_model_data->calendar->details($this->target_user_id);
         break;
     }
@@ -327,7 +360,9 @@ EOT;
 
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
+
     $title = $this->type_name();//.':'.$this->status_name();
+    \Log::info("charge_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->charge_user->details('students')->role=='student'){
@@ -360,7 +395,7 @@ EOT;
         break;
       case "rest_cancel":
         //事務作業の休み取り消しは可能
-        if($target_model_data->calendar->is_management()==true){
+        if($target_model_data->calendar->work==9){
           $ret = true;
         }
         break;

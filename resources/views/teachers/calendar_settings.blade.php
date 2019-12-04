@@ -65,7 +65,7 @@
                   </span>
                 </a>
               </div>
-              <div class="col-12 col-lg-6 col-md-6">
+              <div class="col-12 col-md-6">
                 @foreach($setting->members as $member)
                   @if($member->user->details()->role==="student")
                   {{--
@@ -184,10 +184,10 @@
 <section class="content-header">
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-12 col-lg-6 col-md-6">
+			<div class="col-12 col-md-6">
 				@yield('milestones')
 			</div>
-			<div class="col-12 col-lg-6 col-md-6">
+			<div class="col-12 col-md-6">
 				@yield('events')
 			</div>
 		</div>

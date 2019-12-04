@@ -9,92 +9,93 @@
   @slot('field_logic')
   <div class="row">
   @foreach($fields as $key=>$field)
-      @if(isset($field['size']))
-      <div class="col-{{$field['size']}}">
-      @else
-      <div class="col-12">
-      @endif
-        <div class="form-group">
-          @if($key==="status_name")
-            <label for="{{$key}}" class="w-100">
-              {{$field['label']}}
-            </label>
-            <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
-          @elseif($key==="place")
-            <label for="{{$key}}" class="w-100">
-              {{$field['label']}}
-            </label>
-            <small title="{{$item["id"]}}" class="badge badge-success mt-1 mr-1">{{$item->place()}}</small>
-          @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
-            <label for="{{$key}}" class="w-100">
-              {{$field['label']}}
-            </label>
-            @foreach($item["students"] as $member)
-              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
-                @if($member->status=='new')
-                <i class="fa fa-question-circle mr-1"></i>
-                @elseif($member->status=='confirm')
-                <i class="fa fa-question-circle mr-1"></i>
-                @elseif($member->status=='fix')
-                <i class="fa fa-clock mr-1"></i>
-                @elseif($member->status=='cancel')
-                <i class="fa fa-ban mr-1"></i>
-                @elseif($member->status=='presence')
-                <i class="fa fa-check-circle mr-1"></i>
-                @elseif($member->status=='absence')
-                <i class="fa fa-calendar-times mr-1"></i>
-                @elseif($member->status=='rest' || $member->status=='lecture_cancel')
-                <i class="fa fa-user-times mr-1" title="{{$member->exchange_limit_date}}"></i>
-                @endif
-                {{$member->user->details('students')->name}}
-                @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->rest_result())))
-                ({{$member->rest_result()}})
-                @else
-                <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
-                @endif
-              </a>
-              {{-- TODO この処理は使わなくなったのでいずれ削除
-              @if(isset($user) && $user->role=="manager")
-                @if($member->rest_type=='a2')
-                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2" title="休み２を休み１に変更します。">
-                  <i class="fa fa-exchange-alt mr-1"></i>
-                  休み１変更
-                </a>
-                @elseif($member->rest_type=='a1')
-                <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a2');" class="btn btn-sm btn-default mr-2"　title="休み１を、休み２に変更します。">
-                  <i class="fa fa-exchange-alt mr-1"></i>
-                  休み2変更
-                </a>
-                @endif
-              @endif
-              --}}
-              {{--
-              @if($action=='delete' && $item->is_group()==true && $member->status=='new')
-              <a href="javascript:void(0);" onClick="member_delete({{$member->calendar_id}}, {{$member->id}});" class="ml-2 text-dark">
-                <i class="fa fa-times"></i>
-              </a>
-              @endif
-              --}}
-              <br>
-            @endforeach
-          @elseif(isset($item[$key]) && gettype($item[$key])=='array')
-            <label for="{{$key}}" class="w-100">
-              {{$field['label']}}
-            </label>
-            @foreach($item[$key] as $_item)
-            <span class="text-xs">
-              <small class="badge badge-primary mt-1 mr-1">
-                {{$_item}}
-              </small>
-            </span>
-            @endforeach
-          @else
+    @if(!(isset($user) && ($user->role=="teacher" || $user->role=="manager")) && $key=="remark") @continue @endif
+    @if(isset($field['size']))
+    <div class="col-{{$field['size']}}">
+    @else
+    <div class="col-12">
+    @endif
+      <div class="form-group">
+        @if($key==="status_name")
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>
-          {{$item[$key]}}
-          @endif
-        </div>
+          <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
+        @elseif($key==="place")
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+          <small title="{{$item["id"]}}" class="badge badge-success mt-1 mr-1">{{$item->place()}}</small>
+        @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+          @foreach($item["students"] as $member)
+            <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+              @if($member->status=='new')
+              <i class="fa fa-question-circle mr-1"></i>
+              @elseif($member->status=='confirm')
+              <i class="fa fa-question-circle mr-1"></i>
+              @elseif($member->status=='fix')
+              <i class="fa fa-clock mr-1"></i>
+              @elseif($member->status=='cancel')
+              <i class="fa fa-ban mr-1"></i>
+              @elseif($member->status=='presence')
+              <i class="fa fa-check-circle mr-1"></i>
+              @elseif($member->status=='absence')
+              <i class="fa fa-calendar-times mr-1"></i>
+              @elseif($member->status=='rest' || $member->status=='lecture_cancel')
+              <i class="fa fa-user-times mr-1" title="{{$member->exchange_limit_date}}"></i>
+              @endif
+              {{$member->user->details('students')->name}}
+              @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->rest_result())))
+              ({{$member->rest_result()}})
+              @else
+              <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
+              @endif
+            </a>
+            {{-- TODO この処理は使わなくなったのでいずれ削除
+            @if(isset($user) && $user->role=="manager")
+              @if($member->rest_type=='a2')
+              <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a1');" class="btn btn-sm btn-default mr-2" title="休み２を休み１に変更します。">
+                <i class="fa fa-exchange-alt mr-1"></i>
+                休み１変更
+              </a>
+              @elseif($member->rest_type=='a1')
+              <a href="javascript:void(0);" onClick="rest_type_update({{$member->calendar_id}}, {{$member->id}}, 'a2');" class="btn btn-sm btn-default mr-2"　title="休み１を、休み２に変更します。">
+                <i class="fa fa-exchange-alt mr-1"></i>
+                休み2変更
+              </a>
+              @endif
+            @endif
+            --}}
+            {{--
+            @if($action=='delete' && $item->is_group()==true && $member->status=='new')
+            <a href="javascript:void(0);" onClick="member_delete({{$member->calendar_id}}, {{$member->id}});" class="ml-2 text-dark">
+              <i class="fa fa-times"></i>
+            </a>
+            @endif
+            --}}
+            <br>
+          @endforeach
+        @elseif(isset($item[$key]) && gettype($item[$key])=='array')
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+          @foreach($item[$key] as $_item)
+          <span class="text-xs">
+            <small class="badge badge-primary mt-1 mr-1">
+              {{$_item}}
+            </small>
+          </span>
+          @endforeach
+        @else
+        <label for="{{$key}}" class="w-100">
+          {{$field['label']}}
+        </label>
+        {{$item[$key]}}
+        @endif
+      </div>
     </div>
   @endforeach
   </div>
@@ -186,13 +187,13 @@
     </div>
     <div class="row">
       @method('DELETE')
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
             <i class="fa fa-trash mr-1"></i>
               削除する
           </button>
       </div>
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
           キャンセル

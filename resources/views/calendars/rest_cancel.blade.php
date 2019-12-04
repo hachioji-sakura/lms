@@ -1,12 +1,18 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    @if($item->is_management()==false)
+    @if($item->work!=9)
       @if($user->role==="manager" || $user->role==="teacher")
       <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
         <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_proxy_contact_for_student'))!!}
       </div>
       @endif
-      {!!nl2br(__('messages.confirm_rest_cancel'))!!}
+    @endif
+    @if($ask!=null)
+    <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>この依頼は登録済みですが、再送しますか？
+    </div>
+    @else
+    {!!nl2br(__('messages.confirm_rest_cancel'))!!}
     @endif
   @endslot
   @slot('forms')
@@ -69,13 +75,13 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-md-6 mb-1">
             <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_rest_cancel')}}">
               <i class="fa fa-envelope mr-1"></i>
                 {{__('labels.schedule_rest_cancel')}}
             </button>
         </div>
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-md-6 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
               {{__('labels.close_button')}}
             </button>
@@ -99,13 +105,13 @@
       </div>
 
       <div class="row">
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-md-6 mb-1">
             <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_rest_cancel')}}">
               <i class="fa fa-envelope mr-1"></i>
               {{__('labels.schedule_rest_cancel')}}
             </button>
         </div>
-        <div class="col-12 col-lg-6 col-md-6 mb-1">
+        <div class="col-12 col-md-6 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
               {{__('labels.close_button')}}
             </button>

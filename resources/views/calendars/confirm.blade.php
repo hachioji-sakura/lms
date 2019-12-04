@@ -11,7 +11,7 @@
   @method('PUT')
   <div class="row">
 @if(isset($user) && $user->role==="manager")
-<div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_action">
+<div class="col-12 col-md-6 mb-1" id="{{$domain}}_action">
   <form method="POST" action="/calendars/{{$item['id']}}">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
@@ -22,8 +22,8 @@
     </button>
   </form>
 </div>
-<div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
-  <form method="POST" action="/calendars/{{$item['id']}}/status_update/remind">
+<div class="col-12 col-md-6 mb-1" id="{{$domain}}_confirm">
+  <form method="POST" action="/calendars/{{$item['id']}}/remind">
     @csrf
 		<input type="text" name="dummy" style="display:none;" / >
     @method('PUT')
@@ -35,19 +35,19 @@
 </div>
 @elseif(isset($user) && $user->role==="teacher")
     @if($item['trial_id'] < 1 && $item['status']==='new')
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_confirm">
+    <div class="col-12 col-md-6 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendars/{{$item['id']}}/status_update/confirm">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
-        <input type="hidden" value="1" name="is_all_student" />
+        <input type="hidden" name="is_all_student" value="1" />
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を生徒に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.schedule_fix')}}
         </button>
       </form>
     </div>
-    <div class="col-12 col-lg-6 col-md-6 mb-1" id="{{$domain}}_action">
+    <div class="col-12 col-md-6 mb-1" id="{{$domain}}_action">
       <form method="POST" action="/calendars/{{$item['id']}}">
         @csrf
 		    <input type="text" name="dummy" style="display:none;" / >

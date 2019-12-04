@@ -119,13 +119,21 @@
                         </span>
                       @endif
                     @endforeach
-                    @foreach($calendar['subject'] as $subject)
-                    <span class="text-xs mr-2">
+                    @if($calendar->is_management()==false)
+                      @foreach($calendar['subject'] as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
+                    @else
+                    <span class="text-xs mx-2">
                       <small class="badge badge-primary mt-1 mr-1">
-                        {{$subject}}
+                        {{$calendar["work_name"]}}
                       </small>
                     </span>
-                    @endforeach
+                    @endif
                   </div>
                   <div class="col-12 col-lg-4 col-md-4">
                     @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])

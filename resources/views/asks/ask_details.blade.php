@@ -12,7 +12,7 @@
       <div class="card-header">
         <div class="user-block">
           <span class="">
-            <a href="{{url()->previous()}}">
+            <a href="/{{$domain}}/{{$item->id}}/ask">
               <i class="fa fa-angle-double-left mr-2"></i>
             </a>
             依頼詳細
@@ -47,16 +47,28 @@
             {!!nl2br($ask->body)!!}
           </p>
         </div>
-        <div class="col-12">
+        <div class="col-6">
           <b>起票者</b>
           <p class="ml-3">
             {{$ask["create_user_name"]}}
           </p>
         </div>
-        <div class="col-12">
+        <div class="col-6">
           <b>起票日</b>
           <p class="ml-3">
             {{$ask->created_at_label('Y年m月d日')}}
+          </p>
+        </div>
+        <div class="col-6">
+          <b>対象者</b>
+          <p class="ml-3">
+            {{$ask["target_user_name"]}}
+          </p>
+        </div>
+        <div class="col-6">
+          <b>担当者</b>
+          <p class="ml-3">
+            {{$ask["charge_user_name"]}}
           </p>
         </div>
         <div class="col-12 text-right">
@@ -166,7 +178,7 @@
 @section('page_footer')
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_form="dialog" page_url="/parents/{{$item->id}}/ask/{{$ask->id}}/edit" page_title="依頼内容編集">
-    <i class="fa fa-edit"></i>依頼編集
+    <i class="fa fa-edit"></i>{{__('labels.asks')}}{{__('labels.edit')}}
   </a>
 </dt>
 <dt>

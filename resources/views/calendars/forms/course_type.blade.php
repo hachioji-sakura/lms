@@ -1,4 +1,4 @@
-<div class="col-12 mt-2">
+<div class="col-12 mt-2 schedule_type schedule_type_class">
   <div class="form-group">
     <label for="course_type" class="w-100">
       {{__('labels.lesson_type')}}

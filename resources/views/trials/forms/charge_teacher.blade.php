@@ -116,7 +116,7 @@
                   @else
                   <small class="badge badge-primary mx-2">
                   @endif
-                    空き{{count($teacher->match_schedule['result'][$index])}}コマ
+                    空き{{count($teacher->match_schedule['result'][$index])}}
                   </small>
                 @endif
               @else
