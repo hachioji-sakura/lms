@@ -220,6 +220,7 @@ return [
   'announcements' => 'おしらせ',
   'unchecked_announcements' => '未チェックのお知らせ',
   'all_announcements' => 'すべてのお知らせ',
+  'checked_only' => 'チェックのみ',
   'unchecked_only' => '未チェックのみ',
   'milestones' => '目標',
   'milestone_type' => '目標種別',

@@ -22,37 +22,8 @@ class ManagerController extends TeacherController
      * @return json
      */
     public function get_param(Request $request, $id=null){
-      $id = intval($id);
-      $user = $this->login_details($request);
-      $pagenation = '';
-      $ret = [
-        'domain' => $this->domain,
-        'domain_name' => __('labels.'.$this->domain),
-        'user' => $user,
-        'mode'=>$request->mode,
-        'search_word'=>$request->get('search_word'),
-        '_status' => $request->get('status'),
-        '_page' => $request->get('_page'),
-        '_line' => $request->get('_line'),
-        'list' => $request->get('list'),
-        'attributes' => $this->attributes(),
-      ];
-      $ret['filter'] = [
-        'is_unchecked' => $request->is_unchecked,
-        'is_asc'=>$request->is_asc,
-        'is_desc'=>$request->is_desc,
-        'search_keyword'=>$request->search_keyword,
-        'search_comment_type'=>$request->search_comment_type,
-        'search_week'=>$request->search_week,
-        'search_work' => $request->search_work,
-        'search_place' => $request->search_place,
-      ];
-      if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-      if(empty($ret['_page'])) $ret['_page'] = 0;
-      if(empty($user)){
-        //ログインしていない
-        abort(419);
-      }
+      $ret = $this->get_common_param($request);
+      $user = $ret['user'];
       if(is_numeric($id) && $id > 0){
         //id指定がある
         if(!$this->is_manager($user->role) && $id!==$user->id){

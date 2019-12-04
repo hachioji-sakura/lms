@@ -217,6 +217,7 @@ return [
   'comment_type' => 'Comment Type',
   'unchecked_announcements' => 'Unchecked Announcements',
   'all_announcements' => 'ALL Announcements',
+  'checked_only' => 'Checked only',
   'unchecked_only' => 'Unchecked only',
   'milestones' => 'Milestones',
   'milestone_type' => 'Milestone Type',

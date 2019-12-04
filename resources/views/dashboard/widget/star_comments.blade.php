@@ -230,6 +230,7 @@
 </div>
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")
+  <input type="hidden" name="check_user_id" value="{{$user->user_id}}">
   <div class="col-6 col-md-4">
     <div class="form-group">
       <label for="search_from_date" class="w-100">
@@ -306,8 +307,15 @@
       >{{__('labels.date')}} {{__('labels.asc')}}
       </label>
       <label class="mx-2">
-      <input type="checkbox" value="1" name="is_unchecked" class="icheck flat-green"
-      @if(isset($filter['is_unchecked']) && $filter['is_unchecked']==1)
+        <input type="checkbox" value="1" name="is_checked_only" class="icheck flat-green"
+        @if(isset($filter['is_checked_only']) && $filter['is_checked_only']==1)
+          checked
+        @endif
+        >{{__('labels.checked_only')}}
+        </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_unchecked_only" class="icheck flat-green"
+      @if(isset($filter['is_unchecked_only']) && $filter['is_unchecked_only']==1)
         checked
       @endif
       >{{__('labels.unchecked_only')}}

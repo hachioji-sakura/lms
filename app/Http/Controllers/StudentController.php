@@ -52,15 +52,7 @@ class StudentController extends UserController
    return view($this->domain.'.tiles', $_table)
      ->with($param);
   }
-  /**
-   * 共通パラメータ取得
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id　（this.domain.model.id)
-   * @return json
-   */
-  public function get_param(Request $request, $id=null){
-    $id = intval($id);
+  public function get_common_param(Request $request){
     $user = $this->login_details($request);
     if(empty($user)){
       //ログインしていない
@@ -88,7 +80,8 @@ class StudentController extends UserController
       }
     }
     $ret['filter'] = [
-      'is_unchecked' => $request->is_unchecked,
+      'is_checked_only' => $request->is_checked_only,
+      'is_unchecked_only' => $request->is_unchecked_only,
       'is_asc'=>$request->is_asc,
       'is_desc'=>$request->is_desc,
       'search_keyword' => $request->search_keyword,
@@ -99,6 +92,18 @@ class StudentController extends UserController
     ];
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
     if(empty($ret['_page'])) $ret['_page'] = 0;
+    return $ret;
+  }
+  /**
+   * 共通パラメータ取得
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id　（this.domain.model.id)
+   * @return json
+   */
+  public function get_param(Request $request, $id=null){
+    $ret = $this->get_common_param($request);
+    $user = $ret['user'];
     if(is_numeric($id) && $id > 0){
       $ret['item'] = $this->model()->where('id', $id)->first();
       if(!isset($ret['item'])) abort(404);
@@ -276,8 +281,8 @@ class StudentController extends UserController
 
    //コメントデータ取得
    $form = $request->all();
-   $comments = $model->get_comments($form, $item->user_id);
-   $star_comments = $model->get_comments(['is_star' => true], $item->user_id);
+   $comments = $model->get_comments($form);
+   $star_comments = $model->get_comments(['is_star' => true]);
    /*
    $comments = $model->target_comments;
    if($this->is_teacher($user->role)){
@@ -443,8 +448,8 @@ class StudentController extends UserController
 
    $view = "comments";
    $form = $request->all();
-   $comments = $model->get_comments($form, $item->user_id);
-   $star_comments = $model->get_comments(['is_star' => true], $item->user_id);
+   $comments = $model->get_comments($form);
+   $star_comments = $model->get_comments(['is_star' => true]);
 
    $page_data = $this->get_pagedata($comments['count'] , $param['_line'], $param['_page']);
    foreach($page_data as $key => $val){

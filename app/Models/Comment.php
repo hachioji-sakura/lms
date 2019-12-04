@@ -40,6 +40,13 @@ class Comment extends Milestone
     }
     return $this->scopeFindTypes($query, $types);
   }
+  public function scopeChecked($query, $user_id)
+  {
+    $where_raw = <<<EOT
+      id in (select comment_id from lms.comment_checks where check_user_id = ? and is_checked=1)
+EOT;
+    return $query->whereRaw($where_raw,[$user_id]);
+  }
   public function scopeUnChecked($query, $user_id)
   {
     $where_raw = <<<EOT

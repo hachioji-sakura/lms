@@ -395,8 +395,14 @@ EOT;
       if(!empty($from_date) || !empty($to_date)){
         $comments = $comments->rangeDate($from_date, $to_date);
       }
-      if(isset($form['is_unchecked']) && $form['is_unchecked']==1){
-        $comments = $comments->unChecked($this->id);
+
+      if(isset($form['is_checked_only']) && $form['is_checked_only']==1){
+        if(!(isset($form['is_unchecked_only']) && $form['is_unchecked_only']==1)){
+          $comments = $comments->checked($form['check_user_id']);
+        }
+      }
+      else if(isset($form['is_unchecked_only']) && $form['is_unchecked_only']==1){
+        $comments = $comments->unChecked($form['check_user_id']);
       }
       if(isset($form['search_keyword']) && !empty($form['search_keyword'])){
         $comments = $comments->searchWord($form['search_keyword']);
