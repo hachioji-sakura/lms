@@ -776,12 +776,12 @@ class UserCalendarController extends MilestoneController
     }
     private function get_member_data(Request $request, $param){
       $member = null;
-      if($param['item']->work==9){
-        $member = $param['item']->members->where('user_id', $param['item']->user_id)->first();
-      }
-      else {
+      if($request->has('student_id')){
         $student = Student::where('id', $request->student_id)->first();
         $member = $param['item']->members->where('user_id', $student->user_id)->first();
+      }
+      else {
+        $member = $param['item']->members->where('user_id', $param['item']->user_id)->first();
       }
       return $member;
     }

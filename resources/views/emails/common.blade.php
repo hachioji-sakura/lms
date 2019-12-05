@@ -1,5 +1,5 @@
 @section('mail_title')
-{!!nl2br(__('messages.mail_header', ['url_name'=>__('labels.system_name'), 'url' =>config('app.url')]))!!}
+{{__('messages.mail_header', ['url_name'=>__('labels.system_name'), 'url' =>config('app.url')])}}
 @endsection
 
 @section('signature')

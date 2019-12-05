@@ -16,7 +16,7 @@ class CreateMilestonesTable extends Migration
         Schema::create('milestones', function (Blueprint $table) {
           $table->increments('id');
           $table->string('title')->nullable(false)->comment('件名');
-          $table->string('body')->nullable(false)->comment('内容');
+          $table->string('body',10000)->nullable(false)->comment('内容');
           $table->string('type')->nullable(false)->comment('種別');
           $table->integer('target_user_id')->index('index_target_user_id')->comment('対象ユーザーID');
           $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');

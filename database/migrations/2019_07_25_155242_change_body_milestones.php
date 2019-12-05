@@ -14,7 +14,7 @@ class ChangeBodyMilestones extends Migration
     public function up()
     {
         Schema::table('milestones', function (Blueprint $table) {
-          $table->string('body', 10000)->default('')->comment('内容')->change();
+          //$table->string('body', 10000)->default('')->comment('内容')->change();
         });
     }
 
@@ -22,11 +22,11 @@ class ChangeBodyMilestones extends Migration
      * Reverse the migrations.
      *
      * @return void
-     */
+     */change
     public function down()
     {
         Schema::table('milestones', function (Blueprint $table) {
-          $table->string('body')->nullable(false)->comment('内容')->change();
+          //$table->string('body')->nullable(false)->comment('内容')->change();
         });
     }
 }
