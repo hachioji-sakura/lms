@@ -14,7 +14,7 @@ class ChangeBodyComments extends Migration
     public function up()
     {
         Schema::table('comments', function (Blueprint $table) {
-          $table->string('body', 10000)->default('')->comment('内容')->change();
+          //$table->string('body', 10000)->default('')->comment('内容')->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeBodyComments extends Migration
     public function down()
     {
         Schema::table('comments', function (Blueprint $table) {
-          $table->string('body')->nullable(false)->comment('内容')->change();
+          //$table->string('body')->nullable(false)->comment('内容')->change();
         });
     }
 }
