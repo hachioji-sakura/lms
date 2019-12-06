@@ -2,7 +2,11 @@
   <div class="form-group">
     <label for="schedule_type" class="w-100">
       {{__('labels.schedule_type')}}
+      @if($_edit==true)
+      <span class="right badge badge-warning ml-1">{{__('labels.disabled')}}</span>
+      @else
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+      @endif
     </label>
     <div class="input-group">
       <div class="form-check ml-2" id="schedule_type_form_group">
@@ -11,6 +15,10 @@
             checked
           @else(isset($_edit) && $_edit==false)
             checked
+          @endif
+
+          @if($_edit==true)
+            disabled
           @endif
           >
           <label class="form-check-label" for="schedule_type_class">
@@ -22,6 +30,11 @@
           @if(isset($_edit) && $_edit==true && $item->is_management()==true)
             checked
           @endif
+
+          @if($_edit==true)
+            disabled
+          @endif
+
           >
           <label class="form-check-label" for="schedule_type_other">
             {{__('labels.interview_etc')}}

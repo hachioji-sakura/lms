@@ -555,6 +555,19 @@ EOT;
     }
     return $item;
   }
+  static public function get_holiday($day){
+    $day = date('Y-m-d', strtotime($day));
+    $holiday = Holiday::where('date', $day)->first();
+    if(isset($holiday)){
+      return $holiday;
+    }
+    return null;
+  }
+  public function is_holiday(){
+    $holiday = (new UserCalendar())->get_holiday($this->start_time);
+    if($holiday!=null) return true;
+    return false;
+  }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
     $ret = [];

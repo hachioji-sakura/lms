@@ -121,6 +121,7 @@ return [
   'clear' => 'クリア',
   'required' => '必須',
   'optional' => '任意',
+  'disabled' => '変更不可',
   'setting' => '設定',
   'day' => '日',
   'date' => '日付',
