@@ -1370,6 +1370,7 @@ class UserCalendarController extends MilestoneController
       }
       return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました。');
     }
+
     /**
      * 新規登録ロジック
      *
@@ -1377,6 +1378,11 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
+      $holiday = (new UserCalendar())->get_holiday($request->start_time);
+      if($holiday.is_private_holiday() == true){
+        return $this->error_response('休校日のため予定は登録できません');
+      }
+      
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {

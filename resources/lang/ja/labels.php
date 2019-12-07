@@ -154,6 +154,7 @@ return [
   'place' => '場所',
   'control' => '操作',
   'lesson' => 'レッスン',
+  'course' => 'コース',
   'lesson_name' => '授業種類',
   'info' => '情報',
   'base' => '基本',

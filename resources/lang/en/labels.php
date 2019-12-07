@@ -152,6 +152,7 @@ return [
   'place' => 'Place',
   'control' => 'Control',
   'lesson' => 'Lesson',
+  'course' => 'Course',
   'lesson_name' => 'Lesson Name',
   'info' => 'Infomation',
   'base' => 'Base',

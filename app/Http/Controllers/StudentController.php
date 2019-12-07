@@ -750,8 +750,11 @@ class StudentController extends UserController
      $places = $form['search_place'];
    }
 
-   $calendars = UserCalendar::rangeDate($from_date, $to_date);
-   $calendars = $calendars->findStatuses($statuses);
+   $calendars = UserCalendar::findStatuses($statuses);
+   if(!empty($to_date) || !empty($from_date)){
+     $calendars = $calendars->rangeDate($from_date, $to_date);
+   }
+
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
    $calendars = $calendars->findUser($user_id);
