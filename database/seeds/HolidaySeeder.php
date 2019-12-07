@@ -24,11 +24,12 @@ class HolidaySeeder extends Seeder
       $private_holidays = ['12-30', '12-31', '1-1', '1-2', '1-3'];
       $y = date('Y');
       foreach($private_holidays as $day){
-        $this->add($y.'-'.$day, '休校日', false, true);
+        $holiday = $this->add($y.'-'.$day, '休校日', false, true);
       }
       $y = $y+1;
       foreach($private_holidays as $day){
-        $this->add($y.'-'.$day, '休校日', false, true);
+        $holiday = $this->add($y.'-'.$day, '休校日', false, true);
+        $holiday->update(['is_private_holiday' => 1]);
       }
     }
     private function add($day, $remark, $is_public=false, $is_private=false){

@@ -123,6 +123,7 @@ EOT;
     $item['subject'] = $this->subject();
     $item['status_name'] = $this->status_name();
 
+    $item['course_name'] = $this->lesson().'/'.$this->course().'/'.$item['course_minutes_name'];
     $item['repeat_setting_name'] = $this->schedule_method().$this->week_setting().'/'.$item['timezone'];
 
     $teacher_name = "";
@@ -387,7 +388,7 @@ EOT;
 
       $is_member = true;
       if(count($_calendars) > 0){
-        //同じ日付のカレンダーがすでに作成済み
+        //同じ予定がすでに作成済み
         $ret[$date] = $_calendars;
       }
     }

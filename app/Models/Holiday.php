@@ -13,13 +13,13 @@ class Holiday extends Model
   public static $rules = array(
       'date' => 'required',
   );
-  public is_public_holiday(){
+  public function is_public_holiday(){
     if($this->is_public_holiday==1){
       return true;
     }
     return false;
   }
-  public is_private_holiday(){
+  public function is_private_holiday(){
     if($this->is_private_holiday==1){
       return true;
     }
