@@ -165,6 +165,14 @@ class UserCalendarController extends MilestoneController
     if($request->has('send_mail')){
       $form['send_mail'] = $request->get('send_mail');
     }
+
+    if($request->has('schedule_type') && $request->get('schedule_type')=='other'){
+      $form['work'] = $request->get('work');
+    }
+    else {
+      $form['course_type'] = $request->get('course_type');
+      unset($form['work']);
+    }
     unset($form['status']);
     return $form;
   }
@@ -220,7 +228,6 @@ class UserCalendarController extends MilestoneController
     $form['piano_lesson'] = $request->get('piano_lesson');
     $form['kids_lesson'] = $request->get('kids_lesson');
     $form['lesson'] = $request->get('lesson');
-    $form['course_type'] = $request->get('course_type');
     $form['place_floor_id'] = $request->get('place_floor_id');
     $form['is_exchange'] = false;
     //生徒と講師の情報が予定追加時には必須としている
@@ -264,6 +271,10 @@ class UserCalendarController extends MilestoneController
 
     if($request->has('schedule_type') && $request->get('schedule_type')=='other'){
       $form['work'] = $request->get('work');
+    }
+    else {
+      $form['course_type'] = $request->get('course_type');
+      unset($form['work']);
     }
 
     return $form;
@@ -1359,6 +1370,7 @@ class UserCalendarController extends MilestoneController
       }
       return $this->save_redirect($res, $param, 'カレンダーに予定を登録しました。');
     }
+
     /**
      * 新規登録ロジック
      *
@@ -1366,6 +1378,11 @@ class UserCalendarController extends MilestoneController
      */
     public function _store(Request $request)
     {
+      $holiday = (new UserCalendar())->get_holiday($request->start_time);
+      if($holiday.is_private_holiday() == true){
+        return $this->error_response('休校日のため予定は登録できません');
+      }
+      
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {

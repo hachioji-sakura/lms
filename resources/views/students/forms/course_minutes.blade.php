@@ -5,7 +5,11 @@
       @else
       1回の授業時間は何分をご希望でしょうか？
       @endif
+      @if(isset($_teacher) && $_teacher===true && $_edit==true)
+      <span class="right badge badge-warning ml-1">{{__('labels.disabled')}}</span>
+      @else
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+      @endif
     </label>
     @foreach($attributes['course_minutes'] as $index => $name)
       <label class="mx-2 course_minutes" for="course_minutes_{{$index}}">
@@ -14,6 +18,9 @@
         checked
         @elseif(!empty($item) && isset($item["course_minutes"]) && $index==$item["course_minutes"])
         checked
+        @endif
+        @if(isset($_teacher) && $_teacher===true && $_edit==true)
+        disabled
         @endif
         id="course_minutes_{{$index}}"
       required="true">

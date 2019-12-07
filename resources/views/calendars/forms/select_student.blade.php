@@ -12,7 +12,7 @@
          value="{{ $student->id }}"
          grade="{{$student->tag_value('grade')}}"
          @if(isset($_edit) && $_edit==true && $item['student_id'] == $student->id) selected @endif
-         >{{$student->name()}}</option>
+          disabled>{{$student->name()}}</option>
       @endforeach
       --}}
     </select>

@@ -82,6 +82,12 @@
                       <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
                         <i class="fa fa-chevron-down mr-1"></i>
                         {{date('m月d日', strtotime($calendar["date"]))}}
+
+                        @if(date('Y-m-d')==date('Y-m-d', strtotime($calendar["date"])))
+                          <small class="badge badge-danger ml-1">
+                            {{__('labels.calendar_button_today')}}
+                          </small>
+                        @endif
                       </a>
                     </div>
                   </div>
