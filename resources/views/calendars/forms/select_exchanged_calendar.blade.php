@@ -20,7 +20,7 @@ function get_exchange_calendar(){
   }
   var url = '';
   if(exchanged_calendar_id>0){
-    url = '/api_calendars?id='+exchanged_calendar_id;
+    url = '/api_calendars?id='+exchanged_calendar_id+'&teacher_id='+teacher_id;
   }
   else if(student_id > 0){
     url = '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson;

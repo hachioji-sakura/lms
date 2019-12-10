@@ -6,18 +6,9 @@
     </label>
     <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="select_student_change()">
       <option value="">{{__('labels.selectable')}}</option>
-      {{--
-      @foreach($items as $student)
-         <option
-         value="{{ $student->id }}"
-         grade="{{$student->tag_value('grade')}}"
-         @if(isset($_edit) && $_edit==true && $item['student_id'] == $student->id) selected @endif
-          disabled>{{$student->name()}}</option>
-      @endforeach
-      --}}
     </select>
     @if((isset($_edit) && $_edit==true) || $item['exchanged_calendar_id']>0)
-      @foreach($item->students as $member)
+      @foreach($item->get_students() as $member)
         <input type="hidden" name="select_student_id[]"
           value="{{$member->user->details('students')->id}}"
           grade="{{$member->user->details('students')->tag_value('grade')}}"
