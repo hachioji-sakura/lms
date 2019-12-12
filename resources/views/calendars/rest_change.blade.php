@@ -67,7 +67,7 @@
               <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             </label>
             {{-- TODO 休み理由は選択型の方がよさそうだが、要件がきまっていないので、いったんtextにする --}}
-            <input type="text" name="rest_result" class="form-control" placeholder="規定回数以上 or 当日 or 休講" inputtype="zenkaku">
+            <input type="text" name="rest_result" class="form-control" placeholder="" inputtype="zenkaku">
         </div>
       </div>
       <script>

@@ -113,16 +113,17 @@
                   <div class="col-12 col-lg-5 col-md-5">
                     @foreach($calendar->members as $member)
                       @if($member->user->details()->role==="student")
-                      {{--
-                        <a alt="student_name" href="/students/{{$member->user->details()->id}}">
-                          <i class="fa fa-user-graduate"></i>
-                          {{$member->user->details()->name}}
-                        </a>
-                        --}}
+                        @if($member->status=="rest")
+                        <span class="mr-2 text-danger">
+                        <i class="fa fa-user-times"></i>
+                        {{$member->user->details()->name}}
+                        </span>
+                        @else
                         <span class="mr-2">
                         <i class="fa fa-user-graduate"></i>
                         {{$member->user->details()->name}}
                         </span>
+                        @endif
                       @endif
                     @endforeach
                     @if($calendar->is_management()==false)
