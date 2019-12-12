@@ -173,7 +173,6 @@ EOT;
          where status != 'cancel'
          and exchanged_calendar_id > 0
         )
-      and start_time < current_timestamp
       and user_calendars.id in (
         select um.calendar_id from user_calendar_members um
           inner join common.students s on s.user_id = um.user_id
@@ -275,11 +274,6 @@ EOT;
     if(count($students)!=1) return false;
     $c++;
     if($students[0]->is_exchange_target()!=true) return false;
-    //生徒は一人 かつ、休み（休み２）かつ規定回数以上ではない
-    $exchanged_calendar = $students[0]->exchanged_calendar;
-    //振替登録済み（cancelを除く）
-    $c++;
-    if(isset($exchanged_calendar) && $exchanged_calendar->status!='cancel') return false;  //振替済み
     $c++;
     return true;
   }

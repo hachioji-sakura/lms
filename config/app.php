@@ -54,6 +54,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'management_url' => env('APP_MANAGEMENT_URL', 'https://hachiojisakura.com'),
 
     /*
     |--------------------------------------------------------------------------

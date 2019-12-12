@@ -162,7 +162,7 @@ class Controller extends BaseController
       //POSTの場合は、http_build_queryが不要、PUTは必要
       //curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($POST_DATA));
       if(!empty($this->token)){
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('api-token:'.$this->token));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Api-Token:'.$this->token));
       }
       $result = curl_exec($curl);
       curl_close($curl);
