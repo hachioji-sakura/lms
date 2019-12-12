@@ -806,7 +806,6 @@ class UserCalendarController extends MilestoneController
     public function rest_change_page(Request $request, $id)
     {
       $param = $this->page_access_check($request, $id);
-      if($param['item']["is_passed"]==false) abort(403);
       unset($param['fields']['remark']);
       unset($param['fields']['status_name']);
       unset($param['fields']['lesson']);

@@ -413,27 +413,25 @@ class UserCalendarMember extends Model
       }
     }
 
-    $postdata =[];
+    $postdata = [
+      "trial_id" => $this->calendar->trial_id,
+      "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),
+      "starttime" => date('H:i:s', strtotime($this->calendar->start_time)),
+      "endtime" => date('H:i:s', strtotime($this->calendar->end_time)),
+      "lecture_id" => $lecture_id_org,
+      "subject_expr" => implode (',', $this->calendar->subject()),
+      "work_id" => $this->calendar->work,
+      "place_id" => $this->calendar->place_floor_id,
+      "altsched_id" => $altsched_id,
+      //"cancel" => "",
+      //"confirm" => "",
+      //"temporary" => "111",
+    ];
     switch($method){
-      case "PUT":
       case "POST":
-        $postdata = [
-          "user_id" => $__user_id,
-          "student_no" => $student_no,
-          "teacher_id" => $teacher_no,
-          "trial_id" => $this->calendar->trial_id,
-          "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),
-          "starttime" => date('H:i:s', strtotime($this->calendar->start_time)),
-          "endtime" => date('H:i:s', strtotime($this->calendar->end_time)),
-          "lecture_id" => $lecture_id_org,
-          "subject_expr" => implode (',', $this->calendar->subject()),
-          "work_id" => $this->calendar->work,
-          "place_id" => $this->calendar->place_floor_id,
-          "altsched_id" => $altsched_id,
-          //"cancel" => "",
-          //"confirm" => "",
-          //"temporary" => "111",
-        ];
+        $postdata["user_id"] = $__user_id;
+        $postdata["student_no"] = $student_no;
+        $postdata["teacher_id"] = $teacher_no;
         break;
     }
     if($method==="PUT" || $method==="DELETE"){
