@@ -429,7 +429,9 @@ EOT;
     return $ret;
   }
   public function is_management(){
-    if($this->work==9) return true;
+    if(empty($this->work)) return false;
+    if(intval($this->work)==9) return true;
+    if(intval($this->work)<6) return true;
     return false;
   }
   public function is_group(){
@@ -499,6 +501,7 @@ EOT;
 
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
+    $item['course_minutes'] = $this->course_minutes(true);
     $item['timezone'] = $this->timezone();
     $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
     if($this->lecture_id > 0){
@@ -552,6 +555,19 @@ EOT;
     }
     return $item;
   }
+  static public function get_holiday($day){
+    $day = date('Y-m-d', strtotime($day));
+    $holiday = Holiday::where('date', $day)->first();
+    if(isset($holiday)){
+      return $holiday;
+    }
+    return null;
+  }
+  public function is_holiday(){
+    $holiday = (new UserCalendar())->get_holiday($this->start_time);
+    if($holiday!=null) return true;
+    return false;
+  }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
     $ret = [];
@@ -589,6 +605,8 @@ EOT;
       'status' => 'new'
     ]);
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    //新規登録時に変更メールを送らない
+    unset($form['send_mail']);
     $calendar = $calendar->change($form);
     return $calendar;
   }
@@ -606,7 +624,6 @@ EOT;
 
     $update_fields = [
       'status',
-      'access_key',
       'start_time',
       'end_time',
       'remark',
@@ -670,7 +687,6 @@ EOT;
     $this->office_system_api("PUT");
 
     if(isset($form['send_mail'])){
-
       $is_teacher_mail = false;
       $is_student_mail = false;
       if($form['send_mail']=='both'){
@@ -953,21 +969,24 @@ EOT;
     }
   }
   public function status_to_absence($remark, $login_user_id){
-    if($this->status!='fix') return false;
+    //授業予定→出席、　出席（間違えた場合）→欠席
+    if($this->status!='fix' && $this->status!="presence") return false;
     $status = 'absence';
     //カレンダー：欠席
     $this->update(['status' => $status]);
   }
   public function status_to_presence(){
-    if($this->status!='fix') return false;
+    //授業予定→出席、　欠席（間違えた場合）→出席
+    if($this->status!='fix' && $this->status!="absence") return false;
     $status = 'presence';
     //カレンダー：出席
     $this->update(['status' => $status]);
   }
   public function exist_rest_student(){
+    //欠席 or 休み or　休講
     foreach($this->members as $member){
       $_member = $member->user->details('students');
-      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel')){
+      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel' || $member->status == 'absence')){
         return true;
       }
     }

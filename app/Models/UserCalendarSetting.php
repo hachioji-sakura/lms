@@ -123,6 +123,9 @@ EOT;
     $item['subject'] = $this->subject();
     $item['status_name'] = $this->status_name();
 
+    $item['course_name'] = $this->lesson().'/'.$this->course().'/'.$item['course_minutes_name'];
+    $item['repeat_setting_name'] = $this->schedule_method().$this->week_setting().'/'.$item['timezone'];
+
     $teacher_name = "";
     $student_name = "";
     $other_name = "";
@@ -172,6 +175,8 @@ EOT;
   }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
+    \Log::warning("UserCalendar::add");
+
     $ret = [];
     $trial_id = 0;
 
@@ -219,6 +224,7 @@ EOT;
     $this->delete();
   }
   public function change($form){
+    \Log::warning("UserCalendar::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
@@ -382,7 +388,7 @@ EOT;
 
       $is_member = true;
       if(count($_calendars) > 0){
-        //同じ日付のカレンダーがすでに作成済み
+        //同じ予定がすでに作成済み
         $ret[$date] = $_calendars;
       }
     }

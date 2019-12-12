@@ -1,5 +1,5 @@
-@if(count($teacher->get_tags('lesson'))>1)
-<div class="col-12 mt-2">
+@if(count($teacher->get_tags('lesson'))>1 && $_edit==false)
+<div class="col-12 col-md-6 mt-2">
   <div class="form-group">
     <label for="course_type" class="w-100">
       レッスン
@@ -18,6 +18,9 @@
     </div>
   </div>
 </div>
+@elseif($_edit==true)
+{{-- レッスンが１つしかない --}}
+<input type="hidden" name="lesson" value="{{$item->lesson(true)}}" >
 @else
 {{-- レッスンが１つしかない --}}
 <input type="hidden" name="lesson" value="{{$teacher->get_tag('lesson')['value']}}" alt="{{$teacher->get_tag('lesson')['name']}}">

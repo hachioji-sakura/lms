@@ -108,7 +108,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="javascript:alert('開発中');">
+        <a class="nav-link" href="javascript:window.open('/{{$domain}}/{{$item->id}}/tuition', null, 'width=1024,height=640,toolbar=no,menubar=no,scrollbars=no');">
           <i class="fa fa-file-invoice-dollar nav-icon"></i>受講料設定
         </a>
       </li>

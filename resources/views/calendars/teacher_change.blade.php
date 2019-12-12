@@ -8,6 +8,8 @@
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="parent_ask_id" value="{{$ask->id}}">
     <input type="hidden" name="type" value="teacher_change">
+    <input type="hidden" name="target_model" value="{{$ask->target_model}}">
+    <input type="hidden" name="target_model_id" value="{{$ask->target_model_id}}">
     <div class="row">
       <div class="col-12">
         <div class="form-group">

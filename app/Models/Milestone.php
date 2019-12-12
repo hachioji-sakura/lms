@@ -68,6 +68,17 @@ class Milestone extends Model
     }
     return $query;
   }
+  public function scopeSearchWord($query, $word){
+    $search_words = explode(' ', $word);
+    $query = $query->where(function($query)use($search_words){
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhere('body','like', $_like)
+          ->orWhere('title','like', $_like);
+      }
+    });
+    return $query;
+  }
   public function scopeSortCreatedAt($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('created_at', $sort);
@@ -111,7 +122,9 @@ class Milestone extends Model
     return "";
   }
   public function importance_name(){
-    return $this->attribute_name('comment_importance', $this->importance);
+    $res = $this->attribute_name('importance', $this->importance);
+    \Log::warning("importance_name:".$res);
+    return $res;
   }
   public function details(){
     $item = $this;
@@ -133,9 +146,79 @@ class Milestone extends Model
     $res = $controller->send_mail($mail, $title, $param, $type, $template, $u->get_locale());
     return $res;
   }
+  public function default_importance($type){
+    switch($type){
+      case 'trial':
+        return 10;
+        break;
+      case 'entry':
+        return 10;
+        break;
+      case 'importance':
+        return 10;
+        break;
+      case 'season':
+        return 5;
+        break;
+    }
+    return 0;
+  }
+  public function change($form, $file=null, $is_file_delete = false){
+    $s3_url = '';
+    $_form = $this->file_upload($file);
+    $form['s3_url'] = $_form['s3_url'];
+    $form['s3_alias'] = $_form['s3_alias'];
+    if($is_file_delete == true){
+      $form['s3_url'] = "";
+      $form['s3_alias'] = "";
+    }
+    if($is_file_delete==true){
+      //削除指示がある、もしくは、更新する場合、S3から削除
+      $this->s3_delete($this->s3_url);
+    }
+    $this->update($form);
+    return $this;
+  }
+  public function file_upload($file=null){
+    $form = ['s3_alias' => $this->s3_alias, 's3_url' => $this->s3_url];
+
+    if(!empty($file)){
+      if ($file->isValid([])) {
+        $s3 = $this->s3_upload($file, config('aws_s3.upload_folder'));
+        if(!empty($this->s3_url)){
+          $this->s3_delete($this->s3_url);
+        }
+        $form['s3_alias'] = $file->getClientOriginalName();
+        $form['s3_url'] = $s3['url'];
+        $this->update($form);
+      }
+    }
+    return $form;
+  }
+  public function dispose(){
+    if(isset($this->s3_url) && !empty($this->s3_url)){
+      //S3アップロードファイルがある場合は削除
+      $this->s3_delete($this->s3_url);
+    }
+    $this->delete();
+  }
   protected function send_slack($message, $msg_type, $username=null, $channel=null) {
     $controller = new Controller;
     $res = $controller->send_slack($message, $msg_type, $username, $channel);
+    return $res;
+  }
+  protected function s3_upload($request_file, $save_folder=""){
+    $controller = new Controller;
+    $res = $controller->s3_upload($request_file, $save_folder);
+    return $res;
+  }
+  protected function s3_delete($s3_url){
+    $controller = new Controller;
+    $res = $controller->s3_delete($s3_url);
+    $this->update([
+      's3_alias' => '',
+      's3_url' => '',
+    ]);
     return $res;
   }
 }

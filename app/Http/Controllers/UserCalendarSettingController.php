@@ -25,37 +25,47 @@ class UserCalendarSettingController extends UserCalendarController
     public function model(){
       return UserCalendarSetting::query();
     }
-    public function show_fields($work){
-      if($work==9){
+    public function show_fields($item){
+      $base_ret = [
+        'title' => [
+          'label' => __('labels.title'),
+        ],
+        'repeat_setting_name' => [
+          'label' => __('labels.repeat'),
+          'size' => 6,
+        ],
+        'place_floor_name' => [
+          'label' => __('labels.place'),
+          'size' => 6,
+        ],
+      ];
+
+      if($item->work==9){
         $ret = [
-          'title' => [
-            'label' => __('labels.title'),
+          'user_name' => [
+            'label' => __('labels.charge_user'),
+            'size' => 6,
           ],
-          'place_floor_name' => [
-            'label' => __('labels.place'),
-          ],
-          'title2' => [
-            'label' => __('labels.details'),
+        ];
+      }
+      else if($item->is_management()==true){
+        $ret = [
+          'student_name' => [
+            'label' => __('labels.students'),
+            'size' => 6,
           ],
           'user_name' => [
             'label' => __('labels.charge_user'),
             'size' => 6,
           ],
-          'enable_date' => [
-            'label' => __('labels.subject'),
-            'size' => 12,
+          'work_name' => [
+            'label' => __('labels.schedule_details'),
+            'size' => 6,
           ],
         ];
       }
       else {
         $ret = [
-          'title' => [
-            'label' => __('labels.title'),
-          ],
-          'place_floor_name' => [
-            'label' => __('labels.place'),
-            'size' => 6,
-          ],
           'student_name' => [
             'label' => __('labels.students'),
             'size' => 6,
@@ -74,6 +84,11 @@ class UserCalendarSettingController extends UserCalendarController
           ],
         ];
       }
+      $ret['remark'] = [
+        'label' => __('labels.remark'),
+        'size' => 12,
+      ];
+      $ret = array_merge($base_ret, $ret);
       return $ret;
     }
     public function create_form(Request $request){
@@ -282,12 +297,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function show(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields($param['item']->work);
-      if($param['item']->is_teaching()===false){
-        unset($param['fields']['subject']);
-        unset($param['fields']['student_name']);
-        unset($param['fields']['title2']);
-      }
+      $param['fields'] = $this->show_fields($param['item']);
       return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])->with($param);
@@ -301,7 +311,7 @@ class UserCalendarSettingController extends UserCalendarController
     public function to_calendar_page(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['fields'] = $this->show_fields($param['item']->work);
+      $param['fields'] = $this->show_fields($param['item']);
       $param['add_dates'] = $param['item']->get_add_calendar_date();
 
       return view($this->domain.'.to_calendar', [

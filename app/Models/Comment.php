@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CommentCheck;
 
 class Comment extends Milestone
 {
@@ -30,7 +31,7 @@ class Comment extends Milestone
     $item["publiced_date"] = $this->publiced_date();
     return $item;
   }
-  public function scopeFindDefaultTypes($query)
+  public function scopeFindDefaultTypes($query, $domain)
   {
     $_types = config('attribute.comment_type');
     $types = [];
@@ -39,17 +40,44 @@ class Comment extends Milestone
     }
     return $this->scopeFindTypes($query, $types);
   }
-
-  /*
-  public function scopeStatus($query, $val)
+  public function scopeChecked($query, $user_id)
   {
-      return $query->where('status', $val);
+    $where_raw = <<<EOT
+      id in (select comment_id from lms.comment_checks where check_user_id = ? and is_checked=1)
+EOT;
+    return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function target_user(){
-    return $this->belongsTo('App\User', 'target_user_id');
+  public function scopeUnChecked($query, $user_id)
+  {
+    $where_raw = <<<EOT
+      id not in (select comment_id from lms.comment_checks where check_user_id = ? and is_checked=1)
+EOT;
+    return $query->whereRaw($where_raw,[$user_id]);
   }
-  public function create_user(){
-    return $this->belongsTo('App\User', 'create_user_id');
+
+  public function comment_checks(){
+    return $this->hasMany('App\Models\CommentCheck');
   }
-  */
+  public function is_check($user_id){
+    $check = CommentCheck::where('comment_id', $this->id)->where('check_user_id', $user_id)->first();
+    if(!isset($check)) return false;
+    return $check->is_checked;
+  }
+  public function check($user_id, $val=1){
+    $check = CommentCheck::where('comment_id', $this->id)->where('check_user_id', $user_id)->first();
+    if(!isset($check)){
+      $check = CommentCheck::create([
+        'comment_id' => $this->id,
+        'check_user_id' => $user_id,
+        'is_checked' => $val
+      ]);
+    }
+    else {
+      $check->update(['is_checked' => $val]);
+    }
+    return $check;
+  }
+  public function uncheck($user_id){
+    return $this->check($user_id, 0);
+  }
 }

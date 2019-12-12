@@ -208,7 +208,6 @@ EOT;
       'type' => 'trial',
       'create_user_id' => $parent->user_id,
       'target_user_id' => $student->user_id,
-      'importance' => 10,
       'publiced_at' => date('Y-m-d'),
     ];
     if(!empty($form["remark"])){
@@ -1220,7 +1219,8 @@ EOT;
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
 
-    $ask = Ask::add("agreement", [
+    $ask = Ask::add([
+      "type" => "agreement",
       "end_date" => date("Y-m-d", strtotime("30 day")),
       "body" => "",
       "target_model" => "trials",

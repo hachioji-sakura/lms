@@ -1,7 +1,11 @@
 <?php
 $item = $item->details(1);
  ?>
+ @if($item->is_management()==false)
 ■{{$item->teaching_name()}}
+@else
+■{{$item['work_name']}}
+@endif
 {{__('labels.datetime')}}：{{$item['datetime']}}
 {{__('labels.place')}}：{{$item['place_floor_name']}}
 @if($send_to!=='student')
@@ -10,9 +14,11 @@ $item = $item->details(1);
 --------------------------------------------
 （{{__('labels.details')}}）
 {{__('labels.teachers')}}：{{$item['teacher_name']}}
+@if($item->is_management()==false)
 {{__('labels.lesson')}}：{{$item['lesson']}}
 {{__('labels.lesson_type')}}：{{$item['course']}}
 {{__('labels.subject')}}：{{implode(',', $item['subject'])}}
+@endif
 @if($send_to!=='student')
 {{__('labels.students')}}：
 @foreach($item->members as $member)

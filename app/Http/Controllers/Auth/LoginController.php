@@ -42,10 +42,12 @@ class LoginController extends Controller
     }
     protected function authenticated(Request $request, $user)
     {
+      \Log::warning("LoginController::authenticated");
       session()->regenerate();
       session()->put('login_role', null);
       session()->put('locale', $request->get('locale'));
       $user = Auth::user();
+      \Log::warning("user_id=".$user->id);
       $manager = Manager::where('user_id', $user->id)->first();
       $teacher = Teacher::where('user_id', $user->id)->first();
       if(isset($manager) && strpos(url()->previous(), 'managers/login')){

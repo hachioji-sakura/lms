@@ -28,46 +28,19 @@ class StudentParentController extends TeacherController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-    $id = intval($id);
-    $user = $this->login_details($request);
-    $pagenation = '';
-    $ret = [
-      'view' => '',
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'mode'=>$request->mode,
-      'search_word'=>$request->get('search_word'),
-      '_status' => $request->get('status'),
-      '_page' => $request->get('_page'),
-      '_line' => $request->get('_line'),
-      'list' => $request->get('list'),
-      'attributes' => $this->attributes(),
-    ];
-    $ret['attributes']['ask_type'] = [
-      'new_schedule' => '通塾スケジュールの追加',
-      'change_schedule' => '通塾スケジュールの変更',
-      'other_request' => 'その他',
-    ];
-
-    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-    if(empty($ret['_page'])) $ret['_page'] = 0;
-    if(!isset($user)){
-      //ログインしていない
-      abort(419);
-    }
+    $ret = $this->get_common_param($request);
+    $user = $ret['user'];
     if(is_numeric($id) && $id > 0){
       //id指定がある
-      if(!($this->is_manager($user->role) || $this->is_manager($user->role)) && $id!==$user->id){
+      if(!($this->is_manager($user->role) || $this->is_manager($user->role)) && $id!=$user->id){
         //講師事務以外は自分のidしか閲覧できない
-        abort(403);
+        abort(403, $id."!==".$user->id);
       }
       //$ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
       $ret['item'] = $this->model()->where('id',$id)->first();
       if(!isset($ret['item'])) abort(404);
       $ret['item'] = $ret['item']->details();
       $ret['charge_students'] = $this->get_students($request, $id);
-
     }
     else {
       //id指定がない、かつ、事務以外はNG

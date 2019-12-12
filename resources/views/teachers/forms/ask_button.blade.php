@@ -1,6 +1,10 @@
 @if($user->role==="teacher" || $user->role==="manager" )
   @if($ask["status"]==="new" && ($ask["charge_user_id"]==$item->user_id || $domain=='managers'))
   {{-- 講師予定確認済み --}}
+  <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="再送する" page_form="dialog" page_url="/asks/{{$ask["id"]}}/status_update/remind?origin={{$domain}}&item_id={{$item->id}}&page=ask" role="button" class="btn btn-default btn-sm">
+    <i class="fa fa-envelope mr-1"></i>
+    再送
+  </a>
   <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="承認する" page_form="dialog" page_url="/asks/{{$ask["id"]}}/status_update/commit?origin={{$domain}}&item_id={{$item->id}}&page=ask" role="button" class="btn btn-primary btn-sm">
     <i class="fa fa-check mr-1"></i>
     承認

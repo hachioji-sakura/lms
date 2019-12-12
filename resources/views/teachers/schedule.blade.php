@@ -4,6 +4,20 @@
 @extends('dashboard.common')
 @include($domain.'.menu')
 
+@section('schedule_list_pager')
+@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+  @slot("addon_button")
+  <ul class="pagination pagination-sm m-0 float-left text-sm">
+    <li class="page-item ml-1">
+      <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
+        <i class="fa fa-plus"></i>
+        <span class="btn-label">{{__('labels.add')}}</span>
+      </a>
+    </li>
+  </ul>
+  @endslot
+@endcomponent
+@endsection
 
 @section('contents')
 <section class="content">
@@ -32,18 +46,7 @@
             @endif
           </h3>
           <div class="card-title text-sm">
-            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-              @slot("addon_button")
-              <ul class="pagination pagination-sm m-0 float-left text-sm">
-                <li class="page-item">
-                  <a class="btn btn-info btn-sm" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
-                    <i class="fa fa-plus"></i>
-                    <span class="btn-label">{{__('labels.add')}}</span>
-                  </a>
-                </li>
-              </ul>
-              @endslot
-            @endcomponent
+            @yield('schedule_list_pager')
           </div>
         </div>
         <!-- /.card-header -->
@@ -80,13 +83,21 @@
                     @endif
                   @endforeach
                   <br>
-                  @foreach($calendar['subject'] as $subject)
+                  @if($calendar->is_management()==false)
+                    @foreach($calendar['subject'] as $subject)
+                    <span class="text-xs mx-2">
+                      <small class="badge badge-primary mt-1 mr-1">
+                        {{$subject}}
+                      </small>
+                    </span>
+                    @endforeach
+                  @else
                   <span class="text-xs mx-2">
                     <small class="badge badge-primary mt-1 mr-1">
-                      {{$subject}}
+                      {{$calendar["work_name"]}}
                     </small>
                   </span>
-                  @endforeach
+                  @endif
                 </div>
                 <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
                   @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
@@ -104,10 +115,7 @@
 
         <div class="card-header">
           <div class="card-title text-sm">
-            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-              @slot("addon_button")
-              @endslot
-            @endcomponent
+            @yield('schedule_list_pager')
           </div>
         </div>
 

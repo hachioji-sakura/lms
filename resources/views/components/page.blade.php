@@ -47,13 +47,13 @@
     {{-- 共通form用のボタン --}}
     @if(isset($action) && $action=='delete')
       @method('DELETE')
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
             <i class="fa fa-trash mr-1"></i>
               削除する
           </button>
       </div>
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
           キャンセル
@@ -84,13 +84,13 @@
         </h6>
       </div>
       @endif
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
           <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="送信しますか？">
             <i class="fa fa-envelope mr-1"></i>
               送信する
           </button>
       </div>
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
           キャンセル
@@ -120,13 +120,13 @@
         </div>
       </div>
       @endif
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
           <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_{{$action}}">
             <i class="fa fa-users-cog mr-1"></i>
               講師・事務の兼務設定する
           </button>
       </div>
-      <div class="col-12 col-lg-6 col-md-6 my-1">
+      <div class="col-12 col-md-6 my-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
           キャンセル

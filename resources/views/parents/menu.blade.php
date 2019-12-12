@@ -15,14 +15,16 @@
       <ul class="nav nav-treeview">
         <li class="nav-item">
           <a class="nav-link @if($view=="page") active @endif" href="/parents/{{$item->id}}"  >
-            <i class="fa fa-home nav-icon"></i>トップ
+            <i class="fa fa-home nav-icon"></i>{{__('labels.top')}}
           </a>
         </li>
+        {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >
-            <i class="fa fa-phone nav-icon"></i>お問い合わせ
+            <i class="fa fa-phone nav-icon"></i>{{__('labels.contact_page')}}
           </a>
         </li>
+        --}}
       </ul>
     </li>
     <li class="nav-item has-treeview menu-open">

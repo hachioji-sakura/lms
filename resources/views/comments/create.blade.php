@@ -131,7 +131,7 @@
     </div>
     @endif
     <div class="row">
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
             @if(isset($_edit) && $_edit==true)
               {{__('labels.update_button')}}
@@ -145,7 +145,7 @@
             </span>
           @endif
       </div>
-      <div class="col-12 col-lg-6 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
               キャンセル
           </button>

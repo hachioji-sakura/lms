@@ -126,6 +126,7 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
+    console.log("form_data_adjust:"+form_data);
     var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
@@ -140,9 +141,15 @@ $(function(){
     form_data["teacher_name"] = _t;
 
     var _d = $('input[name=start_date]').val();
-    var _h = $('select[name=start_hours] option:selected').val();
-    var _m = $('select[name=start_minutes] option:selected').val();
-    form_data["start_time"] = _d+" "+_h+":"+_m;
+    var _sh = $('select[name=start_hours] option:selected').val();
+    var _sm = $('select[name=start_minutes] option:selected').val();
+    form_data["start_time"] = _d+" "+_sh+":"+_sm;
+
+    var _eh = $('select[name=end_hours] option:selected').val();
+    var _em = $('select[name=end_minutes] option:selected').val();
+    if(_eh && _em){
+      form_data["work_time"] = _d+" "+_sh+":"+_sm+"-"+_eh+":"+_em;
+    }
 
     var _snames = "";
     $('select[name="student_id[]"] option:selected').each(function(){
@@ -151,7 +158,7 @@ $(function(){
     });
     form_data["student_name"] = _snames;
 
-    var _names = ["place_floor_id", "student_group"];
+    var _names = ["place_floor_id", "student_group", "work"];
     $.each(_names, function(index, value) {
       if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();
@@ -195,46 +202,6 @@ $(function(){
     form_data["subject_name"] = _snames;
     //get_conflict_calendar(form_data);
     return form_data;
-  }
-
-  function get_conflict_calendar(form_data){
-    console.log("--get_conflict_calendar--");
-    console.log(form_data);
-    var teacher_id = form_data['teacher_id'];
-    var lesson = form_data['lesson'];
-    var course_minutes = form_data['course_minutes'][0];
-    var start_time = form_data['start_time'];
-    var lesson = form_data['lesson'];
-    if(lesson==0){
-      lesson = ($('input[name=lesson]').val())|0;
-    }
-    return false;
-    //振替対象の予定を取得
-    service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&course_minutes='+course_minutes+'&lesson='+lesson, null,
-      function(result, st, xhr) {
-        console.log(result["data"]);
-        if(result['status']===200){
-          var c = 0;
-          $.each(result['data'], function(id, val){
-            var _option = '<option value="'+val['id']+'">'+val['datetime']+'</option>';
-            $("select[name='exchanged_calendar_id']").append(_option);
-            c++;
-          });
-          if(c>0){
-            $('select[name=exchanged_calendar_id]').show();
-            $("#exchanged_calendar_none").hide();
-          }
-          else {
-            $('select[name=exchanged_calendar_id]').hide();
-            $("#exchanged_calendar_none").show();
-          }
-          $("#exchanged_calendar").collapse("show");
-        }
-      },
-      function(xhr, st, err) {
-          alert("UI取得エラー(api_calendars)");
-      }
-    );
   }
 });
 </script>

@@ -1,4 +1,4 @@
- <div class="col-12 mt-2">
+ <div class="col-12 mt-2 schedule_type schedule_type_class">
    <label for="charge_subject" class="w-100">
      {{__('labels.charge_subject')}}
      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>

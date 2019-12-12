@@ -104,7 +104,12 @@
     function set_calendar(start_time, end_time, callback) {
       start_time = start_time.replace_all('-','');
       end_time = end_time.replace_all('-','');
-      service.getAjax(false, '/api_calendars/{{$user_id}}/'+start_time+'/'+end_time, null,
+      var user_id = "{{$user_id}}";
+      var is_all = $('input[name="is_all"]:checked').val();
+      if(is_all==1){
+        user_id = 0;
+      }
+      service.getAjax(false, '/api_calendars/'+user_id+'/'+start_time+'/'+end_time, null,
         function(result, st, xhr) {
           if(result['status']===200){
             var events = [];
@@ -112,7 +117,12 @@
               value["start"] = value['start_time'];
               value["end"] = value['end_time'];
               value["total_status"] = value.status;
-              value["status"] = value.own_member.status;
+              if(value.own_member){
+                value["status"] = value.own_member.status;
+              }
+              else {
+                value["status"] = value.status;
+              }
               events.push(value);
             });
             console.log(events);

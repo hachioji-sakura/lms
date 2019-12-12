@@ -54,6 +54,10 @@ class UserCalendarMember extends Model
     }
     return false;
   }
+  public function remind($login_user_id){
+    \Log::warning("member.remind");
+    $this->status_update("remind", "", $login_user_id);
+  }
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
     $is_update = false;
     $login_user = User::where('id', $login_user_id)->first();
@@ -64,10 +68,16 @@ class UserCalendarMember extends Model
     switch($status){
       case "remind":
         $is_send_teacher_mail = false;
-        $is_send_mail = false;
+        $is_send_mail = true;
         //リマインド操作＝事務 or 講師
-        if($this->status!='confirm'){
+        if($this->calendar->status!='confirm'){
           $is_send_mail = false;
+        }
+        $status = $this->calendar->status;
+        $param['token'] = $this->access_key;
+        if(empty($param['token'])){
+          $this->update(['access_key' => $update_form['access_key']]);
+          $param['token'] = $update_form['access_key'];
         }
         break;
       case "confirm":
@@ -77,7 +87,7 @@ class UserCalendarMember extends Model
         }
         break;
       case "fix":
-        if($this->status=='confirm' || $this->status=='cancel'){
+        if($this->calendar->status=='confirm'){
           $is_update = true;
         }
         break;
@@ -92,21 +102,23 @@ class UserCalendarMember extends Model
         }
         break;
       case "presence":
-        if($this->status=='fix'){
+        $is_send_mail = false;
+        $is_send_teacher_mail = false;
+        if($this->status=='fix' || $this->status=='absence'){
           $is_update = true;
-          $is_send_mail = false;
-          $is_send_teacher_mail = false;
         }
         break;
       case "absence":
-        if($this->status=='fix'){
+        $is_send_mail = false;
+        $is_send_teacher_mail = false;
+        if($this->status=='fix' || $this->status=='presence'){
           $is_update = true;
-          $is_send_teacher_mail = false;
         }
         break;
     }
     if($is_update){
       $this->update($update_form);
+      $param['token'] = $update_form['access_key'];
       $res = $this->_office_system_api('PUT');
       switch($status){
         case "confirm":
@@ -130,6 +142,7 @@ class UserCalendarMember extends Model
       }
     }
 
+    \Log::warning("UserCalendarMember::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -138,12 +151,10 @@ class UserCalendarMember extends Model
     $u = $this->user->details();
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
-    $param['token'] = $update_form['access_key'];
     $param['user_name'] = $u->name();
     $param['item'] = $this->calendar->details($this->user_id);
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
-
     if(($param['login_user']->role=='teacher' || $param['login_user']->role=='manager') && $u->role == 'student'){
       //代理の場合
       $param['is_proxy'] = true;
@@ -153,7 +164,7 @@ class UserCalendarMember extends Model
       //このユーザーにメール送信
       $this->user->send_mail($title, $param, $type, $template);
     }
-    if($is_send_teacher_mail && $u->role!="teacher"){
+    if($is_send_teacher_mail==true && $u->role!="teacher"){
       //※このmemberが講師の場合はすでに送信しているため、送らない
       if(!($is_send_mail && $this->calendar->user_id == $this->user_id)){
         $this->calendar->teacher_mail($title, $param, $type, $template);
@@ -206,10 +217,27 @@ class UserCalendarMember extends Model
   }
   public function update_rest_type($update_rest_type, $update_rest_result){
     $this->update([
+      'status' => 'rest',
       'rest_type' => $update_rest_type,
       'rest_result' => $update_rest_result,
     ]);
     $res = $this->_office_system_api('PUT', $update_rest_type, $update_rest_result);
+
+    if($this->calendar->status=='absence'){
+      //欠席→休みに変更する場合
+      $is_absence = false;
+      foreach($this->calendar->get_students() as $member){
+        if($member->status == 'absence'){
+          $is_absence = true;
+          break;
+        }
+      }
+      if($is_absence==false){
+        //生徒の欠席ステータスがない場合、休みステータスに変更
+        $this->calendar->update(['status' => 'rest']);
+      }
+    }
+
     return $this;
   }
   public function rest_result(){
@@ -324,7 +352,8 @@ class UserCalendarMember extends Model
       }
     }
     $__user_id = $student_no;
-    if($this->calendar->is_management()==true){
+    if(empty($__user_id)) $__user_id = $teacher_no;
+    if($this->calendar->work==9 && !empty($manager_no)){
       //事務のスケジュール
       $__user_id = $manager_no;
       $teacher_no = "";
@@ -403,6 +432,9 @@ class UserCalendarMember extends Model
 
     //TODO 更新者を取得しても、事務システム側のデータ単位が異なるので適切に設定することができない
     //このロジックはあまり意味がない
+    $postdata['updateuser'] = $__user_id;
+    \Log::warning("debug:".$__user_id);
+
     if($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
@@ -413,9 +445,6 @@ class UserCalendarMember extends Model
           $postdata['updateuser'] = $student_no;
           break;
       }
-    }
-    else {
-      $postdata['updateuser'] = $__user_id;
     }
 
     $message = "";
@@ -529,7 +558,8 @@ class UserCalendarMember extends Model
       ])->render();
 
     //期限＝予定前日まで
-    $ask = Ask::add("rest_cancel", [
+    $ask = Ask::add([
+      "type" => "rest_cancel",
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
       "body" => $body,
       "target_model" => "user_calendar_members",
@@ -563,7 +593,8 @@ class UserCalendarMember extends Model
       'login_user' => $user->details(),
       ])->render();
 
-    $ask = Ask::add("lecture_cancel", [
+    $ask = Ask::add([
+      "type" => "lecture_cancel",
       "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
       "body" => $body,
       "target_model" => "user_calendar_members",
@@ -588,11 +619,48 @@ class UserCalendarMember extends Model
       $this->update(['status' => 'fix']);
     }
   }
+  public function teacher_change_ask($create_user_id, $target_user_id){
+    $user = User::where('id', $create_user_id)->first();
+    //期限＝予定前日まで
+    $body = View::make('emails.forms.calendar')->with([
+      'item'=>$this->calendar,
+      'send_to' => 'manager',
+      'login_user' => $user->details(),
+      ])->render();
+
+    $ask = Ask::add([
+      "type" => "lecture_cancel",
+      "end_date" => date("Y-m-d", strtotime("-1 day ".$this->calendar->start_time)),
+      "body" => $body,
+      "target_model" => "user_calendar_members",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $target_user_id,
+      "charge_user_id" => 1,
+    ]);
+    return $ask;
+  }
   public function teacher_change($is_exec=true, $change_user_id){
     if($is_exec==true){
       //休講に更新
       $this->update(['user_id' => $change_user_id]);
       $this->calendar->update(['user_id' => $change_user_id]);
     }
+  }
+  public function already_ask_data($data){
+    $form = [
+      'type' => $data['type'],
+      'status' => $data['status'],
+      'target_model' => str_replace('lms.', '',$this->table),
+      'target_model_id' => $this->id,
+    ];
+    if(isset($data['charge_user_id'])){
+      $form['charge_user_id'] = $data['charge_user_id'];
+    }
+    else {
+      $form['charge_user_id'] = $this->calendar->user_id;
+    }
+    $already_data = Ask::already_data($form);
+    return $already_data;
   }
 }

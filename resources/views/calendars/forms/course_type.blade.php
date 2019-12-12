@@ -1,14 +1,18 @@
-<div class="col-12 mt-2">
+<div class="col-12 mt-2 schedule_type schedule_type_class">
   <div class="form-group">
     <label for="course_type" class="w-100">
       {{__('labels.lesson_type')}}
+      @if($_edit==true)
+      <span class="right badge badge-warning ml-1">{{__('labels.disabled')}}</span>
+      @else
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+      @endif
     </label>
     <div class="input-group" id="course_type_form">
       <div class="form-check" id="course_type_form_single">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'single'))
-            checked
+            checked disabled
           @else(!isset($_edit) || $_edit!=true)
             checked
           @endif
@@ -20,7 +24,7 @@
       <div class="form-check ml-2" id="course_type_form_group">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'group'))
-            checked
+          checked disabled
           @endif
           >
           <label class="form-check-label" for="course_type_group">
@@ -30,7 +34,7 @@
       <div class="form-check ml-2" id="course_type_form_family">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_family" value="family" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'family'))
-            checked
+          checked disabled
           @endif
           >
           <label class="form-check-label" for="course_type_family">

@@ -1,7 +1,7 @@
 <div class="col-12 course_type_selected collapse">
   <div class="form-group">
     <label for="title" class="w-100">
-      生徒グループ
+      {{__('labels.student_groups')}}
     </label>
     <select name="student_group_id" class="form-control" width=100% placeholder="生徒グループ" onChange="select_student_group_change()">
       <option value="">{{__('labels.selectable')}}</option>

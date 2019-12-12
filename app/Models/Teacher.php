@@ -232,7 +232,7 @@ EOT;
     if(isset($manager)) return true;
     return false;
   }
-  public function to_manager($access_key, $already_manager_id=0){
+  public function to_manager($access_key, $already_manager_id=0, $create_user_id){
     $_create_form =[
       'name_last' => $this->name_last,
       'name_first' => $this->name_first,
@@ -242,6 +242,7 @@ EOT;
       'gender' => $this->gender,
       'phone_no' => $this->phone_no,
       'address' => $this->address,
+      'create_user_id' => $create_user_id,
     ];
     $manager = null;
     if(isset($already_manager_id) && $already_manager_id > 0){

@@ -82,6 +82,12 @@
                       <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
                         <i class="fa fa-chevron-down mr-1"></i>
                         {{date('m月d日', strtotime($calendar["date"]))}}
+
+                        @if(date('Y-m-d')==date('Y-m-d', strtotime($calendar["date"])))
+                          <small class="badge badge-danger ml-1">
+                            {{__('labels.calendar_button_today')}}
+                          </small>
+                        @endif
                       </a>
                     </div>
                   </div>
@@ -119,13 +125,21 @@
                         </span>
                       @endif
                     @endforeach
-                    @foreach($calendar['subject'] as $subject)
-                    <span class="text-xs mr-2">
+                    @if($calendar->is_management()==false)
+                      @foreach($calendar['subject'] as $subject)
+                      <span class="text-xs mx-2">
+                        <small class="badge badge-primary mt-1 mr-1">
+                          {{$subject}}
+                        </small>
+                      </span>
+                      @endforeach
+                    @else
+                    <span class="text-xs mx-2">
                       <small class="badge badge-primary mt-1 mr-1">
-                        {{$subject}}
+                        {{$calendar["work_name"]}}
                       </small>
                     </span>
-                    @endforeach
+                    @endif
                   </div>
                   <div class="col-12 col-lg-4 col-md-4">
                     @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])

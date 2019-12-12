@@ -4,6 +4,29 @@
 @extends('dashboard.common')
 @include($domain.'.menu')
 
+@section('schedule_list_pager')
+@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+  @slot("addon_button")
+  @if($list=="month")
+  <ul class="pagination pagination-sm m-0 float-left text-sm">
+    <li class="page-item float-left">
+      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_date={{date('Y-m-1', strtotime('-1 month '.$list_date))}}">
+        <i class="fa fa-chevron-left mr-1"></i>
+        <span class="btn-label">前月</span>
+      </a>
+    </li>
+    <li class="page-item ml-1">
+      <a class="btn btn-default btn-sm" href="/{{$domain}}/{{$item->id}}/schedule?list=month&list_date={{date('Y-m-1', strtotime('+1 month '.$list_date))}}">
+        <span class="btn-label">次月</span>
+        <i class="fa fa-chevron-right ml-1"></i>
+      </a>
+    </li>
+  </ul>
+  @endif
+  @endslot
+@endcomponent
+@endsection
+
 @section('contents')
 <section class="content mb-2">
   <div class="row">
@@ -31,10 +54,7 @@
             @endif
           </h3>
           <div class="card-title text-sm">
-            @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-              @slot("addon_button")
-              @endslot
-            @endcomponent
+            @yield('schedule_list_pager')
           </div>
           </h3>
         </div>
@@ -116,10 +136,7 @@
       <!-- /.card -->
       <div class="card-header">
         <div class="card-title text-sm">
-          @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-            @slot("addon_button")
-            @endslot
-          @endcomponent
+          @yield('schedule_list_pager')
         </div>
       </div>
     </div>

@@ -35,32 +35,32 @@ class CommentController extends MilestoneController
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $item){
-        $create_user = $item->create_user->details();
-        $item->create_user_name = $create_user->name;
-        unset($item->create_user);
-        $target_user = $item->target_user->details();
-        $item->target_user_name = $target_user->name;
-        unset($item->target_user);
+        $item = $item->details();
       }
       $fields = [
         'id' => [
           'label' => 'ID',
         ],
-        'title' => [
-          'label' => 'タイトル',
+        'type_name' => [
+          'label' => '種別',
+        ],
+        'body' => [
+          'label' => '内容',
           'link' => 'show',
         ],
       ];
       $fields['target_user_name'] = [
         'label' => '対象者',
       ];
+      /*
       $fields['publiced_at'] = [
         'label' => '公開日',
       ];
+      */
       $fields['create_user_name'] = [
         'label' => '起票者',
       ];
-      $fields['created_at'] = [
+      $fields['created_date'] = [
         'label' => __('labels.add_datetime'),
       ];
       $fields['buttons'] = [
@@ -237,5 +237,56 @@ class CommentController extends MilestoneController
       $update_message = "コメントを公開しました。";
       return $this->save_redirect($res, $param, $update_message);
     }
-
+    /**
+     * コメント既読
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function checked(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $update_message = "コメントを既読にしました";
+      if($param['item']->is_check($param['user']->user_id)==true){
+        $check = $param['item']->uncheck($param['user']->user_id);
+        $update_message = "コメントを未読にしました";
+      }
+      else {
+        $check = $param['item']->check($param['user']->user_id);
+      }
+      /*
+      return $this->save_redirect($res, $param, $update_message);
+      */
+      if($check!=null){
+        return $this->api_response(200, $update_message, "" , $check);
+      }
+      return $this->error_response("更新に失敗しました");
+    }
+    /**
+     * 重要コメント化
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function importanced(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $comment = Comment::where('id', $id)->first();
+      if($comment->importance==0){
+        $comment->update(['importance' => 5]);
+      }
+      else if($comment->importance==5){
+        $comment->update(['importance' => 0]);
+      }
+      $update_message = "コメントの重要度を更新しました";
+      /*
+      return $this->save_redirect($res, $param, $update_message);
+      */
+      if(isset($comment)){
+        return $this->api_response(200, $update_message, "" , $comment);
+      }
+      return $this->error_response("更新に失敗しました");
+    }
 }

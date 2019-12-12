@@ -49,7 +49,7 @@
 		      <input type="text" name="dummy" style="display:none;" / >
           @method('PUT')
           <input type="hidden" value="{{$user->user_id}}" name="user" />
-          <input type="hidden" value="fix" name="name" />
+          <input type="hidden" value="fix" name="status" />
           <div class="row">
             @component('calendars.forms.fix_form', ['item' => $item, 'user'=>$user]) @endcomponent
             @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'fix']) @endcomponent
