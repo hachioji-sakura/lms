@@ -46,18 +46,20 @@
     <i class="fa fa-minus-circle mr-1"></i>
     休み取消
   </a>
-  @elseif($calendar["is_passed"]==true && $calendar->exist_rest_student()==true && $user->role==="manager")
-  {{-- TODO 休み種別変更 --}}
-  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.rest_change')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest_change?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm">
-    <i class="fa fa-exclamation-circle mr-1" title="{{$calendar["status"]}}"></i>
-    {{__('labels.rest_change')}}
-  </a>
   @else
   {{-- 参照のみ --}}
   <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm mr-1">
     <i class="fa fa-file-alt mr-1"></i>{{__('labels.details')}}
   </a>
   @endif
+@endif
+
+@if($calendar->exist_rest_student()==true && $user->role==="manager")
+{{-- TODO 休み種別変更 --}}
+<a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.rest_change')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest_change?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm">
+  <i class="fa fa-exclamation-circle mr-1" title="{{$calendar["status"]}}"></i>
+  {{__('labels.rest_change')}}
+</a>
 @endif
 
 @if(($calendar["status"]==="presence" || $calendar["status"]==="absence") && $user->role==="manager")

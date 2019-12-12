@@ -22,7 +22,7 @@ class ChangeBodyMilestones extends Migration
      * Reverse the migrations.
      *
      * @return void
-     */change
+     */
     public function down()
     {
         Schema::table('milestones', function (Blueprint $table) {

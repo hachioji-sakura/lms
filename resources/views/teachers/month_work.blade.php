@@ -81,7 +81,7 @@
                     <div class="col-12 pl-3">
                       <a data-toggle="collapse" data-parent="#month_work_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
                         <i class="fa fa-chevron-down mr-1"></i>
-                        {{date('m月d日', strtotime($calendar["date"]))}}
+                        {{$calendar["dateweek"]}}
 
                         @if(date('Y-m-d')==date('Y-m-d', strtotime($calendar["date"])))
                           <small class="badge badge-danger ml-1">
@@ -113,16 +113,17 @@
                   <div class="col-12 col-lg-5 col-md-5">
                     @foreach($calendar->members as $member)
                       @if($member->user->details()->role==="student")
-                      {{--
-                        <a alt="student_name" href="/students/{{$member->user->details()->id}}">
-                          <i class="fa fa-user-graduate"></i>
-                          {{$member->user->details()->name}}
-                        </a>
-                        --}}
+                        @if($member->status=="rest")
+                        <span class="mr-2 text-danger">
+                        <i class="fa fa-user-times"></i>
+                        {{$member->user->details()->name}}
+                        </span>
+                        @else
                         <span class="mr-2">
                         <i class="fa fa-user-graduate"></i>
                         {{$member->user->details()->name}}
                         </span>
+                        @endif
                       @endif
                     @endforeach
                     @if($calendar->is_management()==false)

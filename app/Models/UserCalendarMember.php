@@ -20,7 +20,7 @@ class UserCalendarMember extends Model
 {
   protected $table = 'lms.user_calendar_members';
   protected $guarded = array('id');
-  protected $api_hosturl = "https://hachiojisakura.com/sakura-api";
+  public $api_domain = '/sakura-api';
   public $api_endpoint = [
     "GET" =>  "api_get_onetime_schedule.php",
     "PUT" =>  "api_update_onetime_schedule.php",
@@ -37,8 +37,9 @@ class UserCalendarMember extends Model
   public function place_floor_sheat(){
     return $this->belongsTo('App\Models\PlaceFloorSheat', 'place_floor_sheat_id');
   }
-  public function exchanged_calendar(){
-    return $this->hasOne('App\Models\UserCalendar', 'exchanged_calendar_id', 'calendar_id');
+  public function exchanged_calendars(){
+    //振替先のカレンダー
+    return $this->hasMany('App\Models\UserCalendar', 'exchanged_calendar_id', 'calendar_id');
   }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
@@ -46,13 +47,46 @@ class UserCalendarMember extends Model
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
+  //振替対象の場合true
   public function is_exchange_target(){
     if(empty($this->exchange_limit_date)) return false;
     $diff = strtotime($this->exchange_limit_date) - strtotime(date('Y-m-d'));
     if($diff >= 0) {
+      //期限内
       return true;
     }
     return false;
+  }
+  //振替済みの場合true
+  public function is_exchanged(){
+    $minutes = $this->calendar->course_minutes(true);
+    $exchanged_minutes = 0;
+    foreach($this->exchanged_calendars as $exchanged_calendar){
+      if($exchanged_calendar->status=='cancel') continue;
+      //if($exchanged_calendar->status=='new') continue;
+      $exchanged_minutes += intval($exchanged_calendar->course_minutes(true));
+    }
+    if($minutes <= $exchanged_minutes){
+      //振替済み
+      return true;
+    }
+    return false;
+  }
+  //休み取り消し可能な場合=true
+  public function is_rest_cancel_enable(){
+    \Log::warning("-----is_rest_cancel_enable-----");
+    if($this->status!='rest') return false;
+    if($this->is_exchange_target()==true){
+      $is_find = false;
+      foreach($this->exchanged_calendars as $exchanged_calendar){
+        if($exchanged_calendar->status=='cancel') continue;
+        $is_find = true;
+        break;
+      }
+      //振替が登録されている場合は、休み取り消しはできない
+      if($is_find==true) return false;
+    }
+    return true;
   }
   public function remind($login_user_id){
     \Log::warning("member.remind");
@@ -282,7 +316,7 @@ class UserCalendarMember extends Model
     if($this->schedule_id > 0 && $method=="POST") return null;
     //rest_cancelの場合、API実行不要
     if($this->status=='rest_cancel') return null;
-    $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
+    $_url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$method];
 
     //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
     $_method = "GET";
@@ -379,27 +413,25 @@ class UserCalendarMember extends Model
       }
     }
 
-    $postdata =[];
+    $postdata = [
+      "trial_id" => $this->calendar->trial_id,
+      "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),
+      "starttime" => date('H:i:s', strtotime($this->calendar->start_time)),
+      "endtime" => date('H:i:s', strtotime($this->calendar->end_time)),
+      "lecture_id" => $lecture_id_org,
+      "subject_expr" => implode (',', $this->calendar->subject()),
+      "work_id" => $this->calendar->work,
+      "place_id" => $this->calendar->place_floor_id,
+      "altsched_id" => $altsched_id,
+      //"cancel" => "",
+      //"confirm" => "",
+      //"temporary" => "111",
+    ];
     switch($method){
-      case "PUT":
       case "POST":
-        $postdata = [
-          "user_id" => $__user_id,
-          "student_no" => $student_no,
-          "teacher_id" => $teacher_no,
-          "trial_id" => $this->calendar->trial_id,
-          "ymd" => date('Y-m-d', strtotime($this->calendar->start_time)),
-          "starttime" => date('H:i:s', strtotime($this->calendar->start_time)),
-          "endtime" => date('H:i:s', strtotime($this->calendar->end_time)),
-          "lecture_id" => $lecture_id_org,
-          "subject_expr" => implode (',', $this->calendar->subject()),
-          "work_id" => $this->calendar->work,
-          "place_id" => $this->calendar->place_floor_id,
-          "altsched_id" => $altsched_id,
-          //"cancel" => "",
-          //"confirm" => "",
-          //"temporary" => "111",
-        ];
+        $postdata["user_id"] = $__user_id;
+        $postdata["student_no"] = $student_no;
+        $postdata["teacher_id"] = $teacher_no;
         break;
     }
     if($method==="PUT" || $method==="DELETE"){

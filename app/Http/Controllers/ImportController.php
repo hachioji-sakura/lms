@@ -38,7 +38,7 @@ class ImportController extends UserController
     //事務管理システム側の情報
     //API URL: domain+endpoint+.php?query_string
     public $logic_name = '事務管理システム-データ取り込み';
-    public $api_domain = 'https://hachiojisakura.com/sakura-api';
+    public $api_domain = '/sakura-api';
     public $api_endpoint = [
       'works' => 'api_get_work_explanation',
       'courses' =>  'api_get_course',
@@ -76,7 +76,7 @@ class ImportController extends UserController
       if(!array_key_exists($object, $this->api_endpoint)){
         return $this->bad_request();
       }
-      $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
+      $url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$object].'.php';
       $res = $this->call_api($request, $url);
       return $res;
     }
@@ -168,7 +168,7 @@ class ImportController extends UserController
         if(!array_key_exists($object, $this->api_endpoint)){
           return $this->bad_request();
         }
-        $url = $this->api_domain.'/'.$this->api_endpoint[$object].'.php';
+        $url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$object].'.php';
         @$this->remind('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
         if(!$this->is_success_response($res)){
