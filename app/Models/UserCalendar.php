@@ -277,6 +277,18 @@ EOT;
     $c++;
     return true;
   }
+  public function is_prev_rest_contact(){
+    //休みの事前連絡が可能かどうか
+    $base_day = date('Y-m-d 21:00:00', strtotime('-1 day '.$this->start_time));
+    if(strtotime($base_day) < strtotime('now')){
+    }
+    if(1==1){
+      //前日21:00過ぎたら、事前連絡にならない
+      return false;
+    }
+
+    return true;
+  }
   public function has_tag($key, $val=""){
     $tags = $this->tags;
     foreach($tags as $tag){
