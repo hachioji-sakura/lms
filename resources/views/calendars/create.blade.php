@@ -108,7 +108,7 @@ $(function(){
         get_exchange_calendar();
       }
     }
-    
+
     var form_data = front.getFormValue('calendars_entry');
     if(front.validateFormValue('calendars_entry .carousel-item.active')){
       $('body, html').scrollTop(0);
@@ -136,11 +136,13 @@ $(function(){
     console.log("form_data_adjust:"+form_data);
     var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
-      form_data[value+"_name"] = "";
-      if(form_data[value+'[]']){
-        $("input[name='"+value+'[]'+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
-        });
+      if(util.isEmpty(form_data[value+"_name"])){
+        form_data[value+"_name"] = "";
+        if(form_data[value+'[]']){
+          $("input[name='"+value+'[]'+"']:checked").each(function() {
+            form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
+          });
+        }
       }
     });
 
@@ -167,19 +169,24 @@ $(function(){
 
     var _names = ["place_floor_id", "student_group", "work"];
     $.each(_names, function(index, value) {
-      if(form_data[value]){
-        var _name = $('select[name='+value+'] option:selected').text().trim();
-        form_data[value+"_name"] = _name;
+      if(util.isEmpty(form_data[value+"_name"])){
+        form_data[value+"_name"] = "";
+        if(form_data[value]){
+          var _name = $('select[name='+value+'] option:selected').text().trim();
+          form_data[value+"_name"] = _name;
+        }
       }
     });
 
     _names = ["course_minutes", "course_type"];
     $.each(_names, function(index, value) {
-      form_data[value+"_name"] = "";
-      if(form_data[value]){
-        $("input[name='"+value+"']:checked").each(function() {
-          form_data[value+"_name"] += $(this).parent().parent().text().trim()+'<br>';
-        });
+      if(util.isEmpty(form_data[value+"_name"])){
+        form_data[value+"_name"] = "";
+        if(form_data[value]){
+          $("input[name='"+value+"']:checked").each(function() {
+            form_data[value+"_name"] = $(this).parent().parent().text().trim()+'<br>';
+          });
+        }
       }
     });
     var lesson = ($('input[name=lesson]:checked').val())|0;

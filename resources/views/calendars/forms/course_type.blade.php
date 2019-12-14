@@ -1,3 +1,7 @@
+@if($item["exchanged_calendar_id"] > 0)
+<input type="hidden" name="course_type" value="{{$item->get_tag_value('course_type')}}" >
+<input type="hidden" name="course_type_name" value="{{$item->get_tag_name('course_type')}}" >
+@else
 <div class="col-12 mt-2 schedule_type schedule_type_class">
   <div class="form-group">
     <label for="course_type" class="w-100">
@@ -44,12 +48,19 @@
     </div>
   </div>
 </div>
+@endif
 <script>
 $(function(){
   course_type_change();
 });
 function course_type_change(){
   var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+  if(!course_type){
+    course_type = $('input[type="hidden"][name="course_type"]').val();
+  }
+  if(!course_type){
+    return false;
+  }
   if($("select[name='student_id[]']").length>0){
     var student_id_form = $("select[name='student_id[]']");
     var _width = student_id_form.attr("width");

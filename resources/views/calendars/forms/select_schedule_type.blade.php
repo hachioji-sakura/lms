@@ -1,3 +1,6 @@
+@if($item["exchanged_calendar_id"] > 0)
+<input type="hidden" name="schedule_type" value="class" >
+@else
 <div class="col-6 mt-2">
   <div class="form-group">
     <label for="schedule_type" class="w-100">
@@ -43,12 +46,17 @@
     </div>
   </div>
 </div>
+@endif
 <script>
 $(function(){
   schedule_type_change();
 });
 function schedule_type_change(){
   var schedule_type = $("input[name='schedule_type']:checked").val();
+  if(!schedule_type) {
+    schedule_type = $("input[name='schedule_type'][type='hidden']").val();
+  }
+  if(!schedule_type) return false;
   console.log('schedule_type_change:'+schedule_type);
   $(".schedule_type").hide();
   if(schedule_type == "class"){
