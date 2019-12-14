@@ -57,20 +57,15 @@ class UserCalendarMember extends Model
     }
     return false;
   }
-  //振替済みの場合true
-  public function is_exchanged(){
-    $minutes = $this->calendar->course_minutes(true);
+  //振替可能残り時間
+  public function get_exchange_remaining_time(){
     $exchanged_minutes = 0;
     foreach($this->exchanged_calendars as $exchanged_calendar){
       if($exchanged_calendar->status=='cancel') continue;
       //if($exchanged_calendar->status=='new') continue;
-      $exchanged_minutes += intval($exchanged_calendar->course_minutes(true));
+      $exchanged_minutes += intval($exchanged_calendar->course_minutes);
     }
-    if($minutes <= $exchanged_minutes){
-      //振替済み
-      return true;
-    }
-    return false;
+    return $this->calendar->course_minutes - $exchanged_minutes;
   }
   //休み取り消し可能な場合=true
   public function is_rest_cancel_enable(){

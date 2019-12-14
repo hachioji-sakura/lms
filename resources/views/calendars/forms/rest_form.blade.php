@@ -1,4 +1,4 @@
-@if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00') && $item['trial_id'] == 0)
+@if($item->is_prev_rest_contact()==false && $item['trial_id'] == 0)
 <div class="col-12 mt-2 mb-1">
   <div class="form-group">
     <input class="form-check-input icheck flat-green" type="checkbox" id="agreement" name="agreement" value="1" required="true" >

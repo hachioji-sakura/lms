@@ -1,7 +1,7 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
     @if($item->work!=9)
-      @if(strtotime(date('Y/m/d H:i:s')) >= strtotime($item["date"].' 09:00:00'))
+      @if($item->is_prev_rest_contact()==false)
         {{-- 授業当日9時を過ぎたら休み連絡はできない
         <div class="col-12 col-lg-12 col-md-12 mb-1">
           <h4 class="text-danger">授業当日AM9:00以降の休み連絡はできません。</h4>

@@ -5,7 +5,14 @@ $(function(){
   get_exchange_calendar();
 });
 function get_exchange_calendar(){
-  var schedule_type = $('input[name=schedule_type]:checked').val();
+  console.log('get_exchange_calendar');
+  var schedule_type = $("input[name='schedule_type']:checked").val();
+  if(!schedule_type) {
+    schedule_type = $("input[name='schedule_type'][type='hidden']").val();
+  }
+  if(!schedule_type) {
+    return false;
+  }
   if(schedule_type!="class"){
     $('input[name=exchanged_calendar_datetime]').val("");
     $('input[name=exchanged_calendar_id]').val("");
@@ -14,6 +21,8 @@ function get_exchange_calendar(){
   var teacher_id = ($('*[name=teacher_id]').val())|0;
   var student_id = $('select[name="student_id[]"]').val()|0;
   var lesson = ($('input[name=lesson]:checked').val())|0;
+  var course_minutes = ($('input[name=course_minutes]:checked').val())|0;
+
   var exchanged_calendar_id = ($('input[name=exchanged_calendar_id]').val())|0;
   if(lesson==0){
     lesson = ($('input[name=lesson]').val())|0;
@@ -30,16 +39,19 @@ function get_exchange_calendar(){
   $('.add_type.add_type_new').show();
   //振替対象の予定を取得
   if(url == '') return;
+
   service.getAjax(false, url, null,
     function(result, st, xhr) {
       console.log(result["data"]);
       if(result['status']===200){
         if(result["data"].length>0){
           var val = result["data"][0];
-          $('input[name=exchanged_calendar_datetime]').val(val['datetime']);
-          $('input[name=exchanged_calendar_id]').val(val['id']);
-          $('.add_type.add_type_new').hide();
-          $('.add_type.add_type_exchange').show();
+          if(val["exchange_remaining_time"] >= course_minutes){
+            $('input[name=exchanged_calendar_datetime]').val(val['datetime']);
+            $('input[name=exchanged_calendar_id]').val(val['id']);
+            $('.add_type.add_type_new').hide();
+            $('.add_type.add_type_exchange').show();
+          }
         }
       }
     },
