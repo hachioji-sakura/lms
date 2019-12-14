@@ -413,6 +413,8 @@ class TeacherController extends StudentController
       return $this->save_redirect($res, $param, $message);
     }
     public function month_work(Request $request, $id, $target_month=""){
+      set_time_limit(600);
+      $s = strtotime('now');
       if(empty($target_month)) $target_month = date('Y-m');
       $param = $this->get_param($request, $id);
       $model = $this->model()->where('id',$id)->first()->user;
@@ -426,7 +428,7 @@ class TeacherController extends StudentController
       ]);
       $from_date = $target_month.'-01';
       $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
-      $calendars = $this->get_schedule($request->all(), $item->user_id, $from_date, $to_date);
+      $calendars = $this->get_schedule([], $item->user_id, $from_date, $to_date);
       $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
       $calendars = $calendars["data"];
       $enable_confirm = true; //確認ボタン押せる場合 = true
@@ -451,8 +453,9 @@ class TeacherController extends StudentController
       $param['is_checked'] = $is_checked;
       $param['enable_confirm'] = $enable_confirm;
       $param['target_month'] = $target_month;
-      $param['next_month'] = date("Y-m", strtotime("+1 month ".$from_date));;
-      $param['prev_month'] = date("Y-m", strtotime("-1 month ".$from_date));;
+      $param['next_month'] = date("Y-m", strtotime("+1 month ".$from_date));
+      $param['prev_month'] = date("Y-m", strtotime("-1 month ".$from_date));
+      echo strtotime('now')-$s;
       return view($this->domain.'.'.$view, [
         'item' => $item,
       ])->with($param);

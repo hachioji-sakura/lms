@@ -287,4 +287,11 @@ return [
   'season_comment' => '季節講習申込時',
   'schedule_type'           => '予定タイプ',
   'interview_etc' => '面談など',
+  'exchange_limit_date' => '振替期限',
+  'exchange_remaining_time' => '残り:time分',
+  'schedule_change_remind' => '予定変更を連絡する',
+  'no_remind' => '通知しない',
+  'send_to_teacher' => '講師に通知',
+  'send_to_teacher_and_student' => '生徒・講師に通知',
+
 ];

@@ -191,6 +191,8 @@ EOT;
     }
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
+    $course_minutes = intval(strtotime($form['endtime']) - strtotime($form['starttime']))/60;
+
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -205,6 +207,7 @@ EOT;
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],
       'place_floor_id' => $form['place_floor_id'],
+      'course_minutes' => $course_minutes,
       'work' => $form['work'],
       'remark' => $form['remark'],
       'from_time_slot' => $form['from_time_slot'],
@@ -265,6 +268,9 @@ EOT;
     }
 
     if(isset($data['from_time_slot']) && isset($data['to_time_slot'])){
+      //course_minutesは、time_slotから補完
+      $data['course_minutes'] = intval(strtotime('2000-01-01 '.$data['to_time_slot']) - strtotime('2000-01-01 '.$data['from_time_slot']))/60;
+
       $lesson_week = $this->lesson_week;
       if(isset($data['lesson_week'])){
         $lesson_week = $data['lesson_week'];
@@ -285,7 +291,7 @@ EOT;
     }
 
     $this->update($data);
-    $tag_names = ['course_minutes', 'course_type', 'lesson'];
+    $tag_names = ['course_type', 'lesson'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTagSetting::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);

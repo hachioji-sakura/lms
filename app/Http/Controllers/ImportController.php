@@ -776,7 +776,7 @@ class ImportController extends UserController
       $user_id = 0;
 
       //授業時間
-      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
+      $course_minutes = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
 
       $student = null;
       $teacher = null;
@@ -847,6 +847,7 @@ class ImportController extends UserController
         'schedule_method' => $item["schedule_method"],
         'lesson_week_count' => $item["lesson_week_count"],
         'lesson_week' => $item["lesson_week"],
+        'course_minutes' => $course_minutes,
         'from_time_slot' => $item["starttime"],
         'to_time_slot' => $item["endtime"],
         'enable_start_date' => $this->get_date($item["startdate"]),
@@ -943,7 +944,7 @@ class ImportController extends UserController
         if(!empty(trim($item['subject_expr']))){
           $tags['subject_expr'] = $item['subject_expr'];
         }
-        $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+        $tag_names = ['course_type', 'lesson', 'subject_expr'];
         foreach($tag_names as $tag_name){
           if(!empty($tags[$tag_name])){
             if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
@@ -976,7 +977,7 @@ class ImportController extends UserController
       $start_time = $item['ymd'].' '.$item['starttime'];
       $end_time = $item['ymd'].' '.$item['endtime'];
       //授業時間
-      $tags['course_minutes'] = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
+      $course_minutes = intval(strtotime('2000-01-01 '.$item['endtime']) - strtotime('2000-01-01 '.$item['starttime']))/60;
 
       $item['teacher_no'] = $this->get_id_value('teacher', $item);
       $item['student_no'] = $this->get_id_value('student', $item);
@@ -1086,8 +1087,15 @@ class ImportController extends UserController
       if(isset($item['altsched_id']) && $item['altsched_id']!=0){
         //事務システムの振替ID＝メンバーのIDを指している（メンバーとカレンダーが１：１だから）
         $exchanged_calendar_member = UserCalendarMember::where('schedule_id',$item['altsched_id'])->first();
-        $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
+        if(isset($exchanged_calendar_member)) {
+          $exchanged_calendar_id = $exchanged_calendar_member->calendar_id;
+        }
+        else {
+          //TODO 振替元がわからないが振替の予定
+          $exchanged_calendar_id = -9999;
+        }
       }
+
       //場所
       $floor = PlaceFloor::where('id', $item['place_id'])->first();
       $sheat_id = 0;
@@ -1123,6 +1131,7 @@ class ImportController extends UserController
         'end_time' => $end_time,
         'user_id' => $user_id,
         'lecture_id' => $lecture_id,
+        'course_minutes' => $course_minutes,
         'exchanged_calendar_id' => $exchanged_calendar_id,
         'remark' => $remark,
         'status' => $status,
@@ -1218,7 +1227,7 @@ class ImportController extends UserController
         $tags['lesson'] = $lecture->lesson;
       }
 
-      $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
+      $tag_names = ['course_type', 'lesson', 'subject_expr'];
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
           UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
@@ -1227,7 +1236,6 @@ class ImportController extends UserController
       if(isset($student) && isset($teacher)){
          $this->store_charge_student($student->id, $teacher->id, $tags);
       }
-
 
       $setting_id = 0;
       $calendar = UserCalendar::where('id', $calendar_id)->first();
