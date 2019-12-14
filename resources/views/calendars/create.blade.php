@@ -102,6 +102,13 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+
+    if($(this).hasClass('btn-confirm')){
+      if($("input[name='course_minutes']").length > 0 ){
+        get_exchange_calendar();
+      }
+    }
+    
     var form_data = front.getFormValue('calendars_entry');
     if(front.validateFormValue('calendars_entry .carousel-item.active')){
       $('body, html').scrollTop(0);

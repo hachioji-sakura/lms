@@ -467,13 +467,16 @@ EOT;
     return $start_hour_minute.'～'.$end_hour_minute;
   }
   public function dateweek(){
+    return $this->dateweek_format($this->start_time);
+  }
+  public function dateweek_format($date){
     $format = "n月j日";
     $weeks = config('week');
     if(app()->getLocale()=='en'){
       $format = "n/j";
       $weeks = config('week_en');
     }
-    $d = date($format,  strtotime($this->start_time));
+    $d = date($format,  strtotime($date));
     $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
     return $d;
   }
@@ -553,6 +556,7 @@ EOT;
     $item['manager_name'] = trim($manager_name,',');
     $item['user_name'] = $this->user->details()->name();
     $item['is_exchange'] = false;
+    $item['exchange_remaining_time'] = $this->get_exchange_remaining_time();
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;
     }
@@ -1015,6 +1019,6 @@ EOT;
   //振替期限
   public function exchange_limit_date(){
     $students = $this->get_students();
-    return $students[0]->exchange_limit_date;
+    return $this->dateweek_format($students[0]->exchange_limit_date);
   }
 }

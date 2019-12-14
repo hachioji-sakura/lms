@@ -114,7 +114,6 @@
          //マンツーの場合振替対象を取得
          $('input[name=exchanged_calendar_datetime]').val('');
          $('input[name=exchanged_calendar_id]').val('');
-         get_exchange_calendar();
        }
      }
    }

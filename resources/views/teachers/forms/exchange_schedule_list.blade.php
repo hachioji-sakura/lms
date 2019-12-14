@@ -30,10 +30,10 @@
       </div>
       <div class="col-12 text-sm mt-1">
         <small class="badge badge-warning mt-1 mr-1">
-          期限 {{$calendar->exchange_limit_date()}}
+          {{__('labels.exchange_limit_date')}} {{$calendar->exchange_limit_date()}}
         </small>
         <small class="badge badge-danger mt-1 mr-1">
-          残り{{$calendar->get_exchange_remaining_time()}}分
+          {{__('labels.exchange_remaining_time', ["time" => $calendar->get_exchange_remaining_time()])}}
         </small>
       </div>
       <div class="col-12 text-sm mt-1">
