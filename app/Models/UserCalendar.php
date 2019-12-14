@@ -167,18 +167,16 @@ EOT;
     //かつ、振替が未登録(cancelは除く）
     $param = [];
     $where_raw = <<<EOT
-      user_calendars.id not in (
-        select exchanged_calendar_id
-         from user_calendars
-         where status != 'cancel'
-         and exchanged_calendar_id > 0
-        )
-      and user_calendars.id in (
+      user_calendars.id in (
         select um.calendar_id from user_calendar_members um
           inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
           and um.exchange_limit_date >= current_date
+
+      and user_calendars.course_minutes > (
+        select ifnull(sum(ec.course_minutes),0) from user_calendars ec where ec.exchanged_calendar_id = user_calendars.id
+      )
 EOT;
     if($user_id > 0){
       $param[] = $user_id;
@@ -258,16 +256,16 @@ EOT;
   }
   //振替対象の場合:true
   public function is_exchange_target(){
+
     $d = intval(strtotime('now')) - intval(strtotime($this->start_time));
     $c = 0;
-    $c++;
     if($d < 0) return false;
     //過去の予定であること
     $c++;
     if($this->is_single()==false) return false;
     //マンツーであること
     $c++;
-    if($this->status!="rest") return false;
+    if($this->is_rest_status($this->status)==false) return false;
     //ステータス＝休み
     $students = $this->get_students();
     $c++;
@@ -281,12 +279,9 @@ EOT;
     //休みの事前連絡が可能かどうか
     $base_day = date('Y-m-d 21:00:00', strtotime('-1 day '.$this->start_time));
     if(strtotime($base_day) < strtotime('now')){
-    }
-    if(1==1){
       //前日21:00過ぎたら、事前連絡にならない
       return false;
     }
-
     return true;
   }
   public function has_tag($key, $val=""){
@@ -340,7 +335,9 @@ EOT;
     return $this->get_attribute('course_type', $is_value);
   }
   public function course_minutes($is_value=false){
-    return $this->get_attribute('course_minutes', $is_value);
+    //return $this->get_attribute('course_minutes', $is_value);
+    if($is_value==true) return $this->course_minutes;
+    return $this->get_attribute_name('course_minutes', $this->course_minutes);
   }
   public function get_attribute($key, $is_value=false){
     if($is_value==true || app()->getLocale()=='en'){
@@ -507,7 +504,7 @@ EOT;
 
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
-    $item['course_minutes'] = $this->course_minutes(true);
+    $item['course_minutes'] = $this->course_minutes;
     $item['timezone'] = $this->timezone();
     $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
     if($this->lecture_id > 0){
@@ -582,9 +579,7 @@ EOT;
     if(isset($form['user_calendar_setting_id'])){
       $user_calendar_setting_id = $form['user_calendar_setting_id'];
     }
-    if(isset($form['trial_id'])){
-      $trial_id = $form['trial_id'];
-    }
+    if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
     //TODO 重複登録、競合登録の防止が必要
     /*
@@ -596,10 +591,14 @@ EOT;
       return null;
     }
     */
+
+    $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
+
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
       'lecture_id' => 0,
+      'course_minutes' => $course_minutes,
       'trial_id' => $trial_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
@@ -636,6 +635,7 @@ EOT;
       'place_floor_id',
       'work'
     ];
+
     $status = $this->status;
     $is_status_update = true;
 
@@ -665,7 +665,10 @@ EOT;
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
-
+    if(isset($data['start_time']) && isset($data['end_time'])){
+      //course_minutesは、start_time・end_timeから補完
+      $data['course_minutes'] = intval(strtotime($data['end_time']) - strtotime($data['start_time']))/60;
+    }
 /*
     foreach($data as $field=>$val){
       \Log::warning($field."=".$val);
@@ -677,7 +680,7 @@ EOT;
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'course_minutes'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -992,10 +995,26 @@ EOT;
     //欠席 or 休み or　休講
     foreach($this->members as $member){
       $_member = $member->user->details('students');
-      if($_member->role == 'student' && ($member->status == 'rest' || $member->status == 'lecture_cancel' || $member->status == 'absence')){
+      if($_member->role == 'student' && $this->is_rest_status($member->status)==true){
         return true;
       }
     }
     return false;
+  }
+  public function is_rest_status($status){
+    if($status=="rest") return true;
+    if($status=="lecture_cancel") return true;
+    if($status=="absence") return true;
+    return false;
+  }
+  //振替可能残り時間
+  public function get_exchange_remaining_time(){
+    $students = $this->get_students();
+    return $students[0]->get_exchange_remaining_time();
+  }
+  //振替期限
+  public function exchange_limit_date(){
+    $students = $this->get_students();
+    return $students[0]->exchange_limit_date;
   }
 }

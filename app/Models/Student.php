@@ -1028,7 +1028,7 @@ EOT;
   public function get_tuition($setting, $is_enable_only=true){
     $tuitions = $this->tuitions->where('lesson', $setting->get_tag_value('lesson'))
     ->where('course_type', $setting->get_tag_value('course_type'))
-    ->where('course_minutes', $setting->get_tag_value('course_minutes'))
+    ->where('course_minutes', $setting->course_minutes)
     ->where('teacher_id', $setting->user->details()->id);
     if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
       $tuitions =  $tuitions->where('subject', $setting->get_tag_value('subject'));

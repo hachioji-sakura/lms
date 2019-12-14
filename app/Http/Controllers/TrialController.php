@@ -648,7 +648,7 @@ class TrialController extends UserCalendarController
                   'remark' => '',
                   "lesson" => $setting->get_tag_value('lesson'),
                   "course_type" => $setting->get_tag_value('course_type'),
-                  "course_minutes" => $setting->get_tag_value('course_minutes'),
+                  "course_minutes" => $setting->course_minutes,
                   "grade" => $s->student->tag_value('grade'),
                   "lesson_week_count" => $s->student->tag_value('lesson_week_count'),
                   "subject" => $subject,

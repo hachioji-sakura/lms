@@ -348,6 +348,7 @@ EOT;
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
+    /*
     $course_minutes = $this->get_tag('course_minutes');
     if(isset($course_minutes)){
       $course_minutes = $course_minutes->tag_value;
@@ -355,6 +356,7 @@ EOT;
     else {
       $course_minutes=0;
     }
+    */
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],

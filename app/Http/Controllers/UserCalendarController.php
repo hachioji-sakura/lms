@@ -518,7 +518,7 @@ class UserCalendarController extends MilestoneController
         $t = Teacher::where('id', $request->get('teacher_id'))->first();
         $user_id = $t->user_id;
       }
-      if($user_id==0 && $this->is_manager($user->role)!=true){
+      if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
          return $this->forbidden("you are not manager");
       }
 
