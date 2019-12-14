@@ -52,7 +52,21 @@ class Controller extends BaseController
     public function send_mail($to, $title, $param, $type, $template, $locale="ja")
     {
       App::setLocale($locale);
-
+      //TODO calendar_newのサポートへの通知は、いつか外す
+      $is_send_support_mail = false;
+      $send_support_mail_tamplates = [
+        'trial', 'trial_confirm',
+        'register', 'calendar_correction', 'calendar_month_work',
+        'calendar_rest', 'calendar_new',
+        'ask_lecture_cancel_new', 'ask_lecture_cancel_commit', 'ask_lecture_cancel_cancel',
+        'ask_recess_commit', 'ask_unsubscribe_commit',
+      ];
+      foreach($send_support_mail_tamplates as $t){
+        if($t == $template){
+          $is_send_support_mail = true;
+          break;
+        }
+      }
       $title = '【'.__('labels.system_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);
@@ -79,7 +93,11 @@ class Controller extends BaseController
         }
       }
       try {
-        $res = Mail::to($to)->send(new CommonNotification($title, $param, $type, $template));
+        $mail = Mail::to($to);
+        if($is_send_support_mail==true){
+          $mail = $mail->cc(config('app.support_mail'));
+        }
+        $res = $mail->send(new CommonNotification($title, $param, $type, $template));
         return $res;
       }
       catch(\Exception $e){

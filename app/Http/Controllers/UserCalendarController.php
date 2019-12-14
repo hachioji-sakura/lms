@@ -1081,50 +1081,12 @@ class UserCalendarController extends MilestoneController
 
       return $res;
     }
-    /**
-     * 休み連絡通知メール送信
-     * @param  Array  $param
-     * @return boolean
-     */
-    private function rest_mail($param){
-      return  $this->calendar_mail($param,
-               'お休み連絡',
-               'calendar_rest');
-    }
-    private function cancel_mail($param){
-      //TODO 講師あてにキャンセル連絡が届くが、グループレッスンの場合、部分的なキャンセル→全体をキャンセルが必要
-      //return $param['item']->teacher_mail('授業予定のキャンセル', $param, 'text', 'calendar_cancel');
-      return  $this->calendar_mail($param,
-               '授業予定のキャンセル',
-               'calendar_cancel');
-
-    }
-    private function confirm_mail($param){
-      return  $this->calendar_mail($param,
-               '授業予定のご確認',
-               'calendar_confirm');
-
-    }
-    private function fix_mail($param){
-      return $param['item']->teacher_mail('授業予定確定のご連絡', $param, 'text', 'calendar_fix');
-      return  $this->calendar_mail($param,
-               '授業予定確定のご連絡',
-               'calendar_fix');
-
-    }
-    private function absence_mail($param){
-      return  $this->calendar_mail($param,
-               '授業欠席となりました',
-               'calendar_absence');
-
-    }
     private function new_mail($param){
       return $param['item']->teacher_mail('授業予定のご連絡', $param, 'text', 'calendar_new');
 
     }
     private function delete_mail($param){
       return $param['item']->teacher_mail('授業予定削除', $param, 'text', 'calendar_delete');
-
     }
 
     /**
