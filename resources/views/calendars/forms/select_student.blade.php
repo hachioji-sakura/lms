@@ -1,4 +1,4 @@
-<div class="col-12 lesson_selected collapse">
+<div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">
       {{__('labels.students')}}

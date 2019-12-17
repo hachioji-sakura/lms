@@ -30,7 +30,7 @@
       </div>
       <div class="form-check ml-2">
           <input class="form-check-input icheck flat-green" type="radio" name="schedule_type" id="schedule_type_other" value="other" required="true" onChange="schedule_type_change()"
-          @if(isset($_edit) && $_edit==true && $item->is_management()==true)
+          @if(isset($_edit) && $_edit==true && $item->is_management()==true && $item->work!=9)
             checked
           @endif
 
@@ -43,6 +43,23 @@
             {{__('labels.interview_etc')}}
           </label>
       </div>
+      @if($_edit==false)
+      <div class="form-check ml-2">
+          <input class="form-check-input icheck flat-green" type="radio" name="schedule_type" id="schedule_type_office_work" value="office_work" required="true" onChange="schedule_type_change()"
+          @if(isset($_edit) && $_edit==true && $item->is_management()==true && $item->work==9)
+            checked
+          @endif
+
+          @if($_edit==true)
+            disabled
+          @endif
+
+          >
+          <label class="form-check-label" for="schedule_type_office_work">
+            {{__('labels.office_work')}}
+          </label>
+      </div>
+      @endif
     </div>
   </div>
 </div>
@@ -59,11 +76,6 @@ function schedule_type_change(){
   if(!schedule_type) return false;
   console.log('schedule_type_change:'+schedule_type);
   $(".schedule_type").hide();
-  if(schedule_type == "class"){
-    $(".schedule_type_class").show();
-  }
-  else if(schedule_type == "other"){
-    $(".schedule_type_other").show();
-  }
+  $(".schedule_type_"+schedule_type).show();
 }
 </script>

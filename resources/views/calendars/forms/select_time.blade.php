@@ -35,7 +35,7 @@
     </div>
   </div>
 </div>
-<div class="col-12 col-md-6 schedule_type schedule_type_other">
+<div class="col-12 col-md-6 schedule_type schedule_type_other schedule_type_office_work">
   <div class="form-group">
     <label for="end_hours" class="w-100">
       {{__('labels.end_time')}}
