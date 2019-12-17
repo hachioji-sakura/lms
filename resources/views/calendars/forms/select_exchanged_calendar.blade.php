@@ -6,7 +6,13 @@ $(function(){
 });
 function get_exchange_calendar(){
   console.log('get_exchange_calendar');
-  var schedule_type = $('input[name=schedule_type]:checked').val();
+  var schedule_type = $("input[name='schedule_type']:checked").val();
+  if(!schedule_type) {
+    schedule_type = $("input[name='schedule_type'][type='hidden']").val();
+  }
+  if(!schedule_type) {
+    return false;
+  }
   if(schedule_type!="class"){
     $('input[name=exchanged_calendar_datetime]').val("");
     $('input[name=exchanged_calendar_id]').val("");
