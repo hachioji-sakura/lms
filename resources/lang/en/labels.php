@@ -282,6 +282,7 @@ return [
   'season_comment' => 'Season Lesson Comment',
   'schedule_type'           => 'Schedule Type',
   'interview_etc' => 'Interview etc.',
+  'office_work' => 'Office work',
   'exchange_limit_date' => 'Limit',
   'exchange_remaining_time' => 'Remaining(:time minuites)',
   'schedule_change_remind' => 'Change Remind',
