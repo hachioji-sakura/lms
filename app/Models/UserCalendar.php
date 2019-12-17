@@ -1014,6 +1014,7 @@ EOT;
   //振替可能残り時間
   public function get_exchange_remaining_time(){
     $students = $this->get_students();
+    if(count($students)<1) return 0;
     return $students[0]->get_exchange_remaining_time();
   }
   //振替期限
