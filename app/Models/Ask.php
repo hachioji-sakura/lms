@@ -139,7 +139,6 @@ EOT;
       $form['status'] = "new";
     }
 
-    \Log::warning("a1");
     /*
     if(Ask::already_data($type, $form)!=null){
       \Log::warning("競合！");

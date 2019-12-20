@@ -120,7 +120,7 @@
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
-      @if(isset($filter['is_desc']) && $filter['is_desc']==true)
+      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
         checked
       @endif
       >{{__('labels.date')}} {{__('labels.desc')}}

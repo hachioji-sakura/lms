@@ -102,7 +102,7 @@
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="勤務設定">
-          <i class="fa fa-user-edit nav-icon"></i>勤務設定
+          <i class="fa fa-user-cog nav-icon"></i>勤務設定
         </a>
       </li>
       <li class="nav-item">

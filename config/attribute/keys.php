@@ -7,6 +7,7 @@ return array(
   'kids_lesson' => '習い事',
   'course_minutes' => '授業時間',
   'course_type' => '授業形式',
+  'teaching_type' => '授業タイプ',
   'charge_grade' => '担当学年',
   'charge_subject' => '担当科目',
   'charge_subject_level' => '担当科目Lv',

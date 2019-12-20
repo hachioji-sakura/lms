@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\StudentParent;
 use App\Models\UserCalendarMember;
 use App\Models\Lecture;
+use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
@@ -125,7 +126,12 @@ EOT;
   }
   public function scopeFindPlaces($query, $vals, $is_not=false)
   {
-    return $this->scopeFieldWhereIn($query, 'place_floor_id', $vals, $is_not);
+    $place_floors = PlaceFloor::whereIn('place_id', $vals)->get();
+    $ids = [];
+    foreach($place_floors as $place_floor){
+      $ids[] = $place_floor->id;
+    }
+    return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
   public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
@@ -353,32 +359,51 @@ EOT;
     if(!isset($this->work)) return "";
     return $this->get_attribute_name('work', $this->work);
   }
-  public function teaching_code(){
-    $_teaching_type = ['trial', 'regular', 'exchange', 'add' ];
-    if($this->is_teaching()){
-      if($this->trial_id > 0){
-        return $_teaching_type[0];
-      }
-      if(intval($this->user_calendar_setting_id) > 0){
-        return $_teaching_type[1];
-      }
-      if($this->exchanged_calendar_id > 0){
-        return $_teaching_type[2];
-      }
-      return $_teaching_type[3];
+  public function schedule_type_code(){
+    switch($this->work){
+      case 1:
+      case 2:
+      case 3:
+        return 'interview';
+      case 4:
+        return 'examination_director';
+      case 5:
+        return 'training';
+      case 6:
+      case 7:
+      case 8:
+        return 'school_lesson';
+      case 9:
+        return 'office_work';
+      case 10:
+        return 'season_school_lesson';
     }
     return "";
   }
-  public function teaching_name(){
-    $_code = $this->teaching_code();
-    $_teaching_names = ['trial' => '体験授業', 'regular' => '通常授業', 'exchange' => '振替授業', 'add' => '追加授業', ];
-    if(app()->getLocale()=='en'){
-      return $_code;
-    }
-    if(isset($_teaching_names[$_code])){
-      return $_teaching_names[$_code];
+  public function schedule_type_name(){
+    $code = $this->schedule_type_code();
+    return __('labels.'.$code);
+  }
+  public function get_teaching_type(){
+    if($this->work==10) return 'season';
+    if($this->work==5) return 'training';
+
+    if($this->is_teaching()){
+      if($this->trial_id > 0){
+        return 'trial';
+      }
+      if(intval($this->user_calendar_setting_id) > 0){
+        return 'regular';
+      }
+      if($this->exchanged_calendar_id > 0){
+        return 'exchange';
+      }
+      return 'add';
     }
     return "";
+  }
+  public function teaching_type_name(){
+    return $this->get_attribute_name('teaching_type', $this->teaching_type);
   }
   public function status_name(){
     $status_name = "";
@@ -486,14 +511,15 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['teaching_code'] = $this->teaching_code();
-    $item['teaching_name'] = $this->teaching_name();
+    $item['teaching_name'] = $this->teaching_type_name();
+    $item['schedule_type_code'] = $this->schedule_type_code();
+    $item['schedule_type_name'] = $this->schedule_type_name();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
       $item['place_floor_name'] = $this->place_floor->name();
     }
     $item['work_name'] = $this->work();
-    $item['teaching_name'] = $this->teaching_name();
+    $item['teaching_name'] = $this->teaching_type_name();
 
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
@@ -614,6 +640,9 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
+
+    $teaching_type = $calendar->get_teaching_type();
+    $calendar->update(['teaching_type' => $teaching_type]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     //新規登録時に変更メールを送らない

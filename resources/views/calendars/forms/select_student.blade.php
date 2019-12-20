@@ -29,7 +29,7 @@ function get_charge_students(){
   var lesson = ($('input[name=lesson]').val())|0;
   console.log("get_charge_students");
   //対象の生徒を取得
-  service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, null,
+  service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, {'loading': false},
     function(result, st, xhr) {
       if(result['status']===200){
         var c = 0;

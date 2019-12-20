@@ -103,7 +103,7 @@ function select_course_change(obj){
 }
 function get_lectures(){
   console.log("get_lectures");
-  service.getAjax(false, '/api_lectures', null,
+  service.getAjax(false, '/api_lectures', {'loading': false},
     function(result, st, xhr) {
       var lectures = {};
       if(result['status']===200){

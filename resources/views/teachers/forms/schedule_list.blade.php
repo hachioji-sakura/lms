@@ -38,8 +38,6 @@
             </small>
           </span>
           @endforeach
-          {{$calendar->get_exchange_remaining_time()}} / {{$calendar->exchange_limit_date()}}
-
         @else
         <span class="text-xs mx-2">
           <small class="badge badge-primary mt-1 mr-1">

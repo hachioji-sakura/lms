@@ -176,7 +176,6 @@ class UserController extends Controller
   {
     $user = Auth::user();
     $api_token = $request->header('api-token');
-    \Log::warning("login_details:".session('locale'));
     App::setLocale(session('locale'));
     if($request->has('locale')){
       App::setLocale($request->get('locale'));

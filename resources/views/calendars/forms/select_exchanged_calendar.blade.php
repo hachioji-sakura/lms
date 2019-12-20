@@ -40,7 +40,7 @@ function get_exchange_calendar(){
   //振替対象の予定を取得
   if(url == '') return;
 
-  service.getAjax(false, url, null,
+  service.getAjax(false, url, {'loading': false},
     function(result, st, xhr) {
       console.log(result["data"]);
       if(result['status']===200){
@@ -138,7 +138,7 @@ function get_exchange_calendar(){
   }
   console.log("get_exchange_calendar");
   //振替対象の予定を取得
-  service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson, null,
+  service.getAjax(false, '/api_calendars?teacher_id='+teacher_id+'&student_id='+student_id+'&exchange_target=1&lesson='+lesson, {'loading': false},
     function(result, st, xhr) {
       console.log(result["data"]);
       if(result['status']===200){

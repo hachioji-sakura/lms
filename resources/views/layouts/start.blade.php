@@ -82,7 +82,7 @@
 <script src="{{asset('js/plugins/fastclick/fastclick.js')}}"></script>
 <!-- fullCalendar 2.2.5 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-<script src="{{asset('js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+<script src="{{asset('js/plugins/fullcalendar/fullcalendar.js')}}"></script>
 <!-- Ion Slider -->
 <script src="{{asset('js/plugins/ionslider/ion.rangeSlider.min.js')}}"></script>
 <!-- CK Editor -->

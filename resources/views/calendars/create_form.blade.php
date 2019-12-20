@@ -2,8 +2,8 @@
 <div class="row">
   @if($item->work!=9)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
-    @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
@@ -12,6 +12,15 @@
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
+      <div class="form-group">
+        <label for="remark" class="w-100">
+        {{__('labels.remark')}}
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        </label>
+        <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
+      </div>
+    </div>
   @endif
 </div>
 @endsection
@@ -27,6 +36,15 @@
       @component('calendars.forms.charge_subject', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'), 'attributes' => $attributes]); @endcomponent
     @endif
   @endif
+  <div class="col-12">
+    <div class="form-group">
+      <label for="remark" class="w-100">
+      {{__('labels.remark')}}
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      </label>
+      <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
+    </div>
+  </div>
 </div>
 @endsection
 @section('confirm_form')
@@ -50,18 +68,27 @@
     ?>
     @foreach($form_data as $key => $name)
     <div class="col-6 p-3 font-weight-bold
-    @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
-     schedule_type schedule_type_class
-     @elseif($key=="work_name" || $key=="work_time")
-     schedule_type schedule_type_other
-    @endif
+
+      @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
+        schedule_type schedule_type_class
+      @elseif($key=="work_name" )
+        schedule_type schedule_type_other
+      @elseif($key=="work_time")
+        schedule_type schedule_type_other schedule_type_office_work
+      @elseif($key=="student_name")
+        schedule_type schedule_type_class schedule_type_other
+      @endif
     " >{{$name}}</div>
     <div class="col-6 p-3
-    @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
-     schedule_type schedule_type_class
-     @elseif($key=="work_name" || $key=="work_time")
-      schedule_type schedule_type_other
-    @endif
+      @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
+        schedule_type schedule_type_class
+      @elseif($key=="work_name" )
+        schedule_type schedule_type_other
+      @elseif($key=="work_time")
+        schedule_type schedule_type_other schedule_type_office_work
+      @elseif($key=="student_name")
+        schedule_type schedule_type_class schedule_type_other
+      @endif
     ">
       <span id="{{$key}}"></span>
       @if($key=="start_time")
@@ -102,6 +129,8 @@
         </div>
       @endif
     @endforeach
+    <div class="col-6 p-3 font-weight-bold">{{__('labels.remark')}}</div>
+    <div class="col-6 p-3"><span id="remark"></span></div>
     @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
 </div>
 @endsection
