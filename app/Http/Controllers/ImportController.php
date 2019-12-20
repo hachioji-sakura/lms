@@ -1277,7 +1277,8 @@ class ImportController extends UserController
       //ステータス整合性チェック
       $calendar = UserCalendar::where('id', $calendar_id)->first();
 
-      if($calendar->status=='rest' && ($calendar->work==7 || $calendar->work==8)){
+      if(($calendar->status=='rest' || $calendar->status=='lecture_cancel') && ($calendar->work==7 || $calendar->work==8)){
+        //グループ or ファミリーの場合、参加生徒が一人以上いれば、fixに更新する
         foreach($calendar->members as $member){
           $s = Student::where('user_id', $member->user_id)->first();
           if(!isset($s)) continue;
