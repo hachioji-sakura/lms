@@ -25,6 +25,7 @@
               end : end,
               status : "new",
               teaching_type : "add",
+              schedule_type_code : "new",
               selected : true,
             }]);
 
@@ -39,7 +40,6 @@
             param += "&end_hours="+end.hour();
             param += "&end_minutes="+end.minute();
             param += "&course_minutes="+_course_minutes;
-            console.log(param);
             base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });
@@ -66,11 +66,12 @@
                   base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
                 }
                 break;
-              case "rest":
-              case "cancel":
               case "absence":
               case "presence":
-              case "exchange":
+                base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/calendars/"+event.id+"/status_update/presence");
+                break;
+              case "rest":
+              case "cancel":
               default:
                 base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
                 break;
