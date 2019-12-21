@@ -1,31 +1,17 @@
 <div class="col-12 mb-2">
-  <div class="form-group">
-    <label for="lesson_name" class="w-100">
-      {{__('labels.lesson_name')}}
-    </label>
-    {{--
-    <label class="mx-2">
-    <input type="checkbox" value="add" name="teaching_type[]" class="icheck flat-green"
-    @if(isset($filter['add_lesson']) && $filter['add_lesson']==true)
-      checked
-    @endif
-    >{{__('labels.add')}}{{__('labels.school_lesson')}}
-    </label>
-    --}}
-    <label class="mx-2">
-    <input type="checkbox" value="exchange" name="teaching_type[]" class="icheck flat-green"
-    @if(isset($filter['exchange_lesson']) && $filter['exchange_lesson']==true)
-      checked
-    @endif
-    >{{__('labels.exchange')}}{{__('labels.school_lesson')}}
-    </label>
-    <label class="mx-2">
-    <input type="checkbox" value="trial" name="teaching_type[]" class="icheck flat-green"
-    @if(isset($filter['trial_lesson']) && $filter['trial_lesson']==true)
-      checked
-    @endif
-    >{{__('labels.trial')}}{{__('labels.school_lesson')}}
-    </label>
+  <label for="search_work" class="w-100">
+    {{__('labels.lesson_name')}}
+  </label>
+  <div class="w-100">
+    @foreach($attributes['teaching_type'] as $index=>$name)
+      <label class="mx-2">
+      <input type="checkbox" value="{{$index}}" name="teaching_type[]" class="icheck flat-green"
+        @if(isset($filter['teaching_type']) && in_array($index, $filter['teaching_type'])==true)
+        checked
+        @endif
+        >{{$name}}
+      </label>
+    @endforeach
     <label class="mx-2">
     <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
     @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
@@ -52,6 +38,7 @@
     @endforeach
   </div>
 </div>
+{{--
 <div class="col-12 mb-2">
   <label for="search_work" class="w-100">
     {{__('labels.body')}}
@@ -68,7 +55,8 @@
     @endforeach
   </div>
 </div>
-<div class="col-12 mb-2">
+--}}
+<div class="col-6 mb-2">
   <label for="search_status" class="w-100">
     {{__('labels.status')}}
   </label>
@@ -85,4 +73,10 @@
       @endforeach
     </select>
   </div>
+</div>
+<div class="col-6 mb-2">
+    <label for="search_word" class="w-100">
+      {{__('labels.search_keyword')}}
+    </label>
+    <input type="text" name="search_word" class="form-control" placeholder="" inputtype="">
 </div>

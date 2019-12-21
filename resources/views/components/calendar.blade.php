@@ -306,11 +306,11 @@
         var view_mode = $('input[name="view_mode"]:checked').val();
         var user_name = event['student_name'];
         if(view_mode=='students'){
-          user_name = event['teacher_name'];
+          user_name = event['user_name'];
         }
         switch(event['schedule_type_code']){
           case 'office_work':
-            title = event['work_name']+remark;
+            title = event['user_name']+':'+event['work_name']+remark;
             break;
           default:
             title = user_name+remark;

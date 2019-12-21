@@ -550,6 +550,7 @@ class UserCalendarController extends MilestoneController
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
       \Log::warning("--------------UserCalendarController::api_index  start---------------------------");
+      \Log::warning($items->toSql());
       $items = $items->get();
       \Log::warning("--------------UserCalendarController::api_index  end---------------------------");
       foreach($items as $item){
@@ -680,6 +681,13 @@ class UserCalendarController extends MilestoneController
         else $_param = explode(',', $request->search_work.',');
         $items = $items->findWorks($_param);
       }
+      //授業タイプ 検索
+      if(isset($request->teaching_type)){
+        $_param = "";
+        if(gettype($request->teaching_type) == "array") $_param  = $request->teaching_type;
+        else $_param = explode(',', $request->teaching_type.',');
+        $items = $items->findTeachingType($_param);
+      }
       //場所 検索
       if(isset($request->search_place)){
         $_param = "";
@@ -735,6 +743,7 @@ class UserCalendarController extends MilestoneController
       }
       //検索ワード
       if(isset($request->search_word)){
+        /*
         $search_words = explode(' ', $request->search_word);
         $items = $items->where(function($items)use($search_words){
           foreach($search_words as $_search_word){
@@ -743,6 +752,8 @@ class UserCalendarController extends MilestoneController
             $items->orWhere('remark','like',$_like);
           }
         });
+        */
+        $items = $items->searchWord($request->search_word);
       }
 
       return $items;

@@ -101,15 +101,25 @@ EOT;
   {
     $search_words = explode(' ', $word);
     $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id where user_calendar_members um
+      user_calendars.remark like ?
+      OR user_calendars.id in (
+        select um.calendar_id from user_calendar_members um
         left join common.students s on s.user_id = um.user_id
         left join common.teachers t on t.user_id = um.user_id
         left join common.managers m on m.user_id = um.user_id
-        where s.name_last like '%%'
+        where
+          concat(s.name_last ,' ', s.name_first) like ?
+          OR concat(t.name_last ,' ', t.name_first) like ?
+          OR concat(m.name_last ,' ', m.name_first) like ?
+          OR concat(s.kana_last ,' ', s.kana_first) like ?
+          OR concat(t.kana_last ,' ', t.kana_first) like ?
+          OR concat(m.kana_last ,' ', m.kana_first) like ?
+       )
 EOT;
     $query = $query->where(function($query)use($search_words, $where_raw){
       foreach($search_words as $_search_word){
-        $query = $query->whereRaw($where_raw,[$_search_word]);
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhereRaw($where_raw,[$_like,$_like,$_like,$_like,$_like,$_like,$_like]);
       }
     });
     return $query;
@@ -119,6 +129,10 @@ EOT;
   public function scopeFindStatuses($query, $vals, $is_not=false)
   {
     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+  }
+  public function scopeFindTeachingType($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'teaching_type', $vals, $is_not);
   }
   public function scopeFindWorks($query, $vals, $is_not=false)
   {
@@ -213,9 +227,20 @@ EOT;
     return $query;
   }
   public function get_access_member($user_id){
-    $user = User::where('id', $user_id)->first();
-    if(isset($user)) $user = $user->details();
     $ret = [];
+    if($user_id == 0){
+      //user_id 指定なし＝root扱い
+      $user = User::where('id', 1)->first();
+    }
+    else {
+      $user = User::where('id', $user_id)->first();
+    }
+    if(isset($user)) {
+      $user = $user->details();
+    }
+    else {
+      return $ret;
+    }
     if($user->role=='parent'){
       //保護者の場合、自分の子供のみアクセス可能
       foreach ($user->relation() as $relation){
@@ -561,14 +586,12 @@ EOT;
         $managers[] = $member;
       }
     }
-    if($user_id > 0){
-      //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
-      foreach($this->get_access_member($user_id) as $member){
-        $_member = $member->user->details('students');
-        if($_member->role === 'student'){
-          $student_name.=$_member['name'].',';
-          $students[] = $member;
-        }
+    //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
+    foreach($this->get_access_member($user_id) as $member){
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+        $students[] = $member;
       }
     }
 
