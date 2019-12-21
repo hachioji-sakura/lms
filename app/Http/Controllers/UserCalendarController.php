@@ -212,17 +212,25 @@ class UserCalendarController extends MilestoneController
 
     //予定の指定
     if($request->has('start_date') && $request->has('start_hours')
-        && $request->has('start_minutes') && $request->has('course_minutes')){
+        && $request->has('start_minutes')){
       $form['course_minutes'] = $request->get('course_minutes');
       $form['start_date'] = $request->get('start_date');
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
       //授業時間＋開始日時から終了日時を計算
-      $end_time = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
       $form['start_time'] = $start_time;
-      $form['end_time'] = $end_time;
     }
+    if($request->has('course_minutes')){
+      //授業時間設定がある
+      $form['end_time'] = date('Y/m/d H:i:s', strtotime($start_time.' +'.$form['course_minutes'].' minutes'));
+    }
+    else {
+      $form['end_hours'] = $request->get('end_hours');
+      $form['end_minutes'] = $request->get('end_minutes');
+      $form['end_time'] = $form['start_date'].' '.$form['end_hours'].':'.$form['end_minutes'].':00';
+    }
+
     $form['charge_subject'] = $request->get('charge_subject');
     $form['english_talk_lesson'] = $request->get('english_talk_lesson');
     $form['piano_lesson'] = $request->get('piano_lesson');
@@ -245,18 +253,15 @@ class UserCalendarController extends MilestoneController
     //生徒の指定
     if($request->has('student_id')){
       $form['student_id'] = $request->get('student_id');
-    }
-    else {
-      abort(400, "生徒指定なし");
-    }
-    $form['students'] = [];
-    foreach($form['student_id'] as $student_id){
-      $student = Student::where('id', $student_id)->first();
-      if(!isset($student)){
-        //生徒が存在しない
-        abort(400, "存在しない生徒");
+      $form['students'] = [];
+      foreach($form['student_id'] as $student_id){
+        $student = Student::where('id', $student_id)->first();
+        if(!isset($student)){
+          //生徒が存在しない
+          abort(400, "存在しない生徒");
+        }
+        $form['students'][] = $student;
       }
-      $form['students'][] = $student;
     }
 
     $form['exchanged_calendar_id'] = 0;
@@ -271,6 +276,9 @@ class UserCalendarController extends MilestoneController
 
     if($request->has('schedule_type') && $request->get('schedule_type')=='other'){
       $form['work'] = $request->get('work');
+    }
+    else if($request->has('schedule_type') && $request->get('schedule_type')=='office_work'){
+      $form['work'] = 9;
     }
     else {
       $form['course_type'] = $request->get('course_type');
@@ -1343,7 +1351,6 @@ class UserCalendarController extends MilestoneController
       if($holiday!=null && $holiday->is_private_holiday() == true){
         return $this->error_response('休校日のため予定は登録できません');
       }
-
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {

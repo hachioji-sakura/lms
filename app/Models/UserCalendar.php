@@ -577,6 +577,7 @@ EOT;
   }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
+
     $ret = [];
     $trial_id = 0;
     $user_calendar_setting_id = 0;
@@ -613,10 +614,12 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
+
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     //新規登録時に変更メールを送らない
     unset($form['send_mail']);
     $calendar = $calendar->change($form);
+
     return $calendar;
   }
   //本モデルはdeleteではなくdisposeを使う
@@ -1014,6 +1017,7 @@ EOT;
   //振替可能残り時間
   public function get_exchange_remaining_time(){
     $students = $this->get_students();
+    if(count($students)<1) return 0;
     return $students[0]->get_exchange_remaining_time();
   }
   //振替期限
