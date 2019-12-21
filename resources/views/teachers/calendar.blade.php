@@ -66,11 +66,12 @@
                   base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
                 }
                 break;
-              case "rest":
-              case "cancel":
               case "absence":
               case "presence":
-              case "exchange":
+                base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/calendars/"+event.id+"/status_update/presence");
+                break;
+              case "rest":
+              case "cancel":
               default:
                 base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
                 break;
