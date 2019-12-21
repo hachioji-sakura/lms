@@ -25,6 +25,7 @@
               end : end,
               status : "new",
               teaching_type : "add",
+              schedule_type_code : "new",
               selected : true,
             }]);
 
@@ -39,7 +40,6 @@
             param += "&end_hours="+end.hour();
             param += "&end_minutes="+end.minute();
             param += "&course_minutes="+_course_minutes;
-            console.log(param);
             base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });

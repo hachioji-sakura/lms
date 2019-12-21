@@ -609,6 +609,11 @@ EOT;
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
       $item['is_exchange'] = true;
     }
+    //fullcalendar向けのパラメータ
+    $item['start'] = $this->start_time;
+    $item['end'] = $this->end_time;
+    $item['total_status'] = $this->status;
+    
     return $item;
   }
   static public function get_holiday($day){

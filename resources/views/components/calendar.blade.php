@@ -143,20 +143,7 @@
     service.getAjax(false, url, form_data,
       function(result, st, xhr) {
         if(result['status']===200){
-
-          var events = [];
-          $.each(result['data'], function(index, value) {
-            value["start"] = value['start_time'];
-            value["end"] = value['end_time'];
-            value["total_status"] = value.status;
-            if(value.own_member){
-              value["status"] = value.own_member.status;
-            }
-            else {
-              value["status"] = value.status;
-            }
-            events.push(value);
-          });
+          var events = result['data'];
           if(util.isFunction(callback))callback(events);
         }
       },
@@ -165,7 +152,7 @@
           messageParam= "\n"+err.message+"\n"+xhr.responseText;
           alert("カレンダー取得エラー\n画面を再表示してください\n"+messageParam);
       }
-    ,true);
+    ,false);
     return;
   }
 
@@ -301,6 +288,9 @@
       // 自動選択解除対象外の要素
       unselectCancel: '',
       eventRender: function(event, element) {
+        if(!event['schedule_type_code']){
+          event['schedule_type_code'] = "new";
+        }
         var title = "{{__('labels.schedule_add')}}";
         var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
         var view_mode = $('input[name="view_mode"]:checked').val();
@@ -311,6 +301,8 @@
         switch(event['schedule_type_code']){
           case 'office_work':
             title = event['user_name']+':'+event['work_name']+remark;
+            break;
+          case 'new':
             break;
           default:
             title = user_name+remark;
