@@ -57,7 +57,7 @@
       <select name="search_week[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
         @foreach($attributes['lesson_week'] as $index=>$name)
           <option value="{{$index}}"
-          @if(isset($filter['search_week']) && in_array($index, $filter['search_week'])==true)
+          @if(isset($filter['calendar_filter']['search_week']) && in_array($index, $filter['calendar_filter']['search_week'])==true)
           selected
           @endif
           >{{$name}}</option>
@@ -73,7 +73,7 @@
       <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
         @foreach($attributes['work'] as $index=>$name)
           <option value="{{$index}}"
-          @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+          @if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
           selected
           @endif
           >{{$name}}</option>
@@ -88,13 +88,11 @@
     <div class="w-100">
       <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
         @foreach($attributes['places'] as $place)
-          @foreach($place->floors as $floor)
-          <option value="{{$floor->id}}"
-          @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
+          <option value="{{$place->id}}"
+          @if(isset($filter['calendar_filter']['search_place']) && in_array($place->id, $filter['calendar_filter']['search_place'])==true)
           selected
           @endif
-          >{{$floor->name()}}</option>
-          @endforeach
+          >{{$place->name()}}</option>
         @endforeach
       </select>
     </div>

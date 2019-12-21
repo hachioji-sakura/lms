@@ -131,6 +131,8 @@ return [
   'upd_datetime' => 'Updated At',
   'timezone' => 'Timezone',
   'sort_no' => 'Display sort',
+  'user_only' => 'User Only',
+  'all' => 'All',
   'asx' => 'Ascending',
   'desc' => 'Descending',
   'status' => 'Status',
@@ -289,4 +291,8 @@ return [
   'no_remind' => 'Do not Remind',
   'send_to_teacher' => 'For Teacher',
   'send_to_teacher_and_student' => 'For Teacher And Student',
+  'student_name_display' => 'Student Name',
+  'teacher_name_display' => 'Teacher Name',
+  'target_data' => 'Target Data',
+  'label_setting' => 'Label Setting',
 ];

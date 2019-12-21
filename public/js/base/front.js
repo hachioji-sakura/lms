@@ -71,10 +71,18 @@
 			}
 		}
 		if(!util.isEmpty(type) && (type == "checkbox" || type == "radio")){
-			val = [];
-			$("input[name='"+field+"']:checked").each(function() {
-        val.push($(this).val());
-      });
+			if(type=="checkbox"){
+				val = [];
+				$("input[name='"+field+"']:checked").each(function() {
+	        val.push($(this).val());
+	      });
+			}
+			else {
+				val = "";
+				$("input[name='"+field+"']:checked").each(function() {
+	        val = $(this).val();
+	      });
+			}
 		}
 		if(!util.isEmpty(multiple) && val.indexOf(",")>=0) val = val.split(",");
 		return val;

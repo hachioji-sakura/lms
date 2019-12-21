@@ -56,16 +56,16 @@ $(function(){
       location.href = service.setQueryParam({"search_word" : ""});
     }
   });
-  $("input[name='search_word']").on("keypress", function(e){
+  $("input[name='search_word'][accesskey='keyword_search']").on("keypress", function(e){
     if(e.keyCode==13){
       //検索入力～Enterで、検索ボタン押下
       $("#search_button").click();
     }
   });
-  $("input[name='search_word']").on("focusin", function(e){
+  $("input[name='search_word'][accesskey='keyword_search']").on("focusin", function(e){
     $(this).animate({width:"260px"},500,"easeInOutExpo");
   });
-  $("input[name='search_word']").on("focusout", function(e){
+  $("input[name='search_word'][accesskey='keyword_search']").on("focusout", function(e){
     $(this).animate({width:"140px"},500,"easeInOutExpo");
   });
   //ダイアログでサブページを開く場合、

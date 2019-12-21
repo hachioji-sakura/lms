@@ -1277,7 +1277,8 @@ class ImportController extends UserController
       //ステータス整合性チェック
       $calendar = UserCalendar::where('id', $calendar_id)->first();
 
-      if($calendar->status=='rest' && ($calendar->work==7 || $calendar->work==8)){
+      if(($calendar->status=='rest' || $calendar->status=='lecture_cancel') && ($calendar->work==7 || $calendar->work==8)){
+        //グループ or ファミリーの場合、参加生徒が一人以上いれば、fixに更新する
         foreach($calendar->members as $member){
           $s = Student::where('user_id', $member->user_id)->first();
           if(!isset($s)) continue;
@@ -1531,6 +1532,7 @@ class ImportController extends UserController
       return true;
     }
     private function remind($message, $type, $title){
+      \Log::channel('importlog')->warning($message);
       @$this->send_slack($message, $type, $title);
     }
     private function get_id_value($prefix, $item, $is_null_value=0){
@@ -1585,10 +1587,6 @@ EOT;
       return $ret;
     }
     private function test(){
-      $u = Student::hasTag('student_no', '1053')->first();
-      if(isset($u)){
-        return $u->id;
-      }
-      return "";
+      @$this->remind("test", 'info', 'test');
     }
 }

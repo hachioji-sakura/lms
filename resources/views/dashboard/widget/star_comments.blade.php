@@ -169,7 +169,7 @@
               </a>
               <script>
               function importance_comment(id){
-                  service.postAjax('/comments/'+id+'/importanced',{},
+                  service.postAjax('/comments/'+id+'/importanced',{'loading': false},
                   function(result, st, xhr) {
                     if(result['status']===200){
                       console.log(result['data']);
@@ -194,7 +194,7 @@
                   }, "PUT");
               }
               function comment_check(id){
-                  service.postAjax('/comments/'+id+'/checked',{},
+                  service.postAjax('/comments/'+id+'/checked',{'loading': false},
                   function(result, st, xhr) {
                     if(result['status']===200){
                       console.log(result['data']);
@@ -274,7 +274,7 @@
       <select name="search_comment_type[]" class="form-control select2" width=100% placeholder="検索タイプ" multiple="multiple" >
           @foreach(config('attribute.comment_type') as $index => $name)
             <option value="{{$index}}"
-            @if(isset($filter['search_comment_type']) && in_array($index, $filter['search_comment_type'])==true)
+            @if(isset($filter['comment_filter']['search_comment_type']) && in_array($index, $filter['comment_filter']['search_comment_type'])==true)
             selected
             @endif
             >{{$name}}</option>
@@ -301,21 +301,21 @@
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_asc" class="icheck flat-green"
-      @if(isset($filter['is_asc']) && $filter['is_asc']==true)
+      @if(isset($filter['sort']['is_asc']) && $filter['sort']['is_asc']==true)
         checked
       @endif
       >{{__('labels.date')}} {{__('labels.asc')}}
       </label>
       <label class="mx-2">
         <input type="checkbox" value="1" name="is_checked_only" class="icheck flat-green"
-        @if(isset($filter['is_checked_only']) && $filter['is_checked_only']==1)
+        @if(isset($filter['comment_filter']['is_checked_only']) && $filter['comment_filter']['is_checked_only']==1)
           checked
         @endif
         >{{__('labels.checked_only')}}
         </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_unchecked_only" class="icheck flat-green"
-      @if(isset($filter['is_unchecked_only']) && $filter['is_unchecked_only']==1)
+      @if(isset($filter['comment_filter']['is_unchecked_only']) && $filter['comment_filter']['is_unchecked_only']==1)
         checked
       @endif
       >{{__('labels.unchecked_only')}}

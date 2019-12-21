@@ -318,6 +318,7 @@ class UserCalendarController extends MilestoneController
       'is_exchange_add' => false,
     ];
     $ret['filter'] = [
+      'is_all_user'=>$request->is_all_user,
       'search_status'=>$request->status,
       'search_work' => $request->search_work,
       'search_place' => $request->search_place,
@@ -497,6 +498,7 @@ class UserCalendarController extends MilestoneController
      */
     public function api_index(Request $request, $user_id=0, $from_date=null, $to_date=null)
     {
+      set_time_limit(600);
       $param = $this->get_param($request);
       if(!empty($from_date) && strlen($from_date)===8){
         $from_date = date('Y-m-d', strtotime($from_date));
@@ -529,6 +531,11 @@ class UserCalendarController extends MilestoneController
       if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
          return $this->forbidden("you are not manager");
       }
+      \Log::warning("is_all_user:".$request->get('is_all_user'));
+
+      if($request->get('is_all_user')==1){
+        $user_id = 0;
+      }
 
       if($user_id > 0){
         if($this->is_student($user->role) && $user->user_id != $user_id) return $this->forbidden("is not owner");
@@ -539,13 +546,13 @@ class UserCalendarController extends MilestoneController
         $items = $items->findUser($user_id);
       }
 
-      if($request->is_all==1){
-        $user_id = 0;
-      }
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
+      \Log::warning("--------------UserCalendarController::api_index  start---------------------------");
+      \Log::warning($items->toSql());
       $items = $items->get();
+      \Log::warning("--------------UserCalendarController::api_index  end---------------------------");
       foreach($items as $item){
         $item = $item->details($user_id);
         if($user_id > 0) {
@@ -664,7 +671,8 @@ class UserCalendarController extends MilestoneController
       }
       //ステータス 検索
       if(isset($request->search_status)){
-        $items = $items->findStatuses(explode(',', $request->search_status.','));
+        if(gettype($request->search_status) == "array") $items = $items->findStatuses($request->search_status);
+        else $items = $items->findStatuses(explode(',', $request->search_status.','));
       }
       //ワーク 検索
       if(isset($request->search_work)){
@@ -672,6 +680,13 @@ class UserCalendarController extends MilestoneController
         if(gettype($request->search_work) == "array") $_param  = $request->search_work;
         else $_param = explode(',', $request->search_work.',');
         $items = $items->findWorks($_param);
+      }
+      //授業タイプ 検索
+      if(isset($request->teaching_type)){
+        $_param = "";
+        if(gettype($request->teaching_type) == "array") $_param  = $request->teaching_type;
+        else $_param = explode(',', $request->teaching_type.',');
+        $items = $items->findTeachingType($_param);
       }
       //場所 検索
       if(isset($request->search_place)){
@@ -698,6 +713,16 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
+      else {
+
+      }
+      if(isset($request->exchange_lesson) && $request->exchange_lesson==1){
+        $items = $items->where('exchanged_calendar_id','>', 0);
+      }
+      if(isset($request->trial_lesson) && $request->trial_lesson==1){
+        $items = $items->where('trial_id','>', 0);
+      }
+
       //更新取得
       if(isset($request->update)){
         $items = $items->where('updated_at','>',$request->update);
@@ -718,6 +743,7 @@ class UserCalendarController extends MilestoneController
       }
       //検索ワード
       if(isset($request->search_word)){
+        /*
         $search_words = explode(' ', $request->search_word);
         $items = $items->where(function($items)use($search_words){
           foreach($search_words as $_search_word){
@@ -726,6 +752,8 @@ class UserCalendarController extends MilestoneController
             $items->orWhere('remark','like',$_like);
           }
         });
+        */
+        $items = $items->searchWord($request->search_word);
       }
 
       return $items;

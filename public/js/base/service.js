@@ -28,8 +28,7 @@
 		getMessage  : getMessage ,
 		getEncodeString : getEncodeString,
 		getDecodeString : getDecodeString,
-		loadStart : loadStart,
-		loadStop : loadStop,
+		loadClose : loadClose,
 		logout : _logout,
 		getAjax  : getAjax,
 		postAjax : postAjax,
@@ -42,6 +41,7 @@
 		confirm : confirmMessage,
 		clearRequestCache : clearRequestCache
 	};
+	var _callback = null;
 	var _message = {
 		"C_POST_INS" : {"title" : "登録確認", "body": "登録しますが、よろしいですか？"},
 		"C_POST_UPD" : {"title" : "更新確認", "body": "更新しますが、よろしいですか？"},
@@ -91,35 +91,23 @@
 				_cache["userSetting"][key] = data[key];
 			}
 		}
+		$('#loading').on('shown.bs.modal', function () {
+			if(util.isFunction(_callback)){
+				_callback();
+			}
+    });
 		loadRequestCache();
 	}
 	/**
-	* ローディング開始
-	* loadingStart 経過時、loadOpenを実行
+	* ローディングダイアログを表示する
     * @private
-    * @method loadStart
+    * @method loadOpen
     * @return {void} return nothing
     */
-	function loadStart (){
-		if(_loadTimer!=null){
-			clearTimeout(_loadTimer);
-		}
-		_loadTimer = setTimeout(loadOpen, 500);
-		return;
-	}
-	/**
-	* ローディング終了
-	* loadingStart 経過時、loadCloseを実行
-    * @private
-    * @method loadStop
-    * @return {void} return nothing
-    */
-	function loadStop (){
-		if(_loadTimer!=null){
-			clearTimeout(_loadTimer);
-			_loadTimer = null;
-		}
-		loadClose();
+	function loadOpen (){
+		console.log("loadOpen");
+
+		$("#loading").modal('show');
 		return;
 	}
 	/**
@@ -129,22 +117,13 @@
     * @return {void} return nothing
     */
 	function loadClose (){
-		/*
-		if(util.isEmpty(_loading)) return;
-		_loading.dialog("close");
-		*/
 		console.log("loadClose");
+		_callback = null;
 		$("#loading").modal('hide');
-		return;
-	}
-	/**
-	* ローディングダイアログを表示する
-    * @private
-    * @method loadOpen
-    * @return {void} return nothing
-    */
-	function loadOpen (){
-		$("#loading").modal('show');
+		if(_loadTimer!=null){
+			clearTimeout(_loadTimer);
+			_loadTimer = null;
+		}
 		return;
 	}
 
@@ -422,41 +401,48 @@
 				return true;
 			}
 		}
-		loadStart();
 		console.log("getAjax exec:"+key);
-
-		var ret = $.ajax({
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest',
-				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-			},
-			type: "GET",
-			async: async,
-			cache: !cacheReset,
-			dataType: "JSON",
-			url: (url),
-			data: (_request)
-		}).done(
-			function(result, st, xhr) {
-				loadStop();
-				if(result["status"]==200){
-					if(util.isFunction(success)) success(result, st, xhr);
-					setRequestCache(key, result);
+		_callback = function(){
+			var ret = $.ajax({
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				},
+				type: "GET",
+				async: async,
+				cache: !cacheReset,
+				dataType: "JSON",
+				url: (url),
+				data: (_request)
+			}).done(
+				function(result, st, xhr) {
+					//loadClose();
+					loadClose();
+					if(result["status"]==200){
+						if(util.isFunction(success)) success(result, st, xhr);
+						setRequestCache(key, result);
+					}
+					else {
+						alertMessage(result["message"], result["description"], _logout);
+						//10秒経過で自動ログアウト
+						setTimeout(_logout, 10000);
+					}
 				}
-				else {
-					alertMessage(result["message"], result["description"], _logout);
-					//10秒経過で自動ログアウト
-					setTimeout(_logout, 10000);
+			).
+			fail(
+				function(xhr, st, err) {
+					loadClose();
+					if(util.isFunction(error)) error(xhr, st, err);
 				}
-			}
-		).
-		fail(
-			function(xhr, st, err) {
-				loadStop();
-				if(util.isFunction(error)) error(xhr, st, err);
-			}
-		);
-		return ret;
+			);
+			return ret;
+		};
+		if(request['loading']==false){
+			_callback();
+		}
+		else {
+			loadOpen();
+		}
 	}
 	/**
 	* Ajax POST Method
@@ -471,32 +457,39 @@
 	function postAjax(url, request, success, error, _type){
 		var auth = util.getLocalData("auth");
 		console.log("postAjax exec:"+url);
-		loadStart();
 		if(util.isEmpty(_type)) _type="POST";
-		var ret = $.ajax({
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest',
-				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-			},
-			type: _type,
-			cache: false,
-			dataType: "JSON",
-			url: (url),
-			data: (request)
-		}).done(
-			function(result, st, xhr) {
-				loadStop();
-				_requestCache = [];
-				if(util.isFunction(success)) success(result, st, xhr);
-			}
-		).
-		fail(
-			function(xhr, st, err) {
-				loadStop();
-				if(util.isFunction(error)) error(xhr, st, err);
-			}
-		);
-		return ret;
+		_callback = function(){
+			var ret = $.ajax({
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+				},
+				type: _type,
+				cache: false,
+				dataType: "JSON",
+				url: (url),
+				data: (request)
+			}).done(
+				function(result, st, xhr) {
+					loadClose();
+					_requestCache = [];
+					if(util.isFunction(success)) success(result, st, xhr);
+				}
+			).
+			fail(
+				function(xhr, st, err) {
+					loadClose();
+					if(util.isFunction(error)) error(xhr, st, err);
+				}
+			);
+			return ret;
+		};
+		if(request['loading']==false){
+			_callback();
+		}
+		else {
+			loadOpen();
+		}
 	}
 	/**
 	* Ajax FileUpload Method
@@ -510,35 +503,41 @@
     * @return {void} return nothing
     */
 	function uploadAjax(url, request,  success, error, loading){
-		loadStart();
-		var ret=$.ajax({
-			url: (url),
-			data : request,
-			type: "POST",
-			contentType:false,
-			processData: false,
-			cache: false,
-			xhr: function() {
-				var xhrobj = $.ajaxSettings.xhr();
-				if (xhrobj.upload) {
-						xhrobj.upload.addEventListener('progress', function(event) {
-							if(util.isFunction(loading)) loading(event);
-						}, false);
+		_callback = function(){
+			var ret=$.ajax({
+				url: (url),
+				data : request,
+				type: "POST",
+				contentType:false,
+				processData: false,
+				cache: false,
+				xhr: function() {
+					var xhrobj = $.ajaxSettings.xhr();
+					if (xhrobj.upload) {
+							xhrobj.upload.addEventListener('progress', function(event) {
+								if(util.isFunction(loading)) loading(event);
+							}, false);
+					}
+					return xhrobj;
+				},
+				success: function(result, st, xhr) {
+					loadClose();
+					_cache["_uploadFiles"] = {};
+					if(util.isFunction(success)) success(result, st, xhr);
+				},
+				error: function(xhr, st, err) {
+					loadClose();
+					_cache["_uploadFiles"] = {};
+					if(util.isFunction(error)) error(xhr, st, err);
 				}
-				return xhrobj;
-			},
-			success: function(result, st, xhr) {
-				loadStop();
-				_cache["_uploadFiles"] = {};
-				if(util.isFunction(success)) success(result, st, xhr);
-			},
-			error: function(xhr, st, err) {
-				loadStop();
-				_cache["_uploadFiles"] = {};
-				if(util.isFunction(error)) error(xhr, st, err);
-			}
-		});
-
+			});
+		};
+		if(request['loading']==false){
+			_callback();
+		}
+		else {
+			loadOpen();
+		}
 	}
 	//ajax file download
 	/**
@@ -553,38 +552,45 @@
     */
 	function downloadAjax(url, request,  success, error){
 		var _request = requestDataParse(request);
-		loadStart();
-		var ret = $.ajax({
-			headers: {'X-Requested-With': 'XMLHttpRequest'},
-			secureuri:false,
-			type: "GET",
-			async: false,
-			cache: false,
-			url: url,
-			dataType: "JSON",
-			data: (_request)
-		}).done(
-			function(result, st, xhr) {
-				loadStop();
-				if(result["status"]==200){
-					if(!util.isEmpty(result.url)){
-						if(util.isFunction(success)) success(result, st, xhr);
+		_callback = function(){
+			var ret = $.ajax({
+				headers: {'X-Requested-With': 'XMLHttpRequest'},
+				secureuri:false,
+				type: "GET",
+				async: false,
+				cache: false,
+				url: url,
+				dataType: "JSON",
+				data: (_request)
+			}).done(
+				function(result, st, xhr) {
+					loadClose();
+					if(result["status"]==200){
+						if(!util.isEmpty(result.url)){
+							if(util.isFunction(success)) success(result, st, xhr);
+						}
+						else {
+							alertMessage(result["message"], result["description"], null);
+						}
 					}
 					else {
 						alertMessage(result["message"], result["description"], null);
 					}
 				}
-				else {
-					alertMessage(result["message"], result["description"], null);
+			).
+			fail(
+				function(xhr, st, err) {
+					loadClose();
+					if(util.isFunction(error)) error(xhr, st, err);
 				}
-			}
-		).
-		fail(
-			function(xhr, st, err) {
-				loadStop();
-				if(util.isFunction(error)) error(xhr, st, err);
-			}
-		);
+			);
+		};
+		if(request['loading']==false){
+			_callback();
+		}
+		else {
+			loadOpen();
+		}
 	}
 
 	//filedownload usage hidden frame
@@ -655,25 +661,6 @@
 			_ret[key] = a[key];
 		}
 		return _ret;
-	}
-
-	/**
-	* メール送信を即時送信するリクエストを送信する
-	* @method sendMail
-	* @param query_code {String}
-	* @return {Boolean} true(success) or false(failed)
-	*/
-	function sendMail(query_code){
-		var _success = false;
-		postAjax("/sendmail/"+query_code, {},
-			function(result, st, xhr) {
-				_success = true;
-			},
-			function(xhr, st, err) {
-				errorMessage("sendMail\n"+err.message+"\n"+xhr.responseText);
-			}
-		);
-		return _success;
 	}
 	/**
 	* セッションタイムアウトエラーを表示し、ログアウトする

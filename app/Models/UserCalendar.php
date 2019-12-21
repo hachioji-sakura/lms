@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\StudentParent;
 use App\Models\UserCalendarMember;
 use App\Models\Lecture;
+use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
@@ -100,15 +101,25 @@ EOT;
   {
     $search_words = explode(' ', $word);
     $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id where user_calendar_members um
+      user_calendars.remark like ?
+      OR user_calendars.id in (
+        select um.calendar_id from user_calendar_members um
         left join common.students s on s.user_id = um.user_id
         left join common.teachers t on t.user_id = um.user_id
         left join common.managers m on m.user_id = um.user_id
-        where s.name_last like '%%'
+        where
+          concat(s.name_last ,' ', s.name_first) like ?
+          OR concat(t.name_last ,' ', t.name_first) like ?
+          OR concat(m.name_last ,' ', m.name_first) like ?
+          OR concat(s.kana_last ,' ', s.kana_first) like ?
+          OR concat(t.kana_last ,' ', t.kana_first) like ?
+          OR concat(m.kana_last ,' ', m.kana_first) like ?
+       )
 EOT;
     $query = $query->where(function($query)use($search_words, $where_raw){
       foreach($search_words as $_search_word){
-        $query = $query->whereRaw($where_raw,[$_search_word]);
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhereRaw($where_raw,[$_like,$_like,$_like,$_like,$_like,$_like,$_like]);
       }
     });
     return $query;
@@ -119,13 +130,22 @@ EOT;
   {
     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
   }
+  public function scopeFindTeachingType($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'teaching_type', $vals, $is_not);
+  }
   public function scopeFindWorks($query, $vals, $is_not=false)
   {
     return $this->scopeFieldWhereIn($query, 'work', $vals, $is_not);
   }
   public function scopeFindPlaces($query, $vals, $is_not=false)
   {
-    return $this->scopeFieldWhereIn($query, 'place_floor_id', $vals, $is_not);
+    $place_floors = PlaceFloor::whereIn('place_id', $vals)->get();
+    $ids = [];
+    foreach($place_floors as $place_floor){
+      $ids[] = $place_floor->id;
+    }
+    return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
   public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
@@ -207,9 +227,20 @@ EOT;
     return $query;
   }
   public function get_access_member($user_id){
-    $user = User::where('id', $user_id)->first();
-    if(isset($user)) $user = $user->details();
     $ret = [];
+    if($user_id == 0){
+      //user_id 指定なし＝root扱い
+      $user = User::where('id', 1)->first();
+    }
+    else {
+      $user = User::where('id', $user_id)->first();
+    }
+    if(isset($user)) {
+      $user = $user->details();
+    }
+    else {
+      return $ret;
+    }
     if($user->role=='parent'){
       //保護者の場合、自分の子供のみアクセス可能
       foreach ($user->relation() as $relation){
@@ -353,32 +384,51 @@ EOT;
     if(!isset($this->work)) return "";
     return $this->get_attribute_name('work', $this->work);
   }
-  public function teaching_code(){
-    $_teaching_type = ['trial', 'regular', 'exchange', 'add' ];
-    if($this->is_teaching()){
-      if($this->trial_id > 0){
-        return $_teaching_type[0];
-      }
-      if(intval($this->user_calendar_setting_id) > 0){
-        return $_teaching_type[1];
-      }
-      if($this->exchanged_calendar_id > 0){
-        return $_teaching_type[2];
-      }
-      return $_teaching_type[3];
+  public function schedule_type_code(){
+    switch($this->work){
+      case 1:
+      case 2:
+      case 3:
+        return 'interview';
+      case 4:
+        return 'examination_director';
+      case 5:
+        return 'training';
+      case 6:
+      case 7:
+      case 8:
+        return 'school_lesson';
+      case 9:
+        return 'office_work';
+      case 10:
+        return 'season_school_lesson';
     }
     return "";
   }
-  public function teaching_name(){
-    $_code = $this->teaching_code();
-    $_teaching_names = ['trial' => '体験授業', 'regular' => '通常授業', 'exchange' => '振替授業', 'add' => '追加授業', ];
-    if(app()->getLocale()=='en'){
-      return $_code;
-    }
-    if(isset($_teaching_names[$_code])){
-      return $_teaching_names[$_code];
+  public function schedule_type_name(){
+    $code = $this->schedule_type_code();
+    return __('labels.'.$code);
+  }
+  public function get_teaching_type(){
+    if($this->work==10) return 'season';
+    if($this->work==5) return 'training';
+
+    if($this->is_teaching()){
+      if($this->trial_id > 0){
+        return 'trial';
+      }
+      if(intval($this->user_calendar_setting_id) > 0){
+        return 'regular';
+      }
+      if($this->exchanged_calendar_id > 0){
+        return 'exchange';
+      }
+      return 'add';
     }
     return "";
+  }
+  public function teaching_type_name(){
+    return $this->get_attribute_name('teaching_type', $this->teaching_type);
   }
   public function status_name(){
     $status_name = "";
@@ -486,14 +536,15 @@ EOT;
   public function details($user_id=0){
     $item = $this;
     $item['status_name'] = $this->status_name();
-    $item['teaching_code'] = $this->teaching_code();
-    $item['teaching_name'] = $this->teaching_name();
+    $item['teaching_name'] = $this->teaching_type_name();
+    $item['schedule_type_code'] = $this->schedule_type_code();
+    $item['schedule_type_name'] = $this->schedule_type_name();
     $item['place_floor_name'] = "";
     if(isset($this->place_floor)){
       $item['place_floor_name'] = $this->place_floor->name();
     }
     $item['work_name'] = $this->work();
-    $item['teaching_name'] = $this->teaching_name();
+    $item['teaching_name'] = $this->teaching_type_name();
 
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
@@ -535,14 +586,12 @@ EOT;
         $managers[] = $member;
       }
     }
-    if($user_id > 0){
-      //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
-      foreach($this->get_access_member($user_id) as $member){
-        $_member = $member->user->details('students');
-        if($_member->role === 'student'){
-          $student_name.=$_member['name'].',';
-          $students[] = $member;
-        }
+    //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
+    foreach($this->get_access_member($user_id) as $member){
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+        $students[] = $member;
       }
     }
 
@@ -614,6 +663,9 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => 'new'
     ]);
+
+    $teaching_type = $calendar->get_teaching_type();
+    $calendar->update(['teaching_type' => $teaching_type]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     //新規登録時に変更メールを送らない

@@ -33,21 +33,31 @@ return [
     */
 
     'channels' => [
+        // 追加したチャンネル [apidebug]
+        'importlog' => [
+            'driver'     => 'single',
+            'path'       => storage_path('logs/importlog.log'),
+            'level'      => 'warning',
+            'days'       => 30,
+            'permission' => 0666,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
+            'level' => 'info',
         ],
 
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => 'info',
         ],
 
         'daily' => [
-            'driver' => 'daily',
+            'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
+            'level' => 'info',
             'days' => 7,
         ],
 
@@ -69,12 +79,12 @@ return [
 
         'syslog' => [
             'driver' => 'syslog',
-            'level' => 'debug',
+            'level' => 'warning',
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
-            'level' => 'debug',
+            'level' => 'warning',
         ],
     ],
 
