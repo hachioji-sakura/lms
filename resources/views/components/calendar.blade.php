@@ -185,6 +185,12 @@
     }
     @endif
 
+    @if($domain=='managers' || $domain=='teachers')
+    var _right_button = "month,agendaWeek,agendaDay,filter next";
+    @else
+    var _right_button = "month,agendaWeek,agendaDay next";
+    @endif
+
 
     var calendar_option = {
       customButtons:{
@@ -207,7 +213,7 @@
         @else
           left  : 'prev today',
           center: 'title',
-          right : 'month,agendaWeek,agendaDay,filter next'
+          right : _right_button
         @endif
       },
       columnFormat: {
@@ -390,7 +396,6 @@
           @component('calendars.filter', ['domain' => $domain, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter' => $filter])
           @endcomponent
 
-
           <div class="col-12 col-md-6 mb-2">
             <div class="form-group">
               <label for="label_setting" class="w-100">
@@ -433,7 +438,6 @@
               </label>
             </div>
           </div>
-
         </div>
         <div class="row">
           <div class="col-12 mt-2 text-right">

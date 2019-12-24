@@ -534,7 +534,13 @@ class UserCalendarController extends MilestoneController
       \Log::warning("is_all_user:".$request->get('is_all_user'));
 
       if($request->get('is_all_user')==1){
-        $user_id = 0;
+        if($this->is_student_or_parent($param['user']->role)==false){
+          $user_id = 0;
+        }
+        else {
+          //講師・事務のみカレンダーの閲覧可能
+          return $this->bad_request();
+        }
       }
 
       if($user_id > 0){
