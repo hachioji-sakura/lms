@@ -18,7 +18,7 @@
 <div class="my-2 row hr-1 bd-gray">
   <h6 class="col-12">
     @component('auth.login.forget_link', []) @endcomponent
-    <a href="/login" class="small mr-2 float-right "><i class="fa fa-user-tie mr-1"></i>
+    <a href="/login" class="small mr-2 float-right "><i class="fa fa-sign-in-alt mr-1"></i>
       {{__('labels.to_login')}}
     </a>
   </h6>

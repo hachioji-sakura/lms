@@ -38,25 +38,7 @@
     @endforeach
   </div>
 </div>
-{{--
-<div class="col-12 mb-2">
-  <label for="search_work" class="w-100">
-    {{__('labels.body')}}
-  </label>
-  <div class="w-100">
-    @foreach($attributes['work'] as $index=>$name)
-      <label class="mx-2">
-      <input type="checkbox" value="{{$index}}" name="search_work[]" class="icheck flat-green"
-        @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
-        checked
-        @endif
-        >{{$name}}
-      </label>
-    @endforeach
-  </div>
-</div>
---}}
-<div class="col-6 mb-2">
+<div class="col-4 mb-2">
   <label for="search_status" class="w-100">
     {{__('labels.status')}}
   </label>
@@ -74,7 +56,34 @@
     </select>
   </div>
 </div>
-<div class="col-6 mb-2">
+<div class="col-4 mb-2">
+  <label for="search_work" class="w-100">
+    {{__('labels.body')}}
+  </label>
+  <div class="w-100">
+    <select name="search_work[]" class="form-control select2" width=100% placeholder="作業" multiple="multiple" >
+      @foreach($attributes['work'] as $index=>$name)
+        <option value="{{$index}}"
+        @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+        selected
+        @endif
+        >{{$name}}</option>
+      @endforeach
+    </select>
+    {{--
+    @foreach($attributes['work'] as $index=>$name)
+      <label class="mx-2">
+      <input type="checkbox" value="{{$index}}" name="search_work[]" class="icheck flat-green"
+        @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+        checked
+        @endif
+        >{{$name}}
+      </label>
+    @endforeach
+    --}}
+  </div>
+</div>
+<div class="col-4 mb-2">
     <label for="search_word" class="w-100">
       {{__('labels.search_keyword')}}
     </label>
