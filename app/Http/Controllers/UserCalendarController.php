@@ -596,8 +596,6 @@ class UserCalendarController extends MilestoneController
         if(!$item->is_english_talk_lesson()) continue;
         if($request->has('english_teacher')){
           if($item->user->has_tag('english_teacher', $request->get('english_teacher'))==false){
-            echo 'user_id='.$item->user_id.'/';
-            echo $item->user->get_tag('english_teacher')['tag_value'].'<br>';
             continue;
           }
         }

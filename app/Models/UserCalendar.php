@@ -228,17 +228,16 @@ EOT;
   }
   public function get_access_member($user_id){
     $ret = [];
-    if($user_id == 0){
+    if($user_id < 2){
       //user_id 指定なし＝root扱い
       $user = User::where('id', 1)->first();
+      $user = $user->details("managers");
     }
     else {
       $user = User::where('id', $user_id)->first();
+      $user = $user->details("teachers");
     }
-    if(isset($user)) {
-      $user = $user->details();
-    }
-    else {
+    if(!isset($user)) {
       return $ret;
     }
     if($user->role=='parent'){
@@ -613,7 +612,7 @@ EOT;
     $item['start'] = $this->start_time;
     $item['end'] = $this->end_time;
     $item['total_status'] = $this->status;
-    
+
     return $item;
   }
   static public function get_holiday($day){
