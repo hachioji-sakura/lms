@@ -44,29 +44,34 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.total_status){
-              case "new":
-                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
-                break;
-              case "confirm":
-                break;
-              case "fix":
-                if(event.is_passed==true){
-                  base.showPage('dialog', "subDialog", "勤怠をつける", "/calendars/"+event.id+"/status_update/presence");
-                }
-                else{
-                  base.showPage('dialog', "subDialog", "休み連絡", "/calendars/"+event.id+"/status_update/lecture_cancel");
-                }
-                break;
-              case "rest":
-              case "cancel":
-              case "absence":
-              case "presence":
-              case "exchange":
-              default:
-                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
-                break;
-            }
+						if(event.work==9){
+	            switch(event.total_status){
+	              case "new":
+	                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
+	                break;
+	              case "confirm":
+	                break;
+	              case "fix":
+	                if(event.is_passed==true){
+	                  base.showPage('dialog', "subDialog", "勤怠をつける", "/calendars/"+event.id+"/status_update/presence");
+	                }
+	                else{
+	                  base.showPage('dialog', "subDialog", "休み連絡", "/calendars/"+event.id+"/status_update/lecture_cancel");
+	                }
+	                break;
+	              case "rest":
+	              case "cancel":
+	              case "absence":
+	              case "presence":
+	              case "exchange":
+	              default:
+	                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+	                break;
+	            }
+						}
+						else {
+							base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+						}
           },
           @endslot
         @endcomponent

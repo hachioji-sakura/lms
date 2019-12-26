@@ -428,23 +428,30 @@ class TeacherController extends StudentController
       ]);
       $from_date = $target_month.'-01';
       $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
+
       $calendars = $this->get_schedule([], $item->user_id, $from_date, $to_date);
       $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
       $calendars = $calendars["data"];
-      $enable_confirm = true; //確認ボタン押せる場合 = true
-      $is_checked = true; //すべて確認済みの場合 = true
-      foreach($calendars as $calendar){
-        if($calendar->is_last_status()===false){
-            $enable_confirm = false;
-        }
-        if($calendar->is_checked()===false){
-            $is_checked = false;
-        }
-        $calendar = $calendar->details();
+
+      //当月1日より、checked_atに日にちが入っている
+      $is_checked = false;
+      $check_calendars = $calendars->where('checked_at','>', $from_date);
+      if(count($check_calendars) == count($calendars)){
+        $is_checked=true;
       }
+
+      //未入力の予定＝最終ステータス以外
+      $enable_confirm = true; //確認ボタン押せる場合 = true
       if($param['user']->user_id !== $param['item']->user_id){
         $enable_confirm = false;
       }
+      else {
+        $unsolved_calendars = $calendars->whereNotIn('status', ['lecture_cancel', 'cancel', 'rest', 'presence', 'absence']);
+        if(count($unsolved_calendars) > 0){
+          $enable_confirm = false;
+        }
+      }
+
       $param["calendars"] = $calendars;
 
       $param['year'] = date('Y', strtotime($from_date));
@@ -455,7 +462,7 @@ class TeacherController extends StudentController
       $param['target_month'] = $target_month;
       $param['next_month'] = date("Y-m", strtotime("+1 month ".$from_date));
       $param['prev_month'] = date("Y-m", strtotime("-1 month ".$from_date));
-      echo strtotime('now')-$s;
+      //echo strtotime('now')-$s;
       return view($this->domain.'.'.$view, [
         'item' => $item,
       ])->with($param);

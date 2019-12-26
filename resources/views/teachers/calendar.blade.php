@@ -48,33 +48,39 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.total_status){
-              case "new":
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
-                break;
-              case "confirm":
-                //生徒へ再送
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
-                break;
-              case "fix":
-                if(event.is_passed==true){
-                  //過ぎていたら出欠
-                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
-                }
-                else{
-                  //過ぎていないなら休み取り消し
-                  base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
-                }
-                break;
-              case "absence":
-              case "presence":
-                base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/calendars/"+event.id+"/status_update/presence");
-                break;
-              case "rest":
-              case "cancel":
-              default:
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
-                break;
+            if(event.work==5){
+              //演習の場合は操作不要
+              base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
+            }
+            else {
+              switch(event.total_status){
+                case "new":
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
+                  break;
+                case "confirm":
+                  //生徒へ再送
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
+                  break;
+                case "fix":
+                  if(event.is_passed==true){
+                    //過ぎていたら出欠
+                    base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
+                  }
+                  else{
+                    //過ぎていないなら休み取り消し
+                    base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
+                  }
+                  break;
+                case "absence":
+                case "presence":
+                  base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/calendars/"+event.id+"/status_update/presence");
+                  break;
+                case "rest":
+                case "cancel":
+                default:
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
+                  break;
+              }
             }
           },
           @endslot
