@@ -69,7 +69,7 @@ function get_exchange_calendar(){
       追加タイプ
     </label>
     <span title="{{$item->user_calendar_setting_id}}">
-      {{$item->teaching_name()}}
+      {{$item->teaching_type_name()}}
     </span>
   </div>
 </div>

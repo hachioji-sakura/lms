@@ -2,7 +2,7 @@
 $item = $item->details(1);
  ?>
  @if($item->is_management()==false)
-■{{$item->teaching_name()}}
+■{{$item->teaching_type_name()}}
 @else
 ■{{$item['work_name']}}
 @endif
