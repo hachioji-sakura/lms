@@ -25,7 +25,8 @@
 		confirmMessage : confirmMessage,
 		alertMessage : alertMessage,
 		errorMessage : errorMessage,
-		setFileForm : setFileForm
+		setFileForm : setFileForm,
+		allChecked: allChecked,
 	};
 
 	/**
@@ -843,7 +844,22 @@
 		});
 		*/
 	}
-
+	function allChecked(element, formId){
+		var all_checked = $(element).prop('checked');
+		$('#'+formId+' input[type="checkbox"]').each(function(){
+			var item_checked = $(this).prop('checked');
+			if( all_checked != item_checked){
+				$(this).prop('checked', all_checked);
+				if(all_checked==true){
+					$(this).iCheck('check');
+				}
+				else {
+					$(this).iCheck('uncheck');
+				}
+				$(this).iCheck('update');
+			}
+		});
+	}
 	root.dom = $.extend({}, root.dom, public_method);
 
 })(this);

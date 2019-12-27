@@ -107,15 +107,21 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       //予定の指定
-      if($request->has('schedule_method') && $request->has('lesson_week') && $request->has('start_hours')
-          && $request->has('start_minutes') && $request->has('course_minutes')){
+      if($request->has('schedule_method') && $request->has('lesson_week')){
         $form['schedule_method'] = $request->get('schedule_method');
         $form['lesson_week'] = $request->get('lesson_week');
+      }
+      if($request->has('start_hours') && $request->has('start_minutes')){
         $form['start_hours'] = $request->get('start_hours');
         $form['start_minutes'] = $request->get('start_minutes');
-        $form['course_minutes'] = $request->get('course_minutes');
         $form['from_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['start_hours'].':'.$form['start_minutes']));
+      }
+      if($request->has('course_minutes')){
+        $form['course_minutes'] = $request->get('course_minutes');
         $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+      }
+      if($request->has('end_hours') && $request->has('end_minutes')){
+        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
       $form['charge_subject'] = $request->get('charge_subject');
       $form['english_talk_lesson'] = $request->get('english_talk_lesson');
@@ -124,37 +130,102 @@ class UserCalendarSettingController extends UserCalendarController
       $form['lesson'] = $request->get('lesson');
       $form['course_type'] = $request->get('course_type');
       $form['place'] = $request->get('place');
+
       //生徒と講師の情報が予定追加時には必須としている
       //講師の指定
       if($request->has('teacher_id')){
         $form['teacher_id'] = $request->get('teacher_id');
+        $teacher = Teacher::where('id', $form['teacher_id'])->first();
+        if(!isset($teacher)){
+          //講師が存在しない
+          abort(400, "存在しない講師");
+        }
+        $form['user_id'] = $teacher->user_id;
       }
-      $teacher = Teacher::where('id', $form['teacher_id'])->first();
-      if(!isset($teacher)){
-        //講師が存在しない
-        abort(400, "存在しない講師");
-      }
-      $form['user_id'] = $teacher->user_id;
 
       //生徒の指定
       if($request->has('student_id')){
         $form['student_id'] = $request->get('student_id');
-      }
-      else {
-        abort(400, "生徒指定なし");
-      }
-      $form['students'] = [];
-      foreach($form['student_id'] as $student_id){
-        $student = Student::where('id', $student_id)->first();
-        if(!isset($student)){
-          //生徒が存在しない
-          abort(400, "存在しない生徒");
+        $form['students'] = [];
+        foreach($form['student_id'] as $student_id){
+          $student = Student::where('id', $student_id)->first();
+          if(!isset($student)){
+            //生徒が存在しない
+            abort(400, "存在しない生徒");
+          }
+          $form['students'][] = $student;
         }
-        $form['students'][] = $student;
       }
 
       return $form;
     }
+    public function update_form(Request $request, $id=0){
+      $user = $this->login_details($request);
+      $form = $request->all();
+      $form['create_user_id'] = $user->user_id;
+      if($request->has('lesson_week_count')){
+        $form['lesson_week_count'] = $request->get('lesson_week_count');
+      }
+      if(empty($form['lesson_week_count'])){
+        $form['lesson_week_count'] = 0;
+      }
+      $form['remark'] = "";
+      if($request->has('remark')){
+        $form['remark'] = $request->get('remark');
+      }
+
+      //予定の指定
+      if($request->has('schedule_method') && $request->has('lesson_week')){
+        $form['schedule_method'] = $request->get('schedule_method');
+        $form['lesson_week'] = $request->get('lesson_week');
+      }
+      if($request->has('start_hours') && $request->has('start_minutes')){
+        $form['start_hours'] = $request->get('start_hours');
+        $form['start_minutes'] = $request->get('start_minutes');
+        $form['from_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['start_hours'].':'.$form['start_minutes']));
+      }
+      if($request->has('course_minutes')){
+        $form['course_minutes'] = $request->get('course_minutes');
+        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+      }
+      if($request->has('end_hours') && $request->has('end_minutes')){
+        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
+      }
+      $form['charge_subject'] = $request->get('charge_subject');
+      $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+      $form['piano_lesson'] = $request->get('piano_lesson');
+      $form['kids_lesson'] = $request->get('kids_lesson');
+      $form['lesson'] = $request->get('lesson');
+      $form['course_type'] = $request->get('course_type');
+      $form['place'] = $request->get('place');
+
+      if($request->has('teacher_id')){
+        //講師の指定
+        $form['teacher_id'] = $request->get('teacher_id');
+        $teacher = Teacher::where('id', $form['teacher_id'])->first();
+        if(!isset($teacher)){
+          //講師が存在しない
+          abort(400, "存在しない講師");
+        }
+        $form['user_id'] = $teacher->user_id;
+      }
+
+      if($request->has('student_id')){
+        //生徒の指定
+        $form['student_id'] = $request->get('student_id');
+        $form['students'] = [];
+        foreach($form['student_id'] as $student_id){
+          $student = Student::where('id', $student_id)->first();
+          if(!isset($student)){
+            //生徒が存在しない
+            abort(400, "存在しない生徒");
+          }
+          $form['students'][] = $student;
+        }
+      }
+      return $form;
+    }
+
     public function search(Request $request, $user_id=0)
     {
       $items = $this->model();
@@ -250,22 +321,10 @@ class UserCalendarSettingController extends UserCalendarController
       if($this->is_manager($user->role)===false && $this->is_teacher($user->role)===false){
         abort(403, 'このページにはアクセスできません(3)');
       }
-      //$user = User::where('id', 607)->first()->details();
-      $ret = [
-        'domain' => $this->domain,
-        'domain_name' => __('labels.'.$this->domain),
-        'teacher_id' => $request->teacher_id,
-        'user' => $user,
-        'trial_id' => $request->trial_id,
-        '_page' => $request->get('_page'),
-        '_line' => $request->get('_line'),
-        'attributes' => $this->attributes(),
-      ];
-      $ret['filter'] = [
-        'search_work' => $request->search_work,
-        'search_week' => $request->search_week,
-        'search_place' => $request->search_place,
-      ];
+      $ret = $this->get_common_param($request);
+      if($request->has('trial_id')){
+        $ret['trial_id'] = $request->get('trial_id');
+      }
 
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id',$id)->first();
@@ -318,17 +377,29 @@ class UserCalendarSettingController extends UserCalendarController
         'action' => $request->get('action')
       ])->with($param);
     }
+    /**
+     * 詳細画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function to_calendar_data(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['item']->setting_to_calendar($request->start_date, $request->end_date, $range_month=1, $month_week_count=5);
+      return view($this->domain.'.to_calendar', [
+        'action' => $request->get('action')
+      ])->with($param);
+    }
+
     public function _update(Request $request, $id)
     {
       return $res = $this->transaction($request, function() use ($request, $id){
-        $form = $this->create_form($request);
+        $form = $this->update_form($request);
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
         $setting = UserCalendarSetting::where('id', $id)->first();
         $res = $setting->change($form);
-        if($res === null){
-          return $this->error_response('Query Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
-        }
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->delete();

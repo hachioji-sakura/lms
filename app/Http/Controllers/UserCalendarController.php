@@ -297,32 +297,10 @@ class UserCalendarController extends MilestoneController
    */
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    //$user = User::where('id', 607)->first()->details();
-    $ret = [
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'login_user' => $user,
-      'remind' => false,
-      'token' => $this->create_token(1728000),    //token期限＝20日
-      'teacher_id' => $request->teacher_id,
-      'student_id' => $request->student_id,
-      'search_word'=>$request->search_word,
-      'access_key' => $request->key,
-      'cancel_reason' => $request->cancel_reason,
-      'rest_reason' => $request->rest_reason,
-      '_page' => $request->get('_page'),
-      '_line' => $request->get('_line'),
-      '_origin' => $request->get('_origin'),
-      'attributes' => $this->attributes(),
-      'is_exchange_add' => false,
-    ];
-    $ret['filter'] = [
-      'is_all_user'=>$request->is_all_user,
-      'search_status'=>$request->status,
-      'search_work' => $request->search_work,
-      'search_place' => $request->search_place,
-    ];
+    $ret = $this->get_common_param($request);
+    $ret['remind'] = false;
+    $ret['token'] = false;
+    $ret['is_exchange_add'] = false;
     $ret['is_proxy'] = false;
     if($request->has('is_proxy')){
       $ret['is_proxy'] = true;
@@ -670,48 +648,50 @@ class UserCalendarController extends MilestoneController
      */
     public function _search_scope(Request $request, $items)
     {
+      $form = $request->all();
+
       //ID 検索
-      if(isset($request->id)){
-        $items = $items->where('id',$request->id);
+      if(isset($form['id'])){
+        $items = $items->where('id',$form['id']);
       }
       //ステータス 検索
-      if(isset($request->search_status)){
-        if(gettype($request->search_status) == "array") $items = $items->findStatuses($request->search_status);
-        else $items = $items->findStatuses(explode(',', $request->search_status.','));
+      if(isset($form['search_status'])){
+        if(gettype($form['search_status']) == "array") $items = $items->findStatuses($form['search_status']);
+        else $items = $items->findStatuses(explode(',', $form['search_status'].','));
       }
       //ワーク 検索
-      if(isset($request->search_work)){
+      if(isset($form['search_work'])){
         $_param = "";
-        if(gettype($request->search_work) == "array") $_param  = $request->search_work;
-        else $_param = explode(',', $request->search_work.',');
+        if(gettype($form['search_work']) == "array") $_param  = $form['search_work'];
+        else $_param = explode(',', $form['search_work'].',');
         $items = $items->findWorks($_param);
       }
       //授業タイプ 検索
-      if(isset($request->teaching_type)){
+      if(isset($form['teaching_type'])){
         $_param = "";
-        if(gettype($request->teaching_type) == "array") $_param  = $request->teaching_type;
-        else $_param = explode(',', $request->teaching_type.',');
+        if(gettype($form['teaching_type']) == "array") $_param  = $form['teaching_type'];
+        else $_param = explode(',', $form['teaching_type'].',');
         $items = $items->findTeachingType($_param);
       }
       //場所 検索
-      if(isset($request->search_place)){
+      if(isset($form['search_place'])){
         $_param = "";
-        if(gettype($request->search_place) == "array") $_param  = $request->search_place;
-        else $_param = explode(',', $request->search_place.',');
+        if(gettype($form['search_place']) == "array") $_param  = $form['search_place'];
+        else $_param = explode(',', $form['search_place'].',');
         $items = $items->findPlaces($_param);
       }
       //講師ID
-      if(isset($request->teacher_id)){
-        $teacher = Teacher::where('id',$request->teacher_id)->first();
+      if(isset($form['teacher_id'])){
+        $teacher = Teacher::where('id',$form['teacher_id'])->first();
         if(isset($teacher)) $items = $items->findUser($teacher->user_id);
       }
       //生徒ID
-      if(isset($request->student_id)){
-        $student = Student::where('id',$request->student_id)->first();
+      if(isset($form['student_id'])){
+        $student = Student::where('id',$form['student_id'])->first();
         if(isset($student)) {
           //振替元対象
-          if(isset($request->exchange_target) && isset($request->lesson)){
-            $items = $items->findExchangeTarget($student->user_id, $request->lesson);
+          if(isset($form['exchange_target']) && isset($form['lesson'])){
+            $items = $items->findExchangeTarget($student->user_id, $form['lesson']);
           }
           else {
             $items = $items->findUser($student->user_id);
@@ -721,17 +701,18 @@ class UserCalendarController extends MilestoneController
       else {
 
       }
-      if(isset($request->exchange_lesson) && $request->exchange_lesson==1){
+      if(isset($form['exchange_lesson']) && $form['exchange_lesson']==1){
         $items = $items->where('exchanged_calendar_id','>', 0);
       }
-      if(isset($request->trial_lesson) && $request->trial_lesson==1){
+      if(isset($form['trial_lesson']) && $form['trial_lesson']==1){
         $items = $items->where('trial_id','>', 0);
       }
 
       //更新取得
-      if(isset($request->update)){
-        $items = $items->where('updated_at','>',$request->update);
+      if(isset($form['update'])){
+        $items = $items->where('updated_at','>',$form['update']);
       }
+
       //日付検索
       $from_date = "";
       $to_date = "";
@@ -748,16 +729,6 @@ class UserCalendarController extends MilestoneController
       }
       //検索ワード
       if(isset($request->search_word)){
-        /*
-        $search_words = explode(' ', $request->search_word);
-        $items = $items->where(function($items)use($search_words){
-          foreach($search_words as $_search_word){
-            if(empty($_search_word)) continue;
-            $_like = '%'.$_search_word.'%';
-            $items->orWhere('remark','like',$_like);
-          }
-        });
-        */
         $items = $items->searchWord($request->search_word);
       }
 
