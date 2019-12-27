@@ -1265,7 +1265,7 @@ class ImportController extends UserController
         //参加者が異なるのでこの設定ではない
         if($is_member===false) break;
 
-        $add_calendar_date = $setting->get_add_calendar_date($start_date,1);
+        $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
         if(isset($add_calendar_date[$item['ymd']])){
           $setting_id = $setting->id;
           break;

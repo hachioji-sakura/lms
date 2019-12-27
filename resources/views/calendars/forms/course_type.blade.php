@@ -16,10 +16,11 @@
       <div class="form-check" id="course_type_form_single">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_single" value="single" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'single'))
-            checked disabled
+            checked 
           @else(!isset($_edit) || $_edit!=true)
             checked
           @endif
+          @if(isset($_edit) && $_edit==true) disabled @endif
           >
           <label class="form-check-label" for="course_type_single">
             {{__('labels.one_to_one')}}
@@ -28,8 +29,9 @@
       <div class="form-check ml-2" id="course_type_form_group">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_group" value="group" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'group'))
-          checked disabled
+          checked
           @endif
+          @if(isset($_edit) && $_edit==true) disabled @endif
           >
           <label class="form-check-label" for="course_type_group">
             {{__('labels.group')}}
@@ -38,8 +40,9 @@
       <div class="form-check ml-2" id="course_type_form_family">
           <input class="form-check-input icheck flat-green" type="radio" name="course_type" id="course_type_family" value="family" required="true" onChange="course_type_change()"
           @if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'family'))
-          checked disabled
+          checked
           @endif
+          @if(isset($_edit) && $_edit==true) disabled @endif
           >
           <label class="form-check-label" for="course_type_family">
             {{__('labels.family')}}

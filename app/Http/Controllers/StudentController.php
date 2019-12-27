@@ -52,59 +52,6 @@ class StudentController extends UserController
    return view($this->domain.'.tiles', $_table)
      ->with($param);
   }
-  public function get_common_param(Request $request){
-    $user = $this->login_details($request);
-    if(empty($user)){
-      //ログインしていない
-      abort(419);
-    }
-    $ret = [
-       'domain' => $this->domain,
-       'domain_name' => __('labels.'.$this->domain),
-       'user' => $user,
-       'mode'=>$request->mode,
-       'search_word'=>$request->get('search_word'),
-       '_status' => $request->get('status'),
-       '_page' => $request->get('_page'),
-       '_line' => $request->get('_line'),
-       'list' => $request->get('list'),
-       'list_date' => $request->get('list_date'),
-       'attributes' => $this->attributes(),
-    ];
-    if(empty($ret['list_date'])){
-      if($ret['list']=='month'){
-        $ret['list_date'] = date('Y-m-1');
-      }
-      else if($ret['list']=='month'){
-        $ret['list_date'] = date('Y-m-d');
-      }
-    }
-    $ret['filter'] = [
-      'comment_filter' => [
-        'is_checked_only' => $request->is_checked_only,
-        'is_unchecked_only' => $request->is_unchecked_only,
-        'search_comment_type'=>$request->search_comment_type,
-      ],
-      'ask_filter' => [
-        'search_type' => $request->search_type,
-      ],
-      'calendar_filter' => [
-        'search_week'=>$request->search_week,
-        'search_work' => $request->search_work,
-        'search_place' => $request->search_place,
-        'is_all_user' => $request->is_all_user,
-      ],
-      'sort' => [
-        'is_asc'=>$request->is_asc,
-        'is_desc'=>$request->is_desc,
-      ],
-      'search_keyword' => $request->search_keyword,
-    ];
-
-    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-    if(empty($ret['_page'])) $ret['_page'] = 0;
-    return $ret;
-  }
   /**
    * 共通パラメータ取得
    *

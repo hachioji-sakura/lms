@@ -1,30 +1,40 @@
 @section('first_form')
 <div class="row">
-  <div class="col-12 bg-info p-2 pl-4 mb-4">
-    <i class="fa fa-clock mr-1"></i>
-    {{__('labels.base')}}{{__('labels.info')}}
-  </div>
-  @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
-  @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+  @if($item->work!=9)
+    @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+    @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
+    @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
+    @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+  @else
   @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
   @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
-  @component('calendar_settings.forms.select_time', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'calendar'=>$item]) @endcomponent
-  @component('calendars.forms.select_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
-  {{--
+    @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+    <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
+      <div class="form-group">
+        <label for="remark" class="w-100">
+        {{__('labels.remark')}}
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        </label>
+        <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
+      </div>
+    </div>
+  @endif
+
   @component('calendar_settings.forms.select_enable_date', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
-  --}}
 </div>
 @endsection
 @section('second_form')
 <div class="row">
-  <div class="col-12 bg-info p-2 pl-4 mb-4">
-    <i class="fa fa-user-graduate mr-1"></i>
-    {{__('labels.students')}}{{__('labels.info')}}
-  </div>
-  @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
-  @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
-  @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+  @if($item->work!=9)
+    @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$item->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+    @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+  @endif
 </div>
 @endsection
 @section('third_form')
@@ -33,7 +43,9 @@
     <i class="fa fa-chalkboard-teacher mr-1"></i>
     {{__('labels.school_lesson')}}{{__('labels.info')}}
   </div>
-  @component('calendars.forms.charge_subject', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'), 'attributes' => $attributes]); @endcomponent
+  @if($item->work!=9)
+    @component('calendars.forms.charge_subject', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$item->user->details('teachers'), 'attributes' => $attributes]); @endcomponent
+  @endif
 </div>
 @endsection
 @section('confirm_form')
@@ -46,10 +58,13 @@
       $form_data = ["teacher_name" => __('labels.teachers'),
                     "schedule_name"=>__('labels.week_day'),
                     "place_floor_id_name"=>__('labels.place'),
+                    "start_time"=>__('labels.start_time'),
                     "course_minutes_name"=>__('labels.lesson_time'),
                     "course_type_name"=>__('labels.lesson_type'),
                     "student_name"=>__('labels.students'),
-                    "subject_name" => __('labels.subject')];
+                    "subject_name" => __('labels.subject'),
+                    "enable_dulation" => "有効期間",
+                  ];
     ?>
     @foreach($form_data as $key => $name)
     <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
