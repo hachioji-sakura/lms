@@ -437,7 +437,7 @@
 			);
 			return ret;
 		};
-		if(request['loading']==false){
+		if(_request['loading']==false){
 			_callback();
 		}
 		else {
@@ -484,7 +484,7 @@
 			);
 			return ret;
 		};
-		if(request['loading']==false){
+		if(_request['loading']==false){
 			_callback();
 		}
 		else {
@@ -532,7 +532,7 @@
 				}
 			});
 		};
-		if(request['loading']==false){
+		if(_request['loading']==false){
 			_callback();
 		}
 		else {
@@ -585,7 +585,7 @@
 				}
 			);
 		};
-		if(request['loading']==false){
+		if(_request['loading']==false){
 			_callback();
 		}
 		else {
