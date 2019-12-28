@@ -1,3 +1,20 @@
+@if(isset($_edit) && $_edit==true)
+<div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
+  <div class="form-group">
+    <label for="title" class="w-100">
+      {{__('labels.students')}}
+    </label>
+    <span>{{$item['student_name']}}</span>
+    @foreach($item->get_students() as $member)
+      <input type="hidden" name="student_id[]"
+        value="{{$member->user->details('students')->id}}"
+        grade="{{$member->user->details('students')->tag_value('grade')}}"
+        >
+    @endforeach
+  </div>
+  <input type="hidden" name="student_name" value="{{$item['student_name']}}">
+</div>
+@else
 <div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">
@@ -29,7 +46,7 @@ function get_charge_students(){
   var lesson = ($('input[name=lesson]').val())|0;
   console.log("get_charge_students");
   //対象の生徒を取得
-  service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, {'loading': false},
+  service.getAjax(false, '/teachers/'+teacher_id+'/students?lesson='+lesson, null,
     function(result, st, xhr) {
       if(result['status']===200){
         var c = 0;
@@ -61,6 +78,7 @@ function get_charge_students(){
           $("#select_student_none").show();
         }
 
+        course_type_change();
         var select_student_id_form = $("input[name='select_student_id[]']");
         var select_student_ids = [];
         if(select_student_id_form.length > 0){
@@ -77,3 +95,4 @@ function get_charge_students(){
   );
 }
 </script>
+@endif

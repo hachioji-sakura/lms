@@ -71,7 +71,7 @@ class UserCalendarSettingController extends UserCalendarController
             'size' => 6,
           ],
           'user_name' => [
-            'label' => __('labels.charge_user'),
+            'label' => __('labels.teachers'),
             'size' => 6,
           ],
           'subject' => [
@@ -79,7 +79,7 @@ class UserCalendarSettingController extends UserCalendarController
             'size' => 12,
           ],
           'enable_date' => [
-            'label' => '設定有効日',
+            'label' => '設定有効期間',
             'size' => 12,
           ],
         ];
@@ -378,7 +378,7 @@ class UserCalendarSettingController extends UserCalendarController
       ])->with($param);
     }
     /**
-     * 詳細画面表示
+     * 設定により登録される日付範囲を取得
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -386,10 +386,17 @@ class UserCalendarSettingController extends UserCalendarController
     public function to_calendar_data(Request $request, $id)
     {
       $param = $this->get_param($request, $id);
-      $param['item']->setting_to_calendar($request->start_date, $request->end_date, $range_month=1, $month_week_count=5);
-      return view($this->domain.'.to_calendar', [
-        'action' => $request->get('action')
-      ])->with($param);
+      if($param['user']->role !== 'manager'){
+        return $this->forbidden();
+      }
+      if($param['user']->role !== 'manager'){
+        return $this->forbidden();
+      }
+      if(!$request->has('start_date') || !$request->has('end_date')){
+        return $this->bad_request();
+      }
+      $items = $param['item']->get_add_calendar_date($request->start_date, $request->end_date, $range_month=1, $month_week_count=5);
+      return $this->api_response(200, '', '', $items);
     }
 
     public function _update(Request $request, $id)

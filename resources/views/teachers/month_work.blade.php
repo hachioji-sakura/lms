@@ -20,7 +20,7 @@
                 <ul class="pagination pagination-sm m-0">
                   <li class="page-item">
                     <a class="page-link" href="{{sprintf('/%s/%d/month_work/%s', $domain, $item->id, $prev_month)}}">
-                      <i class="fa fa-chevron-left mx-1"></i>
+                      <i class="fa fa-chevron-left ml-1"></i>
                       <span class="d-none d-sm-inline-block">
                         {{__('labels.year_month', ['year'=>date('Y',strtotime($prev_month.'-01')), 'month' => date('m',strtotime($prev_month.'-01'))])}}
                       </span>
@@ -28,12 +28,12 @@
                   </li>
                 </ul>
               </div>
-              <div class="col-6 text-center">
+              <div class="col-6 text-center p-0">
                 <h3 class="card-title" id="charge_students">
-                  {{__('labels.year_month', ['year'=>$year, 'month' => $month])}}
-                  {{__('labels.work_record')}}
+                  {{__('labels.year_month', ['year'=>$year, 'month' => $month])}}{{__('labels.work_record')}}
                   @if(date('Y-m')==$target_month)
-                  <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm mx-2" scroll=true>
+                  <br>
+                  <a href="#{{date("Ymd")}}" class="btn btn-default btn-sm" scroll=true>
                     {{__('labels.calendar_button_today')}}
                   </a>
                   @endif
@@ -143,7 +143,7 @@
                     </span>
                     @endif
                   </div>
-                  <div class="col-12 col-lg-4 col-md-4">
+                  <div class="col-12 col-lg-4 col-md-4 text-right p-2">
                     @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
                     @endcomponent
                   </div>

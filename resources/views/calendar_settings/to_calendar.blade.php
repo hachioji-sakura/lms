@@ -6,18 +6,24 @@
     <div id="calendar_settings_to_calendar" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('first_form')
+          @yield('setting_form')
+          @yield('input_form')
           <div class="row">
             <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                {{__('labels.next_button')}}
-                <i class="fa fa-arrow-circle-right ml-1"></i>
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="to_calendar_create">
+                  {{__('labels.add_button')}}
+                  <i class="fa fa-caret-right ml-1"></i>
+                </button>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                {{__('labels.back_button')}}
               </a>
             </div>
           </div>
         </div>
         <div class="carousel-item">
-          @yield('second_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -98,7 +104,6 @@ $(function(){
       $('#calendar_settings_to_calendar').carousel('next');
       $('#calendar_settings_to_calendar').carousel({ interval : false});
     }
-
     $("ol.step li").removeClass("is-current");
     if($(this).hasClass('btn-confirm')){
       base.pageSettinged("confirm_form", form_data_adjust(form_data));
@@ -128,7 +133,6 @@ $(function(){
 
     var _t = $('input[name=teacher_id]').attr("alt");
     form_data["teacher_name"] = _t;
-
 
     var _snames = "";
     $('select[name="student_id[]"] option:selected').each(function(){

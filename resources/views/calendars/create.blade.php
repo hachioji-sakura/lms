@@ -161,12 +161,13 @@ $(function(){
     }
 
     var _snames = "";
-    $('select[name="student_id[]"] option:selected').each(function(){
-      var _sname = $(this).text().trim();
-      _snames+=_sname+"<br>";
-    });
-    form_data["student_name"] = _snames;
-
+    if($('select[name="student_id[]"] option:selected').length > 0){
+      $('select[name="student_id[]"] option:selected').each(function(){
+        var _sname = $(this).text().trim();
+        _snames+=_sname+"<br>";
+      });
+      form_data["student_name"] = _snames;
+    }
     var _names = ["place_floor_id", "student_group", "work"];
     $.each(_names, function(index, value) {
       if(util.isEmpty(form_data[value+"_name"])){

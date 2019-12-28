@@ -332,6 +332,7 @@
 
 		dateformat: function(val, template){
 			var val = val.replace_all('/', '');
+			val = val.replace_all('-', '');
 			var y = val.substring(0,4);
 			var m = val.substring(4,6);
 			var d = val.substring(6,8);

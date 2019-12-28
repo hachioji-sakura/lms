@@ -34,15 +34,15 @@ $(function(){
 <script src="{{asset('js/lib/inflate.js')}}"></script>
 <script src="{{asset('js/lib/deflate.js')}}"></script>
 <script src="{{asset('js/lib/timsort.js')}}"></script>
-<script src="{{asset('js/base/util.js')}}"></script>
+<script src="{{asset('js/base/util.js?v=1')}}"></script>
 <script src="{{asset('js/base/cardTable.js')}}"></script>
 <script src="{{asset('js/base/listTable.js')}}"></script>
 <script src="{{asset('js/base/fileUI.js')}}"></script>
 <script src="{{asset('js/base/dom.js?v=1')}}"></script>
-<script src="{{asset('js/base/service.js?v=2')}}"></script>
+<script src="{{asset('js/base/service.js?v=3')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
 <script src="{{asset('js/base/translate.js')}}"></script>
-<script src="{{asset('js/base/base.js')}}"></script>
+<script src="{{asset('js/base/base.js?v=3s')}}"></script>
 </body>
 <script>
 $(function(){
