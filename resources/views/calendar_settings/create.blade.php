@@ -22,12 +22,21 @@
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
+            @if($item->work==9)
+            <div class="col-12 mb-1">
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                  {{__('labels.update_button')}}
+                  <i class="fa fa-caret-right ml-1"></i>
+              </button>
+            </div>
+            @else
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 {{__('labels.next_button')}}
                 <i class="fa fa-arrow-circle-right ml-1"></i>
               </a>
             </div>
+            @endif
           </div>
         </div>
         <div class="carousel-item">
@@ -140,6 +149,10 @@ $(function(){
       }
     });
 
+    var _sh = $('select[name=start_hours] option:selected').val();
+    var _sm = $('select[name=start_minutes] option:selected').val();
+    form_data["start_time"] = _sh+":"+_sm;
+
     var _t = $('input[name=teacher_id]').attr("alt");
     form_data["teacher_name"] = _t;
 
@@ -197,8 +210,18 @@ $(function(){
     form_data["subject_name"] = _snames;
 
     form_data["schedule_name"] = form_data["schedule_method_name"];
-    if(form_data["lesson_week_count_name"]) form_data["schedule_name"] += " "+form_data["lesson_week_count_name"];
+    if(form_data["lesson_week_count_name"] && form_data["schedule_method"]=="month"){
+      form_data["schedule_name"] += " "+form_data["lesson_week_count_name"];
+    }
     if(form_data["lesson_week_name"]) form_data["schedule_name"] += " "+form_data["lesson_week_name"];
+
+
+    var _sd = $('input[name=enable_start_date]').val();
+    var _ed = $('input[name=enable_end_date]').val();
+    form_data["enable_dulation"] = "-";
+    if(!util.isEmpty(_sd) && !util.isEmpty(_ed)) form_data["enable_dulation"] = _sd+"～"+_ed;
+    else if(!util.isEmpty(_sd)) form_data["enable_dulation"] = _sd+"～";
+    else if(!util.isEmpty(_ed)) form_data["enable_dulation"] = "～"+_ed;
 
     return form_data;
   }

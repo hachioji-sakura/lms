@@ -32,8 +32,8 @@
 <link rel="stylesheet" href="{{asset('js/plugins/datepicker/datepicker3.css')}}">
 
 <!-- fullCalendar 2.2.5-->
-<link rel="stylesheet" href="{{asset('js/plugins/fullcalendar/fullcalendar.min.css')}}">
-<link rel="stylesheet" href="{{asset('js/plugins/fullcalendar/fullcalendar.print.css')}}" media="print">
+<link rel="stylesheet" href="{{asset('js/plugins/fullcalendar/fullcalendar.min.css?v=1')}}">
+<link rel="stylesheet" href="{{asset('js/plugins/fullcalendar/fullcalendar.print.css?v=1')}}" media="print">
 
 <!-- Styles -->
 <!-- link href="{{asset('css/app.css') }}" rel="stylesheet" -->
@@ -82,7 +82,7 @@
 <script src="{{asset('js/plugins/fastclick/fastclick.js')}}"></script>
 <!-- fullCalendar 2.2.5 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
-<script src="{{asset('js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+<script src="{{asset('js/plugins/fullcalendar/fullcalendar.js?v=1')}}"></script>
 <!-- Ion Slider -->
 <script src="{{asset('js/plugins/ionslider/ion.rangeSlider.min.js')}}"></script>
 <!-- CK Editor -->

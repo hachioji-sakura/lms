@@ -55,6 +55,7 @@
           </p>
         </a>
       </li>
+      {{-- TODO お問い合わせ実装後に有効にする
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=phone" class="nav-link @if($view=="ask" && $list=="phone") active @endif">
           <i class="fa fa-phone nav-icon"></i>
@@ -66,6 +67,7 @@
           </p>
         </a>
       </li>
+      --}}
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=recess" class="nav-link @if($view=="ask" && $list=="recess") active @endif">
           <i class="fa fa-pause-circle nav-icon"></i>
@@ -102,7 +104,7 @@
     <ul class="nav nav-treeview pl-2">
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="勤務設定">
-          <i class="fa fa-user-edit nav-icon"></i>勤務設定
+          <i class="fa fa-user-cog nav-icon"></i>勤務設定
         </a>
       </li>
       <li class="nav-item">

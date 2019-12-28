@@ -108,6 +108,8 @@ EOT;
     $base_date = '2000-01-01 ';
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
     $item['start_minutes'] = date('i',  strtotime($base_date.$this->from_time_slot));
+    $item['end_hours'] = date('H',  strtotime($base_date.$this->to_time_slot));
+    $item['end_minutes'] = date('i',  strtotime($base_date.$this->to_time_slot));
     $item['timezone'] = $this->timezone();
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
@@ -232,27 +234,16 @@ EOT;
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
     ];
-    $form['lesson_week'] = $this->lesson_week;
-    $form['from_time_slot'] = $this->from_time_slot;
-    $form['to_time_slot'] = $this->to_time_slot;
-
-    if(isset($form['course_minutes']) && isset($form['start_hours']) && isset($form['start_minutes'])){
-      //画面のフォーム（開始時間、授業時間）　→　開始時間、終了時間更新
-      $form['from_time_slot'] = $form['start_hours'].':'.$form['start_minutes'].':00';
-      $minutes = $form['course_minutes'];
-      $form['to_time_slot'] = date("H:i:00", strtotime('+'.$minutes.' minute '.'2000-01-01 '.$form['from_time_slot']));
-    }
 
     if(isset($form['course_type']) && !isset($form['work'])){
       //TODO Workの補間どうにかしたい
-      \Log::warning("TODO Workの補間どうにかしたい course_type=:".$form['course_type']);
+      \Log::warning("course_type=:".$form['course_type']);
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
       $form['work'] = $work_data[$form["course_type"]];
-      \Log::warning("TODO Workの補間どうにかしたい work=:".$form['work']);
     }
 
-    //TODO lectureの補間どうにかしたい
     $lecture_id = 0;
+    \Log::warning("TODO lectureの補間どうにかしたい");
     if(isset($form['lesson']) && isset($form['course_type'])){
       $course_id = config('replace.course')[$form["course_type"]];
       $lecture = Lecture::where('lesson', $form['lesson'])
@@ -330,7 +321,7 @@ EOT;
     }
     return $member;
   }
-  public function get_add_calendar_date($start_date="", $range_month=1, $month_week_count=5){
+  public function get_add_calendar_date($start_date="", $end_date="", $range_month=1, $month_week_count=5){
     $add_calendar_date = [];
     if(empty($start_date)) $start_date = date('Y-m-01'); //月初
 
@@ -340,8 +331,9 @@ EOT;
         $start_date = $this->enable_start_date;
       }
     }
-    //1か月後の月末
-    $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
+
+    //終了日指定がない場合、range_monthを使う
+    if(empty($end_date)) $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
 
     if(strtotime($end_date) > strtotime($this->enable_end_date)){
       //1か月後月末以前に設定が切れる場合、そちらを使う
@@ -476,11 +468,11 @@ EOT;
     return false;
   }
 
-  public function setting_to_calendar($start_date="", $range_month=1, $month_week_count=5){
+  public function setting_to_calendar($start_date="", $end_date="", $range_month=1, $month_week_count=5){
     $data = [];
     \Log::warning("setting_to_calendar:[".$start_date."]");
 
-    $schedules = $this->get_add_calendar_date($start_date, $range_month, $month_week_count);
+    $schedules = $this->get_add_calendar_date($start_date, $end_date, $range_month, $month_week_count);
     foreach($schedules as $date => $already_calendar){
       if(isset($already_calendar) && count($already_calendar)>0){
         //作成済みの場合

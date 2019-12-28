@@ -297,31 +297,10 @@ class UserCalendarController extends MilestoneController
    */
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    //$user = User::where('id', 607)->first()->details();
-    $ret = [
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'login_user' => $user,
-      'remind' => false,
-      'token' => $this->create_token(1728000),    //token期限＝20日
-      'teacher_id' => $request->teacher_id,
-      'student_id' => $request->student_id,
-      'search_word'=>$request->search_word,
-      'access_key' => $request->key,
-      'cancel_reason' => $request->cancel_reason,
-      'rest_reason' => $request->rest_reason,
-      '_page' => $request->get('_page'),
-      '_line' => $request->get('_line'),
-      '_origin' => $request->get('_origin'),
-      'attributes' => $this->attributes(),
-      'is_exchange_add' => false,
-    ];
-    $ret['filter'] = [
-      'search_status'=>$request->status,
-      'search_work' => $request->search_work,
-      'search_place' => $request->search_place,
-    ];
+    $ret = $this->get_common_param($request);
+    $ret['remind'] = false;
+    $ret['token'] = false;
+    $ret['is_exchange_add'] = false;
     $ret['is_proxy'] = false;
     if($request->has('is_proxy')){
       $ret['is_proxy'] = true;
@@ -497,6 +476,7 @@ class UserCalendarController extends MilestoneController
      */
     public function api_index(Request $request, $user_id=0, $from_date=null, $to_date=null)
     {
+      set_time_limit(600);
       $param = $this->get_param($request);
       if(!empty($from_date) && strlen($from_date)===8){
         $from_date = date('Y-m-d', strtotime($from_date));
@@ -529,6 +509,17 @@ class UserCalendarController extends MilestoneController
       if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
          return $this->forbidden("you are not manager");
       }
+      \Log::warning("is_all_user:".$request->get('is_all_user'));
+
+      if($request->get('is_all_user')==1){
+        if($this->is_student_or_parent($param['user']->role)==false){
+          $user_id = 0;
+        }
+        else {
+          //講師・事務のみカレンダーの閲覧可能
+          return $this->bad_request();
+        }
+      }
 
       if($user_id > 0){
         if($this->is_student($user->role) && $user->user_id != $user_id) return $this->forbidden("is not owner");
@@ -539,17 +530,18 @@ class UserCalendarController extends MilestoneController
         $items = $items->findUser($user_id);
       }
 
-      if($request->is_all==1){
-        $user_id = 0;
-      }
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
+      \Log::warning("--------------UserCalendarController::api_index  start---------------------------");
+      \Log::warning($items->toSql());
       $items = $items->get();
+      \Log::warning("--------------UserCalendarController::api_index  end---------------------------");
       foreach($items as $item){
         $item = $item->details($user_id);
         if($user_id > 0) {
           $item->own_member = $item->get_member($user_id);
+          $item->status = $item->own_member->status;
         }
       }
 
@@ -582,8 +574,6 @@ class UserCalendarController extends MilestoneController
         if(!$item->is_english_talk_lesson()) continue;
         if($request->has('english_teacher')){
           if($item->user->has_tag('english_teacher', $request->get('english_teacher'))==false){
-            echo 'user_id='.$item->user_id.'/';
-            echo $item->user->get_tag('english_teacher')['tag_value'].'<br>';
             continue;
           }
         }
@@ -658,50 +648,71 @@ class UserCalendarController extends MilestoneController
      */
     public function _search_scope(Request $request, $items)
     {
+      $form = $request->all();
+
       //ID 検索
-      if(isset($request->id)){
-        $items = $items->where('id',$request->id);
+      if(isset($form['id'])){
+        $items = $items->where('id',$form['id']);
       }
       //ステータス 検索
-      if(isset($request->search_status)){
-        $items = $items->findStatuses(explode(',', $request->search_status.','));
+      if(isset($form['search_status'])){
+        if(gettype($form['search_status']) == "array") $items = $items->findStatuses($form['search_status']);
+        else $items = $items->findStatuses(explode(',', $form['search_status'].','));
       }
       //ワーク 検索
-      if(isset($request->search_work)){
+      if(isset($form['search_work'])){
         $_param = "";
-        if(gettype($request->search_work) == "array") $_param  = $request->search_work;
-        else $_param = explode(',', $request->search_work.',');
+        if(gettype($form['search_work']) == "array") $_param  = $form['search_work'];
+        else $_param = explode(',', $form['search_work'].',');
         $items = $items->findWorks($_param);
       }
-      //場所 検索
-      if(isset($request->search_place)){
+      //授業タイプ 検索
+      if(isset($form['teaching_type'])){
         $_param = "";
-        if(gettype($request->search_place) == "array") $_param  = $request->search_place;
-        else $_param = explode(',', $request->search_place.',');
+        if(gettype($form['teaching_type']) == "array") $_param  = $form['teaching_type'];
+        else $_param = explode(',', $form['teaching_type'].',');
+        $items = $items->findTeachingType($_param);
+      }
+      //場所 検索
+      if(isset($form['search_place'])){
+        $_param = "";
+        if(gettype($form['search_place']) == "array") $_param  = $form['search_place'];
+        else $_param = explode(',', $form['search_place'].',');
         $items = $items->findPlaces($_param);
       }
       //講師ID
-      if(isset($request->teacher_id)){
-        $teacher = Teacher::where('id',$request->teacher_id)->first();
+      if(isset($form['teacher_id'])){
+        $teacher = Teacher::where('id',$form['teacher_id'])->first();
         if(isset($teacher)) $items = $items->findUser($teacher->user_id);
       }
       //生徒ID
-      if(isset($request->student_id)){
-        $student = Student::where('id',$request->student_id)->first();
+      if(isset($form['student_id'])){
+        $student = Student::where('id',$form['student_id'])->first();
         if(isset($student)) {
           //振替元対象
-          if(isset($request->exchange_target) && isset($request->lesson)){
-            $items = $items->findExchangeTarget($student->user_id, $request->lesson);
+          if(isset($form['exchange_target']) && isset($form['lesson'])){
+            $items = $items->findExchangeTarget($student->user_id, $form['lesson']);
           }
           else {
             $items = $items->findUser($student->user_id);
           }
         }
       }
-      //更新取得
-      if(isset($request->update)){
-        $items = $items->where('updated_at','>',$request->update);
+      else {
+
       }
+      if(isset($form['exchange_lesson']) && $form['exchange_lesson']==1){
+        $items = $items->where('exchanged_calendar_id','>', 0);
+      }
+      if(isset($form['trial_lesson']) && $form['trial_lesson']==1){
+        $items = $items->where('trial_id','>', 0);
+      }
+
+      //更新取得
+      if(isset($form['update'])){
+        $items = $items->where('updated_at','>',$form['update']);
+      }
+
       //日付検索
       $from_date = "";
       $to_date = "";
@@ -718,14 +729,7 @@ class UserCalendarController extends MilestoneController
       }
       //検索ワード
       if(isset($request->search_word)){
-        $search_words = explode(' ', $request->search_word);
-        $items = $items->where(function($items)use($search_words){
-          foreach($search_words as $_search_word){
-            if(empty($_search_word)) continue;
-            $_like = '%'.$_search_word.'%';
-            $items->orWhere('remark','like',$_like);
-          }
-        });
+        $items = $items->searchWord($request->search_word);
       }
 
       return $items;

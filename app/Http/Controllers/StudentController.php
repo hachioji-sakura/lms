@@ -52,48 +52,6 @@ class StudentController extends UserController
    return view($this->domain.'.tiles', $_table)
      ->with($param);
   }
-  public function get_common_param(Request $request){
-    $user = $this->login_details($request);
-    if(empty($user)){
-      //ログインしていない
-      abort(419);
-    }
-    $ret = [
-       'domain' => $this->domain,
-       'domain_name' => __('labels.'.$this->domain),
-       'user' => $user,
-       'mode'=>$request->mode,
-       'search_word'=>$request->get('search_word'),
-       '_status' => $request->get('status'),
-       '_page' => $request->get('_page'),
-       '_line' => $request->get('_line'),
-       'list' => $request->get('list'),
-       'list_date' => $request->get('list_date'),
-       'attributes' => $this->attributes(),
-    ];
-    if(empty($ret['list_date'])){
-      if($ret['list']=='month'){
-        $ret['list_date'] = date('Y-m-1');
-      }
-      else if($ret['list']=='month'){
-        $ret['list_date'] = date('Y-m-d');
-      }
-    }
-    $ret['filter'] = [
-      'is_checked_only' => $request->is_checked_only,
-      'is_unchecked_only' => $request->is_unchecked_only,
-      'is_asc'=>$request->is_asc,
-      'is_desc'=>$request->is_desc,
-      'search_keyword' => $request->search_keyword,
-      'search_comment_type'=>$request->search_comment_type,
-      'search_week'=>$request->search_week,
-      'search_work' => $request->search_work,
-      'search_place' => $request->search_place,
-    ];
-    if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-    if(empty($ret['_page'])) $ret['_page'] = 0;
-    return $ret;
-  }
   /**
    * 共通パラメータ取得
    *
@@ -189,7 +147,8 @@ class StudentController extends UserController
     //ステータス
     if(isset($request->status)){
       if($request->status!='all'){
-        $items = $items->findStatuses(explode(',', $request->status.','));
+        if(gettype($request->status) == "array") $items = $items->findStatuses($request->status);
+        else $items = $items->findStatuses(explode(',', $request->status.','));
       }
     }
     else {
@@ -456,15 +415,6 @@ class StudentController extends UserController
      $param[$key] = $val;
    }
    $param["comments"] = $comments;
-   /*
-   $filter_keys = ['search_from_date', 'search_to_date', 'importance', 'is_desc', ''];
-   foreach($filter_keys as $filter_key){
-     if($request->has($filter_key)){
-       $param['filter'][$filter_key] = $request->get($filter_key);
-     }
-   }
-   $param['view'] = $view;
-   */
    return view('comments.announcements', [
      'item' => $item,
      'star_comments'=>$star_comments,
@@ -509,15 +459,6 @@ class StudentController extends UserController
      $calendar = $calendar->details();
    }
    $param["calendars"] = $calendars;
-
-   $filter = [];
-   $filter_keys = ['search_from_date', 'search_to_date', 'is_exchange', 'search_status', 'search_work', 'search_place', 'is_desc', ''];
-   foreach($filter_keys as $filter_key){
-     if($request->has($filter_key)){
-       $filter[$filter_key] = $request->get($filter_key);
-     }
-   }
-   $param['filter'] = $filter;
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
@@ -559,14 +500,6 @@ class StudentController extends UserController
    }
    $param["asks"] = $asks;
 
-   $filter = [];
-   $filter_keys = ['search_type', 'search_status'];
-   foreach($filter_keys as $filter_key){
-     if($request->has($filter_key)){
-       $filter[$filter_key] = $request->get($filter_key);
-     }
-   }
-   $param['filter'] = $filter;
    $param['view'] = "ask";
    return view('asks.ask_list', [
      'item' => $item,
@@ -588,15 +521,6 @@ class StudentController extends UserController
      $tuition = $tuition->details();
    }
    $param["tuitions"] = $tuitions;
-
-   $filter = [];
-   $filter_keys = ['search_lesson'];
-   foreach($filter_keys as $filter_key){
-     if($request->has($filter_key)){
-       $filter[$filter_key] = $request->get($filter_key);
-     }
-   }
-   $param['filter'] = $filter;
    $param['view'] = $view;
 
 

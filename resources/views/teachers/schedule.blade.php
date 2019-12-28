@@ -104,84 +104,22 @@
       </div>
     </div>
   </div>
-  <div class="col-12">
+  <div class="col-12 col-md-4">
     <div class="form-group">
       <label for="is_exchange" class="w-100">
         {{__('labels.sort_no')}}
       </label>
       <label class="mx-2">
       <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
-      @if(isset($filter['is_desc']) && $filter['is_desc']==true)
+      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
         checked
       @endif
       >{{__('labels.date')}} {{__('labels.desc')}}
       </label>
     </div>
   </div>
-  <div class="col-12">
-    <div class="form-group">
-      <label for="is_exchange" class="w-100">
-        {{__('labels.to_exchange')}}
-      </label>
-      <label class="mx-2">
-      <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
-      @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
-        checked
-      @endif
-      >{{__('labels.to_exchange')}}
-      </label>
-    </div>
-  </div>
-  <div class="col-12 col-md-4 mb-2">
-    <label for="search_status" class="w-100">
-      {{__('labels.status')}}
-    </label>
-    <div class="w-100">
-      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
-        @foreach(config('attribute.calendar_status') as $index => $name)
-          <option value="{{$index}}"
-          @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
-          selected
-          @endif
-          >{{$name}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  <div class="col-12 col-md-4 mb-2">
-    <label for="search_work" class="w-100">
-      {{__('labels.work')}}
-    </label>
-    <div class="w-100">
-      <select name="search_work[]" class="form-control select2" width=100% placeholder="検索作業" multiple="multiple" >
-        @foreach($attributes['work'] as $index=>$name)
-          <option value="{{$index}}"
-          @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
-          selected
-          @endif
-          >{{$name}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  <div class="col-12 col-md-4 mb-2">
-    <label for="search_place" class="w-100">
-      {{__('labels.place')}}
-    </label>
-    <div class="w-100">
-      <select name="search_place[]" class="form-control select2" width=100% placeholder="検索場所" multiple="multiple" >
-        @foreach($attributes['places'] as $place)
-          @foreach($place->floors as $floor)
-          <option value="{{$floor->id}}"
-          @if(isset($filter['search_place']) && in_array($floor->id, $filter['search_place'])==true)
-          selected
-          @endif
-          >{{$floor->name()}}</option>
-          @endforeach
-        @endforeach
-      </select>
-    </div>
-  </div>
+  @component('calendars.filter', ['domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter'=>$filter])
+  @endcomponent
   @endslot
 @endcomponent
 @endsection

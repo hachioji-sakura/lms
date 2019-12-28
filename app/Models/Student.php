@@ -859,7 +859,6 @@ EOT;
   public function _recess_cancel($type='recess'){
     $type_name = '休会';
     if($type=='unsubscribe') $type_name = '退会';
-    \Log::warning("d0:".$type);
     $param = [];
     $user_calendar_members = [];
     $conflict_calendar_members = [];

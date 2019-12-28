@@ -10,7 +10,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @component('components.calendar', ['user_id' => $item->user_id, 'teacher_id' => $item->id, 'domain' => $domain])
+        @component('components.calendar', ['user' => $user, 'teacher_id' => $item->id, 'domain' => $domain, 'filter'=>$filter, 'item'=>$item, 'attributes' => $attributes])
           @slot('event_select')
           // 選択可
           selectable: true,
@@ -24,7 +24,8 @@
               start: start,
               end : end,
               status : "new",
-              teaching_code : "add",
+              teaching_type : "add",
+              schedule_type_code : "new",
               selected : true,
             }]);
 
@@ -39,7 +40,6 @@
             param += "&end_hours="+end.hour();
             param += "&end_minutes="+end.minute();
             param += "&course_minutes="+_course_minutes;
-            console.log(param);
             base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
               $calendar.fullCalendar("removeEvents", -1);
             });
@@ -48,45 +48,40 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.total_status){
-              case "new":
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
-                break;
-              case "confirm":
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
-                break;
-              case "fix":
-                if(event.is_passed==true){
-                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
-                }
-                else{
-                  base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
-                }
-                break;
-              case "rest":
-              case "cancel":
-              case "absence":
-              case "presence":
-              case "exchange":
-              default:
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
-                break;
+            if(event.work==5){
+              //演習の場合は操作不要
+              base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
             }
-          },
-          @endslot
-          @slot('event_render')
-          eventRender: function(event, element) {
-            var title = "{{__('labels.schedule_add')}}";
-            var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-
-            if(event['student_name']){
-              title = event['student_name']+remark;
+            else {
+              switch(event.total_status){
+                case "new":
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/confirm");
+                  break;
+                case "confirm":
+                  //生徒へ再送
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/calendars/"+event.id+"/status_update/remind");
+                  break;
+                case "fix":
+                  if(event.is_passed==true){
+                    //過ぎていたら出欠
+                    base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/calendars/"+event.id+"/status_update/presence");
+                  }
+                  else{
+                    //過ぎていないなら休み取り消し
+                    base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/calendars/"+event.id+"/status_update/lecture_cancel");
+                  }
+                  break;
+                case "absence":
+                case "presence":
+                  base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/calendars/"+event.id+"/status_update/presence");
+                  break;
+                case "rest":
+                case "cancel":
+                default:
+                  base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
+                  break;
+              }
             }
-            else if(event['teaching_code']==""){
-              title = event['work_name']+remark;
-            }
-            console.log(event);
-            event_render(event, element, title, true);
           },
           @endslot
         @endcomponent
@@ -94,5 +89,4 @@
 		</div>
 	</div>
 </section>
-
 @endsection

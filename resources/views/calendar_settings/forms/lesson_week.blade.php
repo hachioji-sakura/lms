@@ -5,7 +5,7 @@
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['lesson_week'] as $index => $name)
-      @if(isset($calendar) && isset($calendar['students']) && ($calendar['students'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true || $calendar['teachers'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true))
+      @if(isset($calendar) && isset($calendar['students']) && count($calendar['students']) > 0 && ($calendar['students'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true || $calendar['teachers'][0]->user->has_tag('lesson_'.$index.'_time', 'disabled')===true))
       {{-- 生徒（複数の場合は一人目）と、講師の曜日が有効な曜日以外は無効--}}
         @continue
       @endif

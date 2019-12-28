@@ -13,7 +13,7 @@
     </label>
     @foreach($attributes['course_minutes'] as $index => $name)
       <label class="mx-2 course_minutes" for="course_minutes_{{$index}}">
-        @if($item["exchanged_calendar_id"] > 0 && $item->get_exchange_remaining_time() < intval($index))
+        @if(isset($item["exchanged_calendar_id"]) && $item["exchanged_calendar_id"] > 0 && $item->get_exchange_remaining_time() < intval($index))
           @continue
         @endif
         <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"

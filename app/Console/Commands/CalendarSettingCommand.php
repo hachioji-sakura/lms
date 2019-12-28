@@ -62,7 +62,7 @@ class CalendarSettingCommand extends Command
       }
       $data = [];
       foreach($settings as $setting){
-        $schedules = $setting->get_add_calendar_date($start_date, $range_month, $week_count);
+        $schedules = $setting->get_add_calendar_date($start_date, "", $range_month, $week_count);
         foreach($schedules as $date => $already_calendar){
           if(isset($already_calendar) && count($already_calendar)>0){
             //作成済みの場合

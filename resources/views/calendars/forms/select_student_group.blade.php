@@ -29,7 +29,7 @@ function get_student_group(){
   }
   console.log("get_student_group:"+teacher_id+":"+course_type);
   //対象の生徒を取得
-  service.getAjax(false, '/api_student_groups/'+teacher_id+"?search_type="+course_type, null,
+  service.getAjax(false, '/api_student_groups/'+teacher_id+"?search_type="+course_type, {'loading': false},
     function(result, st, xhr) {
       if(result['status']===200){
         var c = 0;

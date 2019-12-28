@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}ダッシュボード
+{{__('labels.calendar_page')}}
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
@@ -10,7 +10,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-12">
-        @component('components.calendar', ['user_id' => $item->user_id, 'teacher_id' => $item->id, 'domain' => $domain])
+				@component('components.calendar', ['user' => $user, 'teacher_id' => $item->id, 'domain' => $domain, 'filter'=>$filter, 'item'=>$item, 'attributes' => $attributes])
           @slot('event_select')
           // 選択可
           selectable: true,
@@ -44,42 +44,34 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
-            switch(event.total_status){
-              case "new":
-                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
-                break;
-              case "confirm":
-                base.showPage('dialog', "subDialog", "予定連絡（再送）", "/calendars/"+event.id+"/status_update/remind");
-                break;
-              case "fix":
-                if(event.is_passed==true){
-                  base.showPage('dialog', "subDialog", "出欠を取る", "/calendars/"+event.id+"/status_update/presence");
-                }
-                else{
-                  base.showPage('dialog', "subDialog", "休講依頼", "/calendars/"+event.id+"/status_update/lecture_cancel");
-                }
-                break;
-              case "rest":
-              case "cancel":
-              case "absence":
-              case "presence":
-              case "exchange":
-              default:
-                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
-                break;
-            }
-          },
-          @endslot
-          @slot('event_render')
-          eventRender: function(event, element) {
-            var title = '勤務追加';
-            if(event['student_name']){
-              title = event['student_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-            }
-            if(event['teaching_code']==""){
-              title = event['work_name']+'('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-            }
-            event_render(event, element, title);
+						if(event.work==9){
+	            switch(event.total_status){
+	              case "new":
+	                base.showPage('dialog', "subDialog", "予定を確定する", "/calendars/"+event.id+"/status_update/confirm");
+	                break;
+	              case "confirm":
+	                break;
+	              case "fix":
+	                if(event.is_passed==true){
+	                  base.showPage('dialog', "subDialog", "勤怠をつける", "/calendars/"+event.id+"/status_update/presence");
+	                }
+	                else{
+	                  base.showPage('dialog', "subDialog", "休み連絡", "/calendars/"+event.id+"/status_update/lecture_cancel");
+	                }
+	                break;
+	              case "rest":
+	              case "cancel":
+	              case "absence":
+	              case "presence":
+	              case "exchange":
+	              default:
+	                base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+	                break;
+	            }
+						}
+						else {
+							base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id);
+						}
           },
           @endslot
         @endcomponent
@@ -87,5 +79,4 @@
 		</div>
 	</div>
 </section>
-
 @endsection
