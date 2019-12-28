@@ -1,5 +1,13 @@
 @if($item["exchanged_calendar_id"] > 0)
 <input type="hidden" name="schedule_type" value="class" >
+@elseif($_edit==true)
+  @if($item->is_teaching()==true)
+    <input type="hidden" name="schedule_type" value="class" >
+  @elseif($item->work==9)
+    <input type="hidden" name="schedule_type" value="office_work" >
+  @else
+    <input type="hidden" name="schedule_type" value="other" >
+  @endif
 @else
 <div class="col-6 mt-2">
   <div class="form-group">

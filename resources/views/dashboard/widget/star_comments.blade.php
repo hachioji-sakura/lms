@@ -169,7 +169,7 @@
               </a>
               <script>
               function importance_comment(id){
-                  service.postAjax('/comments/'+id+'/importanced',{'loading': false},
+                  service.postAjax('/comments/'+id+'/importanced',null,
                   function(result, st, xhr) {
                     if(result['status']===200){
                       console.log(result['data']);
@@ -194,7 +194,7 @@
                   }, "PUT");
               }
               function comment_check(id){
-                  service.postAjax('/comments/'+id+'/checked',{'loading': false},
+                  service.postAjax('/comments/'+id+'/checked',null,
                   function(result, st, xhr) {
                     if(result['status']===200){
                       console.log(result['data']);

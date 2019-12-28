@@ -63,7 +63,7 @@ Route::resource('announcements','AnnouncementController');
 Route::resource('calendar_settings','UserCalendarSettingController');
 Route::get('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar_page');
 Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
-Route::post('api_setting_to_calendar/{id?}','UserCalendarSettingController@api_setting_to_calendar');
+Route::get('calendar_settings/{id}/to_calendar_data','UserCalendarSettingController@to_calendar_data');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');

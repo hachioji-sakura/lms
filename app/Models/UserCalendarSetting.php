@@ -325,7 +325,7 @@ EOT;
     $add_calendar_date = [];
     if(empty($start_date)) $start_date = date('Y-m-01'); //月初
 
-    if(isset($this->enable_start_date)){
+    if(!empty($this->enable_start_date)){
       if(strtotime($start_date) < strtotime($this->enable_start_date)){
         //月初以降の有効開始日の場合、そちらを使う
         $start_date = $this->enable_start_date;
@@ -335,11 +335,13 @@ EOT;
     //終了日指定がない場合、range_monthを使う
     if(empty($end_date)) $end_date = date('Y-m-t', strtotime(date('Y-m-01') . '+'.$range_month.' month'));
 
-    if(strtotime($end_date) > strtotime($this->enable_end_date)){
-      //1か月後月末以前に設定が切れる場合、そちらを使う
-      $end_date = $this->enable_end_date;
+    if(!empty($this->enable_end_date)){
+      if(strtotime($end_date) > strtotime($this->enable_end_date)){
+        //1か月後月末以前に設定が切れる場合、そちらを使う
+        $end_date = $this->enable_end_date;
+      }
     }
-
+    
     //echo $start_date."\n";
     $_w = date('w', strtotime($start_date));
     $_week_no = [
@@ -371,6 +373,7 @@ EOT;
       }
       //次の登録日 ７日後
       $target_date = date("Y-m-d", strtotime("+7 day ".$target_date));
+      \Log::warning("target_date=".$target_date);
       if(date("m", strtotime($target_date)) > $target_month){
         //月が変わった
         $c = $month_week_count;
@@ -381,6 +384,7 @@ EOT;
     $ret = [];
     foreach($add_calendar_date as $date){
       $ret[$date] = [];
+      \Log::warning("date=".$date);
       $_calendars = $this->calendars->where('start_time', $date.' '.$this->from_time_slot)
         ->where('end_time', $date.' '.$this->to_time_slot);
 
@@ -470,7 +474,7 @@ EOT;
 
   public function setting_to_calendar($start_date="", $end_date="", $range_month=1, $month_week_count=5){
     $data = [];
-    \Log::warning("setting_to_calendar:[".$start_date."]");
+    \Log::warning("setting_to_calendar:[".$start_date."][".$end_date."][".$range_month."][".$month_week_count."]");
 
     $schedules = $this->get_add_calendar_date($start_date, $end_date, $range_month, $month_week_count);
     foreach($schedules as $date => $already_calendar){
@@ -489,7 +493,7 @@ EOT;
     \Log::warning("_to_calendar:[".$date."]");
 
     //担当講師が本登録でない場合、登録できない
-    if($this->user->status!='regular') return null;
+    //if($this->user->status!='regular') return null;
 
     $start_time = $date.' '.$this->from_time_slot;
     $end_time = $date.' '.$this->to_time_slot;
@@ -522,7 +526,7 @@ EOT;
       $form[$tag->tag_key] = $tag->tag_value;
     }
     $is_enable = $this->is_enable();
-    if($is_enable===true){
+    if($is_enable===true && $this->work!=9){
       $is_enable = false;
       foreach($this->members as $member){
         if($this->user_id == $member->user_id) continue;
@@ -534,7 +538,7 @@ EOT;
 
 
     if($is_enable==false){
-      //有効なメンバーがいない
+      \Log::warning("有効なメンバーがいない");
       return null;
     }
 

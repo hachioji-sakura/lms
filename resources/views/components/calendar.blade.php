@@ -139,6 +139,7 @@
 
     //'/api_calendars/'+user_id+'/'+start_time+'/'+end_time
     var form_data = front.getFormValue('filter_form');
+    form_data['loading'] = true;
     var url = '/api_calendars/'+form_data['user_id'];
     service.getAjax(false, url, form_data,
       function(result, st, xhr) {

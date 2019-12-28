@@ -437,11 +437,11 @@
 			);
 			return ret;
 		};
-		if(_request['loading']==false){
-			_callback();
+		if(_request['loading'] && _request['loading']==true){
+			loadOpen();
 		}
 		else {
-			loadOpen();
+			_callback();
 		}
 	}
 	/**
@@ -484,11 +484,11 @@
 			);
 			return ret;
 		};
-		if(_request['loading']==false){
-			_callback();
+		if(_request['loading'] && _request['loading']==true){
+			loadOpen();
 		}
 		else {
-			loadOpen();
+			_callback();
 		}
 	}
 	/**
@@ -532,11 +532,11 @@
 				}
 			});
 		};
-		if(_request['loading']==false){
-			_callback();
+		if(_request['loading'] && _request['loading']==true){
+			loadOpen();
 		}
 		else {
-			loadOpen();
+			_callback();
 		}
 	}
 	//ajax file download
@@ -585,11 +585,11 @@
 				}
 			);
 		};
-		if(_request['loading']==false){
-			_callback();
+		if(_request['loading'] && _request['loading']==true){
+			loadOpen();
 		}
 		else {
-			loadOpen();
+			_callback();
 		}
 	}
 
