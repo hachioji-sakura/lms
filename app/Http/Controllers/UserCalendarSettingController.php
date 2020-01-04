@@ -247,33 +247,20 @@ class UserCalendarSettingController extends UserCalendarController
 
       $items = $items->get();
       $fields = [
-        "id" => [
-          "label" => "ID",
+        'title' => [
+          'label' => __('labels.title'),
           "link" => function($row){
             return "/calendars?setting_id=".$row['id'];
           }
         ],
-        "week_setting" => [
-          "label" => __('labels.week_day'),
-          "link" => "show",
-        ],
-        "timezone" => [
-          "label" => __('labels.timezone'),
+        'repeat_setting_name' => [
+          'label' => __('labels.repeat'),
         ],
         "place_floor_name" => [
           "label" => __('labels.place'),
         ],
-        "work_name" => [
-          "label" => __('labels.work'),
-        ],
-        "user_name" => [
-          "label" => __('labels.charge_user'),
-        ],
         "student_name" => [
           "label" => __('labels.students'),
-        ],
-        "subject" => [
-          "label" => __('labels.subject'),
         ],
         "buttons" => [
           "label" => __('labels.control'),
@@ -281,7 +268,12 @@ class UserCalendarSettingController extends UserCalendarController
             "to_calendar" => [
               "method" => "to_calendar",
               "label" => "適用",
-              "style" => "default",
+              "style" => "outline-secondary",
+            ],
+            "delete_calendar" => [
+              "method" => "delete_calendar",
+              "label" => "削除",
+              "style" => "outline-danger",
             ],
             "edit",
             "delete"]
@@ -362,7 +354,7 @@ class UserCalendarSettingController extends UserCalendarController
       ])->with($param);
     }
     /**
-     * 詳細画面表示
+     * カレンダー登録画面表示
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -371,9 +363,23 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-      $param['add_dates'] = $param['item']->get_add_calendar_date();
 
       return view($this->domain.'.to_calendar', [
+        'action' => $request->get('action')
+      ])->with($param);
+    }
+    /**
+     * カレンダー削除画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete_calendar_page(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['fields'] = $this->show_fields($param['item']);
+
+      return view($this->domain.'.delete_calendar', [
         'action' => $request->get('action')
       ])->with($param);
     }
@@ -398,7 +404,6 @@ class UserCalendarSettingController extends UserCalendarController
       $items = $param['item']->get_add_calendar_date($request->start_date, $request->end_date, $range_month=1, $month_week_count=5);
       return $this->api_response(200, '', '', $items);
     }
-
     public function _update(Request $request, $id)
     {
       return $res = $this->transaction($request, function() use ($request, $id){
@@ -472,5 +477,48 @@ class UserCalendarSettingController extends UserCalendarController
         }
         return $setting;
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    public function to_calendar(Request $request, $id)
+    {
+      $res = null;
+      $param = $this->get_param($request, $id);
+      if($param['user']->role !== 'manager'){
+        $res = $this->forbidden();
+      }
+      if(!$request->has('select_dates')){
+        $res = $this->bad_request();
+      }
+      $setting = $param['item'];
+      $res = $this->transaction($request, function() use ($request, $setting){
+        $form['select_dates'] = $request->get('select_dates');
+        foreach($request->get('select_dates') as $date){
+          $setting->add_calendar(date('Y-m-d', strtotime($date)));
+        }
+        return $setting;
+      }, '繰り返しスケジュール登録', __FILE__, __FUNCTION__, __LINE__ );
+
+      return $this->save_redirect($res, $param, '繰り返しスケジュールを登録しました。');
+    }
+    public function delete_calendar(Request $request, $id)
+    {
+      $res = null;
+      $param = $this->get_param($request, $id);
+      if($param['user']->role !== 'manager'){
+        $res = $this->forbidden();
+      }
+      if(!$request->has('select_ids')){
+        $res = $this->bad_request();
+      }
+      $setting = $param['item'];
+      $res = $this->transaction($request, function() use ($request, $id, $setting){
+        $calendars = UserCalendar::where('user_calendar_setting_id', $id)
+                    ->whereIn('id', $request->get('select_ids'))->get();
+        foreach($calendars as $calendar){
+          $calendar->dispose();
+        }
+        return $setting;
+      }, 'スケジュール一括削除', __FILE__, __FUNCTION__, __LINE__ );
+
+      return $this->save_redirect($res, $param, '削除しました。');
     }
 }

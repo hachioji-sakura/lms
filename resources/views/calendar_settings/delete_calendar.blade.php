@@ -1,15 +1,15 @@
-@include('calendar_settings.forms.to_calendar_form')
+@include('calendar_settings.forms.delete_calendar_form')
 <div class="direct-chat-msg">
-  <form id="edit" method="POST" action="/{{$domain}}/{{$item->id}}/to_calendar">
+  <form id="edit" method="POST" action="/{{$domain}}/{{$item->id}}/delete_calendar">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    <div id="calendar_settings_to_calendar">
+    <div id="calendar_settings_delete_calendar">
       @yield('setting_form')
       @yield('input_form')
       <div class="row">
         <div class="col-12 mb-1">
-            <button type="button" class="btn btn-submit btn-primary btn-block collapse" accesskey="to_calendar_create">
-              {{__('labels.add_button')}}
+            <button type="button" class="btn btn-submit btn-danger btn-block collapse" accesskey="delete_calendar_create">
+              {{__('labels.schedule_delete')}}
               <i class="fa fa-caret-right ml-1"></i>
             </button>
         </div>
@@ -26,11 +26,11 @@
 
 $(function(){
   var form_data = null;
-  base.pageSettinged("calendar_settings_to_calendar", form_data);
+  base.pageSettinged("calendar_settings_delete_calendar", form_data);
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('calendar_settings_to_calendar') && select_dates_check_validate()){
+    if(front.validateFormValue('calendar_settings_delete_calendar') && select_ids_check_validate()){
       $('form').submit();
     }
   });

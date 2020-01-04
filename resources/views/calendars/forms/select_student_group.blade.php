@@ -1,4 +1,4 @@
-@if(isset($_edit) && $_edit==true && $item->has_tag('course_type', 'single'))
+@if(isset($_edit) && $_edit==true)
 @else
   <div class="col-12 course_type_selected collapse">
     <div class="form-group">

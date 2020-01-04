@@ -609,6 +609,10 @@ class UserCalendarController extends MilestoneController
       if(isset($form['id'])){
         $items = $items->where('id',$form['id']);
       }
+      //設定ID　検索
+      if(isset($form['user_calendar_setting_id'])){
+        $items = $items->where('user_calendar_setting_id',$form['user_calendar_setting_id']);
+      }
       //ステータス 検索
       if(isset($form['search_status'])){
         if(gettype($form['search_status']) == "array") $items = $items->findStatuses($form['search_status']);

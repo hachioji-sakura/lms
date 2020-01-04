@@ -341,7 +341,7 @@ EOT;
         $end_date = $this->enable_end_date;
       }
     }
-    
+
     //echo $start_date."\n";
     $_w = date('w', strtotime($start_date));
     $_week_no = [
@@ -482,15 +482,15 @@ EOT;
         //作成済みの場合
         continue;
       }
-      $data[] = $this->_to_calendar($date);
+      $data[] = $this->add_calendar($date);
     }
     \Log::warning("setting_to_calendar:res=[".count($data)."]");
     return $data;
   }
 
   //この設定を使って、引数＝日付でUserCalendarに登録する
-  private function _to_calendar($date){
-    \Log::warning("_to_calendar:[".$date."]");
+  public function add_calendar($date){
+    \Log::warning("add_calendar:[".$date."]");
 
     //担当講師が本登録でない場合、登録できない
     //if($this->user->status!='regular') return null;
@@ -535,7 +535,6 @@ EOT;
         break;
       }
     }
-
 
     if($is_enable==false){
       \Log::warning("有効なメンバーがいない");
