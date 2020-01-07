@@ -242,37 +242,44 @@ class UserCalendarSettingController extends UserCalendarController
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
 
-      //$items = $items->orderByWeek();
+      $items = $items->orderByWeek();
       $items = $this->_search_sort($request, $items);
 
       $items = $items->get();
       $fields = [
         'title' => [
           'label' => __('labels.title'),
-          "link" => function($row){
-            return "/calendars?setting_id=".$row['id'];
-          }
+          "link" => "show",
+        ],
+        "student_name" => [
+          "label" => __('labels.students'),
         ],
         'repeat_setting_name' => [
           'label' => __('labels.repeat'),
         ],
+        "status_name" => [
+          "label" => __('labels.status'),
+        ],
+        'calendar_count' => [
+          'label' => '登録予定数',
+          "link" => function($row){
+            return "/calendars?user_calendar_setting_id=".$row['id'];
+          }
+        ],
         "place_floor_name" => [
           "label" => __('labels.place'),
-        ],
-        "student_name" => [
-          "label" => __('labels.students'),
         ],
         "buttons" => [
           "label" => __('labels.control'),
           "button" => [
             "to_calendar" => [
               "method" => "to_calendar",
-              "label" => "適用",
+              "label" => "予定登録",
               "style" => "outline-secondary",
             ],
             "delete_calendar" => [
               "method" => "delete_calendar",
-              "label" => "削除",
+              "label" => "予定削除",
               "style" => "outline-danger",
             ],
             "edit",
@@ -411,15 +418,30 @@ class UserCalendarSettingController extends UserCalendarController
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
         $setting = UserCalendarSetting::where('id', $id)->first();
-        $res = $setting->change($form);
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
-          UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->delete();
-          $setting->memberAdd($setting->user_id, $form['create_user_id']);
           foreach($form['students'] as $student){
-            $setting->memberAdd($student->user_id, $form['create_user_id']);
+            $already_setting = $setting->members->where('user_id', $student->user_id);
+            if(!isset($already_setting)){
+              //既存メンバー以外に指定されている場合、追加
+              $setting->memberAdd($student->user_id, $form['create_user_id']);
+            }
+          }
+          foreach($setting->members as $member){
+            $is_delete = true;
+            foreach($form['students'] as $student){
+              if($member->user_id == $student->user_id){
+                $is_delete = false;
+                break;
+              }
+            }
+            if($is_delete == true){
+              //既存メンバーが指定されていない場合、削除
+              $member->dispose();
+            }
           }
         }
+        $res = $setting->change($form);
         //TODO 更新失敗しても更新成功のエラーメッセージが表示されてしまう
         return $setting;
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );

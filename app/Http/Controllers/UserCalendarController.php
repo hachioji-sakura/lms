@@ -269,6 +269,9 @@ class UserCalendarController extends MilestoneController
     if($request->has('cancel_reason')){
       $ret['cancel_reason'] = $request->get('cancel_reason');
     }
+    if($request->has('user_calendar_setting_id')){
+      $ret['user_calendar_setting_id'] = $request->get('user_calendar_setting_id');
+    }
     if(is_numeric($id) && $id > 0){
       $user_id = -1;
       if($request->has('user')){
@@ -549,10 +552,6 @@ class UserCalendarController extends MilestoneController
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
-      //設定ID
-      if(isset($request->setting_id)){
-        $items = $items->where('user_calendar_setting_id', $request->setting_id);
-      }
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);

@@ -156,17 +156,17 @@ $(function(){
     var _t = $('input[name=teacher_id]').attr("alt");
     form_data["teacher_name"] = _t;
 
-
-    var _snames = "";
-    $('select[name="student_id[]"] option:selected').each(function(){
-      var _sname = $(this).text().trim();
-      _snames+=_sname+"<br>";
-    });
-    form_data["student_name"] = _snames;
-
+    if($('select[name="student_id[]"] option:selected').length > 0){
+      var _snames = "";
+      $('select[name="student_id[]"] option:selected').each(function(){
+        var _sname = $(this).text().trim();
+        _snames+=_sname+"<br>";
+      });
+      form_data["student_name"] = _snames;
+    }
     var _names = ["place_floor_id", "student_group", "lesson_week_count"];
     $.each(_names, function(index, value) {
-      if(form_data[value]){
+      if(form_data[value] && $('select[name='+value+'] option:selected').length>0){
         var _name = $('select[name='+value+'] option:selected').text().trim();
         form_data[value+"_name"] = _name;
       }
@@ -174,8 +174,8 @@ $(function(){
 
     _names = ["course_minutes", "course_type", "schedule_method", "lesson_week"];
     $.each(_names, function(index, value) {
-      form_data[value+"_name"] = [];
-      if(form_data[value]){
+      if(form_data[value] && $("input[name='"+value+"']:checked").length>0){
+        form_data[value+"_name"] = [];
         $("input[name='"+value+"']:checked").each(function() {
           form_data[value+"_name"].push($(this).parent().parent().text().trim()+'');
         });
@@ -222,7 +222,7 @@ $(function(){
     if(!util.isEmpty(_sd) && !util.isEmpty(_ed)) form_data["enable_dulation"] = _sd+"～"+_ed;
     else if(!util.isEmpty(_sd)) form_data["enable_dulation"] = _sd+"～";
     else if(!util.isEmpty(_ed)) form_data["enable_dulation"] = "～"+_ed;
-
+    console.log(form_data);
     return form_data;
   }
 });

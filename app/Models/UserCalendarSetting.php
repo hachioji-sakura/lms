@@ -94,6 +94,16 @@ EOT;
     $end_hour_minute = date('H:i',  strtotime($base_date.$this->to_time_slot));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
+  public function status_name(){
+    $status_name = "";
+    if(app()->getLocale()=='en') return $this->status;
+
+    if(isset(config('attribute.setting_status')[$this->status])){
+      $status_name = config('attribute.setting_status')[$this->status];
+    }
+    return $status_name;
+  }
+
   public function enable_date(){
     $start_date = '';
     $end_date = '';
@@ -105,6 +115,17 @@ EOT;
 
   public function details($user_id=0){
     $item = $this;
+    if($this->is_enable()){
+      if($this->status!='enabled'){
+        $this->update(['status' => 'enabled']);
+      }
+    }
+    else {
+      if($this->status!='disabled'){
+        $this->update(['status' => 'disabled']);
+      }
+    }
+
     $base_date = '2000-01-01 ';
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
     $item['start_minutes'] = date('i',  strtotime($base_date.$this->from_time_slot));
@@ -118,6 +139,7 @@ EOT;
     $item['week_setting'] = $this->week_setting();
     $item['enable_date'] = $this->enable_date();
     $item['place_floor_name'] = "";
+    $item['calendar_count'] = count($this->calendars);
     if(isset($this->place_floor)){
       $item['place_floor_name'] = $this->place_floor->name();
     }
@@ -160,19 +182,22 @@ EOT;
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($other_name,',');
     $item['user_name'] = $this->user->details()->name();
+    if($this->work != 9){
+      $item['title'] = $item['teacher_name'].'/'.$item['lesson'].'/'.$item['course'].'/'. $item["course_minutes_name"].'/';
+      foreach($this->subject() as $subject){
+        $item['title'].=$subject.'/';
+      }
 
-    $item['title'] = $item['teacher_name'].'/'.$item['lesson'].'/'.$item['course'].'/'. $item["course_minutes_name"].'/';
-    foreach($this->subject() as $subject){
-      $item['title'].=$subject.'/';
+      $item['title'] = trim($item['title'], '/');
+      $item['title2']  = "";
+      if($item->is_teaching()===true){
+        //授業について詳細を表示
+        $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
+      }
     }
-
-    $item['title'] = trim($item['title'], '/');
-    $item['title2']  = "";
-    if($item->is_teaching()===true){
-      //授業について詳細を表示
-      $item['title2'] = $item['lesson'].' / '.$item['course'].' / 授業時間：'.$item['course_minutes_name'];
+    else {
+      $item['title'] = $item['user_name'].'/'.$item['work_name'];
     }
-
     return $item;
   }
   //本モデルはcreateではなくaddを使う
@@ -186,7 +211,7 @@ EOT;
     if(!isset($user)) return null;
 
     foreach($user->calendar_settings as $setting){
-      if($setting->is_conflict_setting($form['lesson_week'], $form['from_time_slot'], $form['to_time_slot'], 0, $form['place_floor_id'])==true){
+      if($setting->is_conflict_setting($form["schedule_method"], $form["lesson_week_count"], $form['lesson_week'], $form['from_time_slot'], $form['to_time_slot'], 0, $form['place_floor_id'])==true){
         \Log::error("user_calendar_settings[id=".$setting->id."]:と競合");
         return null;
       }
@@ -274,7 +299,7 @@ EOT;
       if(!isset($user)) return null;
       foreach($user->calendar_settings as $setting){
         if($setting->id == $this->id) continue;
-        if($setting->is_conflict_setting($lesson_week, $data['from_time_slot'], $data['to_time_slot'], 0, $place_floor_id)==true){
+        if($setting->is_conflict_setting($this->schedule_method, $this->lesson_week_count, $lesson_week, $data['from_time_slot'], $data['to_time_slot'], 0, $place_floor_id)==true){
           \Log::error("user_calendar_settings[id=".$setting->id."]:と競合");
           return null;
         }
@@ -430,12 +455,14 @@ EOT;
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
-  public function is_conflict_setting($week, $start_time, $end_time, $place_id=0, $place_floor_id=0){
+  public function is_conflict_setting($schedule_method, $week_count, $week, $start_time, $end_time, $place_id=0, $place_floor_id=0){
     //設定が有効じゃない＝競合は発生しない
     if($this->is_enable() === false) return false;
-
     if($this->lesson_week != $week) return false;
-
+    if($schedule_method!="week"){
+      //月の場合、何週目かチェック
+      if($this->week_count != $week_count) return false;
+    }
     $start = strtotime('2000-01-01 '.$start_time);
     $end = strtotime('2000-01-01 '.$end_time);
     $calendar_starttime = strtotime('2000-01-01 '.$this->from_time_slot);

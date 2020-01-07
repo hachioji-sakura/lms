@@ -54,11 +54,10 @@
     <thead>
     <tr class="bg-light">
       <th class="p-1 pl-2 text-sm">
-        <i class="fa fa-plus mt-1"></i>
         <label class="mx-2 mt-1" for="all_check_click">
           {{__('labels.add')}}
         </label>
-        <input class="form-check-input icheck flat-green ml-2" type="checkbox" name="all_check_click" value="delete" onChange='dom.allChecked(this, "check_list");' >
+        <input class="form-check-input icheck flat-red ml-2" type="checkbox" name="all_check_click" value="delete" onChange='dom.allChecked(this, "check_list");' >
       </th>
     </tr>
     </thead>
@@ -82,7 +81,7 @@ function get_to_calendar_date(){
   end_date = end_date.replace_all('/', '-');
   var id = $("input[name='id']").val();
   var url = "/calendar_settings/"+id+"/to_calendar_data?start_date="+start_date+"&end_date="+end_date;
-  $('button.btn-submit').collapse('hide');
+  $('button.btn-submit').attr('disabled', 'disabled');
   front.clearValidateError();
   if(!front.validateFormValue('to_calendar_setting_form')) return false;
   service.getAjax(false, url, null,
@@ -132,7 +131,7 @@ function get_to_calendar_date(){
         }
 
         if(is_find==true){
-          $('button.btn-submit').collapse('show');
+          $('button.btn-submit').removeAttr('disabled');
         }
         else {
           front.showValidateError('#check_list', '登録可能な日付がありません');
