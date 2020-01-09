@@ -16,7 +16,7 @@
   <i class="fa fa-edit"></i><span class="btn-label">{{__('labels.edit')}}</span>
 </a>
 <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.edit')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}?action=delete" role="button" class="btn btn-danger btn-sm mr-1 mt-1">
-  <i class="fa fa-trash"></i><span class="btn-label">{{__('labels.delete_page')}}</span>
+  <i class="fa fa-trash"></i><span class="btn-label">{{__('labels.delete')}}</span>
 </a>
 
 @endif
