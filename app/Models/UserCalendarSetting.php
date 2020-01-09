@@ -52,7 +52,7 @@ EOT;
   }
   public function scopeEnable($query){
     $where_raw = <<<EOT
-      lms.user_calendar_settings.status = 'fix'
+      lms.user_calendar_settings.status in('fix', 'enabled')
       AND (
        (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
        AND
@@ -71,7 +71,9 @@ EOT;
     return $query->orderBy('from_time_slot', 'asc');
   }
   public function lesson_week(){
-    return $this->get_attribute_name('lesson_week', $this->lesson_week);
+    $ret =  $this->get_attribute_name('lesson_week', $this->lesson_week);
+    if(app()->getLocale()=='en') return $ret;
+    return $ret.'曜';
   }
   public function schedule_method(){
     return $this->get_attribute_name('schedule_method', $this->schedule_method);
@@ -85,7 +87,7 @@ EOT;
     if($this->lesson_week_count > 0){
       $ret .= '第'.$this->lesson_week_count;
     }
-    $ret.=$this->lesson_week().'曜';
+    $ret.=$this->lesson_week();
     return $ret;
   }
   public function timezone(){
@@ -146,9 +148,9 @@ EOT;
     $item['work_name'] = $this->work();
     $item['subject'] = $this->subject();
     $item['status_name'] = $this->status_name();
-
     $item['course_name'] = $this->lesson().'/'.$this->course().'/'.$item['course_minutes_name'];
     $item['repeat_setting_name'] = $this->schedule_method().$this->week_setting().'/'.$item['timezone'];
+    $item['last_schedule'] = $this->get_add_last_schedule();
 
     $teacher_name = "";
     $student_name = "";
@@ -345,6 +347,13 @@ EOT;
       }
     }
     return $member;
+  }
+  public function get_add_last_schedule(){
+    $ret = $this->calendars->sortByDesc('start_time')->first();
+    if(isset($ret)){
+      $ret = $ret->details(1);
+    }
+    return $ret;
   }
   public function get_add_calendar_date($start_date="", $end_date="", $range_month=1, $month_week_count=5){
     $add_calendar_date = [];

@@ -133,21 +133,6 @@ class TeacherController extends StudentController
       'item' => $item,
     ])->with($param);
   }
-  public function calendar_settings(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $model = $this->model()->where('id',$id)->first()->user;
-    $item = $model->details();
-    $item['tags'] = $model->tags();
-
-    $user = $param['user'];
-    $view = "calendar_settings";
-    $param['view'] = $view;
-    $calendar_settings = $item->get_calendar_settings($param['filter']);
-    return view($this->domain.'.'.$view, [
-      'calendar_settings' => $calendar_settings,
-    ])->with($param);
-  }
   private function get_students(Request $request, $teacher_id){
     $students =  Student::findChargeStudent($teacher_id)
       ->searchWord($request->search_word)->get();

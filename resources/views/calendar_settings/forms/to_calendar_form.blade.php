@@ -4,7 +4,7 @@
     <div class="col-12 p-2 pl-4">
       <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="collapsed" aria-expanded="false">
         <i class="fa fa-chevron-down mr-1"></i>
-        繰り返しスケジュール設定
+        {{__('labels.regular_schedule_setting')}}
       </a>
     </div>
   </div>
@@ -18,33 +18,33 @@
 <div class="col-12 mb-2" id="to_calendar_setting_form">
   <input type="hidden" name="id" value="{{$item->id}}">
   <label for="start_date" class="w-100">
-    登録範囲
+    {{__('labels.add_range')}}
     <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+    <button type="button" class="btn btn-default btn-sm ml-2" onClick="set_to_calendar_date()">
+      {{__('labels.calendar_button_this_month')}}
+    </button>
+    <button type="button" class="btn btn-default btn-sm ml-2" onClick="set_to_calendar_date(1)">
+      {{__('labels.calendar_button_next_month')}}
+    </button>
   </label>
   <div class="input-group">
-    <input type="text" name="start_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"
+    <input type="text" name="start_date" class="form-control float-left w-30" uitype="datepicker" placeholder="ex.2000/01/01"
     required="true"
     @if(isset($item) && isset($item['enable_start_date']) && $item['enable_start_date']!='9999-12-31')
     value = "{{date('Y/m/d', strtotime($item['enable_start_date']))}}"
     @endif
     >
     <span class="float-left mx-2 mt-2">～</span>
-    <input type="text" name="end_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"
+    <input type="text" name="end_date" class="form-control float-left w-30" uitype="datepicker" placeholder="ex.2000/01/01"
     required="true"
     greater="start_hours" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time1" not_equal_error="{{__('messages.validate_timezone_error')}}"
     @if(isset($item) && isset($item['enable_end_date']) && $item['enable_end_date']!='9999-12-31')
     value = "{{date('Y/m/d', strtotime($item['enable_end_date']))}}"
     @endif
     >
-    <button type="button" class="btn btn-default btn-sm ml-2" onClick="set_to_calendar_date()">
-      当月
-    </button>
-    <button type="button" class="btn btn-default btn-sm ml-2" onClick="set_to_calendar_date(1)">
-      次月
-    </button>
     <button type="button" class="btn btn-outline-success btn-sm ml-2" onClick="get_to_calendar_date()">
-      <i class="fa fa-calendar-alt mr-1"></i>
-      登録日取得
+      <i class="fa fa-calendar-alt"></i>
+      <span class="btn-label">{{__('labels.get')}}</span>
     </button>
   </div>
 </div>
@@ -70,9 +70,10 @@
 function set_to_calendar_date(next_month){
   if(!next_month) next_month = 0;
   var start = util.nowDate(0, next_month, 0);
-  var end = util.nowDate(0, next_month+1, 0);
+  var end = util.nowDate(0, next_month+1, -1);
   $("input[name='start_date']").val(start);
   $("input[name='end_date']").val(end);
+  get_to_calendar_date();
 }
 function get_to_calendar_date(){
   var start_date = $("input[name='start_date']").val();

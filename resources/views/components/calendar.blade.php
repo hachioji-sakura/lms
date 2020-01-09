@@ -377,15 +377,15 @@
                 {{__('labels.target_data')}}
               </label>
               <label class="mx-2">
-              <input type="radio" value="0" name="is_all_user" class="icheck flat-green"
-              @if(!(isset($filter['calendar_filter']['is_all_user']) && $filter['calendar_filter']['is_all_user']==1))
+              <input type="radio" value="0" name="is_all_data" class="icheck flat-green"
+              @if(!(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1))
                 checked
               @endif
               >{{__('labels.user_only')}}
               </label>
               <label class="mx-2">
-              <input type="radio" value="1" name="is_all_user" class="icheck flat-red"
-              @if(isset($filter['calendar_filter']['is_all_user']) && $filter['calendar_filter']['is_all_user']==1)
+              <input type="radio" value="1" name="is_all_data" class="icheck flat-red"
+              @if(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1)
                 checked
               @endif
               >{{__('labels.all')}}

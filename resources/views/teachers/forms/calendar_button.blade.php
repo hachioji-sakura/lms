@@ -37,15 +37,15 @@
   @elseif($calendar["status"]==="confirm")
   {{-- 生徒へ再度通知連絡 --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
-    <i class="fa fa-user-check mr-1"></i>
+    <i class="fa fa-envelope mr-1"></i>
     <span class="ml-1 btn-label">
     {{__('labels.schedule_remind')}}
   </a>
   @elseif($calendar["status"]==="rest" && $calendar->work==9)
   {{-- 事務作業で休みの場合、休み取り消し --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休み取り消し" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
-    <span class="ml-1 btn-label">
-      <i class="fa fa-minus-circle"></i>
+    <i class="fa fa-minus-circle"></i>
+    <span class="ml-1">
       休み取消
     </span>
   </a>

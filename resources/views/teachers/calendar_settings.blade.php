@@ -39,16 +39,21 @@
                 <div class="col-12">
                   <a data-toggle="collapse" data-parent="#month_work_list" href="#{{$setting["lesson_week"]}}" class="ml-2 my-1" aria-expanded="false">
                     <i class="fa fa-chevron-down mr-1"></i>
-                    {{$setting->lesson_week()}}曜日
+                    {{$setting->lesson_week()}}
                   </a>
                 </div>
               </div>
               <div id="{{$setting["lesson_week"]}}" class="collapse show">
             @endif
 
-            <div class="row pl-3 p-1 border-bottom">
+            <div class="row p-2 border-bottom
+              @if($setting['status']=='disabled')
+              calendar_rest
+              @endif
+              ">
+
               <input type="hidden" name="setting_id[]" value="{{$setting['id']}}" >
-              <div class="col-12 col-lg-4 col-md-4">
+              <div class="col-12 col-md-4">
                 <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}" role="button" class="">
                   @if($setting->schedule_method=="month")
                     <span class="text-xs mr-2">
@@ -64,37 +69,45 @@
                     <i class="fa fa-map-marker"></i>{{$setting["place_floor_name"]}}
                   </span>
                 </a>
+                <small title="{{$setting["id"]}}" class="ml-1 badge badge-{{config('status_style')[$setting['status']]}} mt-1 mr-1">{{$setting['status_name']}}</small>
               </div>
-              <div class="col-12 col-md-6">
-                @foreach($setting->members as $member)
-                  @if($member->user->details()->role==="student")
-                  {{--
-                    <a alt="student_name" href="/students/{{$member->user->details()->id}}">
+              <div class="col-12 col-md-4">
+                <span class="mr-2">
+                  @if($setting->is_teaching()==true)
+                    {{$setting['course']}} /  {{$setting['course_minutes_name']}}
+                  @else
+                    {{$setting['work_name']}}
+                  @endif
+                </span>
+              </div>
+              <div class="col-12">
+                @if($setting->work!=9)
+                  @foreach($setting->members as $member)
+                    @if($member->user->details()->role==="student")
+                      <span class="mr-2">
                       <i class="fa fa-user-graduate"></i>
                       {{$member->user->details()->name}}
-                    </a>
-                    --}}
-                    <span class="mr-2">
-                    <i class="fa fa-user-graduate"></i>
-                    {{$member->user->details()->name}}
-                    </span>
-                  @endif
-                @endforeach
-                @foreach($setting['subject'] as $subject)
-                <span class="text-xs mr-2">
-                  <small class="badge badge-primary mt-1 mr-1">
-                    {{$subject}}
-                  </small>
-                </span>
-                @endforeach
+                      </span>
+                    @endif
+                  @endforeach
+                  @foreach($setting['subject'] as $subject)
+                  <span class="text-xs mr-2">
+                    <small class="badge badge-primary mt-1 mr-1">
+                      {{$subject}}
+                    </small>
+                  </span>
+                  @endforeach
+                @endif
               </div>
-              {{--
-              <div class="col-12 col-lg-2 col-md-2">
-                <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}" role="button" class="btn btn-default btn-sm float-left mr-1 mt-1 float-right">
-                  <i class="fa fa-edit"></i>{{__('labels.edit')}}
+              <div class="col-12 col-md-6 mt-1">
+                <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting["id"]}}" class="text-sm">
+                  {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:{{$setting['last_schedule']['date']}}
                 </a>
               </div>
-              --}}
+              <div class="col-12 col-md-6 text-right mt-1">
+                @component('teachers.forms.calendar_setting_button', ['setting' => $setting, 'user' => $user])
+                @endcomponent
+              </div>
             </div>
             <?php
               $__week = $setting["lesson_week"];
@@ -128,7 +141,7 @@
 
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")
-  <div class="col-12 col-lg-4 col-md-6">
+  <div class="col-12 col-md-6">
     <label for="charge_subject" class="w-100">
       {{__('labels.week_day')}}
     </label>
@@ -144,7 +157,7 @@
       </select>
     </div>
   </div>
-  <div class="col-12 col-lg-4 col-md-6">
+  <div class="col-12 col-md-6">
     <label for="charge_subject" class="w-100">
       {{__('labels.work')}}
     </label>
@@ -160,7 +173,7 @@
       </select>
     </div>
   </div>
-  <div class="col-12 col-lg-4 col-md-6">
+  <div class="col-12 col-md-6">
     <label for="charge_subject" class="w-100">
       {{__('labels.place')}}
     </label>
@@ -175,25 +188,25 @@
         @endforeach
       </select>
     </div>
+  </div>
+  <div class="col-12 mb-2">
+    <label for="search_status" class="w-100">
+      {{__('labels.status')}}
+    </label>
+    <div class="w-100">
+      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
+        @foreach(config('attribute.setting_status') as $index => $name)
+          <option value="{{$index}}"
+          @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+
   @endslot
 @endcomponent
 
-{{--まだ対応しない
-<section class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12 col-md-6">
-				@yield('milestones')
-			</div>
-			<div class="col-12 col-md-6">
-				@yield('events')
-			</div>
-		</div>
-	</div>
-</section>
-
-<section class="content">
-	@yield('tasks')
-</section>
---}}
 @endsection
