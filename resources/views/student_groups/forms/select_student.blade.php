@@ -39,7 +39,7 @@ function get_charge_students(){
   var teacher_id = ($('*[name=teacher_id]').val())|0;
   console.log("get_charge_students");
   //対象の生徒を取得
-  service.getAjax(false, '/teachers/'+teacher_id+'/students', {'loading': false},
+  service.getAjax(false, '/teachers/'+teacher_id+'/students', null,
     function(result, st, xhr) {
       if(result['status']===200){
         var c = 0;

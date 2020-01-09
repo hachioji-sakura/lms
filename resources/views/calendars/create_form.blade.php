@@ -67,7 +67,7 @@
                   ];
     ?>
     @foreach($form_data as $key => $name)
-    <div class="col-6 p-3 font-weight-bold
+    <div class="col-6 p-2 font-weight-bold
 
       @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
         schedule_type schedule_type_class
@@ -79,7 +79,7 @@
         schedule_type schedule_type_class schedule_type_other
       @endif
     " >{{$name}}</div>
-    <div class="col-6 p-3
+    <div class="col-6 p-2
       @if($key=="course_type_name" || $key=="course_minutes_name" || $key=="subject_name" || $key=="start_time")
         schedule_type schedule_type_class
       @elseif($key=="work_name" )
@@ -129,8 +129,8 @@
         </div>
       @endif
     @endforeach
-    <div class="col-6 p-3 font-weight-bold">{{__('labels.remark')}}</div>
-    <div class="col-6 p-3"><span id="remark"></span></div>
+    <div class="col-6 p-2 font-weight-bold">{{__('labels.remark')}}</div>
+    <div class="col-6 p-2"><span id="remark"></span></div>
     @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
 </div>
 @endsection
