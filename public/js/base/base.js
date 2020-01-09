@@ -493,15 +493,18 @@
 				console.log('modal open');
       	$("#"+form_id).modal('show');
 				// モーダルが開いたら、bodyにfixedを付与
-			  document.body.style.position = 'fixed';
+				/*
+			  document.body.style.position = 'absolute';
 			  document.body.style.top = `-${window.scrollY}px`;
+				*/
 				$("#"+form_id).on('hidden.bs.modal', function () {
 					console.log('modal close');
 					// モーダルが閉じられ時
-					const top = document.body.style.top;
+					/*
 					document.body.style.position = '';
 					document.body.style.top = '';
 					window.scrollTo(0, parseInt(scrollY || '0') * -1);
+					*/
 					pageClose(form_id);
 				});
 			}

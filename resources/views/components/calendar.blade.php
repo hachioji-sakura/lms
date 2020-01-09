@@ -41,53 +41,6 @@
       front.clearFormValue('filter_form');
     });
   });
-
-  function status_style(status){
-    var _ret = {
-      "trial" : {
-        "color" : "#e83e8c",
-        "icon" : "<i class='fa fa-exclamation-circle mr-1'></i>",
-      },
-      "new" : {
-        "color" : "#ffc107",
-        "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
-      },
-      "confirm" : {
-        "color" : "#fd7e14",
-        "icon" : "<i class='fa fa-question-circle mr-1'></i>",
-      },
-      "fix" : {
-        "color" : "#17a2b8",
-        "icon" : "<i class='fa fa-clock mr-1'></i>",
-      },
-      "cancel" : {
-        "color" : "#6c757d",
-        "icon" : "<i class='fa fa-ban mr-1'></i>",
-      },
-      "presence" : {
-        "color" : "#28a745",
-        "icon" : "<i class='fa fa-check-circle mr-1'></i>",
-      },
-      "absence" : {
-        "color" : "#dc3545",
-        "icon" : "<i class='fa fa-user-times mr-1'></i>",
-      },
-      "rest" : {
-        "color" : "#dc3545",
-        "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
-      },
-      "rest_cancel" : {
-        "color" : "#ffc107",
-        "icon" : "<i class='fa fa-hourglass-half mr-1'></i>",
-      },
-      "lecture_cancel" : {
-        "color" : "#6c757d",
-        "icon" : "<i class='fa fa-ban mr-1'></i>",
-      },
-    };
-    if(_ret[status]) return _ret[status];
-    return _ret['trial'];
-  }
   function event_render(events, element, title, is_teacher){
     var _status_style = status_style(events.status);
     if(is_teacher==false){
@@ -424,15 +377,15 @@
                 {{__('labels.target_data')}}
               </label>
               <label class="mx-2">
-              <input type="radio" value="0" name="is_all_user" class="icheck flat-green"
-              @if(!(isset($filter['calendar_filter']['is_all_user']) && $filter['calendar_filter']['is_all_user']==1))
+              <input type="radio" value="0" name="is_all_data" class="icheck flat-green"
+              @if(!(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1))
                 checked
               @endif
               >{{__('labels.user_only')}}
               </label>
               <label class="mx-2">
-              <input type="radio" value="1" name="is_all_user" class="icheck flat-red"
-              @if(isset($filter['calendar_filter']['is_all_user']) && $filter['calendar_filter']['is_all_user']==1)
+              <input type="radio" value="1" name="is_all_data" class="icheck flat-red"
+              @if(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1)
                 checked
               @endif
               >{{__('labels.all')}}

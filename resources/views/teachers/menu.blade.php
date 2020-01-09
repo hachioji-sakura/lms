@@ -133,6 +133,11 @@
           <i class="fa fa-user-edit nav-icon"></i>{{__('labels.teacher_setting')}}
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar_settings">
+          <i class="fa fa-user-clock nav-icon"></i>{{__('labels.regular_schedule_list')}}
+        </a>
+      </li>
       @if($user->role==="manager")
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">

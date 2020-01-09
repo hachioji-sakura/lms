@@ -42,7 +42,7 @@ $(function(){
 <script src="{{asset('js/base/service.js?v=3')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
 <script src="{{asset('js/base/translate.js')}}"></script>
-<script src="{{asset('js/base/base.js?v=3s')}}"></script>
+<script src="{{asset('js/base/base.js?v=4')}}"></script>
 </body>
 <script>
 $(function(){
@@ -94,6 +94,62 @@ $(function(){
     return false;
   });
 });
+function status_style(status){
+  var _ret = {
+    "rest" : {
+      "color" : "#dc3545",
+      "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
+      "style" : "secondary",
+    },
+    "rest_cancel" : {
+      "color" : "#ffc107",
+      "icon" : "<i class='fa fa-hourglass-half mr-1'></i>",
+    },
+    "lecture_cancel" : {
+      "color" : "#6c757d",
+      "icon" : "<i class='fa fa-ban mr-1'></i>",
+      "style" : "secondary",
+    },
+    "absence" : {
+      "color" : "#dc3545",
+      "icon" : "<i class='fa fa-user-times mr-1'></i>",
+      "style" : "danger",
+    },
+    "confirm" : {
+      "color" : "#fd7e14",
+      "icon" : "<i class='fa fa-question-circle mr-1'></i>",
+      "style" : "warning",
+    },
+    "fix" : {
+      "color" : "#17a2b8",
+      "icon" : "<i class='fa fa-clock mr-1'></i>",
+      "style" : "primary",
+    },
+    "presence" : {
+      "color" : "#28a745",
+      "icon" : "<i class='fa fa-check-circle mr-1'></i>",
+      "style" : "success",
+    },
+    "trial" : {
+      "color" : "#e83e8c",
+      "icon" : "<i class='fa fa-exclamation-circle mr-1'></i>",
+      "style" : "warning",
+    },
+    "new" : {
+      "color" : "#ffc107",
+      "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
+      "style" : "secondary",
+    },
+    "cancel" : {
+      "color" : "#6c757d",
+      "icon" : "<i class='fa fa-ban mr-1'></i>",
+      "style" : "secondary",
+    },
+  };
+  if(_ret[status]) return _ret[status];
+  return _ret['trial'];
+}
+
 </script>
 
 </html>

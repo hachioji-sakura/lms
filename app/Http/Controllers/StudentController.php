@@ -557,7 +557,7 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $calendar_settings = $item->get_calendar_settings($param['filter']);
+   $calendar_settings = $item->get_calendar_settings($param['filter']['calendar_filter']);
    return view($this->domain.'.'.$view, [
      'calendar_settings' => $calendar_settings,
    ])->with($param);
@@ -680,6 +680,9 @@ class StudentController extends UserController
      $calendars = $calendars->rangeDate($from_date, $to_date);
    }
 
+   if(isset($form['user_calendar_setting_id'])){
+     $calendars = $calendars->where('user_calendar_setting_id' , $form['user_calendar_setting_id']);
+   }
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
    $calendars = $calendars->findUser($user_id);

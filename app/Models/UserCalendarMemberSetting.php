@@ -143,6 +143,10 @@ class UserCalendarMemberSetting extends UserCalendarMember
       $dayofweek = $week_code;
     }
     $postdata =[];
+    $startdate = $this->setting->enable_start_date;
+    $enddate = $this->setting->enable_end_date;
+    if(empty($startdate)) $startdate = '2000-01-01';
+    if(empty($enddate)) $enddate = '2100-01-01';
     switch($method){
       case "PUT":
       case "POST":
@@ -153,8 +157,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
           "kind" => $kind,
           "dayofweek" => $dayofweek,
           "dayofmonth" => $dayofmonth,
-          "startdate" => $this->setting->enable_start_date,
-          "enddate" => $this->setting->enable_end_date,
+          "startdate" => $startdate,
+          "enddate" => $enddate,
           "starttime" => $this->setting->from_time_slot,
           "endtime" => $this->setting->to_time_slot,
           "lecture_id" => $lecture_id_org,

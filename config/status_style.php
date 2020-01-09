@@ -15,5 +15,7 @@ return array(
   'regular' => 'success',
   'recess' => 'secondary',
   'unsubscribe' => 'secondary',
+  'disabled' => 'secondary',
+  'enabled' => 'success',
   );
 ?>

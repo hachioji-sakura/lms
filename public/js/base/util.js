@@ -352,28 +352,19 @@
 		* @return {String}dateString
 		*/
 		nowDate: function(diffYear, diffMonth, diffDay) {
-			var date = new Date();
+			var dt = new Date();
 			var dy =0, dm = 0, dd = 0;
 			if(this.isInteger(diffYear)) dy = diffYear|0;
 			if(this.isInteger(diffMonth)) dm = diffMonth|0;
 			if(this.isInteger(diffDay)) dd = diffDay|0;
-			var year = date.getFullYear()+dy;
-			var month = date.getMonth()+dm;
-			var day = date.getDate()+dd;
 
-			if(month<0) month=0;
-			else if(month>11) month=11;
+			var date = new Date(dt.getFullYear()+dy, dt.getMonth()+dm, dd+1)
 
-			if(day<0) day=1;
-			else if(day>31) day=31;
+			var year = date.getFullYear();
+			var month = date.getMonth()+1;
+			var day = date.getDate();
 
-			month++;
-			var strdate = "";
-			for(var i=0;i<10;i++){
-				strdate = ( year+ '/' + this.leftPadZero(month, 2) + '/' + this.leftPadZero(day, 2));
-				if(this.isDate(strdate)) break;
-				day--;
-			}
+			var strdate = ( year+ '/' + this.leftPadZero(month, 2) + '/' + this.leftPadZero(day, 2));
 			return strdate;
 		},
 

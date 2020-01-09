@@ -37,15 +37,15 @@
   @elseif($calendar["status"]==="confirm")
   {{-- 生徒へ再度通知連絡 --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
-    <i class="fa fa-user-check mr-1"></i>
+    <i class="fa fa-envelope mr-1"></i>
     <span class="ml-1 btn-label">
     {{__('labels.schedule_remind')}}
   </a>
   @elseif($calendar["status"]==="rest" && $calendar->work==9)
   {{-- 事務作業で休みの場合、休み取り消し --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休み取り消し" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
-    <span class="ml-1 btn-label">
-      <i class="fa fa-minus-circle"></i>
+    <i class="fa fa-minus-circle"></i>
+    <span class="ml-1">
       休み取消
     </span>
   </a>
@@ -62,7 +62,7 @@
 
 @if($calendar->exist_rest_student()==true && $user->role==="manager")
 {{-- TODO 休み種別変更 --}}
-<a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.rest_change')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest_change?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
+<a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.rest_change')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/rest_change?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-danger btn-sm ml-1">
   <i class="fa fa-exclamation-circle" title="{{$calendar["status"]}}"></i>
   <span class="ml-1 btn-label">
     {{__('labels.rest_change')}}
@@ -73,7 +73,7 @@
 @if(($calendar["status"]==="presence" || $calendar["status"]==="absence") && ($user->role==="manager" || $user->role==="teacher"))
 {{-- 出欠変更 --}}
 <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
-  <i class="fa fa-exclamation-circle" title="{{$calendar["status"]}}"></i>
+  <i class="fa fa-wrench" title="{{$calendar["status"]}}"></i>
   <span class="ml-1 btn-label">
     出欠変更
   </span>

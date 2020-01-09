@@ -39,7 +39,28 @@
 <div class="card-header">
   <h3 class="card-title">@yield('title')</h3>
   <div class="card-tools pt-2">
-    @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count]) @endcomponent
+    @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+      @slot("addon_button")
+      @if(isset($user_calendar_setting_id ))
+      <ul class="pagination pagination-sm m-0 float-left text-sm">
+        <li class="page-item mr-1">
+          <a class="btn btn-outline-secondary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$user_calendar_setting_id}}/to_calendar" page_title="繰り返しスケジュール登録">
+            <span class="btn-label">
+              予定登録
+            </span>
+          </a>
+        </li>
+        <li class="page-item mr-1">
+          <a class="btn btn-outline-danger btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$user_calendar_setting_id}}/delete_calendar" page_title="繰り返しスケジュール削除">
+            <span class="btn-label">
+              予定削除
+            </span>
+          </a>
+        </li>
+      </ul>
+      @endif
+      @endslot
+    @endcomponent
   </div>
 </div>
 <div class="card-body table-responsive p-0">
