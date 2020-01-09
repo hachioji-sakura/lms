@@ -21,6 +21,7 @@ return [
   "info_calendar_remind1" => "以下の授業予定を生徒様にご連絡いたしました。",
   "info_calendar_remind2" => "生徒様から授業予定の確定操作後に、\n予定は確定となります。",
   "warning_calendar_presence" => "以下の授業予定の出欠をつけてください",
+  "warning_work_calendar_presence" => "以下の予定に出勤・欠勤をつけてください",
   "warning_calendar_presence_time" => "出欠確認は、授業開始15分前から行ってください。",
   "confirm_lecture_exec" => "この授業を実施しましたか？",
   "confirm_student_presence" => "生徒は出席しましたか？",
