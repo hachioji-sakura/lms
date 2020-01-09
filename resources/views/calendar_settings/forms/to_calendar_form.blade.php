@@ -85,7 +85,7 @@ function get_to_calendar_date(){
   $('button.btn-submit').attr('disabled', 'disabled');
   front.clearValidateError();
   if(!front.validateFormValue('to_calendar_setting_form')) return false;
-  service.getAjax(false, url, null,
+  service.getAjax(false, url, {'loading': true},
     function(result, st, xhr) {
       var check_template = [
               '<tr class="">',

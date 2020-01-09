@@ -89,6 +89,7 @@ function get_delete_calendar_date(){
     "from_date" : start_date,
     "to_date" : end_date,
     "user_calendar_setting_id" : id,
+    "loading" : true,
   };
   $('button.btn-submit').collapse('hide');
   if(!front.validateFormValue('delete_calendar_setting_form')) return false;

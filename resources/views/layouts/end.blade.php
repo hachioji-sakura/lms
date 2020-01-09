@@ -34,7 +34,7 @@ $(function(){
 <script src="{{asset('js/lib/inflate.js')}}"></script>
 <script src="{{asset('js/lib/deflate.js')}}"></script>
 <script src="{{asset('js/lib/timsort.js')}}"></script>
-<script src="{{asset('js/base/util.js?v=1')}}"></script>
+<script src="{{asset('js/base/util.js?v=2')}}"></script>
 <script src="{{asset('js/base/cardTable.js')}}"></script>
 <script src="{{asset('js/base/listTable.js')}}"></script>
 <script src="{{asset('js/base/fileUI.js')}}"></script>
