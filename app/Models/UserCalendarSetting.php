@@ -208,7 +208,8 @@ EOT;
 
     $ret = [];
     $trial_id = 0;
-
+    //TODO 重複登録、競合登録の防止が必要
+    /*
     $user = User::where('id', $form['user_id'])->first();
     if(!isset($user)) return null;
 
@@ -218,9 +219,10 @@ EOT;
         return null;
       }
     }
+    */
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
-    $course_minutes = intval(strtotime($form['endtime']) - strtotime($form['starttime']))/60;
+    $course_minutes = intval(strtotime('2000-01-01 '.$form['to_time_slot']) - strtotime('2000-01-01 '.$form['from_time_slot']))/60;
 
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
@@ -297,7 +299,9 @@ EOT;
       if(isset($data['place_floor_id'])){
         $place_floor_id = $data['place_floor_id'];
       }
-      $user = User::where('id', $this->user_id)->first();
+      //TODO 重複登録、競合登録の防止が必要
+      /*
+        $user = User::where('id', $this->user_id)->first();
       if(!isset($user)) return null;
       foreach($user->calendar_settings as $setting){
         if($setting->id == $this->id) continue;
@@ -306,11 +310,12 @@ EOT;
           return null;
         }
       }
+      */
     }
-
     $this->update($data);
     $tag_names = ['course_type', 'lesson'];
     foreach($tag_names as $tag_name){
+      \Log::warning("UserCalendarTagSetting:".$tag_name."=".$form[$tag_name]);
       if(!empty($form[$tag_name])){
         UserCalendarTagSetting::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }

@@ -66,6 +66,7 @@ Route::get('calendar_settings/{id}/delete_calendar','UserCalendarSettingControll
 Route::post('calendar_settings/{id}/to_calendar','UserCalendarSettingController@to_calendar');
 Route::post('calendar_settings/{id}/delete_calendar','UserCalendarSettingController@delete_calendar');
 Route::get('calendar_settings/{id}/to_calendar_data','UserCalendarSettingController@to_calendar_data');
+Route::get('calendar_settings/check','UserCalendarSettingController@setting_check');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');
@@ -75,6 +76,7 @@ Route::put('calendars/{id}/status_update/{status}','UserCalendarController@statu
 Route::put('calendars/{id}/remind','UserCalendarController@remind');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
 Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
+Route::get('calendars/check','UserCalendarController@setting_check');
 Route::get('space_calendars','UserCalendarController@space_calendars');
 
 

@@ -1,11 +1,15 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
-    @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
-      {!!nl2br(__('messages.warning_calendar_presence'))!!}
+    @if($item->work==9)
+    {!!nl2br(__('messages.warning_work_calendar_presence'))!!}
     @else
-      <div class="col-12 col-lg-12 col-md-12 mb-1">
-        <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
-      </div>
+      @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
+        {!!nl2br(__('messages.warning_calendar_presence'))!!}
+      @else
+        <div class="col-12 col-lg-12 col-md-12 mb-1">
+          <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
+        </div>
+      @endif
     @endif
   @endslot
   @slot('forms')

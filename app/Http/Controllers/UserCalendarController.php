@@ -300,7 +300,14 @@ class UserCalendarController extends MilestoneController
         abort(403, 'このページにはアクセスできません(2)');
       }
 
-      $ret['item'] = $item->details($user->user_id);
+      if($this->is_manager_or_teacher($user->role)){
+        //講師・事務の場合、すべての生徒名を表示する(details(user_id=1)）
+        $ret['item'] = $item->details(1);
+      }
+      else {
+        //それ以外は、自分に関連するもの（親子）のみ表示する
+        $ret['item'] = $item->details($user->user_id);
+      }
       if($request->has('student_id')){
         $student = Student::where('id', $request->get('student_id'))->first();
         if(isset($student)){
@@ -1370,6 +1377,14 @@ class UserCalendarController extends MilestoneController
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
-
-
+    /**
+     * 登録内容が有効かどうかチェック
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function setting_check(Request $request){
+      //TODO : 設定を問題なく登録できるかチェックするAPI
+      $ret = $this->api_response();
+      return $ret;
+    }
 }
