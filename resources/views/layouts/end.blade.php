@@ -46,6 +46,29 @@ $(function(){
 </body>
 <script>
 $(function(){
+  var _timer = null;
+  $(window).on('scroll',function(){
+    var heroBottom = $('.main-header').height();
+    $('.main-header').css('top', 0);
+    if($(window).scrollTop() > heroBottom){
+      if(_timer!=null) clearTimeout(_timer);
+      _timer = setTimeout(header_scroll, 300);
+    }
+  });
+  function header_scroll(){
+    var heroBottom = $('.main-header').height();
+    if($(window).scrollTop() > heroBottom){
+      $('.main-header').animate({'top' : $(window).scrollTop()},'fast', function(){
+        if($(window).scrollTop() > heroBottom){
+          $('.main-header').css('top', $(window).scrollTop());
+        }
+      });
+    }
+    else {
+      $('.main-header').css('top', 0);
+    }
+  }
+  $(window).trigger('scroll');
   //キーワード検索
   $("#search_button").on("click", function(e){
     var _search_word = $("input[name=search_word]").val();
@@ -149,6 +172,7 @@ function status_style(status){
   if(_ret[status]) return _ret[status];
   return _ret['trial'];
 }
+
 
 </script>
 
