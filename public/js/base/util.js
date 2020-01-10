@@ -333,13 +333,18 @@
 		dateformat: function(val, template){
 			var val = val.replace_all('/', '');
 			val = val.replace_all('-', '');
-			var y = val.substring(0,4);
-			var m = val.substring(4,6);
-			var d = val.substring(6,8);
+			var y = val.substring(0,4)|0;
+			var m = val.substring(4,6)|0;
+			var d = val.substring(6,8)|0;
+			var date = new Date (y, m-1, d) ;
+			var dayOfWeek = date.getDay();
+			var dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ][dayOfWeek] ;
+
 			template = template.replace('%Y', '{0}');
 			template = template.replace('%m', '{1}');
 			template = template.replace('%d', '{2}');
-			return this.format(template, [y, m, d]);
+			template = template.replace('%w', '{3}');
+			return this.format(template, [y, m, d, dayOfWeekStr]);
 		},
 		/**
 		* 現在のクライアント日付文字列を返却

@@ -94,7 +94,7 @@ function get_to_calendar_date(){
       				'        <div class="form-check">',
       				'        <input class="form-check-input icheck flat-green calendar_member_delete" type="checkbox" name="select_dates[]" id="date_check_#date#" value="#date#" ',
               ' checked>',
-      				'        <label class="form-check-label" for="date_check_#date#">#date_lavel#</label>',
+      				'        <label class="form-check-label" for="date_check_#date#">#date_label#</label>',
       				'        </div>',
       				'    </div>',
       				'    </td>',
@@ -106,7 +106,7 @@ function get_to_calendar_date(){
       				'    <div class="input-group">',
       				'        <div class="form-check">',
       				'        <i class="fa fa-calendar" ></i>',
-      				'        <label class="form-check-label">#date_lavel# 登録済み</label>',
+      				'        <label class="form-check-label">#date_label# 登録済み</label>',
       				'        </div>',
       				'    </div>',
       				'    </td>',
@@ -126,8 +126,8 @@ function get_to_calendar_date(){
           else {
             is_find = true;
           }
-          var date_lavel = util.dateformat(date, '%Y年%m月%d');
-          var _dom = dom.textFormat(_template, {"date" : date, "date_lavel" : date_lavel});
+          var date_label = util.dateformat(date, '%Y年%m月%d(%w)');
+          var _dom = dom.textFormat(_template, {"date" : date, "date_label" : date_label});
           $('#check_list tbody').append(_dom);
         }
 

@@ -95,6 +95,11 @@ class UserCalendarSettingController extends UserCalendarController
       $user = $this->login_details($request);
       $form = $request->all();
       $form['create_user_id'] = $user->user_id;
+      $schedule_type = "";
+      if($request->has('schedule_type')){
+        $schedule_type = $request->get('schedule_type');
+      }
+
       if($request->has('lesson_week_count')){
         $form['lesson_week_count'] = $request->get('lesson_week_count');
       }
@@ -118,10 +123,10 @@ class UserCalendarSettingController extends UserCalendarController
       }
       if($request->has('course_minutes')){
         $form['course_minutes'] = $request->get('course_minutes');
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+        if($schedule_type=='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
       }
-      if($request->has('end_hours') && $request->has('end_minutes')){
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
+      else if($request->has('end_hours') && $request->has('end_minutes')){
+        if($schedule_type!='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
       $form['charge_subject'] = $request->get('charge_subject');
       $form['english_talk_lesson'] = $request->get('english_talk_lesson');
@@ -467,19 +472,20 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
-
         $setting = UserCalendarSetting::add($form);
-        //生徒をカレンダーメンバーに追加
-        if(!empty($form['students'])){
-          foreach($form['students'] as $student){
-            $setting->memberAdd($student->user_id, $form['create_user_id']);
+        if($setting != null){
+          //生徒をカレンダーメンバーに追加
+          if(!empty($form['students'])){
+            foreach($form['students'] as $student){
+              $setting->memberAdd($student->user_id, $form['create_user_id']);
+            }
           }
+          $setting = $setting->details();
+          $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
-        $setting = $setting->details();
-        $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
-        $param = $this->get_param($request, $setting->id);
         return $setting;
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+
       return $res;
     }
     public function _delete(Request $request, $id)
@@ -542,5 +548,46 @@ class UserCalendarSettingController extends UserCalendarController
       }, 'スケジュール一括削除', __FILE__, __FUNCTION__, __LINE__ );
 
       return $this->save_redirect($res, $param, '削除しました。');
+    }
+    /**
+     * 新規登録画面
+     *
+     * @return \Illuminate\Http\Response
+     */
+   public function create(Request $request)
+   {
+      $param = $this->get_param($request);
+      //新規
+      $param['item'] = new UserCalendarSetting();
+      $param['item']->work = "";
+      $param['item']->place = "";
+      $param['teachers'] = [];
+      if($param['user']->role==="teacher"){
+        $param['teachers'][] = $param['user'];
+        $param['teacher_id'] = $param['user']->id;
+      }
+      else if($param['user']->role==="manager"){
+        if($request->has('teacher_id')){
+          $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
+          $param['teacher_id'] = $request->get('teacher_id');
+        }
+        else if($request->has('manager_id')){
+          //事務からの登録の場合、作業内容＝9 (事務作業）
+          $param['item']->work = 9;
+        }
+      }
+      if($param['item']->work!=9 && !isset($param['teacher_id'])) {
+        $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        return view('teachers.select_teacher',
+          [ 'error_message' => '', '_edit' => false])
+          ->with($param);
+      }
+      $param['item']['course_minutes'] = 0;
+      if($request->has('course_minutes')){
+        $param['item']['course_minutes'] = $request->get('course_minutes');
+      }
+      return view($this->domain.'.create',
+        [ 'error_message' => '', '_edit' => false])
+        ->with($param);
     }
 }
