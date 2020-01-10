@@ -1,11 +1,15 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
-    @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
-      {!!nl2br(__('messages.warning_calendar_presence'))!!}
+    @if($item->work==9)
+    {!!nl2br(__('messages.warning_work_calendar_presence'))!!}
     @else
-      <div class="col-12 col-lg-12 col-md-12 mb-1">
-        <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
-      </div>
+      @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
+        {!!nl2br(__('messages.warning_calendar_presence'))!!}
+      @else
+        <div class="col-12 col-lg-12 col-md-12 mb-1">
+          <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
+        </div>
+      @endif
     @endif
   @endslot
   @slot('forms')
@@ -149,8 +153,7 @@
           <div class="row">
             <div class="col-12 col-md-6 mb-1">
               <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_presence" {{__('labels.close_button')}}
-                  confirm="{{__('messages.confirm_update')}}">
-                  <i class="fa fa-check-circle mr-1"></i>
+                  confirm="{{__('messages.confirm_update')}}">                  <i class="fa fa-check-circle mr-1"></i>
                   {{__('labels.schedule_presence')}}
               </button>
             </div>
@@ -180,7 +183,6 @@
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
             <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence" {{__('labels.close_button')}}
-confirm="{{__('messages.confirm_update')}}">
                 <i class="fa fa-check-circle mr-1"></i>
                 @if($item->work==9)
                 {{__('labels.calendar_button_working')}}
@@ -196,7 +198,8 @@ confirm="{{__('messages.confirm_update')}}">
 		        <input type="text" name="dummy" style="display:none;" / >
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_single_absence" confirm="{{__('messages.confirm_update')}}">
+            <button type="button" class="btn btn-danger btn-submit btn-block"  accesskey="{{$domain}}_single_absence"
+            >
               <i class="fa fa-times-circle mr-1"></i>
               @if($item->work==9)
               {{__('labels.calendar_button_no_working')}}

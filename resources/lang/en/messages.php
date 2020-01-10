@@ -21,6 +21,7 @@ return [
  "info_calendar_remind1" => "We have notified the students of the following class schedule.",
  "info_calendar_remind2" => "After the decision operation of the class schedule from the students,\nThe schedule will be finalized.",
  "warning_calendar_presence" => "Please have attendance for the following class schedule",
+ "warning_work_calendar_presence" => "Please have attendance for the following work schedule",
  "warning_calendar_presence_time" => "Please check attendance 15 minutes before class start.",
  "confirm_lecture_exec" => "Did you conduct this class?",
  "confirm_student_presence" => "Did the students attend?",

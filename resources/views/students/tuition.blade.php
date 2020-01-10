@@ -23,7 +23,7 @@
             </li>
           </ul>
           <div class="card-tools">
-            <a class="page-link btn btn-float btn-default btn-sm" data-toggle="modal" data-target="#filter_form">
+            <a class="page-link btn btn-default btn-sm" data-toggle="modal" data-target="#filter_form">
               <i class="fa fa-filter"></i>
               <span class="btn-label">{{__('labels.filter')}}</span>
             </a>

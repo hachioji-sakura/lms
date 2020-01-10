@@ -582,10 +582,16 @@ EOT;
     return false;
   }
   public function get_calendar_settings($filter){
-    \Log::warning("get_calendar_settings start");
-
     $items = UserCalendarSetting::findUser($this->user_id);
-    $items = $items->enable();
+    if(isset($filter["search_status"])){
+      $_param = "";
+      if(gettype($filter["search_status"]) == "array") $_param  = $filter["search_status"];
+      else $_param = explode(',', $filter["search_status"].',');
+      $items = $items->findStatuses($_param);
+    }
+    else {
+      $items = $items->enable();
+    }
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];

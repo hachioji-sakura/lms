@@ -1014,7 +1014,7 @@ EOT;
           foreach($teacher->user->calendar_settings as $setting){
             if($setting->lesson_week != $week_day) continue;
             //echo "conflict?:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
-            if($setting->is_conflict_setting($week_day,$f,$t)==true){
+            if($setting->is_conflict_setting("week", 0 , $week_day,$f,$t)==true){
               //echo "conflict!!<br>";
               $is_free = false;
               $data["status"] = "time_conflict";

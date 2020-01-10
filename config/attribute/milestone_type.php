@@ -1,8 +1,9 @@
 <?php
 return array(
-  'study' => '宿題等に関して',
-  'examination' => 'テストに関して',
-  'promotion' => '進学、進級に関して',
+  'entrance_examination' => '入試',
+  'examination' => '定期テスト',
+  'promotion' => '内部進学',
+  'qualification' => '資格',
   'other' => 'その他',
 );
 ?>

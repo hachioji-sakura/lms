@@ -62,8 +62,8 @@
         @endcomponent
       </li>
       @endforeach
-    </ul>
     @endforeach
+  </ul>
   @endif
   @if($is_find == false)
   <div class="alert">

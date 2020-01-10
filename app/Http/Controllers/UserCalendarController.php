@@ -269,6 +269,9 @@ class UserCalendarController extends MilestoneController
     if($request->has('cancel_reason')){
       $ret['cancel_reason'] = $request->get('cancel_reason');
     }
+    if($request->has('user_calendar_setting_id')){
+      $ret['user_calendar_setting_id'] = $request->get('user_calendar_setting_id');
+    }
     if(is_numeric($id) && $id > 0){
       $user_id = -1;
       if($request->has('user')){
@@ -297,7 +300,14 @@ class UserCalendarController extends MilestoneController
         abort(403, 'このページにはアクセスできません(2)');
       }
 
-      $ret['item'] = $item->details($user->user_id);
+      if($this->is_manager_or_teacher($user->role)){
+        //講師・事務の場合、すべての生徒名を表示する(details(user_id=1)）
+        $ret['item'] = $item->details(1);
+      }
+      else {
+        //それ以外は、自分に関連するもの（親子）のみ表示する
+        $ret['item'] = $item->details($user->user_id);
+      }
       if($request->has('student_id')){
         $student = Student::where('id', $request->get('student_id'))->first();
         if(isset($student)){
@@ -464,9 +474,9 @@ class UserCalendarController extends MilestoneController
       if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
          return $this->forbidden("you are not manager");
       }
-      \Log::warning("is_all_user:".$request->get('is_all_user'));
+      \Log::warning("is_all_data:".$request->get('is_all_data'));
 
-      if($request->get('is_all_user')==1){
+      if($request->get('is_all_data')==1){
         if($this->is_student_or_parent($param['user']->role)==false){
           $user_id = 0;
         }
@@ -549,10 +559,6 @@ class UserCalendarController extends MilestoneController
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
-      //設定ID
-      if(isset($request->setting_id)){
-        $items = $items->where('user_calendar_setting_id', $request->setting_id);
-      }
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
@@ -608,6 +614,10 @@ class UserCalendarController extends MilestoneController
       //ID 検索
       if(isset($form['id'])){
         $items = $items->where('id',$form['id']);
+      }
+      //設定ID　検索
+      if(isset($form['user_calendar_setting_id'])){
+        $items = $items->where('user_calendar_setting_id',$form['user_calendar_setting_id']);
       }
       //ステータス 検索
       if(isset($form['search_status'])){
@@ -1367,6 +1377,14 @@ class UserCalendarController extends MilestoneController
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
-
-
+    /**
+     * 登録内容が有効かどうかチェック
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function setting_check(Request $request){
+      //TODO : 設定を問題なく登録できるかチェックするAPI
+      $ret = $this->api_response();
+      return $ret;
+    }
 }
