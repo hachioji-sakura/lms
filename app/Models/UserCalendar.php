@@ -236,7 +236,11 @@ EOT;
     else {
       $user = User::where('id', $user_id)->first();
       $user = $user->details("teachers");
+      if(empty($user->role)){
+        $user = $user->details();
+      }
     }
+
     if(!isset($user)) {
       return $ret;
     }
