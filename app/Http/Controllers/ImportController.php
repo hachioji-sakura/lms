@@ -88,7 +88,7 @@ class ImportController extends UserController
      */
     public function import(Request $request, $object)
     {
-      set_time_limit(600);
+      set_time_limit(1200);
       if($object==='concealment'){
         $res = $this->concealment();
         return $res;

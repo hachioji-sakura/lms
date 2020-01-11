@@ -431,11 +431,13 @@ EOT;
     return "";
   }
   public function teaching_type_name(){
-    if(empty($this->teaching_type)){
+    $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
+    if(empty($ret)){
       $type = $this->get_teaching_type();
       $this->update(['teaching_type' => $type]);
+      $ret = $this->get_attribute_name('teaching_type', $type);
     }
-    return $this->get_attribute_name('teaching_type', $this->teaching_type);
+    return $ret;
   }
   public function status_name(){
     $status_name = "";
