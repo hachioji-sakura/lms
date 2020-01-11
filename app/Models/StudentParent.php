@@ -121,6 +121,7 @@ class StudentParent extends Teacher
   }
   public function details(){
     $item = $this->replicate();
+    $item["id"] = $this->id;
     $students = [];
     //$item['relations'] = $this->relations;
     foreach($this->relation() as $relation){
