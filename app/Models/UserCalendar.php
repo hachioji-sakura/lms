@@ -431,6 +431,10 @@ EOT;
     return "";
   }
   public function teaching_type_name(){
+    if(empty($this->teaching_type)){
+      $type = $this->get_teaching_type();
+      $this->update(['teaching_type' => $type]);
+    }
     return $this->get_attribute_name('teaching_type', $this->teaching_type);
   }
   public function status_name(){
@@ -538,8 +542,8 @@ EOT;
   }
   public function details($user_id=0){
     $item = $this;
-    $item['status_name'] = $this->status_name();
     $item['teaching_name'] = $this->teaching_type_name();
+    $item['status_name'] = $this->status_name();
     $item['schedule_type_code'] = $this->schedule_type_code();
     $item['schedule_type_name'] = $this->schedule_type_name();
     $item['place_floor_name'] = "";
