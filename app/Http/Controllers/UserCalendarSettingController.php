@@ -381,6 +381,30 @@ class UserCalendarSettingController extends UserCalendarController
       ])->with($param);
     }
     /**
+     * カレンダー登録画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function all_to_calendar_page(Request $request)
+    {
+      if(!$request->has('teacher_id')){
+        abort(400);
+      }
+      $teacher = Teacher::where('id', $request->get('teacher_id'))->first();
+      $user_id = $teacher->user_id;
+      if(!isset($teacher)){
+        abort(400);
+      }
+
+      $param = $this->get_param($request);
+      $param['target_user_id'] = $user_id;
+
+      return view($this->domain.'.all_to_calendar', [
+        'action' => $request->get('action')
+      ])->with($param);
+    }
+    /**
      * カレンダー削除画面表示
      *
      * @param  int  $id
@@ -401,19 +425,37 @@ class UserCalendarSettingController extends UserCalendarController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function to_calendar_data(Request $request, $id)
+    public function to_calendar_data(Request $request, $id=0)
     {
-      $param = $this->get_param($request, $id);
-      if($param['user']->role !== 'manager'){
-        return $this->forbidden();
+      if($id == 0){
+        //全設定指定
+        if(!$request->has('user_id')){
+          //全設定指定の場合、user_idを指定する
+          return $this->bad_request("user_id not found");
+        }
+        $user = User::where('id', $request->get('user_id'))->first();
+        if(!isset($user)){
+          return $this->bad_request("user not found");
+        }
+        $settings = $user->calendar_settings;
+        $param = $this->get_param($request);
+      }
+      else {
+        $param = $this->get_param($request, $id);
+        $settings = [$param['item']];
       }
       if($param['user']->role !== 'manager'){
-        return $this->forbidden();
+        return $this->forbidden("This User is not manager role.");
       }
       if(!$request->has('start_date') || !$request->has('end_date')){
         return $this->bad_request();
       }
-      $items = $param['item']->get_add_calendar_date($request->start_date, $request->end_date, $range_month=1, $month_week_count=5);
+      $items = [];
+      foreach($settings as $setting){
+        $items = array_merge($items, $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5));
+      }
+      ksort($items);
+
       return $this->api_response(200, '', '', $items);
     }
     public function _update(Request $request, $id)

@@ -472,7 +472,7 @@ class UserCalendarController extends MilestoneController
         $user_id = $t->user_id;
       }
       if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
-         return $this->forbidden("you are not manager");
+         return $this->forbidden("This User is not manager or tehacer role.");
       }
       \Log::warning("is_all_data:".$request->get('is_all_data'));
 

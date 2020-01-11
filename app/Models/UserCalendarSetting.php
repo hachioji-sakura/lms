@@ -422,7 +422,7 @@ EOT;
 
     $ret = [];
     foreach($add_calendar_date as $date){
-      $ret[$date] = [];
+      $ret[$date] = ['already_calendars'=>[], 'setting' => $this];
       \Log::warning("date=".$date);
       $_calendars = $this->calendars->where('start_time', $date.' '.$this->from_time_slot)
         ->where('end_time', $date.' '.$this->to_time_slot);
@@ -430,7 +430,7 @@ EOT;
       $is_member = true;
       if(count($_calendars) > 0){
         //同じ予定がすでに作成済み
-        $ret[$date] = $_calendars;
+        $ret[$date]['already_calendars'] = $_calendars;
       }
     }
     return $ret;
