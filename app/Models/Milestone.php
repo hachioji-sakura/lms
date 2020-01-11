@@ -127,7 +127,7 @@ class Milestone extends Model
     return $res;
   }
   public function details(){
-    $item = $this;
+    $item = $this->replicate();
     $item["type_name"] = $this->type_name();
     $item["created_date"] = $this->created_at_label();
     $item["updated_date"] = $this->updated_at_label();

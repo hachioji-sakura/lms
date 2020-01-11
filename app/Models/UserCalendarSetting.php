@@ -116,7 +116,8 @@ EOT;
   }
 
   public function details($user_id=0){
-    $item = $this;
+    $item = $this->replicate();
+    $item["id"] = $this->id;
     if($this->is_enable()){
       if($this->status!='enabled'){
         $this->update(['status' => 'enabled']);
@@ -422,7 +423,7 @@ EOT;
 
     $ret = [];
     foreach($add_calendar_date as $date){
-      $ret[$date] = ['already_calendars'=>[], 'setting' => $this];
+      $ret[$date] = ['already_calendars'=>[], 'setting' => $this->details(1)];
       \Log::warning("date=".$date);
       $_calendars = $this->calendars->where('start_time', $date.' '.$this->from_time_slot)
         ->where('end_time', $date.' '.$this->to_time_slot);

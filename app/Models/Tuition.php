@@ -102,7 +102,7 @@ class Tuition extends Model
     return $start_date.'～'.$end_date;
   }
   public function details(){
-    $item = $this;
+    $item = $this->replicate();
     $item["lesson_name"] = $this->lesson();
     if($this->lesson==4 || $this->lesson==2){
       $item["lesson_name"].=":".$this->subject();

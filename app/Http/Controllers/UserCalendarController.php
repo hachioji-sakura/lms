@@ -506,7 +506,9 @@ class UserCalendarController extends MilestoneController
         $item = $item->details($user_id);
         if($user_id > 0) {
           $item->own_member = $item->get_member($user_id);
-          $item->status = $item->own_member->status;
+          if(isset($item->own_member)){
+            $item->status = $item->own_member->status;
+          }
         }
       }
 

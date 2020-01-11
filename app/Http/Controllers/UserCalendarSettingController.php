@@ -344,7 +344,7 @@ class UserCalendarSettingController extends UserCalendarController
         if(!empty($item->get_tag('lesson'))){
           $ret['select_lesson'] = $item->get_tag('lesson')->tag_value;
         }
-        if(count($item['teachers'])>0){
+        if(isset($item['teachers']) && count($item['teachers'])>0){
           $ret['candidate_teacher'] = $item['teachers'][0]->user->teacher;
           $ret['candidate_teacher']["enable_subject"] = $item['teachers'][0]->user->teacher->get_subject($ret['select_lesson']);
         }

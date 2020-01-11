@@ -1,22 +1,6 @@
-@section('setting_form')
-<div id="accordion">
-  <div class="row">
-    <div class="col-12 p-2 pl-4">
-      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="collapsed" aria-expanded="false">
-        <i class="fa fa-chevron-down mr-1"></i>
-        {{__('labels.regular_schedule_setting')}}
-      </a>
-    </div>
-  </div>
-  <div id="collapse1" class="panel-collapse collapse in">
-    @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
-    @endcomponent
-  </div>
-</div>
 @endsection
 @section('input_form')
 <div class="col-12 mb-2" id="to_calendar_setting_form">
-  <input type="hidden" name="id" value="{{$item->id}}">
   <label for="start_date" class="w-100">
     {{__('labels.add_range')}}
     <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
@@ -126,7 +110,7 @@ function get_to_calendar_date(){
           else {
             is_find = true;
           }
-          var date_label = util.dateformat(date, '%Y年%m月%d(%w)');
+          var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+result['data'][date]['setting']['from_time_slot'].substring(0,5)+'-'+result['data'][date]['setting']['to_time_slot'].substring(0,5);
           var _dom = dom.textFormat(_template, {"date" : date, "date_label" : date_label});
           $('#check_list tbody').append(_dom);
         }
@@ -168,7 +152,21 @@ function select_dates_check_validate(){
 }
 </script>
 @endsection
-@section('third_form')
-@endsection
-@section('confirm_form')
-@endsection
+@section('setting_form')
+@if(isset($item))
+<input type="hidden" name="id" value="{{$item->id}}">
+<div id="accordion">
+  <div class="row">
+    <div class="col-12 p-2 pl-4">
+      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="collapsed" aria-expanded="false">
+        <i class="fa fa-chevron-down mr-1"></i>
+        {{__('labels.regular_schedule_setting')}}
+      </a>
+    </div>
+  </div>
+  <div id="collapse1" class="panel-collapse collapse in">
+    @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
+    @endcomponent
+  </div>
+</div>
+@endif

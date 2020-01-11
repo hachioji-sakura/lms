@@ -114,7 +114,7 @@ EOT;
     return "";
   }
   public function details(){
-    $item = $this;
+    $item = $this->replicate();
     $item['status_name'] = $this->status_name();
     $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
 
