@@ -4,8 +4,8 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <div id="calendar_settings_to_calendar">
-      @yield('setting_form')
       @yield('input_form')
+      @yield('setting_form')
       <div class="row">
         <div class="col-12 mb-1">
             <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="to_calendar_create">

@@ -20,13 +20,13 @@
             @endif
           </h3>
           <div class="card-tools">
-            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}} {{__('labels.add')}}" page_form="dialog" page_url="/calendar_settings/create?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}}{{__('labels.add')}}" page_form="dialog" page_url="/calendar_settings/create?teacher_id={{$item->id}}" role="button">
               <i class="fa fa-plus"></i>
-              <span class="btn-label">設定追加</span>
+              <span class="btn-label">{{__('labels.setting')}}{{__('labels.add')}}</span>
             </a>
-            <a class="btn btn-outline-primary btn-sm float-left mr-1" href="javascript:void(0);" page_url="" page_title="">
+            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="繰り返し予定追加" page_form="dialog" page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}" role="button">
               <i class="fa fa-calendar-plus"></i>
-              <span class="btn-label">全予定追加</span>
+              <span class="btn-label">繰り返し予定追加</span>
             </a>
             <a class="btn btn-default btn-sm float-left" data-toggle="modal" data-target="#filter_form">
               <i class="fa fa-filter"></i>

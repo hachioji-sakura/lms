@@ -5127,6 +5127,9 @@ button.close, button.mailbox-attachment-close {
 	border-radius: 0.3rem;
 	box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
 	outline: 0;
+	/* 2020/1/11 モーダル内のコンテンツスクロール対応*/
+	max-height: calc(99vh - 1.75rem);
+
 }
 
 .modal-backdrop {
@@ -5173,6 +5176,8 @@ button.close, button.mailbox-attachment-close {
 	position: relative;
 	flex: 1 1 auto;
 	padding: 1rem;
+	/* 2020/1/11 モーダル内のコンテンツスクロール対応*/
+	overflow: auto;
 }
 
 .modal-footer {
@@ -5535,7 +5540,10 @@ button.close, button.mailbox-attachment-close {
 	align-items: center;
 	/*2018/08/26 カルーセル微調整*/
 	width: 100%;
+	/*
 	padding-bottom:32px;
+	*/
+	padding-bottom:1rem;
 	transition: transform 0.6s ease;
 	backface-visibility: hidden;
 	perspective: 1000px;
