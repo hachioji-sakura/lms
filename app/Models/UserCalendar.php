@@ -543,8 +543,8 @@ EOT;
   public function details($user_id=0){
     $item = $this->replicate();
     $item["id"] = $this->id;
-    $item['status_name'] = $this->status_name();
     $item['teaching_name'] = $this->teaching_type_name();
+    $item['status_name'] = $this->status_name();
     $item['schedule_type_code'] = $this->schedule_type_code();
     $item['schedule_type_name'] = $this->schedule_type_name();
     $item['place_floor_name'] = "";
