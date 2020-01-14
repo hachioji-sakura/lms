@@ -236,7 +236,7 @@ class ImageController extends UserController
         $message .= "path:".$s3['path']."\n";
         \Log::info("ファイルアップロード:\n".$message);
         $this->send_slack($message, 'info');
-        return $image;
+        return $this->api_response(200, '', '', $image);
       }, '画像アップロード', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

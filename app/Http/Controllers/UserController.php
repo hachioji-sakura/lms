@@ -123,7 +123,7 @@ class UserController extends Controller
           'access_key' => $form['access_key'],
           'password' => Hash::make($form['password']),
       ]);
-      return $user;
+      return $this->api_response(200, '', '', $user);
     }, 'ユーザー登録', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
@@ -373,7 +373,7 @@ class UserController extends Controller
     return $this->transaction(null, function() use ($user_id, $image_id){
       $user = User::where('id', $user_id)->first();
       $user->update(['image_id' => $image_id]);
-      return $user;
+      return $this->api_response(200, '', '', $user);
     }, 'アイコン変更', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
@@ -389,7 +389,7 @@ class UserController extends Controller
     return $this->transaction(null, function() use ($user_id, $password){
       $user = User::where('id', $user_id)->first();
       $user->set_password($password);
-      return $user;
+      return $this->api_response(200, '', '', $user);
     }, 'パスワード設定', __FILE__, __FUNCTION__, __LINE__ );
   }
   public function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
@@ -401,7 +401,7 @@ class UserController extends Controller
         if($request!=null){
           $request->session()->regenerateToken();
         }
-        return $this->api_response(200, '', '', $result);
+        return $result;
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();

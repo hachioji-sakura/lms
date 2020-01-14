@@ -261,7 +261,7 @@ class AskController extends MilestoneController
         'status'=>$status,
         'login_user_id' => $param['user']->user_id,
       ]);
-      return $param['item'];
+      return $this->api_response(200, '', '', $param['item']);
     }, '依頼ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
@@ -316,7 +316,7 @@ class AskController extends MilestoneController
       $param = $this->get_param($request);
       $form["create_user_id"] = $param["user"]->user_id;
       $item = Ask::add($form);
-      return $item;
+      return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     if($res["data"]==null){
       $res = $this->error_response("同じ内容がすでに登録されています。");
@@ -338,7 +338,7 @@ class AskController extends MilestoneController
      $res = $this->transaction($request, function() use ($request, $form, $id){
        $item = $this->model()->where('id',$id)->first();
        $item->dispose();
-       return $item;
+       return $this->api_response(200, '', '', $item);
      }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
@@ -428,7 +428,7 @@ class AskController extends MilestoneController
            $ask->complete();
          }
        }
-       return $result;
+       return $this->api_response(200, '', '', $result);
      }, 'daily_proc', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }

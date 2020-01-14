@@ -325,8 +325,8 @@ class StudentGroupController  extends MilestoneController
       $param = $this->get_param($request);
       $form['create_user_id'] = $param['user']->user_id;
       $res = $this->transaction($request, function() use ($form){
-        $student_group = StudentGroup::add($form);
-        return $student_group;
+        $item = StudentGroup::add($form);
+        return $this->api_response(200, '', '', $item);
       }, '追加しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
@@ -340,9 +340,9 @@ class StudentGroupController  extends MilestoneController
       $res = $this->transaction($request, function() use ($request, $id){
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
-        $student_group = $param["item"];
-        $student_group->dispose();
-        return $student_group;
+        $item = $param["item"];
+        $item->dispose();
+        return $this->api_response(200, '', '', $item);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -398,7 +398,7 @@ class StudentGroupController  extends MilestoneController
         $form['create_user_id'] = $param['user']->user_id;
         $item = $this->model()->where('id',$id)->first();
         $item->change($form);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;

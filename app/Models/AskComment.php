@@ -19,8 +19,7 @@ class AskComment extends Milestone
     return $this->belongsTo('App\Models\Ask', 'ask_id');
   }
   public function details(){
-    $item = $this->replicate();
-    $item["id"] = $this->id;
+    $item = $this;
     $item["created_date"] = $this->created_at_label();
     $item["updated_date"] = $this->updated_at_label();
     $item["create_user_name"] = $this->create_user->details()->name();

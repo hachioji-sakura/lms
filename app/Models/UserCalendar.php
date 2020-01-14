@@ -434,7 +434,7 @@ EOT;
     $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
     if(empty($ret)){
       $type = $this->get_teaching_type();
-      $this->update(['teaching_type' => $type]);
+      UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
       $ret = $this->get_attribute_name('teaching_type', $type);
     }
     return $ret;
@@ -543,8 +543,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
-    $item = $this->replicate();
-    $item["id"] = $this->id;
+    $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
     $item['schedule_type_code'] = $this->schedule_type_code();

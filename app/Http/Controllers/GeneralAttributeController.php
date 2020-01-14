@@ -166,7 +166,7 @@ class GeneralAttributeController extends UserController
           'sort_no' => $form['sort_no'],
           'create_user_id' => $user->user_id,
         ]);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '汎用コード登録', __FILE__, __FUNCTION__, __LINE__ );
     }
     public function save_validate(Request $request)
@@ -289,7 +289,7 @@ class GeneralAttributeController extends UserController
           'attribute_value' => $form['attribute_value'],
           'sort_no' => $form['sort_no'],
         ]);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '汎用コード更新', __FILE__, __FUNCTION__, __LINE__ );
     }
 
@@ -315,7 +315,7 @@ class GeneralAttributeController extends UserController
         $form = $request->all();
         $item = GeneralAttribute::where('id', $id)->first();
         $item->delete();
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '汎用コード削除', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

@@ -152,7 +152,7 @@ class UserAnswerController extends UserExaminationController
           'current_question_id' => $next_question_id
         ]);
 
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '回答保存', __FILE__, __FUNCTION__, __LINE__ );
 
     }
@@ -163,7 +163,7 @@ class UserAnswerController extends UserExaminationController
 
         $user = $this->login_details($request);
 
-        $_item = $this->model()->create([
+        $item = $this->model()->create([
           'start_time' => $form['start_time'],
           'answer_text' => $form['answer_text'],
           'question_id' => $form['question_id'],
@@ -172,7 +172,7 @@ class UserAnswerController extends UserExaminationController
           'is_traning' => $form['is_traning'],
           'score' => $form['score'],
         ]);
-        return $_item;
+        return $this->api_response(200, '', '', $item);
       }, '回答登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 }

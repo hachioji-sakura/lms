@@ -116,8 +116,7 @@ EOT;
   }
 
   public function details($user_id=0){
-    $item = $this->replicate();
-    $item["id"] = $this->id;
+    $item = $this;
     if($this->is_enable()){
       if($this->status!='enabled'){
         $this->update(['status' => 'enabled']);

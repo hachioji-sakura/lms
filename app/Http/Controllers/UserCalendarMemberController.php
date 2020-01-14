@@ -85,31 +85,6 @@ class UserCalendarMemberController extends UserCalendarController
     ])->with($param);
   }
   /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function rest_type_update(Request $request, $id)
-  {
-    /*TODO この処理は使わなくなったので削除する予定
-    $param = $this->get_param($request, $id);
-
-    if(!$request->has('rest_type')) return $this->bad_request();
-    $item = $this->model()->where('id',$id)->first();
-    if(!isset($item)) return $this->not_found();
-
-    $rest_type = $request->get('rest_type');
-    $res = $this->transaction($request, function() use ($item,$rest_type){
-      $item->update_rest_type($rest_type);
-      return $item;
-    }, '休みタイプ更新', __FILE__, __FUNCTION__, __LINE__ );
-    $res["message"] = $rest_type;
-    return $res;
-    */
-  }
-  /**
    * 授業予定削除処理
    *
    * @return \Illuminate\Http\Response
@@ -123,7 +98,7 @@ class UserCalendarMemberController extends UserCalendarController
       if(!isset($item)) return $this->not_found();
       $this->send_slack('カレンダーメンバー削除/ id['.$id.']', 'info', 'カレンダーメンバー削除');
       $item->dispose();
-      return $item;
+      return $this->api_response(200, '', '', $item);
     }, 'カレンダーメンバー削除', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }

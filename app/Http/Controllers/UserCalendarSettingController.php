@@ -452,7 +452,9 @@ class UserCalendarSettingController extends UserCalendarController
       }
       $items = [];
       foreach($settings as $setting){
-        $items = array_merge($items, $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5));
+        $items = array_merge($items,
+          $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5)
+        );
       }
       ksort($items);
 
@@ -490,7 +492,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
         $res = $setting->change($form);
         //TODO 更新失敗しても更新成功のエラーメッセージが表示されてしまう
-        return $setting;
+        return $this->api_response(200, '', '', $setting);
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -525,7 +527,7 @@ class UserCalendarSettingController extends UserCalendarController
           $setting = $setting->details();
           $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
-        return $setting;
+        return $this->api_response(200, '', '', $setting);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
@@ -545,12 +547,15 @@ class UserCalendarSettingController extends UserCalendarController
         else {
           $setting->dispose();
         }
-        return $setting;
+        return $this->api_response(200, '', '', $setting);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
-    public function to_calendar(Request $request, $id)
+    public function to_calendar(Request $request, $id=0)
     {
       $res = null;
+      if(!$request->has('start_date') || !$request->has('end_date')){
+        return $this->bad_request();
+      }
       $param = $this->get_param($request, $id);
       if($param['user']->role !== 'manager'){
         $res = $this->forbidden();
@@ -558,13 +563,32 @@ class UserCalendarSettingController extends UserCalendarController
       if(!$request->has('select_dates')){
         $res = $this->bad_request();
       }
-      $setting = $param['item'];
-      $res = $this->transaction($request, function() use ($request, $setting){
-        $form['select_dates'] = $request->get('select_dates');
-        foreach($request->get('select_dates') as $date){
-          $setting->add_calendar(date('Y-m-d', strtotime($date)));
+      $settings = [];
+      if(!empty($id)){
+        $settings[] = $param['item'];
+      }
+      else {
+        if(!$request->has('user_id')){
+          $res = $this->bad_request();
         }
-        return $setting;
+        $user = User::where('id', $request->get('user_id'))->first();
+        if(!isset($user)){
+          return $this->bad_request("user not found");
+        }
+        $settings = $user->calendar_settings;
+      }
+
+      $res = $this->transaction($request, function() use ($request, $settings){
+        $form['select_dates'] = $request->get('select_dates');
+        foreach($settings as $setting){
+          $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5)
+          foreach($dates as $date){
+            $res = $setting->add_calendar(date('Y-m-d', strtotime($date)));
+          }
+          if($this->is_success_response($res)){
+          }
+        }
+        return $this->api_response(200, '', '', $settings);
       }, '繰り返しスケジュール登録', __FILE__, __FUNCTION__, __LINE__ );
 
       return $this->save_redirect($res, $param, '繰り返しスケジュールを登録しました。');
@@ -586,7 +610,7 @@ class UserCalendarSettingController extends UserCalendarController
         foreach($calendars as $calendar){
           $calendar->dispose();
         }
-        return $setting;
+        return $this->api_response(200, '', '', $setting);
       }, 'スケジュール一括削除', __FILE__, __FUNCTION__, __LINE__ );
 
       return $this->save_redirect($res, $param, '削除しました。');

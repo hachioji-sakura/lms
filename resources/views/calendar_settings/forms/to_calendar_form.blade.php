@@ -1,4 +1,3 @@
-@endsection
 @section('input_form')
 <div class="col-12 mb-2" id="to_calendar_setting_form">
   <label for="start_date" class="w-100">
@@ -39,9 +38,8 @@
     <tr class="bg-light">
       <th class="p-1 pl-2 text-sm">
         <label class="mx-2 mt-1" for="all_check_click">
-          {{__('labels.add')}}
+          {{__('labels.schedule_add')}}{{__('labels.date')}}
         </label>
-        <input class="form-check-input icheck flat-red ml-2" type="checkbox" name="all_check_click" value="delete" onChange='dom.allChecked(this, "check_list");' >
       </th>
     </tr>
     </thead>
@@ -62,56 +60,76 @@ function set_to_calendar_date(next_month){
 function get_to_calendar_date(){
   var start_date = $("input[name='start_date']").val();
   var end_date = $("input[name='end_date']").val();
+  var user_id = $("input[name='user_id']").val();
   start_date = start_date.replace_all('/', '-');
   end_date = end_date.replace_all('/', '-');
-  var id = $("input[name='id']").val();
-  var url = "/calendar_settings/"+id+"/to_calendar_data?start_date="+start_date+"&end_date="+end_date;
+  var url = "/calendar_settings/to_calendar_data?start_date="+start_date+"&end_date="+end_date+"&user_id="+user_id;
+  if($("input[name='id']").length > 0){
+    var id = $("input[name='id']").val();
+    url = "/calendar_settings/"+id+"/to_calendar_data?start_date="+start_date+"&end_date="+end_date;
+  }
   $('button.btn-submit').attr('disabled', 'disabled');
   front.clearValidateError();
   if(!front.validateFormValue('to_calendar_setting_form')) return false;
   service.getAjax(false, url, {'loading': true},
     function(result, st, xhr) {
       var check_template = [
-              '<tr class="">',
-      				'    <td class="p-1 text-sm text-center">',
-      				'    <div class="input-group">',
-      				'        <div class="form-check">',
-      				'        <input class="form-check-input icheck flat-green calendar_member_delete" type="checkbox" name="select_dates[]" id="date_check_#date#" value="#date#" ',
-              ' checked>',
-      				'        <label class="form-check-label" for="date_check_#date#">#date_label#</label>',
-      				'        </div>',
-      				'    </div>',
-      				'    </td>',
-      				'</tr>'
+        '<tr class="">',
+        '    <td class="p-1 text-sm text-center">',
+        '    <div class="input-group">',
+        '        <div class="form-check">',
+        ' <small title="" class="badge badge-#style# mt-1 mr-1"><i class="fa fa-plus" ></i>#status_name#</small>',
+        '        <label class="form-check-label">#date_label#',
+        '        </label>',
+        '        </div>',
+        '    </div>',
+        '    </td>',
+        '</tr>'
       ].join('');
       var already_template = [
-              '<tr class="">',
-      				'    <td class="p-1 text-sm text-center">',
-      				'    <div class="input-group">',
-      				'        <div class="form-check">',
-      				'        <i class="fa fa-calendar" ></i>',
-      				'        <label class="form-check-label">#date_label# 登録済み</label>',
-      				'        </div>',
-      				'    </div>',
-      				'    </td>',
-      				'</tr>'
+        '<tr class="">',
+        '    <td class="p-1 text-sm text-center">',
+        '    <div class="input-group">',
+        '        <div class="form-check">',
+        ' <small title="" class="badge badge-#style# mt-1 mr-1">登録済み</small>',
+        '        </label>',
+        '        <label class="form-check-label">#date_label#</label>',
+        '        </div>',
+        '        <input type="hidden" name="select_dates[]" value="#date#" > ',
+        '    </div>',
+        '    </td>',
+        '</tr>'
       ].join('');
 
       $('#check_list tbody').empty();
       if(result['status']===200){
         console.log(result['data']);
         var is_find = false;
+        var st;
+
         for(var date in result['data']){
           if(!util.isDate(date, '-')) continue;
           _template = check_template;
           if(!util.isEmpty(result['data'][date]['already_calendars']) && Object.keys(result['data'][date]['already_calendars']).length > 0){
             _template = already_template;
+            for(var key in result['data'][date]['already_calendars']){
+              st = status_style(result['data'][date]['already_calendars'][key]["status"]);
+            }
           }
           else {
+            st = {"name" : "新規登録", "style" : "info"};
             is_find = true;
           }
-          var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+result['data'][date]['setting']['from_time_slot'].substring(0,5)+'-'+result['data'][date]['setting']['to_time_slot'].substring(0,5);
-          var _dom = dom.textFormat(_template, {"date" : date, "date_label" : date_label});
+          var setting = result['data'][date]['setting'];
+          var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5);
+          date_label += '/'+setting['student_name'];
+          var _dom = dom.textFormat(_template,
+            {"date" : date,
+             "date_label" : date_label,
+             "status_name" : st["name"],
+             "style" : st["style"]
+           }
+          );
           $('#check_list tbody').append(_dom);
         }
 
@@ -137,8 +155,8 @@ function get_to_calendar_date(){
 }
 function select_dates_check_validate(){
   var _is_scceuss = false;
-  if( $("input[type='checkbox'][name='select_dates[]']").length > 0){
-    $("input[type='checkbox'][name='select_dates[]']:checked").each(function(index, value){
+  if( $("input[name='select_dates[]']").length > 0){
+    $("input[name='select_dates[]']").each(function(index, value){
       if(_is_scceuss===true) return ;
       var val = $(this).val();
       if(!util.isEmpty(val)) _is_scceuss = true;
@@ -170,3 +188,4 @@ function select_dates_check_validate(){
   </div>
 </div>
 @endif
+@endsection
