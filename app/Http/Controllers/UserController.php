@@ -395,13 +395,18 @@ class UserController extends Controller
   public function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
       try {
         DB::beginTransaction();
-        $result = $callback();
-        DB::commit();
+        $res = $callback();
         // 二重送信対策
         if($request!=null){
           $request->session()->regenerateToken();
         }
-        return $result;
+        if($this->is_success_response($res)){
+          DB::commit();
+        }
+        else {
+          DB::rollBack();
+        }
+        return $res;
       }
       catch (\Illuminate\Database\QueryException $e) {
           DB::rollBack();
