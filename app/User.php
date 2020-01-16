@@ -20,10 +20,11 @@ use App\Notifications\CustomPasswordReset;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
-
+use App\Models\Traits\Common;
 use Hash;
 class User extends Authenticatable
 {
+    use Common;
     use Notifiable;
     protected $connection = 'mysql_common';
     /**
@@ -335,8 +336,7 @@ EOT;
           $param['login_user'] = $u->details();
         }
       }
-      $controller = new Controller;
-      $res = $controller->send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
+      $res = $this->_send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
       return $res;
     }
     public function get_mail_address(){

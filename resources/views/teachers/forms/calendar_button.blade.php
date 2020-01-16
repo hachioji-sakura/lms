@@ -95,6 +95,6 @@
 </a>
 @if($user->role==="manager")
 <a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" role="button" class="btn btn-default btn-sm ml-1">
-  <i class="fa fa-times"></i>
+  <i class="fa fa-trash"></i>
 </a>
 @endif

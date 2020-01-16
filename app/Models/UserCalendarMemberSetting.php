@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarTagSetting;
+use App\Models\Traits\Common;
 
 class UserCalendarMemberSetting extends UserCalendarMember
 {
+  use Common;
   protected $table = 'lms.user_calendar_member_settings';
   protected $guarded = array('id');
   public $api_endpoint = [

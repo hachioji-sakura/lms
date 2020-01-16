@@ -579,13 +579,17 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       $res = $this->transaction($request, function() use ($request, $settings){
-        $form['select_dates'] = $request->get('select_dates');
         foreach($settings as $setting){
-          $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5)
-          foreach($dates as $date){
-            $res = $setting->add_calendar(date('Y-m-d', strtotime($date)));
-          }
-          if($this->is_success_response($res)){
+          $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
+          foreach($request->get('select_dates') as $date){
+            if(empty($date)) continue;
+            $calendar = $setting->add_calendar(date('Y-m-d', strtotime($date)));
+            if($calendar==null){
+              //error
+              $res = $this->error_response('繰り返しスケジュール登録エラー');
+              $this->send_slack('繰り返しスケジュール登録エラー/ id['.$setting['id'].']登録日付['.$date.']', 'error', '繰り返しスケジュール登録');
+              return $res;
+            }
           }
         }
         return $this->api_response(200, '', '', $settings);

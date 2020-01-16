@@ -7,8 +7,11 @@ use App\User;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
 use DB;
+use App\Models\Traits\Common;
+
 class UserCalendarSetting extends UserCalendar
 {
+
   protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
   public static $rules = array(
@@ -129,6 +132,7 @@ EOT;
     }
 
     $base_date = '2000-01-01 ';
+
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
     $item['start_minutes'] = date('i',  strtotime($base_date.$this->from_time_slot));
     $item['end_hours'] = date('H',  strtotime($base_date.$this->to_time_slot));
@@ -579,7 +583,7 @@ EOT;
 
     if($is_enable==false){
       \Log::warning("有効なメンバーがいない");
-      return null;
+      return nul;
     }
 
     foreach($form as $key => $v){

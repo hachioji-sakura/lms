@@ -15,9 +15,11 @@ use App\Models\PlaceFloor;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarTag;
 use App\User;
+use App\Models\Traits\Common;
 use View;
 class UserCalendarMember extends Model
 {
+  use Common;
   protected $table = 'lms.user_calendar_members';
   protected $guarded = array('id');
   public $api_domain = '/sakura-api';
@@ -558,22 +560,6 @@ class UserCalendarMember extends Model
         }
       }
     }
-    return $res;
-  }
-  public function create_token($limit_second=86400){
-    $controller = new Controller;
-    $res = $controller->create_token($limit_second);
-    return $res;
-  }
-  protected function send_slack($message, $msg_type, $username=null, $channel=null) {
-    $controller = new Controller;
-    $res = $controller->send_slack($message, $msg_type, $username, $channel);
-    return $res;
-  }
-  protected function call_api($url, $method, $data){
-    $controller = new Controller;
-    $req = new Request;
-    $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
   public function rest_cancel_ask($create_user_id){

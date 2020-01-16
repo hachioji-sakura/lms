@@ -13,8 +13,11 @@ use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
+use App\Models\Traits\Common;
+
 class UserCalendar extends Model
 {
+  use Common;
   protected $pagenation_line = 20;
   protected $table = 'lms.user_calendars';
   protected $guarded = array('id');
@@ -543,6 +546,8 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
+    \Log::warning("setting.test:".$this->hogehoge());
+
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();

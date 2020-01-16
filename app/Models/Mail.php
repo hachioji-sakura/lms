@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Models\Traits\Common;
 class Mail extends Model
 {
   protected $connection = 'mysql_common';
@@ -31,18 +31,12 @@ class Mail extends Model
   }
 
   public function send_mail($to, $title, $param, $type, $template, $locale="ja"){
-    $controller = new Controller;
     $u = User::where('id', $user_id)->first();
     $mail = $u->get_mail_address();
     if(!isset($u)) return $controller->bad_request();
     $param['user'] = $u->details();
     $param['send_to'] = $param['user']->role;
-    $res = $controller->send_mail($mail, $title, $param, $type, $template, $u->get_locale());
-    return $res;
-  }
-  protected function send_slack($message, $msg_type, $username=null, $channel=null) {
-    $controller = new Controller;
-    $res = $controller->send_slack($message, $msg_type, $username, $channel);
+    $res = $this->_send_mail($mail, $title, $param, $type, $template, $u->get_locale());
     return $res;
   }
 

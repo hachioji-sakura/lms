@@ -81,6 +81,7 @@ function get_to_calendar_date(){
         ' <small title="" class="badge badge-#style# mt-1 mr-1"><i class="fa fa-plus" ></i>#status_name#</small>',
         '        <label class="form-check-label">#date_label#',
         '        </label>',
+        '        <input type="hidden" name="select_dates[]" value="#date#" > ',
         '        </div>',
         '    </div>',
         '    </td>',
@@ -95,7 +96,6 @@ function get_to_calendar_date(){
         '        </label>',
         '        <label class="form-check-label">#date_label#</label>',
         '        </div>',
-        '        <input type="hidden" name="select_dates[]" value="#date#" > ',
         '    </div>',
         '    </td>',
         '</tr>'
@@ -157,13 +157,14 @@ function select_dates_check_validate(){
   var _is_scceuss = false;
   if( $("input[name='select_dates[]']").length > 0){
     $("input[name='select_dates[]']").each(function(index, value){
+      console.log(value);
       if(_is_scceuss===true) return ;
       var val = $(this).val();
       if(!util.isEmpty(val)) _is_scceuss = true;
     });
   }
   if(!_is_scceuss){
-    front.showValidateError('#check_list', '登録日を１つ以上選択してください');
+    front.showValidateError('#check_list', '登録可能な予定がありません。');
   }
 
   return _is_scceuss;
