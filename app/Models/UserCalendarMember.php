@@ -15,9 +15,11 @@ use App\Models\PlaceFloor;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarTag;
 use App\User;
+use App\Models\Traits\Common;
 use View;
 class UserCalendarMember extends Model
 {
+  use Common;
   protected $table = 'lms.user_calendar_members';
   protected $guarded = array('id');
   public $api_domain = '/sakura-api';
@@ -479,17 +481,24 @@ class UserCalendarMember extends Model
       $message .= '['.$key.':'.$val.']';
     }
     $res = $this->call_api($_url, $_method, $postdata);
-    \Log::info("事務システムAPI Request:".$_url."\n".$message);
-    $str_res = json_encode($res);
-    \Log::info("事務システムAPI Response:".$_url."\n".$str_res);
-    @$this->send_slack("事務システムAPI Request:".$_url."\n".$message, 'warning', "事務システムAPI");
-    @$this->send_slack("事務システムAPI Response:".$_url."\n".$str_res, 'warning', "事務システムAPI");
+    $message = "事務システムAPI \nRequest:".$_url."\n".$message;
     if(empty($res)){
-      @$this->send_slack("事務システムAPIエラー:".$_url."\nresponseなし", 'error', "事務システムAPIエラー");
+      $message .= "\n事務システムAPIエラー:".$_url."\nresponseなし";
+      \Log::Error($message);
+      @$this->send_slack($message, 'error', "事務システムAPI");
       return null;
     }
+    else{
+      $str_res = json_encode($res);
+      $message .= "\nResponse:"."\n".$str_res;
+      @$this->send_slack($message, 'warning', "事務システムAPI");
+      \Log::info($message);
+    }
+
     if($res["status"] != 0){
-      @$this->send_slack("事務システムAPIエラー:".$_url."\nstatus=".$res["status"], 'error', "事務システムAPIエラー");
+      $message .= "\n事務システムAPIエラー:".$_url."\nstatus=".$res["status"];
+      \Log::Error($message);
+      @$this->send_slack($message, 'error', "事務システムAPI");
       return null;
     }
     $schedule_id = $this->schedule_id;
@@ -558,22 +567,6 @@ class UserCalendarMember extends Model
         }
       }
     }
-    return $res;
-  }
-  public function create_token($limit_second=86400){
-    $controller = new Controller;
-    $res = $controller->create_token($limit_second);
-    return $res;
-  }
-  protected function send_slack($message, $msg_type, $username=null, $channel=null) {
-    $controller = new Controller;
-    $res = $controller->send_slack($message, $msg_type, $username, $channel);
-    return $res;
-  }
-  protected function call_api($url, $method, $data){
-    $controller = new Controller;
-    $req = new Request;
-    $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
   public function rest_cancel_ask($create_user_id){

@@ -308,7 +308,7 @@ return [
   'teacher_name_display' => '講師名を表示',
   'target_data' => '対象データ',
   'label_setting' => 'ラベル表示設定',
-  'regist_schedule_count' => '登録予定数(:count)',
+  'regist_schedule_count' => '登録数(:count)',
   'get' => '取得',
   'last_regist_date' => '最終登録日',
 ];

@@ -1,22 +1,5 @@
-@section('setting_form')
-<div id="accordion">
-  <div class="row">
-    <div class="col-12 p-2 pl-4">
-      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="collapsed" aria-expanded="false">
-        <i class="fa fa-chevron-down mr-1"></i>
-        {{__('labels.regular_schedule_setting')}}
-      </a>
-    </div>
-  </div>
-  <div id="collapse1" class="panel-collapse collapse in">
-    @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
-    @endcomponent
-  </div>
-</div>
-@endsection
 @section('input_form')
 <div class="col-12 mb-2" id="to_calendar_setting_form">
-  <input type="hidden" name="id" value="{{$item->id}}">
   <label for="start_date" class="w-100">
     {{__('labels.add_range')}}
     <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
@@ -55,9 +38,8 @@
     <tr class="bg-light">
       <th class="p-1 pl-2 text-sm">
         <label class="mx-2 mt-1" for="all_check_click">
-          {{__('labels.add')}}
+          {{__('labels.schedule_add')}}{{__('labels.date')}}
         </label>
-        <input class="form-check-input icheck flat-red ml-2" type="checkbox" name="all_check_click" value="delete" onChange='dom.allChecked(this, "check_list");' >
       </th>
     </tr>
     </thead>
@@ -78,58 +60,84 @@ function set_to_calendar_date(next_month){
 function get_to_calendar_date(){
   var start_date = $("input[name='start_date']").val();
   var end_date = $("input[name='end_date']").val();
+  var user_id = $("input[name='user_id']").val();
   start_date = start_date.replace_all('/', '-');
   end_date = end_date.replace_all('/', '-');
-  var id = $("input[name='id']").val();
-  var url = "/calendar_settings/"+id+"/to_calendar_data?start_date="+start_date+"&end_date="+end_date;
+  var url = "/calendar_settings/to_calendar_data?start_date="+start_date+"&end_date="+end_date+"&user_id="+user_id;
+  if($("input[name='id']").length > 0){
+    var id = $("input[name='id']").val();
+    url = "/calendar_settings/"+id+"/to_calendar_data?start_date="+start_date+"&end_date="+end_date;
+  }
   $('button.btn-submit').attr('disabled', 'disabled');
   front.clearValidateError();
   if(!front.validateFormValue('to_calendar_setting_form')) return false;
   service.getAjax(false, url, {'loading': true},
     function(result, st, xhr) {
       var check_template = [
-              '<tr class="">',
-      				'    <td class="p-1 text-sm text-center">',
-      				'    <div class="input-group">',
-      				'        <div class="form-check">',
-      				'        <input class="form-check-input icheck flat-green calendar_member_delete" type="checkbox" name="select_dates[]" id="date_check_#date#" value="#date#" ',
-              ' checked>',
-      				'        <label class="form-check-label" for="date_check_#date#">#date_label#</label>',
-      				'        </div>',
-      				'    </div>',
-      				'    </td>',
-      				'</tr>'
+        '<tr class="">',
+        '    <td class="p-1 text-sm text-center">',
+        '    <div class="input-group">',
+        '        <div class="form-check">',
+        ' <small title="" class="badge badge-#style# mt-1 mr-1"><i class="fa fa-plus" ></i>#status_name#</small>',
+        '        <label class="form-check-label">#date_label#',
+        '        </label>',
+        '        <input type="hidden" name="select_dates[]" value="#date#" > ',
+        '        </div>',
+        '    </div>',
+        '    </td>',
+        '</tr>'
       ].join('');
       var already_template = [
-              '<tr class="">',
-      				'    <td class="p-1 text-sm text-center">',
-      				'    <div class="input-group">',
-      				'        <div class="form-check">',
-      				'        <i class="fa fa-calendar" ></i>',
-      				'        <label class="form-check-label">#date_label# 登録済み</label>',
-      				'        </div>',
-      				'    </div>',
-      				'    </td>',
-      				'</tr>'
+        '<tr class="">',
+        '    <td class="p-1 text-sm text-center">',
+        '    <div class="input-group">',
+        '        <i class="fa fa-check" ></i>登録済み : ',
+        '        <label class="form-check-label">#date_label#</label>',
+        ' <small title="" class="badge badge-#style# mt-1 mr-1">#status_name#</small>',
+        '    </div>',
+        '    </td>',
+        '</tr>'
       ].join('');
 
       $('#check_list tbody').empty();
       if(result['status']===200){
         console.log(result['data']);
         var is_find = false;
-        for(var date in result['data']){
-          if(!util.isDate(date, '-')) continue;
-          _template = check_template;
-          if(!util.isEmpty(result['data'][date]['already_calendars']) && Object.keys(result['data'][date]['already_calendars']).length > 0){
-            _template = already_template;
+        var st;
+
+        for(var setting_id in result['data']){
+          for(var date in result['data'][setting_id]){
+            if(!util.isDate(date, '-')) continue;
+            var _data = result['data'][setting_id][date];
+            var setting = _data['setting'];
+            _template = check_template;
+            if(!util.isEmpty(_data['already_calendars']) && Object.keys(_data['already_calendars']).length > 0){
+              _template = already_template;
+              for(var key in _data['already_calendars']){
+                if(!_data['already_calendars'][key]["id"]) continue;
+                console.log(_data['already_calendars'][key]);
+                st = status_style(_data['already_calendars'][key]["status"]);
+              }
+            }
+            else {
+              st = {"name" : "新規登録", "style" : "info"};
+              is_find = true;
+            }
+            var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5);
+            if(!util.isEmpty(setting['student_name'])) date_label += '/'+setting['student_name'];
+            date_label += '/'+setting['work_name'];
+
+            var _dom = dom.textFormat(_template,
+              {"date" : date,
+               "date_label" : date_label,
+               "status_name" : st["name"],
+               "style" : st["style"]
+             }
+            );
+            $('#check_list tbody').append(_dom);
           }
-          else {
-            is_find = true;
-          }
-          var date_label = util.dateformat(date, '%Y年%m月%d(%w)');
-          var _dom = dom.textFormat(_template, {"date" : date, "date_label" : date_label});
-          $('#check_list tbody').append(_dom);
         }
+
 
         if(is_find==true){
           $('button.btn-submit').removeAttr('disabled');
@@ -153,22 +161,38 @@ function get_to_calendar_date(){
 }
 function select_dates_check_validate(){
   var _is_scceuss = false;
-  if( $("input[type='checkbox'][name='select_dates[]']").length > 0){
-    $("input[type='checkbox'][name='select_dates[]']:checked").each(function(index, value){
+  if( $("input[name='select_dates[]']").length > 0){
+    $("input[name='select_dates[]']").each(function(index, value){
+      console.log(value);
       if(_is_scceuss===true) return ;
       var val = $(this).val();
       if(!util.isEmpty(val)) _is_scceuss = true;
     });
   }
   if(!_is_scceuss){
-    front.showValidateError('#check_list', '登録日を１つ以上選択してください');
+    front.showValidateError('#check_list', '登録可能な予定がありません。');
   }
 
   return _is_scceuss;
 }
 </script>
 @endsection
-@section('third_form')
-@endsection
-@section('confirm_form')
+@section('setting_form')
+@if(isset($item))
+<input type="hidden" name="id" value="{{$item->id}}">
+<div id="accordion">
+  <div class="row">
+    <div class="col-12 p-2 pl-4">
+      <a data-toggle="collapse" data-parent="#accordion" href="#collapse1" class="collapsed" aria-expanded="false">
+        <i class="fa fa-chevron-down mr-1"></i>
+        {{__('labels.regular_schedule_setting')}}
+      </a>
+    </div>
+  </div>
+  <div id="collapse1" class="panel-collapse collapse in">
+    @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action])
+    @endcomponent
+  </div>
+</div>
+@endif
 @endsection

@@ -239,7 +239,7 @@ class TeacherController extends StudentController
        $item = null;
        if($this->domain==="teachers") $item = Teacher::entry($form);
        else $item = Manager::entry($form);
-       return $item;
+       return $this->api_response(200, '', '', $item);
      }, __('labels.'.$this->domain).'登録', __FILE__, __FUNCTION__, __LINE__ );
    }
    /**
@@ -348,7 +348,7 @@ class TeacherController extends StudentController
         $item->profile_update($form);
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '本登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
     protected function to_manager_page(Request $request, $id)
@@ -485,8 +485,7 @@ class TeacherController extends StudentController
         foreach($form['calendar_id'] as $calendar_id){
           UserCalendar::where('id', $calendar_id)->first()->checked($check_date);
         }
-
-        return $check_date;
+        return $this->api_response(200, '', '', $check_date);
       }, '月次勤怠確定', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**

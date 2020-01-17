@@ -217,7 +217,7 @@ class UserExaminationController extends TextbookChapterController
           'status' => $form['status'],
           'current_question_id' => $form['question_id'],
         ]);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, 'テスト実施登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 
@@ -230,7 +230,7 @@ class UserExaminationController extends TextbookChapterController
           'status' => $form['status'],
           'current_question_id' => $form['question_id']
         ]);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, 'テスト実施更新', __FILE__, __FUNCTION__, __LINE__ );
     }
 

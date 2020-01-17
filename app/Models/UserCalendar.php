@@ -13,8 +13,11 @@ use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
+use App\Models\Traits\Common;
+
 class UserCalendar extends Model
 {
+  use Common;
   protected $pagenation_line = 20;
   protected $table = 'lms.user_calendars';
   protected $guarded = array('id');
@@ -431,11 +434,13 @@ EOT;
     return "";
   }
   public function teaching_type_name(){
-    if(empty($this->teaching_type)){
+    $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
+    if(empty($ret)){
       $type = $this->get_teaching_type();
-      $this->update(['teaching_type' => $type]);
+      UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
+      $ret = $this->get_attribute_name('teaching_type', $type);
     }
-    return $this->get_attribute_name('teaching_type', $this->teaching_type);
+    return $ret;
   }
   public function status_name(){
     $status_name = "";
@@ -541,6 +546,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
+
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
@@ -623,16 +629,18 @@ EOT;
 
     return $item;
   }
-  static public function get_holiday($day){
+  static public function get_holiday($day, $is_public=true, $is_private=true){
     $day = date('Y-m-d', strtotime($day));
-    $holiday = Holiday::where('date', $day)->first();
+    $holiday = Holiday::where('date', $day)
+            ->first();
     if(isset($holiday)){
       return $holiday;
     }
     return null;
   }
-  public function is_holiday(){
-    $holiday = (new UserCalendar())->get_holiday($this->start_time);
+  public function is_holiday($date=""){
+    if(empty($date)) $date = $this->start_time;
+    $holiday = (new UserCalendar())->get_holiday($date);
     if($holiday!=null) return true;
     return false;
   }
@@ -654,7 +662,7 @@ EOT;
       ->where('user_id', $form['teacher_user_id'])->first();
 
     if(isset($calendar)){
-      return null;
+      return $this->error_response("同じ時間の予定が存在します", "", $form);
     }
     */
 
@@ -684,7 +692,7 @@ EOT;
     unset($form['send_mail']);
     $calendar = $calendar->change($form);
 
-    return $calendar;
+    return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){

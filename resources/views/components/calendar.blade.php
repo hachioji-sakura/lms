@@ -98,6 +98,7 @@
       function(result, st, xhr) {
         if(result['status']===200){
           var events = result['data'];
+          console.log(events);
           if(util.isFunction(callback))callback(events);
         }
       },
