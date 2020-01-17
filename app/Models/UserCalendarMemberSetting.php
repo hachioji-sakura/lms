@@ -53,7 +53,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($this->setting_id_org == 0 && $method=="DELETE") return null;;
     if($this->setting_id_org > 0 && $method=="POST") return null;;
 
-    $_url = $this->api_hosturl.'/'.$this->api_endpoint[$method];
+    $_url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$method];
 
     //事務システムのAPIは、GET or POSTなので、urlとともに、methodを合わせる
     $_method = "GET";

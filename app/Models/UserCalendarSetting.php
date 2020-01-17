@@ -259,10 +259,12 @@ EOT;
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
     UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
+    /*
     $calendars = UserCalendar::where('user_calendar_setting_id', $this->id)->get();
     foreach($calendars as $calendar){
       $calendar->dispose();
     }
+    */
     $this->delete();
   }
   public function change($form){
