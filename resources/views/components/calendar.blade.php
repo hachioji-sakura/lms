@@ -333,6 +333,7 @@
 });
 </script>
 
+@if(isset($item))
 <div class="modal fade" id="filter_form" role="dialog" aria-labelledby="modal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -409,3 +410,4 @@
     </div>
   </div>
 </div>
+@endif
