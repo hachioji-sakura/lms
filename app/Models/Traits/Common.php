@@ -5,9 +5,6 @@ use Illuminate\Http\Request;
 
 trait Common
 {
-  public function hogehoge(){
-    return "hoge";
-  }
   public function send_json_response($json){
     $controller = new Controller;
     return $controller->send_json_response($json);

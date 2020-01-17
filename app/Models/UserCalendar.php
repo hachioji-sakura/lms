@@ -546,7 +546,6 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
-    \Log::warning("setting.test:".$this->hogehoge());
 
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
