@@ -437,7 +437,7 @@ class UserCalendarSettingController extends UserCalendarController
         if(!isset($user)){
           return $this->bad_request("user not found");
         }
-        $settings = $user->calendar_settings;
+        $settings = $user->details()->get_calendar_settings([]);
         $param = $this->get_param($request);
       }
       else {
@@ -452,11 +452,9 @@ class UserCalendarSettingController extends UserCalendarController
       }
       $items = [];
       foreach($settings as $setting){
-        $items = array_merge($items,
-          $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5)
-        );
+        if($setting->is_enable()==false) continue;
+        $items[$setting->id] = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
       }
-      ksort($items);
 
       return $this->api_response(200, '', '', $items);
     }
@@ -552,6 +550,7 @@ class UserCalendarSettingController extends UserCalendarController
     }
     public function to_calendar(Request $request, $id=0)
     {
+      set_time_limit(1200);
       $res = null;
       if(!$request->has('start_date') || !$request->has('end_date')){
         return $this->bad_request();
@@ -580,13 +579,14 @@ class UserCalendarSettingController extends UserCalendarController
 
       $res = $this->transaction($request, function() use ($request, $settings){
         foreach($settings as $setting){
+          if($setting->is_enable()==false) continue;
           $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
-          foreach($request->get('select_dates') as $date){
+          foreach($dates as $date => $val){
             if(empty($date)) continue;
-            $calendar = $setting->add_calendar(date('Y-m-d', strtotime($date)));
-            if($calendar==null){
+            $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));
+            if(!$this->is_success_response($result)){
               //error
-              $res = $this->error_response('繰り返しスケジュール登録エラー');
+              $res = $this->error_response('繰り返しスケジュール登録エラー', $result["message"]);
               $this->send_slack('繰り返しスケジュール登録エラー/ id['.$setting['id'].']登録日付['.$date.']', 'error', '繰り返しスケジュール登録');
               return $res;
             }

@@ -396,15 +396,15 @@ class UserController extends Controller
       try {
         DB::beginTransaction();
         $res = $callback();
-        // 二重送信対策
-        if($request!=null){
-          $request->session()->regenerateToken();
-        }
         if($this->is_success_response($res)){
           DB::commit();
         }
         else {
           DB::rollBack();
+        }
+        // 二重送信対策
+        if($request!=null){
+          $request->session()->regenerateToken();
         }
         return $res;
       }

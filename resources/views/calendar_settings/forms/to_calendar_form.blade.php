@@ -91,11 +91,9 @@ function get_to_calendar_date(){
         '<tr class="">',
         '    <td class="p-1 text-sm text-center">',
         '    <div class="input-group">',
-        '        <div class="form-check">',
-        ' <small title="" class="badge badge-#style# mt-1 mr-1">登録済み</small>',
-        '        </label>',
+        '        <i class="fa fa-check" ></i>登録済み : ',
         '        <label class="form-check-label">#date_label#</label>',
-        '        </div>',
+        ' <small title="" class="badge badge-#style# mt-1 mr-1">#status_name#</small>',
         '    </div>',
         '    </td>',
         '</tr>'
@@ -107,31 +105,39 @@ function get_to_calendar_date(){
         var is_find = false;
         var st;
 
-        for(var date in result['data']){
-          if(!util.isDate(date, '-')) continue;
-          _template = check_template;
-          if(!util.isEmpty(result['data'][date]['already_calendars']) && Object.keys(result['data'][date]['already_calendars']).length > 0){
-            _template = already_template;
-            for(var key in result['data'][date]['already_calendars']){
-              st = status_style(result['data'][date]['already_calendars'][key]["status"]);
+        for(var setting_id in result['data']){
+          for(var date in result['data'][setting_id]){
+            if(!util.isDate(date, '-')) continue;
+            var _data = result['data'][setting_id][date];
+            var setting = _data['setting'];
+            _template = check_template;
+            if(!util.isEmpty(_data['already_calendars']) && Object.keys(_data['already_calendars']).length > 0){
+              _template = already_template;
+              for(var key in _data['already_calendars']){
+                if(!_data['already_calendars'][key]["id"]) continue;
+                console.log(_data['already_calendars'][key]);
+                st = status_style(_data['already_calendars'][key]["status"]);
+              }
             }
+            else {
+              st = {"name" : "新規登録", "style" : "info"};
+              is_find = true;
+            }
+            var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5);
+            if(!util.isEmpty(setting['student_name'])) date_label += '/'+setting['student_name'];
+            date_label += '/'+setting['work_name'];
+
+            var _dom = dom.textFormat(_template,
+              {"date" : date,
+               "date_label" : date_label,
+               "status_name" : st["name"],
+               "style" : st["style"]
+             }
+            );
+            $('#check_list tbody').append(_dom);
           }
-          else {
-            st = {"name" : "新規登録", "style" : "info"};
-            is_find = true;
-          }
-          var setting = result['data'][date]['setting'];
-          var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5);
-          date_label += '/'+setting['student_name'];
-          var _dom = dom.textFormat(_template,
-            {"date" : date,
-             "date_label" : date_label,
-             "status_name" : st["name"],
-             "style" : st["style"]
-           }
-          );
-          $('#check_list tbody').append(_dom);
         }
+
 
         if(is_find==true){
           $('button.btn-submit').removeAttr('disabled');

@@ -11,7 +11,7 @@ use App\Models\Traits\Common;
 
 class UserCalendarSetting extends UserCalendar
 {
-
+  use Common;
   protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
   public static $rules = array(
@@ -259,6 +259,10 @@ EOT;
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
     UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
+    $calendars = UserCalendar::where('user_calendar_setting_id', $this->id)->get();
+    foreach($calendars as $calendar){
+      $calendar->dispose();
+    }
     $this->delete();
   }
   public function change($form){
@@ -401,18 +405,21 @@ EOT;
 
     do {
       $is_add = true;
-      if($this->lesson_week_count > 0){
-        $is_add = false;
-        //第何週か指定がある場合
-        $c = $this->get_week_count($target_date);
-        if($c == $this->lesson_week_count){
-          //echo $c.' '.$target_date."\n";
-          $is_add = true;
+      //休校日ではない場合、候補とする
+      if(!$this->is_holiday($target_date, true, true)){
+        if($this->lesson_week_count > 0){
+          $is_add = false;
+          //第何週か指定がある場合
+          $c = $this->get_week_count($target_date);
+          if($c == $this->lesson_week_count){
+            //echo $c.' '.$target_date."\n";
+            $is_add = true;
+          }
         }
-      }
-      if($is_add===true && $c > 0){
-        $add_calendar_date[] = $target_date;
-        $c--;
+        if($is_add===true && $c > 0){
+          $add_calendar_date[] = $target_date;
+          $c--;
+        }
       }
       //次の登録日 ７日後
       $target_date = date("Y-m-d", strtotime("+7 day ".$target_date));
@@ -545,8 +552,20 @@ EOT;
 
     //通常授業設定と競合するカレンダーが存在するかチェック
     $c = (new UserCalendar())->rangeDate($start_time, $end_time)
+        ->where('user_calendar_setting_id', $this->id)
         ->where('user_id', $this->user_id)
         ->first();
+
+    if(isset($c)){
+      \Log::error("このカレンダーは登録ずみ");
+      return $this->error_response("このカレンダーは登録ずみ(id=".$this->id.")");
+    }
+
+    $c = (new UserCalendar())->rangeDate($start_time, $end_time)
+        ->where('user_calendar_setting_id','!=', $this->id)
+        ->where('user_id', $this->user_id)
+        ->first();
+
     $default_status = 'fix';
     if(isset($c)){
       \Log::warning("calendar:[".$c->id."]");
@@ -582,14 +601,16 @@ EOT;
     }
 
     if($is_enable==false){
-      \Log::warning("有効なメンバーがいない");
-      return nul;
+      \Log::error("有効なメンバーがいない");
+      return $this->error_response("有効なメンバーがいない(id=".$this->id.")");
     }
-
+/*
     foreach($form as $key => $v){
       \Log::warning("param[".$key."] =".$v);
     }
-    $calendar = UserCalendar::add($form);
+*/
+    $res = UserCalendar::add($form);
+    $calendar = $res['data'];
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
@@ -602,7 +623,7 @@ EOT;
       UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
       $calendar->status_to_fix('', 1);
     }
-    return $calendar;
+    return $this->api_response(200, "", "", $calendar);
   }
 
 }
