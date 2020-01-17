@@ -1330,8 +1330,11 @@ class UserCalendarController extends MilestoneController
           abort(400, "日時パラメータ不正");
         }
 
-        $calendar = UserCalendar::add($form);
-        if($calendar==null) return null;
+        $res = UserCalendar::add($form);
+        if(!$this->is_success_response($res)){
+          return $res;
+        }
+        $calendar = $res['data'];
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){

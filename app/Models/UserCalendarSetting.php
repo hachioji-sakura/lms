@@ -610,7 +610,11 @@ EOT;
     }
 */
     $res = UserCalendar::add($form);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
     $calendar = $res['data'];
+
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;

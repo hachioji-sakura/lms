@@ -443,15 +443,14 @@ class TrialController extends UserCalendarController
      $param = $this->get_param($request, $id);
      $item = $param['item'];
      $user = $this->login_details($request);
-
      $res = $this->transaction($request, function() use ($request, $id, $user){
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
        //カレンダーステータス変更
        $trial = Trial::where('id', $id)->first();
        $trial->update(['status'=>'confirm']);
-       $calendar = $trial->trial_to_calendar($form);
-       return $this->api_response(200, '', '', $calendar);
+       $res = $trial->trial_to_calendar($form);
+       return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
      if($this->is_success_response($res)){
        $this->confirm_mail($param, $res["data"]->details($user->user_id));

@@ -9,9 +9,11 @@ use App\Models\Comment;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
 use App\Models\Ask;
+use App\Models\Traits\Common;
 
 class Trial extends Model
 {
+  use Common;
   protected $table = 'lms.trials';
   protected $guarded = array('id');
   public static $rules = array(
@@ -348,15 +350,8 @@ EOT;
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
-    /*
-    $course_minutes = $this->get_tag('course_minutes');
-    if(isset($course_minutes)){
-      $course_minutes = $course_minutes->tag_value;
-    }
-    else {
-      $course_minutes=0;
-    }
-    */
+    $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
+
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
@@ -385,11 +380,15 @@ EOT;
       $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
       if(!isset($calendar)){
         \Log::error("存在しないカレンダーへの参加者追加");
-        return null;
+        return $this->error_response("存在しないカレンダーへの参加者追加(id=".$this->id.")", "Trial::trial_to_calendar");
       }
     }
     else {
-      $calendar = UserCalendar::add($calendar_form);
+      $res = UserCalendar::add($calendar_form);
+      if(!$this->is_success_response($res)){
+        return $res;
+      }
+      $calendar = $res['data'];
     }
     //体験同時申し込み生徒数だけ追加
     foreach($this->trial_students as $trial_student){
@@ -398,7 +397,7 @@ EOT;
       ChargeStudent::add($charge_student_form);
     }
 
-    return $calendar;
+    return $this->api_response(200,"","",$calendar);
   }
   public function candidate_teachers($teacher_id, $lesson){
     if($teacher_id > 0 && $lesson > 0){

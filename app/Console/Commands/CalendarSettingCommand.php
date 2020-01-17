@@ -142,7 +142,8 @@ class CalendarSettingCommand extends Command
         //有効なメンバーがいない
         return null;
       }
-      $calendar = UserCalendar::add($form);
+      $res = UserCalendar::add($form);
+      $calendar = $res['data'];
       if($calendar!=null){
         foreach($setting->members as $member){
           if($setting->user_id == $member->user_id) continue;
