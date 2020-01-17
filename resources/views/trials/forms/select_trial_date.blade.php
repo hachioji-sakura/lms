@@ -38,6 +38,7 @@
   <div class="col-md-6">
     @component('components.calendar', [
       'id' => 1,
+      'item' => $candidate_teacher,
       'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time1)),
       'mode'=>'day',
       'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id,
