@@ -45,7 +45,8 @@
       'domain'=> $domain,
       'domain_name' => $domain_name,
       'attributes' => $attributes,
-      'user' => $user
+      'user' => $user,
+      'filter' => null,
       ])
       @slot('event_select')
       @endslot
