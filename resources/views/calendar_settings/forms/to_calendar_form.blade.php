@@ -120,7 +120,7 @@ function get_to_calendar_date(){
         for(var date in result['data']){
           if(!util.isDate(date, '-')) continue;
           _template = check_template;
-          if(!util.isEmpty(result['data'][date]) && Object.keys(result['data'][date]).length > 0){
+          if(!util.isEmpty(result['data'][date]['already_calendars']) && Object.keys(result['data'][date]['already_calendars']).length > 0){
             _template = already_template;
           }
           else {
