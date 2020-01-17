@@ -44,6 +44,7 @@
       'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id,
       'domain'=> $domain,
       'domain_name' => $domain_name,
+      'attributes' => $attributes
       ])
       @slot('event_select')
       @endslot
