@@ -40,7 +40,10 @@
       'id' => 1,
       'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time1)),
       'mode'=>'day',
-      'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id])
+      'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id,
+      'domain'=> $domain,
+      'domain_name' => $domain_name,
+      ])
       @slot('event_select')
       @endslot
       @slot('event_click')
