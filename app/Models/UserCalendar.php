@@ -653,7 +653,9 @@ EOT;
     if(isset($form['user_calendar_setting_id'])){
       $user_calendar_setting_id = $form['user_calendar_setting_id'];
     }
+
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+    if(!isset($form['work'])) $form['work'] = '';
 
     //TODO 重複登録、競合登録の防止が必要
     /*
@@ -668,6 +670,9 @@ EOT;
 
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
 
+    $status = 'new';
+    if($form['work']==9) $status = 'fix';
+
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -677,11 +682,11 @@ EOT;
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
       'place_floor_id' => $form['place_floor_id'],
-      'work' => '',
+      'work' => $form['work'],
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
       'create_user_id' => $form['create_user_id'],
-      'status' => 'new'
+      'status' => $status
     ]);
 
     $teaching_type = $calendar->get_teaching_type();
@@ -1003,7 +1008,7 @@ EOT;
   }
 
   public function status_to_fix($remark, $login_user_id){
-    if($this->status!='confirm' && $this->status!='cancel') return false;
+    if($this->status!='new' && $this->status!='confirm' && $this->status!='cancel') return false;
     $is_update = true;
     foreach($this->members as $member){
       $_member = $member->user->details('students');

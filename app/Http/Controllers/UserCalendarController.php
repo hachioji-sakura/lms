@@ -239,6 +239,9 @@ class UserCalendarController extends MilestoneController
     if($request->has('send_mail')){
       $form['send_mail'] = $request->get('send_mail');
     }
+    if($request->has('to_status')){
+      $form['to_status'] = $request->get('to_status');
+    }
 
     return $form;
   }
