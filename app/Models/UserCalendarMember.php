@@ -118,7 +118,7 @@ class UserCalendarMember extends Model
         }
         break;
       case "fix":
-        if($this->calendar->status=='confirm'){
+        if($this->calendar->status=='confirm' || $this->calendar->status=='new'){
           $is_update = true;
         }
         break;
