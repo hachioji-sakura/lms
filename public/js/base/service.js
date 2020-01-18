@@ -457,6 +457,7 @@
 	function postAjax(url, request, success, error, _type){
 		var auth = util.getLocalData("auth");
 		console.log("postAjax exec:"+url);
+		var _request = requestDataParse(request);
 		if(util.isEmpty(_type)) _type="POST";
 		_callback = function(){
 			var ret = $.ajax({
@@ -468,7 +469,7 @@
 				cache: false,
 				dataType: "JSON",
 				url: (url),
-				data: (request)
+				data: (_request)
 			}).done(
 				function(result, st, xhr) {
 					loadClose();
@@ -503,10 +504,11 @@
     * @return {void} return nothing
     */
 	function uploadAjax(url, request,  success, error, loading){
+		var _request = requestDataParse(request);
 		_callback = function(){
 			var ret=$.ajax({
 				url: (url),
-				data : request,
+				data : _request,
 				type: "POST",
 				contentType:false,
 				processData: false,
