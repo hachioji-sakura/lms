@@ -4,7 +4,7 @@
       学年
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <select name="{{$prefix}}grade" class="form-control grade" placeholder="学年" required="true" onChange="grade_select_change()" accesskey="{{$prefix}}grade" @if(isset($item) && !empty($item)) value="{{$item->get_tag('grade')['value']}}" @endif>
+    <select name="{{$prefix}}grade" class="form-control grade" placeholder="学年" required="true" onChange="grade_select_change()" accesskey="{{$prefix}}grade" >
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
