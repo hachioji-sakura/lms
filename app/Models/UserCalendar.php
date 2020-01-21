@@ -419,19 +419,20 @@ EOT;
     if($this->work==10) return 'season';
     if($this->work==5) return 'training';
 
+    $ret = "";
     if($this->is_teaching()){
       if($this->trial_id > 0){
-        return 'trial';
+        $ret = "trial";
       }
       if(intval($this->user_calendar_setting_id) > 0){
-        return 'regular';
+        $ret = "regular";
       }
       if($this->exchanged_calendar_id > 0){
-        return 'exchange';
+        $ret = "exchange";
       }
-      return 'add';
+      $ret = "add";
     }
-    return "";
+    return $ret;
   }
   public function teaching_type_name(){
     $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
@@ -723,10 +724,13 @@ EOT;
     $status = $this->status;
     $is_status_update = true;
 
+
     //TODO Workの補間どうにかしたい
-    if(isset($form['course_type']) && !isset($form['work'])){
+    if(isset($form['course_type']) && empty($this->work) && empty($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
-      $form['work'] = $work_data[$form["course_type"]];
+      if(isset($work_data[$form["course_type"]])){
+        $form['work'] = $work_data[$form["course_type"]];
+      }
     }
 
     //TODO lectureの補間どうにかしたい
