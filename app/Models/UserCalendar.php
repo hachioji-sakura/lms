@@ -415,22 +415,25 @@ EOT;
     $code = $this->schedule_type_code();
     return __('labels.'.$code);
   }
-  public function get_teaching_type(){
-    if($this->work==10) return 'season';
-    if($this->work==5) return 'training';
+  public function get_teaching_type($work=''){
+    if(empty($work)) $work = $this->work;
+    if($work==10) return 'season';
+    if($work==5) return 'training';
 
     $ret = "";
     if($this->is_teaching()){
       if($this->trial_id > 0){
         $ret = "trial";
       }
-      if(intval($this->user_calendar_setting_id) > 0){
+      else if(intval($this->user_calendar_setting_id) > 0){
         $ret = "regular";
       }
-      if($this->exchanged_calendar_id > 0){
+      else if($this->exchanged_calendar_id > 0){
         $ret = "exchange";
       }
-      $ret = "add";
+      else {
+        $ret = "add";
+      }
     }
     return $ret;
   }
@@ -674,6 +677,15 @@ EOT;
     $status = 'new';
     if($form['work']==9) $status = 'fix';
 
+
+    //TODO Workの補間どうにかしたい
+    if(isset($form['course_type']) && empty($form['work'])){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      if(isset($work_data[$form["course_type"]])){
+        $form['work'] = $work_data[$form["course_type"]];
+      }
+    }
+
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
       'end_time' => $form['end_time'],
@@ -689,9 +701,6 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => $status
     ]);
-
-    $teaching_type = $calendar->get_teaching_type();
-    $calendar->update(['teaching_type' => $teaching_type]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     //新規登録時に変更メールを送らない
@@ -724,15 +733,6 @@ EOT;
     $status = $this->status;
     $is_status_update = true;
 
-
-    //TODO Workの補間どうにかしたい
-    if(isset($form['course_type']) && empty($this->work) && empty($form['work'])){
-      $work_data = ["single" => 6, "group"=>7, "family"=>8];
-      if(isset($work_data[$form["course_type"]])){
-        $form['work'] = $work_data[$form["course_type"]];
-      }
-    }
-
     //TODO lectureの補間どうにかしたい
     $lecture_id = 0;
     if(isset($form['lesson']) && isset($form['course_type'])){
@@ -757,13 +757,16 @@ EOT;
       //course_minutesは、start_time・end_timeから補完
       $data['course_minutes'] = intval(strtotime($data['end_time']) - strtotime($data['start_time']))/60;
     }
-/*
-    foreach($data as $field=>$val){
-      \Log::warning($field."=".$val);
-    }
-*/
+
     if(isset($data['status_name']))  unset($data['status_name']);
     $this->update($data);
+    if(empty($this->teaching_type)){
+      $type = $this->get_teaching_type();
+      \Log::warning("type=".$type);
+
+      $this->update(['teaching_type' => $type]);
+    }
+
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
