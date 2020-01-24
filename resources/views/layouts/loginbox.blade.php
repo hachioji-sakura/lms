@@ -12,7 +12,7 @@
 	<a href="javascript:void(0);" onClick="setLocale('{{url()->current()}}', 'en')">English</a>
 </div>
 <div class="login-box">
-	<div class="login-logo">
+	<div class="login-logo p-4">
 	<a href="./"><b>{{__('labels.system_name')}}</b></a>
 	</div>
 	<div class="card">

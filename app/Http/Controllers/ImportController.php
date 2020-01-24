@@ -88,7 +88,7 @@ class ImportController extends UserController
      */
     public function import(Request $request, $object)
     {
-      set_time_limit(600);
+      set_time_limit(1200);
       if($object==='concealment'){
         $res = $this->concealment();
         return $res;
@@ -245,7 +245,7 @@ class ImportController extends UserController
           foreach($items as $item){
             if($this->store_general_attribute($key_name, $item[$id_column], $item[$idname_column])) $c++;
           }
-          return $key_name.'['.$c.']';
+          return $this->api_response(200, '', '', $key_name.'['.$c.']');
         }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -259,8 +259,8 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_student($item)) $c++;
         }
-        return 'count['.$c.']';
-      }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
+        return $this->api_response(200, '', '', 'count['.$c.']');
+    }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
      * 事務管理システムから取得したデータを取り込み
@@ -273,7 +273,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_teacher($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -287,7 +287,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -301,7 +301,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_repeat_schedule($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -315,7 +315,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_textbook($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -329,7 +329,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -343,7 +343,7 @@ class ImportController extends UserController
         foreach($items as $item){
           if($this->store_lecture($item)) $c++;
         }
-        return 'count['.$c.']';
+        return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**

@@ -4,7 +4,6 @@
 @extends('dashboard.common')
 @include($domain.'.menu')
 
-
 @section('contents')
 <section class="content mb-2">
   <div class="row">
@@ -62,7 +61,7 @@
 
               <input type="hidden" name="setting_id[]" value="{{$setting['id']}}" >
               <div class="col-12 col-md-4">
-                <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}" role="button" class="">
+                <a href="javascript:void(0);" title="{{$setting->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" role="button" class="">
                   @if($setting->schedule_method=="month")
                     <span class="text-xs mr-2">
                       <small class="badge badge-info mt-1 mr-1">
@@ -77,7 +76,7 @@
                     <i class="fa fa-map-marker"></i>{{$setting["place_floor_name"]}}
                   </span>
                 </a>
-                <small title="{{$setting["id"]}}" class="ml-1 badge badge-{{config('status_style')[$setting['status']]}} mt-1 mr-1">{{$setting['status_name']}}</small>
+                <small title="{{$setting->id}}" class="ml-1 badge badge-{{config('status_style')[$setting['status']]}} mt-1 mr-1">{{$setting['status_name']}}</small>
               </div>
               <div class="col-12 col-md-4">
                 <span class="mr-2">
@@ -108,7 +107,7 @@
                 @endif
               </div>
               <div class="col-12 col-md-6 mt-1">
-                <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting["id"]}}" class="text-sm">
+                <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting->id}}" class="text-sm">
                   {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:{{$setting['last_schedule']['date']}}
                 </a>
               </div>

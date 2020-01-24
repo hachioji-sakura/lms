@@ -239,6 +239,9 @@ class UserCalendarController extends MilestoneController
     if($request->has('send_mail')){
       $form['send_mail'] = $request->get('send_mail');
     }
+    if($request->has('to_status')){
+      $form['to_status'] = $request->get('to_status');
+    }
 
     return $form;
   }
@@ -506,7 +509,9 @@ class UserCalendarController extends MilestoneController
         $item = $item->details($user_id);
         if($user_id > 0) {
           $item->own_member = $item->get_member($user_id);
-          $item->status = $item->own_member->status;
+          if(isset($item->own_member)){
+            $item->status = $item->own_member->status;
+          }
         }
       }
 
@@ -870,7 +875,7 @@ class UserCalendarController extends MilestoneController
             $member->remind($param['user']->user_id);
           }
         }
-        return $param['item'];
+        return $this->api_response(200, '', '', $param['item']);
       }, 'カレンダー通知', __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $this->status_update_message["remind"]);
     }
@@ -943,7 +948,7 @@ class UserCalendarController extends MilestoneController
 
       $res = $this->transaction($request, function() use ($update_member, $form){
         $res = $update_member->update_rest_type($form['rest_type'], $form['rest_result']);
-        return $update_member;
+        return $this->api_response(200, '', '', $update_member);
       }, '休み種類変更', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
@@ -996,7 +1001,7 @@ class UserCalendarController extends MilestoneController
             break;
           }
         }
-        return $param['item'];
+        return $this->api_response(200, '', '', $param['item']);
       }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
@@ -1055,7 +1060,7 @@ class UserCalendarController extends MilestoneController
         //statusは更新対象にしない
         if(!empty($form['status'])) unset($form['status']);
         $item->change($form);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '授業予定更新', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
@@ -1328,8 +1333,11 @@ class UserCalendarController extends MilestoneController
           abort(400, "日時パラメータ不正");
         }
 
-        $calendar = UserCalendar::add($form);
-        if($calendar==null) return null;
+        $res = UserCalendar::add($form);
+        if(!$this->is_success_response($res)){
+          return $res;
+        }
+        $calendar = $res['data'];
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
@@ -1342,7 +1350,7 @@ class UserCalendarController extends MilestoneController
         if($form['send_mail'] == "teacher"){
           $this->new_mail($param);
         }
-        return $calendar;
+        return $this->api_response(200, '', '', $calendar);
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
       if($res["data"]==null){
@@ -1373,7 +1381,7 @@ class UserCalendarController extends MilestoneController
             }
           }
         }
-        return $calendar;
+        return $this->api_response(200, '', '', $calendar);
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }

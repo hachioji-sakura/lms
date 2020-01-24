@@ -699,6 +699,7 @@ class StudentController extends UserController
    $calendars = $calendars->get();
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
+       $calendars[$i] = $calendar->details($user_id);
        $calendars[$i]->own_member = $calendars[$i]->get_member($user_id);
        $calendars[$i]->status = $calendars[$i]->own_member->status;
      }
@@ -973,7 +974,7 @@ class StudentController extends UserController
        $form['create_user_id'] = $user->user_id;
        $item = $this->model()->where('id',$id)->first();
        $item = $item->profile_update($form);
-       return $item;
+       return $this->api_response(200, '', '', $item);
     }, '生徒情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
@@ -996,7 +997,7 @@ class StudentController extends UserController
       $form = $request->all();
       $item = $this->model()->where('id', $id)->first();
       $item->user->update(['status' => 9]);
-      return $item;
+      return $this->api_response(200, '', '', $item);
     }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
 
@@ -1013,8 +1014,8 @@ class StudentController extends UserController
       $form = $request->all();
       $form["target_user_id"] = $param["item"]->user_id;
       $form["create_user_id"] = $param["user"]->user_id;
-      $ask = Ask::add($form);
-      return $ask;
+      $item = Ask::add($form);
+      return $this->api_response(200, '', '', $item);
     }, '問い合わせ登録', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, '登録しました。');
   }
@@ -1033,7 +1034,7 @@ class StudentController extends UserController
     $res = $this->transaction($request, function() use ($request, $ask){
       $form = $request->all();
       $ask->update(['body'=>$form['body']]);
-      return $ask;
+      return $this->api_response(200, '', '', $ask);
     }, '問い合わせ更新', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, '更新しました。');
   }

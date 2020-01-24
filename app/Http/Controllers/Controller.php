@@ -19,10 +19,10 @@ class Controller extends BaseController
   public $token = '7511a32c7b6fd3d085f7c6cbe66049e7';
 
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    protected function send_json_response($json){
+    public function send_json_response($json){
       return response($json, $json["status"])->header('Content-Type', 'application/json');
     }
-    protected function api_response($status=200, $message="", $description="", $data=[]){
+    public function api_response($status=200, $message="", $description="", $data=[]){
       $json = [
         "status" => $status,
         "message" => $message,
@@ -31,22 +31,22 @@ class Controller extends BaseController
       ];
       return $json;
     }
-    protected function is_success_response($json){
+    public function is_success_response($json){
       if($json["status"]==="0") return true;
       if($json["status"]===200) return true;
       if($json["status"]==="success") return true;
       return false;
     }
-    protected function error_response($message="system error", $description=""){
+    public function error_response($message="system error", $description=""){
       return $this->api_response(500, $message, $description);
     }
-    protected function notfound($message="not found", $description=""){
+    public function notfound($message="not found", $description=""){
       return $this->api_response(404, $message, $description);
     }
-    protected function bad_request($message="bad request", $description=""){
+    public function bad_request($message="bad request", $description=""){
       return $this->api_response(400, $message, $description);
     }
-    protected  function forbidden($message="forbidden", $description=""){
+    public  function forbidden($message="forbidden", $description=""){
       return $this->api_response(403, $message, $description);
     }
     public function send_mail($to, $title, $param, $type, $template, $locale="ja")
@@ -204,7 +204,7 @@ class Controller extends BaseController
       * @param  int $key_length
       * @return boolean
       */
-     protected function is_enable_token($token, $key_length=32){
+     public function is_enable_token($token, $key_length=32){
        $expire = substr($token, $key_length);
        if(intval($expire)-time() > 0){
          return true;

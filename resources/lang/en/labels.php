@@ -138,6 +138,7 @@ return [
   'asx' => 'Ascending',
   'desc' => 'Descending',
   'status' => 'Status',
+  'updated_status' => 'Updated Status',
   'selectable' => 'Please Select',
   'to_exchange' => 'To Alternate',
   'exchange_add' => 'To Alternate',
@@ -302,4 +303,6 @@ return [
   'regist_schedule_count' => 'schedule(:count)',
   'get' => 'Get',
   'last_regist_date' => 'Last date',
+  'require_student_confirm' => 'Require student confirmation',
+  'not_require_student_confirm' => 'Does not require student confirmation',
 ];

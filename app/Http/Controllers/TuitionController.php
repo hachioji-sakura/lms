@@ -236,7 +236,7 @@ class TuitionController extends MilestoneController
     $form = $this->create_form($request);
     $res = $this->transaction($request, function() use ($request, $form){
       $item = Tuition::add($form);
-      return $item;
+      return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
@@ -245,7 +245,7 @@ class TuitionController extends MilestoneController
      $res =  $this->transaction($request, function() use ($request, $id){
        $item = Tuition::where('id',$id)->first();
        $item->change($this->update_form($request));
-       return $item;
+       return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }

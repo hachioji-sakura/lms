@@ -8,6 +8,6 @@ return array(
   'restcare_holiday_is_a1' => '休み判定用項目：祝日は休み1',
   'restcare_rest_is_a1' => '休み判定用項目：常に休み１',
   'restcare_rest_add_exchange_enable' => '休み判定用項目：常に振替対象',
-  'repeat_schedule_no_week5' => '5週目の繰り返しスケジュールはなし',
+  'repeat_schedule_no_week5' => '5週目の通常授業なし',
 );
 ?>

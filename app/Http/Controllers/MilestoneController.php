@@ -324,7 +324,7 @@ class MilestoneController extends UserController
           }
         }
 
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
      }
@@ -430,7 +430,7 @@ class MilestoneController extends UserController
           }
         }
         $item->change($form, $file, $is_file_delete);
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
@@ -460,7 +460,7 @@ class MilestoneController extends UserController
           $this->s3_delete($item['s3_url']);
         }
         $item->dispose();
-        return $item;
+        return $this->api_response(200, '', '', $item);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }

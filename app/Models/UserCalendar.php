@@ -13,8 +13,11 @@ use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
+use App\Models\Traits\Common;
+
 class UserCalendar extends Model
 {
+  use Common;
   protected $pagenation_line = 20;
   protected $table = 'lms.user_calendars';
   protected $guarded = array('id');
@@ -412,30 +415,36 @@ EOT;
     $code = $this->schedule_type_code();
     return __('labels.'.$code);
   }
-  public function get_teaching_type(){
-    if($this->work==10) return 'season';
-    if($this->work==5) return 'training';
+  public function get_teaching_type($work=''){
+    if(empty($work)) $work = $this->work;
+    if($work==10) return 'season';
+    if($work==5) return 'training';
 
+    $ret = "";
     if($this->is_teaching()){
       if($this->trial_id > 0){
-        return 'trial';
+        $ret = "trial";
       }
-      if(intval($this->user_calendar_setting_id) > 0){
-        return 'regular';
+      else if(intval($this->user_calendar_setting_id) > 0){
+        $ret = "regular";
       }
-      if($this->exchanged_calendar_id > 0){
-        return 'exchange';
+      else if($this->exchanged_calendar_id > 0){
+        $ret = "exchange";
       }
-      return 'add';
+      else {
+        $ret = "add";
+      }
     }
-    return "";
+    return $ret;
   }
   public function teaching_type_name(){
-    if(empty($this->teaching_type)){
+    $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
+    if(empty($ret)){
       $type = $this->get_teaching_type();
-      $this->update(['teaching_type' => $type]);
+      UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
+      $ret = $this->get_attribute_name('teaching_type', $type);
     }
-    return $this->get_attribute_name('teaching_type', $this->teaching_type);
+    return $ret;
   }
   public function status_name(){
     $status_name = "";
@@ -541,6 +550,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
+
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
@@ -623,16 +633,18 @@ EOT;
 
     return $item;
   }
-  static public function get_holiday($day){
+  static public function get_holiday($day, $is_public=true, $is_private=true){
     $day = date('Y-m-d', strtotime($day));
-    $holiday = Holiday::where('date', $day)->first();
+    $holiday = Holiday::where('date', $day)
+            ->first();
     if(isset($holiday)){
       return $holiday;
     }
     return null;
   }
-  public function is_holiday(){
-    $holiday = (new UserCalendar())->get_holiday($this->start_time);
+  public function is_holiday($date=""){
+    if(empty($date)) $date = $this->start_time;
+    $holiday = (new UserCalendar())->get_holiday($date);
     if($holiday!=null) return true;
     return false;
   }
@@ -645,7 +657,9 @@ EOT;
     if(isset($form['user_calendar_setting_id'])){
       $user_calendar_setting_id = $form['user_calendar_setting_id'];
     }
+
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+    if(!isset($form['work'])) $form['work'] = '';
 
     //TODO 重複登録、競合登録の防止が必要
     /*
@@ -654,11 +668,23 @@ EOT;
       ->where('user_id', $form['teacher_user_id'])->first();
 
     if(isset($calendar)){
-      return null;
+      return $this->error_response("同じ時間の予定が存在します", "", $form);
     }
     */
 
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
+
+    $status = 'new';
+    if($form['work']==9) $status = 'fix';
+
+
+    //TODO Workの補間どうにかしたい
+    if(isset($form['course_type']) && empty($form['work'])){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+      if(isset($work_data[$form["course_type"]])){
+        $form['work'] = $work_data[$form["course_type"]];
+      }
+    }
 
     $calendar = UserCalendar::create([
       'start_time' => $form['start_time'],
@@ -669,22 +695,19 @@ EOT;
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
       'place_floor_id' => $form['place_floor_id'],
-      'work' => '',
+      'work' => $form['work'],
       'remark' => '',
       'user_id' => $form['teacher_user_id'],
       'create_user_id' => $form['create_user_id'],
-      'status' => 'new'
+      'status' => $status
     ]);
-
-    $teaching_type = $calendar->get_teaching_type();
-    $calendar->update(['teaching_type' => $teaching_type]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
     //新規登録時に変更メールを送らない
     unset($form['send_mail']);
     $calendar = $calendar->change($form);
 
-    return $calendar;
+    return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose(){
@@ -710,12 +733,6 @@ EOT;
     $status = $this->status;
     $is_status_update = true;
 
-    //TODO Workの補間どうにかしたい
-    if(isset($form['course_type']) && !isset($form['work'])){
-      $work_data = ["single" => 6, "group"=>7, "family"=>8];
-      $form['work'] = $work_data[$form["course_type"]];
-    }
-
     //TODO lectureの補間どうにかしたい
     $lecture_id = 0;
     if(isset($form['lesson']) && isset($form['course_type'])){
@@ -740,13 +757,16 @@ EOT;
       //course_minutesは、start_time・end_timeから補完
       $data['course_minutes'] = intval(strtotime($data['end_time']) - strtotime($data['start_time']))/60;
     }
-/*
-    foreach($data as $field=>$val){
-      \Log::warning($field."=".$val);
-    }
-*/
+
     if(isset($data['status_name']))  unset($data['status_name']);
     $this->update($data);
+    if(empty($this->teaching_type)){
+      $type = $this->get_teaching_type();
+      \Log::warning("type=".$type);
+
+      $this->update(['teaching_type' => $type]);
+    }
+
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
@@ -995,7 +1015,7 @@ EOT;
   }
 
   public function status_to_fix($remark, $login_user_id){
-    if($this->status!='confirm' && $this->status!='cancel') return false;
+    if($this->status!='new' && $this->status!='confirm' && $this->status!='cancel') return false;
     $is_update = true;
     foreach($this->members as $member){
       $_member = $member->user->details('students');

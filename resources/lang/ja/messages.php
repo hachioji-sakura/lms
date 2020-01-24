@@ -3,6 +3,7 @@
 return [
   "validate_timezone_error" => '時間帯範囲が間違っています',
   "confirm_update" => "更新しますか？",
+  "confirm_delete" => "削除しますか？",
   "confirm_add" => "登録しますか？",
   "error_exchange_target" => "振替対象の授業を選択してください",
   "error_single_exchange_is_one_student" => "振替対象の生徒を一人にしてください",
@@ -11,7 +12,7 @@ return [
   "confirm_rest_cancel" => "休み取り消し連絡を送信しますか？\n（先生が承諾しなかれば、休み取り消しは完了となりません）",
   "info_proxy_contact_for_student" => "生徒の代わりに連絡をします。",
   "confirm_calendar_fix" => "この授業予定の確認連絡をしますか？",
-  "info_calendar_fix" => "生徒様よりご連絡があり、\n以下の 授業予定が確定となりました。",
+  "info_calendar_fix" => "以下の 授業予定が確定となりました。",
   "confirm_calendar_confirm" => "以下の授業予定を確定し、生徒に連絡しますか？",
   "confirm_calendar_confirm_for_teacher" => "以下の授業予定を担当講師あてに連絡しますか？",
   "info_calendar_confirm" => "以下の授業予定をご確認ください",

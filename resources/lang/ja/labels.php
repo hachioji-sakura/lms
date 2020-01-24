@@ -139,6 +139,7 @@ return [
   'asc' => '昇順',
   'desc' => '降順',
   'status' => 'ステータス',
+  'updated_status' => '更新後のステータス',
   'selectable' => '(選択)',
   'to_exchange' => '振替対象',
   'exchange_add' => '振替登録',
@@ -308,7 +309,9 @@ return [
   'teacher_name_display' => '講師名を表示',
   'target_data' => '対象データ',
   'label_setting' => 'ラベル表示設定',
-  'regist_schedule_count' => '登録予定数(:count)',
+  'regist_schedule_count' => '登録数(:count)',
   'get' => '取得',
   'last_regist_date' => '最終登録日',
+  'require_student_confirm' => '生徒の確認を必要とする',
+  'not_require_student_confirm' => '生徒の確認を必要としない',
 ];

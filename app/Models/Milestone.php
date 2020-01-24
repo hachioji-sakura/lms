@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\GeneralAttribute;
 use App\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Traits\Common;
 
 class Milestone extends Model
 {
+  use Common;
   protected $connection = 'mysql';
   protected $table = 'lms.milestones';
   protected $guarded = array('id');
@@ -137,13 +138,12 @@ class Milestone extends Model
     return $item;
   }
   public function send_mail($user_id, $title, $param, $type, $template){
-    $controller = new Controller;
     $u = User::where('id', $user_id)->first();
     $mail = $u->get_mail_address();
     if(!isset($u)) return $controller->bad_request();
     $param['user'] = $u->details();
     $param['send_to'] = $param['user']->role;
-    $res = $controller->send_mail($mail, $title, $param, $type, $template, $u->get_locale());
+    $res = $this->_send_mail($mail, $title, $param, $type, $template, $u->get_locale());
     return $res;
   }
   public function default_importance($type){
@@ -201,24 +201,5 @@ class Milestone extends Model
       $this->s3_delete($this->s3_url);
     }
     $this->delete();
-  }
-  protected function send_slack($message, $msg_type, $username=null, $channel=null) {
-    $controller = new Controller;
-    $res = $controller->send_slack($message, $msg_type, $username, $channel);
-    return $res;
-  }
-  protected function s3_upload($request_file, $save_folder=""){
-    $controller = new Controller;
-    $res = $controller->s3_upload($request_file, $save_folder);
-    return $res;
-  }
-  protected function s3_delete($s3_url){
-    $controller = new Controller;
-    $res = $controller->s3_delete($s3_url);
-    $this->update([
-      's3_alias' => '',
-      's3_url' => '',
-    ]);
-    return $res;
   }
 }

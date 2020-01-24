@@ -237,7 +237,7 @@ class StudentParentController extends TeacherController
           $trial_student->student->regular();
         }
 */
-        return $user;
+        return $this->api_response(200, "", "", $user);
       }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 
