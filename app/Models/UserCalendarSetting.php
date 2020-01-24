@@ -130,7 +130,6 @@ EOT;
         $this->update(['status' => 'disabled']);
       }
     }
-
     $base_date = '2000-01-01 ';
 
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
@@ -479,6 +478,19 @@ EOT;
     }
     return true;
   }
+  public function has_enable_member(){
+    $is_enable = true;
+    if($this->work!=9){
+      $is_enable = false;
+      foreach($this->members as $member){
+        if($this->user_id == $member->user_id) continue;
+        if($member->user->details()->status != 'regular') continue;
+        $is_enable = true;
+        break;
+      }
+    }
+    return $is_enable;
+  }
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
@@ -545,6 +557,18 @@ EOT;
   //この設定を使って、引数＝日付でUserCalendarに登録する
   public function add_calendar($date){
     \Log::warning("add_calendar:[".$date."]");
+    $is_enable = $this->is_enable();
+    if($is_enable==false){
+      return $this->error_response("valid_setting", "設定が有効ではない(id=".$this->id.")");
+    }
+
+    if($is_enable===true && $this->work!=9){
+      $is_enable = $this->has_enable_member();
+      if($is_enable==false){
+        \Log::error("有効なメンバーがいない");
+        return $this->error_response("no_member", "有効なメンバーがいない(id=".$this->id.")");
+      }
+    }
 
     //担当講師が本登録でない場合、登録できない
     //if($this->user->status!='regular') return null;
@@ -559,8 +583,7 @@ EOT;
         ->first();
 
     if(isset($c)){
-      \Log::error("このカレンダーは登録ずみ");
-      return $this->error_response("このカレンダーは登録ずみ(id=".$this->id.")");
+      return $this->error_response("already_registered", "このカレンダーは登録ずみ(id=".$this->id.")");
     }
 
     $c = (new UserCalendar())->rangeDate($start_time, $end_time)
@@ -591,21 +614,7 @@ EOT;
     foreach($this->tags as $tag){
       $form[$tag->tag_key] = $tag->tag_value;
     }
-    $is_enable = $this->is_enable();
-    if($is_enable===true && $this->work!=9){
-      $is_enable = false;
-      foreach($this->members as $member){
-        if($this->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular') continue;
-        $is_enable = true;
-        break;
-      }
-    }
 
-    if($is_enable==false){
-      \Log::error("有効なメンバーがいない");
-      return $this->error_response("有効なメンバーがいない(id=".$this->id.")");
-    }
 /*
     foreach($form as $key => $v){
       \Log::warning("param[".$key."] =".$v);

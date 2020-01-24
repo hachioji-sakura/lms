@@ -39,7 +39,7 @@
             $__week = "";
           ?>
           <ul class="mailbox-attachments clearfix row">
-            @foreach($calendar_settings as $setting)
+          @foreach($calendar_settings as $setting)
             @if($__week != $setting["lesson_week"])
             <li class="col-12 p-0" accesskey="" target="">
               <div class="row">
@@ -54,7 +54,7 @@
             @endif
 
             <div class="row p-2 border-bottom
-              @if($setting['status']=='disabled')
+              @if($setting['status']=='disabled' || $setting->has_enable_member()==false)
               calendar_rest
               @endif
               ">
@@ -89,6 +89,9 @@
               </div>
               <div class="col-12">
                 @if($setting->work!=9)
+                  @if($setting->has_enable_member()==false)
+                  <small class="ml-1 mr-1 text-sm text-danger">メンバー設定不備</small>
+                  @else
                   @foreach($setting->members as $member)
                     @if($member->user->details()->role==="student")
                       <span class="mr-2">
@@ -97,6 +100,7 @@
                       </span>
                     @endif
                   @endforeach
+                  @endif
                   @foreach($setting['subject'] as $subject)
                   <span class="text-xs mr-2">
                     <small class="badge badge-primary mt-1 mr-1">
