@@ -363,18 +363,31 @@ EOT;
     return "";
   }
   public function lesson($is_value=false){
-    $en = [1=>'School', 2=>'English Talk', 3=>'Piano', 4=>'Kids Lesson'];
-    $val = $this->get_attribute('lesson', $is_value);
-    if(is_numeric($val) && $is_value==false) return $en[intval($val)];
+    $val = "";
+    if($this->is_teaching()==true){
+      $en = [1=>'School', 2=>'English Talk', 3=>'Piano', 4=>'Kids Lesson'];
+      $val = $this->get_attribute('lesson', $is_value);
+      if(is_numeric($val) && $is_value==false){
+        if(isset($en[intval($val)])){
+          return $en[intval($val)];
+        }
+      }
+    }
     return $val;
   }
   public function course($is_value=false){
-    return $this->get_attribute('course_type', $is_value);
+    if($this->is_teaching()==true){
+      return $this->get_attribute('course_type', $is_value);
+    }
+    return "";
   }
   public function course_minutes($is_value=false){
     //return $this->get_attribute('course_minutes', $is_value);
-    if($is_value==true) return $this->course_minutes;
-    return $this->get_attribute_name('course_minutes', $this->course_minutes);
+    if($this->is_teaching()==true){
+      if($is_value==true) return $this->course_minutes;
+      return $this->get_attribute_name('course_minutes', $this->course_minutes);
+    }
+    return "";
   }
   public function get_attribute($key, $is_value=false){
     if($is_value==true || app()->getLocale()=='en'){
@@ -771,7 +784,8 @@ EOT;
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson'];
+    //TODO 将来的にsubject_exprに関するロジックは不要
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
