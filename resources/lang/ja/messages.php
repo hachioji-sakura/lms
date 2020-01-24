@@ -98,5 +98,5 @@ return [
   "info_late_arrival_cancel" => "生徒様よりご連絡があり、\n以下の 授業予定の遅刻連絡をキャンセルするとのことです。",
   "confirm_remind_already_ask_data" => "この依頼は登録済みですが、再送しますか？",
   "confirm_ask_data" => "承認もしくは、差し戻し操作を行ってください。",
-
+  "error_user_calendar_settings_no_member" => "メンバー設定不備！",
 ];
