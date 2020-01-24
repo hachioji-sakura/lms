@@ -96,4 +96,5 @@ return [
  "info_late_arrival_cancel" => "The student contacted us,\nThey canceled the late contact for the following class schedule.",
  "confirm_remind_already_ask_data" => "This request has been registered, but will you resend it?",
  "confirm_ask_data" => "Please approve or send back this request.",
+ "error_user_calendar_settings_no_member" => "Insufficient member settings!",
  ];

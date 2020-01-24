@@ -8,7 +8,7 @@
       @yield('setting_form')
       <div class="row">
         <div class="col-12 mb-1">
-            <button type="button" class="btn btn-submit btn-danger btn-block collapse" accesskey="delete_calendar_create">
+            <button type="button" class="btn btn-submit btn-danger btn-block collapse" accesskey="delete_calendar_create" confirm="{{__('messages.confirm_delete')}}">
               {{__('labels.schedule_delete')}}
               <i class="fa fa-caret-right ml-1"></i>
             </button>

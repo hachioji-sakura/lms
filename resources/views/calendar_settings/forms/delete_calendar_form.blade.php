@@ -93,6 +93,7 @@ function get_delete_calendar_date(){
   };
   $('button.btn-submit').collapse('hide');
   if(!front.validateFormValue('delete_calendar_setting_form')) return false;
+  front.clearValidateError();
   service.getAjax(false, url, req,
     function(result, st, xhr) {
       var check_template = [

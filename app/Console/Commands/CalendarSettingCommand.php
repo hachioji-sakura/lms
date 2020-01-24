@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Illuminate\Http\Request;
 use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
@@ -14,7 +15,7 @@ class CalendarSettingCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'calendarsetting:make {--range_month=} {--start_date=} {--week_count=} {--id=}';
+    protected $signature = 'calendarsetting:make {--range_month=} {--start_date=} {--end_date=} {--week_count=} {--id=} {{--view_mode=}}';
 
     /**
      * The console command description.
@@ -40,14 +41,22 @@ class CalendarSettingCommand extends Command
      */
     public function handle()
     {
-      $this->to_calendar($this->option("start_date"), $this->option("range_month"), $this->option("week_count"), $this->option("id"));
+      if(!empty($this->option("view_mode"))){
+        $view_mode = true;
+      }
+      else {
+        $view_mode = false;
+      }
+      $this->to_calendar($this->option("start_date"), $this->option("end_date"), $this->option("range_month"), $this->option("week_count"), $this->option("id"), $view_mode);
     }
-    public function to_calendar($start_date='', $range_month=1, $week_count=5, $id=0)
+    public function to_calendar($start_date='', $end_date='', $range_month=1, $week_count=5, $id=0, $view_mode=false)
     {
       $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
       @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month, 'warning', "remind_trial_calendar");
 
-      if(empty($range_month)) $range_month=2;
+      //パラメータ指定がない場合
+      //登録範囲　3か月分, 5週目の授業あり、開始日＝今日
+      if(empty($range_month)) $range_month=3;
       if(empty($week_count)) $week_count=5;
       if(empty($start_date)) $start_date=date('Y-m-d');
 
@@ -61,103 +70,51 @@ class CalendarSettingCommand extends Command
         return false;
       }
       $data = [];
-      foreach($settings as $setting){
-        $schedules = $setting->get_add_calendar_date($start_date, "", $range_month, $week_count);
-        foreach($schedules as $date => $already_calendar){
-          if(isset($already_calendar) && count($already_calendar)>0){
-            //作成済みの場合
-            continue;
-          }
-          $this->info('to_calendar:'.$date);
-          $ret = $this->_to_calendar($date, $setting);
-          if($ret!=null) $data[] = $ret;
-        }
-      }
-      @$this->send_slack("calendarsetting:to_calendar:end", 'warning', "remind_trial_calendar");
-      return false;
-    }
-    private function _to_calendar($date, $setting){
-      //担当講師が本登録でない場合、登録できない
-      if($setting->user->status!='regular') return null;
-      if($setting->is_enable($date)==false) return null;
-      $this->info('--------------------------------');
-      $this->info('setting:id='.$setting->id);
-      $this->info('setting:enable_date='.$setting->enable_date());
-      $start_time = $date.' '.$setting->from_time_slot;
-      $end_time = $date.' '.$setting->to_time_slot;
-      $calendars = UserCalendar::rangeDate($start_time, $end_time)
-      ->where('user_id', $setting->user_id)
-        ->get();
-      $default_status = 'fix';
-      if(isset($calendars)){
-        //通常授業設定と競合するカレンダーが存在
-        $default_status = 'new';
-        foreach($calendars as $c){
-          if($c->lecture_id == $setting->lecture_id && $c->work == $setting->work && $c->place_floor_id == $setting->place_floor_id){
-            $is_same_calendar = true;
-            foreach($setting->members as $member){
-              if($member->user->details()->status != 'regular') continue;
-              if($c->is_member($member->user_id)==false){
-                $is_same_calendar = false;
-                break;
+      $request = new Request();
+      $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
+        foreach($settings as $setting){
+          if($setting->is_enable()==false) continue;
+          if($setting->has_enable_member()==false) continue;
+          $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
+          foreach($dates as $date => $val){
+            if(empty($date)) continue;
+            $this->info('add_calendar / setting_id='.$setting->id.' / date='.$date);
+            if($view_mode==false){
+              $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));
+              if(!$this->is_success_response($result)){
+                $this->info($result["message"]."\n".$result["description"]);
+                if($result['message'] != 'already_registered'){
+                  $this->info("繰り返しスケジュール登録エラー:\n".$result["message"]."\n".$result["description"]);
+                  return false;
+                }
               }
             }
-            if($is_same_calendar==true){
-              $this->info('already same calendar exist');
-              return null;
-            }
           }
         }
-      }
+        return $this->api_response(200, '', '', $settings);
+      }, '繰り返しスケジュール登録', __FILE__, __FUNCTION__, __LINE__ );
 
-
-      $form = [
-        'status' => $default_status,
-        'user_calendar_setting_id' => $setting->id,
-        'start_time' => $start_time,
-        'end_time' => $end_time,
-        'lecture_id' => $setting->lecture_id,
-        'place_floor_id' => $setting->place_floor_id,
-        'work' => $setting->work,
-        'exchanged_calendar_id' => 0,
-        'remark' => $setting->remark,
-        'teacher_user_id' => $setting->user_id,
-        'create_user_id' => 1,
-      ];
-      $message = '';
-      foreach($form as $key=>$val){
-        $this->info($key.'='.$val);
-      }
-      $start_date = $date;
-      $is_enable = false;
-
-      foreach($setting->members as $member){
-        $this->info('user_id='.$member->user_id);
-        if($setting->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular') continue;
-        $is_enable = true;
-        break;
-      }
-      if($is_enable==false){
-        //有効なメンバーがいない
-        return null;
-      }
-      $res = UserCalendar::add($form);
-      $calendar = $res['data'];
-      if($calendar!=null){
-        foreach($setting->members as $member){
-          if($setting->user_id == $member->user_id) continue;
-          if(strtotime($member->user->created_at) > strtotime($date)) continue;
-          if($member->user->details()->status != 'regular') continue;
-          //主催者以外を追加
-          $calendar->memberAdd($member->user_id, 1, $default_status);
-        }
-      }
-      return $calendar;
+      @$this->send_slack("calendarsetting:to_calendar:end", 'warning', "remind_trial_calendar");
+      return true;
+    }
+    protected function api_response($status=200, $message="", $description="", $data=[]) {
+      $controller = new Controller;
+      $res = $controller->api_response($status, $message, $description, $data);
+      return $res;
+    }
+    protected function is_success_response($json) {
+      $controller = new Controller;
+      $res = $controller->is_success_response($json);
+      return $res;
     }
     protected function send_slack($message, $msg_type, $username=null, $channel=null) {
       $controller = new Controller;
       $res = $controller->send_slack($message, $msg_type, $username, $channel);
+      return $res;
+    }
+    protected function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
+      $controller = new Controller;
+      $res = $controller->transaction($request, $callback, $logic_name, $__file, $__function, $__line);
       return $res;
     }
 }

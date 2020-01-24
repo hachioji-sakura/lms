@@ -751,7 +751,7 @@ class ImportController extends UserController
         $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
         foreach($tag_names as $tag_name){
           if(!empty($tags[$tag_name])){
-             ChargeStudentTag::setTag($charge_student->id, $tag_name, $tags[$tag_name], 1);
+            $this->store_charge_student_tag($charge_student->id, $tag_name, $tags[$tag_name]);
           }
         }
       }
@@ -947,7 +947,9 @@ class ImportController extends UserController
         $tag_names = ['course_type', 'lesson', 'subject_expr'];
         foreach($tag_names as $tag_name){
           if(!empty($tags[$tag_name])){
-            if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
+            if(isset($setting)){
+               $this->store_calendar_setting_tag($setting->id, $tag_name, $tags[$tag_name]);
+             }
             if(!isset($student->user_id)){
               continue;
             }
@@ -1230,7 +1232,7 @@ class ImportController extends UserController
       $tag_names = ['course_type', 'lesson', 'subject_expr'];
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
-          UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
+          $this->store_calendar_tag($calendar_id, $tag_name, $tags[$tag_name]);
         }
       }
       if(isset($student) && isset($teacher)){
@@ -1291,6 +1293,56 @@ class ImportController extends UserController
       }
 
       return true;
+    }
+    /**
+     * カレンダータグ登録
+     * @param array $item
+     * @return boolean
+     */
+    private function store_calendar_tag($model_id, $key, $val){
+      return $this->store_tag($id, $key, $val, 'user_calendars');
+    }
+    private function store_calendar_setting_tag($model_id, $key, $val){
+      return $this->store_tag($id, $key, $val, 'user_calendar_settings');
+    }
+    private function store_charge_student_tag($model_id, $key, $val){
+      return $this->store_tag($id, $key, $val, 'charge_students');
+    }
+    private function store_tag($model_id, $key, $val, $model='user_calendars'){
+      if(empty($model_id)) return false;
+      if(empty($key)) return false;
+      if(empty($val)) return false;
+      switch($model){
+        case 'charge_students':
+          $items = ChargeStudentTag::where('charge_student_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+        case 'user_calendars':
+          $items = UserCalendarTag::where('calendar_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+        case 'user_calendar_settings':
+          $items = UserCalendarTagSetting::where('user_calendar_setting_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+      }
+      if(isset($item)){
+        //すでに存在する場合は保存しない
+        return false;
+      }
+
+      switch($model){
+        case 'charge_students':
+          return ChargeStudentTag::setTag($model_id, $key, $val, 1);
+        case 'user_calendars':
+          return UserCalendarTag::setTag($model_id, $key, $val, 1);
+        case 'user_calendar_settings':
+          return UserCalendarTagSetting::setTag($model_id, $key, $val, 1);
+      }
+
     }
 
     /**

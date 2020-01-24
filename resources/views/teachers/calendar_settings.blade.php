@@ -23,9 +23,9 @@
               <i class="fa fa-plus"></i>
               <span class="btn-label">{{__('labels.setting')}}{{__('labels.add')}}</span>
             </a>
-            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="繰り返し予定追加" page_form="dialog" page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.repeat_schedule_add')}}" page_form="dialog" page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}" role="button">
               <i class="fa fa-calendar-plus"></i>
-              <span class="btn-label">繰り返し予定追加</span>
+              <span class="btn-label">{{__('labels.repeat_schedule_add')}}</span>
             </a>
             <a class="btn btn-default btn-sm float-left" data-toggle="modal" data-target="#filter_form">
               <i class="fa fa-filter"></i>
@@ -39,7 +39,7 @@
             $__week = "";
           ?>
           <ul class="mailbox-attachments clearfix row">
-            @foreach($calendar_settings as $setting)
+          @foreach($calendar_settings as $setting)
             @if($__week != $setting["lesson_week"])
             <li class="col-12 p-0" accesskey="" target="">
               <div class="row">
@@ -54,7 +54,7 @@
             @endif
 
             <div class="row p-2 border-bottom
-              @if($setting['status']=='disabled')
+              @if($setting['status']=='disabled' || $setting->has_enable_member()==false)
               calendar_rest
               @endif
               ">
@@ -89,6 +89,9 @@
               </div>
               <div class="col-12">
                 @if($setting->work!=9)
+                  @if($setting->has_enable_member()==false)
+                  <small class="ml-1 mr-1 text-sm text-danger">{{__('messages.error_user_calendar_settings_no_member')}}</small>
+                  @else
                   @foreach($setting->members as $member)
                     @if($member->user->details()->role==="student")
                       <span class="mr-2">
@@ -97,6 +100,7 @@
                       </span>
                     @endif
                   @endforeach
+                  @endif
                   @foreach($setting['subject'] as $subject)
                   <span class="text-xs mr-2">
                     <small class="badge badge-primary mt-1 mr-1">

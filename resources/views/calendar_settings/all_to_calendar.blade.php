@@ -9,7 +9,7 @@
       @yield('setting_form')
       <div class="row">
         <div class="col-12 mb-1">
-            <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="to_calendar_create">
+            <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="to_calendar_create" confirm="{{__('messages.confirm_add')}}">
               {{__('labels.add_button')}}
               <i class="fa fa-caret-right ml-1"></i>
             </button>

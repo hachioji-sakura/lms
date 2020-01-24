@@ -48,6 +48,7 @@ return [
   'schedule_list_description' => '授業予定をリスト表示',
   'today_schedule_list_description' => '本日の授業予定をリスト表示',
   'schedule_add' => '予定追加',
+  'repeat_schedule_add' => '繰り返し予定追加',
   'trial_lesson' => '体験授業',
   'schedule_add_description' => '授業の追加・振替',
   'year_month' => ':year年:month月',

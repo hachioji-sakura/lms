@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Mail;
 use App;
+use DB;
 
 class Controller extends BaseController
 {
@@ -251,5 +252,32 @@ class Controller extends BaseController
 
        //配列として祝日を返す
        return $csv;
+     }
+     public function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
+         try {
+           DB::beginTransaction();
+           $res = $callback();
+           if($this->is_success_response($res)){
+             DB::commit();
+           }
+           else {
+             DB::rollBack();
+           }
+           // 二重送信対策
+           if($request!=null){
+             $request->session()->regenerateToken();
+           }
+           return $res;
+         }
+         catch (\Illuminate\Database\QueryException $e) {
+             DB::rollBack();
+             $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', $logic_name);
+             return $this->error_response('Query Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
+         }
+         catch(\Exception $e){
+             DB::rollBack();
+             $this->send_slack($logic_name.'エラー:'.$e->getMessage(), 'error', $logic_name);
+             return $this->error_response('DB Exception', '['.$__file.']['.$__function.'['.$__line.']'.'['.$e->getMessage().']');
+         }
      }
 }

@@ -75,26 +75,36 @@ function get_to_calendar_date(){
     function(result, st, xhr) {
       var check_template = [
         '<tr class="">',
-        '    <td class="p-1 text-sm text-center">',
-        '    <div class="input-group">',
-        '        <div class="form-check">',
-        ' <small title="" class="badge badge-#style# mt-1 mr-1"><i class="fa fa-plus" ></i>#status_name#</small>',
-        '        <label class="form-check-label">#date_label#',
-        '        </label>',
-        '        <input type="hidden" name="select_dates[]" value="#date#" > ',
+        '    <td class="p-1 text-sm">',
+        '        <div class="row">',
+          '        <div class="col-12 ">',
+            ' <small title="" class="badge badge-#style# mt-1 mr-1"><i class="fa fa-plus" ></i>#status_name#</small>',
+            '        <label>#date_label#</label>',
+            '        <input type="hidden" name="select_dates[]" value="#date#" > ',
+          '        </div>',
+          '        <div class="col-12">',
+            '        <label>#student_name#</label>',
+            '        <label>#time_label#</label>',
+            '        <label>#work_name#</label>',
+          '        </div>',
         '        </div>',
-        '    </div>',
         '    </td>',
         '</tr>'
       ].join('');
       var already_template = [
         '<tr class="">',
-        '    <td class="p-1 text-sm text-center">',
-        '    <div class="input-group">',
-        '        <i class="fa fa-check" ></i>登録済み : ',
-        '        <label class="form-check-label">#date_label#</label>',
-        ' <small title="" class="badge badge-#style# mt-1 mr-1">#status_name#</small>',
-        '    </div>',
+        '    <td class="p-1 text-sm">',
+        '        <div class="row">',
+          '        <div class="col-12">',
+          '        <i class="fa fa-check" ></i>登録済み : ',
+          '        <label>#date_label#</label>',
+          ' <small title="" class="badge badge-#style# mt-1 mr-1">#status_name#</small>',
+          '        </div>',
+          '        <div class="col-12">',
+          '        <label>#student_name#</label>',
+          '        <label>#time_label#</label>',
+          '        <label>#work_name#</label>',
+        '        </div>',
         '    </td>',
         '</tr>'
       ].join('');
@@ -123,13 +133,12 @@ function get_to_calendar_date(){
               st = {"name" : "新規登録", "style" : "info"};
               is_find = true;
             }
-            var date_label = util.dateformat(date, '%Y年%m月%d(%w) ')+setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5);
-            if(!util.isEmpty(setting['student_name'])) date_label += '/'+setting['student_name'];
-            date_label += '/'+setting['work_name'];
-
             var _dom = dom.textFormat(_template,
               {"date" : date,
-               "date_label" : date_label,
+               "date_label" : util.dateformat(date, '%Y年%m月%d(%w) '),
+               "time_label" : setting['from_time_slot'].substring(0,5)+'-'+setting['to_time_slot'].substring(0,5),
+               "work_name" : setting['work_name'],
+               "student_name" : setting['student_name'],
                "status_name" : st["name"],
                "style" : st["style"]
              }
