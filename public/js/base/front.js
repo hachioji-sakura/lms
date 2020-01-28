@@ -71,7 +71,8 @@
 			}
 		}
 		if(!util.isEmpty(type) && (type == "checkbox" || type == "radio")){
-			if(type=="checkbox"){
+			//TODO 2020.01.28 yasui type=radioでも値は配列でなければいけない？
+			if(type=="checkbox" || type=="radio"){
 				val = [];
 				$("input[name='"+field+"']:checked").each(function() {
 	        val.push($(this).val());

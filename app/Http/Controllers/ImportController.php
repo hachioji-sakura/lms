@@ -1026,8 +1026,11 @@ class ImportController extends UserController
         $_data_type = 'manager';
         $manager = Manager::hasTag('manager_no', $item['user_id'])->first();
         if(!isset($manager)){
-          @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
-          return false;
+          $manager = Teacher::hasTag('manager_no', $item['user_id'])->first();
+          if(!isset($manager)){
+            @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+            return false;
+          }
         }
         $user_id = $manager->user_id;
         $status = "fix";
