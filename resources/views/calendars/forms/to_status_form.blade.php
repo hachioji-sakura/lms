@@ -1,4 +1,4 @@
-@if($item->is_group()==true)
+@if($item->is_group()==true || $item->trial_id>0)
 <input type="hidden" name="status" value="confirm" />
 @else
 <div class="col-12 mt-2 couse_type_group">
