@@ -914,8 +914,8 @@ class ImportController extends UserController
         $setting = UserCalendarSetting::create($setting_data);
       }
       $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
-      ->where('user_id', $user_id)
-      ->first();
+                  ->where('user_id', $user_id)
+                  ->first();
       if(!isset($__member)){
         $member = UserCalendarMemberSetting::create([
             'user_calendar_setting_id' => $setting->id,
@@ -927,8 +927,8 @@ class ImportController extends UserController
       }
       if(isset($student)){
         $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
-        ->where('user_id', $student->user_id)
-        ->first();
+                  ->where('user_id', $student->user_id)
+                  ->first();
         if(!isset($__member)){
           $__member = UserCalendarMemberSetting::create([
               'user_calendar_setting_id' => $setting->id,
@@ -1300,13 +1300,13 @@ class ImportController extends UserController
      * @return boolean
      */
     private function store_calendar_tag($model_id, $key, $val){
-      return $this->store_tag($id, $key, $val, 'user_calendars');
+      return $this->store_tag($model_id, $key, $val, 'user_calendars');
     }
     private function store_calendar_setting_tag($model_id, $key, $val){
-      return $this->store_tag($id, $key, $val, 'user_calendar_settings');
+      return $this->store_tag($model_id, $key, $val, 'user_calendar_settings');
     }
     private function store_charge_student_tag($model_id, $key, $val){
-      return $this->store_tag($id, $key, $val, 'charge_students');
+      return $this->store_tag($model_id, $key, $val, 'charge_students');
     }
     private function store_tag($model_id, $key, $val, $model='user_calendars'){
       if(empty($model_id)) return false;
