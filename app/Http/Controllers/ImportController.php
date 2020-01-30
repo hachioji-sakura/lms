@@ -805,6 +805,9 @@ class ImportController extends UserController
       if($item['student_no']==0 && $item['teacher_no'] > 0){
         $_data_type = 'teacher';
       }
+      else if($item['student_no'] > 0 && $item['teacher_no'] == 0){
+        $_data_type = 'student';
+      }
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
       }
@@ -888,6 +891,13 @@ class ImportController extends UserController
 
           }
         }
+      }
+      else if($_data_type=="student"){
+        if(!isset($student)){
+          @$this->remind("事務管理システム:id=".$item['id']."/student_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
+        $user_id = $student->user_id;
       }
       else if($_data_type=="teacher"){
         if(!isset($teacher)){
@@ -993,6 +1003,7 @@ class ImportController extends UserController
           @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
+        $user_id = $student->user_id;
       }
       $teacher = null;
       if($item['teacher_no']>0){
@@ -1021,6 +1032,9 @@ class ImportController extends UserController
       $_data_type = 'student_teacher';
       if($item['student_no']==0 && $item['teacher_no'] > 0){
         $_data_type = 'teacher';
+      }
+      else if($item['student_no']>0 && $item['teacher_no'] == 0){
+        $_data_type = 'student';
       }
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
@@ -1143,6 +1157,7 @@ class ImportController extends UserController
         'place_floor_id' => $item['place_id'],
         'work' => $work,
       ];
+
       if(isset($items)){
         //すでに存在する場合は更新する
         $items->update($update_form);
