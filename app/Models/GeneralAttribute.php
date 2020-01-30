@@ -56,4 +56,32 @@ class GeneralAttribute  extends Model
       ->where('attribute_value', $this->parent_attribute_value)
       ->first();
   }
+  static public function get_item($key, $value){
+    $item = null;
+    $d = config('attributes');
+    if(isset($d[$key]) && isset($d[$key][$value.""])){
+      \Log::warning("config use");
+      $item = $d[$key][$value.""];
+    }
+    if($item == null){
+      \Log::warning("config no use!");
+      $item = GeneralAttribute::where('attribute_key', $key)
+        ->where('attribute_value', $value)->first();
+    }
+    return $item;
+  }
+  static public function get_temporary_attribute(){
+    $url = '../storage/temporary/attributes.json';
+    try {
+        $contents = \File::get($url);
+        if(!empty($contents)){
+          return json_decode($contents);
+        }
+        return null;
+    } catch (\Illuminate\Filesystem\FileNotFoundException $exception) {
+      return null;
+    }
+    return null;
+  }
+
 }

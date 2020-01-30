@@ -26,22 +26,19 @@ class UserTag extends Model
     if($key==="howto_word") return "検索時のキーワード";
 
     if($key==="lesson_time_holiday") $key = "lesson_time";
-    $item = GeneralAttribute::where('attribute_key', 'keys')
-    ->where('attribute_value', $key)->first();
+    $item = GeneralAttribute::get_item('keys', $key);
 
-    if(!empty($item)) return $item->attribute_name;
+    if(!empty($item)) return $item["attribute_name"];
 
     $item = $this->details();
     /*
     if(isset($item->charge_subject_level_item)){
-      return $item->charge_subject_level_item->attribute_name;
+      return $item->charge_subject_level_item["attribute_name"];
     }
     */
 
-    $item = GeneralAttribute::where('attribute_key', 'charge_subject_level_item')
-    ->where('attribute_value', $key)->first();
-    if(!empty($item)) return $item->attribute_name;
-
+    $item = GeneralAttribute::get_item('charge_subject_level_item', $key);
+    if(!empty($item)) return $item["attribute_name"];
     return $this->tag_key;
   }
   public function details(){
@@ -52,20 +49,18 @@ class UserTag extends Model
     if($key==="lesson_place"){
       $place = Place::where('id', $this->tag_value)->first();
       if(isset($place)){
-        $place->attribute_name = $place->name();
+        $place["attribute_name"] = $place->name();
         return $place;
       }
       return null;
     }
-    $item = GeneralAttribute::where('attribute_key', $key)
-      ->where('attribute_value', $this->tag_value)->first();
+    $item = GeneralAttribute::get_item($key, $this->tag_value);
 
     //general_attributeのattribute_keyをtag_keyとして使っている場合
     if(!empty($item)) return $item;
 
     //general_attributesから取得できなかった場合
-    $charge_subject_level_item = GeneralAttribute::where('attribute_key','charge_subject_level_item')
-        ->where('attribute_value', $this->tag_key)->first();
+    $charge_subject_level_item = GeneralAttribute::get_item('charge_subject_level_item', $this->tag_key);
 
     if(!empty($charge_subject_level_item)){
       //希望科目の場合
@@ -76,8 +71,8 @@ class UserTag extends Model
         //受験可、補習可　講師向けの定義
         $key = 'charge_subject_level';
       }
-      $item = GeneralAttribute::where('attribute_key', $key)
-          ->where('attribute_value', $this->tag_value)->first();
+      $item = GeneralAttribute::get_item($key, $this->tag_value);
+
       $item['charge_subject_level_item'] = $charge_subject_level_item;
     }
 
@@ -123,9 +118,10 @@ class UserTag extends Model
   public function name(){
     $item = $this->details();
     if(!isset($item) || empty($item)) return $this->tag_value;
-    if(isset($item->attribute_name)){
-      return $item->attribute_name;
+    if(isset($item["attribute_name"])){
+      return $item["attribute_name"];
     }
     return "";
   }
+
 }

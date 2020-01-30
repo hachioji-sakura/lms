@@ -10,6 +10,7 @@ use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\User;
+use App\Models\UserTag;
 use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
@@ -472,14 +473,11 @@ EOT;
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
-    $tags = $this->user->tags;
-    foreach($this->user->tags as $tag){
-      $tag_data = $tag->details();
-      if(isset($tag_data['charge_subject_level_item'])){
-        //補習以上可能なものを取得
-        if(intval($tag->tag_value) > 1){
-          $subjects[$tag->tag_key] = intval($tag->tag_value);
-        }
+    $tags = UserTag::where('user_id', $this->user_id)->where('tag_key', 'like', '%_level')->get();
+    foreach($tags as $tag){
+      //補習以上可能なものを取得
+      if(intval($tag->tag_value) > 1){
+        $subjects[$tag->tag_key] = intval($tag->tag_value);
       }
     }
     return $subjects;
