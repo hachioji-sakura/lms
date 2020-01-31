@@ -486,8 +486,8 @@ EOT;
     $ret = [];
     $lesson = intval($lesson);
     if($lesson===1 || $lesson==0){
-      $tags = $this->user->tags;
-      foreach($this->user->tags as $tag){
+      $tags = UserTag::where('user_id', $this->user_id)->where('tag_key', 'like', '%_level')->get();
+      foreach($tags as $tag){
         $tag_data = $tag->details();
         if(isset($tag_data['charge_subject_level_item'])){
           if(intval($tag->tag_value) > 1){
