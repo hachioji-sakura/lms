@@ -969,6 +969,7 @@ EOT;
     $param['send_to'] = 'teacher';
     $param['item'] = $this->details(1);
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -980,6 +981,7 @@ EOT;
     $param['send_to'] = 'student';
     $param['item'] = $this->details(1);
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない
@@ -993,6 +995,7 @@ EOT;
     $students = [];
     //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
         $students[] = $member;
@@ -1004,6 +1007,7 @@ EOT;
     $teachers = [];
     //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
       if($_member->role === 'teacher'){
         $teachers[] = $member;
@@ -1027,6 +1031,7 @@ EOT;
     if($this->status!='new') return false;
     $status = 'confirm';
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role != 'student') continue;
     }
@@ -1038,6 +1043,7 @@ EOT;
     if($this->status!='new' && $this->status!='confirm' && $this->status!='cancel') return false;
     $is_update = true;
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role != 'student') continue;
       if($member->status!='fix' && $member->status!='cancel'){
@@ -1055,6 +1061,7 @@ EOT;
     $status = 'cancel';
     $is_update = true;
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role != 'student') continue;
       if($member->status!='fix' && $member->status!='cancel'){
@@ -1076,6 +1083,7 @@ EOT;
     $status = 'rest';
     $is_update = true;
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role != 'student') continue;
       if($member->status!='rest'){
@@ -1105,6 +1113,7 @@ EOT;
   public function exist_rest_student(){
     //欠席 or 休み or　休講
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role == 'student' && $this->is_rest_status($member->status)==true){
         return true;
