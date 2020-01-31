@@ -635,7 +635,10 @@ EOT;
     $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($manager_name,',');
-    $item['user_name'] = $this->user->details()->name();
+    $item['user_name'] = "";
+    if(!isset($this->user)){
+      $item['user_name'] = $this->user->details()->name();
+    }
     $item['is_exchange'] = false;
     $item['exchange_remaining_time'] = $this->get_exchange_remaining_time();
     if(is_numeric($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0){
