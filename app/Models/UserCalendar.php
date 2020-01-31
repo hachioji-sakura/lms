@@ -619,6 +619,7 @@ EOT;
     }
     //グループレッスンの場合など、ユーザーがアクセス可能な生徒を表示する
     foreach($this->get_access_member($user_id) as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
         $student_name.=$_member['name'].',';
