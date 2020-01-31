@@ -167,7 +167,16 @@ $(function(){
       var trial_time_name = $('select[name=trial_time3] option:selected').text().trim();
       form_data["trial_date_time3"] = util.dateformat(form_data["trial_date3"], '%m月%d日')+'<br>'+trial_time_name;
     }
-
+/*TODO 後まわし
+    if(form_data["trial_date4"] && form_data["trial_time4"]){
+      var trial_time_name = $('select[name=trial_time4] option:selected').text().trim();
+      form_data["trial_date_time4"] = util.dateformat(form_data["trial_date4"], '%m月%d日')+'<br>'+trial_time_name;
+    }
+    if(form_data["trial_date5"] && form_data["trial_time5"]){
+      var trial_time_name = $('select[name=trial_time5] option:selected').text().trim();
+      form_data["trial_date_time5"] = util.dateformat(form_data["trial_date5"], '%m月%d日')+'<br>'+trial_time_name;
+    }
+*/
     var _names = ["lesson_place", "howto"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";

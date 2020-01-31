@@ -56,6 +56,11 @@
                       第1希望:{{$item['date1']}}</span><br>
                       第2希望:{{$item['date2']}}</span><br>
                       第3希望:{{$item['date3']}}</span>
+{!--
+<br>
+                      第4希望:{{$item['date4']}}</span><br>
+                      第5希望:{{$item['date5']}}</span>
+--}}
                   </div>
                   <div class="col-12 col-lg-4 mt-1 text-sm">
                     <a href="trials/{{$item->id}}" role="button" class="btn btn-secondary btn-sm">

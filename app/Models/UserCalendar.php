@@ -358,8 +358,8 @@ EOT;
     return "";
   }
   public function get_attribute_name($key, $val){
-    $item = GeneralAttribute::findKeyValue($key,$val)->first();
-    if(isset($item)) return $item->attribute_name;
+    $item = GeneralAttribute::get_item($key,$val);
+    if(isset($item)) return $item["attribute_name"];
     return "";
   }
   public function lesson($is_value=false){
@@ -605,6 +605,7 @@ EOT;
     $managers = [];
     $item['managers'] = [];
     foreach($this->members as $member){
+      if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
       if($_member->role === 'teacher'){
         $teacher_name.=$_member['name'].',';

@@ -70,6 +70,19 @@ class GeneralAttribute  extends Model
     }
     return $item;
   }
+  static public function get_items($key){
+    $items = null;
+    $d = config('attributes');
+    if(isset($d[$key])){
+      \Log::warning("config use");
+      $items = $d[$key];
+    }
+    if($item == null){
+      \Log::warning("config no use!");
+      $items = GeneralAttribute::where('attribute_key', $key)->get();
+    }
+    return $items;
+  }
   static public function get_temporary_attribute(){
     $url = '../storage/temporary/attributes.json';
     try {

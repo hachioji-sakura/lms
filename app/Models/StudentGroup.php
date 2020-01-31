@@ -24,8 +24,8 @@ class StudentGroup extends Model
     return $this->hasMany('App\Models\StudentGroupMember', 'student_group_id');
   }
   public function type_name(){
-    $g = GeneralAttribute::findKeyValue('course_type', $this->type)->first();
-    if(isset($g)) return $g->attribute_name;
+    $g = GeneralAttribute::get_item('course_type', $this->type);
+    if(isset($g)) return $g["attribute_name"];
     return "";
   }
   //本モデルはcreateではなくaddを使う

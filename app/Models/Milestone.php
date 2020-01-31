@@ -113,7 +113,7 @@ class Milestone extends Model
     return $this->belongsTo('App\User', 'create_user_id');
   }
   protected function attribute_name($key, $value){
-    $_attribute = GeneralAttribute::where('attribute_key', $key)->where('attribute_value', $value)->first();
+    $_attribute = GeneralAttribute::get_item($key, $value);
     if(isset($_attribute))  return $_attribute['attribute_name'];
     return "";
   }
