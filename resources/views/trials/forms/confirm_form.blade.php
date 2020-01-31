@@ -11,7 +11,7 @@
   <div class="col-6 p-3"><span id="trial_date_time2"></span></div>
   <div class="col-6 p-3 font-weight-bold" >第３希望日時</div>
   <div class="col-6 p-3"><span id="trial_date_time3"></span></div>
-{{!--
+{{-- TODO 後回し
   <div class="col-6 p-3 font-weight-bold" >第４希望日時</div>
   <div class="col-6 p-3"><span id="trial_date_time4"></span></div>
   <div class="col-6 p-3 font-weight-bold" >第５希望日時</div>
