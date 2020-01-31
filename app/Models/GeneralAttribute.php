@@ -62,6 +62,11 @@ class GeneralAttribute  extends Model
     if(isset($d[$key]) && isset($d[$key][$value.""])){
       \Log::warning("config use");
       $item = $d[$key][$value.""];
+      $g = new GeneralAttribute;
+      foreach($item as $field => $val){
+        $g[$field] = $item[$field];
+      }
+      $item = $g;
     }
     if($item == null){
       \Log::warning("config no use!");
@@ -76,6 +81,13 @@ class GeneralAttribute  extends Model
     if(isset($d[$key])){
       \Log::warning("config use");
       $items = $d[$key];
+      foreach($items as $key => $item){
+        $g = new GeneralAttribute;
+        foreach($item as $field => $val){
+          $g[$field] = $item[$field];
+        }
+        $items[$key] = $g;
+      }
     }
     if($item == null){
       \Log::warning("config no use!");
