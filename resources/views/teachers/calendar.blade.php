@@ -15,39 +15,16 @@
           // 選択可
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
-            var _course_minutes = end.diff(start, 'minutes');
-            $calendar.fullCalendar("removeEvents", -1);
-            $calendar.fullCalendar('unselect');
-            $calendar.fullCalendar('addEventSource', [{
-              id:-1,
-              title: "{{__('labels.schedule_add')}}",
-              start: start,
-              end : end,
-              status : "new",
-              teaching_type : "add",
-              schedule_type_code : "new",
-              selected : true,
-            }]);
-
-            var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
-            var end_date = util.format("{0}/{1}/{2}", end.year(), (end.month()+1) , end.date());
-            var param ="";
-            param += "?teacher_id={{$item->id}}";
-            param += "&start_date="+start_date;
-            param += "&start_hours="+start.hour();
-            param += "&start_minutes="+start.minute();
-            param += "&end_date="+end_date;
-            param += "&end_hours="+end.hour();
-            param += "&end_minutes="+end.minute();
-            param += "&course_minutes="+_course_minutes;
-            base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
-              $calendar.fullCalendar("removeEvents", -1);
-            });
+            event_create(start, end, jsEvent, view , resource);
           },
           @endslot
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
+            if(event.id<0){
+              event_create(event.start, event.end, jsEvent, view);
+              return false;
+            }
             if(event.work==5){
               //演習の場合は操作不要
               base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
