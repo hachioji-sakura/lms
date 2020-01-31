@@ -57,12 +57,12 @@ class UserTag extends Model
     $item = GeneralAttribute::get_item($key, $this->tag_value);
 
     //general_attributeのattribute_keyをtag_keyとして使っている場合
-    if(!empty($item)) return $item;
+    if($item!=null) return $item;
 
     //general_attributesから取得できなかった場合
     $charge_subject_level_item = GeneralAttribute::get_item('charge_subject_level_item', $this->tag_key);
 
-    if(!empty($charge_subject_level_item)){
+    if($charge_subject_level_item!=null){
       //希望科目の場合
       //受験希望、補習希望　生徒向けの定義
       $key = 'lesson_subject_level';
@@ -76,10 +76,7 @@ class UserTag extends Model
       $item['charge_subject_level_item'] = $charge_subject_level_item;
     }
 
-    if(isset($item)){
-      return $item;
-    }
-    return null;
+    return $item;
   }
   public function scopeFindUser($query, $val)
   {
