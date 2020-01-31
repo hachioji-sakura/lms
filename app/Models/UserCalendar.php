@@ -636,7 +636,7 @@ EOT;
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($manager_name,',');
     $item['user_name'] = "";
-    if(!isset($this->user)){
+    if(isset($this->user)){
       $item['user_name'] = $this->user->details()->name();
     }
     $item['is_exchange'] = false;
