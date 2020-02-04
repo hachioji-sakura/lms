@@ -200,9 +200,10 @@ function teacher_schedule_change(){
   $('input[name=end_time]').val(end);
   $('input[name=calendar_id]').val(calendar_id);
   var lesson_place_floor = _teacher_schedule.attr('lesson_place_floor');
-  var select_lesson_place_floor = $("*[name='lesson_place_floor']").val();
+  var select_lesson_place_floor = $("*[name='place_floor_id']").val();
+  console.log("teacher_schedule_change:"+select_lesson_place_floor+":"+select_lesson_place_floor);
   if(!util.isEmpty(lesson_place_floor)){
-    $("*[name='lesson_place_floor']").val(lesson_place_floor);
+    $("*[name='place_floor_id']").val(lesson_place_floor);
   }
   $calendar = $("#calendar1");
   $("#calendar1").fullCalendar("removeEvents", -1);

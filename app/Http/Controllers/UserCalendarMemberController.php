@@ -97,7 +97,7 @@ class UserCalendarMemberController extends UserCalendarController
       $item = $this->model()->where('id',$id)->first();
       if(!isset($item)) return $this->not_found();
       $this->send_slack('カレンダーメンバー削除/ id['.$id.']', 'info', 'カレンダーメンバー削除');
-      $item->dispose();
+      $item->dispose($param['user']->user_id);
       return $this->api_response(200, '', '', $item);
     }, 'カレンダーメンバー削除', __FILE__, __FUNCTION__, __LINE__ );
     return $res;

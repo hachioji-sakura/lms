@@ -77,7 +77,7 @@
     <div class="description-block">
       <h5 class="description-header">
           <i class="fa fa-calendar-check mr-1"></i>
-          希望スケジュール　ー空き情報ー
+          希望通常スケジュール　ー空き情報ー
       </h5>
       <span class="description-text">
         <table class="table table-striped border-bottom">

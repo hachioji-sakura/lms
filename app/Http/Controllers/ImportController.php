@@ -1309,7 +1309,34 @@ class ImportController extends UserController
           }
         }
       }
+      if($work == 11){
+        //TODO 期間講習の場合は下記のロジックで問題ないが、期間講習でない演習は、担当講師を期間講習から取得しない
+        //演習の場合、同日の期間講習（work=10)の講師に担当をつける
+        $season_lessons = UserCalendar::where('work' , 10)
+                    ->where('start_time', '>', $item['ymd'].' 00:00:00')
+                    ->where('start_time', '<', $item['ymd'].' 23:59:59')
+                    ->findStatuses(['new','confirm'], true)
+                    ->get();
 
+        foreach($season_lessons as $season_lesson){
+          $_member = UserCalendarMember::where('calendar_id' , $calendar_id)
+            ->where('user_id' , $season_lesson->user_id)
+            ->first();
+          if(!isset($_member)){
+            UserCalendarMember::create([
+              'calendar_id' => $calendar_id,
+              'status' => 'fix',
+              'rest_type' => $item['cancel'],
+              'remark' => $item['comment'],
+              'rest_result' => '',
+              'schedule_id' => 0,
+              'place_floor_sheat_id' => $sheat_id,
+              'user_id' => $season_lesson->user_id,
+              'create_user_id' => 1
+            ]);
+          }
+        }
+      }
       return true;
     }
     /**
