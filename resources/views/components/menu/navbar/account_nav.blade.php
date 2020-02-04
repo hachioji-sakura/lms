@@ -37,14 +37,16 @@
     <a href="/faqs" class="dropdown-item" >
       <i class="fa fa-question-circle mr-2"></i>{{__('labels.faqs')}}
     </a>
-    @if(app()->getLocale()=='en')
-    <a href="/home?locale=ja" class="dropdown-item" >
-      <i class="fa fa-exchange-alt mr-2"></i>日本語
-    </a>
-    @else
-    <a href="/home?locale=en" class="dropdown-item" >
-      <i class="fa fa-exchange-alt mr-2"></i>English
-    </a>
+    @if($user->role!=="parent")
+      @if(app()->getLocale()=='en')
+      <a href="/home?locale=ja" class="dropdown-item" >
+        <i class="fa fa-exchange-alt mr-2"></i>日本語
+      </a>
+      @else
+      <a href="/home?locale=en" class="dropdown-item" >
+        <i class="fa fa-exchange-alt mr-2"></i>English
+      </a>
+      @endif
     @endif
     <a class="dropdown-item" page_form="dialog" page_url="/icon/change?origin={{$domain}}&item_id={{$user->id}}&user_id={{$user->user_id}}" page_title="{{__('labels.icons')}}">
       <i class="fa fa-portrait mr-2"></i>{{__('labels.icons')}}

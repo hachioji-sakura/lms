@@ -339,9 +339,9 @@ EOT;
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
     $tag_names[] ='howto'; //体験のみのタグ
     //通塾可能曜日・時間帯タグ
-    $lesson_weeks = GeneralAttribute::get_items('lesson_week');
-    foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    $lesson_weeks = config('attribute.lesson_week');
+    foreach($lesson_weeks as $lesson_week=>$name){
+      $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
