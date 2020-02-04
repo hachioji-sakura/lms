@@ -485,7 +485,7 @@ class UserCalendarSettingController extends UserCalendarController
             }
             if($is_delete == true){
               //既存メンバーが指定されていない場合、削除
-              $member->dispose();
+              $member->dispose($param['user']->user_id);
             }
           }
         }
@@ -534,12 +534,13 @@ class UserCalendarSettingController extends UserCalendarController
     public function _delete(Request $request, $id)
     {
       return $res = $this->transaction($request, function() use ($request, $id){
+        $param = $this->get_param($request, $id);
         $setting = UserCalendarSetting::where('id', $id)->first();
         if($setting->is_group()==true){
           $form = $request->all();
           foreach($setting->members as $member){
             if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
-              $member->dispose();
+              $member->dispose($param['user']->user_id);
             }
           }
         }

@@ -1,9 +1,9 @@
 {{-- 塾場合マンツー or ファミリー --}}
 @if($select_lesson==1 && $item->has_tag("course_type", "family"))
 <input type="hidden" name="course_type" value="family">
-@elseif(isset($item["tagdata"]) && isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['group']))
+@elseif($select_lesson==2 && isset($item["tagdata"]) && isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['group']))
 <input type="hidden" name="course_type" value="group">
-@elseif(isset($item["tagdata"]) && isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['single']))
+@elseif($select_lesson==2 && isset($item["tagdata"]) && isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['single']))
 <input type="hidden" name="course_type" value="single">
 @elseif($select_lesson==1)
 <input type="hidden" name="course_type" value="single">

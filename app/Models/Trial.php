@@ -504,6 +504,7 @@ EOT;
       $disable_point = 0;
       $disable_subject = [];
       $enable_subject = [];
+
       if($lesson==1){
         $charge_subjects = $teacher->get_charge_subject();
         //塾の場合、担当可能、不可能な科目の情報セットを作る
@@ -805,7 +806,7 @@ EOT;
                 //場所の競合もなし=選択候補
                 $is_place_conflict = false;
                 if($now_calendar->is_same_place($tag->tag_value)){
-                  $_free_place = $now_calendar->place;
+                  $_free_place = $now_calendar->place_floor_id;
                 }
               }
             }

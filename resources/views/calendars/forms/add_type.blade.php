@@ -2,8 +2,8 @@
 @if(
   isset($item["tagdata"]) &&
   (
-   (isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['group']))
-    || (isset($item["tagdata"]['kids_lesson_course_type']) && isset($item["tagdata"]['kids_lesson_course_type']['group']))
+   ($item->has_tag('lesson', 2)==true && isset($item["tagdata"]['english_talk_course_type']) && isset($item["tagdata"]['english_talk_course_type']['group']))
+    || ($item->has_tag('lesson', 4)==true && isset($item["tagdata"]['kids_lesson_course_type']) && isset($item["tagdata"]['kids_lesson_course_type']['group']))
   )
 )
 <div class="col-12 mt-2 couse_type_group">

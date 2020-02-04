@@ -180,6 +180,7 @@ class UserCalendarMember extends Model
     $template = 'calendar_'.$status;
 
     $u = $this->user->details();
+    $param = [];
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
     $param['user_name'] = $u->name();
@@ -284,8 +285,10 @@ class UserCalendarMember extends Model
     return $rest_result;
   }
   //本モデルはdeleteではなくdisposeを使う
-  public function dispose(){
+  public function dispose($login_user_id){
     $c = 0;
+    $login_user = User::where('id', $login_user_id)->first();
+    if(!isset($login_user)) return false;
     foreach($this->calendar->get_students() as $member){
       if($member->id == $this->id) continue;
       $c++;
@@ -300,8 +303,17 @@ class UserCalendarMember extends Model
     else {
       $this->delete();
     }
+    $u = $this->user->details();
+    $param = [];
+    $param['login_user'] = $login_user->details();
+    $param['user'] = $u;
+    $param['user_name'] = $u->name();
+    $param['item'] = $this->calendar->details($this->user_id);
+    $param['send_to'] = $u->role;
+    $param['is_proxy'] = false;
+    $title = __('messages.mail_title_calendar_delete');
     $this->user->send_mail($title, $param, $type, $template);
-
+    return true;
   }
 
   public function office_system_api($method){

@@ -42,26 +42,34 @@
       </div>
     </li>
     @foreach($item->calendars as $calendar)
-      @foreach($calendar->teachers as $teacher)
       <?php
-        $teacher = $teacher->user->details();
+        $teacher = $calendar->user->details('teachers');
         if(isset($find_teachers[$teacher->id])) continue;
         $ct = $item->_candidate_teachers($teacher->id, $calendar->lesson(true));
         if(count($ct)>0) $ct = $ct[0];
         else continue;
         $is_find = true;
         $find_teachers[$teacher->id] = true;
+        $free_week_schedule_count = 0;
+        foreach($ct->match_schedule['result'] as $s){
+          $free_week_schedule_count += count($s);
+        }
       ?>
       <li class="col-6" accesskey="" target="">
         @component('trials.forms.charge_teacher', ['teacher' => $ct,  'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
           @slot('addon')
           <div class="col-12 mb-2">
+            @if($free_week_schedule_count>0)
               <a href="/{{$domain}}/{{$item->id}}/to_calendar_setting?calendar_id={{$calendar->id}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
+            @else
+            <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
+              <i class="fa fa-exclamation-triangle mr-1"></i>予定が空いていません
+            </h6>
+            @endif
           </div>
           @endslot
         @endcomponent
       </li>
-      @endforeach
     @endforeach
   </ul>
   @endif
