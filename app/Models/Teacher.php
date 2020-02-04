@@ -132,18 +132,19 @@ EOT;
 	    }
     }
     $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
-    $lesson_weeks = GeneralAttribute::get_items('lesson_week');
+
     //講師用の希望シフト
-    foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    $lesson_weeks = config('attribute.lesson_week');
+    foreach($lesson_weeks as $lesson_week=>$name){
+      $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     //事務用の希望シフト
     foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'work_'.$lesson_week['attribute_value'].'_time';
+      $tag_names[] = 'work_'.$lesson_week.'_time';
     }
     //体験授業シフト
     foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'trial_'.$lesson_week['attribute_value'].'_time';
+      $tag_names[] = 'trial_'.$lesson_week.'_time';
     }
 
     foreach($tag_names as $tag_name){

@@ -13,12 +13,14 @@
   </a>
 </li>
 @elseif($user->role==="parent")
+{{--
 <li class="nav-item">
   <a href="/parents/{{$user->id}}/ask" class="nav-link">
     <i class="fa fa-phone"></i>
     <span class="d-none d-sm-inline-block">お問い合わせ一覧</span>
   </a>
 </li>
+--}}
 <li class="nav-item">
   <a class="nav-link" data-toggle="dropdown" href="#">
     <i class="fa fa-user-graduate"></i>
