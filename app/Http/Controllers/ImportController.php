@@ -172,7 +172,7 @@ class ImportController extends UserController
         @$this->remind('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
         if(!$this->is_success_response($res)){
-          return $this->error_response('api error['.$res.']', $url);
+          return $this->error_response('api error['.$res['message'].']['.$res['description'].']', $url);
         }
         $items = $res['data'];
         switch($object){
