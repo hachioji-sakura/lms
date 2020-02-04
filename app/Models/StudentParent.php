@@ -32,7 +32,9 @@ class StudentParent extends Teacher
   {
     $name = $this->name_last . ' ' .$this->name_first;
     if(empty(trim($name))){
-      $name = $this->relation()->first()->student->name();
+      if(isset($this->relation()) && isset($this->relation()->first())){
+        $name = $this->relation()->first()->student->name();
+      }
     }
     return $name;
   }
