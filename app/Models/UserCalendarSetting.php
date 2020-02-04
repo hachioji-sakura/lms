@@ -484,8 +484,9 @@ EOT;
       $is_enable = false;
       foreach($this->members as $member){
         if($this->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular') continue;
+        if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
         $is_enable = true;
+
         break;
       }
     }
@@ -629,7 +630,7 @@ EOT;
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
-      if($member->user->details()->status != 'regular') continue;
+      if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
       //主催者以外を追加
       $calendar->memberAdd($member->user_id, 1, $default_status);
     }
