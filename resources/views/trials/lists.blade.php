@@ -21,6 +21,9 @@
                   <div class="col-12 col-lg-4 col-md-6 mt-1">
                     <a href="trials/{{$item->id}}">
                     @foreach($item->trial_students as $trial_student)
+                    @if(!isset($trial_student->student))
+                      @continue
+                    @endif
                     <span class="text-xs ml-1">
                         <i class="fa fa-user mr-1"></i>
                         {{$trial_student->student->name()}} 様
