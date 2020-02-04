@@ -82,10 +82,10 @@ EOT;
     return $this->get_attribute_name('schedule_method', $this->schedule_method);
   }
   public function week_setting(){
-    $item = GeneralAttribute::where('attribute_key', 'schedule_method')
-      ->where('attribute_value', $this->schedule_method)
-      ->first();
+    /*
+    $item = GeneralAttribute::get_item('schedule_method', $this->schedule_method);
     if(!isset($item)) return "";
+    */
     $ret = "";
     if($this->lesson_week_count > 0){
       $ret .= '第'.$this->lesson_week_count;

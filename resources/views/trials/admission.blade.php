@@ -149,7 +149,18 @@ $(function(){
       var trial_end = $('select[name=trial_end_time3] option:selected').text().trim();
       form_data["trial_date_time3"] = util.dateformat(form_data["trial_date3"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
     }
-
+/*TODO 後まわし
+    if(form_data["trial_date4"] && form_data["trial_start_time4"] && form_data["trial_end_time4"]){
+      var trial_start = $('select[name=trial_start_time4] option:selected').text().trim();
+      var trial_end = $('select[name=trial_end_time4] option:selected').text().trim();
+      form_data["trial_date_time4"] = util.dateformat(form_data["trial_date4"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
+    }
+    if(form_data["trial_date5"] && form_data["trial_start_time5"] && form_data["trial_end_time5"]){
+      var trial_start = $('select[name=trial_start_time5] option:selected').text().trim();
+      var trial_end = $('select[name=trial_end_time5] option:selected').text().trim();
+      form_data["trial_date_time5"] = util.dateformat(form_data["trial_date5"], '%m月%d日')+'<br>'+trial_start+" ～ "+trial_end;
+    }
+*/
     var _names = ["lesson", "lesson_place", "howto", "kids_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";

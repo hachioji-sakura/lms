@@ -121,7 +121,7 @@
       @endfor
     </select>
     <div class="w-10 text-center float-left mx-2">～</div>
-    <select name="trial_end_time3" class="form-control float-left mr-1 w-40" required="true" greater="trial_start_time3" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time3" not_equal_error="{{__('messages.validate_timezone_error')}}" >
+    <select name="trial_end_time3" class="form-control float-left mr-1 w-40" greater="trial_start_time3" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time3" not_equal_error="{{__('messages.validate_timezone_error')}}" >
       <option value="">{{__('labels.selectable')}}</option>
       @for ($i = 8; $i < 23; $i++)
         <option value="{{$i}}"
@@ -133,6 +133,94 @@
     </select>
   </div>
 </div>
+{{--　後まわし
+<div class="col-12 mt-2 col-md-4">
+  <label for="start_date" class="w-100">
+    第４希望日
+    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+  </label>
+  <div class="input-group">
+    <input type="text" name="trial_date4" class="form-control float-left" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}"
+    @if($_edit===true)
+     value="{{date('Y/m/d', strtotime($item->trial_start_time4))}}"
+    @endif
+    >
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-8  mb-4">
+  <label for="start_date" class="w-100">
+    時間帯
+    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+  </label>
+  <div class="input-group">
+    <select name="trial_start_time4" class="form-control float-left mr-1 w-40" >
+      <option value="">{{__('labels.selectable')}}</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_start_time4)))
+        selected
+        @endif
+        >
+        {{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+    <div class="w-10 text-center float-left mx-2">～</div>
+    <select name="trial_end_time4" class="form-control float-left mr-1 w-40" greater="trial_start_time4" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time4" not_equal_error="{{__('messages.validate_timezone_error')}}" >
+      <option value="">{{__('labels.selectable')}}</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_end_time4)))
+        selected
+        @endif
+        >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-4">
+  <label for="start_date" class="w-100">
+    第５希望日
+    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+  </label>
+  <div class="input-group">
+    <input type="text" name="trial_date5" class="form-control float-left" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}"
+    @if($_edit===true)
+     value="{{date('Y/m/d', strtotime($item->trial_start_time5))}}"
+    @endif
+    >
+  </div>
+</div>
+<div class="col-12 mt-2 col-md-8  mb-4">
+  <label for="start_date" class="w-100">
+    時間帯
+    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+  </label>
+  <div class="input-group">
+    <select name="trial_start_time5" class="form-control float-left mr-1 w-40" >
+      <option value="">{{__('labels.selectable')}}</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_start_time5)))
+        selected
+        @endif
+        >
+        {{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+    <div class="w-10 text-center float-left mx-2">～</div>
+    <select name="trial_end_time5" class="form-control float-left mr-1 w-40" greater="trial_start_time5" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time5" not_equal_error="{{__('messages.validate_timezone_error')}}" >
+      <option value="">{{__('labels.selectable')}}</option>
+      @for ($i = 8; $i < 23; $i++)
+        <option value="{{$i}}"
+        @if($_edit===true && $i==date('H', strtotime($item->trial_end_time5)))
+        selected
+        @endif
+        >{{str_pad($i, 2, 0, STR_PAD_LEFT)}}時</option>
+      @endfor
+    </select>
+  </div>
+</div>
+--}}
 <div class="col-12">
   <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
     ※生徒様に最適な講師を紹介いたしますので、<br>

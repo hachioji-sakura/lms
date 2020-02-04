@@ -56,4 +56,57 @@ class GeneralAttribute  extends Model
       ->where('attribute_value', $this->parent_attribute_value)
       ->first();
   }
+  static public function get_item($key, $value){
+    $item = null;
+    $d = config('attributes');
+    if(isset($d[$key]) && isset($d[$key][$value.""])){
+      \Log::warning("config use");
+      $item = $d[$key][$value.""];
+      $g = new GeneralAttribute;
+      foreach($item as $field => $val){
+        $g[$field] = $item[$field];
+      }
+      $item = $g;
+    }
+    if($item == null){
+      \Log::warning("config no use!");
+      $item = GeneralAttribute::where('attribute_key', $key)
+        ->where('attribute_value', $value)->first();
+    }
+    return $item;
+  }
+  static public function get_items($key){
+    $items = null;
+    $d = config('attributes');
+    if(isset($d[$key])){
+      \Log::warning("config use");
+      $items = $d[$key];
+      foreach($items as $key => $item){
+        $g = new GeneralAttribute;
+        foreach($item as $field => $val){
+          $g[$field] = $item[$field];
+        }
+        $items[$key] = $g;
+      }
+    }
+    if($item == null){
+      \Log::warning("config no use!");
+      $items = GeneralAttribute::where('attribute_key', $key)->get();
+    }
+    return $items;
+  }
+  static public function get_temporary_attribute(){
+    $url = '../storage/temporary/attributes.json';
+    try {
+        $contents = \File::get($url);
+        if(!empty($contents)){
+          return json_decode($contents);
+        }
+        return null;
+    } catch (\Illuminate\Filesystem\FileNotFoundException $exception) {
+      return null;
+    }
+    return null;
+  }
+
 }

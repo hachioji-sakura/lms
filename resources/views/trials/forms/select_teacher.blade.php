@@ -18,7 +18,7 @@
         @component('trials.forms.charge_teacher', ['teacher' => $teacher,  'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
           @slot('addon')
           <div class="col-12 mb-2">
-            @if(count($teacher->trial)<1)
+            @if(isset($teacher->trial) && count($teacher->trial)<1)
             <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
               <i class="fa fa-exclamation-triangle mr-1"></i>予定が空いていません
             </h6>

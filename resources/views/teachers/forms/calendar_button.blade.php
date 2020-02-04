@@ -90,11 +90,14 @@
 </a>
 @endif
 --}}
-<a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm ml-1">
-  <i class="fa fa-edit"></i>
-</a>
-@if($user->role==="manager")
-<a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" role="button" class="btn btn-default btn-sm ml-1">
-  <i class="fa fa-trash"></i>
-</a>
+@if($calendar->work!=10)
+  {{-- 季節講習の予定は事務システム側の再編成で行うので、変更・削除はできない --}}
+  <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm ml-1">
+    <i class="fa fa-edit"></i>
+  </a>
+  @if($user->role==="manager")
+  <a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?action=delete" role="button" class="btn btn-default btn-sm ml-1">
+    <i class="fa fa-trash"></i>
+  </a>
+  @endif
 @endif

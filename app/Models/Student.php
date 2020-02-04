@@ -10,6 +10,7 @@ use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\User;
+use App\Models\UserTag;
 use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
@@ -402,7 +403,7 @@ EOT;
     //1:nタグ
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
     //通塾可能曜日・時間帯タグ
-    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+    $lesson_weeks = GeneralAttribute::get_items('lesson_week');
     foreach($lesson_weeks as $lesson_week){
       $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
     }
@@ -415,7 +416,7 @@ EOT;
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'school_name', 'grade'];
     //科目タグ
-    $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
+    $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
@@ -472,14 +473,11 @@ EOT;
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
-    $tags = $this->user->tags;
-    foreach($this->user->tags as $tag){
-      $tag_data = $tag->details();
-      if(isset($tag_data['charge_subject_level_item'])){
-        //補習以上可能なものを取得
-        if(intval($tag->tag_value) > 1){
-          $subjects[$tag->tag_key] = intval($tag->tag_value);
-        }
+    $tags = UserTag::where('user_id', $this->user_id)->where('tag_key', 'like', '%_level')->get();
+    foreach($tags as $tag){
+      //補習以上可能なものを取得
+      if(intval($tag->tag_value) > 1){
+        $subjects[$tag->tag_key] = intval($tag->tag_value);
       }
     }
     return $subjects;
@@ -488,8 +486,8 @@ EOT;
     $ret = [];
     $lesson = intval($lesson);
     if($lesson===1 || $lesson==0){
-      $tags = $this->user->tags;
-      foreach($this->user->tags as $tag){
+      $tags = UserTag::where('user_id', $this->user_id)->where('tag_key', 'like', '%_level')->get();
+      foreach($tags as $tag){
         $tag_data = $tag->details();
         if(isset($tag_data['charge_subject_level_item'])){
           if(intval($tag->tag_value) > 1){

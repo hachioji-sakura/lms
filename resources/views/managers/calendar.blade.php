@@ -15,35 +15,16 @@
           // 選択可
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
-            var _course_minutes = end.diff(start, 'minutes');
-            $calendar.fullCalendar("removeEvents", -1);
-            $calendar.fullCalendar('unselect');
-            $calendar.fullCalendar('addEventSource', [{
-              id:-1,
-              title: "勤務追加",
-              start: start,
-              end : end,
-              status : "new",
-            }]);
-            var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
-            var end_date = util.format("{0}/{1}/{2}", end.year(), (end.month()+1) , end.date());
-            var param ="";
-            param += "?manager_id={{$item->id}}";
-            param += "&start_date="+start_date;
-            param += "&start_hours="+start.hour();
-            param += "&start_minutes="+start.minute();
-            param += "&end_date="+end_date;
-            param += "&end_hours="+end.hour();
-            param += "&end_minutes="+end.minute();
-            param += "&course_minutes="+_course_minutes;
-            base.showPage('dialog', "subDialog", "勤務追加", "/calendars/create"+param, function(){
-              $calendar.fullCalendar("removeEvents", -1);
-            });
+						event_create(start, end, jsEvent, view , resource);
           },
           @endslot
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
-            $calendar.fullCalendar('unselect');
+						$calendar.fullCalendar('unselect');
+            if(event.id<0){
+              event_create(event.start, event.end, jsEvent, view);
+              return false;
+            }
 						if(event.work==9){
 	            switch(event.total_status){
 	              case "new":

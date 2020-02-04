@@ -131,7 +131,22 @@ EOT;
     $item['trial_date3'] = date('Y/m/d',  strtotime($this->trial_start_time3));
     $item['trial_start3'] = date('H:i',  strtotime($this->trial_start_time3));
     $item['trial_end3'] = date('H:i',  strtotime($this->trial_end_time3));
-
+/*TODO 後まわし
+    $item['date4'] = '-';
+    if(!empty($this->trial_start_time4)){
+      $item['trial_date4'] = date('Y/m/d',  strtotime($this->trial_start_time4));
+      $item['trial_start4'] = date('H:i',  strtotime($this->trial_start_time4));
+      $item['trial_end4'] = date('H:i',  strtotime($this->trial_end_time4));
+      $item['date4'] = date('m月d日 H:i',  strtotime($this->trial_start_time4)).'～'.$item['trial_end4'];
+    }
+    $item['date5'] = '-';
+    if(!empty($this->trial_start_time5)){
+      $item['trial_date5'] = date('Y/m/d',  strtotime($this->trial_start_time5));
+      $item['trial_start5'] = date('H:i',  strtotime($this->trial_start_time5));
+      $item['trial_end5'] = date('H:i',  strtotime($this->trial_end_time5));
+      $item['date5'] = date('m月d日 H:i',  strtotime($this->trial_start_time5)).'～'.$item['trial_end5'];
+    }
+*/
     $item['parent_name'] =  $this->parent->name();
     $item['parent_phone_no'] =  $this->parent->phone_no;
     $item['parent_address'] =  $this->parent->address;
@@ -298,7 +313,13 @@ EOT;
 
     $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
     $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
+/*TODO 後まわし
+    $form['trial_start_time4'] = $form['trial_date4'].' '.$form['trial_start_time4'].':00:00';
+    $form['trial_end_time4'] = $form['trial_date4'].' '.$form['trial_end_time4'].':00:00';
 
+    $form['trial_start_time5'] = $form['trial_date5'].' '.$form['trial_start_time5'].':00:00';
+    $form['trial_end_time5'] = $form['trial_date5'].' '.$form['trial_end_time5'].':00:00';
+*/
     if(!isset($form['remark']) || empty($form['remark'])) $form['remark'] = '';
     $this->update([
       'remark' => $form['remark'],
@@ -308,11 +329,17 @@ EOT;
       'trial_end_time2' => $form['trial_end_time2'],
       'trial_start_time3' => $form['trial_start_time3'],
       'trial_end_time3' => $form['trial_end_time3'],
+/*TODO 後まわし
+      'trial_start_time4' => $form['trial_start_time4'],
+      'trial_end_time4' => $form['trial_end_time4'],
+      'trial_start_time5' => $form['trial_start_time5'],
+      'trial_end_time5' => $form['trial_end_time5'],
+*/
     ]);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
     $tag_names[] ='howto'; //体験のみのタグ
     //通塾可能曜日・時間帯タグ
-    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+    $lesson_weeks = GeneralAttribute::get_items('lesson_week');
     foreach($lesson_weeks as $lesson_week){
       $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
     }
@@ -324,7 +351,7 @@ EOT;
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'howto_word', 'course_type'];
     //科目タグ
-    $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
+    $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
@@ -414,6 +441,7 @@ EOT;
     return $ret;
   }
   public function _candidate_teachers($teacher_id=0, $lesson=0){
+
     $detail = $this->details();
     //体験希望科目を取得
     $trial_subjects = [];
@@ -461,10 +489,15 @@ EOT;
       $teachers = $teachers->where('id', $teacher_id);
     }
     $teachers = $teachers->get();
+
     //30分ごとの開始時間から授業時間までのslotを作成
     $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $course_minutes);
     $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $course_minutes);
     $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $course_minutes);
+/*TODO 後まわし
+    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $course_minutes);
+    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $course_minutes);
+*/
     $ret = [];
     foreach($teachers as $teacher){
       $enable_point = 0;
@@ -566,13 +599,14 @@ EOT;
       if($enable_point > 0){
         $match_schedule = $this->get_match_schedule($teacher);
         if($match_schedule['all_count'] >= 0){
-          //var_dump($match_schedule['result']);
-          //$teacher->brother_schedule = $this->get_brother_schedule($teacher);
+          $teacher->enable_point = $enable_point;
+          $teacher->disable_point = $disable_point;
+          $teacher->subject_review = 'part';
+          if($disable_point < 1) $teacher->subject_review = 'all';
+          $teacher->enable_subject = $enable_subject;
+          $teacher->disable_subject = $disable_subject;
+
           $teacher->match_schedule = $match_schedule;
-          /*
-          $teacher->trial1 = $teacher_trial1;
-          $teacher->trial2 = $teacher_trial2;
-          */
           $calendars1 = UserCalendar::findUser($teacher->user_id)
                           ->findStatuses(['fix', 'confirm', 'new'])
                           ->searchDate($detail['trial_start_time1'], $detail['trial_end_time1'])
@@ -588,45 +622,44 @@ EOT;
                           ->searchDate($detail['trial_start_time3'], $detail['trial_end_time3'])
                           ->orderBy('start_time')
                           ->get();
+/*TODO 後まわし
+          $calendars4 = UserCalendar::findUser($teacher->user_id)
+                          ->findStatuses(['fix', 'confirm', 'new'])
+                          ->searchDate($detail['trial_start_time4'], $detail['trial_end_time4'])
+                          ->orderBy('start_time')
+                          ->get();
+
+          $calendars5 = UserCalendar::findUser($teacher->user_id)
+                          ->findStatuses(['fix', 'confirm', 'new'])
+                          ->searchDate($detail['trial_start_time5'], $detail['trial_end_time5'])
+                          ->orderBy('start_time')
+                          ->get();
+*/
 
           $teacher->calendars=[
             'trial_date1' => $calendars1,
             'trial_date2' => $calendars2,
             'trial_date3' => $calendars3,
+/*TODO 後まわし
+            'trial_date4' => $calendars4,
+            'trial_date5' => $calendars5,
+*/
           ];
 
           $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
+/*TODO 後まわし
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list4, $teacher->user_id, $detail['trial_date4'], $calendars3, "trial_date4"));
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list5, $teacher->user_id, $detail['trial_date5'], $calendars3, "trial_date5"));
+*/
           $teacher->trial = $this->get_time_list_review($teacher->user_id, $teacher->trial);
-          $teacher->enable_point = $enable_point;
-          $teacher->disable_point = $disable_point;
-          $teacher->subject_review = 'part';
-          if($disable_point < 1) $teacher->subject_review = 'all';
-          $teacher->enable_subject = $enable_subject;
-          $teacher->disable_subject = $disable_subject;
-
           $ret[] = $teacher;
         }
 
       }
     }
-
     return $ret;
-  }
-  //↓まだつかってない
-  public function get_brother_schedule($teacher){
-    $student = [];
-    foreach($this->trial_students as $i => $trial_student){
-      $calendar = UserCalendar::searchDate(date('Y-m-d H:i:s'), date('Y-m-d H:i:s', strtotime('+14 day')))
-        ->findUser($teacher->user_id)
-        ->findUser($trial_student->student->user_id)
-        ->where('trial_id', '>', 0)
-        ->get();
-      $students[$i] = $trial_student->student;
-      $students[$i]->current_schedule = $calendar;
-    }
-    return $students;
   }
   public function to_calendar_setting($form, $calendar_id){
     $calendar = UserCalendar::where('id', $calendar_id)->first();
@@ -673,6 +706,9 @@ EOT;
   private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
     $_start = $trial_start_time;
     $time_list = [];
+    if(empty($trial_start_time) || empty($trial_end_time)){
+      return $time_list;
+    }
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));

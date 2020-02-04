@@ -412,6 +412,7 @@ class TrialController extends UserCalendarController
     */
    public function to_calendar(Request $request, $id)
    {
+     set_time_limit(1200);
      $param = $this->get_param($request, $id);
 
      $teacher_id = 0;
