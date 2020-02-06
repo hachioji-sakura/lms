@@ -477,9 +477,8 @@ class UserCalendarController extends MilestoneController
       if($user_id==0 && $this->is_manager_or_teacher($user->role)!=true){
          return $this->forbidden("This User is not manager or tehacer role.");
       }
-      \Log::warning("is_all_data:".$request->get('is_all_data'));
 
-      if($request->get('is_all_data')==1){
+      if($request->get('is_all_data')==1 || $request->get('is_all_data')[0]==1){
         if($this->is_student_or_parent($param['user']->role)==false){
           $user_id = 0;
         }
@@ -1365,23 +1364,23 @@ class UserCalendarController extends MilestoneController
      */
     public function _delete(Request $request, $id)
     {
-      $res = $this->transaction($request, function() use ($request, $id){
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
         $calendar = $param["item"];
         if($calendar->is_group()==false){
-          $calendar->dispose();
+          $calendar->dispose($user->user_id);
           $this->send_slack('カレンダー削除/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー削除');
         }
         else {
           $form = $request->all();
           foreach($calendar->members as $member){
             if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
-              $member->dispose();
+              $member->dispose($param['user']->user_id);
             }
           }
         }
         return $this->api_response(200, '', '', $calendar);
+        $res = $this->transaction($request, function() use ($request, $id){
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }

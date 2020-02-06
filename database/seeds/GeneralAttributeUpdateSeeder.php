@@ -37,5 +37,34 @@ class GeneralAttributeUpdateSeeder extends Seeder
           $_item = GeneralAttribute::create($_add_item);
         }
       }
+      $this->create_temporary_attribute();
+    }
+    public function create_temporary_attribute(){
+      $url = './config/attributes.php';
+      $fields = ['attribute_name', 'parent_attribute_key', 'parent_attribute_value', 'sort_no'];
+      $attributes = GeneralAttribute::orderBy('attribute_key')->orderBy('sort_no')->get();
+      $contents = "<?php  return array(";
+      $key = "";
+      foreach($attributes as $attribute){
+        if(empty($key) || $key!=$attribute->attribute_key){
+          if(!empty($key)){
+            $contents .= "\t],\n";
+          }
+          $key = $attribute->attribute_key;
+          $contents .= "\t\"".$attribute->attribute_key."\" => [\n";
+        }
+        $contents .= "\t\t\"".$attribute->attribute_value."\" => [\n";
+        foreach($fields as $field){
+          $contents .= "\t\t\t\"".$field.'" => "'.$attribute[$field]."\",\n";
+        }
+        $contents .= "\t\t],\n";
+      }
+      $contents .= "],); ?>";
+      $bytes_written = \File::put($url, $contents);
+      if ($bytes_written === false) {
+        \Log::error("create_temporary_attribute: file_put error!");
+        return false;
+      }
+      return true;
     }
 }

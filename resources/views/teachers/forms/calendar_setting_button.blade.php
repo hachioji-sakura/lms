@@ -5,7 +5,7 @@
 </a>
 --}}
 @if($setting->status=="enabled")
-<a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-primary btn-sm mr-1 mt-1">
+<a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-success btn-sm mr-1 mt-1">
   <i class="fa fa-calendar-plus"></i><span class="btn-label">{{__('labels.schedule_add')}}</span>
 </a>
 <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/delete_calendar" role="button" class="btn btn-outline-danger btn-sm mr-1 mt-1">

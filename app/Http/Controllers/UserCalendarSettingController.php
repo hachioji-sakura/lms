@@ -453,6 +453,7 @@ class UserCalendarSettingController extends UserCalendarController
       $items = [];
       foreach($settings as $setting){
         if($setting->is_enable()==false) continue;
+        if($setting->has_enable_member()==false) continue;
         $items[$setting->id] = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
       }
 
@@ -484,7 +485,7 @@ class UserCalendarSettingController extends UserCalendarController
             }
             if($is_delete == true){
               //既存メンバーが指定されていない場合、削除
-              $member->dispose();
+              $member->dispose($param['user']->user_id);
             }
           }
         }
@@ -533,12 +534,13 @@ class UserCalendarSettingController extends UserCalendarController
     public function _delete(Request $request, $id)
     {
       return $res = $this->transaction($request, function() use ($request, $id){
+        $param = $this->get_param($request, $id);
         $setting = UserCalendarSetting::where('id', $id)->first();
         if($setting->is_group()==true){
           $form = $request->all();
           foreach($setting->members as $member){
             if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
-              $member->dispose();
+              $member->dispose($param['user']->user_id);
             }
           }
         }
@@ -580,13 +582,14 @@ class UserCalendarSettingController extends UserCalendarController
       $res = $this->transaction($request, function() use ($request, $settings){
         foreach($settings as $setting){
           if($setting->is_enable()==false) continue;
+          if($setting->has_enable_member()==false) continue;
           $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
           foreach($dates as $date => $val){
             if(empty($date)) continue;
             $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));
-            if(!$this->is_success_response($result)){
+            if(!$this->is_success_response($result) && $result['message'] != 'already_registered'){
               //error
-              $res = $this->error_response('繰り返しスケジュール登録エラー', $result["message"]);
+              $res = $this->error_response('繰り返しスケジュール登録エラー', $result["description"]);
               $this->send_slack('繰り返しスケジュール登録エラー/ id['.$setting['id'].']登録日付['.$date.']', 'error', '繰り返しスケジュール登録');
               return $res;
             }

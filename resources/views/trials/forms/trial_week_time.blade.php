@@ -1,6 +1,6 @@
 <div class="card card-widget mb-2">
   <div class="card-header">
-    <i class="fa fa-calendar mr-1"></i>希望スケジュール
+    <i class="fa fa-calendar mr-1"></i>希望通常スケジュール
   </div>
   <div class="card-footer">
     <div class="row">

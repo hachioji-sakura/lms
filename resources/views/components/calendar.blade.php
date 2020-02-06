@@ -41,6 +41,42 @@
       front.clearFormValue('filter_form');
     });
   });
+  function event_create(start, end, jsEvent, view , resource){
+    var _course_minutes = end.diff(start, 'minutes');
+    $calendar.fullCalendar("removeEvents", -1);
+    $calendar.fullCalendar('unselect');
+    $calendar.fullCalendar('addEventSource', [{
+      id:-1,
+      title: "{{__('labels.schedule_add')}}",
+      start: start,
+      end : end,
+      status : "new",
+      @if($domain=='teachers')
+      teaching_type : "add",
+      schedule_type_code : "new",
+      selected : true,
+      @endif
+    }]);
+
+    var start_date = util.format("{0}/{1}/{2}", start.year(), (start.month()+1) , start.date());
+    var end_date = util.format("{0}/{1}/{2}", end.year(), (end.month()+1) , end.date());
+    var param ="";
+    @if($domain=='teachers')
+    param += "?teacher_id={{$item->id}}";
+    @elseif($domain=='managers')
+    param += "?manager_id={{$item->id}}";
+    @endif
+    param += "&start_date="+start_date;
+    param += "&start_hours="+start.hour();
+    param += "&start_minutes="+start.minute();
+    param += "&end_date="+end_date;
+    param += "&end_hours="+end.hour();
+    param += "&end_minutes="+end.minute();
+    param += "&course_minutes="+_course_minutes;
+    base.showPage('dialog', "subDialog", "{{__('labels.schedule_add')}}", "/calendars/create"+param, function(){
+      $calendar.fullCalendar("removeEvents", -1);
+    });
+  }
   function event_render(events, element, title, is_teacher){
     var _status_style = status_style(events.status);
     if(is_teacher==false){

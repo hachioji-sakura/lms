@@ -122,7 +122,7 @@ EOT;
     }
     $this->update($update_form);
 
-    $charge_subject_level_items = GeneralAttribute::findKey('charge_subject_level_item')->get();
+    $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
@@ -132,18 +132,19 @@ EOT;
 	    }
     }
     $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
-    $lesson_weeks = GeneralAttribute::findKey('lesson_week')->get();
+
     //講師用の希望シフト
-    foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'lesson_'.$lesson_week['attribute_value'].'_time';
+    $lesson_weeks = config('attribute.lesson_week');
+    foreach($lesson_weeks as $lesson_week=>$name){
+      $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     //事務用の希望シフト
     foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'work_'.$lesson_week['attribute_value'].'_time';
+      $tag_names[] = 'work_'.$lesson_week.'_time';
     }
     //体験授業シフト
     foreach($lesson_weeks as $lesson_week){
-      $tag_names[] = 'trial_'.$lesson_week['attribute_value'].'_time';
+      $tag_names[] = 'trial_'.$lesson_week.'_time';
     }
 
     foreach($tag_names as $tag_name){
@@ -164,69 +165,6 @@ EOT;
     }
     $this->user->update(['status' => 0]);
   }
-  /*
-  public function get_charge_subject(){
-    //担当科目を取得
-    $subjects = [];
-    $tags = $this->user->tags;
-    foreach($this->user->tags as $tag){
-      $tag_data = $tag->details();
-      if(isset($tag_data['charge_subject_level_item'])){
-        //補習以上可能なものを取得
-        if(intval($tag->tag_value) > 1){
-          $subjects[$tag->tag_key] = intval($tag->tag_value);
-        }
-      }
-    }
-    return $subjects;
-  }
-  public function get_enable_subjcet($lesson){
-    $ret = [];
-    $lesson = intval($lesson);
-    if($lesson===1){
-      $tags = $this->user->tags;
-      foreach($this->user->tags as $tag){
-        $tag_data = $tag->details();
-        if(isset($tag_data['charge_subject_level_item'])){
-          if(intval($tag->tag_value) > 1){
-            $subject_key = str_replace('_level', '', $tag->tag_key);
-            $ret[$subject_key] = [
-              "subject_key" => $subject_key,
-              "subject_name" => $tag->keyname(),  //科目名
-              "level_name" => $tag->name(), //補習可能、受験可能など
-              "style" => "secondary",
-            ];
-          }
-        }
-      }
-    }
-    else if($lesson===3){
-      //ピアノの場合特に判断基準なし
-      $ret['piano'] = [
-        "subject_key" => 'piano',
-        "subject_name" => 'ピアノ',  //科目名
-        "level_name" => '',
-        "style" => "primary",
-      ];
-    }
-    else if($lesson==4 || $lesson==2){
-      $key_name = 'kids_lesson';
-      if($lesson==2){
-        $key_name = 'english_talk_lesson';
-      }
-      foreach($this->user->tags as $tag){
-        if($tag->tag_key !== $key_name) continue;
-        //対応可能
-        $ret[$tag->tag_value] = [
-          "subject_key" => $tag->tag_value,
-          "subject_name" => $tag->name(),
-          "style" => "secondary",
-        ];
-      }
-    }
-    return $ret;
-  }
-  */
   public function is_manager(){
     $manager = Manager::where('user_id', $this->user_id)->first();
     if(isset($manager)) return true;

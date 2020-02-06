@@ -82,8 +82,8 @@ class Tuition extends Model
     return "";
   }
   public function get_attribute_name($key, $val){
-    $item = GeneralAttribute::findKeyValue($key,$val)->first();
-    if(isset($item)) return $item->attribute_name;
+    $item = GeneralAttribute::get_item($key,$val);
+    if(isset($item)) return $item["attribute_name"];
     return "";
   }
   public function is_enable(){

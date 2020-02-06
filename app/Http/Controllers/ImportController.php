@@ -172,7 +172,7 @@ class ImportController extends UserController
         @$this->remind('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
         if(!$this->is_success_response($res)){
-          return $this->error_response('api error['.$res.']', $url);
+          return $this->error_response('api error', $url);
         }
         $items = $res['data'];
         switch($object){
@@ -751,7 +751,7 @@ class ImportController extends UserController
         $tag_names = ['course_minutes', 'course_type', 'lesson', 'subject_expr'];
         foreach($tag_names as $tag_name){
           if(!empty($tags[$tag_name])){
-             ChargeStudentTag::setTag($charge_student->id, $tag_name, $tags[$tag_name], 1);
+            $this->store_charge_student_tag($charge_student->id, $tag_name, $tags[$tag_name]);
           }
         }
       }
@@ -804,6 +804,9 @@ class ImportController extends UserController
       $_data_type = 'student_teacher';
       if($item['student_no']==0 && $item['teacher_no'] > 0){
         $_data_type = 'teacher';
+      }
+      else if($item['student_no'] > 0 && $item['teacher_no'] == 0){
+        $_data_type = 'student';
       }
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
@@ -889,6 +892,13 @@ class ImportController extends UserController
           }
         }
       }
+      else if($_data_type=="student"){
+        if(!isset($student)){
+          @$this->remind("事務管理システム:id=".$item['id']."/student_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+          return false;
+        }
+        $user_id = $student->user_id;
+      }
       else if($_data_type=="teacher"){
         if(!isset($teacher)){
           @$this->remind("事務管理システム:id=".$item['id']."/teacher_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
@@ -914,8 +924,8 @@ class ImportController extends UserController
         $setting = UserCalendarSetting::create($setting_data);
       }
       $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
-      ->where('user_id', $user_id)
-      ->first();
+                  ->where('user_id', $user_id)
+                  ->first();
       if(!isset($__member)){
         $member = UserCalendarMemberSetting::create([
             'user_calendar_setting_id' => $setting->id,
@@ -927,8 +937,8 @@ class ImportController extends UserController
       }
       if(isset($student)){
         $__member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)
-        ->where('user_id', $student->user_id)
-        ->first();
+                  ->where('user_id', $student->user_id)
+                  ->first();
         if(!isset($__member)){
           $__member = UserCalendarMemberSetting::create([
               'user_calendar_setting_id' => $setting->id,
@@ -947,7 +957,9 @@ class ImportController extends UserController
         $tag_names = ['course_type', 'lesson', 'subject_expr'];
         foreach($tag_names as $tag_name){
           if(!empty($tags[$tag_name])){
-            if(isset($setting)) UserCalendarTagSetting::setTag($setting->id, $tag_name, $tags[$tag_name], 1);
+            if(isset($setting)){
+               $this->store_calendar_setting_tag($setting->id, $tag_name, $tags[$tag_name]);
+             }
             if(!isset($student->user_id)){
               continue;
             }
@@ -991,6 +1003,7 @@ class ImportController extends UserController
           @$this->remind("事務管理システム:student_no=".$item['student_no']."は、学習管理システムに登録されていません\n".$message, 'error', $this->logic_name);
           return false;
         }
+        $user_id = $student->user_id;
       }
       $teacher = null;
       if($item['teacher_no']>0){
@@ -1020,12 +1033,18 @@ class ImportController extends UserController
       if($item['student_no']==0 && $item['teacher_no'] > 0){
         $_data_type = 'teacher';
       }
+      else if($item['student_no']>0 && $item['teacher_no'] == 0){
+        $_data_type = 'student';
+      }
       else if($item['student_no']==0 && $item['teacher_no']==0){
         $_data_type = 'manager';
         $manager = Manager::hasTag('manager_no', $item['user_id'])->first();
         if(!isset($manager)){
-          @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
-          return false;
+          $manager = Teacher::hasTag('manager_no', $item['user_id'])->first();
+          if(!isset($manager)){
+            @$this->remind("事務管理システム:manager_no=".$item['user_id']."は、学習管理システムに登録されていません:\n".$message, 'error', $this->logic_name);
+            return false;
+          }
         }
         $user_id = $manager->user_id;
         $status = "fix";
@@ -1138,6 +1157,7 @@ class ImportController extends UserController
         'place_floor_id' => $item['place_id'],
         'work' => $work,
       ];
+
       if(isset($items)){
         //すでに存在する場合は更新する
         $items->update($update_form);
@@ -1230,7 +1250,7 @@ class ImportController extends UserController
       $tag_names = ['course_type', 'lesson', 'subject_expr'];
       foreach($tag_names as $tag_name){
         if(!empty($tags[$tag_name])){
-          UserCalendarTag::setTag($calendar_id, $tag_name, $tags[$tag_name], 1);
+          $this->store_calendar_tag($calendar_id, $tag_name, $tags[$tag_name]);
         }
       }
       if(isset($student) && isset($teacher)){
@@ -1289,8 +1309,85 @@ class ImportController extends UserController
           }
         }
       }
+      if($work == 11){
+        //TODO 期間講習の場合は下記のロジックで問題ないが、期間講習でない演習は、担当講師を期間講習から取得しない
+        //演習の場合、同日の期間講習（work=10)の講師に担当をつける
+        $season_lessons = UserCalendar::where('work' , 10)
+                    ->where('start_time', '>', $item['ymd'].' 00:00:00')
+                    ->where('start_time', '<', $item['ymd'].' 23:59:59')
+                    ->findStatuses(['new','confirm'], true)
+                    ->get();
 
+        foreach($season_lessons as $season_lesson){
+          $_member = UserCalendarMember::where('calendar_id' , $calendar_id)
+            ->where('user_id' , $season_lesson->user_id)
+            ->first();
+          if(!isset($_member)){
+            UserCalendarMember::create([
+              'calendar_id' => $calendar_id,
+              'status' => 'fix',
+              'rest_type' => $item['cancel'],
+              'remark' => $item['comment'],
+              'rest_result' => '',
+              'schedule_id' => 0,
+              'place_floor_sheat_id' => $sheat_id,
+              'user_id' => $season_lesson->user_id,
+              'create_user_id' => 1
+            ]);
+          }
+        }
+      }
       return true;
+    }
+    /**
+     * カレンダータグ登録
+     * @param array $item
+     * @return boolean
+     */
+    private function store_calendar_tag($model_id, $key, $val){
+      return $this->store_tag($model_id, $key, $val, 'user_calendars');
+    }
+    private function store_calendar_setting_tag($model_id, $key, $val){
+      return $this->store_tag($model_id, $key, $val, 'user_calendar_settings');
+    }
+    private function store_charge_student_tag($model_id, $key, $val){
+      return $this->store_tag($model_id, $key, $val, 'charge_students');
+    }
+    private function store_tag($model_id, $key, $val, $model='user_calendars'){
+      if(empty($model_id)) return false;
+      if(empty($key)) return false;
+      if(empty($val)) return false;
+      switch($model){
+        case 'charge_students':
+          $items = ChargeStudentTag::where('charge_student_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+        case 'user_calendars':
+          $items = UserCalendarTag::where('calendar_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+        case 'user_calendar_settings':
+          $items = UserCalendarTagSetting::where('user_calendar_setting_id', $model_id)
+            ->where('tag_key', $key)
+            ->where('tag_value', $val)->first();
+          break;
+      }
+      if(isset($item)){
+        //すでに存在する場合は保存しない
+        return false;
+      }
+
+      switch($model){
+        case 'charge_students':
+          return ChargeStudentTag::setTag($model_id, $key, $val, 1);
+        case 'user_calendars':
+          return UserCalendarTag::setTag($model_id, $key, $val, 1);
+        case 'user_calendar_settings':
+          return UserCalendarTagSetting::setTag($model_id, $key, $val, 1);
+      }
+
     }
 
     /**

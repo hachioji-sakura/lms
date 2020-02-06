@@ -49,6 +49,7 @@ return [
   'schedule_list_description' => 'List of class schedule',
   'today_schedule_list_description' => 'List of todays class schedule',
   'schedule_add' => 'Add Schedule',
+  'repeat_schedule_add' => 'Add Recurring Schedule',
   'trial_lesson' => 'Trial Lesson',
   'schedule_add_description' => 'Add Schedule Or Alternate Lesson',
   'year_month' => ':year/:month',
@@ -305,4 +306,5 @@ return [
   'last_regist_date' => 'Last date',
   'require_student_confirm' => 'Require student confirmation',
   'not_require_student_confirm' => 'Does not require student confirmation',
+  "error_user_calendar_settings_no_member" => "Insufficient member settings!",
 ];
