@@ -412,6 +412,7 @@ EOT;
       case 4:
         return 'examination_director';
       case 5:
+      case 11:
         return 'training';
       case 6:
       case 7:
@@ -431,7 +432,7 @@ EOT;
   public function get_teaching_type($work=''){
     if(empty($work)) $work = $this->work;
     if($work==10) return 'season';
-    if($work==11) return 'training';
+    if($work==11) return 'season_training';
     if($work==5) return 'training';
 
     $ret = "";
