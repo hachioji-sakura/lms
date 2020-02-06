@@ -95,7 +95,11 @@
                   </div>
                   <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
                 @endif
-                <div class="row pl-3 p-1 border-bottom calendar_{{$calendar['status']}}">
+                <div class="row pl-3 p-1 border-bottom
+                @if($calendar->is_rest_status()==true)
+                calendar_rest
+                @endif
+                ">
                   <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                   <div class="col-12 col-lg-3 col-md-3">
                     <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
