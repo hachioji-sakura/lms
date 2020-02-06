@@ -324,11 +324,11 @@ class ImportController extends UserController
      * @return boolean
      */
     private function schedules_import($items){
+      return $this->transaction(null, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
         }
-      return $this->transaction(null, function() use ($items){
         return $this->api_response(200, '', '', 'count['.$c.']');
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
