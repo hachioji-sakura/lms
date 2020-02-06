@@ -565,17 +565,8 @@ class TrialController extends UserCalendarController
 
    public function admission(Request $request, $id){
      $access_key = '';
-     /*
-     if($request->has('key')){
-       $access_key = $request->get('key');
-     }
-     if(empty($access_key)) abort(403);
-     */
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
-     /*
-     if($trial->parent->user->access_key!==$access_key) abort(403);
-     */
 
      $param = [
        'item' => $trial->details(),
@@ -589,6 +580,33 @@ class TrialController extends UserCalendarController
        ->with($param);
 
    }
+   public function ask_candidate(Request $request, $id){
+     $access_key = '';
+     $trial = Trial::where('id', $id)->first();
+     if(!isset($trial)) abort(404);
+
+     $param = [
+       'item' => $trial->details(),
+       'domain' => $this->domain,
+       'domain_name' => __('labels.'.$this->domain),
+       'attributes' => $this->attributes(),
+     ];
+     return view($this->domain.'.ask_candidate',
+       ['sended' => '',
+        '_edit' => false])
+       ->with($param);
+
+   }
+   public function ask_candidate_mail(Request $request, $id){
+     $param = $this->get_param($request, $id);
+     $access_key = $this->create_token(2678400);
+     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+
+       return $this->api_response(200, '', '', []);
+     }, '体験授業候補日連絡メール送信', __FILE__, __FUNCTION__, __LINE__ );
+     return $this->save_redirect($res, [], '体験授業候補日連絡メールを送信しました。');
+   }
+
    public function _update(Request $request, $id)
    {
      $res =  $this->transaction($request, function() use ($request, $id){
@@ -665,6 +683,4 @@ class TrialController extends UserCalendarController
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
-   public function admission_submit(Request $request, $id){
-   }
 }

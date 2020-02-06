@@ -1078,6 +1078,11 @@ class ImportController extends UserController
             break;
         }
       }
+      if($status=='new' && ($work==5 || $work==11)){
+        //演習の場合 fix
+        $status = 'fix';
+      }
+
       if(!empty(trim($item['cancel']))){
         //TODO :以下の項目をどうにかしたい
         //c = すべからずcancel
