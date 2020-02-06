@@ -1014,6 +1014,9 @@ class ImportController extends UserController
         }
         $user_id = $teacher->user_id;
       }
+      //work
+      $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
+      $work = $_attr->attribute_value;
 
       //ステータス初期設定
       $status= 'fix';
@@ -1129,9 +1132,6 @@ class ImportController extends UserController
           $sheat_id = $sheat->id;
         }
       }
-      //work
-      $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
-      $work = $_attr->attribute_value;
 
       $calendar_id = 0;
       $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();

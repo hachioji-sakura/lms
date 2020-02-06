@@ -475,6 +475,12 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "1",
 		],
+		"9" => [
+			"attribute_name" => "土日講習",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
 	],
 	"course_minutes" => [
 		"30" => [
@@ -1975,23 +1981,29 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "6",
 		],
+		"restcare_first_rest_is_a1" => [
+			"attribute_name" => "休み判定用項目：初回の休みは休み１",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "7",
+		],
 		"restcare_rest_is_a1" => [
 			"attribute_name" => "休み判定用項目：常に休み１",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "7",
+			"sort_no" => "8",
 		],
 		"restcare_rest_add_exchange_enable" => [
 			"attribute_name" => "休み判定用項目：常に振替対象",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "8",
+			"sort_no" => "9",
 		],
 		"repeat_schedule_no_week5" => [
 			"attribute_name" => "5週目の通常授業なし",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "9",
+			"sort_no" => "10",
 		],
 	],
 	"subject" => [
@@ -2571,6 +2583,12 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "6",
 		],
+		"season_training" => [
+			"attribute_name" => "演習(期間講習)",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "7",
+		],
 	],
 	"work" => [
 		"1" => [
@@ -2623,6 +2641,18 @@
 		],
 		"9" => [
 			"attribute_name" => "事務",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
+		"10" => [
+			"attribute_name" => "季節および土日講習",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
+		"11" => [
+			"attribute_name" => "季節および土日講習演習",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "1",
