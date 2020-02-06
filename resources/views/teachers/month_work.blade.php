@@ -96,7 +96,7 @@
                   <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
                 @endif
                 <div class="row pl-3 p-1 border-bottom
-                @if($calendar->is_rest_status()==true)
+                @if($calendar->is_rest_status($calendar->status)==true)
                 calendar_rest
                 @endif
                 ">
