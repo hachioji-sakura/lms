@@ -25,7 +25,7 @@
               event_create(event.start, event.end, jsEvent, view);
               return false;
             }
-            if(event.work==5){
+            if(event.work==5 || event.work==11){
               //演習の場合は操作不要
               base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/calendars/"+event.id);
             }

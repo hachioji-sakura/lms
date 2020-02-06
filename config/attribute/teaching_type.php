@@ -6,5 +6,6 @@ return array(
   'add' => '追加授業',
   'season' => '期間講習',
   'training' => '演習',
+  'season_training' => '演習(期間講習)',
 );
 ?>

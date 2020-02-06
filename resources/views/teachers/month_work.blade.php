@@ -75,6 +75,7 @@
             @endif
             <ul id="month_work_list" class="mailbox-attachments clearfix row">
               @foreach($calendars as $calendar)
+              @if($calendar->work==11) @continue @endif
               <?php $calendar = $calendar->details(1); ?>
                 @if($__date != $calendar["date"])
                 <li class="col-12 p-0" accesskey="" target="">
@@ -112,7 +113,10 @@
                     </a>
                   </div>
                   <div class="col-12 col-lg-5 col-md-5">
+                    @component('calendars.forms.label_students', ['item' => $calendar, 'user'=>$user, 'set_br' => false , 'status_visible'=> false]) @endcomponent
+{{-- componentにより共通化
                     @foreach($calendar->members as $member)
+                      @if(!isset($member->user)) ERROR!!({{$member->user_id}}) @continue @endif
                       @if($member->user->details()->role==="student")
                         @if($member->status=="rest")
                         <span class="mr-2 text-danger">
@@ -127,6 +131,7 @@
                         @endif
                       @endif
                     @endforeach
+--}}
                     @if($calendar->is_management()==false)
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">

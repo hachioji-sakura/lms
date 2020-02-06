@@ -1014,6 +1014,9 @@ class ImportController extends UserController
         }
         $user_id = $teacher->user_id;
       }
+      //work
+      $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
+      $work = $_attr->attribute_value;
 
       //ステータス初期設定
       $status= 'fix';
@@ -1078,6 +1081,11 @@ class ImportController extends UserController
             break;
         }
       }
+      if($status=='new' && ($work==5 || $work==11)){
+        //演習の場合 fix
+        $status = 'fix';
+      }
+
       if(!empty(trim($item['cancel']))){
         //TODO :以下の項目をどうにかしたい
         //c = すべからずcancel
@@ -1124,9 +1132,6 @@ class ImportController extends UserController
           $sheat_id = $sheat->id;
         }
       }
-      //work
-      $_attr = $this->get_save_general_attribute('work', $item['work_id'],'');
-      $work = $_attr->attribute_value;
 
       $calendar_id = 0;
       $_member = UserCalendarMember::where('schedule_id',$item['id'])->first();

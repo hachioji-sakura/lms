@@ -78,6 +78,19 @@ class UserCalendarController extends MilestoneController
         ],
       ];
     }
+    else if($item->work==5 || $item->work==11){
+      //授業予定
+      $ret = [
+        'teaching_name' => [
+          'label' => __('labels.lesson_name'),
+          'size' => 6,
+        ],
+        'student_name' => [
+          'label' => __('labels.students'),
+          'size' => 12,
+        ],
+      ];
+    }
     else {
       //授業予定
       $ret = [
