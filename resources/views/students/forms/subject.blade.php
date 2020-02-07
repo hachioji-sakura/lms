@@ -10,7 +10,7 @@
       @endif
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <table class="table table-striped" id="subject_table">
+    <table class="table" id="subject_table">
     <tr class="bg-gray">
       @if($grade_display===true)
       <th class="p-1">学年</th>

@@ -31,7 +31,7 @@
 
       <div class="row" id="rest_list">
         <div class="col-12">
-          <table class="table table-striped w-80" id="rest_list_table">
+          <table class="table w-80" id="rest_list_table">
             <tr class="bg-gray">
               <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>生徒</th>
               <th class="p-1 pl-2 text-sm"><i class="fa fa-check mr-1"></i>休み</th>

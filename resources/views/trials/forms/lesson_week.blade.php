@@ -25,7 +25,7 @@
         定期スケジュール
     </h5>
     <span class="description-text">
-      <table class="table table-striped border-bottom">
+      <table class="table border-bottom">
       <tr class="bg-secondary header calendar_setting_header">
         <th class="p-1 text-center border-right  action_form action_add">
           選択
