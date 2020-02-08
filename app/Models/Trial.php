@@ -92,6 +92,42 @@ EOT;
     }
     return null;
   }
+  public function get_status(){
+    switch($this->status){
+      case "confirm":
+      case "fix":
+      case "presence":
+      case "new":
+        $status = 'fix';
+        if(count($this->calendars) < 1) $status = 'new';
+        if($this->is_confirm_trial_lesson()==true){
+          $status = 'confirm';
+        }
+        else if($this->is_presence_trial_lesson()==true){
+          $status = 'presence';
+        }
+        Trial::where('id', $this->id)->update(['status' => $status]);
+        return $status;
+      case "cancel":
+      case "complete":
+        return $this->status;
+    }
+    return "";
+  }
+  public function is_confirm_trial_lesson(){
+    foreach($this->calendars as $calendar){
+      if($calendar->status=='new') return true;
+      if($calendar->status=='confirm') return true;
+    }
+    return false;
+  }
+  public function is_presence_trial_lesson(){
+    if(count($this->calendars) < 1) return false;
+    foreach($this->calendars as $calendar){
+      if($calendar->status!='presence') return false;
+    }
+    return true;
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
     $status_name = "";
@@ -101,22 +137,21 @@ EOT;
       case "new":
         return "未対応";
       case "confirm":
-        return "予定確認中";
+        return "体験授業調整中";
       case "fix":
-        return "授業予定";
+        return "体験授業確定";
       case "cancel":
         return "キャンセル";
       case "rest":
         return "休み";
-      case "absence":
-        return "欠席";
       case "presence":
-        return "出席済み";
+        return "体験授業完了";
     }
     return "";
   }
   public function details(){
     $item = $this;
+    $item->status = $this->get_status();
     $item['status_name'] = $this->status_name();
     $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
 
@@ -305,37 +340,13 @@ EOT;
     return $trial;
   }
   public function trial_update($form){
-    $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
-    $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
-
-    $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
-    $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
-
-    $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
-    $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
-/*TODO 後まわし
-    $form['trial_start_time4'] = $form['trial_date4'].' '.$form['trial_start_time4'].':00:00';
-    $form['trial_end_time4'] = $form['trial_date4'].' '.$form['trial_end_time4'].':00:00';
-
-    $form['trial_start_time5'] = $form['trial_date5'].' '.$form['trial_start_time5'].':00:00';
-    $form['trial_end_time5'] = $form['trial_date5'].' '.$form['trial_end_time5'].':00:00';
-*/
     if(!isset($form['remark']) || empty($form['remark'])) $form['remark'] = '';
-    $this->update([
-      'remark' => $form['remark'],
-      'trial_start_time1' => $form['trial_start_time1'],
-      'trial_end_time1' => $form['trial_end_time1'],
-      'trial_start_time2' => $form['trial_start_time2'],
-      'trial_end_time2' => $form['trial_end_time2'],
-      'trial_start_time3' => $form['trial_start_time3'],
-      'trial_end_time3' => $form['trial_end_time3'],
-/*TODO 後まわし
-      'trial_start_time4' => $form['trial_start_time4'],
-      'trial_end_time4' => $form['trial_end_time4'],
-      'trial_start_time5' => $form['trial_start_time5'],
-      'trial_end_time5' => $form['trial_end_time5'],
-*/
-    ]);
+    $fields = ['trial_start_time1', 'trial_end_time1', 'trial_start_time2', 'trial_end_time2', 'trial_start_time3', 'trial_end_time3', 'trial_start_time4', 'trial_end_time4', 'trial_start_time5', 'trial_end_time5', 'remark'];
+    $data = [];
+    foreach($fields as $field){
+      if(!empty($form[$field])) $data[$field] = $form[$field];
+    }
+    $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
     $tag_names[] ='howto'; //体験のみのタグ
     //通塾可能曜日・時間帯タグ
@@ -353,6 +364,7 @@ EOT;
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
+      \Log::warning("a1:".$charge_subject_level_item['attribute_value']);
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){
@@ -374,6 +386,7 @@ EOT;
     return $user_calendar_settings;
   }
   public function trial_to_calendar($form){
+    $this->update(['status' => 'confirm']);
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
     //１トライアル複数授業予定のケースもある
@@ -392,6 +405,7 @@ EOT;
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,
       'teacher_user_id' => $teacher->user_id,
+      'send_mail' => 'teacher',
     ];
     $charge_student_form = [
       'teacher_id' => $teacher->id,

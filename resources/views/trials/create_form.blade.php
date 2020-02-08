@@ -5,20 +5,30 @@
     体験授業お申込み内容
   </div>
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
-  @component('trials.forms.trial_date', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  <?php
+    $is_label = true;
+    if($user->role=='manager') $is_label = false;
+  ?>
+  @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
 @section('student_form')
-@component('trials.forms.entry_students', ['attributes' => $attributes]) @endcomponent
+@component('trials.forms.entry_students', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-phone-square mr-1"></i>
     ご連絡先
   </div>
-  @component('students.forms.email', []) @endcomponent
-  @component('students.forms.phoneno', []) @endcomponent
-  @component('students.forms.address', []) @endcomponent
+  <?php
+    $parent = null;
+    if($_edit==true){
+      $parent = $item->parent->details();
+    }
+  ?>
+  @component('students.forms.email', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
+  @component('students.forms.phoneno', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
+  @component('students.forms.address', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
 </div>
 @endsection
 @section('lesson_week_form')

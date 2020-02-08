@@ -118,7 +118,6 @@
       if( $("input.subject_level[type='radio']", $(".carousel-item.active")).length > 0){
         $("input.subject_level[type='radio'][value!=1]:checked", $(".carousel-item.active")).each(function(index, value){
           var val = $(this).val();
-          console.log(val);
           if(val!=1){
             _is_scceuss = true;
           }

@@ -545,7 +545,7 @@ class UserCalendarSettingController extends UserCalendarController
           }
         }
         else {
-          $setting->dispose();
+          $setting->dispose($param['user']->user_id);
         }
         return $this->api_response(200, '', '', $setting);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -615,7 +615,7 @@ class UserCalendarSettingController extends UserCalendarController
         $calendars = UserCalendar::where('user_calendar_setting_id', $id)
                     ->whereIn('id', $request->get('select_ids'))->get();
         foreach($calendars as $calendar){
-          $calendar->dispose();
+          $calendar->dispose($param['user']->user_id);
         }
         return $this->api_response(200, '', '', $setting);
       }, 'スケジュール一括削除', __FILE__, __FUNCTION__, __LINE__ );

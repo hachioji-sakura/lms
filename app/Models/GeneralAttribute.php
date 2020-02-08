@@ -79,7 +79,7 @@ class GeneralAttribute  extends Model
     $items = null;
     $d = config('attributes');
     if(isset($d[$key])){
-      \Log::warning("config use");
+      \Log::warning("config use:".$key);
       $items = $d[$key];
       foreach($items as $key => $item){
         $g = new GeneralAttribute;
@@ -90,7 +90,7 @@ class GeneralAttribute  extends Model
       }
     }
     if($item == null){
-      \Log::warning("config no use!");
+      \Log::warning("config no use!:".$key);
       $items = GeneralAttribute::where('attribute_key', $key)->get();
     }
     return $items;

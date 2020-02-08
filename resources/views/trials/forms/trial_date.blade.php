@@ -1,10 +1,36 @@
-{{--
-<div class="col-12 mt-1">
-  <h6 class="text-sm text-danger" >
-    ※希望日時につきまして、ご指定いただいた時間帯の範囲にて、60分の授業を予定しております
-  </h6>
+@if(isset($is_label) && $is_label==true)
+<input type="hidden" name="trial_date_time1" value = "{{date('m月d日', strtotime($item->trial_start_time1))}} {{date('H', strtotime($item->trial_start_time1))}}時～ {{date('H', strtotime($item->trial_end_time1))}}時">
+<input type="hidden" name="trial_date_time2" value = "{{date('m月d日', strtotime($item->trial_start_time2))}} {{date('H', strtotime($item->trial_start_time1))}}時～ {{date('H', strtotime($item->trial_end_time2))}}時">
+<input type="hidden" name="trial_date_time3" value = "{{date('m月d日', strtotime($item->trial_start_time3))}} {{date('H', strtotime($item->trial_start_time1))}}時～ {{date('H', strtotime($item->trial_end_time3))}}時">
+<div class="col-12 mt-2">
+    <label for="start_date" class="w-100">
+      第１希望日時
+    </label>
+    <div class="input-group">
+      {{__('labels.year_month_day', ['year' => date('Y', strtotime($item->trial_start_time1)), 'month' => date('m', strtotime($item->trial_start_time1)), 'day' => date('d', strtotime($item->trial_start_time1))])}}
+      {{date('H:i', strtotime($item->trial_start_time1))}}～{{date('H:i', strtotime($item->trial_end_time1))}}
+    </div>
 </div>
---}}
+<div class="col-12 mt-2">
+    <label for="start_date" class="w-100">
+      第２希望日時
+    </label>
+    <div class="input-group">
+      {{__('labels.year_month_day', ['year' => date('Y', strtotime($item->trial_start_time2)), 'month' => date('m', strtotime($item->trial_start_time2)), 'day' => date('d', strtotime($item->trial_start_time2))])}}
+      {{date('H:i', strtotime($item->trial_start_time2))}}～{{date('H:i', strtotime($item->trial_end_time2))}}
+    </div>
+</div>
+<div class="col-12 mt-2 mb-4">
+    <label for="start_date" class="w-100">
+      第３希望日時
+    </label>
+    <div class="input-group">
+      {{__('labels.year_month_day', ['year' => date('Y', strtotime($item->trial_start_time3)), 'month' => date('m', strtotime($item->trial_start_time3)), 'day' => date('d', strtotime($item->trial_start_time3))])}}
+      {{date('H:i', strtotime($item->trial_start_time3))}}～{{date('H:i', strtotime($item->trial_end_time3))}}
+    </div>
+</div>
+@else
+
 <div class="col-12 mt-2 col-md-4">
     <label for="start_date" class="w-100">
       第１希望日
@@ -227,3 +253,4 @@
      体験授業ご希望日時について、幅広く教えてください。
   </h6>
 </div>
+@endif

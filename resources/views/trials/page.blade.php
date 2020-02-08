@@ -17,6 +17,10 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-calendar mr-1"></i>体験授業予定
+            <a class="btn btn-flat btn-danger float-right ml-2" role="button"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_candidate">
+              <i class="fa fa-envelope mr-1"></i>
+              追加で候補日を訊く連絡
+            </a>
             <a role="button" class="btn btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar">
               <i class="fa fa-plus mr-1"></i>
               体験授業予定を設定する
