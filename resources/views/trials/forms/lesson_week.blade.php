@@ -165,9 +165,9 @@ function lesson_week_datetime_change(){
   end_time = (end_time+'00')|0;
   var select_lesson_place_floor = $("select[name='lesson_place_floor']").val();
   if(!util.isEmpty(lesson_place_floor)){
-    $("select[name='lesson_place_floor']").val(lesson_place_floor);
+    $("select[name='place_floor_id']").val(lesson_place_floor);
   }
-  var lesson_place_floor_name = $('select[name="lesson_place_floor"] option:selected').text().trim();
+  var lesson_place_floor_name = $('select[name="place_floor_id"] option:selected').text().trim();
   var _label = $("label[for='"+select_id+"']").html();
   var _detail = "";
   var _template =[

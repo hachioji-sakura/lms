@@ -181,10 +181,9 @@ class TrialController extends UserCalendarController
       $ret['item'] = $item->details();
     }
     else {
-      $lists = ['cancel', 'new', 'confirm', 'complete'];
+      $lists = ['cancel', 'new', 'fix', 'confirm', 'complete', 'presence'];
       foreach($lists as $list){
         $_status = $list;
-        if($_status=='cancel') $_status='rest,cancel';
         $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
       }
     }
