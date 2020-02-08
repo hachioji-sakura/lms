@@ -105,6 +105,29 @@ class TrialController extends UserCalendarController
     return Trial::query();
   }
   /**
+   * 新規登録用フォーム
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return json
+   */
+  public function create_form(Request $request){
+    $form = $request->all();
+    if(!empty($form['trial_date1'])){
+      $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
+      $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
+    }
+    if(!empty($form['trial_date2'])){
+      $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
+      $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
+    }
+    if(!empty($form['trial_date3'])){
+      $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
+      $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
+    }
+    return $form;
+  }
+
+  /**
    * 一覧表示
    *
    * @param  \Illuminate\Http\Request  $request
@@ -378,7 +401,8 @@ class TrialController extends UserCalendarController
        }
      }
      $res = $this->transaction($request, function() use ($request){
-       $form = $request->all();
+       $form = $this->create_form($request);
+       $form['create_user_id'] = 1;
        $form["accesskey"] = '';
        $form["password"] = 'sakusaku';
        if(!empty($form['student2_name_last'])){
@@ -387,10 +411,6 @@ class TrialController extends UserCalendarController
        $item = Trial::entry($form);
        return $this->api_response(200, '', '', $item);
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
-
-     if($res["data"]==null){
-       $this->error_response('体験授業申し込みに失敗しました。');
-     }
 
      if($this->is_success_response($res)){
        $this->send_mail($form['email'],
@@ -449,7 +469,6 @@ class TrialController extends UserCalendarController
        $form['create_user_id'] = $user->user_id;
        //カレンダーステータス変更
        $trial = Trial::where('id', $id)->first();
-       $trial->update(['status'=>'confirm']);
        $res = $trial->trial_to_calendar($form);
        return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -581,7 +600,6 @@ class TrialController extends UserCalendarController
 
    }
    public function ask_candidate(Request $request, $id){
-     $access_key = '';
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
 
@@ -598,8 +616,38 @@ class TrialController extends UserCalendarController
 
    }
    public function ask_candidate_mail(Request $request, $id){
-     $param = $this->get_param($request, $id);
      $access_key = $this->create_token(2678400);
+     $param = $this->get_param($request, $id);
+     $access_key = $this->create_token();
+
+     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+
+       return $this->api_response(200, '', '', []);
+     }, '体験授業候補日連絡メール送信', __FILE__, __FUNCTION__, __LINE__ );
+     return $this->save_redirect($res, [], '体験授業候補日連絡メールを送信しました。');
+   }
+
+   public function add_candidate_date(Request $request, $id){
+     $trial = Trial::where('id', $id)->first();
+     if(!isset($trial)) abort(404);
+
+     $param = [
+       'item' => $trial->details(),
+       'domain' => $this->domain,
+       'domain_name' => __('labels.'.$this->domain),
+       'attributes' => $this->attributes(),
+     ];
+     return view($this->domain.'.add_candidate_date',
+       ['sended' => '',
+        '_edit' => false])
+       ->with($param);
+
+   }
+   public function add_candidate_date_send(Request $request, $id){
+     $access_key = $this->create_token(2678400);
+     $param = $this->get_param($request, $id);
+     $access_key = $this->create_token();
+
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
 
        return $this->api_response(200, '', '', []);
@@ -610,10 +658,9 @@ class TrialController extends UserCalendarController
    public function _update(Request $request, $id)
    {
      $res =  $this->transaction($request, function() use ($request, $id){
-       $form = $request->all();
+       $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
-       $item = $this->model()->where('id',$id)->first();
        $item->trial_update($form);
        return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );

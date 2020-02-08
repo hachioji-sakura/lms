@@ -98,4 +98,7 @@ return [
  "confirm_remind_already_ask_data" => "This request has been registered, but will you resend it?",
  "confirm_ask_data" => "Please approve or send back this request.",
  "error_user_calendar_settings_no_member" => "Insufficient member settings!",
+ "message_trial_candidate_date1" => "I am very sorry that I can not schedule a trial class \nfor the trial class you applied for at the desired date and time.",
+ "message_trial_candidate_date2" => "I would like to inform you of the additional candidate date and time from the following URL,\n Sorry to trouble you, but thank you very much.",
+
  ];

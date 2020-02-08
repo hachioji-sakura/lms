@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-12">
         <div class="form-group">
-          <table class="table table-striped">
+          <table class="table">
           <tr class="bg-gray">
             <th class="p-1 text-center border-right">時間帯 / 曜日</th>
             @foreach($attributes['lesson_week'] as $index => $name)

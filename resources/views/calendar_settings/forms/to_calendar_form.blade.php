@@ -33,7 +33,7 @@
 </div>
 <div class="col-12 mb-2">
   <div>
-  <table class="table table-striped" id="check_list">
+  <table class="table" id="check_list">
     <thead>
     <tr class="bg-light">
       <th class="p-1 pl-2 text-sm">

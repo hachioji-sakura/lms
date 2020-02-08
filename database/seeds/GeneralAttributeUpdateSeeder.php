@@ -41,7 +41,7 @@ class GeneralAttributeUpdateSeeder extends Seeder
     }
     public function create_temporary_attribute(){
       $url = './config/attributes.php';
-      $fields = ['attribute_name', 'parent_attribute_key', 'parent_attribute_value', 'sort_no'];
+      $fields = ['attribute_value', 'attribute_name', 'parent_attribute_key', 'parent_attribute_value', 'sort_no'];
       $attributes = GeneralAttribute::orderBy('attribute_key')->orderBy('sort_no')->get();
       $contents = "<?php  return array(";
       $key = "";

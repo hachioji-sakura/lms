@@ -93,6 +93,8 @@ class UserCalendarMember extends Model
     $is_update = false;
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
+    $param = [];
+
     if(!isset($login_user)){
       return false;
     }
@@ -180,7 +182,6 @@ class UserCalendarMember extends Model
     $template = 'calendar_'.$status;
 
     $u = $this->user->details();
-    $param = [];
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
     $param['user_name'] = $u->name();

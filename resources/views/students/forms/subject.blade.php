@@ -10,7 +10,7 @@
       @endif
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <table class="table table-striped" id="subject_table">
+    <table class="table" id="subject_table">
     <tr class="bg-gray">
       @if($grade_display===true)
       <th class="p-1">学年</th>
@@ -118,7 +118,6 @@
       if( $("input.subject_level[type='radio']", $(".carousel-item.active")).length > 0){
         $("input.subject_level[type='radio'][value!=1]:checked", $(".carousel-item.active")).each(function(index, value){
           var val = $(this).val();
-          console.log(val);
           if(val!=1){
             _is_scceuss = true;
           }

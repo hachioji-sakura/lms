@@ -253,7 +253,7 @@ EOT;
     return $calendar_setting;
   }
   //本モデルはdeleteではなくdisposeを使う
-  public function dispose(){
+  public function dispose($login_user_id){
     //事務システム側を先に削除
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();

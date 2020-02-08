@@ -17,7 +17,7 @@
   @endif
 @endsection
 @section('content')
-  @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
+  @component('calendars.page', ['user'=>$user, 'item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
     @slot('page_message')
       @if(!empty($result))
         <h4 class="bg-success p-3 text-sm">

@@ -80,7 +80,7 @@
           希望通常スケジュール　ー空き情報ー
       </h5>
       <span class="description-text">
-        <table class="table table-striped border-bottom">
+        <table class="table border-bottom">
         <tr class="bg-gray">
           @foreach($attributes['lesson_week'] as $index => $name)
           <th class="p-1 text-center border-right lesson_week_label
@@ -138,7 +138,7 @@
           定期スケジュール
       </h5>
       <span class="description-text">
-        <table class="table table-striped border-bottom">
+        <table class="table border-bottom">
         <tr class="bg-secondary header">
           <th class="p-1 text-center border-right ">
             曜日/時間

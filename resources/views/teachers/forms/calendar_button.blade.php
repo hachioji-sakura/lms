@@ -36,7 +36,7 @@
   </a>
   @elseif($calendar["status"]==="confirm")
   {{-- 生徒へ再度通知連絡 --}}
-  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/remind?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
+  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_remind')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/remind?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
     <i class="fa fa-envelope mr-1"></i>
     <span class="ml-1 btn-label">
     {{__('labels.schedule_remind')}}
