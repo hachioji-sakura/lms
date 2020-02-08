@@ -1127,6 +1127,11 @@ EOT;
     }
     return false;
   }
+  public function is_enable_status($status){
+    if($status=='cancel') return false;
+    if($this->is_rest_status($status)==true) return false;
+    return false;
+  }
   public function is_rest_status($status){
     if($status=="rest") return true;
     if($status=="lecture_cancel") return true;

@@ -660,6 +660,7 @@ class TrialController extends UserCalendarController
        $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
+       $item = Trial::where('id', $id)->first();
        $item->trial_update($form);
        return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
