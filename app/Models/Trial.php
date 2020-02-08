@@ -1170,7 +1170,7 @@ EOT;
   }
   //コマの評価づけ：隣接するスケジュールを優先とする
   private function get_setting_review($user_id, $lesson_week, $from_time_slot, $to_time_slot){
-    //echo "[".$lesson_week."][".$from_time_slot."][".$to_time_slot."]<br>";
+    //echo "get_setting_review[".$lesson_week."][".$from_time_slot."][".$to_time_slot."]<br>";
     $is_place_conflict = false;
     $ret = ['setting'=>null, 'same_place'=>'', 'review'=>0, 'status'=>''];
     //上に隣接する通常授業設定を取得
@@ -1180,10 +1180,14 @@ EOT;
                       ->get();
     $prev = null;
     foreach($prev_settings as $setting){
+      if($setting->is_enable()==false) continue;
       foreach($this->get_tags('lesson_place') as $tag){
         //体験希望所在地のフロアと同じ場合隣接とみなす
         if($setting->is_same_place($tag->tag_value)==true){
           $prev  = $setting;
+          $is_place_conflict = false;
+          //echo "prev----setting_id[".$setting->id."]=<br>";
+          break;
         }
         else {
           $is_place_conflict = true;
@@ -1192,6 +1196,7 @@ EOT;
       }
       if(isset($prev)) break;
     }
+    $is_place_conflict = false;
     //下に隣接する通常授業設定を取得
     $next_settings = UserCalendarSetting::where('user_id', $user_id)
                       ->where('to_time_slot', $from_time_slot)
@@ -1199,9 +1204,13 @@ EOT;
                       ->get();
     $next = null;
     foreach($next_settings as $setting){
+      if($setting->is_enable()==false) continue;
       foreach($this->get_tags('lesson_place') as $tag){
         if($setting->is_same_place($tag->tag_value)==true){
           $next  = $setting;
+          $is_place_conflict = false;
+          //echo "next----setting_id[".$setting->id."]=<br>";
+          break;
         }
         else {
           $is_place_conflict = true;

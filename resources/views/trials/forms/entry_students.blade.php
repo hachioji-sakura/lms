@@ -2,15 +2,17 @@
   $student1=null;
   $student2=null;
   $student3=null;
-  foreach($item->trial_students as $student){
-    if($student1==null){
-      $student1 = $student->student->details();
-    }
-    else if($student2==null){
-      $student2 = $student->student->details();
-    }
-    else if($student3==null){
-      $student3 = $student->student->details();
+  if($item!=[]){
+    foreach($item->trial_students as $student){
+      if($student1==null){
+        $student1 = $student->student->details();
+      }
+      else if($student2==null){
+        $student2 = $student->student->details();
+      }
+      else if($student3==null){
+        $student3 = $student->student->details();
+      }
     }
   }
 ?>

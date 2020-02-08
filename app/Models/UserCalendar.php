@@ -945,10 +945,10 @@ EOT;
   }
   public function is_same_place($place_id=0, $place_floor_id=0){
     //場所のチェック　フロアから所在地を出して、所在地単位でチェックする
-    //echo "is_same_place_check:";
+    //echo "is_same_place_check:[$place_id][$place_floor_id]";
     if(!empty($place_id)){
       if(isset($this->place_floor) && $this->place_floor->place_id==$place_id){
-        //echo "true<br>";
+        //echo "place_check:[".$this->place_floor->place_id."]";
         return true;
       }
     }
