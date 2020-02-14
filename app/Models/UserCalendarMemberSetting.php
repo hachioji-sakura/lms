@@ -3,10 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarTagSetting;
 use App\Models\Traits\Common;
 use App\User;
+use App\Models\Teacher;
+use App\Models\Student;
+use App\Models\Tuition;
 
 class UserCalendarMemberSetting extends UserCalendarMember
 {
@@ -204,5 +209,188 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     return $res;
   }
+  public function get_tuition(){
+    if($this->setting->is_teaching()!=true){
+      return null;
+    }
+    $user = $this->user->details();
+    if($user->role!='student'){
+      return null;
+    }
+    $lesson = $this->setting->lesson(true);
+    $course = $this->setting->course(true);
+    $grade = $user->tag_value('grade');
+    $course_minutes = $this->setting->course_minutes(true);
+    $settings = $user->get_calendar_settings([]);
+    $lesson_week_count = 0;
+    foreach($settings as $setting){
+      if($lesson==$setting->lesson(true) &&
+        $course == $setting->course(true)){
+          if($lesson_week_count < 3) $lesson_week_count++;
+      }
+    }
+    $setting_details = $this->setting->details(1);
+    $teacher = $this->setting->user->details('teachers');
+    $subject = '';
+    if($this->setting->get_tag_value('lesson')==2 && $this->setting->has_tag('english_talk_lesson', 'chinese')==true){
+      $subject= $this->setting->get_tag_value('subject');
+    }
+    elseif($this->setting->get_tag_value('lesson')==4){
+      $subject= $this->setting->get_tag_value('kids_lesson');
+    }
+    $tuition = Tuition::where('student_id', $user->id)
+                ->where('teacher_id', $teacher->id)
+                ->where('lesson', $lesson)
+                ->where('course_type', $course)
+                ->where('course_minutes', $course_minutes)
+                ->where('grade', $grade)
+                ->where('lesson_week_count', $lesson_week_count)
+                ->where('subject', $subject)->first();
+    if(!isset($tuition)) return null;
+    return $tuition;
+  }
+  static public function get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $is_juken=false, $teacher_id){
+    $replace_course = config('replace.course');
+    if(!isset($replace_course[$course])){
+      return null;
+    }
+    $replace_course = $replace_course[$course];
 
+    $replace_grade = config('replace.grade');
+    if(!isset($replace_grade[$grade])){
+      return null;
+    }
+    $replace_grade = $replace_grade[$grade];
+
+    $jukensei_flag = 0;
+    if($is_juken==true){
+      $jukensei_flag = 1;
+    }
+
+    $_url = config('app.management_url').'/sakura-api/api_get_lesson_fee.php';
+    $_url .='?lesson='.$lesson;
+    $_url .='&course_type='.$replace_course;
+    $_url .='&course_minutes='.$course_minutes;
+    $_url .='&grade='.$replace_grade;
+    $_url .='&jukensei_flag='.$jukensei_flag;
+    $_url .='&lesson_week_count='.$lesson_week_count;
+    $controller = new Controller;
+    $request = new Request;
+    $res = $controller->call_api($request, $_url, 'GET', null);
+
+    $message = "";
+    $message = "事務システムAPI \nRequest:".$_url."\n".$message;
+    if(empty($res)){
+      $message .= "\n事務システムAPIエラー:".$_url."\nresponseなし";
+      \Log::Error($message);
+      @$controller->send_slack($message, 'error', "事務システムAPI");
+      return null;
+    }
+    else if($res["status"] != 'success'){
+      $message .= "\n事務システムAPIエラー:".$_url."\nstatus=".$res["status"];
+      \Log::Error($message);
+      @$controller->send_slack($message, 'error', "事務システムAPI");
+      return null;
+    }
+    //TODO 弓削さんの場合＋1000円 期間講習の対応なので関係ない？
+    if($teacher_id == 1){
+      $res["data"]['lesson_fee'] = intval($res["data"]['lesson_fee'])+1000;
+    }
+
+    return $controller->api_response(200, "", "" , $res["data"]);
+  }
+  public function get_lesson_fee(){
+    if($this->setting->is_teaching()!=true){
+      return null;
+    }
+    $user = $this->user->details();
+    if($user->role!='student'){
+      return null;
+    }
+    $lesson = $this->setting->lesson(true);
+    $course = $this->setting->course(true);
+    $grade = $user->tag_value('grade');
+    $course_minutes = $this->setting->course_minutes(true);
+    $settings = $user->get_calendar_settings([]);
+    $lesson_week_count = 0;
+    foreach($settings as $setting){
+      if($lesson==$setting->lesson(true) &&
+        $course == $setting->course(true)){
+          if($lesson_week_count < 3) $lesson_week_count++;
+      }
+    }
+    $t = $this->setting->user->details('teachers');
+    $res = UserCalendarMemberSetting::get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $user->is_juken(), $t->id);
+
+    return $res;
+  }
+  public function set_api_lesson_fee($lesson_fee=null){
+    if($this->setting->is_teaching()!=true){
+      return null;
+    }
+    $user = $this->user->details();
+    if($user->role!='student'){
+      return null;
+    }
+    $lesson = $this->setting->lesson(true);
+    $course = $this->setting->course(true);
+    $grade = $user->tag_value('grade');
+    $course_minutes = $this->setting->course_minutes(true);
+    $jukensei_flag = 0;
+    if($user->is_juken()==true){
+      $jukensei_flag = 1;
+    }
+    $settings = $user->get_calendar_settings([]);
+    $lesson_week_count = 0;
+    foreach($settings as $setting){
+      if($lesson==$setting->lesson(true) &&
+        $course == $setting->course(true)){
+          if($lesson_week_count < 3) $lesson_week_count++;
+      }
+    }
+
+    $setting_details = $this->setting->details(1);
+    $teacher = $this->setting->user->details('teachers');
+
+    if($lesson_fee==null){
+      $res = $this->get_lesson_fee();
+      if($res==null){
+        return $this->error_response("get_api_lesson_fee error");
+      }
+      $lesson_fee = $res['data']['lesson_fee'];
+    }
+    $subject = '';
+    if($this->setting->get_tag_value('lesson')==2 && $this->setting->has_tag('english_talk_lesson', 'chinese')==true){
+      $subject= $this->setting->get_tag_value('subject');
+    }
+    elseif($this->setting->get_tag_value('lesson')==4){
+      $subject= $this->setting->get_tag_value('kids_lesson');
+    }
+    $tuition = $this->get_tuition();
+    if($tuition == null){
+      Tuition::add([
+        'student_id' => $user->id,
+        'teacher_id' => $teacher->id,
+        'tuition' => $lesson_fee,
+        'title' => $setting_details['title'],
+        'remark' => '',
+        "lesson" => $lesson,
+        "course_type" => $course,
+        "course_minutes" => $course_minutes,
+        "grade" => $grade,
+        "lesson_week_count" => $lesson_week_count,
+        "subject" => $subject,
+        "create_user_id" => $this->setting->user_id,
+        "start_date" => '9999-12-31',
+        "end_date" => '9999-12-31',
+      ]);
+    }
+    else {
+      $tuition->update([
+        'title' => $setting_details['title'],
+        'tuition' => $lesson_fee,
+      ]);
+    }
+    return $this->api_response(200, '', '');
+  }
 }

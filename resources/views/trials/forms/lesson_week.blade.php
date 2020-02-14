@@ -116,6 +116,7 @@
                  end_time="{{$time_slot["to"]}}"
                  lesson_place_floor="{{$time_slot["place"]}}"
                  onChange="lesson_week_datetime_change()"
+                 validate = "lesson_week_datetime_validate()";
                  @if($is_first==false)  @endif
                  >
                  <label class="form-check-label" for="lesson_week_{{$week_day}}_{{$time_slot["from"]}}_{{$time_slot["to"]}}" title="{{$time_slot["review"]}}_{{$time_slot["show"]}}">
@@ -150,6 +151,7 @@ $(function(){
   $("select[name='lesson_place_floor']").on('change', lesson_week_datetime_change);
 });
 function lesson_week_datetime_change(){
+  console.log('lesson_week_datetime_change');
   var lesson_week_datetime = $("input.lesson_week_datetime:checked");
   if(!lesson_week_datetime) return;
   var select_id = lesson_week_datetime.attr("id");
@@ -238,5 +240,27 @@ function select_lesson_week_change(){
   $(".teacher_schedule."+w).show();
   $(".calendar_setting_row").hide();
   $(".calendar_setting_row."+w).show();
+}
+function lesson_week_datetime_validate(){
+  console.log("lesson_week_datetime_validate");
+  var lesson_week_datetime = $("input.lesson_week_datetime:checked");
+  if(!lesson_week_datetime) return;
+
+  console.log("lesson_week_datetime_validate:"+lesson_week_datetime.length);
+  if(lesson_week_datetime.length<1){
+    front.showValidateError($("span.teacher_schedule"), '通常授業の曜日・時間帯を指定してください');
+    return false;
+  }
+
+  var lesson_place_floor = lesson_week_datetime.attr('lesson_place_floor');
+  var place_floor_id = $("*[name='place_floor_id']").val();
+  if(!util.isEmpty(lesson_place_floor)){
+    if(lesson_place_floor != place_floor_id){
+      var lesson_place_floor_name = $('*[name=place_floor_id] option[value='+lesson_place_floor+']').text().trim();
+      front.showValidateError($("*[name='place_floor_id']"), 'この予定は教室を、「'+lesson_place_floor_name+'」にしてください');
+      return false;
+    }
+  }
+  return true;
 }
 </script>
