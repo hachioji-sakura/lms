@@ -298,8 +298,6 @@ class TeacherController extends StudentController
       ];
 
       $result = "success";
-      $email = "";
-      $password = "";
       $form = $request->all();
       if(!empty($param['user'])){
         //ログインユーザーがある場合は、操作させない
@@ -313,19 +311,13 @@ class TeacherController extends StudentController
         );
       }
       $res = $this->_register_update($request);
-      $email = $form['email'];
-      $password = $form['password'];
 
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($email, '登録完了', $form, 'text', 'register',
-        $res['data']->user->get_locale()
-      );
-        if (!Auth::attempt(['email' => $email, 'password' => $password]))
-        {
-          abort(500);
-        }
+        $this->send_mail($create_user->email, '登録完了', $form, 'text', 'register', $res['data']->user->get_locale());
+        Auth::loginUsingId($create_user->user_id);
+
         if($this->domain==="managers"){
           session()->regenerate();
           session()->put('login_role', "manager");

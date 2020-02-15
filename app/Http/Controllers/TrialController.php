@@ -181,10 +181,9 @@ class TrialController extends UserCalendarController
       $ret['item'] = $item->details();
     }
     else {
-      $lists = ['cancel', 'new', 'confirm', 'complete'];
+      $lists = ['cancel', 'new', 'fix', 'confirm', 'complete', 'presence'];
       foreach($lists as $list){
         $_status = $list;
-        if($_status=='cancel') $_status='rest,cancel';
         $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
       }
     }
@@ -575,10 +574,6 @@ class TrialController extends UserCalendarController
       $setting = $trial->to_calendar_setting($form, $form['calendar_id']);
       return $this->api_response(200, '', '', $setting);
     }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
-    if($res["data"]==null){
-      $res = $this->error_response("この設定と競合する設定があり、登録できませんでした。");
-    }
-
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }
 
@@ -661,6 +656,7 @@ class TrialController extends UserCalendarController
        $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
+       $item = Trial::where('id', $id)->first();
        $item->trial_update($form);
        return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -688,6 +684,7 @@ class TrialController extends UserCalendarController
     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
       $trial = Trial::where('id', $id)->first();
       $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+      /*
       foreach($trial->trial_students as $s){
         //受講料delete-insert
         Tuition::where('student_id' , $s->student_id)->delete();
@@ -725,6 +722,7 @@ class TrialController extends UserCalendarController
             }
           }
       }
+      */
       //受講料初期設定
       return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );

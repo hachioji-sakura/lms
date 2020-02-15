@@ -191,16 +191,12 @@ class StudentParentController extends TeacherController
         );
       }
       $res = $this->_register_update($request);
-      $email = $form['email'];
-      $password = $form['password'];
       if($this->is_success_response($res)){
+        $create_user = $res['data']->user->details($this->domain);
         if(empty($param['user'])){
           $form['send_to'] = 'parent';
-          $this->send_mail($email, 'システムへの本登録が完了しました', $form, 'text', 'register');
-          if (!Auth::attempt(['email' => $email, 'password' => $password]))
-          {
-            abort(400, 'ログインできない['.$email.']['.$password.']['.$access_key.']');
-          }
+          $this->send_mail($create_user->email, 'システムへの本登録が完了しました', $form, 'text', 'register');
+          Auth::loginUsingId($create_user->user_id);
         }
         return $this->save_redirect($res, $param, 'システムへの本登録が完了しました', '/home');
       }

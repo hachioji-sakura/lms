@@ -662,9 +662,9 @@ EOT;
           ];
 
           $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
 /*TODO 後まわし
+$teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
+$teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list4, $teacher->user_id, $detail['trial_date4'], $calendars3, "trial_date4"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list5, $teacher->user_id, $detail['trial_date5'], $calendars3, "trial_date5"));
 */
@@ -733,6 +733,7 @@ EOT;
       $_duration = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
       foreach($this->get_calendar() as $calendar){
+        if($calendar->is_enable_status($calendar->status)==false) continue;
         //この時間範囲にて体験授業がすでに登録されている場合は、無効
         if($calendar->is_conflict($_start, $_end)){
           $status = "trial_calendar_conflict";
