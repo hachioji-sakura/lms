@@ -75,6 +75,7 @@
             @endif
             <ul id="month_work_list" class="mailbox-attachments clearfix row">
               @foreach($calendars as $calendar)
+              @if($calendar->work==11) @continue @endif
               <?php $calendar = $calendar->details(1); ?>
                 @if($__date != $calendar["date"])
                 <li class="col-12 p-0" accesskey="" target="">
@@ -94,7 +95,11 @@
                   </div>
                   <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
                 @endif
-                <div class="row pl-3 p-1 border-bottom calendar_{{$calendar['status']}}">
+                <div class="row pl-3 p-1 border-bottom
+                @if($calendar->is_rest_status($calendar->status)==true)
+                calendar_rest
+                @endif
+                ">
                   <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
                   <div class="col-12 col-lg-3 col-md-3">
                     <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
@@ -112,7 +117,10 @@
                     </a>
                   </div>
                   <div class="col-12 col-lg-5 col-md-5">
+                    @component('calendars.forms.label_students', ['item' => $calendar, 'user'=>$user, 'set_br' => false , 'status_visible'=> false]) @endcomponent
+{{-- componentにより共通化
                     @foreach($calendar->members as $member)
+                      @if(!isset($member->user)) ERROR!!({{$member->user_id}}) @continue @endif
                       @if($member->user->details()->role==="student")
                         @if($member->status=="rest")
                         <span class="mr-2 text-danger">
@@ -127,6 +135,7 @@
                         @endif
                       @endif
                     @endforeach
+--}}
                     @if($calendar->is_management()==false)
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">

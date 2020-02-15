@@ -64,7 +64,7 @@
       <label for="member_delete" class="w-100">
         参加生徒削除
       </label>
-      <table class="table table-striped w-80">
+      <table class="table w-80">
         <tr class="bg-gray">
           <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>{{__('labels.students')}}</th>
           <th class="p-1 pl-2 text-sm"><i class="fa fa-trash mr-1"></i>

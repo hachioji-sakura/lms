@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Student;
@@ -70,6 +74,19 @@ class UserCalendarController extends MilestoneController
         ],
         'work_name' => [
           'label' => __('labels.schedule_details'),
+          'size' => 6,
+        ],
+        'student_name' => [
+          'label' => __('labels.students'),
+          'size' => 12,
+        ],
+      ];
+    }
+    else if($item->work==5 || $item->work==11){
+      //授業予定
+      $ret = [
+        'teaching_name' => [
+          'label' => __('labels.lesson_name'),
           'size' => 6,
         ],
         'student_name' => [
@@ -738,6 +755,7 @@ class UserCalendarController extends MilestoneController
         }
       }
       $param = $this->page_access_check($request, $id);
+      $param['ask'] = $this->get_ask_data($request, $param, $status);
       if($request->has('user')){
         if($status=='fix' && $param['item']->status=='fix'){
           return redirect('/calendars/'.$param['item']->id.'?user='.$request->get('user'));
@@ -745,7 +763,6 @@ class UserCalendarController extends MilestoneController
         return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
       }
 
-      $param['ask'] = $this->get_ask_data($request, $param, $status);
       return view($this->domain.'.'.$status, [])->with($param);
     }
     private function get_ask_data(Request $request, $param, $status){
@@ -836,11 +853,11 @@ class UserCalendarController extends MilestoneController
           abort(403, '有効期限が切れています(2)');
         }
       }
-      $param = $this->get_param($request, $id);
-      if(!isset($param['item'])) abort(404, 'ページがみつかりません(102)');
+      $calendar = UserCalendar::where('id', $id)->first();
+      if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
         $is_find = false;
-        foreach($param['item']->get_access_member($request->get('user')) as $member){
+        foreach($calendar->get_access_member($request->get('user')) as $member){
           if($member->user_id == $request->get('user')){
             //指定したuserがcalendar.memberに存在する
             $is_find = true;
@@ -851,6 +868,9 @@ class UserCalendarController extends MilestoneController
           abort(404, 'ページがみつかりません(3)');
         }
       }
+
+      Auth::loginUsingId($request->has('user'));
+      $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
       $param['action'] = '';
       return $param;
@@ -866,7 +886,7 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $res = $this->transaction($request, function() use ($param){
         if($param['item']->status=='new'){
-          $this->new_mail($param);
+          $param['item']->register_mail($param);
         }
         else {
           foreach($param['item']->members as $member){
@@ -1064,14 +1084,6 @@ class UserCalendarController extends MilestoneController
 
       return $res;
     }
-    private function new_mail($param){
-      return $param['item']->teacher_mail('授業予定のご連絡', $param, 'text', 'calendar_new');
-
-    }
-    private function delete_mail($param){
-      return $param['item']->teacher_mail('授業予定削除', $param, 'text', 'calendar_delete');
-    }
-
     /**
      * 予定確認メール送信
      * カレンダーの対象者に確認メールを送信する
@@ -1345,10 +1357,6 @@ class UserCalendarController extends MilestoneController
         }
         $calendar = $calendar->details();
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
-        $param = $this->get_param($request, $calendar->id);
-        if($form['send_mail'] == "teacher"){
-          $this->new_mail($param);
-        }
         return $this->api_response(200, '', '', $calendar);
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
@@ -1364,6 +1372,7 @@ class UserCalendarController extends MilestoneController
      */
     public function _delete(Request $request, $id)
     {
+      $res = $this->transaction($request, function() use ($request, $id){
         $param = $this->get_param($request, $id);
         $user = $this->login_details($request);
         $calendar = $param["item"];
@@ -1380,7 +1389,6 @@ class UserCalendarController extends MilestoneController
           }
         }
         return $this->api_response(200, '', '', $calendar);
-        $res = $this->transaction($request, function() use ($request, $id){
       }, 'カレンダー削除', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }

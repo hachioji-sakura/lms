@@ -99,7 +99,11 @@ Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_settin
 Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting_update');
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
-Route::put('trials/{id}/admission','TrialController@admission_submit');
+Route::get('trials/{id}/ask_candidate','TrialController@ask_candidate');
+Route::post('trials/{id}/ask_candidate','TrialController@ask_candidate_mail_send');
+Route::get('trials/{id}/add_candidate_date','TrialController@add_candidate_date');
+Route::post('trials/{id}/add_candidate_date','TrialController@add_candidat_send');
+
 Route::get('trials/{id}/commit','TrialController@admission');
 
 /*

@@ -4,7 +4,7 @@
       {{$title}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <table class="table table-striped" id="week_table">
+    <table class="table" id="week_table">
     <tr class="bg-gray">
       <th class="p-1 text-center">時間帯 / 曜日</th>
       @foreach($attributes['lesson_week'] as $index => $name)
@@ -75,7 +75,6 @@
       if( $("input.week_time[type='checkbox']", $(".carousel-item.active")).length > 0){
         $("input.week_time[type='checkbox'][value!='disabled']:checked", $(".carousel-item.active")).each(function(index, value){
           var val = $(this).val();
-          console.log(val);
           if(val!='disabled'){
             _is_scceuss = true;
           }

@@ -20,7 +20,7 @@
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>
-          <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
+          <small title="id={{$item["id"]}},work={{$item["work"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
         @elseif($key==="place")
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
@@ -30,39 +30,7 @@
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>
-          @foreach($item["students"] as $member)
-            <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
-              @if($member->status=='new')
-              <i class="fa fa-question-circle mr-1"></i>
-              @elseif($member->status=='confirm')
-              <i class="fa fa-question-circle mr-1"></i>
-              @elseif($member->status=='fix')
-              <i class="fa fa-clock mr-1"></i>
-              @elseif($member->status=='cancel')
-              <i class="fa fa-ban mr-1"></i>
-              @elseif($member->status=='presence')
-              <i class="fa fa-check-circle mr-1"></i>
-              @elseif($member->status=='absence')
-              <i class="fa fa-calendar-times mr-1"></i>
-              @elseif($member->status=='rest' || $member->status=='lecture_cancel')
-              <i class="fa fa-user-times mr-1" title="{{$member->exchange_limit_date}}"></i>
-              @endif
-              {{$member->user->details('students')->name}}
-              @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->rest_result())))
-              ({{$member->rest_result()}})
-              @else
-              <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
-              @endif
-            </a>
-            {{--
-            @if($action=='delete' && $item->is_group()==true && $member->status=='new')
-            <a href="javascript:void(0);" onClick="member_delete({{$member->calendar_id}}, {{$member->id}});" class="ml-2 text-dark">
-              <i class="fa fa-times"></i>
-            </a>
-            @endif
-            --}}
-            <br>
-          @endforeach
+          @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
         @elseif(isset($item[$key]) && gettype($item[$key])=='array')
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
@@ -116,7 +84,7 @@
         <label for="member_delete" class="w-100">
           参加生徒削除
         </label>
-        <table class="table table-striped w-80">
+        <table class="table w-80">
           <tr class="bg-gray">
             <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>{{__('labels.students')}}</th>
             <th class="p-1 pl-2 text-sm"><i class="fa fa-trash mr-1"></i>
