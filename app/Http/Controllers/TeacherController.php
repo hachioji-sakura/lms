@@ -56,6 +56,12 @@ class TeacherController extends StudentController
         $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $asks["count"];
       }
+      $lists = ['confirm_list', 'fix_list'];
+      foreach($lists as $list){
+        $calendar_settings = $this->get_calendar_settings(["list" => $list], $ret['item']->user_id);
+        $ret[$list.'_setting_count'] = $calendar_settings["count"];
+      }
+
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -488,8 +494,18 @@ class TeacherController extends StudentController
      */
     public function get_charge_students(Request $request , $id){
       $param = $this->get_param($request, $id);
-      $items = $param['item']->get_charge_students();
-
+      if($this->is_manager($param['user']->role)){
+        $items = [];
+        $students = Student::findStatuses(['regular','trial'])->get();
+        foreach($students as $student){
+          $detail = $student->user->details("students");
+          $detail['grade'] = $detail->tag_value('grade');
+          $items[$detail->id] = $detail;
+        }
+      }
+      else {
+        $items = $param['item']->get_charge_students();
+      }
       return $this->api_response(200, "", "", $items);
     }
 }
