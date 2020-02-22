@@ -25,8 +25,11 @@
 {{-- レッスンが１つしかない --}}
 <input type="hidden" name="lesson" value="{{$teacher->get_tag('lesson')['value']}}" alt="{{$teacher->get_tag('lesson')['name']}}">
 @endif
+@component('students.forms.select_lesson_script', []) @endcomponent
+
 <script>
 $(function(){
+
   lesson_change();
 });
 function lesson_change(){
@@ -48,5 +51,6 @@ function lesson_change(){
   }
   $(".lesson_selected").collapse('show');
   course_type_change();
+  course_minutes_filter('lesson')
 }
 </script>

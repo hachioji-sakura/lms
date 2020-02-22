@@ -134,8 +134,25 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/{{$domain}}/{{$item->id}}/calendar_settings">
-          <i class="fa fa-user-clock nav-icon"></i>{{__('labels.regular_schedule_list')}}
+        <a href="/{{$domain}}/{{$item->id}}/calendar_settings?list=fix_list" class="nav-link @if($view=="calendar_settings" && $list=="fix_list") active @endif">
+          <i class="fa fa-user-clock nav-icon"></i>
+          <p>
+            {{__('labels.regular_schedule_list')}}
+            @if($fix_list_setting_count > 0)
+            <span class="badge badge-primary right">{{$fix_list_setting_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a href="/{{$domain}}/{{$item->id}}/calendar_settings?list=confirm_list" class="nav-link @if($view=="calendar_settings" && $list=="confirm_list") active @endif">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          <p>
+            通常授業の確認
+            @if($confirm_list_setting_count > 0)
+            <span class="badge badge-warning right">{{$confirm_list_setting_count}}</span>
+            @endif
+          </p>
         </a>
       </li>
       @if($user->role==="manager")

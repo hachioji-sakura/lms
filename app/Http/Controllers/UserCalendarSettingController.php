@@ -30,6 +30,10 @@ class UserCalendarSettingController extends UserCalendarController
         'title' => [
           'label' => __('labels.title'),
         ],
+        'status_name' => [
+          'label' => __('labels.status'),
+          'size' => 6,
+        ],
         'repeat_setting_name' => [
           'label' => __('labels.repeat'),
           'size' => 6,
@@ -322,9 +326,12 @@ class UserCalendarSettingController extends UserCalendarController
       if(!isset($user)){
         abort(403, 'このページにはアクセスできません(2)');
       }
+      /*
+      通常授業も生徒と確認を取り合うので、アクセスを可能にする
       if($this->is_manager($user->role)===false && $this->is_teacher($user->role)===false){
         abort(403, 'このページにはアクセスできません(3)');
       }
+      */
       $ret = $this->get_common_param($request);
       if($request->has('trial_id')){
         $ret['trial_id'] = $request->get('trial_id');
@@ -692,5 +699,28 @@ class UserCalendarSettingController extends UserCalendarController
         return $this->error_response('api error');
       }
       return $res;
+    }
+    public function page_access_check(Request $request, $id){
+      $this->user_key_check($request);
+      $setting = UserCalendarSetting::where('id', $id)->first();
+      if(!isset($setting)) abort(404, 'ページがみつかりません(102)');
+      if($request->has('user') && $request->has('key')){
+        $is_find = false;
+        foreach($setting->members as $member){
+          if($member->user_id == $request->get('user')){
+            //指定したuserがcalendar.memberに存在する
+            $is_find = true;
+            break;
+          }
+        }
+        if($is_find === false){
+          abort(404, 'ページがみつかりません(11)');
+        }
+      }
+      $this->user_login($request->get('user'));
+      $param = $this->get_param($request, $id);
+      $param['fields'] = $this->show_fields($param['item']);
+      $param['action'] = '';
+      return $param;
     }
 }

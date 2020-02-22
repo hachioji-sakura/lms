@@ -694,6 +694,7 @@ $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_l
       'remark' => '',
       'lesson' => $calendar->get_tag('lesson')->tag_value,
       'create_user_id' => $form['create_user_id'],
+      'send_mail' => 'teacher',
     ];
     $update_fields = [
       'start_hours', 'start_minutes',

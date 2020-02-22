@@ -1,7 +1,7 @@
 <?php
 $item = $item->details(1);
  ?>
- @if($item->is_management()==false)
+@if($item->is_teaching()==true)
 ■{{$item->teaching_type_name()}}
 @else
 ■{{$item['work_name']}}
@@ -14,7 +14,7 @@ $item = $item->details(1);
 --------------------------------------------
 （{{__('labels.details')}}）
 {{__('labels.teachers')}}：{{$item['teacher_name']}}
-@if($item->is_management()==false)
+@if($item->is_teaching()==true)
 {{__('labels.lesson')}}：{{$item['lesson']}}
 {{__('labels.lesson_type')}}：{{$item['course']}}
 {{__('labels.subject')}}：{{implode(',', $item['subject'])}}

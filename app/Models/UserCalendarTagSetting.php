@@ -33,6 +33,9 @@ class UserCalendarTagSetting extends UserTag
   public static function setTags($user_calendar_setting_id, $tag_key, $tag_values, $create_user_id){
     UserCalendarTagSetting::where('user_calendar_setting_id', $user_calendar_setting_id)
       ->where('tag_key' , $tag_key)->delete();
+    if(gettype($tag_values) != "array"){
+      return null;
+    }
     foreach($tag_values as $tag_value){
       $item = UserCalendarTagSetting::create([
         'user_calendar_setting_id' => $user_calendar_setting_id,

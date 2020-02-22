@@ -26,6 +26,24 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public $register_mail_template = 'calendar_new';
+  public $delete_mail_template = 'calendar_delete';
+  public function register_mail_title(){
+    $trial = "";
+    if($this->trial_id > 0){
+      $trial ='['. __('labels.trial_lesson').']';
+    }
+    $title = __('messages.info_calendar_add', ['trial' => $trial]);
+    return $title;
+  }
+  public function delete_mail_title(){
+    $trial = "";
+    if($this->trial_id > 0){
+      $trial ='['. __('labels.trial_lesson').']';
+    }
+    $title = __('messages.info_calendar_delete', ['trial' => $trial]);
+    return $title;
+  }
   public function user(){
     return $this->belongsTo('App\User');
   }
@@ -723,18 +741,24 @@ EOT;
     ]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
-      $calendar->register_mail([], $form['create_user_id']);
+      $is_sendmail = true;
       //新規登録時に変更メールを送らない
       unset($form['send_mail']);
     }
-    $calendar = $calendar->change($form);
+    $calendar->change($form);
 
+    if($is_sendmail == true){
+      $calendar->register_mail([], $form['create_user_id'], $form['create_user_id']);
+    }
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id){
-    $this->delete_mail([], $login_user_id);
+    if($this->status!='new'){
+      $this->delete_mail([], $login_user_id);
+    }
     //事務システム側を先に削除
     $this->office_system_api("DELETE");
     UserCalendarMember::where('calendar_id', $this->id)->delete();
@@ -1151,27 +1175,19 @@ EOT;
   }
 
   public function register_mail($param=[], $login_user_id){
-    $trial = "";
-    if($this->trial_id > 0){
-      $trial = __('labels.trial_lesson');
-    }
-    $title = __('messages.info_calendar_add', ['trial' => $trial]);
+    $title = $this->register_mail_title();
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
     $u = User::where('id', $login_user_id)->first();
     $param['login_user'] = $u->details();
-    return $this->teacher_mail($title, $param, 'text', 'calendar_new');
+    return $this->teacher_mail($title, $param, 'text', $this->register_mail_template);
   }
   public function delete_mail($param=[], $login_user_id){
-    $trial = "";
-    if($this->trial_id > 0){
-      $trial = __('labels.trial_lesson');
-    }
-    $title = __('messages.info_calendar_delete', ['trial' => $trial]);
+    $title = $this->delete_mail_title();
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
     $u = User::where('id', $login_user_id)->first();
     $param['login_user'] = $u->details();
-    return $this->teacher_mail($title, $param, 'text', 'calendar_delete');
+    return $this->teacher_mail($title, $param, 'text', $this->delete_mail_template);
   }
 }

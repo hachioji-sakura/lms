@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Student;
@@ -736,7 +732,7 @@ class UserCalendarController extends MilestoneController
         $form['action'] = '';
       }
       if($request->has('user')){
-        return view($this->domain.'.simplepage', ["subpage"=>'' ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>'' ])->with($param);
       }
       return view($this->domain.'.page', $form)->with($param);
     }
@@ -760,7 +756,7 @@ class UserCalendarController extends MilestoneController
         if($status=='fix' && $param['item']->status=='fix'){
           return redirect('/calendars/'.$param['item']->id.'?user='.$request->get('user'));
         }
-        return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>$status ])->with($param);
       }
 
       return view($this->domain.'.'.$status, [])->with($param);
@@ -844,15 +840,8 @@ class UserCalendarController extends MilestoneController
       $param['ask'] = $ask;
       return view($this->domain.'.teacher_change', [])->with($param);
     }
-    private function page_access_check(Request $request, $id){
-      if($request->has('user') && !$request->has('key')){
-          abort(404, 'ページがみつかりません(1)');
-      }
-      if($request->has('user') && $request->has('key')){
-        if(!$this->is_enable_token($request->get('key'))){
-          abort(403, '有効期限が切れています(2)');
-        }
-      }
+    public function page_access_check(Request $request, $id){
+      $this->user_key_check($request);
       $calendar = UserCalendar::where('id', $id)->first();
       if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
@@ -865,15 +854,24 @@ class UserCalendarController extends MilestoneController
           }
         }
         if($is_find === false){
-          abort(404, 'ページがみつかりません(3)');
+          abort(404, 'ページがみつかりません(99)');
         }
       }
-
-      Auth::loginUsingId($request->has('user'));
+      $this->user_login($request->get('user'));
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
       $param['action'] = '';
       return $param;
+    }
+    public function user_key_check(Request $request){
+      if($request->has('user') && !$request->has('key')){
+          abort(404, 'ページがみつかりません(1)');
+      }
+      if($request->has('user') && $request->has('key')){
+        if(!$this->is_enable_token($request->get('key'))){
+          abort(403, '有効期限が切れています(2)');
+        }
+      }
     }
     /**
      * カレンダー通知
@@ -886,7 +884,7 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $res = $this->transaction($request, function() use ($param){
         if($param['item']->status=='new'){
-          $param['item']->register_mail($param);
+          $param['item']->register_mail($param, $param['user']->user_id);
         }
         else {
           foreach($param['item']->members as $member){
