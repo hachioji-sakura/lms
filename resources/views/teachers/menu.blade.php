@@ -77,6 +77,12 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
+          <i class="fa fa-calendar-plus nav-icon"></i>
+          {{__('labels.schedule_add')}}
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
           <i class="fa fa-history nav-icon "></i>
           {{__('labels.schedule_history')}}
@@ -86,53 +92,13 @@
   </li>
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
-    <i class="nav-icon fa fa-cogs"></i>
+    <i class="nav-icon fa fa-business-time"></i>
     <p>
-      {{__('labels.other')}}
+      {{__('labels.regular_schedule_setting')}}
       <i class="right fa fa-angle-left"></i>
     </p>
     </a>
     <ul class="nav nav-treeview pl-2">
-      {{--
-      <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
-          <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
-        </a>
-      </li>
-      --}}
-      <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/ask?list=rest_cancel" class="nav-link @if($view=="ask" && $list=="rest_cancel") active @endif">
-          <i class="fa fa-envelope-square nav-icon"></i>
-          <p>
-            {{__('labels.schedule_rest_cancel')}}
-            @if($rest_cancel_count > 0)
-            <span class="badge badge-danger right">{{$rest_cancel_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
-          <i class="fa fa-envelope-square nav-icon"></i>
-          <p>
-            {{__('labels.ask_lecture_cancel')}}
-            @if($lecture_cancel_count > 0)
-            <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
-          <i class="fa fa-calendar-plus nav-icon"></i>
-          {{__('labels.schedule_add')}}
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.teacher_setting')}}">
-          <i class="fa fa-user-edit nav-icon"></i>{{__('labels.teacher_setting')}}
-        </a>
-      </li>
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/calendar_settings?list=fix_list" class="nav-link @if($view=="calendar_settings" && $list=="fix_list") active @endif">
           <i class="fa fa-user-clock nav-icon"></i>
@@ -148,11 +114,60 @@
         <a href="/{{$domain}}/{{$item->id}}/calendar_settings?list=confirm_list" class="nav-link @if($view=="calendar_settings" && $list=="confirm_list") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>
           <p>
-            通常授業の確認
+            {{__('labels.regular_schedule_confirm')}}
             @if($confirm_list_setting_count > 0)
             <span class="badge badge-warning right">{{$confirm_list_setting_count}}</span>
             @endif
           </p>
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-envelope"></i>
+    <p>
+      {{__('labels.asks')}}
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=rest_cancel" class="nav-link @if($view=="ask" && $list=="rest_cancel") active @endif">
+          <i class="fa fa-calendar-check nav-icon"></i>
+          <p>
+            {{__('labels.schedule_rest_cancel')}}
+            @if($rest_cancel_count > 0)
+            <span class="badge badge-danger right">{{$rest_cancel_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=lecture_cancel" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
+          <i class="fa fa-calendar-times nav-icon"></i>
+          <p>
+            {{__('labels.ask_lecture_cancel')}}
+            @if($lecture_cancel_count > 0)
+            <span class="badge badge-danger right">{{$lecture_cancel_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-cogs"></i>
+    <p>
+      {{__('labels.other')}}
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.teacher_setting')}}">
+          <i class="fa fa-user-cog nav-icon"></i>{{__('labels.teacher_setting')}}
         </a>
       </li>
       @if($user->role==="manager")
