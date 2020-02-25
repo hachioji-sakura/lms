@@ -59,7 +59,9 @@ Route::put('announcements/{id}/publiced','AnnouncementController@publiced');
 Route::put('announcements/{id}/checked','AnnouncementController@checked');
 Route::resource('announcements','AnnouncementController');
 
-
+Route::put('calendar_settings/{id}/remind','UserCalendarSettingController@remind');
+Route::get('calendar_settings/{id}/status_update/{status}','UserCalendarSettingController@status_update_page');
+Route::put('calendar_settings/{id}/status_update/{status}','UserCalendarSettingController@status_update');
 Route::get('calendar_settings/all_to_calendar','UserCalendarSettingController@all_to_calendar_page');
 Route::get('calendar_settings/to_calendar_data','UserCalendarSettingController@to_calendar_data');
 Route::post('calendar_settings/to_calendar','UserCalendarSettingController@to_calendar');

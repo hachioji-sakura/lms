@@ -9,11 +9,9 @@ use App\Models\GeneralAttribute;
 use App\Models\Place;
 use App\Models\PlaceFloor;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\RegistersUsers;use Illuminate\Http\Request;
 class UserController extends Controller
 {
   public $domain = "users";
@@ -390,5 +388,9 @@ class UserController extends Controller
       $user->set_password($password);
       return $this->api_response(200, '', '', $user);
     }, 'パスワード設定', __FILE__, __FUNCTION__, __LINE__ );
+  }
+
+  public function user_login($user_id){
+    Auth::loginUsingId($user_id);
   }
 }

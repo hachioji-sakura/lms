@@ -34,7 +34,7 @@
             {{__('labels.send_button')}}
           </button>
       </div>
-      <div class="col-12 col-lg-12 col-md-12 mb-1">
+      <div class="col-12 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
               {{__('labels.close_button')}}
           </button>

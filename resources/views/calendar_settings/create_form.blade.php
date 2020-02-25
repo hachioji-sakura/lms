@@ -73,5 +73,6 @@
     <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
     <div class="col-6 p-3"><span id="{{$key}}"></span></div>
     @endforeach
+    @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
 </div>
 @endsection

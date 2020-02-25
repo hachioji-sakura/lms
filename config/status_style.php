@@ -17,5 +17,6 @@ return array(
   'unsubscribe' => 'secondary',
   'disabled' => 'secondary',
   'enabled' => 'success',
+  'closed' => 'secondary',
   );
 ?>

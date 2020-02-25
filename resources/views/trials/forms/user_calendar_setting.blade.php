@@ -34,6 +34,11 @@
         </span>
       </div>
       <div class="col-12 col-md-2 my-1">
+        @if($setting->status=='new')
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/confirm" page_title="確認連絡" role="button" class="btn btn-sm btn-warning float-left mx-1 text-center">
+          <i class="fa fa-envelope"></i>
+        </a>
+        @endif
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="編集" role="button" class="btn btn-sm btn-success float-left mx-1 text-center">
           <i class="fa fa-edit"></i>
         </a>

@@ -25,10 +25,31 @@ class UserCalendarSettingController extends UserCalendarController
     public function model(){
       return UserCalendarSetting::query();
     }
+    public function page_title($item, $page_status){
+      if($item->is_teaching()==true){
+        $title = "通常授業";
+      }
+      else {
+        $title = $item->work()."（繰り返し予定設定）";
+      }
+
+      switch($page_status){
+        case "confirm":
+          $title.="のご確認";
+          break;
+        default:
+          $title.="詳細";
+      }
+      return $title;
+    }
     public function show_fields($item){
       $base_ret = [
         'title' => [
           'label' => __('labels.title'),
+        ],
+        'status_name' => [
+          'label' => __('labels.status'),
+          'size' => 6,
         ],
         'repeat_setting_name' => [
           'label' => __('labels.repeat'),
@@ -78,16 +99,8 @@ class UserCalendarSettingController extends UserCalendarController
             'label' => __('labels.subject'),
             'size' => 12,
           ],
-          'enable_date' => [
-            'label' => '設定有効期間',
-            'size' => 12,
-          ],
         ];
       }
-      $ret['remark'] = [
-        'label' => __('labels.remark'),
-        'size' => 12,
-      ];
       $ret = array_merge($base_ret, $ret);
       return $ret;
     }
@@ -319,24 +332,47 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function get_param(Request $request, $id=null){
       $user = $this->login_details($request);
-      if(!isset($user)){
-        abort(403, 'このページにはアクセスできません(2)');
-      }
+      /*
+      通常授業も生徒と確認を取り合うので、アクセスを可能にする
       if($this->is_manager($user->role)===false && $this->is_teacher($user->role)===false){
         abort(403, 'このページにはアクセスできません(3)');
       }
+      */
       $ret = $this->get_common_param($request);
       if($request->has('trial_id')){
         $ret['trial_id'] = $request->get('trial_id');
       }
 
       if(is_numeric($id) && $id > 0){
+        $user_id = -1;
+        if($request->has('user')){
+          $user_id = $request->get('user');
+        }
+
         $item = $this->model()->where('id',$id)->first();
         if(!isset($item)){
           abort(404, 'ページがみつかりません(1)');
         }
         if($this->is_teacher($user->role)===true && $user->user_id != $item->user_id){
           abort(403, 'このページにはアクセスできません(4)');
+        }
+        if($user_id>0){
+          $user = User::where('id', $user_id)->first();
+          if(!isset($user)){
+            abort(403, '有効期限が切れています(4)');
+          }
+          $user = $user->details();
+          $ret['user'] = $user;
+        }
+        if(isset($user)){
+          if($this->is_manager($user->role)!=true){
+            if($item->is_access($user->user_id)!=true){
+              abort(403, 'このページにはアクセスできません(1)'.$user->role);
+            }
+          }
+        }
+        else {
+          abort(403, 'このページにはアクセスできません(2)');
         }
 
         $ret['item'] = $item->details($user->user_id);
@@ -361,6 +397,23 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
+      if(!$this->is_student_or_parent($param['user']->role)){
+        $param['fields']['enable_date'] = [
+          'label' => __('labels.setting_term'),
+          'size' => 12,
+        ];
+        $param['fields']['remark'] = [
+          'label' => __('labels.remark'),
+          'size' => 12,
+        ];
+      }
+      if(!isset($form['action'])){
+        $form['action'] = '';
+      }
+      $page_title = $this->page_title($param['item'], "");
+      if($request->has('user')){
+        return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
+      }
       return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])->with($param);
@@ -375,7 +428,16 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-
+      if(!$this->is_student_or_parent($param['user']->role)){
+        $param['fields']['enable_date'] = [
+          'label' => __('labels.setting_term'),
+          'size' => 12,
+        ];
+        $param['fields']['remark'] = [
+          'label' => __('labels.remark'),
+          'size' => 12,
+        ];
+      }
       return view($this->domain.'.to_calendar', [
         'action' => $request->get('action')
       ])->with($param);
@@ -414,7 +476,16 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-
+      if(!$this->is_student_or_parent($param['user']->role)){
+        $param['fields']['enable_date'] = [
+          'label' => __('labels.setting_term'),
+          'size' => 12,
+        ];
+        $param['fields']['remark'] = [
+          'label' => __('labels.remark'),
+          'size' => 12,
+        ];
+      }
       return view($this->domain.'.delete_calendar', [
         'action' => $request->get('action')
       ])->with($param);
@@ -692,5 +763,38 @@ class UserCalendarSettingController extends UserCalendarController
         return $this->error_response('api error');
       }
       return $res;
+    }
+    public function page_access_check(Request $request, $id){
+      $this->user_key_check($request);
+      $setting = UserCalendarSetting::where('id', $id)->first();
+      if(!isset($setting)) abort(404, 'ページがみつかりません(102)');
+      if($request->has('user') && $request->has('key')){
+        $is_find = false;
+        foreach($setting->members as $member){
+          if($member->user_id == $request->get('user')){
+            //指定したuserがcalendar.memberに存在する
+            $is_find = true;
+            break;
+          }
+        }
+        if($is_find === false){
+          abort(404, 'ページがみつかりません(11)');
+        }
+      }
+      $this->user_login($request->get('user'));
+      $param = $this->get_param($request, $id);
+      $param['fields'] = $this->show_fields($param['item']);
+      if(!$this->is_student_or_parent($param['user']->role)){
+        $param['fields']['enable_date'] = [
+          'label' => __('labels.setting_term'),
+          'size' => 12,
+        ];
+        $param['fields']['remark'] = [
+          'label' => __('labels.remark'),
+          'size' => 12,
+        ];
+      }
+      $param['action'] = '';
+      return $param;
     }
 }

@@ -1,16 +1,15 @@
-@component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
+@component('calendars_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
   @if($user->role=="parent" || $user->role=="student")
     {!!nl2br(__('messages.confirm_calendar_fix'))!!}
-  @endif
-  @if($user->role==="manager" || $user->role==="teacher")
+  @elseif($user->role==="manager" || $user->role==="teacher")
   <div class="col-12 bg-danger p-2 mb-2">
     <i class="fa fa-exclamation-triangle mr-1"></i>生徒の授業予定を確定します。
   </div>
   @endif
   @endslot
   @slot('forms')
-  <form method="POST" action="/calendars/{{$item['id']}}" id="_form">
+  <form method="POST" action="/calendar_settings/{{$item['id']}}" id="_form">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     @method('PUT')

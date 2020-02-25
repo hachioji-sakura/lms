@@ -393,4 +393,87 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     return $this->api_response(200, '', '');
   }
+  //TODO : status_updateをcalendar_setting向けに最適帰化
+  public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
+    $is_update = false;
+    $login_user = User::where('id', $login_user_id)->first();
+    $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
+    $param = [];
+
+    if(!isset($login_user)){
+      return false;
+    }
+    switch($status){
+      case "remind":
+        $is_send_teacher_mail = false;
+        $is_send_mail = true;
+        //リマインド操作＝事務 or 講師
+        if($this->setting->status!='confirm'){
+          $is_send_mail = false;
+        }
+        $status = $this->setting->status;
+        $param['token'] = $this->access_key;
+        if(empty($param['token'])){
+          $this->update(['access_key' => $update_form['access_key']]);
+          $param['token'] = $update_form['access_key'];
+        }
+        break;
+      case "confirm":
+        if($this->status=='new' || $this->status=='confirm'){
+          $is_update = true;
+          $is_send_teacher_mail = false;
+        }
+        break;
+      case "fix":
+        if($this->setting->status=='confirm' || $this->setting->status=='new'){
+          $is_update = true;
+        }
+        break;
+      case "cancel":
+        if($this->status=='confirm' || $this->status=='fix'){
+          $is_update = true;
+        }
+        break;
+    }
+    if($is_update){
+      $this->update($update_form);
+      $param['token'] = $update_form['access_key'];
+      $res = $this->_office_system_api('PUT');
+      switch($status){
+        case "confirm":
+          $this->setting->status_to_confirm($remark, $this->user_id);
+          break;
+        case "fix":
+          $this->setting->status_to_fix($remark, $this->user_id);
+          break;
+        case "cancel":
+          $this->setting->status_to_cancel($remark, $this->user_id);
+          break;
+      }
+    }
+
+    \Log::warning("UserCalendarMemberSetting::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
+    //ステータス別のメッセージ文言取得
+    $title = __('messages.mail_title_calendar_setting_'.$status);
+    $type = 'text';
+    $template = 'calendar_setting_'.$status;
+
+    $u = $this->user->details();
+    $param['login_user'] = $login_user->details();
+    $param['user'] = $u;
+    $param['user_name'] = $u->name();
+    $param['item'] = $this->setting->details($this->user_id);
+    $param['send_to'] = $u->role;
+
+    if($is_send_mail){
+      //このユーザーにメール送信
+      $this->user->send_mail($title, $param, $type, $template);
+    }
+    if($is_send_teacher_mail==true && $u->role!="teacher"){
+      //※このmemberが講師の場合はすでに送信しているため、送らない
+      if(!($is_send_mail && $this->setting->user_id == $this->user_id)){
+        $this->setting->teacher_mail($title, $param, $type, $template);
+      }
+    }
+  }
 }

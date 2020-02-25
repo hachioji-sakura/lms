@@ -14,11 +14,20 @@ class UserCalendarSetting extends UserCalendar
   use Common;
   protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
+  public $register_mail_template = 'calendar_setting_new';
+  public $delete_mail_template = 'calendar_setting_delete';
   public static $rules = array(
       'user_id' => 'required',
       'from_time_slot' => 'required',
       'to_time_slot' => 'required'
   );
+  public function register_mail_title(){
+    return __('messages.info_calendar_setting_add');
+  }
+  public function delete_mail_title(){
+    return __('messages.info_calendar_setting_delete');
+  }
+
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
@@ -55,8 +64,7 @@ EOT;
   }
   public function scopeEnable($query){
     $where_raw = <<<EOT
-      lms.user_calendar_settings.status in('fix', 'enabled')
-      AND (
+      (
        (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
        AND
        (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
@@ -74,11 +82,14 @@ EOT;
     return $query->orderBy('from_time_slot', 'asc');
   }
   public function lesson_week(){
+    if(app()->getLocale()=='en') return ucfirst($this->lesson_week);
     $ret =  $this->get_attribute_name('lesson_week', $this->lesson_week);
-    if(app()->getLocale()=='en') return $ret;
     return $ret.'曜';
   }
   public function schedule_method(){
+    if(app()->getLocale()=='en'){
+      return "(Every ".ucfirst($this->schedule_method).")";
+    }
     return $this->get_attribute_name('schedule_method', $this->schedule_method);
   }
   public function week_setting(){
@@ -88,6 +99,10 @@ EOT;
     */
     $ret = "";
     if($this->lesson_week_count > 0){
+      if(app()->getLocale()=='en') {
+        $count_en = ['First', 'Second', 'Third', 'Forth', 'Fifth'];
+        return $count_en[$this->lesson_week_count].' '.$this->lesson_week();
+      }
       $ret .= '第'.$this->lesson_week_count;
     }
     $ret.=$this->lesson_week();
@@ -108,7 +123,17 @@ EOT;
     }
     return $status_name;
   }
-
+  public function enable_name(){
+    $enable_status = "disabled";
+    if($this->status=='fix'){
+      if($this->is_enable()==true) $enable_status = "enabled";
+    }
+    if(app()->getLocale()=='en') return $enable_status;
+    if(isset(config('attribute.setting_status')[$enable_status])){
+      $enable_status = config('attribute.setting_status')[$enable_status];
+    }
+    return $enable_status;
+  }
   public function enable_date(){
     $start_date = '';
     $end_date = '';
@@ -120,6 +145,7 @@ EOT;
 
   public function details($user_id=0){
     $item = $this;
+    /*
     if($this->is_enable()){
       if($this->status!='enabled'){
         $this->update(['status' => 'enabled']);
@@ -130,6 +156,7 @@ EOT;
         $this->update(['status' => 'disabled']);
       }
     }
+    */
     $base_date = '2000-01-01 ';
 
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
@@ -249,11 +276,28 @@ EOT;
       'create_user_id' => $form['create_user_id'],
     ]);
     $calendar_setting->memberAdd($form['user_id'], $form['create_user_id'], '主催者', false);
+
+
+    $is_sendmail = false;
+    if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
+      $is_sendmail = true;
+      //新規登録時に変更メールを送らない
+      unset($form['send_mail']);
+    }
     $calendar_setting->change($form);
+
+    if($is_sendmail == true){
+      $calendar_setting->register_mail([], $form['create_user_id']);
+    }
+
     return $calendar_setting;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id){
+    if($this->status!='new'){
+      $this->delete_mail([], $login_user_id);
+    }
+
     //事務システム側を先に削除
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
@@ -321,7 +365,7 @@ EOT;
       }
       */
     }
-    $this->update($data);
+    UserCalendarSetting::where('id', $this->id)->update($data);
     $tag_names = ['course_type', 'lesson'];
     foreach($tag_names as $tag_name){
       \Log::warning("UserCalendarTagSetting:".$tag_name."=".$form[$tag_name]);

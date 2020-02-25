@@ -4,5 +4,6 @@ return array(
   'commit' => '対応済',
   'cancel' => 'キャンセル',
   'complete' => '完了',
+  'closed' => '終了',
 );
 ?>

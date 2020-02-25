@@ -369,7 +369,11 @@ class StudentGroupController  extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $param['teachers'][] = $param['item']->teacher;
-      $param['students'] = $param['item']->teacher->get_charge_students();
+      $is_all = false;
+      if($this->is_manager($param['user']->role)){
+        $is_all = true;
+      }
+      $param['students'] = $param['item']->teacher->get_charge_students($is_all);
       return view($this->domain.'.create', [
         '_edit' => true])
         ->with($param);
