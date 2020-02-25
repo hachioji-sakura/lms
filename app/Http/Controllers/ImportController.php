@@ -710,7 +710,7 @@ class ImportController extends UserController
       }
       //@$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."登録！:email=".$user->email." / name=".$user->name, 'info', $this->logic_name);
       //生徒属性登録
-      UserTag::where('user_id', $student->user_id)->delete();
+      UserTag::where('user_id', $student->user_id)->whereIn('tag_key', ['student_no', 'grade', 'student_type', 'grade_adj'])->delete();
       //生徒種別：ほとんどが3=生徒なので取得不要と思う、2=職員？、1=本部？
       //$this->store_user_tag($user->id, 'student_kind', $item['student_kind']);
       $this->store_user_tag($student->user_id, 'student_no', $item['student_no'], false);
@@ -727,6 +727,9 @@ class ImportController extends UserController
       }
       if(is_numeric($item['fee_free']) && $item['fee_free']=='1'){
         $this->store_user_tag($student->user_id, 'student_type', 'fee_free', false);
+      }
+      if(is_numeric($item['yuge_price']) && $item['yuge_price']=='1'){
+        $this->store_user_tag($student->user_id, 'student_type', 'yuge_price', false);
       }
       $this->store_user_tag($student->user_id, 'grade_adj', $item['grade_adj']);
       return true;

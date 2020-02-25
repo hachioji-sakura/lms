@@ -1,6 +1,7 @@
 <?php
 return array(
   'fee_free' => '受講料無料',
+  'yuge_price' => '弓削先生が担当する場合、受講料+1000円',
   'arrowre' => 'アローレ所属',
   'internal_study' => '内部進学',
   'juken' => '受験',

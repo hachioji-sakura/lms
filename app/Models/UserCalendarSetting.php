@@ -355,6 +355,7 @@ EOT;
           'remark' => $remark,
           'create_user_id' => $create_user_id,
       ]);
+      $member->set_api_lesson_fee();
       if($is_api===true){
         //事務システムにも登録
         $member->office_system_api("POST");

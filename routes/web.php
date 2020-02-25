@@ -70,6 +70,7 @@ Route::post('calendar_settings/{id?}/to_calendar','UserCalendarSettingController
 Route::post('calendar_settings/{id}/delete_calendar','UserCalendarSettingController@delete_calendar');
 Route::get('calendar_settings/{id}/to_calendar_data','UserCalendarSettingController@to_calendar_data');
 Route::get('calendar_settings/check','UserCalendarSettingController@setting_check');
+Route::get('calendar_settings/{id}/fee','UserCalendarSettingController@get_fee');
 
 Route::resource('calendar_members','UserCalendarMemberController');
 Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');
@@ -264,6 +265,7 @@ Route::get('asks/{ask_id}/commit','AskController@commit_page');
 Route::resource('asks','AskController');
 
 
+Route::get('api_tuition','TuitionController@get_api_tuition');
 Route::resource('tuitions','TuitionController');
 Route::resource('faqs','FaqController');
 Route::get('faqs/{id}/page','FaqController@page');

@@ -663,4 +663,34 @@ class UserCalendarSettingController extends UserCalendarController
         [ 'error_message' => '', '_edit' => false])
         ->with($param);
     }
+    public function get_fee(Request $request, $id){
+      if(!$request->has('student_id')){
+        return $this->bad_request('student_id not found');
+      }
+      $item = UserCalendarSetting::where('id', $id)->first();
+      if(!isset($item)){
+        return $this->notfound();
+      }
+
+      $student = Student::where('id', $request->get('student_id'))->first();
+      if(!isset($student)){
+        return $this->bad_request('student no exist');
+      }
+
+      $target_member = null;
+      foreach($item->members as $member){
+        if($member->user_id == $student->user_id){
+          $target_member = $member;
+          break;
+        }
+      }
+      if($target_member==null){
+        return $this->bad_request('this setting does not has student.');
+      }
+      $res = $target_member->get_api_lesson_fee();
+      if($res==null){
+        return $this->error_response('api error');
+      }
+      return $res;
+    }
 }

@@ -13,7 +13,7 @@
 </div>
 <div class="login-box">
 	<div class="login-logo p-4">
-	<a href="./"><b>{{__('labels.system_name')}}</b></a>
+	<b>{{__('labels.system_name')}}</b>
 	</div>
 	<div class="card">
 		<div class="card-header">

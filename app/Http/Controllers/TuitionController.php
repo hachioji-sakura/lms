@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Tuition;
+use App\Models\UserCalendarMemberSetting;
 
 class TuitionController extends MilestoneController
 {
@@ -247,6 +248,29 @@ class TuitionController extends MilestoneController
        $item->change($this->update_form($request));
        return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
+   }
+   public function get_api_tuition(Request $request){
+     $fields = ['lesson', 'course', 'course_minutes', 'lesson_week_count', 'grade', 'teacher_id'];
+     foreach($fields as $field){
+       if(!$request->has($field)){
+         return $this->bad_request($field.' not found');
+       }
+     }
+     $form = $request->all();
+     if(!$request->has('is_juken')){
+       $form['is_juken'] = 0;
+     }
+     $res = UserCalendarMemberSetting::get_api_lesson_fee($form['lesson'],
+                                                         $form['course'],
+                                                         $form['course_minutes'],
+                                                         $form['lesson_week_count'],
+                                                         $form['grade'],
+                                                         $form['is_juken'],
+                                                         $form['teacher_id']);
+     if($res==null){
+       return $this->error_response('api error');
+     }
      return $res;
    }
 }

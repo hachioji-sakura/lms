@@ -70,8 +70,6 @@
               </div>
             </div>
           </div>
-
-
         </div>
       </form>
     @else
@@ -111,7 +109,7 @@ $(function(){
   base.pageSettinged("trial_to_register", null);
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('trial_to_register')){
+    if(front.validateFormValue('trial_to_register') && lesson_week_datetime_validate()){
       var from_time_slot = $('input[name="from_time_slot"]').val();
       var to_time_slot = $('input[name="to_time_slot"]').val();
       var calendar_setting_id = $('input[name="calendar_setting_id"]').val();

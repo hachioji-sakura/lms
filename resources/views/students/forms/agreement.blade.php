@@ -155,7 +155,7 @@
 													$is_exist = true;
 													$setting_key = $setting->get_tag_value('lesson').'_';
 													$setting_key .= $setting->get_tag_value('course_type').'_';
-													$setting_key .= $setting->get_tag_value('course_minutes').'_';
+													$setting_key .= $setting->course_minutes.'_';
 													$setting_key .= $setting->user_id.'_';
 													if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
 														$setting_key .= $setting->get_tag_value('subject');
@@ -172,6 +172,10 @@
 															<label for="tuition" class="w-100">
 																受講料
 																@if($setting->id != $tuition_form[$setting_key])
+																	{{--
+																		カレンダー設定に対し、レッスン＋授業形態＋授業時間＋講師IDが同一の場合、
+																		同一受講料となる
+																	--}}
 																	<span class="right badge badge-warning ml-1">同一受講料設定あり</span>
 																@else
 																 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
@@ -193,8 +197,8 @@
 																	setting_id="{{$setting->id}}"
 																	lesson="{{$setting->get_tag_value('lesson')}}"
 								                  course_type="{{$setting->get_tag_value('course_type')}}"
-								                  course_minutes="{{$setting->get_tag_value('course_minutes')}}"
-								                  teacher_id="{{$setting->user->details()->id}}"
+								                  course_minutes="{{$setting->course_minutes}}"
+								                  teacher_id="{{$setting->user->details('teachers')->id}}"
 																	student_id="{{$item->id}}"
 																	grade="{{$item->tag_value('grade')}}"
 																	lesson_week_count="{{$item->tag_value('lesson_week_count')}}"
@@ -259,8 +263,7 @@ $(function(){
 		for(var i=0;i<fields.length;i++){
       data[fields[i]] = $(element).attr(fields[i]);
     }
-	  data["grade"] = data["grade"].substring(0,1);
-	  var r = get_tuition(data["lesson"]|0, data["course_type"], data["grade"], data["is_juken"]|0, data["lesson_week_count"]|0, data["subject"], data["course_minutes"]|0);
+	  var r = get_tuition(data["lesson"]|0, data["course_type"], data["grade"], data["is_juken"]|0, data["lesson_week_count"]|0, data["subject"], data["course_minutes"]|0, data["teacher_id"]);
 		$('input[name='+data['setting_id']+'_tuition]').val(r);
 		$('span[alt='+data['setting_id']+'_tuition]').html(r);
 	}

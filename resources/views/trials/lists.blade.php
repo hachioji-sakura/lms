@@ -9,7 +9,7 @@
       <div class="card-header">
         <h3 class="card-title" id="charge_students">
           <i class="fa fa-calendar mr-1"></i>
-          体験授業一覧
+          体験申し込み一覧
         </h3>
       </div>
       <div id="trial_list" class="card-body table-responsive p-3">
@@ -105,7 +105,7 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
       <p>
-        {{__('labels.filter')}}
+        申し込み状態
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
@@ -123,11 +123,33 @@
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=confirm" class="nav-link @if($_status=="confirm") active @endif">
-          <i class="fa fa-calendar-plus nav-icon"></i>
+          <i class="fa fa-calendar-alt nav-icon"></i>
           <p>
-            体験授業登録済み
+            体験授業調整中
             @if($confirm_count > 0)
             <span class="badge badge-warning right">{{$confirm_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=fix" class="nav-link @if($_status=="fix") active @endif">
+          <i class="fa fa-calendar-plus nav-icon"></i>
+          <p>
+            体験授業確定
+            @if($fix_count > 0)
+            <span class="badge badge-primary right">{{$fix_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=presence" class="nav-link @if($_status=="presence") active @endif">
+          <i class="fa fa-calendar-check nav-icon"></i>
+          <p>
+            体験授業完了
+            @if($presence_count > 0)
+            <span class="badge badge-success right">{{$presence_count}}</span>
             @endif
           </p>
         </a>
@@ -138,7 +160,7 @@
           <p>
             入会案内連絡済
             @if($complete_count > 0)
-            <span class="badge badge-success right">{{$complete_count}}</span>
+            <span class="badge badge-secondary right">{{$complete_count}}</span>
             @endif
           </p>
         </a>

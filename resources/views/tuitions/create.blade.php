@@ -129,8 +129,8 @@
                   value="{{$setting->id}}"
                   lesson="{{$setting->get_tag_value('lesson')}}"
                   course_type="{{$setting->get_tag_value('course_type')}}"
-                  course_minutes="{{$setting->get_tag_value('course_minutes')}}"
-                  teacher_id="{{$setting->user->details()->id}}"
+                  course_minutes="{{$setting->course_minutes}}"
+                  teacher_id="{{$setting->user->details('teachers')->id}}"
                   @if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true)
                   subject="{{$setting->get_tag_value('subject')}}"
                   @elseif($setting->get_tag_value('lesson')==4)
