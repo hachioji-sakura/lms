@@ -570,17 +570,6 @@ EOT;
   public function dateweek(){
     return $this->dateweek_format($this->start_time);
   }
-  public function dateweek_format($date){
-    $format = "n月j日";
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($date));
-    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
-    return $d;
-  }
   public function get_member($user_id){
     return $this->members->where('user_id', $user_id)->first();
   }
