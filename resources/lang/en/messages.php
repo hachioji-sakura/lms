@@ -106,4 +106,5 @@ return [
  "confirm_schedule_commit_cancel_reason" => "Tell us why you can't attend this even",
  "confirm_rest_contact" => "Send a Rest Contact?",
  "confirm_schedule_to_confirm" => "Confirm this event?",
+ "message_please_calendar_confirm" => "Thank you for your confirmation.",
  ];

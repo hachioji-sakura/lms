@@ -3,7 +3,7 @@
 @section('title_header', $page_title)
 
 @section('content')
-  @component('calendars.page', ['user'=>$user, 'item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
+  @component($domain.'.page', ['user'=>$user, 'item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
     @slot('page_message')
       @if(!empty($result))
         <h4 class="bg-success p-3 text-sm">

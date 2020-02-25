@@ -30,10 +30,16 @@
               {{$field['label']}}
             </label>
             @foreach($item->students as $member)
+          {{--
               <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="">
+            --}}
+            <span>
                 <i class="fa fa-user-graduate mr-1"></i>
                 {{$member->user->details('students')->name}}
+              </span>
+          {{--
               </a>
+              --}}
               <br>
             @endforeach
           @elseif(isset($item[$key]) && gettype($item[$key])=='array')
