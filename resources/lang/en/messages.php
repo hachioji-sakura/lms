@@ -102,5 +102,8 @@ return [
  "error_user_calendar_settings_no_member" => "Insufficient member settings!",
  "message_trial_candidate_date1" => "I am very sorry that I can not schedule a trial class \nfor the trial class you applied for at the desired date and time.",
  "message_trial_candidate_date2" => "I would like to inform you of the additional candidate date and time from the following URL,\n Sorry to trouble you, but thank you very much.",
-
+ "confirm_schedule_commit" => "Are you going to participate in this event?",
+ "confirm_schedule_commit_cancel_reason" => "Tell us why you can't attend this even",
+ "confirm_rest_contact" => "Send a Rest Contact?",
+ "confirm_schedule_to_confirm" => "Confirm this event?",
  ];

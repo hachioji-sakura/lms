@@ -3,14 +3,14 @@
     @if($item->work!=9)
       @if($item->is_prev_rest_contact()==false)
         {{-- 授業当日9時を過ぎたら休み連絡はできない
-        <div class="col-12 col-lg-12 col-md-12 mb-1">
+        <div class="col-12 mb-1">
           <h4 class="text-danger">授業当日AM9:00以降の休み連絡はできません。</h4>
         </div>
         --}}
       @else
       @endif
       @if($user->role==="manager" || $user->role==="teacher")
-      <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+      <div class="col-12 bg-danger p-2 mb-2">
         <i class="fa fa-exclamation-triangle mr-1"></i>生徒の代わりに連絡をします。
       </div>
       @endif

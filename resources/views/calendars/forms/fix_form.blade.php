@@ -1,20 +1,20 @@
 <div class="col-12 mb-1">
   <div class="form-group">
     <label for="status">
-      この予定に参加しますか？
+      {{__('messages.confirm_schedule_commit')}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
       <div class="form-check">
           <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_fix" value="fix" required="true" onChange="status_radio_change()">
           <label class="form-check-label" for="status_fix">
-              はい
+              {{__('labels.yes')}}
           </label>
       </div>
       <div class="form-check ml-2">
           <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_cancel" value="cancel" required="true"  onChange="status_radio_change()">
           <label class="form-check-label" for="status_cancel">
-              いいえ
+            {{__('labels.no')}}
           </label>
       </div>
     </div>
@@ -23,7 +23,7 @@
 <div class="col-12 collapse" id="cancel_reason">
   <div class="form-group">
     <label for="cancel_reason" class="w-100">
-      予定に参加できない理由をお知らせください
+
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
     <textarea type="text" name="cancel_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。" ></textarea>

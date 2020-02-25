@@ -2,9 +2,8 @@
   @slot('page_message')
   @if($user->role=="parent" || $user->role=="student")
     {!!nl2br(__('messages.confirm_calendar_fix'))!!}
-  @endif
-  @if($user->role==="manager" || $user->role==="teacher")
-  <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+  @elseif($user->role==="manager" || $user->role==="teacher")
+  <div class="col-12 bg-danger p-2 mb-2">
     <i class="fa fa-exclamation-triangle mr-1"></i>生徒の授業予定を確定します。
   </div>
   @endif
@@ -29,7 +28,7 @@
         </button>
       </form>
     </div>
-    <div class="col-12 col-lg-12 col-md-12 mb-1">
+    <div class="col-12 mb-1">
         <button type="reset" class="btn btn-secondary btn-block">
           {{__('labels.close_button')}}
         </button>

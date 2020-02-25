@@ -82,11 +82,14 @@ EOT;
     return $query->orderBy('from_time_slot', 'asc');
   }
   public function lesson_week(){
+    if(app()->getLocale()=='en') return ucfirst($this->lesson_week);
     $ret =  $this->get_attribute_name('lesson_week', $this->lesson_week);
-    if(app()->getLocale()=='en') return $ret;
     return $ret.'曜';
   }
   public function schedule_method(){
+    if(app()->getLocale()=='en'){
+      return "(Every ".ucfirst($this->schedule_method).")";
+    }
     return $this->get_attribute_name('schedule_method', $this->schedule_method);
   }
   public function week_setting(){
@@ -96,6 +99,10 @@ EOT;
     */
     $ret = "";
     if($this->lesson_week_count > 0){
+      if(app()->getLocale()=='en') {
+        $count_en = ['First', 'Second', 'Third', 'Forth', 'Fifth'];
+        return $count_en[$this->lesson_week_count].' '.$this->lesson_week();
+      }
       $ret .= '第'.$this->lesson_week_count;
     }
     $ret.=$this->lesson_week();

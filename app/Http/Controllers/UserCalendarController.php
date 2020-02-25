@@ -31,6 +31,26 @@ class UserCalendarController extends MilestoneController
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
         ];
+  public function page_title($item, $page_status){
+    if($item->is_teaching()==true){
+      $title = $item->teaching_type_name();
+    }
+    else {
+      $title = $item->work();
+    }
+
+    switch($page_status){
+      case "rest":
+        $title.="のお休み連絡";
+        break;
+      case "confirm":
+        $title.="のご確認";
+        break;
+      default:
+        $title.="詳細";
+    }
+    return $title;
+  }
   public function model(){
     return UserCalendar::query();
   }
@@ -731,8 +751,9 @@ class UserCalendarController extends MilestoneController
       if(!isset($form['action'])){
         $form['action'] = '';
       }
+      $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
-        return view('calendars.simplepage', ["subpage"=>'' ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
       return view($this->domain.'.page', $form)->with($param);
     }
@@ -752,11 +773,13 @@ class UserCalendarController extends MilestoneController
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
+
+      $page_title = $this->page_title($param['item'], $status);
       if($request->has('user')){
         if($status=='fix' && $param['item']->status=='fix'){
-          return redirect('/calendars/'.$param['item']->id.'?user='.$request->get('user'));
+          return redirect('/'.$this->domain.'/'.$param['item']->id.'?user='.$request->get('user'));
         }
-        return view('calendars.simplepage', ["subpage"=>$status ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>$status,"page_title" => $page_title ])->with($param);
       }
 
       return view($this->domain.'.'.$status, [])->with($param);

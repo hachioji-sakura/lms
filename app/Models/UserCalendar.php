@@ -403,6 +403,7 @@ EOT;
     //return $this->get_attribute('course_minutes', $is_value);
     if($this->is_teaching()==true){
       if($is_value==true) return $this->course_minutes;
+      if(app()->getLocale()=='en') return $this->course_minutes.' minutes';
       return $this->get_attribute_name('course_minutes', $this->course_minutes);
     }
     return "";
@@ -471,6 +472,7 @@ EOT;
     return $ret;
   }
   public function teaching_type_name(){
+    if(app()->getLocale()=='en') return ucfirst($this->teaching_type)." Lesson";
     $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
     if(empty($ret)){
       $type = $this->get_teaching_type();
