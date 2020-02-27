@@ -671,7 +671,7 @@ class StudentController extends UserController
          $from_date =$form['list_date'];
        }
        if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-t', strtotime($form['list_date']));
+         $to_date = date('Y-m-1', strtotime('+1 month'.$form['list_date']));
        }
        if(empty($form['search_status'])){
          $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
@@ -735,7 +735,7 @@ class StudentController extends UserController
    if(isset($form['_page']) && isset($form['_line'])){
      $calendars = $calendars->pagenation(intval($form['_page'])-1, $form['_line']);
    }
-   //echo $calendars->toSql()."<br>";
+   echo $calendars->toSql()."<br>";
    $calendars = $calendars->get();
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
