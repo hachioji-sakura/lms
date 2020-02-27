@@ -26,12 +26,6 @@
     @endif
   </div>
 </div>
-@if(!empty(session()->get('post_error_message')))
-<h4 class="bg-danger p-3 text-sm">
-  <i class="fa fa-exclamation-triangle">
-  </i>
-  {{__('messages.'.session()->get('post_error_message'))}}
-</h4>
 <div class="form-group row mb-3">
   <div class="input-group">
       <div class="form-check">
@@ -42,7 +36,6 @@
       </div>
   </div>
 </div>
-@endif
 <script>
 $(function(){
   var form_data = util.getLocalData('login_form');
