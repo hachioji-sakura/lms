@@ -276,19 +276,7 @@ EOT;
       'create_user_id' => $form['create_user_id'],
     ]);
     $calendar_setting->memberAdd($form['user_id'], $form['create_user_id'], '主催者', false);
-
-
-    $is_sendmail = false;
-    if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
-      $is_sendmail = true;
-      //新規登録時に変更メールを送らない
-      unset($form['send_mail']);
-    }
     $calendar_setting->change($form);
-
-    if($is_sendmail == true){
-      $calendar_setting->register_mail([], $form['create_user_id']);
-    }
 
     return $calendar_setting;
   }

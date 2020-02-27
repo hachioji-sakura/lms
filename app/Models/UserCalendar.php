@@ -740,9 +740,6 @@ EOT;
     }
     $calendar->change($form);
 
-    if($is_sendmail == true){
-      $calendar->register_mail([], $form['create_user_id'], $form['create_user_id']);
-    }
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う

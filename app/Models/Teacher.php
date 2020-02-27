@@ -139,11 +139,11 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     //事務用の希望シフト
-    foreach($lesson_weeks as $lesson_week){
+    foreach($lesson_weeks as $lesson_week=>$name){
       $tag_names[] = 'work_'.$lesson_week.'_time';
     }
     //体験授業シフト
-    foreach($lesson_weeks as $lesson_week){
+    foreach($lesson_weeks as $lesson_week=>$name){
       $tag_names[] = 'trial_'.$lesson_week.'_time';
     }
 
