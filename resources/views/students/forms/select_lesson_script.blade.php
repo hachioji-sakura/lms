@@ -72,7 +72,13 @@ function lesson_place_filter(name){
 function course_minutes_filter(name){
   console.log("course_minutes_filter("+name+")");
   var check_lesson = get_lesson_check(name);
+  console.log(check_lesson);
+  var exchanged_calendar_id = $("input[name='exchanged_calendar_id']").val();
   $("label.course_minutes").show();
+  if(exchanged_calendar_id && exchanged_calendar_id>0){
+    //振替の場合は分割振替などがあるので、フィルタはなし
+    return ;
+  }
   if(!check_lesson["is_school"]){
     //塾以外＝90分、120分なし
     $("label.course_minutes:contains('９０分')").hide();
