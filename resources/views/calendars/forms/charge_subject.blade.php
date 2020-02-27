@@ -100,8 +100,6 @@
      //charge_subject_form.empty();
      charge_subject_form.html(_option_html);
      $("select[name='charge_subject[]']").val(selected);
-     console.log("selected");
-     console.log(selected);
      charge_subject_form.select2({
        width: _width,
        placeholder: '{{__('labels.selectable')}}',
