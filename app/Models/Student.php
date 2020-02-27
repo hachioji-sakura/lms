@@ -376,6 +376,7 @@ EOT;
       'user_id' => $user->id,
       'create_user_id' => $user->id,
     ]);
+
     UserTag::setTag($user->id,'student_no',$student_no,$user->id);
 
     return $student;
@@ -409,9 +410,8 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     //1:1タグ
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
@@ -422,9 +422,8 @@ EOT;
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     return $this;
   }
