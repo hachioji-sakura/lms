@@ -324,12 +324,12 @@ class ImportController extends UserController
      * @return boolean
      */
     private function schedules_import($items){
-      return $this->transaction(null, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
         }
         return $this->api_response(200, '', '', 'count['.$c.']');
+        return $this->transaction(null, function() use ($items){
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -1167,9 +1167,17 @@ class ImportController extends UserController
       ];
 
       if(isset($items)){
-        //すでに存在する場合は更新する
-        $items->update($update_form);
-        $calendar_id = $items->id;
+        if(intval($item['delflag'])==1){
+          UserCalendarMember::where('calendar_id', $items->id)->delete();
+          UserCalendarTag::where('calendar_id', $items->id)->delete();
+          UserCalendar::where('id', $items->id)->delete();
+          return true;
+        }
+        else {
+          //すでに存在する場合は更新する
+          $items->update($update_form);
+          $calendar_id = $items->id;
+        }
       }
       else {
         $update_form['create_user_id'] = 1;

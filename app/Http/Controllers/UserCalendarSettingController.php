@@ -587,6 +587,7 @@ class UserCalendarSettingController extends UserCalendarController
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         $setting = UserCalendarSetting::add($form);
+
         if($setting != null){
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
@@ -595,6 +596,15 @@ class UserCalendarSettingController extends UserCalendarController
             }
           }
           $setting = $setting->details();
+          $is_sendmail = false;
+          if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
+            $is_sendmail = true;
+            //新規登録時に変更メールを送らない
+            unset($form['send_mail']);
+          }
+          if($is_sendmail == true){
+            $setting->register_mail([], $form['create_user_id']);
+          }
           $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
         return $this->api_response(200, '', '', $setting);

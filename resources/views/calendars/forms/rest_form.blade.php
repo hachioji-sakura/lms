@@ -16,7 +16,7 @@
       お休みの理由をお知らせください
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
-    <textarea type="text" name="rest_reason" class="form-control" placeholder="例：予定日時の都合があわなくなり、X月X日 15時～に変更したい。"></textarea>
+    <textarea type="text" name="rest_reason" class="form-control" placeholder=""></textarea>
   </div>
 </div>
 --}}
