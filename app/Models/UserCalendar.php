@@ -420,6 +420,10 @@ EOT;
   }
   public function work(){
     if(!isset($this->work)) return "";
+    if(app()->getLocale()=='en'){
+      //TODO : workの定義が数値なので、別途組む必要がある
+      return $this->work;
+    }
     return $this->get_attribute_name('work', $this->work);
   }
   public function schedule_type_code(){

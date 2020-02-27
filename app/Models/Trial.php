@@ -355,9 +355,8 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'howto_word', 'course_type'];
@@ -368,9 +367,8 @@ EOT;
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     foreach($this->trial_students as $trial_student){
       $trial_student->student->profile_update($form);

@@ -27,18 +27,17 @@ class UserCalendarSettingController extends UserCalendarController
     }
     public function page_title($item, $page_status){
       if($item->is_teaching()==true){
-        $title = "通常授業";
+        $title = __('labels.regular_class_schedule');
       }
       else {
-        $title = $item->work()."（繰り返し予定設定）";
+        $title = $item->work()."(".__('labels.repeat').' '.__('labels.setting').")";
       }
-
       switch($page_status){
         case "confirm":
-          $title.="のご確認";
+          $title.=' '.__('labels.confirm');
           break;
         default:
-          $title.="詳細";
+          $title.= ' '.__('labels.details');
       }
       return $title;
     }

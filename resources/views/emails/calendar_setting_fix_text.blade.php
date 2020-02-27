@@ -12,7 +12,7 @@
 @if($send_to==='student')
 …………………………………………………………………………………………
 詳細のご確認については、以下の画面をご利用ください
-{{config('app.url')}}/calendars/{{$item['id']}}?user={{$user->user_id}}
+{{config('app.url')}}/calendar_settings/{{$item['id']}}?user={{$user->user_id}}
 …………………………………………………………………………………………
 
 ご不明な点等ございましたら、下記までお問い合わせください。　

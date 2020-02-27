@@ -89,7 +89,9 @@ return [
   'emergency_lecture_cancel_description' => 'In case of emergency rest on the day',
   'emergency_lecture_cancel_schedule' => 'Class to be canceled on the day',
 
+  'regular_class_schedule' => 'Regular Class',
   'details' => 'Details',
+  'confirm' => 'Confirmation',
   'name' => 'Name',
   'group_name' => 'Group Name',
   'title' => 'Title',

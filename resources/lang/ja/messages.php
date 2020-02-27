@@ -112,4 +112,6 @@ return [
   "confirm_rest_contact" => "休み連絡を送信しますか？",
   "confirm_schedule_to_confirm" => "この予定を確認済みに更新しますか？",
   "message_please_calendar_confirm" => "ご確認いただきますよう、宜しくお願い致します。",
+  "message_tell_me_cancel_reason" => "ご参加いただけない理由についてお知らせください",
+  "error_login_disabled" => "このユーザーはログインできません",
 ];

@@ -89,8 +89,9 @@ return [
   'emergency_lecture_cancel_schedule' => '休講連絡する授業',
   'late_arrival_schedule' => '遅刻連絡する授業',
 
-
+  'regular_class_schedule' => '通常授業',
   'details' => '詳細',
+  'confirm' => '確認',
   'name' => '氏名',
   'group_name' => 'グループ名',
   'title' => '概要',
