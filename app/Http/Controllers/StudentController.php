@@ -735,7 +735,7 @@ class StudentController extends UserController
    if(isset($form['_page']) && isset($form['_line'])){
      $calendars = $calendars->pagenation(intval($form['_page'])-1, $form['_line']);
    }
-   echo $calendars->toSql()."<br>";
+   //echo $calendars->toSql()."<br>";
    $calendars = $calendars->get();
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
