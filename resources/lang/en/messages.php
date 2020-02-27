@@ -107,4 +107,6 @@ return [
  "confirm_rest_contact" => "Send a Rest Contact?",
  "confirm_schedule_to_confirm" => "Confirm this event?",
  "message_please_calendar_confirm" => "Thank you for your confirmation.",
+ "message_tell_me_cancel_reason" => "Please tell us why you are not eligible",
+ "error_login_disabled" => "This user cannot sign up",
  ];

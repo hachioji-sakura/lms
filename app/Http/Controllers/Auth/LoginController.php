@@ -45,8 +45,14 @@ class LoginController extends Controller
       \Log::warning("LoginController::authenticated");
       session()->regenerate();
       session()->put('login_role', null);
+      session()->put('error_message', "");
+      session()->put('post_error_message', "");
       session()->put('locale', $request->get('locale'));
       $user = Auth::user();
+      if($user->status==1){
+        //体験状態のためログインはできない
+        session()->put('post_error_message', "error_login_disabled");
+      }
       \Log::warning("user_id=".$user->id);
       $manager = Manager::where('user_id', $user->id)->first();
       $teacher = Teacher::where('user_id', $user->id)->first();

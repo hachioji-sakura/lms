@@ -23,7 +23,7 @@
 <div class="col-12 collapse" id="cancel_reason">
   <div class="form-group">
     <label for="cancel_reason" class="w-100">
-      ご参加いただけない理由についてお知らせください
+      {{__('messages.message_tell_me_cancel_reason')}}
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
     <textarea type="text" name="cancel_reason" class="form-control" placeholder="" ></textarea>
