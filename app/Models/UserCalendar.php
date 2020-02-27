@@ -309,14 +309,16 @@ EOT;
       return false;
     }
   }
-  //振替対象の場合:true
-  public function is_exchange_target(){
-
+  public function is_passed(){
     $d = intval(strtotime('now')) - intval(strtotime($this->start_time));
     $c = 0;
     if($d < 0) return false;
-    //過去の予定であること
-    $c++;
+    return true;
+  }
+  //振替対象の場合:true
+  public function is_exchange_target(){
+    \Log::warning("hogehoge");
+
     if($this->is_single()==false) return false;
     //マンツーであること
     $c++;
@@ -590,12 +592,8 @@ EOT;
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
 
-    $diff = strtotime($this->start_time) - strtotime('now');
     //過ぎた予定かどうか
-    $item['is_passed'] = true;
-    if($diff > 0) {
-      $item['is_passed'] = false;
-    }
+    $item['is_passed'] = $this->is_passed();
 
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));

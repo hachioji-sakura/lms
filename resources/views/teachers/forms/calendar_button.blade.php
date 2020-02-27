@@ -79,17 +79,6 @@
   </span>
 </a>
 @endif
-
-{{--
-@if($calendar->is_exchange_target()==true)
-<a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.exchange_add')}}" page_form="dialog" page_url="/calendars/create?exchanged_calendar_id={{$calendar["id"]}}" role="button" class="btn btn-primary btn-sm ml-1">
-  <i class="fa fa-exchange-alt"></i>
-  <span class="ml-1 btn-label">
-    {{__('labels.exchange_add')}}
-  </span>
-</a>
-@endif
---}}
 @if($calendar->work!=10)
   {{-- 季節講習の予定は事務システム側の再編成で行うので、変更・削除はできない --}}
   <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm ml-1">
