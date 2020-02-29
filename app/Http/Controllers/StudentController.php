@@ -757,6 +757,11 @@ class StudentController extends UserController
          $form['search_type'] = ['teacher_change'];
        }
        break;
+     case "rest_cancel":
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['rest_cancel'];
+       }
+       break;
      case "lecture_cancel":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['lecture_cancel'];
