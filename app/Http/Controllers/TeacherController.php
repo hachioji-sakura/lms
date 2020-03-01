@@ -146,25 +146,28 @@ class TeacherController extends StudentController
     //TODO:暫定で14日先の予定を表示する
     $to_date = date('Y-m-d 23:59:59', strtotime('+14 day'));
     $teacher = Teacher::where('id', $teacher_id)->first();
-    $calendars = UserCalendar::rangeDate($from_date,$to_date)
-                  ->findUser($teacher->user_id)
-                  ->orderBy('start_time')
-                  ->get();
-    foreach($students as $student){
-      foreach($calendars as $calendar){
-        if($calendar->is_member($student->user_id)){
-          $student['current_calendar_start_time'] = $calendar['start_time'];
-          $student['current_calendar'] = $calendar->details();
-          break;
+    if(isset($teacher) && isset($students)){
+      $calendars = UserCalendar::rangeDate($from_date,$to_date)
+                    ->findUser($teacher->user_id)
+                    ->orderBy('start_time')
+                    ->get();
+        foreach($students as $student){
+          foreach($calendars as $calendar){
+            if($calendar->is_member($student->user_id)){
+              $student['current_calendar_start_time'] = $calendar['start_time'];
+              $student['current_calendar'] = $calendar->details();
+              break;
+            }
+          }
+        if(empty($student['current_calendar_start_time'])){
+          //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
+          $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
         }
       }
-      if(empty($student['current_calendar_start_time'])){
-        //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
-        $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
-      }
+      $students = $students->sortBy('current_calendar_start_time');
+      return $students;
     }
-    $students = $students->sortBy('current_calendar_start_time');
-    return $students;
+    return null;
   }
   /**
    * 仮登録ページ
