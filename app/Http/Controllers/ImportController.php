@@ -1311,6 +1311,9 @@ class ImportController extends UserController
       if($setting_id > 0){
         $calendar->update(['user_calendar_setting_id' => $setting_id]);
       }
+      $teaching_type = $calendar->get_teaching_type();
+      $calendar->update(['teaching_type' => $teaching_type]);
+
       //ステータス整合性チェック
       $calendar = UserCalendar::where('id', $calendar_id)->first();
 
