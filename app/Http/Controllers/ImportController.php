@@ -1291,6 +1291,7 @@ class ImportController extends UserController
         ->get();
       foreach($settings as $setting){
         $is_member = true;
+        \Log::warning("setting_id=".$setting->id);
         foreach($calendar->members as $member){
           if($setting->is_member($member->user_id)==false){
             //設定に参加者が含まれていない
@@ -1298,13 +1299,13 @@ class ImportController extends UserController
             break;
           }
         }
-        //参加者が異なるのでこの設定ではない
-        if($is_member===false) break;
-
-        $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
-        if(isset($add_calendar_date[$item['ymd']])){
-          $setting_id = $setting->id;
-          break;
+        //参加者が同じ場合、この設定が通常授業設定確定
+        if($is_member===true) {
+          $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
+          if(isset($add_calendar_date[$item['ymd']])){
+            $setting_id = $setting->id;
+            break;
+          }
         }
       }
       if($setting_id > 0){
