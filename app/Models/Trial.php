@@ -93,6 +93,7 @@ EOT;
     return null;
   }
   public function get_status(){
+    //体験授業登録状況により、ステータスは変動する
     switch($this->status){
       case "confirm":
       case "fix":
@@ -108,11 +109,8 @@ EOT;
         }
         Trial::where('id', $this->id)->update(['status' => $status]);
         return $status;
-      case "cancel":
-      case "complete":
-        return $this->status;
     }
-    return "";
+    return $this->status;
   }
   public function is_confirm_trial_lesson(){
     foreach($this->calendars as $calendar){
@@ -133,7 +131,7 @@ EOT;
     $status_name = "";
     switch($this->status){
       case "complete":
-        return "入会案内済み";
+        return "入会完了";
       case "new":
         return "未対応";
       case "confirm":
@@ -142,12 +140,18 @@ EOT;
         return "体験授業確定";
       case "cancel":
         return "キャンセル";
-      case "rest":
-        return "休み";
       case "presence":
         return "体験授業完了";
+      case "entry_contact":
+        return "入会希望連絡済み";
+      case "entry_hope":
+        return "入会希望あり";
+      case "entry_cancel":
+        return "入会希望しない";
+      case "entry_guidanced":
+        return "入会案内連絡済み";
     }
-    return "";
+    return "(定義なし)";
   }
   public function details(){
     $item = $this;
@@ -228,13 +232,8 @@ EOT;
    */
   static public function entry($form){
     $form["accesskey"] = '';
+    //TODO デフォルトパスワード
     $form["password"] = 'sakusaku';
-    /*
-    $form["name_last"] = $form["parent_name_last"];
-    $form["name_first"] = $form["parent_name_first"];
-    $form["kana_last"] = $form["parent_kana_last"];
-    $form["kana_first"] = $form["parent_kana_first"];
-    */
     $form["name_last"] = "";
     $form["name_first"] = "";
     $form["kana_last"] = "";
@@ -1269,13 +1268,49 @@ EOT;
 
     return $ret;
   }
+  public function hope_to_join_ask($create_user_id, $access_key){
+    //この体験に関してはいったん完了ステータス
+    //保護者にアクセスキーを設定
+    \Log::warning("hope_to_join_ask");
+
+    $this->parent->user->update(['access_key' => $access_key]);
+    //すでにある場合は一度削除
+    Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
+        ->where('status', 'new')->where('type', 'hope_to_join')->delete();
+
+    $ask = Ask::add([
+      "type" => "hope_to_join",
+      "end_date" => date("Y-m-d", strtotime("30 day")),
+      "body" => "",
+      "target_model" => "trials",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->parent->user_id,
+      "charge_user_id" => 1,
+    ]);
+    //ステータス：入会希望連絡済み
+    Trial::where('id', $this->id)->update(['status' => 'entry_contact']);
+    return $ask;
+  }
+  public function hope_to_join($is_commit=false, $schedule_start_hope_date){
+    if($is_commit==false){
+      //ステータス：入会希望なし
+      Trial::where('id', $this->id)->update(['status' => 'entry_cancel']);
+    }
+    else {
+      //ステータス：入会希望あり
+      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $schedule_start_hope_date]);
+    }
+    return true;
+  }
+
   public function agreement_ask($create_user_id, $access_key){
     //この体験に関してはいったん完了ステータス
     //保護者にアクセスキーを設定
     \Log::warning("agreement_ask");
 
     $this->parent->user->update(['access_key' => $access_key]);
-    $this->update(['status' => 'complete']);
+    Trial::where('id', $this->id)->update(['status' => 'complete']);
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();

@@ -314,4 +314,5 @@ return [
   'require_student_confirm' => 'Require student confirmation',
   'not_require_student_confirm' => 'Does not require student confirmation',
   "error_user_calendar_settings_no_member" => "Insufficient member settings!",
+  'schedule_start_hope_date' => 'Schedule Start Date',
 ];

@@ -66,12 +66,12 @@
 --}}
                   </div>
                   <div class="col-12 col-lg-4 mt-1 text-sm">
-                    <a href="trials/{{$item->id}}" role="button" class="btn btn-secondary btn-sm">
-                      <i class="fa fa-file mr-1"></i>
+                    <a href="trials/{{$item->id}}" role="" class="mr-1" style="text-decoration: underline">
+                      <i class="fa fa-file"></i>
                       {{__('labels.details')}}
                     </a>
-                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="button" class="btn btn-success btn-sm">
-                      <i class="fa fa-edit mr-1"></i>
+                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1"  style="text-decoration: underline">
+                      <i class="fa fa-edit"></i>
                       {{__('labels.edit')}}
                     </a>
                     <br>

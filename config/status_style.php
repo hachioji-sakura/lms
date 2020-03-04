@@ -18,5 +18,8 @@ return array(
   'disabled' => 'secondary',
   'enabled' => 'success',
   'closed' => 'secondary',
+  'entry_contact' => 'warning',
+  'entry_cancel' => 'secondary',
+  'entry_hope' => 'primary',
   );
 ?>

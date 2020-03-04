@@ -49,8 +49,8 @@ return [
   "mail_header" => "本メールは、:url_name(:url)に登録いただいた方に、\nお送りしています。",
   "mail_footer" => "このメールに心当たりのない場合は、お手数ですが、下記までご連絡ください。",
   "mail_dear" => ":user_name様",
-  "mail_dear_teacher" => ":user_name先生",
-  "mail_dear_manager" => ":user_nameさん",
+  "mail_dear_teacher" => ":user_name 先生",
+  "mail_dear_manager" => ":user_name さん",
   "mail_password_reset1" => "以下の URL よりパスワードの再発行を行って下さい。",
   "info_url_limit" => "※URLの有効期限はお申込みから24時間以内となっています。",
   "confirm_ask_cancel" => "この依頼内容を差戻しますか？",
@@ -114,4 +114,5 @@ return [
   "message_please_calendar_confirm" => "ご確認いただきますよう、宜しくお願い致します。",
   "message_tell_me_cancel_reason" => "ご参加いただけない理由についてお知らせください",
   "error_login_disabled" => "このユーザーはログインできません",
+  "message_hope_to_join" => "ご入会を希望しますか？",
 ];

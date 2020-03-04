@@ -68,7 +68,6 @@ class GeneralAttribute  extends Model
       $item = $g;
     }
     if($item == null){
-      \Log::warning("config no use!");
       $item = GeneralAttribute::where('attribute_key', $key)
         ->where('attribute_value', $value)->first();
     }

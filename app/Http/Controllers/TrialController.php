@@ -594,6 +594,35 @@ class TrialController extends UserCalendarController
        ->with($param);
 
    }
+
+   public function ask_hope_to_join(Request $request, $id){
+     $trial = Trial::where('id', $id)->first();
+     if(!isset($trial)) abort(404);
+
+     $param = [
+       'item' => $trial->details(),
+       'domain' => $this->domain,
+       'domain_name' => __('labels.'.$this->domain),
+       'attributes' => $this->attributes(),
+     ];
+     return view($this->domain.'.ask_hope_to_join',
+       ['sended' => '',
+        '_edit' => false])
+       ->with($param);
+
+   }
+   public function ask_hope_to_join_mail_send(Request $request, $id){
+     $access_key = $this->create_token(2678400);
+     $param = $this->get_param($request, $id);
+     $access_key = $this->create_token();
+
+     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+       $param['item']->hope_to_join_ask($param['user']->user_id, $access_key);
+       return $this->api_response(200, '', '', []);
+     }, '入会希望受け取り連絡送信', __FILE__, __FUNCTION__, __LINE__ );
+     return $this->save_redirect($res, [], '入会希望受け取り連絡を送信しました。');
+   }
+
    public function ask_candidate(Request $request, $id){
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
