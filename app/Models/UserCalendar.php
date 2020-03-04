@@ -108,11 +108,11 @@ class UserCalendar extends Model
   public function scopeSearchDate($query, $from_date, $to_date)
   {
     $where_raw = <<<EOT
-      ((user_calendars.start_time >= '?'
-       AND user_calendars.start_time <= '?'
+      ((user_calendars.start_time >= ?
+       AND user_calendars.start_time <= ?
       )
-      OR (user_calendars.end_time >= '?'
-        AND user_calendars.end_time <= '?'
+      OR (user_calendars.end_time >= ?
+        AND user_calendars.end_time <= ?
       ))
 EOT;
     return $query->whereRaw($where_raw,[$from_date, $to_date, $from_date, $to_date]);
@@ -203,7 +203,7 @@ EOT;
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
-    $to = date("Y-m-01", strtotime("+2 month ".$from));
+    $to = date("Y-m-01 00:00:00", strtotime("+2 month ".$from));
     //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
     //かつ、振替が未登録(cancelは除く）
     $param = [];
