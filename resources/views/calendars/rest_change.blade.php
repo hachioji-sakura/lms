@@ -1,6 +1,6 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'action'=>$action, 'domain' => $domain, 'user'=>$user])
   @slot('page_message')
-    <div class="col-12 col-lg-12 col-md-12 bg-warning p-2 mb-2">
+    <div class="col-12 bg-warning p-2 mb-2">
       <i class="fa fa-exclamation-triangle mr-1"></i>
       休み判定結果を変更します。
     </div>

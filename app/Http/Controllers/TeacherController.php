@@ -56,6 +56,12 @@ class TeacherController extends StudentController
         $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
         $ret[$list.'_count'] = $asks["count"];
       }
+      $lists = ['confirm_list', 'fix_list'];
+      foreach($lists as $list){
+        $calendar_settings = $this->get_calendar_settings(["list" => $list], $ret['item']->user_id);
+        $ret[$list.'_setting_count'] = $calendar_settings["count"];
+      }
+
     }
     else {
       //id指定がない、かつ、事務以外はNG
@@ -140,25 +146,28 @@ class TeacherController extends StudentController
     //TODO:暫定で14日先の予定を表示する
     $to_date = date('Y-m-d 23:59:59', strtotime('+14 day'));
     $teacher = Teacher::where('id', $teacher_id)->first();
-    $calendars = UserCalendar::rangeDate($from_date,$to_date)
-                  ->findUser($teacher->user_id)
-                  ->orderBy('start_time')
-                  ->get();
-    foreach($students as $student){
-      foreach($calendars as $calendar){
-        if($calendar->is_member($student->user_id)){
-          $student['current_calendar_start_time'] = $calendar['start_time'];
-          $student['current_calendar'] = $calendar->details();
-          break;
+    if(isset($teacher) && isset($students)){
+      $calendars = UserCalendar::rangeDate($from_date,$to_date)
+                    ->findUser($teacher->user_id)
+                    ->orderBy('start_time')
+                    ->get();
+        foreach($students as $student){
+          foreach($calendars as $calendar){
+            if($calendar->is_member($student->user_id)){
+              $student['current_calendar_start_time'] = $calendar['start_time'];
+              $student['current_calendar'] = $calendar->details();
+              break;
+            }
+          }
+        if(empty($student['current_calendar_start_time'])){
+          //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
+          $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
         }
       }
-      if(empty($student['current_calendar_start_time'])){
-        //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
-        $student['current_calendar_start_time'] = '9999-12-31 23:59:59';
-      }
+      $students = $students->sortBy('current_calendar_start_time');
+      return $students;
     }
-    $students = $students->sortBy('current_calendar_start_time');
-    return $students;
+    return null;
   }
   /**
    * 仮登録ページ
@@ -488,8 +497,18 @@ class TeacherController extends StudentController
      */
     public function get_charge_students(Request $request , $id){
       $param = $this->get_param($request, $id);
-      $items = $param['item']->get_charge_students();
-
+      if($this->is_manager($param['user']->role)){
+        $items = [];
+        $students = Student::findStatuses(['regular','trial'])->get();
+        foreach($students as $student){
+          $detail = $student->user->details("students");
+          $detail['grade'] = $detail->tag_value('grade');
+          $items[$detail->id] = $detail;
+        }
+      }
+      else {
+        $items = $param['item']->get_charge_students();
+      }
       return $this->api_response(200, "", "", $items);
     }
 }

@@ -26,6 +26,24 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public $register_mail_template = 'calendar_new';
+  public $delete_mail_template = 'calendar_delete';
+  public function register_mail_title(){
+    $trial = "";
+    if($this->trial_id > 0){
+      $trial ='['. __('labels.trial_lesson').']';
+    }
+    $title = __('messages.info_calendar_add', ['trial' => $trial]);
+    return $title;
+  }
+  public function delete_mail_title(){
+    $trial = "";
+    if($this->trial_id > 0){
+      $trial ='['. __('labels.trial_lesson').']';
+    }
+    $title = __('messages.info_calendar_delete', ['trial' => $trial]);
+    return $title;
+  }
   public function user(){
     return $this->belongsTo('App\User');
   }
@@ -90,14 +108,14 @@ class UserCalendar extends Model
   public function scopeSearchDate($query, $from_date, $to_date)
   {
     $where_raw = <<<EOT
-      ((user_calendars.start_time >= '$from_date'
-       AND user_calendars.start_time <= '$to_date'
+      ((user_calendars.start_time >= ?
+       AND user_calendars.start_time <= ?
       )
-      OR (user_calendars.end_time >= '$from_date'
-        AND user_calendars.end_time <= '$to_date'
+      OR (user_calendars.end_time >= ?
+        AND user_calendars.end_time <= ?
       ))
 EOT;
-    return $query->whereRaw($where_raw,[$from_date, $to_date]);
+    return $query->whereRaw($where_raw,[$from_date, $to_date, $from_date, $to_date]);
 
   }
   public function scopeSearchWord($query, $word)
@@ -185,7 +203,7 @@ EOT;
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
     $from = date("Y-m-01 00:00:00", strtotime("-1 month "));
-    $to = date("Y-m-01", strtotime("+2 month ".$from));
+    $to = date("Y-m-01 00:00:00", strtotime("+2 month ".$from));
     //先月～今月末の対象生徒が、休みかつ、規定回数以上ではない
     //かつ、振替が未登録(cancelは除く）
     $param = [];
@@ -226,7 +244,7 @@ EOT;
 EOT;
     }
     $query = $query->whereRaw($where_raw,$param);
-    $query = $this->scopeSearchDate($query, $from, $to);
+    //$query = $this->scopeSearchDate($query, $from, $to);
     return $query;
   }
   public function get_access_member($user_id){
@@ -291,14 +309,14 @@ EOT;
       return false;
     }
   }
-  //振替対象の場合:true
-  public function is_exchange_target(){
-
+  public function is_passed(){
     $d = intval(strtotime('now')) - intval(strtotime($this->start_time));
     $c = 0;
     if($d < 0) return false;
-    //過去の予定であること
-    $c++;
+    return true;
+  }
+  //振替対象の場合:true
+  public function is_exchange_target(){
     if($this->is_single()==false) return false;
     //マンツーであること
     $c++;
@@ -385,6 +403,7 @@ EOT;
     //return $this->get_attribute('course_minutes', $is_value);
     if($this->is_teaching()==true){
       if($is_value==true) return $this->course_minutes;
+      if(app()->getLocale()=='en') return $this->course_minutes.' minutes';
       return $this->get_attribute_name('course_minutes', $this->course_minutes);
     }
     return "";
@@ -401,6 +420,10 @@ EOT;
   }
   public function work(){
     if(!isset($this->work)) return "";
+    if(app()->getLocale()=='en'){
+      //TODO : workの定義が数値なので、別途組む必要がある
+      return $this->work;
+    }
     return $this->get_attribute_name('work', $this->work);
   }
   public function schedule_type_code(){
@@ -453,6 +476,7 @@ EOT;
     return $ret;
   }
   public function teaching_type_name(){
+    if(app()->getLocale()=='en') return ucfirst($this->teaching_type)." Lesson";
     $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
     if(empty($ret)){
       $type = $this->get_teaching_type();
@@ -550,17 +574,6 @@ EOT;
   public function dateweek(){
     return $this->dateweek_format($this->start_time);
   }
-  public function dateweek_format($date){
-    $format = "n月j日";
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($date));
-    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
-    return $d;
-  }
   public function get_member($user_id){
     return $this->members->where('user_id', $user_id)->first();
   }
@@ -581,12 +594,8 @@ EOT;
     $item['date'] = date('Y/m/d',  strtotime($this->start_time));
     $item['dateweek'] = $this->dateweek();
 
-    $diff = strtotime($this->start_time) - strtotime('now');
     //過ぎた予定かどうか
-    $item['is_passed'] = true;
-    if($diff > 0) {
-      $item['is_passed'] = false;
-    }
+    $item['is_passed'] = $this->is_passed();
 
     $item['start_hour_minute'] = date('H:i',  strtotime($this->start_time));
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
@@ -723,18 +732,21 @@ EOT;
     ]);
 
     $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
-      $calendar->register_mail([], $form['create_user_id']);
+      $is_sendmail = true;
       //新規登録時に変更メールを送らない
       unset($form['send_mail']);
     }
-    $calendar = $calendar->change($form);
+    $calendar->change($form);
 
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id){
-    $this->delete_mail([], $login_user_id);
+    if($this->status!='new'){
+      $this->delete_mail([], $login_user_id);
+    }
     //事務システム側を先に削除
     $this->office_system_api("DELETE");
     UserCalendarMember::where('calendar_id', $this->id)->delete();
@@ -1151,27 +1163,19 @@ EOT;
   }
 
   public function register_mail($param=[], $login_user_id){
-    $trial = "";
-    if($this->trial_id > 0){
-      $trial = __('labels.trial_lesson');
-    }
-    $title = __('messages.info_calendar_add', ['trial' => $trial]);
+    $title = $this->register_mail_title();
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
     $u = User::where('id', $login_user_id)->first();
     $param['login_user'] = $u->details();
-    return $this->teacher_mail($title, $param, 'text', 'calendar_new');
+    return $this->teacher_mail($title, $param, 'text', $this->register_mail_template);
   }
   public function delete_mail($param=[], $login_user_id){
-    $trial = "";
-    if($this->trial_id > 0){
-      $trial = __('labels.trial_lesson');
-    }
-    $title = __('messages.info_calendar_delete', ['trial' => $trial]);
+    $title = $this->delete_mail_title();
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
     $u = User::where('id', $login_user_id)->first();
     $param['login_user'] = $u->details();
-    return $this->teacher_mail($title, $param, 'text', 'calendar_delete');
+    return $this->teacher_mail($title, $param, 'text', $this->delete_mail_template);
   }
 }

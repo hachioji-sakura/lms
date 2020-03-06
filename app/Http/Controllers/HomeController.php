@@ -26,6 +26,9 @@ class HomeController extends Controller
     public function index(Request $request)
     {
       $user = Auth::user();
+      \Log::warning("HomeController:index");
+      \Log::warning("user_id=".$user->id);
+
       if(isset($user)){
         if($request->has('locale')){
           session()->put('locale', $request->get('locale'));
@@ -59,7 +62,7 @@ class HomeController extends Controller
           }
         }
         Auth::logout();
-        abort(403);
+        return redirect('/login?status='.$user->status);
       }
       else {
         return redirect('/login');

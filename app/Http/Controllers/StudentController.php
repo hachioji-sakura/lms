@@ -557,11 +557,51 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $calendar_settings = $item->get_calendar_settings($param['filter']['calendar_filter']);
+   $filter = $param['filter']['calendar_filter'];
+   $filter['list'] = '';
+   if($request->has('list')){
+     $filter['list'] = $request->get('list');
+   }
+   $calendar_settings = $this->get_calendar_settings($filter, $item->user_id);
    return view($this->domain.'.'.$view, [
-     'calendar_settings' => $calendar_settings,
+     'calendar_settings' => $calendar_settings['data'],
    ])->with($param);
  }
+ public function get_calendar_settings($form, $user_id){
+   $user = User::where('id', $user_id)->first()->details();
+   if(!isset($form['list'])) $form['list'] = '';
+   switch($form['list']){
+     case "confirm_list":
+       if(empty($form['search_status'])){
+         $form['search_status'] = ['new', 'confirm'];
+       }
+       break;
+     case "fix_list":
+       if(empty($form['search_status'])){
+         $form['search_status'] = ['fix'];
+       }
+       break;
+     default:
+       break;
+   }
+
+   $calendar_settings = $user->get_calendar_settings($form);
+   $count = count($calendar_settings);
+
+   if(isset($form['_page']) && isset($form['_line'])){
+     $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
+   }
+   //echo $calendars->toSql()."<br>";
+   if($this->domain=='students'){
+     foreach($calendar_settings as $i=>$setting){
+       $calendar_settings[$i] = $setting->details($user_id);
+       $calendar_settings[$i]->own_member = $setting[$i]->get_member($user_id);
+       $calendar_settings[$i]->status = $setting[$i]->own_member->status;
+     }
+   }
+   return ["data" => $calendar_settings, 'count' => $count];
+ }
+
  public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
@@ -631,7 +671,7 @@ class StudentController extends UserController
          $from_date =$form['list_date'];
        }
        if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-t', strtotime($form['list_date']));
+         $to_date = date('Y-m-1', strtotime('+1 month'.$form['list_date']));
        }
        if(empty($form['search_status'])){
          $statuses = ['rest', 'fix', 'presence', 'absence', 'lecture_cancel'];
@@ -674,6 +714,10 @@ class StudentController extends UserController
    if(!empty($form['search_place'])){
      $places = $form['search_place'];
    }
+   $teaching_types =[];
+   if(!empty($form['teaching_type'])){
+     $teaching_types = $form['teaching_type'];
+   }
 
    $calendars = UserCalendar::findStatuses($statuses);
    if(!empty($to_date) || !empty($from_date)){
@@ -685,8 +729,10 @@ class StudentController extends UserController
    }
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
+   $calendars = $calendars->findTeachingType($teaching_types);
    $calendars = $calendars->findUser($user_id);
    if($is_exchange==true){
+     \Log::warning("----------exchange-------------");
      $calendars = $calendars->findExchangeTarget();
    }
    $count = $calendars->count();
@@ -715,6 +761,11 @@ class StudentController extends UserController
      case "teacher_change":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['teacher_change'];
+       }
+       break;
+     case "rest_cancel":
+       if(!isset($form['search_type'])){
+         $form['search_type'] = ['rest_cancel'];
        }
        break;
      case "lecture_cancel":

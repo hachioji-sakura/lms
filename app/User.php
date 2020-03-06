@@ -238,37 +238,6 @@ EOT;
       }
       return $ret;
     }
-    /*
-    public function get_week_calendar_setting($minute=30)
-    {
-      $settings = $this->calendar_setting();
-      if(!isset($settings['week'])) return [];
-      $settings = $settings['week'];
-      $week_setting = [];
-      $seconds = $minute*60;
-      foreach($settings as $week_day => $settings){
-        if(!isset($week_setting[$week_day])){
-          $week_setting[$week_day] = [];
-        }
-        foreach($settings as $setting){
-          //カレンダー設定を取得し、30分単位のコマ設定として取得する
-          $base_date = '2000-01-01 '.$setting['from_time_slot'];
-          $time_minutes = strtotime('2000-01-01 '.$setting['to_time_slot'])-strtotime($base_date);
-          //echo"[".$setting['from_time_slot']."][".$setting['to_time_slot']."][".$time_minutes."][".$setting['lesson_week']."]<br>";
-          while($time_minutes > 0){
-            $time = date('Hi', strtotime($base_date));
-            $week_setting[$week_day][$time] = $setting; //ex.$week_setting['fri'][1630] = setting
-            //echo "→[".$time."][".$setting['lesson_week']."]<br>";
-            $base_date = date("Y-m-d H:i:s", strtotime("+".$minute." minute ".$base_date));
-            $time_minutes -= $seconds;
-          }
-        }
-      }
-      //var_dump($week_setting);
-      //array("mon" : [ calendar_setting...])
-      return $week_setting;
-    }
-    */
     /**
      * user_tagsから、work_mon_time、work_the_timeなどを取得し、
      * 30分単位のtime_slotにしてtrue/falseを返す

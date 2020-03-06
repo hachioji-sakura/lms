@@ -73,7 +73,7 @@
 <script>
 $(function(){
   base.pageSettinged("teachers_edit", []);
-  lesson_checkbox_change();
+  lesson_checkbox_change($('input[name="lesson[]"]'));
   $('#teachers_edit').carousel({ interval : false});
   //submit
   $("button.btn-submit").on('click', function(e){

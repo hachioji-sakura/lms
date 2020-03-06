@@ -5,7 +5,7 @@
 @endisset
 
 @if(!empty($page_message))
-<div class="col-12 col-lg-12 col-md-12 my-1">
+<div class="col-12 my-1">
   @if(isset($action) && $action=='delete')
     <h5 class="text-danger">{{$page_message}}</h5>
   @else
@@ -13,11 +13,11 @@
   @endif
 </div>
 @elseif(isset($action) && $action=='delete')
-<div class="col-12 col-lg-12 col-md-12 my-1">
+<div class="col-12 my-1">
   <h5 class="text-danger">削除してもよろしいですか？</h5>
 </div>
 @elseif(isset($action) && $action=='remind')
-<div class="col-12 col-lg-12 col-md-12 my-1">
+<div class="col-12 my-1">
   <h5 class="text-success">本登録依頼メールを送信しますがよろしいですか？</h5>
 </div>
 @endif

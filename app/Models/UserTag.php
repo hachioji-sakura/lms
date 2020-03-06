@@ -112,6 +112,11 @@ class UserTag extends Model
     }
     return UserTag::where('user_id', $user_id)->where('tag_key', $tag_key)->get();
   }
+  public static function clearTags($user_id, $tag_key){
+    UserTag::where('user_id', $user_id)
+      ->where('tag_key' , $tag_key)->delete();
+  }
+
   public function name(){
     $item = $this->details();
     if(!isset($item) || empty($item)) return $this->tag_value;

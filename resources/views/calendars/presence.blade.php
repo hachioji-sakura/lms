@@ -6,7 +6,7 @@
       @if(config('app.env')!='product' || strtotime($item->start_time) <= strtotime('15 minute') || strtotime($item->end_time) <= strtotime('1 minute'))
         {!!nl2br(__('messages.warning_calendar_presence'))!!}
       @else
-        <div class="col-12 col-lg-12 col-md-12 mb-1">
+        <div class="col-12 mb-1">
           <h4 class="text-danger">{!!nl2br(__('messages.warning_calendar_presence_time'))!!}</h4>
         </div>
       @endif
@@ -165,7 +165,7 @@
           </div>
         @else
           <div class="row">
-            <div class="col-12 col-lg-12 col-md-12 mb-1">
+            <div class="col-12 mb-1">
                 <button type="reset" class="btn btn-secondary btn-block">
                     {{__('labels.close_button')}}
                 </button>
@@ -209,7 +209,7 @@
             </button>
           </form>
         </div>
-        <div class="col-12 col-lg-12 col-md-12 mb-1">
+        <div class="col-12 mb-1">
             <button type="reset" class="btn btn-secondary btn-block">
                 {{__('labels.close_button')}}
 

@@ -186,9 +186,9 @@ EOT;
     $item['parent_phone_no'] =  $this->parent->phone_no;
     $item['parent_address'] =  $this->parent->address;
     $item['parent_email'] =  $this->parent->user->email;
-    $item['date1'] = date('m月d日 H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
-    $item['date2'] = date('m月d日 H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
-    $item['date3'] = date('m月d日 H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
+    $item['date1'] = $this->dateweek_format($this->trial_start_time1).date(' H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
+    $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
+    $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
     $subject1 = [];
     $subject2 = [];
     $tagdata = [];
@@ -355,9 +355,8 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'howto_word', 'course_type'];
@@ -368,9 +367,8 @@ EOT;
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
-        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      if(empty($form[$tag_name])) $form[$tag_name] = '';
+      TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     foreach($this->trial_students as $trial_student){
       $trial_student->student->profile_update($form);
@@ -662,9 +660,9 @@ EOT;
           ];
 
           $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
 /*TODO 後まわし
-$teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
-$teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list4, $teacher->user_id, $detail['trial_date4'], $calendars3, "trial_date4"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list5, $teacher->user_id, $detail['trial_date5'], $calendars3, "trial_date5"));
 */
@@ -694,6 +692,7 @@ $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_l
       'remark' => '',
       'lesson' => $calendar->get_tag('lesson')->tag_value,
       'create_user_id' => $form['create_user_id'],
+      'send_mail' => 'teacher',
     ];
     $update_fields = [
       'start_hours', 'start_minutes',

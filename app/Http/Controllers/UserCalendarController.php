@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Models\Student;
@@ -35,6 +31,26 @@ class UserCalendarController extends MilestoneController
           'absence' => '授業を欠席に更新しました。',
           'remind' => '授業予定の確認連絡をしました。',
         ];
+  public function page_title($item, $page_status){
+    if($item->is_teaching()==true){
+      $title = $item->teaching_type_name();
+    }
+    else {
+      $title = $item->work();
+    }
+
+    switch($page_status){
+      case "rest":
+        $title.="のお休み連絡";
+        break;
+      case "confirm":
+        $title.="のご確認";
+        break;
+      default:
+        $title.="詳細";
+    }
+    return $title;
+  }
   public function model(){
     return UserCalendar::query();
   }
@@ -735,8 +751,9 @@ class UserCalendarController extends MilestoneController
       if(!isset($form['action'])){
         $form['action'] = '';
       }
+      $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
-        return view($this->domain.'.simplepage', ["subpage"=>'' ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
       return view($this->domain.'.page', $form)->with($param);
     }
@@ -756,11 +773,13 @@ class UserCalendarController extends MilestoneController
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
+
+      $page_title = $this->page_title($param['item'], $status);
       if($request->has('user')){
         if($status=='fix' && $param['item']->status=='fix'){
-          return redirect('/calendars/'.$param['item']->id.'?user='.$request->get('user'));
+          return redirect('/'.$this->domain.'/'.$param['item']->id.'?user='.$request->get('user'));
         }
-        return view($this->domain.'.simplepage', ["subpage"=>$status ])->with($param);
+        return view('calendars.simplepage', ["subpage"=>$status,"page_title" => $page_title ])->with($param);
       }
 
       return view($this->domain.'.'.$status, [])->with($param);
@@ -844,15 +863,8 @@ class UserCalendarController extends MilestoneController
       $param['ask'] = $ask;
       return view($this->domain.'.teacher_change', [])->with($param);
     }
-    private function page_access_check(Request $request, $id){
-      if($request->has('user') && !$request->has('key')){
-          abort(404, 'ページがみつかりません(1)');
-      }
-      if($request->has('user') && $request->has('key')){
-        if(!$this->is_enable_token($request->get('key'))){
-          abort(403, '有効期限が切れています(2)');
-        }
-      }
+    public function page_access_check(Request $request, $id){
+      $this->user_key_check($request);
       $calendar = UserCalendar::where('id', $id)->first();
       if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
@@ -865,15 +877,24 @@ class UserCalendarController extends MilestoneController
           }
         }
         if($is_find === false){
-          abort(404, 'ページがみつかりません(3)');
+          abort(404, 'ページがみつかりません(99)');
         }
       }
-
-      Auth::loginUsingId($request->has('user'));
+      $this->user_login($request->get('user'));
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
       $param['action'] = '';
       return $param;
+    }
+    public function user_key_check(Request $request){
+      if($request->has('user') && !$request->has('key')){
+          abort(404, 'ページがみつかりません(1)');
+      }
+      if($request->has('user') && $request->has('key')){
+        if(!$this->is_enable_token($request->get('key'))){
+          abort(403, '有効期限が切れています(2)');
+        }
+      }
     }
     /**
      * カレンダー通知
@@ -886,7 +907,7 @@ class UserCalendarController extends MilestoneController
       $param = $this->get_param($request, $id);
       $res = $this->transaction($request, function() use ($param){
         if($param['item']->status=='new'){
-          $param['item']->register_mail($param);
+          $param['item']->register_mail($param, $param['user']->user_id);
         }
         else {
           foreach($param['item']->members as $member){
@@ -982,7 +1003,7 @@ class UserCalendarController extends MilestoneController
     private function _status_update(Request $request, $param, $id, $status){
       $res = $this->transaction($request, function() use ($request, $param, $id, $status){
         $form = $request->all();
-        $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
+        $param['item'] = $this->model()->where('id', $param['item']->id)->first();
         $members = $param['item']->members;
         $_remark = '';
         $_access_key = '';
@@ -1356,6 +1377,17 @@ class UserCalendarController extends MilestoneController
           }
         }
         $calendar = $calendar->details();
+
+        $is_sendmail = false;
+        if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
+          $is_sendmail = true;
+          //新規登録時に変更メールを送らない
+          unset($form['send_mail']);
+        }
+        if($is_sendmail == true){
+          $calendar->register_mail([], $form['create_user_id']);
+        }
+
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         return $this->api_response(200, '', '', $calendar);
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );

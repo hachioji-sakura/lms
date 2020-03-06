@@ -324,12 +324,12 @@ class ImportController extends UserController
      * @return boolean
      */
     private function schedules_import($items){
-      return $this->transaction(null, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_schedule($item)) $c++;
         }
         return $this->api_response(200, '', '', 'count['.$c.']');
+        return $this->transaction(null, function() use ($items){
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -1167,9 +1167,17 @@ class ImportController extends UserController
       ];
 
       if(isset($items)){
-        //すでに存在する場合は更新する
-        $items->update($update_form);
-        $calendar_id = $items->id;
+        if(intval($item['delflag'])==1){
+          UserCalendarMember::where('calendar_id', $items->id)->delete();
+          UserCalendarTag::where('calendar_id', $items->id)->delete();
+          UserCalendar::where('id', $items->id)->delete();
+          return true;
+        }
+        else {
+          //すでに存在する場合は更新する
+          $items->update($update_form);
+          $calendar_id = $items->id;
+        }
       }
       else {
         $update_form['create_user_id'] = 1;
@@ -1290,18 +1298,25 @@ class ImportController extends UserController
             break;
           }
         }
-        //参加者が異なるのでこの設定ではない
-        if($is_member===false) break;
-
-        $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
-        if(isset($add_calendar_date[$item['ymd']])){
+        //参加者が同じ場合、この設定が通常授業設定確定
+        if($is_member===true) {
           $setting_id = $setting->id;
-          break;
+          /*
+          $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
+          if(isset($add_calendar_date[$item['ymd']]['already_calendars'])){
+            $setting_id = $setting->id;
+            break;
+          }
+          */
         }
       }
+      \Log::warning("-------------setting_id=".$setting_id.'-------------');
       if($setting_id > 0){
         $calendar->update(['user_calendar_setting_id' => $setting_id]);
       }
+      $teaching_type = $calendar->get_teaching_type();
+      $calendar->update(['teaching_type' => $teaching_type]);
+
       //ステータス整合性チェック
       $calendar = UserCalendar::where('id', $calendar_id)->first();
 

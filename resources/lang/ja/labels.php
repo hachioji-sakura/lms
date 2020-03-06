@@ -80,6 +80,7 @@ return [
   'student_groups_description' => 'グループ、ファミリーの管理',
   'regular_schedule_list' => '通常授業一覧',
   'regular_schedule_setting' => '通常授業設定',
+  'regular_schedule_confirm' => '通常授業（確認）',
   'regular_schedule_list_description' => '定期的な授業予定',
   'teacher_setting' => '講師設定',
   'teacher_setting_description' => '担当科目、授業可能曜日の設定',
@@ -88,8 +89,9 @@ return [
   'emergency_lecture_cancel_schedule' => '休講連絡する授業',
   'late_arrival_schedule' => '遅刻連絡する授業',
 
-
+  'regular_class_schedule' => '通常授業',
   'details' => '詳細',
+  'confirm' => '確認',
   'name' => '氏名',
   'group_name' => 'グループ名',
   'title' => '概要',
@@ -131,6 +133,7 @@ return [
   'date' => '日付',
   'all_day' => '終日',
   'duration' => '期間',
+  'setting_term' => '設定有効期間',
   'datetime' => '日時',
   'add_datetime' => '登録日時',
   'add_range' => '登録範囲',

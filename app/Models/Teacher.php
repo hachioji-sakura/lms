@@ -139,24 +139,30 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     //事務用の希望シフト
-    foreach($lesson_weeks as $lesson_week){
+    foreach($lesson_weeks as $lesson_week=>$name){
       $tag_names[] = 'work_'.$lesson_week.'_time';
     }
     //体験授業シフト
-    foreach($lesson_weeks as $lesson_week){
+    foreach($lesson_weeks as $lesson_week=>$name){
       $tag_names[] = 'trial_'.$lesson_week.'_time';
     }
 
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
+      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      }
+      else {
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
     }
     $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
     foreach($tag_names as $tag_name){
-      if(!empty($form[$tag_name])){
+      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-	    }
+      }
+      else {
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
     }
     $tag_names = ['schedule_remark'];
     foreach($tag_names as $tag_name){

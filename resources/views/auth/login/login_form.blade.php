@@ -24,7 +24,6 @@
             <strong>{{ $errors->first('password') }}</strong>
         </span>
     @endif
-
   </div>
 </div>
 <div class="form-group row mb-3">
@@ -39,15 +38,24 @@
 </div>
 <script>
 $(function(){
-  base.pageSettinged("login_form", null);
+  var form_data = util.getLocalData('login_form');
+  base.pageSettinged("login_form", form_data);
   //submit
-
   $("button.btn-submit").on('click', function(e){
-    console.log("login");
+    save_login_info();
     e.preventDefault();
     if(front.validateFormValue('login_form')){
       $("form").submit();
     }
   });
+
+  function save_login_info(){
+    util.removeLocalData('login_form');
+    var remember = $('input[name=remember]').prop('checked');
+    if(!remember) return ;
+    var form_data = front.getFormValue('login_form');
+    delete form_data['_token'];
+    util.setLocalData('login_form', form_data);
+  }
 });
 </script>

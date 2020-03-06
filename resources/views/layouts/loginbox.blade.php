@@ -20,6 +20,7 @@
 			<h3 class="card-title">@yield('title_header')</h3>
 		</div>
 		<div class="card-body login-card-body">
+
       @yield('content')
 
 			@yield('modal')

@@ -1,7 +1,11 @@
 @foreach($item["students"] as $member)
   @if($member->user->details()->role!="student") @continue @endif
 
+  @if($user->role=="manager" || $user->role=="teacher")
   <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+  @else
+  <span>
+  @endif
     @if($member->status=='new' || $member->status=='confirm' || $member->status=='fix')
     <i class="fa fa-user-graduate"></i>
     @elseif($member->status=='cancel')
@@ -21,7 +25,11 @@
       <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1">{{$member->status_name()}}</small>
       @endif
     @endif
+  @if($user->role=="manager" || $user->role=="teacher")
   </a>
+  @else
+  </span>
+  @endif
   @if($set_br==true)
   <br>
   @else

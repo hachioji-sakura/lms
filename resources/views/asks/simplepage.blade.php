@@ -10,7 +10,7 @@
   @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
     @slot('page_message')
       @if($item->status=="new")
-      <div class="col-12 col-lg-12 col-md-12 bg-danger p-2 mb-2">
+      <div class="col-12 bg-danger p-2 mb-2">
         <i class="fa fa-exclamation-triangle mr-1"></i>    {{__('messages.confirm_ask_data')}}
       </div>
       @endif

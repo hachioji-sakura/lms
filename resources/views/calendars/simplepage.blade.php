@@ -1,23 +1,9 @@
 @extends('layouts.loginbox')
-@section('title')
-@if($item->trial_id > 0)体験@endif授業予定
-@if($subpage==="rest")
-  お休み連絡
-@elseif($item['status']==="confirm")
-  のご確認
-@endif
-@endsection
+@section('title', $page_title)
+@section('title_header', $page_title)
 
-@section('title_header')
-  @if($item->trial_id > 0)体験@endif授業予定
-  @if($subpage==="rest")
-    お休み連絡
-  @elseif($item['status']==="confirm")
-    のご確認
-  @endif
-@endsection
 @section('content')
-  @component('calendars.page', ['user'=>$user, 'item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
+  @component($domain.'.page', ['user'=>$user, 'item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => ''])
     @slot('page_message')
       @if(!empty($result))
         <h4 class="bg-success p-3 text-sm">
@@ -27,23 +13,27 @@
         @if($item['status']==="fix" && $subpage==="rest")
           @if($item->is_prev_rest_contact()==false && $item['trial_id'] == 0)
             {{-- 授業当日9時を過ぎたら休み連絡はできない --}}
-            <div class="col-12 col-lg-12 col-md-12 mb-1 bg-warning p-4">
+            <div class="col-12 mb-1 bg-warning p-4">
               <i class="fa fa-exclamation-triangle mr-2"></i>この休み連絡は、振替対象外となります。
               <br>
               <span class="text-sm">※授業当日のAM9:00以降の連絡</span>
             </div>
           @else
-            この授業予定をお休みしますか？
+          <div class="col-12 mb-1 bg-success p-2">
+            <i class="fa fa-exclamation-triangle mr-2"></i>{{__('messages.confirm_rest_contact')}}
+          </div>
           @endif
         @else
-          以下の授業予定をご確認ください
+        <div class="col-12 mb-1 bg-success p-2">
+          <i class="fa fa-exclamation-triangle mr-2"></i>{{__('messages.info_calendar_confirm')}}
+        </div>
         @endif
       @endif
     @endslot
 
     @slot('forms')
       @if(empty($result))
-      <form method="POST" action="/calendars/{{$item['id']}}" id="_form">
+      <form method="POST" action="/{{$domain}}/{{$item['id']}}" id="_form">
         @if(($item['status']==="confirm" || $item['status']==="fix") && $subpage==="fix")
           @csrf
 		      <input type="text" name="dummy" style="display:none;" / >
@@ -56,9 +46,9 @@
           </div>
           <div class="row">
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="この予定を確認済みに更新しますか？">
+                <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_schedule_to_confirm')}}">
                   <i class="fa fa-envelope mr-1"></i>
-                  送信
+                  {{__('labels.send_button')}}
                 </button>
               </form>
             </div>
@@ -77,9 +67,9 @@
             </div>
           <div class="row">
             <div class="col-12">
-                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form" confirm="休み連絡を送信しますか？">
+                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form" confirm="{{__('messages.confirm_rest_contact')}}">
                   <i class="fa fa-envelope mr-1"></i>
-                    休み連絡
+                    {{__('labels.rest_contact')}}
                 </button>
             </div>
           </div>
@@ -90,7 +80,7 @@
       <div class="row mt-2">
         <div class="col-12">
           <a href="/login" role="button" class="btn btn-outline-success btn-block btn-sm float-left mr-1">
-            <i class="fa fa-sign-in-alt mr-1"></i>ログイン画面へ
+            <i class="fa fa-sign-in-alt mr-1"></i>{{__('labels.to_login')}}
           </a>
         </div>
       </div>

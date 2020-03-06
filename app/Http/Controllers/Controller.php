@@ -53,8 +53,9 @@ class Controller extends BaseController
     public function send_mail($to, $title, $param, $type, $template, $locale="ja")
     {
       App::setLocale($locale);
-      //TODO calendar_newのサポートへの通知は、いつか外す
+      //TODO いったんすべてサポートに送信
       $is_send_support_mail = false;
+      /*
       $send_support_mail_tamplates = [
         'trial', 'trial_confirm',
         'register', 'calendar_correction', 'calendar_month_work',
@@ -62,12 +63,16 @@ class Controller extends BaseController
         'ask_lecture_cancel_new', 'ask_lecture_cancel_commit', 'ask_lecture_cancel_cancel',
         'ask_recess_commit', 'ask_unsubscribe_commit',
       ];
+      */
+      $is_send_support_mail = true;
+      /*
       foreach($send_support_mail_tamplates as $t){
         if($t == $template){
           $is_send_support_mail = true;
           break;
         }
       }
+      */
       $title = '【'.__('labels.system_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);
