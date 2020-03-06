@@ -80,8 +80,8 @@
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
-        @if(isset($filter['search_from_date']))
-          value="{{$filter['search_from_date']}}"
+        @if(isset($filter['calendar_filter']['search_from_date']))
+          value="{{$filter['calendar_filter']['search_from_date']}}"
         @endif
         >
       </div>
@@ -97,8 +97,8 @@
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
-        @if(isset($filter['search_to_date']))
-          value="{{$filter['search_to_date']}}"
+        @if(isset($filter['calendar_filter']['search_to_date']))
+          value="{{$filter['calendar_filter']['search_to_date']}}"
         @endif
         >
       </div>

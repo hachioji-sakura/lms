@@ -15,7 +15,7 @@
           <small class="badge badge-danger mt-1 mx-1">{{__('labels.trial')}}</small>
           @endif
           <br>
-          <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
+          <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}} / {{$calendar->teaching_type_name()}}
           <br>
           <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
         </a>
