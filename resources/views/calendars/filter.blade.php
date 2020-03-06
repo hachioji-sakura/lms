@@ -6,7 +6,7 @@
     @foreach($attributes['teaching_type'] as $index=>$name)
       <label class="mx-2">
       <input type="checkbox" value="{{$index}}" name="teaching_type[]" class="icheck flat-green"
-        @if(isset($filter['teaching_type']) && in_array($index, $filter['teaching_type'])==true)
+        @if(isset($filter['calendar_filter']['teaching_type']) && in_array($index, $filter['calendar_filter']['teaching_type'])==true)
         checked
         @endif
         >{{$name}}
@@ -14,7 +14,7 @@
     @endforeach
     <label class="mx-2">
     <input type="checkbox" value="1" name="is_exchange" class="icheck flat-green"
-    @if(isset($filter['is_exchange']) && $filter['is_exchange']==true)
+    @if(isset($filter['calendar_filter']['is_exchange']) && $filter['calendar_filter']['is_exchange']==true)
       checked
     @endif
     >{{__('labels.to_exchange')}}
@@ -30,7 +30,7 @@
     @foreach($attributes['places'] as $place)
       <label class="mx-2">
       <input type="checkbox" value="{{$place->id}}" name="search_place[]" class="icheck flat-green"
-        @if(isset($filter['search_place']) && in_array($place->id, $filter['search_place'])==true)
+        @if(isset($filter['calendar_filter']['search_place']) && in_array($place->id, $filter['calendar_filter']['search_place'])==true)
         checked
         @endif
         >{{$place->name()}}
@@ -48,7 +48,7 @@
         @if($index=='lecture_cancel') @continue @endif
         @if($index=='rest') $index='rest,lecture_cancel' @endif
         <option value="{{$index}}"
-        @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+        @if(isset($filter['calendar_filter']['search_status']) && in_array($index, $filter['calendar_filter']['search_status'])==true)
         selected
         @endif
         >{{$name}}</option>
@@ -64,7 +64,7 @@
     <select name="search_work[]" class="form-control select2" width=100% placeholder="作業" multiple="multiple" >
       @foreach($attributes['work'] as $index=>$name)
         <option value="{{$index}}"
-        @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+        @if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
         selected
         @endif
         >{{$name}}</option>
@@ -74,7 +74,7 @@
     @foreach($attributes['work'] as $index=>$name)
       <label class="mx-2">
       <input type="checkbox" value="{{$index}}" name="search_work[]" class="icheck flat-green"
-        @if(isset($filter['search_work']) && in_array($index, $filter['search_work'])==true)
+        @if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
         checked
         @endif
         >{{$name}}
@@ -87,5 +87,9 @@
     <label for="search_word" class="w-100">
       {{__('labels.search_keyword')}}
     </label>
-    <input type="text" name="search_word" class="form-control" placeholder="" inputtype="">
+    <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
+    @if(isset($filter['search_keyword']))
+    value = "{{$filter['search_keyword']}"
+    @endif
+    >
 </div>

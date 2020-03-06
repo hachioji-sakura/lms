@@ -31,6 +31,22 @@
             {{$field['label']}}
           </label>
           @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
+        @elseif($key==='teaching_name')
+        <label for="{{$key}}" class="w-100">
+          {{$field['label']}}
+        </label>
+        {{$item[$key]}}
+        @if($item->exchanged_calendar_id > 0)
+        <br>
+        <small class="badge badge-primary mt-1 mr-1 p-1">
+          <i class="fa fa-exchange-alt mr-1"></i>
+          {{__('labels.exchange')}}: <span id="exchanged_calendar_datetime">
+            {{$item->exchanged_calendar->details()["datetime"]}}
+          </span>
+        </small>
+        @endif
+        <br>
+
         @elseif(isset($item[$key]) && gettype($item[$key])=='array')
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}

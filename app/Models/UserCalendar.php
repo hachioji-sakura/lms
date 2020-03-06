@@ -244,7 +244,7 @@ EOT;
 EOT;
     }
     $query = $query->whereRaw($where_raw,$param);
-    $query = $this->scopeSearchDate($query, $from, $to);
+    //$query = $this->scopeSearchDate($query, $from, $to);
     return $query;
   }
   public function get_access_member($user_id){
