@@ -8,7 +8,7 @@
         <i class="fa fa-calendar mx-1"></i>{{$calendar["dateweek"]}}
         <small title="{{$calendar["id"]}}" class="badge badge-{{config('status_style')[$calendar['status']]}} mt-1 mx-1">{{$calendar["status_name"]}}</small>
         <br>
-        <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
+        <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}} / {{$calendar->teaching_type_name()}}
         <br>
         <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
         </a>
