@@ -87,11 +87,15 @@ class UserController extends Controller
         'search_type' => $request->search_type,
       ],
       'calendar_filter' => [
+        'search_from_date'=>$request->search_from_date,
+        'search_to_date'=>$request->search_to_date,
         'search_week'=>$request->search_week,
         'search_work' => $request->search_work,
         'search_status' => $request->search_status,
         'search_place' => $request->search_place,
         'is_all_data' => $request->is_all_data,
+        'is_exchange' => $request->is_exchange,
+        'teaching_type' => $request->teaching_type,
       ],
       'sort' => [
         'is_asc'=>$request->is_asc,

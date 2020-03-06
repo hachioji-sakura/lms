@@ -714,6 +714,10 @@ class StudentController extends UserController
    if(!empty($form['search_place'])){
      $places = $form['search_place'];
    }
+   $teaching_types =[];
+   if(!empty($form['teaching_type'])){
+     $teaching_types = $form['teaching_type'];
+   }
 
    $calendars = UserCalendar::findStatuses($statuses);
    if(!empty($to_date) || !empty($from_date)){
@@ -725,8 +729,10 @@ class StudentController extends UserController
    }
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
+   $calendars = $calendars->findTeachingType($teaching_types);
    $calendars = $calendars->findUser($user_id);
    if($is_exchange==true){
+     \Log::warning("----------exchange-------------");
      $calendars = $calendars->findExchangeTarget();
    }
    $count = $calendars->count();
