@@ -355,7 +355,6 @@ EOT;
     $template = 'ask_'.$this->type.'_'.$this->status;
     if($this->target_user_id==1) return false;
     $title = $this->type_name();//.':'.$this->status_name();
-    \Log::info("target_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->target_user->details('students')->role=='student'){

@@ -262,12 +262,13 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-      $res = $this->transaction($request, function() use ($request, $param, $id, $status){      $form = $request->all();
+      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+      $form = $request->all();
+      $form['status'] = $status;
+      $form['login_user_id'] = $param['user']->user_id;
+
       $param['item'] = Ask::where('id', $param['item']->id)->first();
-      $param['item'] = $param['item']->change([
-        'status'=>$status,
-        'login_user_id' => $param['user']->user_id,
-      ]);
+      $param['item'] = $param['item']->change($form);
       return $this->api_response(200, '', '', $param['item']);
     }, '依頼ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;

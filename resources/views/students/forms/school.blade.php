@@ -1,4 +1,10 @@
-<div class="col-12 col-lg-3 col-md-3">
+<div class="col-12
+@if(isset($is_label) && $is_label==true)
+col-md-6
+@else
+col-md-3
+@endif
+ ">
   <div class="form-group">
     <label for="{{$prefix}}grade" class="w-100">
       {{__('labels.grade')}}
@@ -26,7 +32,13 @@
     @endif
   </div>
 </div>
-<div class="col-12 col-lg-9 col-md-9 {{$prefix}}grade_school_name_form">
+<div class="col-12
+@if(isset($is_label) && $is_label==true)
+col-md-6
+@else
+col-md-9
+@endif
+{{$prefix}}grade_school_name_form">
   <div class="form-group">
     <label for="{{$prefix}}school_name" class="w-100">
       {{__('labels.school_name')}}

@@ -181,7 +181,7 @@ class TrialController extends UserCalendarController
       $ret['item'] = $item->details();
     }
     else {
-      $lists = ['cancel', 'new', 'fix', 'confirm', 'complete', 'presence'];
+      $lists = ['cancel', 'new', 'fix', 'confirm', 'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
         $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
@@ -442,7 +442,7 @@ class TrialController extends UserCalendarController
      if($request->has('lesson')){
        $lesson = $request->get('lesson');
      }
-     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
+     $param['candidate_teachers'] = $param['item']->candidate_teachers(1, $lesson);
      $param['view'] = 'to_calendar';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
@@ -681,13 +681,13 @@ class TrialController extends UserCalendarController
 
    public function _update(Request $request, $id)
    {
-     $res =  $this->transaction($request, function() use ($request, $id){
        $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
        $item = Trial::where('id', $id)->first();
        $item->trial_update($form);
        return $this->api_response(200, '', '', $item);
+       $res =  $this->transaction($request, function() use ($request, $id){
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }

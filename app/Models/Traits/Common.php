@@ -69,6 +69,7 @@ trait Common
     return $res;
   }
   public function dateweek_format($date){
+    if(empty($date)) return "-";
     $format = "n月j日";
     $weeks = config('week');
     if(app()->getLocale()=='en'){

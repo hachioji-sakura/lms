@@ -4,7 +4,7 @@
 @endsection
 @section('title_header')@yield('title')@endsection
 @section('content')
-@if($item->status=='fix')
+@if($item->status=='new')
 <div id="ask_hope_to_join">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
     @csrf
@@ -22,7 +22,7 @@
               </label>
               <div class="input-group">
                 <div class="form-check">
-                    <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_fix" value="commit" required="true" onChange="status_radio_change()">
+                    <input class="form-check-input icheck flat-green" type="radio" name="status" id="status_commit" value="commit" required="true" onChange="status_radio_change()">
                     <label class="form-check-label" for="status_commit">
                         {{__('labels.yes')}}
                     </label>

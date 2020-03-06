@@ -193,6 +193,26 @@ EOT;
     $item['date1'] = $this->dateweek_format($this->trial_start_time1).date(' H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
     $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
     $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
+    $item['start_hope_date'] = $this->dateweek_format($this->schedule_start_hope_date);
+
+    $get_tagdata = $this->get_tagdata();
+    foreach($get_tagdata as $key => $val){
+      $item[$key] = $val;
+    }
+    $calendars = $this->get_calendar();
+    foreach($calendars as $i => $calendar){
+      $calendars[$i] = $calendar->details();
+    }
+    $item['calendars'] = $calendars;
+    $calendar_settings = [];
+    $user_calendar_settings = $this->get_calendar_settings();
+    foreach($user_calendar_settings as $user_calendar_setting){
+      $calendar_settings[] = $user_calendar_setting->details();
+    }
+    $item['calendar_settings'] = $calendar_settings;
+    return $item;
+  }
+  public function get_tagdata(){
     $subject1 = [];
     $subject2 = [];
     $tagdata = [];
@@ -210,22 +230,7 @@ EOT;
         $tagdata[$tag->tag_key][$tag->tag_value] = $tag->name();
       }
     }
-
-    $item['subject1'] = $subject1;
-    $item['subject2'] = $subject2;
-    $item['tagdata'] = $tagdata;
-    $calendars = $this->get_calendar();
-    foreach($calendars as $i => $calendar){
-      $calendars[$i] = $calendar->details();
-    }
-    $item['calendars'] = $calendars;
-    $calendar_settings = [];
-    $user_calendar_settings = $this->get_calendar_settings();
-    foreach($user_calendar_settings as $user_calendar_setting){
-      $calendar_settings[] = $user_calendar_setting->details();
-    }
-    $item['calendar_settings'] = $calendar_settings;
-    return $item;
+    return ['subject1' => $subject1, 'subject2' => $subject2, 'tagdata' => $tagdata];
   }
   /**
    * 体験授業申し込み登録
@@ -354,8 +359,12 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
-      if(empty($form[$tag_name])) $form[$tag_name] = '';
-      TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+      else {
+        TrialTag::clearTags($this->id, $tag_name);
+      }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'howto_word', 'course_type'];
@@ -722,6 +731,10 @@ EOT;
     if(empty($trial_start_time) || empty($trial_end_time)){
       return $time_list;
     }
+    if(strtotime("now") > strtotime($trial_start_time)){
+      return [];
+    }
+
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
