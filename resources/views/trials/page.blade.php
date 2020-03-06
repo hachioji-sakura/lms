@@ -17,19 +17,19 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-calendar mr-1"></i>体験授業予定
-            {{-- TODO 後まわし
-            <a class="btn btn-flat btn-danger float-right ml-2" role="button"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_candidate">
-              <i class="fa fa-envelope mr-1"></i>
-              追加で候補日を訊く連絡
-            </a>
-            --}}
-            <a role="button" class="btn btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar">
+            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar">
               <i class="fa fa-plus mr-1"></i>
-              体験授業予定を設定する
+              体験授業登録
             </a>
           </div>
           <div class="card-footer">
             @component('trials.forms.trial_calendar',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
+          </div>
+          <div class="card-footer">
+            <a class="btn btn-sm btn-flat btn-success float-right ml-2" role="button"  href="javascript:void(0);" page_title="入会希望を受け取る連絡を出す" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_hope_to_join">
+              <i class="fa fa-envelope mr-1"></i>
+              入会希望に関するご連絡
+            </a>
           </div>
         </div>
 
@@ -38,12 +38,12 @@
             <i class="fa fa-clock mr-1"></i>通常授業設定
             {{--
             <a class="btn btn-flat btn-danger float-right" role="button"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
-              <i class="fa fa-envelope mr-1"></i>入塾案内を出す
+              <i class="fa fa-envelope mr-1"></i>入塾案内連絡
             </a>
             --}}
-            <a role="button" class="btn btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar_setting">
+            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar_setting">
               <i class="fa fa-plus mr-1"></i>
-              通常授業予定を設定する
+              通常授業登録
             </a>
           </div>
           <div class="card-footer">

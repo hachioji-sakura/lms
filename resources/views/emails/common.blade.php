@@ -1,9 +1,9 @@
 @section('mail_title')
 {{__('messages.mail_header', ['url_name'=>__('labels.system_name'), 'url' =>config('app.url')])}}
+{{__('messages.mail_header2')}}
 @endsection
-
 @section('signature')
-{!!nl2br(__('messages.mail_footer'))!!}
+{{__('messages.mail_footer')}}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {{__('labels.email')}}：hachiojisakura-support@hachioji-sakura.com
 {{__('labels.phone_no')}}　：080-7726-2443 (042-649-3976)

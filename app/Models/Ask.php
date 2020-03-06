@@ -193,7 +193,7 @@ EOT;
 
   public function change($form, $file=null, $is_file_delete = false){
     if(isset($form["status"]) && isset($form["login_user_id"])){
-      $this->_change($form['status'], $form['login_user_id']);
+      $this->_change($form);
       $this->update(['status'=>$form['status']]);
     }
     return $this;
@@ -230,13 +230,16 @@ EOT;
     $item["end_dateweek"] = $this->end_dateweek();
     return $item;
   }
-  public function _change($status, $login_user_id){
+  public function _change($form){
     $ret = false;
     $is_commit = false;
     $is_complete = false;
+    if(!isset($form['status']) || !isset($form['login_user_id'])) return false;
+    $status = $form['status'];
     if($status == 'commit'){
       $is_commit = true;
     }
+    $login_user_id = $form['login_user_id'];
     $target_model_data = $this->get_target_model_data();
     if($target_model_data==null) return false;
     switch($this->type){
@@ -254,6 +257,13 @@ EOT;
         else if($this->type=="unsubscribe"){
           $target_model_data->unsubscribe_commit($is_commit, $start_date);
         }
+        break;
+      case "hope_to_join":
+        if(!isset($form['schedule_start_hope_date'])) $form['schedule_start_hope_date']="";
+        $ret = true;
+        $is_complete = true;
+        //Trial->hope_to_join()を実行
+        $target_model_data->hope_to_join($is_commit, $form['schedule_start_hope_date']);
         break;
       case "agreement":
         $ret = true;
@@ -307,6 +317,7 @@ EOT;
     $target_model_data = $this->get_target_model_data();
     if($target_model_data==null) return false;
     switch($this->type){
+      case "hope_to_join":
       case "agreement":
       case "recess":
       case "unsubscribe":
@@ -344,7 +355,6 @@ EOT;
     $template = 'ask_'.$this->type.'_'.$this->status;
     if($this->target_user_id==1) return false;
     $title = $this->type_name();//.':'.$this->status_name();
-    \Log::info("target_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->target_user->details('students')->role=='student'){

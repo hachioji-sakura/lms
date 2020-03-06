@@ -6,6 +6,7 @@ return array(
   'emergency_lecture_cancel' => '緊急休講申請',
   'teacher_change' => '代講依頼',
   'agreement' => '入会のご案内',
+  'hope_to_join' => '入会希望に関するご連絡',
   'recess' => '休会連絡',
   'unsubscribe' => '退会連絡',
   'schedule_add' => '授業追加依頼',
