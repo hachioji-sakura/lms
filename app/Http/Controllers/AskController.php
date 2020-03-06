@@ -208,6 +208,11 @@ class AskController extends MilestoneController
     $res = $this->api_response();
     $is_send = true;
     $ask = Ask::where('id', $id)->first();
+
+    if($request->has('status') && $status!=$request->get('status')){
+      $status = $request->get('status');
+    }
+
     if($status!="remind"){
       //remind以外はステータスの更新
       if($ask->status != $status){
@@ -257,13 +262,13 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-    $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
       $form = $request->all();
+      $form['status'] = $status;
+      $form['login_user_id'] = $param['user']->user_id;
+
       $param['item'] = Ask::where('id', $param['item']->id)->first();
-      $param['item'] = $param['item']->change([
-        'status'=>$status,
-        'login_user_id' => $param['user']->user_id,
-      ]);
+      $param['item'] = $param['item']->change($form);
       return $this->api_response(200, '', '', $param['item']);
     }, '依頼ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
@@ -353,6 +358,18 @@ class AskController extends MilestoneController
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['action'] = '';
      return view('calendars.teacher_change', [])->with($param);
+   }
+   public function hope_to_join_page(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+
+     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+
+     $param['fields'] = $this->show_fields($param['item']->type);
+     $param['trial'] = $param['item']->get_target_model_data();
+     $param['access_key'] = $param['trial']->parent->user->access_key;
+     $param['action'] = '';
+     return view('asks.hope_to_join', [])->with($param);
    }
    public function agreement_page(Request $request, $id)
    {

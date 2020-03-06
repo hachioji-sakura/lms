@@ -43,5 +43,9 @@ class TrialTag extends UserTag
     }
     return TrialTag::where('trial_id', $trial_id)->where('tag_key', $tag_key)->get();
   }
+  public static function clearTags($trial_id, $tag_key){
+    TrialTag::where('trial_id', $trial_id)
+      ->where('tag_key' , $tag_key)->delete();
+  }
 
 }

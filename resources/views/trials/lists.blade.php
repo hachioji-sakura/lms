@@ -20,6 +20,13 @@
                 <div class="row">
                   <div class="col-12 col-lg-4 col-md-6 mt-1">
                     <a href="trials/{{$item->id}}">
+                    <span class="text-xs">
+                      <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
+                        {{$item['status_name']}}
+                      </small>
+                    </span>
+                    <span class="text-sm time">申込日:{{$item['create_date']}}</span>
+                    <br>
                     @foreach($item->trial_students as $trial_student)
                     @if(!isset($trial_student->student))
                       @continue
@@ -31,13 +38,6 @@
                       </small>
                     @endforeach
                     </a>
-                    <span class="text-sm time">申込日:{{$item['create_date']}}</span>
-                    <span class="text-xs ml-2">
-                      <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
-                        {{$item['status_name']}}
-                      </small>
-                    </span>
-                    <br>
                     @foreach($item["tagdata"]["lesson"] as $label)
                     <span class="text-xs">
                       <small class="badge badge-primary p-1 mr-1">
@@ -66,12 +66,12 @@
 --}}
                   </div>
                   <div class="col-12 col-lg-4 mt-1 text-sm">
-                    <a href="trials/{{$item->id}}" role="button" class="btn btn-secondary btn-sm">
-                      <i class="fa fa-file mr-1"></i>
+                    <a href="trials/{{$item->id}}" role="" class="mr-1" style="text-decoration: underline">
+                      <i class="fa fa-file"></i>
                       {{__('labels.details')}}
                     </a>
-                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="button" class="btn btn-success btn-sm">
-                      <i class="fa fa-edit mr-1"></i>
+                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1"  style="text-decoration: underline">
+                      <i class="fa fa-edit"></i>
                       {{__('labels.edit')}}
                     </a>
                     <br>
@@ -103,9 +103,9 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-filter"></i>
+      <i class="nav-icon fa fa-envelope-square"></i>
       <p>
-        申し込み状態
+        体験授業完了前
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
@@ -154,11 +154,55 @@
           </p>
         </a>
       </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open mt-2">
+    <a href="#" class="nav-link">
+      <i class="nav-icon fa fa-envelope-open-text"></i>
+      <p>
+        体験授業完了後
+        <i class="right fa fa-angle-left"></i>
+      </p>
+    </a>
+    <ul class="nav nav-treeview">
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=entry_contact" class="nav-link @if($_status=="entry_contact") active @endif">
+          <i class="fa fa-hourglass-half nav-icon"></i>
+          <p>
+            入会希望連絡待ち
+            @if($entry_contact_count > 0)
+            <span class="badge badge-secondary right">{{$entry_contact_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=entry_hope" class="nav-link @if($_status=="entry_hope") active @endif">
+          <i class="fa fa-thumbs-up nav-icon"></i>
+          <p>
+            入会希望あり
+            @if($entry_hope_count > 0)
+            <span class="badge badge-primary right">{{$entry_hope_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?status=entry_guidanced" class="nav-link @if($_status=="entry_guidanced") active @endif">
+          <i class="fa fa-file-export nav-icon"></i>
+          <p>
+            入会案内連絡済
+            @if($entry_guidanced_count > 0)
+            <span class="badge badge-secondary right">{{$entry_guidanced_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
       <li class="nav-item">
         <a href="/{{$domain}}?status=complete" class="nav-link @if($_status=="complete") active @endif">
           <i class="fa fa-check-circle nav-icon"></i>
           <p>
-            入会案内連絡済
+            入会済み
             @if($complete_count > 0)
             <span class="badge badge-secondary right">{{$complete_count}}</span>
             @endif
@@ -166,16 +210,27 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=rest,cancel" class="nav-link @if($_status=="rest,cancel") active @endif">
+        <a href="/{{$domain}}?status=entry_cancel" class="nav-link @if($_status=="entry_cancel") active @endif">
           <i class="fa fa-ban nav-icon"></i>
           <p>
-            キャンセル
-            @if($cancel_count > 0)
-            <span class="badge badge-secondary right">{{$cancel_count}}</span>
+            入会キャンセル
+            @if($entry_cancel_count > 0)
+            <span class="badge badge-secondary right">{{$entry_cancel_count}}</span>
             @endif
           </p>
         </a>
       </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open mt-2">
+    <a href="#" class="nav-link">
+      <i class="nav-icon fa fa-filter"></i>
+      <p>
+        その他
+        <i class="right fa fa-angle-left"></i>
+      </p>
+    </a>
+    <ul class="nav nav-treeview">
       <li class="nav-item">
         <a href="/{{$domain}}" class="nav-link @if(empty($_status)) active @endif">
           <i class="fa fa-history nav-icon"></i>
