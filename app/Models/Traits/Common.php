@@ -77,7 +77,7 @@ trait Common
       $weeks = config('week_en');
     }
     $d = date($format,  strtotime($date));
-    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
+    $d .= '('.$weeks[date('w',  strtotime($date))].')';
     return $d;
   }
 }
