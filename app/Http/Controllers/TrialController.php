@@ -442,7 +442,7 @@ class TrialController extends UserCalendarController
      if($request->has('lesson')){
        $lesson = $request->get('lesson');
      }
-     $param['candidate_teachers'] = $param['item']->candidate_teachers(1, $lesson);
+     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
      $param['view'] = 'to_calendar';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
