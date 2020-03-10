@@ -57,18 +57,6 @@ class Milestone extends Model
   {
     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
   }
-  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
-  {
-    if(count($vals) > 0){
-      if($is_not===true){
-        $query = $query->whereNotIn($field, $vals);
-      }
-      else {
-        $query = $query->whereIn($field, $vals);
-      }
-    }
-    return $query;
-  }
   public function scopeSearchWord($query, $word){
     $search_words = explode(' ', $word);
     $query = $query->where(function($query)use($search_words){
