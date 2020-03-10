@@ -12,9 +12,11 @@ use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Common;
 
 class Student extends Model
 {
+  use Common;
   protected $connection = 'mysql_common';
   protected $table = 'common.students';
   protected $guarded = array('id');
@@ -322,18 +324,6 @@ EOT;
         $query = $this->scopeFindEmail($query, $_search_word, true);
       }
     });
-    return $query;
-  }
-  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
-  {
-    if(count($vals) > 0){
-      if($is_not===true){
-        $query = $query->whereNotIn($field, $vals);
-      }
-      else {
-        $query = $query->whereIn($field, $vals);
-      }
-    }
     return $query;
   }
 

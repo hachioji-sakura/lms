@@ -135,6 +135,22 @@ class TrialController extends UserCalendarController
    */
   public function index(Request $request)
   {
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+
     $param = $this->get_param($request);
     $user = $param['user'];
     if(!$this->is_manager($user->role)){
@@ -142,6 +158,12 @@ class TrialController extends UserCalendarController
       abort(403);
     }
     $_table = $this->search($request);
+
+    $page_data = $this->get_pagedata($_table['count'], $param['_line'], $param['_page']);
+    foreach($page_data as $key => $val){
+      $param[$key] = $val;
+    }
+
     return view($this->domain.'.lists', $_table)
       ->with($param);
   }
@@ -161,18 +183,7 @@ class TrialController extends UserCalendarController
     if(!isset($user)) {
       abort(403);
     }
-    $ret = [
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'origin' => $request->origin,
-      'item_id' => $request->item_id,
-      'search_word'=>$request->search_word,
-      '_status' => $request->get('status'),
-      'search_status'=>$request->status,
-      'access_key'=>$request->key,
-      'attributes' => $this->attributes(),
-    ];
+    $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       if(!isset($item)){
@@ -202,90 +213,27 @@ class TrialController extends UserCalendarController
     $items->with('parent');
     $user = $this->login_details($request);
     $items = $this->_search_scope($request, $items);
-    $items = $this->_search_pagenation($request, $items);
 
+    $count = $items->count();
+
+    $request->merge([
+      '_sort' => 'created_at'
+    ]);
+    if($request->get('is_desc')==1){
+      $request->merge([
+        '_sort_order' => 'desc',
+      ]);
+    }
     $items = $this->_search_sort($request, $items);
+    $items = $this->_search_pagenation($request, $items);
     $items = $items->get();
-    $status = $request->get('status');
-    if(!empty($status) && $status==='confirm'){
-      $fields = [
-        'create_date' => [
-          'label' => '申込年月日',
-          'link' => 'show',
-        ],
-        'datetime' => [
-          'label' => '授業予定',
-        ],
-        'teacher_name' => [
-          'label' => '講師氏名',
-        ],
-        'student_name' => [
-          'label' => '生徒氏名',
-        ],
-      ];
-      $fields['buttons'] = [
-        'label' => '・・・',
-        'button' => [
-          [ "label" => "授業予定リマインド",
-            "method" => "remind",
-            "style" => "danger",
-          ]
-        ]
-      ];
-    }
-    else {
-      $fields =[
-        'create_date' => [
-          'label' => '申込年月日',
-          'link' => 'show',
-        ],
-        'status_name' => [
-          'label' => __('labels.status'),
-        ],
-        'date1' => [
-          'label' => '第１希望',
-        ],
-        'date2' => [
-          'label' => '第２希望',
-        ],
-        'student_name' => [
-          'label' => '生徒氏名',
-        ],
-        /*
-        'parent_name' => [
-          'label' => '顧客氏名',
-        ],
-        'grade' => [
-          'label' => '学年',
-        ],
-        'subject1' => [
-          'label' => '補習科目',
-        ],
-        'subject2' => [
-          'label' => '受験科目',
-        ],
-        */
-      ];
-      /*
-          $fields['buttons'] = [
-            'label' => '操作',
-            'button' => ['edit', 'delete']
-          ];
-      */
-      $fields['buttons'] = [
-        'label' => '・・・',
-        'button' => [
-          [ "label" => "体験授業予定登録",
-            "method" => "confirm",
-            "style" => "primary",
-          ]
-        ]
-      ];
-    }
+    /*
     foreach($items as $item){
       $item = $item->details();
     }
-    return ['items' => $items, 'fields' => $fields];
+    */
+    \Log::warning("TrailController::search");
+    return ['items' => $items, 'count' => $count];
   }
   /**
    * フィルタリングロジック
@@ -301,10 +249,14 @@ class TrialController extends UserCalendarController
       $items = $items->where('id',$request->id);
     }
     //ステータス 検索
-    if(isset($request->status)){
-      $items = $items->findStatuses($request->status);
+    if($request->has('search_status')){
+      $items = $items->findStatuses($request->search_status);
     }
     else {
+      if($request->has('list')){
+        $items = $items->findStatuses($request->list);
+      }
+
     }
     //検索ワード
     if(isset($request->search_word)){

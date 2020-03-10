@@ -41,19 +41,10 @@ class Trial extends Model
   /**
    *　スコープ：ステータス
    */
-  public function scopeFindStatuses($query, $statuses)
-  {
-    $str_statuses = '';
-    $statuses = explode(',', $statuses);
-    foreach($statuses as $status){
-      $str_statuses .= "'".$status."',";
-    }
-    $str_statuses = trim($str_statuses, ',');
-    $where_raw = <<<EOT
-      $this->table.status in ($str_statuses)
-EOT;
-    return $query->whereRaw($where_raw,[]);
-  }
+   public function scopeFindStatuses($query, $vals, $is_not=false)
+   {
+     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+   }
 
   /**
    *　スコープ：キーワード検索
@@ -107,7 +98,7 @@ EOT;
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
         }
-        Trial::where('id', $this->id)->update(['status' => $status]);
+        if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
         return $status;
     }
     return $this->status;
@@ -128,30 +119,14 @@ EOT;
   }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
-    $status_name = "";
-    switch($this->status){
-      case "complete":
-        return "入会完了";
-      case "new":
-        return "未対応";
-      case "confirm":
-        return "体験授業調整中";
-      case "fix":
-        return "体験授業確定";
-      case "cancel":
-        return "キャンセル";
-      case "presence":
-        return "体験授業完了";
-      case "entry_contact":
-        return "入会希望連絡済み";
-      case "entry_hope":
-        return "入会希望あり";
-      case "entry_cancel":
-        return "入会希望しない";
-      case "entry_guidanced":
-        return "入会案内連絡済み";
+    if(isset(config('attribute.trial_status')[$this->status])){
+      return config('attribute.trial_status')[$this->status];
     }
     return "(定義なし)";
+  }
+  public function timestamp_format($i){
+    $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
+    return $ret;
   }
   public function details(){
     $item = $this;
@@ -371,7 +346,6 @@ EOT;
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
-      \Log::warning("a1:".$charge_subject_level_item['attribute_value']);
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){

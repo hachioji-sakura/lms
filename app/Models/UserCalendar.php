@@ -168,18 +168,6 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
-  {
-    if(count($vals) > 0){
-      if($is_not===true){
-        $query = $query->whereNotIn($field, $vals);
-      }
-      else {
-        $query = $query->whereIn($field, $vals);
-      }
-    }
-    return $query;
-  }
   public function scopeFindTrialStudent($query, $trial_id)
   {
     $where_raw = <<<EOT
