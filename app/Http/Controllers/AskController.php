@@ -248,8 +248,13 @@ class AskController extends MilestoneController
       $this->send_slack('依頼ステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼ステータス更新');
     }
     $message = $slack_message;
-    if($param['item']->type =="agreement"){
-      $message = "";
+
+    //更新メッセージを表示しないようにする
+    switch($param['item']->type){
+      case "hope_to_join":
+      case "agreement":
+        $message = "";
+        break;
     }
     return $this->save_redirect($res, $param, $message);
   }

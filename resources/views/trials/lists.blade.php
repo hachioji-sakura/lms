@@ -30,13 +30,14 @@
             <?php
               $get_tagdata = $item->get_tagdata();
               $tagdata = $get_tagdata["tagdata"];
+              $status = $item->get_status();
              ?>
             <li class="col-12" accesskey="" target="">
                 <div class="row">
                   <div class="col-12 col-lg-4 col-md-6 mt-1">
                     <a href="trials/{{$item->id}}">
                     <span class="text-xs">
-                      <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
+                      <small class="badge badge-{{config('status_style')[$status]}} p-1 mr-1">
                         {{$item->status_name()}}
                       </small>
                     </span>
