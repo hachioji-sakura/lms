@@ -80,4 +80,18 @@ trait Common
     $d .= '('.$weeks[date('w',  strtotime($date))].')';
     return $d;
   }
+  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
+  {
+    if(gettype($vals) == "string") $vals = explode(',', $vals.',');
+
+    if(count($vals) > 0){
+      if($is_not===true){
+        $query = $query->whereNotIn($field, $vals);
+      }
+      else {
+        $query = $query->whereIn($field, $vals);
+      }
+    }
+    return $query;
+  }
 }

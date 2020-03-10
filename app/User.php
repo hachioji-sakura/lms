@@ -124,7 +124,7 @@ class User extends Authenticatable
     }
     public function details($domain = ""){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
-      $image = Image::where('id', $this->image_id)->first();
+      $image = $this->image;
       $s3_url = '';
       if(isset($image)){
         $s3_url = $image->s3_url;

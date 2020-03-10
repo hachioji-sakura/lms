@@ -58,6 +58,7 @@ class GeneralAttribute  extends Model
   }
   static public function get_item($key, $value){
     $item = null;
+
     $d = config('attributes');
     if(isset($d[$key]) && isset($d[$key][$value.""])){
       $item = $d[$key][$value.""];
@@ -68,8 +69,10 @@ class GeneralAttribute  extends Model
       $item = $g;
     }
     if($item == null){
+      \Log::warning("------------------");
       $item = GeneralAttribute::where('attribute_key', $key)
         ->where('attribute_value', $value)->first();
+        \Log::warning("------------------");
     }
     return $item;
   }

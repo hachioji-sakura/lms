@@ -2,6 +2,14 @@
   {{$domain_name}}一覧
 @endsection
 @extends('dashboard.common')
+
+@section('list_pager')
+@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
+  @slot("addon_button")
+  @endslot
+@endcomponent
+@endsection
+
 @section('contents')
 <div class="row">
   <div class="col-12">
@@ -11,6 +19,9 @@
           <i class="fa fa-calendar mr-1"></i>
           体験申し込み一覧
         </h3>
+        <div class="card-title text-sm">
+          @yield('list_pager')
+        </div>
       </div>
       <div id="trial_list" class="card-body table-responsive p-3">
         @if(count($items) > 0)
@@ -97,6 +108,40 @@
     </div>
   </div>
 </div>
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-12 mb-2">
+    <label for="search_status" class="w-100">
+      {{__('labels.status')}}
+    </label>
+    <div class="w-100">
+      <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
+        @foreach(config('attribute.trial_status') as $index => $name)
+          <option value="{{$index}}"
+          @if(isset($filter['calendar_filter']['search_status']) && in_array($index, $filter['calendar_filter']['search_status'])==true)
+          selected
+          @endif
+          >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="form-group">
+      <label for="is_desc_1" class="w-100">
+        {{__('labels.sort_no')}}
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_desc" id="is_desc_1" class="icheck flat-green"
+      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
+        checked
+      @endif
+      >{{__('labels.date')}} {{__('labels.desc')}}
+      </label>
+    </div>
+  </div>
+  @endslot
+@endcomponent
 @endsection
 
 @section('page_sidemenu')
@@ -111,7 +156,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?status=new" class="nav-link @if($_status=="today") active @endif">
+        <a href="/{{$domain}}?list=new" class="nav-link @if($_status=="new") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>
           <p>
             未対応
@@ -122,7 +167,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=confirm" class="nav-link @if($_status=="confirm") active @endif">
+        <a href="/{{$domain}}?list=confirm" class="nav-link @if($_status=="confirm") active @endif">
           <i class="fa fa-calendar-alt nav-icon"></i>
           <p>
             体験授業調整中
@@ -133,7 +178,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=fix" class="nav-link @if($_status=="fix") active @endif">
+        <a href="/{{$domain}}?list=fix" class="nav-link @if($_status=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
             体験授業確定
@@ -144,7 +189,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=presence" class="nav-link @if($_status=="presence") active @endif">
+        <a href="/{{$domain}}?list=presence" class="nav-link @if($_status=="presence") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
             体験授業完了
@@ -166,7 +211,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?status=entry_contact" class="nav-link @if($_status=="entry_contact") active @endif">
+        <a href="/{{$domain}}?list=entry_contact" class="nav-link @if($_status=="entry_contact") active @endif">
           <i class="fa fa-hourglass-half nav-icon"></i>
           <p>
             入会希望連絡待ち
@@ -177,7 +222,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=entry_hope" class="nav-link @if($_status=="entry_hope") active @endif">
+        <a href="/{{$domain}}?list=entry_hope" class="nav-link @if($_status=="entry_hope") active @endif">
           <i class="fa fa-thumbs-up nav-icon"></i>
           <p>
             入会希望あり
@@ -188,7 +233,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=entry_guidanced" class="nav-link @if($_status=="entry_guidanced") active @endif">
+        <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($_status=="entry_guidanced") active @endif">
           <i class="fa fa-file-export nav-icon"></i>
           <p>
             入会案内連絡済
@@ -199,7 +244,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=complete" class="nav-link @if($_status=="complete") active @endif">
+        <a href="/{{$domain}}?list=complete" class="nav-link @if($_status=="complete") active @endif">
           <i class="fa fa-check-circle nav-icon"></i>
           <p>
             入会済み
@@ -210,7 +255,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?status=entry_cancel" class="nav-link @if($_status=="entry_cancel") active @endif">
+        <a href="/{{$domain}}?list=entry_cancel" class="nav-link @if($_status=="entry_cancel") active @endif">
           <i class="fa fa-ban nav-icon"></i>
           <p>
             入会キャンセル
