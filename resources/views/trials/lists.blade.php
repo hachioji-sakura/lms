@@ -27,16 +27,20 @@
         @if(count($items) > 0)
           <ul class="mailbox-attachments clearfix row">
             @foreach($items as $item)
+            <?php
+              $get_tagdata = $item->get_tagdata();
+              $tagdata = $get_tagdata["tagdata"];
+             ?>
             <li class="col-12" accesskey="" target="">
                 <div class="row">
                   <div class="col-12 col-lg-4 col-md-6 mt-1">
                     <a href="trials/{{$item->id}}">
                     <span class="text-xs">
-                      <small class="badge badge-{{config('status_style')[$item['status']]}} p-1 mr-1">
-                        {{$item['status_name']}}
+                      <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
+                        {{$item->status_name()}}
                       </small>
                     </span>
-                    <span class="text-sm time">申込日:{{$item['create_date']}}</span>
+                    <span class="text-sm time">申込日:{{$item->dateweek_format($item->created_at)}}</span>
                     <br>
                     @foreach($item->trial_students as $trial_student)
                     @if(!isset($trial_student->student))
@@ -49,7 +53,8 @@
                       </small>
                     @endforeach
                     </a>
-                    @foreach($item["tagdata"]["lesson"] as $label)
+                    @isset($tagdata["lesson"])
+                    @foreach($tagdata["lesson"] as $label)
                     <span class="text-xs">
                       <small class="badge badge-primary p-1 mr-1">
                         <i class="fa fa-chalkboard mr-1"></i>
@@ -57,7 +62,9 @@
                       </small>
                     </span>
                     @endforeach
-                    @foreach($item["tagdata"]["lesson_place"] as $label)
+                    @endisset
+                    @isset($tagdata["lesson_place"])
+                    @foreach($tagdata["lesson_place"] as $label)
                     <span class="text-xs">
                       <small class="badge badge-success p-1 mr-1">
                         <i class="fa fa-map-marker mr-1"></i>
@@ -65,15 +72,16 @@
                       </small>
                     </span>
                     @endforeach
+                    @endisset
                   </div>
                   <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
-                      第1希望:{{$item['date1']}}</span><br>
-                      第2希望:{{$item['date2']}}</span><br>
-                      第3希望:{{$item['date3']}}</span>
+                      第1希望:{{$item->timestamp_format(1)}}</span><br>
+                      第2希望:{{$item->timestamp_format(2)}}</span><br>
+                      第3希望:{{$item->timestamp_format(3)}}</span>
 {{--
 <br>
-                      第4希望:{{$item['date4']}}</span><br>
-                      第5希望:{{$item['date5']}}</span>
+第4希望:{{$item->timestamp_format(4)}}</span><br>
+第5希望:{{$item->timestamp_format(5)}}</span>
 --}}
                   </div>
                   <div class="col-12 col-lg-4 mt-1 text-sm">

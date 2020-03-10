@@ -124,6 +124,10 @@ class Trial extends Model
     }
     return "(定義なし)";
   }
+  public function timestamp_format($i){
+    $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
+    return $ret;
+  }
   public function details(){
     $item = $this;
     $item->status = $this->get_status();
