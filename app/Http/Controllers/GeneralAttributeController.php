@@ -57,15 +57,9 @@ class GeneralAttributeController extends UserController
         abort(404);
       }
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
-      return [
-        'domain' => $this->domain,
-        'domain_name' => __('labels.'.$this->domain),
-        "user" => $user,
-        "search_word"=>$request->search_word,
-        "select_key"=>$attribute_key,
-        "select_key_name"=>$select_key['attribute_name'],
-        "keys"=>$keys,
-      ];
+      $ret = $this->get_common_param($request);
+      $ret['keys'] = $keys;
+      return $ret;
     }
     private function search(Request $request, $attribute_key)
     {
