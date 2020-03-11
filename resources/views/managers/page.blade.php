@@ -98,7 +98,7 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/trials?status=new">
+        <a href="/trials?list=new">
         <div class="info-box">
           <span class="info-box-icon bg-info">
             <i class="fa fa-envelope-open-text"></i>
