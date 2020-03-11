@@ -1,6 +1,6 @@
 <script>
 function calc_tuition(){
-  console.log('calcu_tuition');
+  console.log('calc_tuition');
   var select_id = $("select[name=calendar_setting_id] option:selected");
   var fields = ['lesson', 'course_type', 'subject', 'teacher_id', 'course_minutes'];
   var data = [];
