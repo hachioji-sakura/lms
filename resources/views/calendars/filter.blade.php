@@ -87,9 +87,9 @@
     <label for="search_word" class="w-100">
       {{__('labels.search_keyword')}}
     </label>
-    <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
+    <input type="text" name="search_keyword" class="form-control" placeholder="" inputtype=""
     @if(isset($filter['search_keyword']))
-    value = "{{$filter['search_keyword']}"
+    value = "{{$filter['search_keyword']}}"
     @endif
     >
 </div>

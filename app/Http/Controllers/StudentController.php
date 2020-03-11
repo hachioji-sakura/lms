@@ -141,8 +141,8 @@ class StudentController extends UserController
     }
 
     //検索ワード
-    if(isset($request->search_word)){
-      $items = $items->searchWord($request->search_word);
+    if(isset($request->search_keyword)){
+      $items = $items->searchWord($request->search_keyword);
     }
     //ステータス
     if(isset($request->status)){
@@ -734,6 +734,9 @@ class StudentController extends UserController
    if($is_exchange==true){
      \Log::warning("----------exchange-------------");
      $calendars = $calendars->findExchangeTarget();
+   }
+   if(!empty($form['search_keyword'])){
+     $calendars = $calendars->searchWord($form['search_keyword']);
    }
    $count = $calendars->count();
    $calendars = $calendars->sortStarttime($sort);

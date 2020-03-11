@@ -2,6 +2,7 @@
 namespace App\Models\Traits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\GeneralAttribute;
 
 trait Common
 {
@@ -93,5 +94,24 @@ trait Common
       }
     }
     return $query;
+  }
+  protected function _date_label($date, $format='Y年m月d日 H:i'){
+    return date($format, strtotime($date));
+  }
+  public function created_at_label($format='Y年m月d日 H:i'){
+    return $this->_date_label($this->created_at, $format);
+  }
+  public function updated_at_label($format='Y年m月d日 H:i'){
+    return $this->_date_label($this->updated_at, $format);
+  }
+  public function attribute_name($key, $value){
+    $_attribute = GeneralAttribute::get_item($key, $value);
+    if(isset($_attribute))  return $_attribute['attribute_name'];
+    return "";
+  }
+  public function config_attribute_name($key, $value){
+    $_lists = config('attribute.'.$key);
+    if(isset($_lists) && isset($_lists[$value])) return $_lists[$value];
+    return "";
   }
 }
