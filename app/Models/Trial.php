@@ -117,6 +117,14 @@ class Trial extends Model
     }
     return true;
   }
+  public function is_regular_schedule_fix(){
+    if(count($this->user_calendar_settings) < 1) return false;
+    foreach($this->user_calendar_settings as $setting){
+      if($setting->is_enable()==false) continue;
+      if($setting->status!='fix') return false;
+    }
+    return true;
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
     if(isset(config('attribute.trial_status')[$this->status])){

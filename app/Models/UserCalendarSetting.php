@@ -234,7 +234,6 @@ EOT;
   }
   //本モデルはcreateではなくaddを使う
   static protected function add($form){
-    \Log::warning("UserCalendar::add");
 
     $ret = [];
     $trial_id = 0;
@@ -253,7 +252,6 @@ EOT;
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
     $course_minutes = intval(strtotime('2000-01-01 '.$form['to_time_slot']) - strtotime('2000-01-01 '.$form['from_time_slot']))/60;
-
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
