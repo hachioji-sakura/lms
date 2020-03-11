@@ -69,6 +69,7 @@ trait Common
     return $res;
   }
   public function dateweek_format($date){
+    if(empty($date)) return "-";
     $format = "n月j日";
     $weeks = config('week');
     if(app()->getLocale()=='en'){
@@ -76,7 +77,21 @@ trait Common
       $weeks = config('week_en');
     }
     $d = date($format,  strtotime($date));
-    $d .= '('.$weeks[date('w',  strtotime($this->start_time))].')';
+    $d .= '('.$weeks[date('w',  strtotime($date))].')';
     return $d;
+  }
+  public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
+  {
+    if(gettype($vals) == "string") $vals = explode(',', $vals.',');
+
+    if(count($vals) > 0){
+      if($is_not===true){
+        $query = $query->whereNotIn($field, $vals);
+      }
+      else {
+        $query = $query->whereIn($field, $vals);
+      }
+    }
+    return $query;
   }
 }

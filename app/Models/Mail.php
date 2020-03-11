@@ -29,7 +29,6 @@ class Mail extends Model
     ]);
     return $mail;
   }
-
   public function send_mail($to, $title, $param, $type, $template, $locale="ja"){
     $u = User::where('id', $user_id)->first();
     $mail = $u->get_mail_address();

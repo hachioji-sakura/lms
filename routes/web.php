@@ -102,6 +102,12 @@ Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_settin
 Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting_update');
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
+
+
+Route::get('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join');
+Route::post('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join_mail_send');
+
+
 Route::get('trials/{id}/ask_candidate','TrialController@ask_candidate');
 Route::post('trials/{id}/ask_candidate','TrialController@ask_candidate_mail_send');
 Route::get('trials/{id}/add_candidate_date','TrialController@add_candidate_date');
@@ -262,7 +268,8 @@ Route::get('ask_daily_proc/{d?}','AskController@daily_proc');
 Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
 Route::put('asks/{id}/status_update/{status}','AskController@status_update');
 Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change_page');
-Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
+Route::get('asks/{ask_id}/hope_to_join','AskController@hope_to_join_page');
+
 Route::get('asks/{ask_id}/commit','AskController@commit_page');
 Route::resource('asks','AskController');
 

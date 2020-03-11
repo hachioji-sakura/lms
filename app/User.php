@@ -124,7 +124,7 @@ class User extends Authenticatable
     }
     public function details($domain = ""){
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
-      $image = Image::where('id', $this->image_id)->first();
+      $image = $this->image;
       $s3_url = '';
       if(isset($image)){
         $s3_url = $image->s3_url;
@@ -271,7 +271,7 @@ EOT;
             $hour = intval(substr($tag_value,0,2));
             $c = 0;
             while($c < 60){
-              $ret[$week_day][$hour.sprintf('%02d', $c)] = true;
+              $ret[$week_day][sprintf('%02d', $hour).sprintf('%02d', $c)] = true;
               $c+=$minute;
             }
           }

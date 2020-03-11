@@ -208,6 +208,11 @@ class AskController extends MilestoneController
     $res = $this->api_response();
     $is_send = true;
     $ask = Ask::where('id', $id)->first();
+
+    if($request->has('status') && $status!=$request->get('status')){
+      $status = $request->get('status');
+    }
+
     if($status!="remind"){
       //remind以外はステータスの更新
       if($ask->status != $status){
@@ -243,8 +248,13 @@ class AskController extends MilestoneController
       $this->send_slack('依頼ステータス更新[mail='.$is_send.']['.$status.']:'.$slack_message.' / id['.$param['item']['id'].']開始日時['.$param['item']['start_time'].']終了日時['.$param['item']['end_time'].']生徒['.$param['item']['student_name'].']講師['.$param['item']['teacher_name'].']', 'info', '依頼ステータス更新');
     }
     $message = $slack_message;
-    if($param['item']->type =="agreement"){
-      $message = "";
+
+    //更新メッセージを表示しないようにする
+    switch($param['item']->type){
+      case "hope_to_join":
+      case "agreement":
+        $message = "";
+        break;
     }
     return $this->save_redirect($res, $param, $message);
   }
@@ -257,13 +267,13 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-    $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
       $form = $request->all();
+      $form['status'] = $status;
+      $form['login_user_id'] = $param['user']->user_id;
+
       $param['item'] = Ask::where('id', $param['item']->id)->first();
-      $param['item'] = $param['item']->change([
-        'status'=>$status,
-        'login_user_id' => $param['user']->user_id,
-      ]);
+      $param['item'] = $param['item']->change($form);
       return $this->api_response(200, '', '', $param['item']);
     }, '依頼ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
@@ -353,6 +363,18 @@ class AskController extends MilestoneController
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['action'] = '';
      return view('calendars.teacher_change', [])->with($param);
+   }
+   public function hope_to_join_page(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+
+     if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
+
+     $param['fields'] = $this->show_fields($param['item']->type);
+     $param['trial'] = $param['item']->get_target_model_data();
+     $param['access_key'] = $param['trial']->parent->user->access_key;
+     $param['action'] = '';
+     return view('asks.hope_to_join', [])->with($param);
    }
    public function agreement_page(Request $request, $id)
    {

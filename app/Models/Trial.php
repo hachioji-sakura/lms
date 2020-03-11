@@ -41,19 +41,10 @@ class Trial extends Model
   /**
    *　スコープ：ステータス
    */
-  public function scopeFindStatuses($query, $statuses)
-  {
-    $str_statuses = '';
-    $statuses = explode(',', $statuses);
-    foreach($statuses as $status){
-      $str_statuses .= "'".$status."',";
-    }
-    $str_statuses = trim($str_statuses, ',');
-    $where_raw = <<<EOT
-      $this->table.status in ($str_statuses)
-EOT;
-    return $query->whereRaw($where_raw,[]);
-  }
+   public function scopeFindStatuses($query, $vals, $is_not=false)
+   {
+     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+   }
 
   /**
    *　スコープ：キーワード検索
@@ -93,6 +84,7 @@ EOT;
     return null;
   }
   public function get_status(){
+    //体験授業登録状況により、ステータスは変動する
     switch($this->status){
       case "confirm":
       case "fix":
@@ -106,13 +98,10 @@ EOT;
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
         }
-        Trial::where('id', $this->id)->update(['status' => $status]);
+        if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
         return $status;
-      case "cancel":
-      case "complete":
-        return $this->status;
     }
-    return "";
+    return $this->status;
   }
   public function is_confirm_trial_lesson(){
     foreach($this->calendars as $calendar){
@@ -128,26 +117,24 @@ EOT;
     }
     return true;
   }
+  public function is_regular_schedule_fix(){
+    if(count($this->user_calendar_settings) < 1) return false;
+    foreach($this->user_calendar_settings as $setting){
+      if($setting->is_enable()==false) continue;
+      if($setting->status!='fix') return false;
+    }
+    return true;
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
-    $status_name = "";
-    switch($this->status){
-      case "complete":
-        return "入会案内済み";
-      case "new":
-        return "未対応";
-      case "confirm":
-        return "体験授業調整中";
-      case "fix":
-        return "体験授業確定";
-      case "cancel":
-        return "キャンセル";
-      case "rest":
-        return "休み";
-      case "presence":
-        return "体験授業完了";
+    if(isset(config('attribute.trial_status')[$this->status])){
+      return config('attribute.trial_status')[$this->status];
     }
-    return "";
+    return "(定義なし)";
+  }
+  public function timestamp_format($i){
+    $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
+    return $ret;
   }
   public function details(){
     $item = $this;
@@ -189,6 +176,26 @@ EOT;
     $item['date1'] = $this->dateweek_format($this->trial_start_time1).date(' H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
     $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
     $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
+    $item['start_hope_date'] = $this->dateweek_format($this->schedule_start_hope_date);
+
+    $get_tagdata = $this->get_tagdata();
+    foreach($get_tagdata as $key => $val){
+      $item[$key] = $val;
+    }
+    $calendars = $this->get_calendar();
+    foreach($calendars as $i => $calendar){
+      $calendars[$i] = $calendar->details();
+    }
+    $item['calendars'] = $calendars;
+    $calendar_settings = [];
+    $user_calendar_settings = $this->get_calendar_settings();
+    foreach($user_calendar_settings as $user_calendar_setting){
+      $calendar_settings[] = $user_calendar_setting->details();
+    }
+    $item['calendar_settings'] = $calendar_settings;
+    return $item;
+  }
+  public function get_tagdata(){
     $subject1 = [];
     $subject2 = [];
     $tagdata = [];
@@ -206,35 +213,15 @@ EOT;
         $tagdata[$tag->tag_key][$tag->tag_value] = $tag->name();
       }
     }
-
-    $item['subject1'] = $subject1;
-    $item['subject2'] = $subject2;
-    $item['tagdata'] = $tagdata;
-    $calendars = $this->get_calendar();
-    foreach($calendars as $i => $calendar){
-      $calendars[$i] = $calendar->details();
-    }
-    $item['calendars'] = $calendars;
-    $calendar_settings = [];
-    $user_calendar_settings = $this->get_calendar_settings();
-    foreach($user_calendar_settings as $user_calendar_setting){
-      $calendar_settings[] = $user_calendar_setting->details();
-    }
-    $item['calendar_settings'] = $calendar_settings;
-    return $item;
+    return ['subject1' => $subject1, 'subject2' => $subject2, 'tagdata' => $tagdata];
   }
   /**
    * 体験授業申し込み登録
    */
   static public function entry($form){
     $form["accesskey"] = '';
+    //TODO デフォルトパスワード
     $form["password"] = 'sakusaku';
-    /*
-    $form["name_last"] = $form["parent_name_last"];
-    $form["name_first"] = $form["parent_name_first"];
-    $form["kana_last"] = $form["parent_kana_last"];
-    $form["kana_first"] = $form["parent_kana_first"];
-    */
     $form["name_last"] = "";
     $form["name_first"] = "";
     $form["kana_last"] = "";
@@ -355,15 +342,18 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
-      if(empty($form[$tag_name])) $form[$tag_name] = '';
-      TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+      else {
+        TrialTag::clearTags($this->id, $tag_name);
+      }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'howto_word', 'course_type'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
-      \Log::warning("a1:".$charge_subject_level_item['attribute_value']);
       $tag_names[] = $charge_subject_level_item['attribute_value'];
     }
     foreach($tag_names as $tag_name){
@@ -723,6 +713,10 @@ EOT;
     if(empty($trial_start_time) || empty($trial_end_time)){
       return $time_list;
     }
+    if(strtotime("now") > strtotime($trial_start_time)){
+      return [];
+    }
+
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
@@ -1269,13 +1263,49 @@ EOT;
 
     return $ret;
   }
+  public function hope_to_join_ask($create_user_id, $access_key){
+    //この体験に関してはいったん完了ステータス
+    //保護者にアクセスキーを設定
+    \Log::warning("hope_to_join_ask");
+
+    $this->parent->user->update(['access_key' => $access_key]);
+    //すでにある場合は一度削除
+    Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
+        ->where('status', 'new')->where('type', 'hope_to_join')->delete();
+
+    $ask = Ask::add([
+      "type" => "hope_to_join",
+      "end_date" => date("Y-m-d", strtotime("30 day")),
+      "body" => "",
+      "target_model" => "trials",
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->parent->user_id,
+      "charge_user_id" => 1,
+    ]);
+    //ステータス：入会希望連絡済み
+    Trial::where('id', $this->id)->update(['status' => 'entry_contact']);
+    return $ask;
+  }
+  public function hope_to_join($is_commit=false, $schedule_start_hope_date){
+    if($is_commit==false){
+      //ステータス：入会希望なし
+      Trial::where('id', $this->id)->update(['status' => 'entry_cancel']);
+    }
+    else {
+      //ステータス：入会希望あり
+      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $schedule_start_hope_date]);
+    }
+    return true;
+  }
+
   public function agreement_ask($create_user_id, $access_key){
     //この体験に関してはいったん完了ステータス
     //保護者にアクセスキーを設定
     \Log::warning("agreement_ask");
 
     $this->parent->user->update(['access_key' => $access_key]);
-    $this->update(['status' => 'complete']);
+    Trial::where('id', $this->id)->update(['status' => 'complete']);
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
