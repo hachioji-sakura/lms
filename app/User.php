@@ -271,7 +271,7 @@ EOT;
             $hour = intval(substr($tag_value,0,2));
             $c = 0;
             while($c < 60){
-              $ret[$week_day][$hour.sprintf('%02d', $c)] = true;
+              $ret[$week_day][sprintf('%02d', $hour).sprintf('%02d', $c)] = true;
               $c+=$minute;
             }
           }

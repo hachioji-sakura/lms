@@ -30,13 +30,14 @@
             <?php
               $get_tagdata = $item->get_tagdata();
               $tagdata = $get_tagdata["tagdata"];
+              $status = $item->get_status();
              ?>
             <li class="col-12" accesskey="" target="">
                 <div class="row">
                   <div class="col-12 col-lg-4 col-md-6 mt-1">
                     <a href="trials/{{$item->id}}">
                     <span class="text-xs">
-                      <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
+                      <small class="badge badge-{{config('status_style')[$status]}} p-1 mr-1">
                         {{$item->status_name()}}
                       </small>
                     </span>
@@ -85,23 +86,7 @@
 --}}
                   </div>
                   <div class="col-12 col-lg-4 mt-1 text-sm">
-                    <a href="trials/{{$item->id}}" role="" class="mr-1" style="text-decoration: underline">
-                      <i class="fa fa-file"></i>
-                      {{__('labels.details')}}
-                    </a>
-                    <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1"  style="text-decoration: underline">
-                      <i class="fa fa-edit"></i>
-                      {{__('labels.edit')}}
-                    </a>
-                    <br>
-                    <a href="trials/{{$item->id}}/to_calendar" role="button" class="btn btn-info btn-sm mt-1">
-                      <i class="fa fa-plus mr-1"></i>
-                      体験授業登録
-                    </a>
-                    <a href="trials/{{$item->id}}/to_calendar_setting" role="button" class="btn btn-primary btn-sm mt-1">
-                      <i class="fa fa-plus mr-1"></i>
-                      通常授業登録
-                    </a>
+                    @component('trials.forms.trial_button', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
                   </div>
                 </div>
             </li>
@@ -164,7 +149,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?list=new" class="nav-link @if($_status=="new") active @endif">
+        <a href="/{{$domain}}?list=new" class="nav-link @if($list=="new") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>
           <p>
             未対応
@@ -175,7 +160,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=confirm" class="nav-link @if($_status=="confirm") active @endif">
+        <a href="/{{$domain}}?list=confirm" class="nav-link @if($list=="confirm") active @endif">
           <i class="fa fa-calendar-alt nav-icon"></i>
           <p>
             体験授業調整中
@@ -186,7 +171,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=fix" class="nav-link @if($_status=="fix") active @endif">
+        <a href="/{{$domain}}?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
             体験授業確定
@@ -197,7 +182,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=presence" class="nav-link @if($_status=="presence") active @endif">
+        <a href="/{{$domain}}?list=presence" class="nav-link @if($list=="presence") active @endif">
           <i class="fa fa-calendar-check nav-icon"></i>
           <p>
             体験授業完了
@@ -219,7 +204,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_contact" class="nav-link @if($_status=="entry_contact") active @endif">
+        <a href="/{{$domain}}?list=entry_contact" class="nav-link @if($list=="entry_contact") active @endif">
           <i class="fa fa-hourglass-half nav-icon"></i>
           <p>
             入会希望連絡待ち
@@ -230,7 +215,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_hope" class="nav-link @if($_status=="entry_hope") active @endif">
+        <a href="/{{$domain}}?list=entry_hope" class="nav-link @if($list=="entry_hope") active @endif">
           <i class="fa fa-thumbs-up nav-icon"></i>
           <p>
             入会希望あり
@@ -241,7 +226,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($_status=="entry_guidanced") active @endif">
+        <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($list=="entry_guidanced") active @endif">
           <i class="fa fa-file-export nav-icon"></i>
           <p>
             入会案内連絡済
@@ -252,7 +237,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=complete" class="nav-link @if($_status=="complete") active @endif">
+        <a href="/{{$domain}}?list=complete" class="nav-link @if($list=="complete") active @endif">
           <i class="fa fa-check-circle nav-icon"></i>
           <p>
             入会済み
@@ -263,7 +248,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_cancel" class="nav-link @if($_status=="entry_cancel") active @endif">
+        <a href="/{{$domain}}?list=entry_cancel" class="nav-link @if($list=="entry_cancel") active @endif">
           <i class="fa fa-ban nav-icon"></i>
           <p>
             入会キャンセル
