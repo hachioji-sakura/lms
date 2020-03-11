@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\CommonNotification;
 use App\User;
+use App\Models\MailLog;
 use Illuminate\Http\Request;
 use Mail;
 use App;
@@ -98,15 +99,18 @@ class Controller extends BaseController
           //return true;
         }
       }
+      $mail_log_res = MailLog::add(config('mail.from')['address'], $to, $title, $param, $type, $template, $locale);
       try {
         $mail = Mail::to($to);
         if($is_send_support_mail==true){
           $mail = $mail->cc(config('app.support_mail'));
         }
         $res = $mail->send(new CommonNotification($title, $param, $type, $template));
+        $mail_log_res['data']->update(['status' => 'sended']);
         return $res;
       }
       catch(\Exception $e){
+        $mail_log_res['data']->update(['status' => 'error']);
         $this->send_slack('メール送信エラー:'.$e->getMessage(), 'error', 'Controller.send_mail');
         return true;
       }

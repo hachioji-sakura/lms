@@ -27,6 +27,7 @@ return [
   'milestones_list'             => '目標一覧',
   'attributes_list'             => '属性一覧',
   'events_list'             => 'イベント一覧',
+  'maillogs'                 =>'メール履歴',
   'student_groups_list'             => '生徒グループ一覧',
   'account'             => 'アカウント',
   'register' => '本登録',

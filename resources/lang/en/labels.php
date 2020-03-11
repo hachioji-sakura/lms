@@ -28,6 +28,7 @@ return [
   'milestones_list'             => 'Milestones List',
   'attributes_list'             => 'Attributes List',
   'events_list'             => 'Events List',
+  'maillogs'                 =>'Mail Logs',
   'student_groups_list'             => 'StudentGroups List',
   'account'             => 'Account',
   'system_register_request' => 'Request for system registration',

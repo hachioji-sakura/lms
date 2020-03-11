@@ -273,6 +273,8 @@ Route::get('asks/{ask_id}/hope_to_join','AskController@hope_to_join_page');
 Route::get('asks/{ask_id}/commit','AskController@commit_page');
 Route::resource('asks','AskController');
 
+Route::resource('maillogs','MailLogController');
+
 
 Route::get('api_tuition','TuitionController@get_api_tuition');
 Route::resource('tuitions','TuitionController');
