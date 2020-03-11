@@ -68,7 +68,7 @@
       <span class="d-none d-sm-inline-block">{{__('labels.other')}}</span>
     </a>
     <div class="dropdown-menu dropdown-menu-lg">
-      <a href="/trials?status=new" class="dropdown-item">{{__('labels.trials_list')}}</a>
+      <a href="/trials?list=new" class="dropdown-item">{{__('labels.trials_list')}}</a>
       {{--
       <a href="/comments" class="dropdown-item">{{__('labels.comments_list')}}</a>
       <a href="/milestones" class="dropdown-item">{{__('labels.milestones_list')}}</a>
