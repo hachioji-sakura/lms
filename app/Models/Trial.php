@@ -125,6 +125,17 @@ class Trial extends Model
     }
     return true;
   }
+  public function is_trial_lesson_complete(){
+      switch($this->status){
+        case "confirm":
+        case "fix":
+        case "cancel":
+        case "new":
+        case "presence":
+          return false;
+      }
+      return true;
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
     if(isset(config('attribute.trial_status')[$this->status])){
@@ -132,9 +143,23 @@ class Trial extends Model
     }
     return "(定義なし)";
   }
-  public function timestamp_format($i){
+  public function trial_start_end_time($i){
     $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
     return $ret;
+  }
+  public function entry_contact_send_date(){
+      return $this->get_ask_created_date('hope_to_join');
+  }
+  public function entry_guidanced_send_date(){
+      return $this->get_ask_created_date('agreement');
+  }
+  public function get_ask_created_date($type){
+    $a = Ask::where('type', $type)
+      ->where('target_model', 'trials')
+      ->where('target_model_id', $this->id)
+      ->first();
+      if(!isset($a)) return "-";
+    return $this->dateweek_format($a->created_at);
   }
   public function details(){
     $item = $this;
@@ -177,7 +202,6 @@ class Trial extends Model
     $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
     $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
     $item['start_hope_date'] = $this->dateweek_format($this->schedule_start_hope_date);
-
     $get_tagdata = $this->get_tagdata();
     foreach($get_tagdata as $key => $val){
       $item[$key] = $val;
@@ -1303,10 +1327,9 @@ class Trial extends Model
   public function agreement_ask($create_user_id, $access_key){
     //この体験に関してはいったん完了ステータス
     //保護者にアクセスキーを設定
-    \Log::warning("agreement_ask");
 
     $this->parent->user->update(['access_key' => $access_key]);
-    Trial::where('id', $this->id)->update(['status' => 'complete']);
+    Trial::where('id', $this->id)->update(['status' => 'entry_guidanced']);
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
