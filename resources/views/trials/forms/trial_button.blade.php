@@ -7,7 +7,7 @@
   {{__('labels.edit')}}
 </a>
 <br>
-@if($item->status=='new' || $item->status=='confirm' || $item->status=='fix' || $item->status=='presence')
+@if($item->is_trial_lesson_complete()==false)
 <a href="trials/{{$item->id}}/to_calendar" role="button" class="btn btn-info btn-sm mt-1">
   <i class="fa fa-plus mr-1"></i>
   体験授業登録
@@ -17,7 +17,7 @@
   入会希望に関するご連絡
 </a>
 @endif
-@if($item->status=='entry_contact' || $item->status=='entry_hope' || $item->status=='entry_guidanced')
+@if($item->is_trial_lesson_complete()==true)
 <a href="trials/{{$item->id}}/to_calendar_setting" role="button" class="btn btn-info btn-sm mt-1">
   <i class="fa fa-plus mr-1"></i>
   通常授業登録

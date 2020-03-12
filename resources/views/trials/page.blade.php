@@ -33,7 +33,7 @@
           </div>
         </div>
 
-        @if($item->status=='entry_contact' || $item->status=='entry_hope' || $item->status=='entry_guidanced')
+        @if($item->is_trial_lesson_complete()==true)
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>通常授業設定

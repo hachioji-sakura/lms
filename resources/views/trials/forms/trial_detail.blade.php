@@ -16,6 +16,38 @@
             </small>
           </span>
         </div>
+      </div>
+      <div class="col-sm-6 border-right">
+        <div class="description-block">
+          <h5 class="description-header">入会希望に関する連絡</h5>
+          <span class="description-text">
+              {{$item->entry_contact_send_date()}}
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-6 border-right">
+        <div class="description-block">
+          <h5 class="description-header">授業開始希望日</h5>
+          <span class="description-text">
+              {{$item->dateweek_format($item->schedule_start_hope_date)}}
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-6 border-right">
+        <div class="description-block">
+          <h5 class="description-header">入会案内連絡</h5>
+          <span class="description-text">
+              {{$item->entry_guidanced_send_date()}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-sm-6 border-right">
         <div class="description-block">
           <h5 class="description-header">ご希望のレッスン</h5>
           <span class="description-text">
