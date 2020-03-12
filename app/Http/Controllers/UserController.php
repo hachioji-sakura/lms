@@ -65,10 +65,20 @@ class UserController extends Controller
        'attributes' => $this->attributes(),
        'token' => $this->create_token(1728000),    //token期限＝20日
        'teacher_id' => $request->teacher_id,
+       'manager_id' => $request->manager_id,
        'student_id' => $request->student_id,
        'access_key' => $request->key,
-
+       'origin' => $request->origin,
+       'item_id' => $request->item_id,
     ];
+    $ret['filter'] =[
+      'is_unchecked' => $request->is_unchecked,
+      'is_asc'=>$request->is_asc,
+      'is_desc'=>$request->is_desc,
+      'search_keyword' => $request->search_keyword,
+    ];
+
+
     if(empty($ret['list_date'])){
       if($ret['list']=='month'){
         $ret['list_date'] = date('Y-m-1');

@@ -74,6 +74,7 @@
       <a href="/milestones" class="dropdown-item">{{__('labels.milestones_list')}}</a>
       <a href="/events" class="dropdown-item">{{__('labels.events_list')}}</a>
       --}}
+      <a href="/maillogs" class="dropdown-item">{{__('labels.maillogs')}}</a>
       <a href="/attributes" class="dropdown-item">{{__('labels.attributes_list')}}</a>
     </div>
   </li>

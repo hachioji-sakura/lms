@@ -272,7 +272,7 @@ class MilestoneController extends UserController
      */
     public function _store(Request $request)
     {
-      $form = $this->create_form($request);
+    $form = $this->create_form($request);
       $res = $this->save_validate($request);
       if(!$this->is_success_response($res)){
         return $res;
@@ -293,7 +293,6 @@ class MilestoneController extends UserController
             $item->file_upload($request->file('upload_file'));
           }
         }
-
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
