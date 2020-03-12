@@ -172,6 +172,15 @@ class MilestoneController extends UserController
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
+      $request->merge([
+        '_sort_order' => 'desc',
+        '_sort' => 'created_at',
+      ]);
+      if($request->has('is_asc') && $request->get('is_asc')==1){
+        $request->merge([
+          '_sort_order' => 'asc',
+        ]);
+      }
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $key => $item){

@@ -590,11 +590,12 @@ EOT;
   public function add_calendar($date){
     \Log::warning("add_calendar:[".$date."]");
     $is_enable = $this->is_enable();
+    /*
     if($is_enable==false){
       return $this->error_response("valid_setting", "設定が有効ではない(id=".$this->id.")");
     }
-
-    if($is_enable===true && $this->work!=9){
+    */
+    if($this->work!=9){
       $is_enable = $this->has_enable_member();
       if($is_enable==false){
         \Log::error("有効なメンバーがいない");

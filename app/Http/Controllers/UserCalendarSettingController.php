@@ -522,7 +522,6 @@ class UserCalendarSettingController extends UserCalendarController
       }
       $items = [];
       foreach($settings as $setting){
-        if($setting->is_enable()==false) continue;
         if($setting->has_enable_member()==false) continue;
         $items[$setting->id] = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
       }
@@ -661,7 +660,7 @@ class UserCalendarSettingController extends UserCalendarController
 
       $res = $this->transaction($request, function() use ($request, $settings){
         foreach($settings as $setting){
-          if($setting->is_enable()==false) continue;
+          //if($setting->is_enable()==false) continue;
           if($setting->has_enable_member()==false) continue;
           $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
           foreach($dates as $date => $val){
@@ -691,7 +690,7 @@ class UserCalendarSettingController extends UserCalendarController
         $res = $this->bad_request();
       }
       $setting = $param['item'];
-      $res = $this->transaction($request, function() use ($request, $id, $setting){
+      $res = $this->transaction($request, function() use ($request, $id, $setting, $param){
         $calendars = UserCalendar::where('user_calendar_setting_id', $id)
                     ->whereIn('id', $request->get('select_ids'))->get();
         foreach($calendars as $calendar){
