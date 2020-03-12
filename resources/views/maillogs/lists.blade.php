@@ -5,72 +5,70 @@
 {{__('labels.maillogs')}}
 @endsection
 
-@extends('dashboard.common')
-@include('dashboard.lists')
-
-
-@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
-  @slot("search_form")
-  <div class="col-6 col-md-4">
-    <div class="form-group">
-      <label for="search_from_date" class="w-100">
-        {{__('labels.date')}}(FROM)
-      </label>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+@section('list_filter')
+  @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+    @slot("search_form")
+    <div class="col-6 col-md-4">
+      <div class="form-group">
+        <label for="search_from_date" class="w-100">
+          {{__('labels.date')}}(FROM)
+        </label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+          </div>
+          <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+          @if(isset($filter['calendar_filter']['search_from_date']))
+            value="{{$filter['calendar_filter']['search_from_date']}}"
+          @endif
+          >
         </div>
-        <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
-        @if(isset($filter['calendar_filter']['search_from_date']))
-          value="{{$filter['calendar_filter']['search_from_date']}}"
-        @endif
-        >
       </div>
     </div>
-  </div>
-  <div class="col-6 col-md-4">
-    <div class="form-group">
-      <label for="search_to_date" class="w-100">
-        {{__('labels.date')}}(TO)
-      </label>
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+    <div class="col-6 col-md-4">
+      <div class="form-group">
+        <label for="search_to_date" class="w-100">
+          {{__('labels.date')}}(TO)
+        </label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+          </div>
+          <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+          @if(isset($filter['calendar_filter']['search_to_date']))
+            value="{{$filter['calendar_filter']['search_to_date']}}"
+          @endif
+          >
         </div>
-        <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
-        @if(isset($filter['calendar_filter']['search_to_date']))
-          value="{{$filter['calendar_filter']['search_to_date']}}"
-        @endif
-        >
       </div>
     </div>
-  </div>
-  <div class="col-12 col-md-4">
-    <div class="form-group">
-      <label for="is_exchange" class="w-100">
-        {{__('labels.sort_no')}}
-      </label>
-      <label class="mx-2">
-      <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
-      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
-        checked
-      @endif
-      >{{__('labels.date')}} {{__('labels.desc')}}
-      </label>
+    <div class="col-12 col-md-4">
+      <div class="form-group">
+        <label for="is_asc_1" class="w-100">
+          {{__('labels.sort_no')}}
+        </label>
+        <label class="mx-2">
+        <input type="checkbox" value="1" name="is_asc" class="icheck flat-green" id="is_asc_1"
+        @if(isset($filter['sort']['is_asc']) && $filter['sort']['is_asc']==true)
+          checked
+        @endif
+        >{{__('labels.date')}} {{__('labels.asc')}}
+        </label>
+      </div>
     </div>
-  </div>
-  <div class="col-12 mb-2">
-      <label for="search_word" class="w-100">
-        {{__('labels.search_keyword')}}
-      </label>
-      <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
-      @isset($filter['search_keyword'])
-      value = "{{$filter['search_keyword']}}"
-      @endisset
-      >
-  </div>
-  @endslot
-@endcomponent
+    <div class="col-12 mb-2">
+        <label for="search_word" class="w-100">
+          {{__('labels.search_keyword')}}
+        </label>
+        <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
+        @isset($filter['search_keyword'])
+        value = "{{$filter['search_keyword']}}"
+        @endisset
+        >
+    </div>
+    @endslot
+  @endcomponent
+@endsection
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -102,3 +100,6 @@
     </a>
   </dt>
 @endsection
+
+@extends('dashboard.common')
+@include('dashboard.lists')

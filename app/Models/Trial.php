@@ -683,6 +683,7 @@ class Trial extends Model
       'lesson' => $calendar->get_tag('lesson')->tag_value,
       'create_user_id' => $form['create_user_id'],
       'send_mail' => 'teacher',
+      'enable_start_date' => $this->schedule_start_hope_date
     ];
     $update_fields = [
       'start_hours', 'start_minutes',

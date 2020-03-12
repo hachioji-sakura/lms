@@ -180,7 +180,7 @@ class TrialController extends UserCalendarController
       abort(403);
     }
 
-    if(!isset($user)) {
+    if($this->is_manager($user->role)!=true){
       abort(403);
     }
     $ret = $this->get_common_param($request);

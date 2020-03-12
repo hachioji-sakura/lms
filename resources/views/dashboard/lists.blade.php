@@ -19,9 +19,5 @@
     @endcomponent
   </div>
 </div>
-<script>
-$(function(){
-  base.pageSettinged('filter_form', null);
-});
-</script>
+@yield('list_filter')
 @endsection
