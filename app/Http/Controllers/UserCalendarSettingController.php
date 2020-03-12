@@ -522,6 +522,8 @@ class UserCalendarSettingController extends UserCalendarController
       }
       $items = [];
       foreach($settings as $setting){
+        //TODO:体験の場合、未来の開始日でも予定を登録することがある
+        //if($setting->is_enable()==false) continue;
         if($setting->has_enable_member()==false) continue;
         $items[$setting->id] = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);
       }
@@ -660,6 +662,7 @@ class UserCalendarSettingController extends UserCalendarController
 
       $res = $this->transaction($request, function() use ($request, $settings){
         foreach($settings as $setting){
+          //TODO:体験の場合、未来の開始日でも予定を登録することがある
           //if($setting->is_enable()==false) continue;
           if($setting->has_enable_member()==false) continue;
           $dates = $setting->get_add_calendar_date($request->start_date, $request->end_date, 1, 5);

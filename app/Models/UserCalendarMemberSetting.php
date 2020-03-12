@@ -343,6 +343,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($user->is_juken()==true){
       $jukensei_flag = 1;
     }
+    //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
     $settings = $user->get_calendar_settings(["search_status"=>["new", "confirm", "fix"]]);
     $lesson_week_count = 0;
     foreach($settings as $setting){

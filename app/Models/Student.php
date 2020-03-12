@@ -580,7 +580,6 @@ EOT;
       $_param = "";
       if(gettype($filter["search_status"]) == "array") $_param  = $filter["search_status"];
       else $_param = explode(',', $filter["search_status"].',');
-      \Log::warning("search_status:".count($_param));
       $items = $items->findStatuses($_param);
     }
     else {

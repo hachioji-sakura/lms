@@ -71,13 +71,6 @@ class UserController extends Controller
        'origin' => $request->origin,
        'item_id' => $request->item_id,
     ];
-    $ret['filter'] =[
-      'is_unchecked' => $request->is_unchecked,
-      'is_asc'=>$request->is_asc,
-      'is_desc'=>$request->is_desc,
-      'search_keyword' => $request->search_keyword,
-    ];
-
 
     if(empty($ret['list_date'])){
       if($ret['list']=='month'){
@@ -112,6 +105,7 @@ class UserController extends Controller
         'is_desc'=>$request->is_desc,
       ],
       'search_keyword' => $request->search_keyword,
+      'is_unchecked' => $request->is_unchecked,
     ];
 
     if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
