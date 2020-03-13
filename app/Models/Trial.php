@@ -264,6 +264,7 @@ class Trial extends Model
     $form["name_first"] = $form["student_name_first"];
     //２．生徒情報登録：氏名・カナ・学年・学校名
     //同じ送信内容の場合は登録しない
+    \Log::warning("parent->brother_add1");
     $student = $parent->brother_add($form, 1);
     $comment = [
       'title' => '-',
@@ -288,6 +289,7 @@ class Trial extends Model
       $form["gender"] = $form["student2_gender"];
       $form["grade"] = $form["student2_grade"];
       $form["school_name"] = $form["student2_school_name"];
+      \Log::warning("parent->brother_add2");
       $student2 = $parent->brother_add($form, 1);
       if(!empty($form["remark"])){
         $comment['target_user_id'] = $student2->user_id;
@@ -304,6 +306,7 @@ class Trial extends Model
       $form["gender"] = $form["student3_gender"];
       $form["grade"] = $form["student3_grade"];
       $form["school_name"] = $form["student3_school_name"];
+      \Log::warning("parent->brother_add3");
       $student3 = $parent->brother_add($form, 1);
       if(!empty($form["remark"])){
         $comment['target_user_id'] = $student3->user_id;
@@ -346,6 +349,17 @@ class Trial extends Model
     }
     //申し込み情報更新
     //同じ送信内容の場合は、申し込み情報のみ更新する
+
+
+    unset($form['name_last']);
+    unset($form['name_first']);
+    unset($form['kana_last']);
+    unset($form['kana_first']);
+    unset($form['birth_day']);
+    unset($form['gender']);
+    unset($form['grade']);
+    unset($form['school_name']);
+
     $trial->trial_update($form);
 
     return $trial;
