@@ -18,6 +18,13 @@
             <i class="fa fa-home nav-icon"></i>{{__('labels.top')}}
           </a>
         </li>
+{{--
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.teacher_setting')}}">
+            <i class="fa fa-user-cog nav-icon"></i>{{__('labels.users')}}{{__('labels.setting')}}
+          </a>
+        </li>
+--}}
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >

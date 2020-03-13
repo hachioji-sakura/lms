@@ -9,7 +9,11 @@
     @if(isset($is_label) && $is_label===true)
     <span>{{$item['email']}}</span>
     @else
-    <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email" >
+    <input type="text" id="email" name="email" class="form-control" placeholder="例：hachioji@sakura.com" required="true" inputtype="email"
+    @if(isset($_edit) && $_edit==true)
+    value = '{{$item->email}}'
+    @endif
+    >
     @endif
   </div>
 </div>
