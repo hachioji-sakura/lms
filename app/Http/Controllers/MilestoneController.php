@@ -172,6 +172,15 @@ class MilestoneController extends UserController
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
+      $request->merge([
+        '_sort_order' => 'desc',
+        '_sort' => 'created_at',
+      ]);
+      if($request->has('is_asc') && $request->get('is_asc')==1){
+        $request->merge([
+          '_sort_order' => 'asc',
+        ]);
+      }
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
       foreach($items as $key => $item){
@@ -272,7 +281,7 @@ class MilestoneController extends UserController
      */
     public function _store(Request $request)
     {
-      $form = $this->create_form($request);
+    $form = $this->create_form($request);
       $res = $this->save_validate($request);
       if(!$this->is_success_response($res)){
         return $res;
@@ -293,7 +302,6 @@ class MilestoneController extends UserController
             $item->file_upload($request->file('upload_file'));
           }
         }
-
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;

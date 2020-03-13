@@ -180,7 +180,7 @@ class TrialController extends UserCalendarController
       abort(403);
     }
 
-    if(!isset($user)) {
+    if($this->is_manager($user->role)!=true){
       abort(403);
     }
     $ret = $this->get_common_param($request);
@@ -665,45 +665,6 @@ class TrialController extends UserCalendarController
     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
       $trial = Trial::where('id', $id)->first();
       $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
-      /*
-      foreach($trial->trial_students as $s){
-        //受講料delete-insert
-        Tuition::where('student_id' , $s->student_id)->delete();
-        foreach($s->student->user->calendar_setting() as $schedule_method => $d1){
-            foreach($d1 as $lesson_week => $settings){
-              foreach($settings as $setting){
-                $setting = $setting->details();
-                $subject = '';
-                if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
-                  $subject= $setting->get_tag_value('subject');
-                }
-                elseif($setting->get_tag_value('lesson')==4){
-                  $subject= $setting->get_tag_value('kids_lesson');
-                }
-                if(empty($request->get($setting->id.'_tuition'))){
-                  continue;
-                }
-                Tuition::add([
-                  'student_id' => $s->student_id,
-                  'teacher_id' => $setting->user->details()->id,
-                  'tuition' => $request->get($setting->id.'_tuition'),
-                  'title' => $setting['title'],
-                  'remark' => '',
-                  "lesson" => $setting->get_tag_value('lesson'),
-                  "course_type" => $setting->get_tag_value('course_type'),
-                  "course_minutes" => $setting->course_minutes,
-                  "grade" => $s->student->tag_value('grade'),
-                  "lesson_week_count" => $s->student->tag_value('lesson_week_count'),
-                  "subject" => $subject,
-                  "create_user_id" => $param['user']->user_id,
-                  "start_date" => '9999-12-31',
-                  "end_date" => '9999-12-31',
-                ]);
-              }
-            }
-          }
-      }
-      */
       //受講料初期設定
       return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );

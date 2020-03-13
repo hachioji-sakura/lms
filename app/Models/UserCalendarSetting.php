@@ -145,18 +145,6 @@ EOT;
 
   public function details($user_id=0){
     $item = $this;
-    /*
-    if($this->is_enable()){
-      if($this->status!='enabled'){
-        $this->update(['status' => 'enabled']);
-      }
-    }
-    else {
-      if($this->status!='disabled'){
-        $this->update(['status' => 'disabled']);
-      }
-    }
-    */
     $base_date = '2000-01-01 ';
 
     $item['start_hours'] = date('H',  strtotime($base_date.$this->from_time_slot));
@@ -588,13 +576,15 @@ EOT;
 
   //この設定を使って、引数＝日付でUserCalendarに登録する
   public function add_calendar($date){
-    \Log::warning("add_calendar:[".$date."]");
+    $is_enable = true;
+    /*
+    TODO:体験の場合、未来の開始日でも予定を登録することがある
     $is_enable = $this->is_enable();
     if($is_enable==false){
       return $this->error_response("valid_setting", "設定が有効ではない(id=".$this->id.")");
     }
-
-    if($is_enable===true && $this->work!=9){
+    */
+    if($this->work!=9){
       $is_enable = $this->has_enable_member();
       if($is_enable==false){
         \Log::error("有効なメンバーがいない");

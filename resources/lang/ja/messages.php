@@ -47,7 +47,7 @@ return [
   "error_validate_password" => "半角英数8文字以上16文字未満",
   "error_validate_password_not_match" => "パスワードが一致しません",
   "mail_header" => "本メールは、:url_name(:url)に登録いただいた方に、\nお送りしています。",
-  "mail_header2" => "（このメールは、システムからの自動送信となりますので、\nご連絡はhachiojisakura-support@hachioji-sakura.comにお願いします。）",
+  "mail_auto_send_message" => "※このメールは、システムからの自動送信しております。\n　このメールへの返信によるご質問、お問い合わせにはお答えできません。何卒ご了承ください。",
   "mail_footer" => "このメールに心当たりのない場合は、お手数ですが、下記までご連絡ください。",
   "mail_dear" => ":user_name様",
   "mail_dear_teacher" => ":user_name 先生",
