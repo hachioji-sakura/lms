@@ -47,7 +47,7 @@ return [
  "error_validate_password" => "8 or more alphanumeric characters and less than 16 characters",
  "error_validate_password_not_match" => "Passwords do not match",
  "mail_header" => "This e-mail is sent to those who registered to :url_name(:url).",
- "mail_header2" => "（This email will be sent automatically from the system, \nPlease contact hachiojisakura-support@hachioji-sakura.com）",
+ "mail_auto_send_message" => "This e-mail is sent automatically from the system.\n We cannot respond to questions or inquiries by replying to this email. Please understand.",
  "mail_footer" => "If you do not understand this email, please contact us at the following address.",
  "mail_dear" => "Dear :user_name.",
  "mail_dear_teacher" => "Dear :user_name.",

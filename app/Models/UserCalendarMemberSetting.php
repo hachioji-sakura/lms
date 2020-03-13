@@ -221,7 +221,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $course = $this->setting->course(true);
     $grade = $user->tag_value('grade');
     $course_minutes = $this->setting->course_minutes(true);
-    $settings = $user->get_calendar_settings([]);
+    //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
+    $filter = ["search_status" => ["new", "confirm", "fix"]];
+    $settings = $user->get_calendar_settings($filter);
     $lesson_week_count = 0;
     foreach($settings as $setting){
       if($lesson==$setting->lesson(true) &&
@@ -311,7 +313,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $course = $this->setting->course(true);
     $grade = $user->tag_value('grade');
     $course_minutes = $this->setting->course_minutes(true);
-    $settings = $user->get_calendar_settings([]);
+    //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
+    $settings = $user->get_calendar_settings(["search_status"=>["new", "confirm", "fix"]]);
     $lesson_week_count = 0;
     foreach($settings as $setting){
       if($lesson==$setting->lesson(true) &&
@@ -340,7 +343,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($user->is_juken()==true){
       $jukensei_flag = 1;
     }
-    $settings = $user->get_calendar_settings([]);
+    //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
+    $settings = $user->get_calendar_settings(["search_status"=>["new", "confirm", "fix"]]);
     $lesson_week_count = 0;
     foreach($settings as $setting){
       if($lesson==$setting->lesson(true) &&

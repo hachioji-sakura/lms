@@ -69,10 +69,10 @@ class GeneralAttribute  extends Model
       $item = $g;
     }
     if($item == null){
-      \Log::warning("------------------");
+      \Log::info("------------------");
       $item = GeneralAttribute::where('attribute_key', $key)
         ->where('attribute_value', $value)->first();
-        \Log::warning("------------------");
+        \Log::info("------------------");
     }
     return $item;
   }

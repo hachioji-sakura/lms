@@ -30,6 +30,7 @@ class CommentController extends MilestoneController
         $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
+      $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
 
       $items = $this->_search_sort($request, $items);
@@ -67,7 +68,7 @@ class CommentController extends MilestoneController
         'label' => '操作',
         'button' => ['edit', 'delete']
       ];
-      return ['items' => $items, 'fields' => $fields];
+      return ['items' => $items, 'fields' => $fields, 'count' => $count];
     }
     /**
      * フィルタリングロジック

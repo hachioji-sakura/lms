@@ -730,8 +730,8 @@ class UserCalendarController extends MilestoneController
         $items = $items->rangeDate($from_date, $to_date);
       }
       //検索ワード
-      if(isset($request->search_word)){
-        $items = $items->searchWord($request->search_word);
+      if(isset($request->search_keyword)){
+        $items = $items->searchWord($request->search_keyword);
       }
 
       return $items;

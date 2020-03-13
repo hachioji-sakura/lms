@@ -144,6 +144,7 @@ class StudentController extends UserController
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
     }
+
     //ステータス
     if(isset($request->status)){
       if($request->status!='all'){
@@ -734,6 +735,9 @@ class StudentController extends UserController
    if($is_exchange==true){
      \Log::warning("----------exchange-------------");
      $calendars = $calendars->findExchangeTarget();
+   }
+   if(!empty($form['search_keyword'])){
+     $calendars = $calendars->searchWord($form['search_keyword']);
    }
    $count = $calendars->count();
    $calendars = $calendars->sortStarttime($sort);

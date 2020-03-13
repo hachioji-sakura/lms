@@ -27,18 +27,6 @@ class MilestoneController extends UserController
       if($this->is_student($user->role)===true){
         return $user->user_id;
       }
-      /*
-      if($request->has('student_id')){
-        $u = Student::where('id',$request->get('student_id'));
-      }
-      else if($request->has('teacher_id')){
-        $u = Teacher::where('id',$request->get('teacher_id'));
-      }
-      else if($request->has('manager_id')){
-        $u = Manager::where('id',$request->get('manager_id'));
-      }
-      */
-
       if($request->has('origin') && $request->has('item_id')){
         switch($request->get('origin')){
           case "students":
@@ -97,6 +85,22 @@ class MilestoneController extends UserController
      */
     public function index(Request $request)
     {
+      if(!$request->has('_line')){
+        $request->merge([
+          '_line' => $this->pagenation_line,
+        ]);
+      }
+      if(!$request->has('_page')){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      else if($request->get('_page')==0){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+
       $param = $this->get_param($request);
       $user = $param['user'];
       if(!$this->is_manager($user->role)){
@@ -104,6 +108,12 @@ class MilestoneController extends UserController
         abort(403);
       }
       $_table = $this->search($request);
+
+      $page_data = $this->get_pagedata($_table['count'] , $param['_line'], $param['_page']);
+      foreach($page_data as $key => $val){
+        $param[$key] = $val;
+      }
+
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -133,27 +143,7 @@ class MilestoneController extends UserController
       if(!isset($user)) {
         abort(403);
       }
-      $ret = [
-        'domain' => $this->domain,
-        'domain_name' => __('labels.'.$this->domain),
-        'user' => $user,
-        'origin' => $request->origin,
-        'item_id' => $request->item_id,
-        'teacher_id' => $request->teacher_id,
-        'manager_id' => $request->manager_id,
-        'student_id' => $request->student_id,
-        'search_word'=>$request->search_word,
-        'search_status'=>$request->status,
-        'attributes' => $this->attributes(),
-      ];
-      $ret['filter'] =[
-        'is_unchecked' => $request->is_unchecked,
-        'is_asc'=>$request->is_asc,
-        'is_desc'=>$request->is_desc,
-        'search_keyword' => $request->search_keyword,
-      ];
-      if(empty($ret['_line'])) $ret['_line'] = $this->pagenation_line;
-      if(empty($ret['_page'])) $ret['_page'] = 0;
+      $ret = $this->get_common_param($request);
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
         if($this->is_student($user->role) &&
@@ -162,16 +152,6 @@ class MilestoneController extends UserController
             abort(404);
         }
         $item = $item->details();
-        /*
-        $create_user = $item->create_user->details();
-        $item->create_user_name = $create_user->name;
-        unset($item->create_user);
-        $item->_type_name = $item->type_name();
-
-        $target_user = $item->target_user->details();
-        $item->target_user_name = $target_user->name;
-        unset($item->target_user);
-        */
         $ret['item'] = $item->details();
       }
       return $ret;
@@ -192,18 +172,17 @@ class MilestoneController extends UserController
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
       $items = $this->_search_pagenation($request, $items);
+      $request->merge([
+        '_sort_order' => 'desc',
+        '_sort' => 'created_at',
+      ]);
+      if($request->has('is_asc') && $request->get('is_asc')==1){
+        $request->merge([
+          '_sort_order' => 'asc',
+        ]);
+      }
       $items = $this->_search_sort($request, $items);
       $items = $items->get();
-      /*
-      foreach($items as $item){
-        $create_user = $item->create_user->details();
-        $item->create_user_name = $create_user->name;
-        unset($item->create_user);
-        $target_user = $item->target_user->details();
-        $item->target_user_name = $target_user->name;
-        unset($item->target_user);
-      }
-      */
       foreach($items as $key => $item){
         $items[$key] = $item->details();
       }
@@ -302,7 +281,7 @@ class MilestoneController extends UserController
      */
     public function _store(Request $request)
     {
-      $form = $this->create_form($request);
+    $form = $this->create_form($request);
       $res = $this->save_validate($request);
       if(!$this->is_success_response($res)){
         return $res;
@@ -323,7 +302,6 @@ class MilestoneController extends UserController
             $item->file_upload($request->file('upload_file'));
           }
         }
-
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;

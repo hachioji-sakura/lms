@@ -125,6 +125,17 @@ class Trial extends Model
     }
     return true;
   }
+  public function is_trial_lesson_complete(){
+      switch($this->status){
+        case "confirm":
+        case "fix":
+        case "cancel":
+        case "new":
+        case "presence":
+          return false;
+      }
+      return true;
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
     if(isset(config('attribute.trial_status')[$this->status])){
@@ -132,9 +143,23 @@ class Trial extends Model
     }
     return "(定義なし)";
   }
-  public function timestamp_format($i){
+  public function trial_start_end_time($i){
     $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
     return $ret;
+  }
+  public function entry_contact_send_date(){
+      return $this->get_ask_created_date('hope_to_join');
+  }
+  public function entry_guidanced_send_date(){
+      return $this->get_ask_created_date('agreement');
+  }
+  public function get_ask_created_date($type){
+    $a = Ask::where('type', $type)
+      ->where('target_model', 'trials')
+      ->where('target_model_id', $this->id)
+      ->first();
+      if(!isset($a)) return "-";
+    return $this->dateweek_format($a->created_at);
   }
   public function details(){
     $item = $this;
@@ -177,7 +202,6 @@ class Trial extends Model
     $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
     $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
     $item['start_hope_date'] = $this->dateweek_format($this->schedule_start_hope_date);
-
     $get_tagdata = $this->get_tagdata();
     foreach($get_tagdata as $key => $val){
       $item[$key] = $val;
@@ -240,6 +264,7 @@ class Trial extends Model
     $form["name_first"] = $form["student_name_first"];
     //２．生徒情報登録：氏名・カナ・学年・学校名
     //同じ送信内容の場合は登録しない
+    \Log::warning("parent->brother_add1");
     $student = $parent->brother_add($form, 1);
     $comment = [
       'title' => '-',
@@ -264,6 +289,7 @@ class Trial extends Model
       $form["gender"] = $form["student2_gender"];
       $form["grade"] = $form["student2_grade"];
       $form["school_name"] = $form["student2_school_name"];
+      \Log::warning("parent->brother_add2");
       $student2 = $parent->brother_add($form, 1);
       if(!empty($form["remark"])){
         $comment['target_user_id'] = $student2->user_id;
@@ -280,6 +306,7 @@ class Trial extends Model
       $form["gender"] = $form["student3_gender"];
       $form["grade"] = $form["student3_grade"];
       $form["school_name"] = $form["student3_school_name"];
+      \Log::warning("parent->brother_add3");
       $student3 = $parent->brother_add($form, 1);
       if(!empty($form["remark"])){
         $comment['target_user_id'] = $student3->user_id;
@@ -322,6 +349,17 @@ class Trial extends Model
     }
     //申し込み情報更新
     //同じ送信内容の場合は、申し込み情報のみ更新する
+
+
+    unset($form['name_last']);
+    unset($form['name_first']);
+    unset($form['kana_last']);
+    unset($form['kana_first']);
+    unset($form['birth_day']);
+    unset($form['gender']);
+    unset($form['grade']);
+    unset($form['school_name']);
+
     $trial->trial_update($form);
 
     return $trial;
@@ -377,9 +415,9 @@ class Trial extends Model
     $this->update(['status' => 'confirm']);
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
+    $calendar = null;
     //１トライアル複数授業予定のケースもある
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
-
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
@@ -419,13 +457,15 @@ class Trial extends Model
       }
       $calendar = $res['data'];
     }
-    //体験同時申し込み生徒数だけ追加
-    foreach($this->trial_students as $trial_student){
-      $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
-      $charge_student_form['student_id'] = $trial_student->student->id;
-      ChargeStudent::add($charge_student_form);
+    if($calendar!=null){
+      //体験同時申し込み生徒数だけ追加
+      foreach($this->trial_students as $trial_student){
+        $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
+        $charge_student_form['student_id'] = $trial_student->student->id;
+        ChargeStudent::add($charge_student_form);
+      }
+      $calendar->register_mail([], $form['create_user_id']);
     }
-
     return $this->api_response(200,"","",$calendar);
   }
   public function candidate_teachers($teacher_id, $lesson){
@@ -683,6 +723,7 @@ class Trial extends Model
       'lesson' => $calendar->get_tag('lesson')->tag_value,
       'create_user_id' => $form['create_user_id'],
       'send_mail' => 'teacher',
+      'enable_start_date' => $this->schedule_start_hope_date
     ];
     $update_fields = [
       'start_hours', 'start_minutes',
@@ -1302,10 +1343,9 @@ class Trial extends Model
   public function agreement_ask($create_user_id, $access_key){
     //この体験に関してはいったん完了ステータス
     //保護者にアクセスキーを設定
-    \Log::warning("agreement_ask");
 
     $this->parent->user->update(['access_key' => $access_key]);
-    Trial::where('id', $this->id)->update(['status' => 'complete']);
+    Trial::where('id', $this->id)->update(['status' => 'entry_guidanced']);
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();

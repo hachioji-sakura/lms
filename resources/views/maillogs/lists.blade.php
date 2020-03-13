@@ -1,6 +1,10 @@
 @section('title')
-{{__('labels.milestones_list')}}
+{{__('labels.maillogs')}}
 @endsection
+@section('title_header')
+{{__('labels.maillogs')}}
+@endsection
+
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
@@ -65,14 +69,9 @@
     @endslot
   @endcomponent
 @endsection
+
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
-      <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
-    </a>
-  </li>
-
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -82,10 +81,10 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach($attributes['milestone_type'] as $index => $name)
+      @foreach(config('attribute.mail_status') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
-           <i class="fa fa-list-alt nav-icon"></i>{{$name}}
+         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($search_status) && $index===$search_status) active @endif">
+           <i class="fa fa-envelope nav-icon"></i>{{$name}}
          </a>
        </li>
        @endforeach
@@ -101,7 +100,6 @@
     </a>
   </dt>
 @endsection
-
 
 @extends('dashboard.common')
 @include('dashboard.lists')

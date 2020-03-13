@@ -72,15 +72,6 @@ class Milestone extends Model
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('created_at', $sort);
   }
-  protected function _date_label($date, $format='Y年m月d日 H:i'){
-    return date($format, strtotime($date));
-  }
-  public function created_at_label($format='Y年m月d日 H:i'){
-    return $this->_date_label($this->created_at, $format);
-  }
-  public function updated_at_label($format='Y年m月d日 H:i'){
-    return $this->_date_label($this->updated_at, $format);
-  }
   public function scopePagenation($query, $page, $line){
     $_line = $this->pagenation_line;
     if(is_numeric($line)){
@@ -100,19 +91,8 @@ class Milestone extends Model
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
-  protected function attribute_name($key, $value){
-    $_attribute = GeneralAttribute::get_item($key, $value);
-    if(isset($_attribute))  return $_attribute['attribute_name'];
-    return "";
-  }
-  protected function config_attribute_name($key, $value){
-    $_lists = config('attribute.'.$key);
-    if(isset($_lists) && isset($_lists[$value])) return $_lists[$value];
-    return "";
-  }
   public function importance_name(){
     $res = $this->attribute_name('importance', $this->importance);
-    \Log::warning("importance_name:".$res);
     return $res;
   }
   public function details(){

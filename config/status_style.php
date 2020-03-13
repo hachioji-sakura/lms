@@ -21,5 +21,9 @@ return array(
   'entry_contact' => 'secondary',
   'entry_cancel' => 'secondary',
   'entry_hope' => 'primary',
+  'entry_guidanced' => 'primary',
+  'send' => 'warning',
+  'error' => 'danger',
+  'sended' => 'success',
   );
 ?>
