@@ -141,9 +141,10 @@ class StudentController extends UserController
     }
 
     //検索ワード
-    if(isset($request->search_keyword)){
-      $items = $items->searchWord($request->search_keyword);
+    if(isset($request->search_word)){
+      $items = $items->searchWord($request->search_word);
     }
+
     //ステータス
     if(isset($request->status)){
       if($request->status!='all'){
