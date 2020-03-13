@@ -415,9 +415,9 @@ class Trial extends Model
     $this->update(['status' => 'confirm']);
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
+    $calendar = null;
     //１トライアル複数授業予定のケースもある
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
-
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
@@ -457,13 +457,15 @@ class Trial extends Model
       }
       $calendar = $res['data'];
     }
-    //体験同時申し込み生徒数だけ追加
-    foreach($this->trial_students as $trial_student){
-      $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
-      $charge_student_form['student_id'] = $trial_student->student->id;
-      ChargeStudent::add($charge_student_form);
+    if($calendar!=null){
+      //体験同時申し込み生徒数だけ追加
+      foreach($this->trial_students as $trial_student){
+        $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
+        $charge_student_form['student_id'] = $trial_student->student->id;
+        ChargeStudent::add($charge_student_form);
+      }
+      $calendar->register_mail([], $form['create_user_id']);
     }
-
     return $this->api_response(200,"","",$calendar);
   }
   public function candidate_teachers($teacher_id, $lesson){
