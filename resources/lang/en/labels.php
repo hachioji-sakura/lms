@@ -108,6 +108,8 @@ return [
   'gender' => 'gender',
   'grade' => 'grade',
   'shool_name' => 'School Name',
+  'post_no' => 'Post Number',
+  'address' => 'Address',
   'phone_no' => 'Telephone Number',
   'email' => 'Email',
   'charge_lesson' => 'Charge Lesson',

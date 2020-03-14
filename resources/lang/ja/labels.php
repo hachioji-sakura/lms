@@ -109,6 +109,8 @@ return [
   'grade' => '学年',
   'school_name' => '学校名',
   'phone_no' => '電話番号',
+  'post_no' => '郵便番号',
+  'address' => '住所',
   'email' => 'メールアドレス',
   'charge_lesson' => '担当可能なレッスン',
   'lesson_week_time' => '担当可能な曜日・時間帯',

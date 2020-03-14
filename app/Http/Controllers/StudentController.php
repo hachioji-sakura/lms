@@ -992,8 +992,7 @@ class StudentController extends UserController
 
     if($this->is_success_response($res)){
       $title = __('labels.system_register_request');
-      $this->send_mail($email,
-        $title, [
+      $param['item']->user->send_mail($title, [
         'user_name' => $param['item']->name(),
         'access_key' => $access_key,
         'remind' => true,
@@ -1019,6 +1018,7 @@ class StudentController extends UserController
 
   public function _update(Request $request, $id)
   {
+    $param = $this->get_param($request, $id);
     $res = $this->save_validate($request);
     if(!$this->is_success_response($res)){
       return $res;
@@ -1030,7 +1030,7 @@ class StudentController extends UserController
        $item = $this->model()->where('id',$id)->first();
        $item = $item->profile_update($form);
        return $this->api_response(200, '', '', $item);
-    }, '生徒情報更新', __FILE__, __FUNCTION__, __LINE__ );
+    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
    * Remove the specified resource from storage.
