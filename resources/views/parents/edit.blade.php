@@ -13,7 +13,6 @@ if($user->role=="manager") $is_label = false;
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
-          @component('students.forms.email', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes, 'is_label'=>$is_label]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
@@ -22,10 +21,10 @@ if($user->role=="manager") $is_label = false;
               </a>
             </div>
             <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
-                {{__('labels.next_button')}}
-              </a>
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_edit">
+                  <i class="fa fa-edit mr-1"></i>
+                  {{__('labels.update_button')}}
+                </button>
             </div>
           </div>
         </div>

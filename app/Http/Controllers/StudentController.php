@@ -901,7 +901,6 @@ class StudentController extends UserController
     $param['_edit'] = true;
     $param['student'] = $param['item'];
     return view($this->domain.'.edit',$param);
-
   }
   /**
    * Show the form for editing the specified resource.
@@ -1102,5 +1101,25 @@ class StudentController extends UserController
     return view('asks.ask_details',['_edit' => true])
       ->with($param);
   }
+  public function email_edit_page(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    return view('dashboard.email',$param);
+  }
+  public function send_access_key(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
 
+  }
+  public function email_edit(Request $request, $id)
+  {
+    $str="";
+    for($i=0;$i<6;$i++){
+      $str.=mt_rand(0,9);
+    }
+    
+  }
 }

@@ -111,4 +111,5 @@ return [
  "message_tell_me_cancel_reason" => "Please tell us why you are not eligible",
  "error_login_disabled" => "This user cannot sign up",
  "message_hope_to_join" => "Do you want to join?",
+ "info_change_email" => "Enter it below verify your email.",
  ];

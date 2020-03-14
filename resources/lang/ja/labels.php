@@ -17,6 +17,7 @@ return [
   'password_setting' => 'パスワード設定',
   'forget_password' => 'パスワードを忘れた方',
   'register_email' => '登録メールアドレス',
+  'change_email' => 'メールアドレス変更',
   'logout'             => 'ログアウト',
   'students_list'             => '生徒一覧',
   'parents_list'             => '契約者一覧',
@@ -325,4 +326,5 @@ return [
   'require_student_confirm' => '生徒の確認を必要とする',
   'not_require_student_confirm' => '生徒の確認を必要としない',
   'schedule_start_hope_date' => '授業開始希望日',
+  'verification_code' => '認証コード',
 ];

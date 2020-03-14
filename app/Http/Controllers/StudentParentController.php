@@ -115,6 +115,7 @@ class StudentParentController extends TeacherController
    *
    * @return \Illuminate\Http\Response
    */
+   /*
   public function entry(Request $request)
   {
     $param = [
@@ -126,6 +127,7 @@ class StudentParentController extends TeacherController
       ['sended' => ''])
       ->with($param);
    }
+   */
    /**
     * 本登録ページ
     *

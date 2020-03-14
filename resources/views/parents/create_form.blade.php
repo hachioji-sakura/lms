@@ -18,8 +18,9 @@
   </div>
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.address', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
+  @if($_edit==false)
   @component('students.forms.password', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
-
+  @endif
 </div>
 @endisset
 @endsection

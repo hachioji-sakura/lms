@@ -116,4 +116,5 @@ return [
   "message_tell_me_cancel_reason" => "ご参加いただけない理由についてお知らせください",
   "error_login_disabled" => "このユーザーはログインできません",
   "message_hope_to_join" => "ご入会を希望しますか？",
+  "info_change_email" => "認証コードを送信しました。",
 ];
