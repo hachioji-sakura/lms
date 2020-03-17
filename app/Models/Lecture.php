@@ -36,9 +36,13 @@ EOT;
     $item['lesson_name'] = $item['lesson']['attribute_name'];
     $item['course'] = $this->_course();
     $item['course_name'] = $item['course']['attribute_name'];
+    /*
     $item['subject'] = $this->_subject();
     $item['subject_name'] = $item['subject']['attribute_name'];
-    $item['name'] = $item['lesson']['attribute_name'].':'.$item['course']['attribute_name'].':'.$item['subject']['attribute_name'];
+    */
+    $item['subject'] = null;
+    $item['subject_name'] = "";
+    $item['name'] = $item['lesson']['attribute_name'].':'.$item['course']['attribute_name'];
     return $item;
   }
   public function _lesson(){

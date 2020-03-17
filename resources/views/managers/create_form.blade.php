@@ -34,6 +34,7 @@
     @component('components.select_gender', ['_edit'=>$_edit, 'item'  => $item, 'prefix'=>''])
     @endcomponent
   </div>
+  @component('students.forms.address', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
 
 </div>

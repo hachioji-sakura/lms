@@ -901,7 +901,6 @@ class StudentController extends UserController
     $param['_edit'] = true;
     $param['student'] = $param['item'];
     return view($this->domain.'.edit',$param);
-
   }
   /**
    * Show the form for editing the specified resource.
@@ -992,8 +991,7 @@ class StudentController extends UserController
 
     if($this->is_success_response($res)){
       $title = __('labels.system_register_request');
-      $this->send_mail($email,
-        $title, [
+      $this->send_mail($email, $title, [
         'user_name' => $param['item']->name(),
         'access_key' => $access_key,
         'remind' => true,
@@ -1019,6 +1017,7 @@ class StudentController extends UserController
 
   public function _update(Request $request, $id)
   {
+    $param = $this->get_param($request, $id);
     $res = $this->save_validate($request);
     if(!$this->is_success_response($res)){
       return $res;
@@ -1029,8 +1028,13 @@ class StudentController extends UserController
        $form['create_user_id'] = $user->user_id;
        $item = $this->model()->where('id',$id)->first();
        $item = $item->profile_update($form);
+
+       if(isset($form['email'])){
+         User::where('id', $item->user_id)->update(['email'=>$form['email']]);
+       }
+
        return $this->api_response(200, '', '', $item);
-    }, '生徒情報更新', __FILE__, __FUNCTION__, __LINE__ );
+    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
   /**
    * Remove the specified resource from storage.
@@ -1102,5 +1106,37 @@ class StudentController extends UserController
     return view('asks.ask_details',['_edit' => true])
       ->with($param);
   }
+  public function email_edit_page(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    return view('dashboard.email',$param);
+  }
+  public function email_edit(Request $request, $id)
+  {
+    $res = $this->api_response(200, "", "");
+    if(!$request->has('new_email')){
+      $res = $this->bad_request();
+    }
+    $param = $this->get_param($request, $id);
 
+    if($this->is_success_response($res)){
+      $d = strtotime($param['item']->user->email_verified_at);
+      if($d < strtotime('now')){
+        $res = $this->forbidden("有効期限が切れています", "");
+      }
+    }
+    if($this->is_success_response($res)){
+      $form = $request->all();
+      $res = $this->transaction($request, function() use ($request, $param){
+        $param['item']->user->update([
+          'email' => $request->get('new_email'),
+          'verification_code' => ''
+        ]);
+        return $this->api_response(200, '', '');
+      }, 'メールアドレス変更', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    return $this->save_redirect($res, $param, '更新しました。');
+  }
 }

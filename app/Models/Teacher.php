@@ -107,6 +107,7 @@ EOT;
       'birth_day' => "",
       'gender' => "",
       'phone_no' => "",
+      'post_no' => "",
       'address' => "",
       'bank_no' => "",
       'bank_branch_no' => "",
@@ -157,7 +158,7 @@ EOT;
     }
     $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
     foreach($tag_names as $tag_name){
-      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+      if(isset($form[$tag_name]) && !empty($form[$tag_name])){
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       else {
@@ -185,6 +186,7 @@ EOT;
       'birth_day' => $this->birth_day,
       'gender' => $this->gender,
       'phone_no' => $this->phone_no,
+      'post_no' => $this->post_no,
       'address' => $this->address,
       'create_user_id' => $create_user_id,
     ];

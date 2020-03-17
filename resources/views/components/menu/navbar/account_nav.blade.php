@@ -30,6 +30,9 @@
     <a href="javascript:void(0);" class="dropdown-item"  page_title="{{__('labels.account_setting')}}" page_form="dialog" page_url="/{{$user["domain"]}}/{{$user->id}}/edit" >
       <i class="fa fa-user-edit mr-2"></i>{{__('labels.account_setting')}}
     </a>
+    <a href="javascript:void(0);" class="dropdown-item"  page_title="{{__('labels.change_email')}}" page_form="dialog" page_url="/{{$user["domain"]}}/{{$user->id}}/email_edit" >
+      <i class="fa fa-envelope-square mr-2"></i>{{__('labels.change_email')}}
+    </a>
     @endif
     <a href="javascript:void(0);" class="dropdown-item"  page_title="{{__('labels.password_setting')}}" page_form="dialog" page_url="/password" >
       <i class="fa fa-lock mr-2"></i>{{__('labels.password_setting')}}

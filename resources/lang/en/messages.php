@@ -111,4 +111,6 @@ return [
  "message_tell_me_cancel_reason" => "Please tell us why you are not eligible",
  "error_login_disabled" => "This user cannot sign up",
  "message_hope_to_join" => "Do you want to join?",
+ "info_send_verification_code" => "Enter it below verify your email.",
+ "info_use_verification_code" => "Please enter the following authentication code when changing your email address",
  ];

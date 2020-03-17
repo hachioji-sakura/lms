@@ -106,6 +106,7 @@ class StudentParent extends Teacher
       'kana_last' => "",
       'kana_first' => "",
       'phone_no' => "",
+      'post_no' => "",
       'address' => "",
       'status' => "",
     ];
