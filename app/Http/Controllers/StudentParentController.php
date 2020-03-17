@@ -100,7 +100,8 @@ class StudentParentController extends TeacherController
     $students =  StudentRelation::with('student')->findParent($parent_id)
       ->get();
     foreach($students as $key => $student){
-      $student['current_calendar_start_time'] = $student->current_calendar()['start_time'];
+      $current_calendar = $student->current_calendar();
+      if(isset($current_calendar)) $student['current_calendar_start_time'] = $current_calendar['start_time'];
       if(empty($student['current_calendar_start_time'])){
         //予定があるものを上にあげて、昇順、予定がないもの（null)を後ろにする
         $student['current_calendar_start_time'] = '9999-12-31 23:59:59';

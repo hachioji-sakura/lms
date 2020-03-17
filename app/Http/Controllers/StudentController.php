@@ -991,7 +991,7 @@ class StudentController extends UserController
 
     if($this->is_success_response($res)){
       $title = __('labels.system_register_request');
-      $param['item']->user->send_mail($title, [
+      $this->send_mail($email, $title, [
         'user_name' => $param['item']->name(),
         'access_key' => $access_key,
         'remind' => true,
@@ -1028,6 +1028,11 @@ class StudentController extends UserController
        $form['create_user_id'] = $user->user_id;
        $item = $this->model()->where('id',$id)->first();
        $item = $item->profile_update($form);
+
+       if(isset($form['email'])){
+         User::where('id', $item->user_id)->update(['email'=>$form['email']]);
+       }
+
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
@@ -1108,18 +1113,30 @@ class StudentController extends UserController
     $param['_edit'] = true;
     return view('dashboard.email',$param);
   }
-  public function send_access_key(Request $request, $id)
-  {
-    $result = '';
-    $param = $this->get_param($request, $id);
-
-  }
   public function email_edit(Request $request, $id)
   {
-    $str="";
-    for($i=0;$i<6;$i++){
-      $str.=mt_rand(0,9);
+    $res = $this->api_response(200, "", "");
+    if(!$request->has('new_email')){
+      $res = $this->bad_request();
     }
-    
+    $param = $this->get_param($request, $id);
+
+    if($this->is_success_response($res)){
+      $d = strtotime($param['item']->user->email_verified_at);
+      if($d < strtotime('now')){
+        $res = $this->forbidden("有効期限が切れています", "");
+      }
+    }
+    if($this->is_success_response($res)){
+      $form = $request->all();
+      $res = $this->transaction($request, function() use ($request, $param){
+        $param['item']->user->update([
+          'email' => $request->get('new_email'),
+          'verification_code' => ''
+        ]);
+        return $this->api_response(200, '', '');
+      }, 'メールアドレス変更', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    return $this->save_redirect($res, $param, '更新しました。');
   }
 }
