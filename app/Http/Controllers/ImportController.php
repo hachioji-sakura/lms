@@ -71,6 +71,8 @@ class ImportController extends UserController
       if($object==='set_password'){
         $password = Hash::make('sakusaku');
         $users = User::where('id','>',1)->update(['password'=>$password]);
+        $password = Hash::make('password');
+        $users = User::where('id',1)->update(['password'=>$password]);
         return "set_password";
       }
       if(!array_key_exists($object, $this->api_endpoint)){
