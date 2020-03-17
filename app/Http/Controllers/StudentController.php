@@ -1027,12 +1027,11 @@ class StudentController extends UserController
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
        $item = $this->model()->where('id',$id)->first();
-       $item = $item->profile_update($form);
+       $item->profile_update($form);
 
        if(isset($form['email'])){
          User::where('id', $item->user_id)->update(['email'=>$form['email']]);
        }
-
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
