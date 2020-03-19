@@ -7,7 +7,9 @@
   </div>
   @component('students.forms.name', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
   @component('students.forms.kana', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
-
+  @if($user->role=="manager")
+  @component('students.forms.editable_email', ['_edit'=>$_edit, 'item' => $parent, 'prefix' => 'parent_']) @endcomponent
+  @else
   <div class="col-12 col-md-6">
     <div class="form-group">
       <label for="email" class="w-100">
@@ -16,10 +18,12 @@
       <span>{{$parent->email}}</span>
     </div>
   </div>
+  @endif
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.address', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
+  @if($_edit==false)
   @component('students.forms.password', ['_edit'=>$_edit, 'item' => $parent, 'attributes' => $attributes]) @endcomponent
-
+  @endif
 </div>
 @endisset
 @endsection

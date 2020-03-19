@@ -34,7 +34,13 @@
     @component('components.select_gender', ['_edit'=>$_edit, 'item'  => $item, 'prefix'=>''])
     @endcomponent
   </div>
+  @component('students.forms.address', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
+  @if($user->role=="manager")
+  @component('students.forms.editable_email', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+  @else
+  @component('students.forms.email', ['_edit'=>$_edit, 'item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+  @endif
 
 </div>
 @endsection

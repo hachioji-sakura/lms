@@ -8,7 +8,6 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
-          @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
           @yield('bank_form')
           <div class="row">
             <div class="col-12 mb-1">
