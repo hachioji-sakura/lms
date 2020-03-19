@@ -24,7 +24,7 @@
     <select name="student_id[]" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="select_student_change()">
       <option value="">{{__('labels.selectable')}}</option>
     </select>
-    @if((isset($_edit) && $_edit==true) || $item['exchanged_calendar_id']>0)
+    @if((isset($_edit) && $_edit==true) || isset($item['exchanged_calendar_id']) && $item['exchanged_calendar_id']>0)
       @foreach($item->get_students() as $member)
         <input type="hidden" name="select_student_id[]"
           value="{{$member->user->details('students')->id}}"

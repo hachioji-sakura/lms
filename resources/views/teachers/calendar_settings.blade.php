@@ -112,7 +112,10 @@
               </div>
               <div class="col-12 col-md-6 mt-1">
                 <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting->id}}" class="text-sm">
-                  {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:{{$setting['last_schedule']['date']}}
+                  {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:
+                  @isset($setting['last_schedule'])
+                  {{$setting['last_schedule']['date']}}
+                  @endisset
                 </a>
               </div>
               <div class="col-12 col-md-6 text-right mt-1">
