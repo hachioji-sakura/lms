@@ -5,7 +5,7 @@
   ?>
   @if($item->work!=9)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
-    @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers, 'is_class_schedule' => true]); @endcomponent
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher' => $teacher,'attributes' => $attributes]); @endcomponent
     @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
@@ -17,15 +17,6 @@
     @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-    <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
-      <div class="form-group">
-        <label for="remark" class="w-100">
-        {{__('labels.remark')}}
-          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        </label>
-        <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
-      </div>
-    </div>
   @endif
 
   @component('calendar_settings.forms.select_enable_date', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
@@ -42,13 +33,22 @@
 @endsection
 @section('third_form')
 <div class="row">
-  <div class="col-12 bg-info p-2 pl-4 mb-4">
+  <div class="col-12 bg-info p-2 pl-4 mb-4 schedule_type schedule_type_class">
     <i class="fa fa-chalkboard-teacher mr-1"></i>
     {{__('labels.school_lesson')}}{{__('labels.info')}}
   </div>
   @if($item->work!=9)
     @component('calendars.forms.charge_subject', ['_edit'=>$_edit, 'item'=>$item, 'teacher' => $teacher, 'attributes' => $attributes]); @endcomponent
   @endif
+  <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
+    <div class="form-group">
+      <label for="remark" class="w-100">
+      {{__('labels.remark')}}
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      </label>
+      <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
+    </div>
+  </div>
 </div>
 @endsection
 @section('confirm_form')
