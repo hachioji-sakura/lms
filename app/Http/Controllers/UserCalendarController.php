@@ -511,7 +511,7 @@ class UserCalendarController extends MilestoneController
          return $this->forbidden("This User is not manager or tehacer role.");
       }
 
-      if($request->get('is_all_data')==1 || $request->get('is_all_data')[0]==1){
+      if($request->has('is_all_data') && ($request->get('is_all_data')==1 || $request->get('is_all_data')[0]==1)){
         if($this->is_student_or_parent($param['user']->role)==false){
           $user_id = 0;
         }

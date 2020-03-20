@@ -13,6 +13,9 @@ $item = $item->details(1);
 @endif
 --------------------------------------------
 （{{__('labels.details')}}）
+@if($item->work==9)
+{{__('labels.charge_user')}}：{{$item->user->details()->name()}}
+@else
 {{__('labels.teachers')}}：{{$item['teacher_name']}}
 @if($item->is_teaching()==true)
 {{__('labels.lesson')}}：{{$item['lesson']}}
@@ -27,7 +30,7 @@ $item = $item->details(1);
 @endif
 @endforeach
 @endif
-
+@endif
 --------------------------------------------
 @isset($item['comment'])
 {{__('labels.notice')}}{{$item['comment']}}

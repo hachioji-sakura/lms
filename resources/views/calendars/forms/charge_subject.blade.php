@@ -49,7 +49,7 @@
        </select>
       </div>
      @endif
-     @if($teacher->user->has_tag('lesson', '3')===true)
+     @if($_edit==false && $teacher->user->has_tag('lesson', '3')===true)
      <div class="form-group w-100 charge_subject_2 charge_subject">
        ピアノレッスン
        <input type="hidden" name="piano_lesson" value="piano" >

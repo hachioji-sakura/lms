@@ -259,6 +259,14 @@
           @endif
         </div>
       <!-- /.card -->
+      {{-- TODO:charge_studentsの追加が必要の場合
+      <div class="card-footer">
+        <a href="javascript:void(0);" page_title="{{__('labels.charge_student')}}{{__('labels.add')}}"
+         page_form="dialog" page_url="/teachers/{{$item->id}}/students/create" role="button" class="btn btn-info btn-sm">
+          <i class="fa fa-plus"></i>
+        </a>
+      </div>
+      --}}
     </div>
   </div>
 </section>

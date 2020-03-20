@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\Models\Teacher;
 use App\Models\UserTag;
+use App\Models\ChargeStudent;
 //他
 use App\Models\GeneralAttribute;
 
@@ -222,5 +223,16 @@ EOT;
     $this->user->update(['status' => 0]);
     $this->update(['status' => 'regular']);
     return $this;
+  }
+  public function add_charge_student($student_id, $create_user_id){
+    $item = ChargeStudent::where('student_id' , $student_id)->where('teacher_id', $this->id)->first();
+    if(!isset($item)){
+      $item =  ChargeStudent::create(['student_id' => $student_id,
+                     'teacher_id' => $this->id,
+                     'create_user_id' => $create_user_id,
+                   ]);
+      return $this->api_response(200, __('messages.info_add'), "");
+    }
+    return $this->error_response(__('messages.error_already_reagisted'), '');
   }
 }
