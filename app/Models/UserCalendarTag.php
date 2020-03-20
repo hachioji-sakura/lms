@@ -63,5 +63,9 @@ class UserCalendarTag extends UserTag
     }
     return UserCalendarTag::where('calendar_id', $calendar_id)->where('tag_key', $tag_key)->get();
   }
+  public static function clearTags($calendar_id, $tag_key){
+    UserCalendarTag::where('calendar_id', $calendar_id)
+      ->where('tag_key' , $tag_key)->delete();
+  }
 
 }

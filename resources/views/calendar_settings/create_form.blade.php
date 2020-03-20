@@ -1,8 +1,10 @@
 @section('first_form')
 <div class="row">
   <?php
-  $teacher = $teachers[0]->user->details('teachers');
+  $teacher = null;
+  if(count($teachers) > 0) $teacher = $teachers[0]->user->details('teachers');
   ?>
+  <input type="hidden" value="{{$item->work}}" name="work" >
   @if($item->work!=9)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
     @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers, 'is_class_schedule' => true]); @endcomponent
@@ -13,6 +15,7 @@
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
   @else
+    <input type="hidden" value="office_work" name="schedule_type" >
     @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent

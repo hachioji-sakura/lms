@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Manager;
 use App\Models\Lecture;
 use App\Models\ChargeStudent;
 use App\Models\UserTag;
@@ -145,7 +146,6 @@ class UserCalendarSettingController extends UserCalendarController
       $form['piano_lesson'] = $request->get('piano_lesson');
       $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
-      $form['course_type'] = $request->get('course_type');
       $form['place'] = $request->get('place');
 
       //生徒と講師の情報が予定追加時には必須としている
@@ -172,6 +172,27 @@ class UserCalendarSettingController extends UserCalendarController
           }
           $form['students'][] = $student;
         }
+      }
+
+      if($request->has('manager_id')){
+        $form['manager_id'] = $request->get('manager_id');
+        $manager = Manager::where('id', $form['manager_id'])->first();
+        if(!isset($manager)){
+          //講師が存在しない
+          abort(400, "存在しない講師");
+        }
+        $form['user_id'] = $manager->user_id;
+      }
+      $form['course_type'] = $schedule_type;
+      if($schedule_type=='other'){
+        $form['work'] = $request->get('work');
+      }
+      else if($schedule_type=='office_work'){
+        $form['work'] = 9;
+      }
+      else {
+        $form['course_type'] = $request->get('course_type');
+        unset($form['work']);
       }
 
       return $form;
@@ -213,7 +234,6 @@ class UserCalendarSettingController extends UserCalendarController
       $form['piano_lesson'] = $request->get('piano_lesson');
       $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
-      $form['course_type'] = $request->get('course_type');
       $form['place'] = $request->get('place');
 
       if($request->has('teacher_id')){
@@ -568,7 +588,7 @@ class UserCalendarSettingController extends UserCalendarController
     /**
      * 新規登録
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illumin156ate\Http\Response
      */
     public function store(Request $request)
     {
@@ -587,7 +607,6 @@ class UserCalendarSettingController extends UserCalendarController
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         $setting = UserCalendarSetting::add($form);
-
         if($setting != null){
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){

@@ -19,11 +19,23 @@
             @endif
           </h3>
           <div class="card-tools">
-            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}}{{__('labels.add')}}" page_form="dialog" page_url="/calendar_settings/create?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}}{{__('labels.add')}}" page_form="dialog"
+            @if($domain=="teachers")
+              page_url="/calendar_settings/create?teacher_id={{$item->id}}"
+            @elseif($domain=="managers")
+              page_url="/calendar_settings/create?manager_id={{$item->id}}"
+            @endif
+             role="button">
               <i class="fa fa-plus"></i>
               <span class="btn-label">{{__('labels.setting')}}{{__('labels.add')}}</span>
             </a>
-            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.repeat_schedule_add')}}" page_form="dialog" page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.repeat_schedule_add')}}" page_form="dialog"
+            @if($domain=="teachers")
+              page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}"
+            @elseif($domain=="managers")
+              page_url="/calendar_settings/all_to_calendar?manager_id={{$item->id}}"
+            @endif
+             role="button">
               <i class="fa fa-calendar-plus"></i>
               <span class="btn-label">{{__('labels.repeat_schedule_add')}}</span>
             </a>
