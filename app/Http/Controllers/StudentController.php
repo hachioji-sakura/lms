@@ -955,8 +955,7 @@ class StudentController extends UserController
         'label' => __('labels.name'),
       ],
     ];
-    return view('components.page', [
-      'action' => 'remind',
+    return view('auth.remind', [
       'fields'=>$fields])
       ->with($param);
   }
@@ -991,12 +990,14 @@ class StudentController extends UserController
 
     if($this->is_success_response($res)){
       $title = __('labels.system_register_request');
+      $mail_template = "entry";
+      if($request->has('mail_template')) $mail_template = $request->get('mail_template');
       $this->send_mail($email, $title, [
         'user_name' => $param['item']->name(),
         'access_key' => $access_key,
         'remind' => true,
         'send_to' => $send_to,
-      ], 'text', 'entry');
+      ], 'text', $mail_template);
     }
     return $this->save_redirect($res, $param, $message);
   }
