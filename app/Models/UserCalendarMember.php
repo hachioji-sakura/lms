@@ -553,12 +553,12 @@ class UserCalendarMember extends Model
 
         $update = [];
         $is_update = false;
-        if(!empty($comment)  && $this->remark != $comment){
+        if($this->remark != $comment){
           //comment -> remark
           $update['remark'] = $comment;
           $is_update = true;
         }
-        if(!empty($cancel)  && $this->rest_type != $cancel){
+        if($this->rest_type != $cancel){
           //cancel -> rest_type
           $update['rest_type'] = $cancel;
           $is_update = true;
@@ -569,7 +569,7 @@ class UserCalendarMember extends Model
           $update['rest_result'] = $cancel_reason;
           $is_update = true;
         }
-        if(!empty($exchange_limit_date)  && $this->exchange_limit_date != $exchange_limit_date){
+        if($this->exchange_limit_date != $exchange_limit_date){
           $update['exchange_limit_date'] = $exchange_limit_date;
           $is_update = true;
         }
