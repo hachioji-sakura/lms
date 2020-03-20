@@ -534,8 +534,16 @@ class UserCalendarSettingController extends UserCalendarController
         $param = $this->get_param($request, $id);
         $settings = [$param['item']];
       }
+      if(count($settings) < 1) {
+        return $this->bad_request("setting not found");
+      }
       if($param['user']->role !== 'manager'){
-        return $this->forbidden("This User is not manager role.");
+        //自分以外の設定があったらforbidden
+        foreach($settings as $setting){
+          if($setting->user_id != $param['user']->user_id){
+            return $this->forbidden("This User is not manager role.");
+          }
+        }
       }
       if(!$request->has('start_date') || !$request->has('end_date')){
         return $this->bad_request();

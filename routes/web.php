@@ -226,6 +226,7 @@ Route::put('teachers/{id}/ask/{ask_id}','TeacherController@ask_update');
 Route::get('teachers/{id}/announcements','TeacherController@announcements');
 
 Route::get('managers/{id}/calendar','ManagerController@calendar');
+Route::get('managers/{id}/schedule','ManagerController@schedule');
 Route::get('managers/{id}/unsubscribe','ManagerController@unsubscribe');
 Route::get('managers/{id}/recess','ManagerController@recess');
 Route::get('managers/{id}/resume','ManagerController@resume');
