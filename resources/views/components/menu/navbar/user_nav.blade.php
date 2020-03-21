@@ -75,7 +75,7 @@
       <a href="/events" class="dropdown-item">{{__('labels.events_list')}}</a>
       --}}
       <a href="/maillogs" class="dropdown-item">{{__('labels.maillogs')}}</a>
-      <a href="/attributes" class="dropdown-item">{{__('labels.attributes_list')}}</a>
+      <a href="/attributes?select_key=keys" class="dropdown-item">{{__('labels.attributes_list')}}</a>
     </div>
   </li>
 @endif

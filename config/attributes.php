@@ -1204,6 +1204,13 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "6",
 		],
+		"infant_lesson" => [
+			"attribute_value" => "infant_lesson",
+			"attribute_name" => "幼児教室",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "7",
+		],
 	],
 	"lesson" => [
 		"1" => [

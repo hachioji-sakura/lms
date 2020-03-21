@@ -90,10 +90,13 @@ class Trial extends Model
       case "fix":
       case "presence":
       case "new":
-        $status = 'fix';
-        if(count($this->calendars) < 1) $status = 'new';
+      case "cancel":
+        $status = 'new';
         if($this->is_confirm_trial_lesson()==true){
           $status = 'confirm';
+        }
+        else if($this->is_all_fix_trial_lesson()==true){
+          $status = 'fix';
         }
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
@@ -103,8 +106,19 @@ class Trial extends Model
     }
     return $this->status;
   }
+  public function is_all_fix_trial_lesson(){
+    $is_find = false;
+    foreach($this->calendars as $calendar){
+      if($calendar->status=='cancel') continue;
+      if($calendar->status=='new') return false;
+      if($calendar->status=='confirm') return false;
+      if($calendar->status=='fix') $is_find = true;
+    }
+    return $is_find;
+  }
   public function is_confirm_trial_lesson(){
     foreach($this->calendars as $calendar){
+      if($calendar->status=='cancel') continue;
       if($calendar->status=='new') return true;
       if($calendar->status=='confirm') return true;
     }
@@ -112,10 +126,12 @@ class Trial extends Model
   }
   public function is_presence_trial_lesson(){
     if(count($this->calendars) < 1) return false;
+    $is_find = false;
     foreach($this->calendars as $calendar){
-      if($calendar->status!='presence') return false;
+      if($calendar->status=='presence') $is_find = true;
+      if($calendar->is_last_status()==false) return false;
     }
-    return true;
+    return $is_find;
   }
   public function is_regular_schedule_fix(){
     if(count($this->user_calendar_settings) < 1) return false;
@@ -404,7 +420,7 @@ class Trial extends Model
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
-    $calendar = UserCalendar::findTrialStudent($this->id)->findStatuses(['cancel'], true)->get();
+    $calendar = UserCalendar::findTrialStudent($this->id)->get();
     return $calendar;
   }
   public function get_calendar_settings(){

@@ -62,7 +62,7 @@
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
         </label>
-        {{$item[$key]}}
+        {!!nl2br($item[$key])!!}
         @endif
       </div>
     </div>

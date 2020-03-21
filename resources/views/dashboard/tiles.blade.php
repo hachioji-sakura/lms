@@ -24,7 +24,7 @@
                 <a href="./{{$domain}}/{{$item->id}}" class="">
                     {{$item->name()}}
                 </a>
-                <span class="text-xs mx-2">
+                <span class="text-xs ml-1">
                   <small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
                     {{$item->status_name()}}
                   </small>
