@@ -13,6 +13,10 @@
     <div class="card-title text-sm">
       @yield('list_pager')
     </div>
+    <div class="card-tools">
+      @component('components.search_word', ['search_word' => $search_word])
+      @endcomponent
+    </div>
   </div>
   <div class="card-body table-responsive p-0">
     @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
