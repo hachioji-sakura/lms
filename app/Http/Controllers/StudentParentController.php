@@ -153,11 +153,12 @@ class StudentParentController extends TeacherController
          $param['result'] = 'token_error';
          return view($this->domain.'.register',$param);
        }
-       $user = User::where('access_key',$access_key);
-       if($user->count() < 1){
+       $user = User::where('access_key',$access_key)->first();
+       if(!isset($user)){
          abort(404);
        }
-       $param['parent'] = $user->first()->details();
+       $param['parent'] = $user->details();
+       $param['user'] = $param['parent'];
        $student = Student::findChild($param['parent']->id)->orderBy('id', 'desc')->first();
        $trial = Trial::where('student_parent_id', $param['parent']->id)->where('student_parent_id', $param['parent']->id)->first();
        if(isset($trial)) $param['trial'] = $trial->details();
@@ -193,13 +194,17 @@ class StudentParentController extends TeacherController
           ['result' => $result]
         );
       }
+      $user = User::where('access_key',$form['access_key'])->first();
+      if(!isset($user)){
+        abort(403);
+      }
+
       $res = $this->_register_update($request);
       if($this->is_success_response($res)){
-        $create_user = $res['data']->user->details($this->domain);
         if(empty($param['user'])){
           $form['send_to'] = 'parent';
-          $this->send_mail($create_user->email, 'システムへの本登録が完了しました', $form, 'text', 'register');
-          Auth::loginUsingId($create_user->user_id);
+          $this->send_mail($user->email, 'システムへの本登録が完了しました', $form, 'text', 'register');
+          Auth::loginUsingId($user->id);
         }
         return $this->save_redirect($res, $param, 'システムへの本登録が完了しました', '/home');
       }
@@ -209,11 +214,10 @@ class StudentParentController extends TeacherController
     {
       $form = $request->all();
 
-      $user = User::where('access_key',$form['access_key']);
-      if($user->count() < 1){
+      $user = User::where('access_key',$form['access_key'])->first();
+      if(!isset($user)){
         abort(403);
       }
-      $user = $user->first();
       return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $parent = StudentParent::where('user_id', $user->id)->first();

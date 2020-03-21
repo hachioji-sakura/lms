@@ -64,6 +64,7 @@ class ImportController extends UserController
      */
     public function index(Request $request, $object)
     {
+      $this->token = $request->header('api-token');
       if($object==='concealment'){
         $res = $this->concealment();
         return $res;
@@ -90,6 +91,8 @@ class ImportController extends UserController
      */
     public function import(Request $request, $object)
     {
+      $this->token = $request->header('api-token');
+
       set_time_limit(1200);
       if($object==='concealment'){
         $res = $this->concealment();

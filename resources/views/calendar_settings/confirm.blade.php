@@ -10,7 +10,7 @@
   @slot('forms')
   @method('PUT')
   <div class="row">
-    @if(isset($user) && $user->role==="manager")
+    @if(isset($user) && $user->role==="manager" && $item->user_id != $user->user_id)
     <div class="col-12 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendar_settings/{{$item['id']}}/remind">
         @csrf
@@ -19,6 +19,18 @@
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を講師に連絡しますか？">
             <i class="fa fa-envelope mr-1"></i>
               {{__('labels.send_button')}}
+        </button>
+      </form>
+    </div>
+    @elseif(isset($user) && ($user->role==="manager" || $user->role==="staff") && $item->user_id == $user->user_id)
+    <div class="col-12 mb-1" id="{{$domain}}_confirm">
+      <form method="POST" action="/calendar_settings/{{$item['id']}}/status_update/fix">
+        @csrf
+    		<input type="text" name="dummy" style="display:none;" / >
+        @method('PUT')
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を確定しますか？">
+            <i class="fa fa-envelope mr-1"></i>
+              {{__('labels.update_button')}}
         </button>
       </form>
     </div>

@@ -1,13 +1,15 @@
 <?php
 
 return [
-"validate_timezone_error" => "Wrong time zone input",
-"confirm_update" => "Do you want to update?",
-"confirm_delete" => "Do you want to delete?",
+ "validate_timezone_error" => "Wrong time zone input",
+ "confirm_update" => "Do you want to update?",
+ "confirm_delete" => "Do you want to delete?",
  "confirm_add" => "Do you want to register?",
+ "info_add" => "Has registered.",
  "error_exchange_target" => "Please select classes for transfer",
  "error_single_exchange_is_one_student" => "Please leave only one student for transfer",
  "error_group_exchange" => "Group lessons can not be transferred",
+ "error_already_reagisted" => "It has already been registered.",
  "warning_telephone_not_hyphen" => "Hyphen (-) unnecessary",
  "confirm_rest_cancel" => "Do you want to send a cancellation notice?",
  "info_proxy_contact_for_student" => "The following lesson schedule has been finalized.",
