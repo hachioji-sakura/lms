@@ -404,7 +404,7 @@ class Trial extends Model
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
-    $calendar = UserCalendar::findTrialStudent($this->id)->findStatuses(['cancel'], true)->get();
+    $calendar = UserCalendar::findTrialStudent($this->id)->get();
     return $calendar;
   }
   public function get_calendar_settings(){

@@ -123,6 +123,7 @@ return [
   'add' => 'Add',
   'edit' => 'Edit',
   'select' => 'Select',
+  'cancel' => 'Cancel',
 
   'check' => 'Check',
   'top' => 'Top',
