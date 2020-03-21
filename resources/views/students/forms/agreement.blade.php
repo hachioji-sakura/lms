@@ -84,22 +84,14 @@
 								<div class="col-6 p-2 font-weight-bold" >入会金</div>
 			          <div class="col-6 p-2">
 									@if($item->is_first_brother()==true)
-										@if($item->user->has_tag('lesson',1)==false && $item->user->has_tag('lesson',2)==false)
-											1,0000円
-										@else
-											1,5000円
-				          	@endif
+										@component('trials.forms.entry_fee', ['user'=>$item->user]) @endcomponent
 									@else
 										0円
 									@endif
 			          </div>
 								<div class="col-6 p-2 font-weight-bold" >月会費</div>
 			          <div class="col-6 p-2">
-									@if($item->user->has_tag('lesson',1)==false && $item->user->has_tag('lesson',2)==false)
-										1,000円
-									@else
-										1,500円
-			          	@endif
+									@component('trials.forms.monthly_fee', ['user'=>$item->user]) @endcomponent
 			          </div>
 			        </div>
 		        </div>

@@ -6,5 +6,6 @@ return array(
   'science' => 'サイエンスクラブ',
   'after_school' => '学童保育',
   'japanese_school' => '国語教室',
+  'infant_lesson' => '幼児教室',
 );
 ?>
