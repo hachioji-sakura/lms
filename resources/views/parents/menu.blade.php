@@ -1,5 +1,5 @@
 @section('page_sidemenu')
-<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+<ul class="nav nav-pills nav-sidebar flex-column pl-1" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-item has-treeview menu-open">
       <a href="#" class="nav-link">
       <i class="nav-icon fa fa-id-card"></i>
@@ -16,6 +16,11 @@
         <li class="nav-item">
           <a class="nav-link @if($view=="page") active @endif" href="/parents/{{$item->id}}"  >
             <i class="fa fa-home nav-icon"></i>{{__('labels.top')}}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.teacher_setting')}}">
+            <i class="fa fa-user-cog nav-icon"></i>{{__('labels.users')}}{{__('labels.setting')}}
           </a>
         </li>
         {{--

@@ -17,6 +17,7 @@ return [
   'password_setting' => 'Password Setting',
   'forget_password' => 'I forgot my password',
   'register_email' => 'e-mail address',
+  'change_email' => 'e-mail change',
   'logout'             => 'Logout',
   'students_list'             => 'Students List',
   'parents_list'             => 'Parents List',
@@ -108,6 +109,8 @@ return [
   'gender' => 'gender',
   'grade' => 'grade',
   'shool_name' => 'School Name',
+  'post_no' => 'Post Number',
+  'address' => 'Address',
   'phone_no' => 'Telephone Number',
   'email' => 'Email',
   'charge_lesson' => 'Charge Lesson',
@@ -316,4 +319,5 @@ return [
   'not_require_student_confirm' => 'Does not require student confirmation',
   "error_user_calendar_settings_no_member" => "Insufficient member settings!",
   'schedule_start_hope_date' => 'Schedule Start Date',
+  'verification_code' => 'Verification Code',
 ];

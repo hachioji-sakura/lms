@@ -8,7 +8,12 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
+          @if($user->role=="manager")
+          @component('students.forms.editable_email', ['item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+          @else
           @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+          @endif
+
           @yield('bank_form')
           <div class="row">
             <div class="col-12 mb-1">

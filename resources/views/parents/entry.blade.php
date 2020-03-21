@@ -1,3 +1,4 @@
+{{--
 @extends('layouts.simplepage')
 @section('title', '体験申し込みページ')
 
@@ -207,3 +208,4 @@ $(function(){
 </script>
 @endif
 @endsection
+--}}

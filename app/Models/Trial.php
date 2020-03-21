@@ -257,7 +257,7 @@ class Trial extends Model
     if($parent==null) return null;
 
     $form["create_user_id"] = $parent->user_id;
-    $parent = $parent->profile_update($form);
+    $parent->profile_update($form);
     $form["kana_last"] = $form["student_kana_last"];
     $form["kana_first"] = $form["student_kana_first"];
     $form["name_last"] = $form["student_name_last"];

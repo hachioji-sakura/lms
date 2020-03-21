@@ -130,4 +130,32 @@ class AuthController extends UserController
      return $this->save_redirect($res, [], $message);
 
    }
+   public function send_access_key(Request $request)
+   {
+     $title = __('messages.info_send_verification_code');
+     if(!$request->has('new_email')) return $this->bad_request();
+     if(!$request->has('user_id')) return $this->bad_request();
+
+     $user = User::where('id', $request->get('user_id'))->first();
+     if(!isset($user)) return $this->notfound();
+     $user = $user->details();
+
+     $res = $this->transaction($request, function() use ($request, $user, $title){
+       $verification_code = "";
+       for($i=0;$i<6;$i++){
+         $verification_code.=mt_rand(0,9);
+       }
+       //24H有効
+       User::where('id', $request->get('user_id'))->update([
+         'verification_code' => $verification_code,
+         'email_verified_at' => date('Y-m-d H:i:s', strtotime("+1 day ".date('Y-m-d H:i:s'))),
+       ]);
+       $this->send_mail($request->get('new_email'), $title, [
+         'user_name' => $user->name(),
+         'verification_code' => $verification_code,
+       ], 'text', 'send_accesskey');
+       return $this->api_response(200, "", "");
+     }, $title, __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
+   }
 }
