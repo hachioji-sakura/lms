@@ -78,7 +78,7 @@ return [
   "info_register2" => "引き続き、以下の URL より本登録を行ってください。",
   "info_register_complete1" => ":domain登録が完了いたしました。",
   "info_register_complete2" => "以後、下記ログイン画面よりご利用ください。",
-  "info_calendar_cancel" => "以下の授業は、生徒様都合によりキャンセルとなりました。",
+  "info_calendar_cancel" => "以下の授業は、キャンセルとなりました。",
   "info_lecture_cancel_to_cancel" => "以下の休講依頼について\n承認されませんでした。",
   "info_lecture_cancel_to_commit" => "以下の休講依頼について\n承認されました。",
   "info_lecture_cancel" => "以下の 授業予定の休講依頼を連絡しました。\n依頼承認後、休講となります。",

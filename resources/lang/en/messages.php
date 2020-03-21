@@ -76,7 +76,7 @@ return [
  "info_register2" => "Please continue to register from the following URL.",
  "info_register_complete1" => ":domain registration has been completed.",
  "info_register_complete2" => "After that, please use from the following login page.",
- "info_calendar_cancel" => "The following classes have been canceled due to student convenience.",
+ "info_calendar_cancel" => "The following classes have been canceled.",
  "info_lecture_cancel_to_cancel" => "The following cancellation requests were not approved.",
  "info_lecture_cancel_to_commit" => "The following cancellation requests have been approved.",
  "info_lecture_cancel" => "I have notified of the following class schedule cancellation requests.\nAfter approving the request, it will be canceled.",

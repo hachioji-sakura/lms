@@ -41,10 +41,10 @@
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/cancel?trial_id={{$item->id}}" page_title="{{__('labels.cancel')}}" class="mr-1 underline text-sm">
           <i class="fa fa-ban"></i>{{__('labels.cancel')}}
         </a>
-        @endif
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/edit?trial_id={{$item->id}}" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
           <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>
+        @endif
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}" class="mr-1 underline text-sm">
           <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
