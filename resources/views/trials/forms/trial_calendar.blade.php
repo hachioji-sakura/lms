@@ -31,13 +31,13 @@
         </span>
         @endforeach
       </div>
-      @if($calendar->status=='new')
+      @if($calendar->status=='new' || $calendar->status=='confirm')
       <div class="col-12 col-md-3 my-1">
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/edit?trial_id={{$item->id}}" page_title="{{__('labels.edit')}}" role="button" class="mr-1">
-          {{__('labels.edit')}}
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/edit?trial_id={{$item->id}}" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}" role="button" class=" mr-1">
-          {{__('labels.delete')}}
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
       </div>
       @endif

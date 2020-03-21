@@ -59,11 +59,11 @@
         </a>
         @endif
         @if($setting->status=='new')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" role="button" class="ml-2">
-          {{__('labels.edit')}}
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}" role="button" class="ml-2">
-          {{__('labels.delete')}}
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}"  class="mr-1 underline text-sm">
+          <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
         @endif
       </div>

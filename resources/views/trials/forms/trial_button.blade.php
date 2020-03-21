@@ -1,8 +1,8 @@
-<a href="trials/{{$item->id}}" role="" class="mr-1" style="text-decoration: underline">
+<a href="trials/{{$item->id}}" role="" class="mr-1 underline">
   <i class="fa fa-file"></i>
   {{__('labels.details')}}
 </a>
-<a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1"  style="text-decoration: underline">
+<a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1 underline">
   <i class="fa fa-edit"></i>
   {{__('labels.edit')}}
 </a>
