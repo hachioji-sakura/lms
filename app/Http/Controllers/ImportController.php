@@ -394,8 +394,20 @@ class ImportController extends UserController
       if(isset($bank_account_type[intval($item['bank_acount_type'])])){
         $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
       }
-
+      $teacher = null;
+      $user_id = -1;
       if(!isset($manager)){
+        //登録されていないが、講師側に同一氏名のユーザーが存在する場合
+        $teacher = Teacher::where('name_last', $item['name_last'])->where('name_first', $item['name_first'])->first();
+        if(isset($teacher)){
+          //兼務
+          $user_id = $teacher->user_id;
+        }
+      }
+      else {
+        $user_id = $manager->user_id;
+      }
+      if($user_id < 1){
         //認証情報登録
         $res = $this->user_create([
           'name' => $item['staff_no'],
@@ -404,7 +416,13 @@ class ImportController extends UserController
           'image_id' => $item['image_id'],
           'status' => $item['status'],
         ]);
-        if($this->is_success_response($res)){
+        if($this->is_success_response($res)) $user_id = $res['data']->id;
+      }
+      if(!isset($manager)){
+        $manager = Manager::where('name_last', $item['name_last'])->where('name_first', $item['name_first'])->first();
+      }
+      if(!isset($manager)){
+        if($user_id > 0 ){
           //講師情報登録
           $manager = Manager::create([
             'status' => $status,
@@ -412,7 +430,7 @@ class ImportController extends UserController
             'name_first' => $item['name_first'],
             'kana_last' => $item['kana_last'],
             'kana_first' => $item['kana_first'],
-            'user_id' => $res['data']->id,
+            'user_id' => $user_id,
             'bank_no' => $item['bank_no'],
             'bank_branch_no' => $item['bank_branch_no'],
             'bank_account_type' => $_bank_account_type,
@@ -420,13 +438,11 @@ class ImportController extends UserController
             'bank_account_name' => $item['bank_acount_name'],
             'create_user_id' => 1
           ]);
-          $user_id = $res['data']->id;
         }
         else {
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['staff_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
-        $this->store_user_tag($manager->user_id, 'manager_no', $item['staff_no'], false);
       }
       else {
         if($item['status']==1 && $manager->user->status==0){
@@ -448,6 +464,8 @@ class ImportController extends UserController
           'status' => $item['status'],
         ]);
       }
+      $this->store_user_tag($user_id, 'manager_no', $item['staff_no'], false);
+
       return true;
     }
 
