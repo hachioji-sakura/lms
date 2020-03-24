@@ -1,7 +1,7 @@
 @if(count($item->calendar_settings)>0)
   @foreach($item->calendar_settings as $setting)
     <div class="row border-bottom">
-      <div class="col-12 col-md-10 p-2">
+      <div class="col-12 col-md-9 p-2 border-right">
           <span class="description-text mr-2">
             <a href="javascript:void(0);" title="{{$setting->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" >
               <i class="fa fa-clock mr-1"></i>
@@ -39,29 +39,33 @@
         if(isset($t)) $t_id = $t->id;
         ?>
         <a href="/teachers/{{$t_id}}/schedule?list=history&user_calendar_setting_id={{$setting->id}}" class="text-sm">
-          {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:{{$setting['last_schedule']['date']}}
+          {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:
+          @isset($setting['last_schedule'])
+          {{$setting['last_schedule']['date']}}
+          @endisset
         </a>
       </div>
-      <div class="col-12 col-md-2 my-1">
+      <div class="col-12 col-md-3 my-1">
         @if($setting->status=='fix')
-        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-success btn-sm float-left mx-1 text-center">
+        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-success btn-sm ml-1">
           <i class="fa fa-calendar-plus"></i>
         </a>
-        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/delete_calendar" role="button" class="btn btn-outline-danger btn-sm float-left mx-1 text-center">
+        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/delete_calendar" role="button" class="btn btn-outline-danger btn-sm  ml-1">
           <i class="fa fa-calendar-minus"></i>
+        </a>
+        @elseif($setting->status=='new')
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/confirm" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
+          <i class="fa fa-envelope"></i>
         </a>
         @endif
         @if($setting->status=='new')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/confirm" page_title="確認連絡" role="button" class="btn btn-sm btn-warning float-left mx-1 text-center">
-          <i class="fa fa-envelope"></i>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="削除" role="button" class="btn btn-sm btn-danger float-left mx-1 text-center">
-          <i class="fa fa-trash"></i>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}"  class="mr-1 underline text-sm">
+          <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
         @endif
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="編集" role="button" class="btn btn-sm btn-success float-left mx-1 text-center">
-          <i class="fa fa-edit"></i>
-        </a>
       </div>
     </div>
   @endforeach

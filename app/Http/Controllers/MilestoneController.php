@@ -113,7 +113,6 @@ class MilestoneController extends UserController
       foreach($page_data as $key => $val){
         $param[$key] = $val;
       }
-
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }

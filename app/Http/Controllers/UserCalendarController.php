@@ -920,6 +920,32 @@ class UserCalendarController extends MilestoneController
       return $this->save_redirect($res, $param, $this->status_update_message["remind"]);
     }
     /**
+     * 強制キャンセル更新
+     *
+     * @param  Request  $request
+     * @param  integer  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function force_cancel(Request $request, $id){
+      $param = $this->get_param($request, $id);
+      $res = $this->transaction($request, function() use ($request, $param, $id){
+        if($param['item']->status=='new' || $param['item']->status=='confirm'){
+          $remark = $param['item']->remark;
+          if(!empty($request->get('cancel_reason'))){
+            $remark.="\nキャンセル理由[".$request->get('cancel_reason')."]";
+          }
+          UserCalendar::where('id', $id)->update(['status' => 'cancel', 'remark' => $remark]);
+          UserCalendarMember::where('calendar_id', $id)->update(['status' => 'cancel']);
+        }
+        $title = __('messages.mail_title_calendar_cancel');
+        $template = 'calendar_cancel';
+        $param['item']->teacher_mail($title, $param, 'text', $template);
+        return $this->api_response(200, '', '', $param['item']);
+      }, 'カレンダー通知', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, $this->status_update_message["cancel"]);
+    }
+
+    /**
      * ステータス更新
      *
      * @param  \Illuminate\Http\Request  $request
@@ -1001,6 +1027,7 @@ class UserCalendarController extends MilestoneController
      * @return \Illuminate\Http\Response
      */
     private function _status_update(Request $request, $param, $id, $status){
+      \Log::warning("UserCalendarController::_status_update(".$status.")");
       $res = $this->transaction($request, function() use ($request, $param, $id, $status){
         $form = $request->all();
         $param['item'] = $this->model()->where('id', $param['item']->id)->first();

@@ -13474,3 +13474,6 @@ ul.wysihtml5-toolbar{
 	border-style: solid;
 	border-color: #17a2b8;
 }
+.underline {
+	text-decoration: underline;
+}
