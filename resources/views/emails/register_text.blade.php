@@ -23,13 +23,13 @@
 @else
 {{config('app.url')}}/login
 @endif
-
+{{--  TODO : 実用化されるまでコメントアウト
 {{__('labels.manual')}}
 {{config('app.url')}}/manual
 
 {{__('labels.faqs')}}
 {{config('app.url')}}/faqs
-
+--}}
 …………………………………………………………………………………………
 
 @yield('signature')
