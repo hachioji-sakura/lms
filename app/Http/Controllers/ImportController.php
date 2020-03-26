@@ -613,40 +613,40 @@ class ImportController extends UserController
           $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
       //student_noを持った生徒が登録済みかどうか
-      $student = Student::hasTag('student_no', $item['student_no'])->first();
-      if(!isset($student)){
-        //認証情報登録(保護者として登録）
-        $parent_user = User::where('email', $item['email'])->first();
-        if(!isset($parent_user)){
-          $res = $this->user_create([
-            'name' => $item['family_name'].'',
-            'password' => $item['password'],
-            'email' => $item['email'],
-            'image_id' => 4,
-            'status' => $item['status'],
+      $parent_user = User::where('email', $item['email'])->first();
+      //認証情報登録(保護者として登録）
+      if(!isset($parent_user)){
+        $res = $this->user_create([
+          'name' => $item['family_name'].'',
+          'password' => $item['password'],
+          'email' => $item['email'],
+          'image_id' => 4,
+          'status' => $item['status'],
+        ]);
+        if($this->is_success_response($res)){
+          //保護者情報登録
+          $parent_user = $res['data'];
+          $StudentParent = new StudentParent;
+          $parent = $StudentParent->create([
+            'status' => $status,
+            'name_last' => $item['family_name'],
+            'name_first' => $item['first_name'],
+            'kana_last' => $item['kana_last'],
+            'kana_first' => $item['kana_first'],
+            'user_id' => $parent_user->id,
+            'create_user_id' => 1,
           ]);
-          if($this->is_success_response($res)){
-            //保護者情報登録
-            $parent_user = $res['data'];
-            $StudentParent = new StudentParent;
-            $parent = $StudentParent->create([
-              'status' => $status,
-              'name_last' => $item['family_name'],
-              'name_first' => $item['first_name'],
-              'kana_last' => $item['kana_last'],
-              'kana_first' => $item['kana_first'],
-              'user_id' => $parent_user->id,
-              'create_user_id' => 1,
-            ]);
-          }
-          else {
-            @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."保護者登録エラー:email=".$parent_user->email." / name=".$parent_user->name, 'error', $this->logic_name);
-            return false;
-          }
         }
         else {
-          $parent = StudentParent::where('user_id', $parent_user->id)->first();
+          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."保護者登録エラー:email=".$parent_user->email." / name=".$parent_user->name, 'error', $this->logic_name);
+          return false;
         }
+      }
+      else {
+        $parent = StudentParent::where('user_id', $parent_user->id)->first();
+      }
+      $student = Student::hasTag('student_no', $item['student_no'])->first();
+      if(!isset($student)){
         //認証情報なし：新規登録
         $res = $this->user_create([
           'name' => $item['student_no'],
