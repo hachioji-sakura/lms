@@ -692,7 +692,6 @@ class ImportController extends UserController
           'gender' => $item['gender'],
         ]);
         if($status == 'unsubscribe'){
-          @$this->remind("退会生徒:email=".$item['email']." / name=".$item['student_no'], 'info', $this->logic_name);
           //削除時のみ更新
           $student->user->update([
             'status' => $item['status'],
