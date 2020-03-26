@@ -287,12 +287,12 @@ class ImportController extends UserController
      * @return boolean
      */
     private function managers_import($items){
-      return $this->transaction(null, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
         }
         return $this->api_response(200, '', '', 'count['.$c.']');
+        return $this->transaction(null, function() use ($items){
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -445,9 +445,6 @@ class ImportController extends UserController
         }
       }
       else {
-        if($item['status']==1 && $manager->user->status==0){
-          $item['status'] = 0;
-        }
         $manager->update([
           'status' => $status,
           'name_last' => $item['name_last'],
@@ -459,9 +456,6 @@ class ImportController extends UserController
           'bank_account_type' => $_bank_account_type,
           'bank_account_no' => $item['bank_acount_no'],
           'bank_account_name' => $item['bank_acount_name'],
-        ]);
-        $manager->user->update([
-          'status' => $item['status'],
         ]);
       }
       $this->store_user_tag($user_id, 'manager_no', $item['staff_no'], false);
@@ -549,9 +543,6 @@ class ImportController extends UserController
         if($item['lesson_id2']!='0') $this->store_user_tag($teacher->user_id, 'lesson', $item['lesson_id2'], false);
       }
       else {
-        if($item['status']==1 && $teacher->user->status==0){
-          $item['status'] = 0;
-        }
         $teacher->update([
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],
@@ -563,9 +554,6 @@ class ImportController extends UserController
           'bank_account_type' => $_bank_account_type,
           'bank_account_no' => $item['bank_acount_no'],
           'bank_account_name' => $item['bank_acount_name'],
-        ]);
-        $teacher->user->update([
-          'status' => $item['status'],
         ]);
       }
       return true;
