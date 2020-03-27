@@ -613,6 +613,7 @@ class ImportController extends UserController
           $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
       //student_noを持った生徒が登録済みかどうか
+      //事務員の可能性もある
       $parent_user = User::where('email', $item['email'])->first();
       //認証情報登録(保護者として登録）
       if(!isset($parent_user)){
@@ -624,26 +625,21 @@ class ImportController extends UserController
           'status' => $item['status'],
         ]);
         if($this->is_success_response($res)){
-          //保護者情報登録
           $parent_user = $res['data'];
-          $StudentParent = new StudentParent;
-          $parent = $StudentParent->create([
-            'status' => $status,
-            'name_last' => $item['family_name'],
-            'name_first' => $item['first_name'],
-            'kana_last' => $item['kana_last'],
-            'kana_first' => $item['kana_first'],
-            'user_id' => $parent_user->id,
-            'create_user_id' => 1,
-          ]);
-        }
-        else {
-          @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."保護者登録エラー:email=".$parent_user->email." / name=".$parent_user->name, 'error', $this->logic_name);
-          return false;
         }
       }
-      else {
-        $parent = StudentParent::where('user_id', $parent_user->id)->first();
+      $parent = StudentParent::where('user_id', $parent_user->id)->first();
+      if(!isset($parent)){
+        //保護者情報登録
+        $parent = StudentParent::create([
+          'status' => $status,
+          'name_last' => $item['family_name'],
+          'name_first' => $item['first_name'],
+          'kana_last' => $item['kana_last'],
+          'kana_first' => $item['kana_first'],
+          'user_id' => $parent_user->id,
+          'create_user_id' => 1,
+        ]);
       }
       $student = Student::hasTag('student_no', $item['student_no'])->first();
       if(!isset($student)){
@@ -692,7 +688,6 @@ class ImportController extends UserController
           'gender' => $item['gender'],
         ]);
         if($status == 'unsubscribe'){
-          @$this->remind("退会生徒:email=".$item['email']." / name=".$item['student_no'], 'info', $this->logic_name);
           //削除時のみ更新
           $student->user->update([
             'status' => $item['status'],
