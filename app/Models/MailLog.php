@@ -48,7 +48,16 @@ class MailLog extends Model
     ];
     $mail_log = MailLog::create($create_form);
     return $mail_log->api_response(200, "", "", $mail_log);
-
+  }
+  public function change($form){
+    $fields = ["subject", "body", "send_schedule", "type", "from_address", "to_address"];
+    $update_form = [];
+    foreach($form as $key => $val){
+      if(!isset($val)) continue;
+      $update_form[$key] = $val;
+    }
+    $this->update($update_form);
+    return $this;
   }
   public function details(){
     $item = $this;
