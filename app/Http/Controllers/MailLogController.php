@@ -123,10 +123,25 @@ class MailLogController extends MilestoneController
 
     return $items;
   }
+  /**
+   * データ更新時のパラメータチェック
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function save_validate(Request $request)
+  {
+    $form = $request->all();
+    //保存時にパラメータをチェック
+    if(empty($form['subject']) || empty($form['body']) || empty($form['type'])){
+      return $this->bad_request('リクエストエラー', '種別='.$form['type'].'/タイトル='.$form['title'].'/内容='.$form['body']);
+    }
+    return $this->api_response(200, '', '');
+  }
+
   public function update_form(Request $request){
     $form = [];
     $form['status'] = $request->get('status');
-    $form['title'] = $request->get('title');
+    $form['subject'] = $request->get('subject');
     $form['body'] = $request->get('body');
     return $form;
   }
