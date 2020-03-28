@@ -106,17 +106,21 @@
                       <span class="mr-2">
                         <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
                       </span>
-                      <span class="mr-2">
-                        <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
-                      </span>
-                      /
-                      <span class="text-xs mr-2">
-                          {{$calendar["work_name"]}}
-                      </span>
                       <span class="text-xs mr-2">
                         <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
                           {{$calendar["status_name"]}}
                         </small>
+                      </span>
+                      <br>
+                      <span class="mr-2">
+                        <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
+                      </span>
+                      <span class="text-sm mr-2">
+                        @if($calendar->is_teaching()==true)
+                        <i class="fa fa-tag mx-1"></i>{{$calendar->teaching_type_name()}}
+                        @else
+                        <i class="fa fa-tag mx-1"></i>{{$calendar["work_name"]}}
+                        @endif
                       </span>
                     </a>
                   </div>
