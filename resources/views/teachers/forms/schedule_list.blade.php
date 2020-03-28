@@ -19,13 +19,6 @@
           <br>
           <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
           <br>
-          <span class="text-sm">
-            @if($calendar->is_teaching()==true)
-            <i class="fa fa-tag mx-1"></i>{{$calendar->teaching_type_name()}}
-            @else
-            <i class="fa fa-tag mx-1"></i>{{$calendar["work_name"]}}
-            @endif
-          </span>
         </a>
       </div>
       <div class="col-5 col-lg-4 col-md-4">

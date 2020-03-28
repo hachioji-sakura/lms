@@ -200,6 +200,11 @@ class UserCalendarSettingController extends UserCalendarController
     public function update_form(Request $request, $id=0){
       $user = $this->login_details($request);
       $form = $request->all();
+      $schedule_type = "";
+      if($request->has('schedule_type')){
+        $schedule_type = $request->get('schedule_type');
+      }
+
       $form['create_user_id'] = $user->user_id;
       if($request->has('lesson_week_count')){
         $form['lesson_week_count'] = $request->get('lesson_week_count');
@@ -224,10 +229,10 @@ class UserCalendarSettingController extends UserCalendarController
       }
       if($request->has('course_minutes')){
         $form['course_minutes'] = $request->get('course_minutes');
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+        if($schedule_type=='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
       }
       if($request->has('end_hours') && $request->has('end_minutes')){
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
+        if($schedule_type!='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
       $form['charge_subject'] = $request->get('charge_subject');
       $form['english_talk_lesson'] = $request->get('english_talk_lesson');
