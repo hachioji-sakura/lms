@@ -101,13 +101,17 @@
                 @endif
                 ">
                   <input type="hidden" name="calendar_id[]" value="{{$calendar['id']}}" >
-                  <div class="col-12 col-lg-3 col-md-3">
+                  <div class="col-12 col-md-4">
                     <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" role="button" class="">
                       <span class="mr-2">
                         <i class="fa fa-clock"></i>{{$calendar["timezone"]}}
                       </span>
                       <span class="mr-2">
                         <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
+                      </span>
+                      /
+                      <span class="text-xs mr-2">
+                          {{$calendar["work_name"]}}
                       </span>
                       <span class="text-xs mr-2">
                         <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
@@ -116,7 +120,7 @@
                       </span>
                     </a>
                   </div>
-                  <div class="col-12 col-lg-5 col-md-5">
+                  <div class="col-12 col-md-4">
                     @component('calendars.forms.label_students', ['item' => $calendar, 'user'=>$user, 'set_br' => false , 'status_visible'=> false]) @endcomponent
 {{-- componentにより共通化
                     @foreach($calendar->members as $member)
@@ -152,7 +156,7 @@
                     </span>
                     @endif
                   </div>
-                  <div class="col-12 col-lg-4 col-md-4 text-right p-2">
+                  <div class="col-12 col-md-4 text-right p-2">
                     @component('teachers.forms.calendar_button', ['teacher'=>$item, 'calendar' => $calendar, 'user'=>$user, 'domain'=>$domain, 'domain_name'=>$domain_name])
                     @endcomponent
                   </div>

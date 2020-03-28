@@ -17,7 +17,7 @@
           @endif
         </a>
       @endif
-    @else
+    @elseif($calendar->schedule_type_code()!="training")
       {{-- 過ぎた予定に対し、出欠 --}}
       <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.calendar_button_attendance')}}{{__('labels.check')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-success btn-sm ml-1">
         <i class="fa fa-user-check mr-1"></i>
