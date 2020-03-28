@@ -103,7 +103,7 @@
     var t2="";
     $(element[0])
       .css('color', textColor)
-      .css('border-color', bgcolor)
+      .css('border-color', "#FFFFFF")
       .css('background-color', bgcolor)
       .css('cursor', 'pointer')
       .html('<div class="p-1 text-center">'+icon+t1+'<span class="d-none d-sm-inline-block">'+t2+'</span></div>');

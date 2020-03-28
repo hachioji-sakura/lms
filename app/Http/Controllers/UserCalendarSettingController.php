@@ -576,6 +576,7 @@ class UserCalendarSettingController extends UserCalendarController
           }
           foreach($setting->members as $member){
             $is_delete = true;
+            if($member->user_id == $setting->user_id) continue;
             foreach($form['students'] as $student){
               if($member->user_id == $student->user_id){
                 $is_delete = false;

@@ -7,7 +7,7 @@
       <h3 class="card-title">@yield('title')</h3>
     </div>
     <div class="card-body">
-      <div id="listTable" class="card-body card-list" alt="CardTable">
+      <div class="card-body card-list" >
         <ul class="mailbox-attachments clearfix row">
           @foreach($items as $item)
           @if($item['chapter_count']>0)
