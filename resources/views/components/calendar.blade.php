@@ -299,6 +299,12 @@
           case 'office_work':
             title = event['user_name']+':'+event['work_name']+remark;
             break;
+          case 'training':
+            title = event['user_name']+remark;
+            if(view_mode=='students'){
+              title = event['schedule_type_name']+remark;
+            }
+            break;
           case 'new':
             break;
           default:
