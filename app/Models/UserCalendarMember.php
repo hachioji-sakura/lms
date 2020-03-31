@@ -304,6 +304,7 @@ class UserCalendarMember extends Model
     else {
       $this->delete();
     }
+    /*
     $u = $this->user->details();
     $param = [];
     $param['login_user'] = $login_user->details();
@@ -312,8 +313,10 @@ class UserCalendarMember extends Model
     $param['item'] = $this->calendar->details($this->user_id);
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
+    $type = "text";
     $title = __('messages.mail_title_calendar_delete');
     $this->user->send_mail($title, $param, $type, $template);
+    */
     return true;
   }
 
