@@ -7,7 +7,7 @@
         <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-secondary btn-sm ml-1">
           <i class="fa fa-minus-circle mr-1"></i>休み連絡する
         </a>
-      @else
+      @elseif($calendar->schedule_type_code()!="training")
         <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_lecture_cancel')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/lecture_cancel?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-secondary btn-sm ml-1">
           <i class="fa fa-ban mr-1"></i>
           @if($calendar->work==9)
