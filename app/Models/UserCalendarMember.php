@@ -304,6 +304,7 @@ class UserCalendarMember extends Model
     else {
       $this->delete();
     }
+    /*
     $u = $this->user->details();
     $param = [];
     $param['login_user'] = $login_user->details();
@@ -312,8 +313,10 @@ class UserCalendarMember extends Model
     $param['item'] = $this->calendar->details($this->user_id);
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
+    $type = "text";
     $title = __('messages.mail_title_calendar_delete');
     $this->user->send_mail($title, $param, $type, $template);
+    */
     return true;
   }
 
@@ -416,9 +419,11 @@ class UserCalendarMember extends Model
     $repetition_id = 0;
     if($this->calendar->user_calendar_setting_id > 0){
       //通常授業設定由来の場合
-      foreach($this->calendar->setting->members as $_m){
-        if($_m->user_id == $this->user_id){
-          $repetition_id = $_m->setting_id_org;
+      if(isset($this->calendar->setting)){
+        foreach($this->calendar->setting->members as $_m){
+          if($_m->user_id == $this->user_id){
+            $repetition_id = $_m->setting_id_org;
+          }
         }
       }
     }
@@ -695,5 +700,11 @@ class UserCalendarMember extends Model
     }
     $already_data = Ask::already_data($form);
     return $already_data;
+  }
+  public function is_last_status(){
+    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
+      return true;
+    }
+    return false;
   }
 }

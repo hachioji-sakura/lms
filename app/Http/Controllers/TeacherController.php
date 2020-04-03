@@ -460,7 +460,7 @@ class TeacherController extends StudentController
       $param = $this->get_param($request, $id);
       $form = $request->all();
       $res = $this->api_response();
-      if($form['checked_at_type']==='fix'){
+      if(isset($form['checked_at_type']) && $form['checked_at_type']==='fix'){
         //確認済み
         $res = $this->_month_work_confirm($request);
         $message = '月次勤務実績を確認済みにしました。';

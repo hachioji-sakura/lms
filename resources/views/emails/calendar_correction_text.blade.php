@@ -11,7 +11,8 @@
 
 勤務実績画面
 {{config('app.url')}}/{{$user->role}}s/{{$user->id}}/month_work/{{$target_month}}
-
+@if(isset($remark))
 依頼内容
 {{$remark}}
+@endif
 …………………………………………………………………………………………

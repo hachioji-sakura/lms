@@ -2,6 +2,7 @@
 
 return [
  "validate_timezone_error" => "Wrong time zone input",
+ "confirm_send" => "Do you want to send?",
  "confirm_update" => "Do you want to update?",
  "confirm_delete" => "Do you want to delete?",
  "confirm_add" => "Do you want to register?",
