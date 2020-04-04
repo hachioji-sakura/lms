@@ -1105,19 +1105,19 @@ class Trial extends Model
             $data["status"] = "teacher_ng";
           }
         }
-
-        //echo "候補:曜日[".$week_day.'][st='.$data["status"].'is_free=['.$is_free.']]'.$time."<br>";
+        //echo "候補:曜日[".$week_day.'][st='.$data["status"].'/is_free=['.$is_free.']]'.$time."<br>";
         //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
         if($is_free===true){
           $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
           $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
-
           foreach($teacher->user->calendar_settings as $setting){
             if($setting->lesson_week != $week_day) continue;
             //echo "conflict?:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
             if($setting->is_conflict_setting("week", 0 , $week_day,$f,$t)==true){
               //echo "conflict!!<br>";
-              $is_free = false;
+              if($setting->is_group()==false){
+                $is_free = false;
+              }
               $data["status"] = "time_conflict";
               $data["conflict_calendar_setting"] = $setting;
               break;

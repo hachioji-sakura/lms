@@ -275,7 +275,7 @@ class StudentController extends UserController
      //重複登録があるかチェック
      $from_date = date('Y-m-d 00:00:00');
      $to_date = date('Y-m-d 23:59:59');
-     $param['already_data'] = $item->already_ask_data('emergency_lecture_cancel',$param['user']->user_id);
+     $param['already_data'] = $item->already_ask_data('emergency_lecture_cancel',$item->user_id);
      if($param['already_data']!=null){
        $from_date = $param['already_data']->start_date.' '.$param['already_data']->from_time_slot;
        $to_date = $param['already_data']->start_date.' '.$param['already_data']->to_time_slot;
@@ -302,8 +302,8 @@ class StudentController extends UserController
    $item = $model->details();
    $user = $param['user'];
    //重複登録があるかチェック
-   $param['recess_data'] = $item->already_ask_data('recess',$param['user']->user_id);
-   $param['already_data'] = $item->already_ask_data('unsubscribe',$param['user']->user_id);
+   $param['recess_data'] = $item->already_ask_data('recess',$item->user_id);
+   $param['already_data'] = $item->already_ask_data('unsubscribe',$item->user_id);
    return view('asks.unsubscribe', [
    ])->with($param);
   }
@@ -319,8 +319,9 @@ class StudentController extends UserController
    $user = $param['user'];
 
    //重複登録があるかチェック
-   $param['already_data'] = $item->already_ask_data('recess', $param['user']->user_id);
-   $param['unsubscribe_data'] = $item->already_ask_data('unsubscribe', $param['user']->user_id);
+   $param['already_data'] = $item->already_ask_data('recess', $item->user_id);
+   $param['unsubscribe_data'] = $item->already_ask_data('unsubscribe', $item->user_id);
+   var_dump($param['already_data']);
    return view('asks.recess', [
    ])->with($param);
   }
@@ -341,7 +342,7 @@ class StudentController extends UserController
    //重複登録があるかチェック
    $from_date = date('Y-m-d 00:00:00');
    $to_date = date('Y-m-d 23:59:59');
-   $param['already_data'] = $item->already_ask_data('late_arrival',$param['user']->user_id);
+   $param['already_data'] = $item->already_ask_data('late_arrival',$item->user_id);
    if($param['already_data'] != null){
      $from_date = $param['already_data']->start_date.' '.$param['already_data']->from_time_slot;
      $to_date = $param['already_data']->start_date.' '.$param['already_data']->to_time_slot;
