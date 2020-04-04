@@ -101,24 +101,15 @@ class MailLogController extends MilestoneController
     }
     //ステータス 検索
     if(isset($request->search_status)){
-      $items = $items->where('status',$request->search_status);
+      $items = $items->fieldWhereIn($request->search_status);
     }
     //種別 検索
     if(isset($request->search_type)){
-      $items = $items->where('template',$request->search_type);
+      $items = $items->findTemplates($request->search_type);
     }
     //検索ワード
     if(isset($request->search_word)){
-      $search_words = explode(' ', $request->search_word);
-      $items = $items->where(function($items)use($search_words){
-        foreach($search_words as $_search_word){
-          if(empty($_search_word)) continue;
-          $_like = '%'.$_search_word.'%';
-          $items->orWhere('body','like',$_like)
-                ->orWhere('to_address','like',$_like)
-                ->orWhere('subject','like',$_like);
-        }
-      });
+      $items = $items->searchWord($request->search_word);
     }
 
     return $items;

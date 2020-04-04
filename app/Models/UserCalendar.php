@@ -371,7 +371,7 @@ EOT;
   public function lesson($is_value=false){
     $val = "";
     if($this->is_teaching()==true){
-      $en = [1=>'School', 2=>'English Talk', 3=>'Piano', 4=>'Kids Lesson'];
+      $en = [1=>'School', 2=>'English Conversation', 3=>'Piano', 4=>'Kids Lesson'];
       $val = $this->get_attribute('lesson', $is_value);
       if(is_numeric($val) && $is_value==false){
         if(isset($en[intval($val)])){
