@@ -133,28 +133,38 @@ EOT;
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
 	    }
     }
-    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
 
-    //講師用の希望シフト
+    //希望シフト
     $lesson_weeks = config('attribute.lesson_week');
-    foreach($lesson_weeks as $lesson_week=>$name){
-      $tag_names[] = 'lesson_'.$lesson_week.'_time';
+    $fields = ["lesson", "work", "trial"];
+    foreach($fields as $field){
+      $is_setting_find = false;
+      $tag_names = [];
+      foreach($lesson_weeks as $lesson_week=>$name){
+        $tag_name = $field.'_'.$lesson_week.'_time';
+        if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+          $is_setting_find = true;
+        }
+        $tag_names[] = $tag_name;
+      }
+      if($is_setting_find==true){
+        //更新する場合
+        foreach($tag_names as $tag_name){
+          if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+            UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+          }
+          else {
+            //曜日の設定がない場合に削除する必要がある
+            UserTag::clearTags($this->user_id, $tag_name);
+          }
+        }
+      }
     }
-    //事務用の希望シフト
-    foreach($lesson_weeks as $lesson_week=>$name){
-      $tag_names[] = 'work_'.$lesson_week.'_time';
-    }
-    //体験授業シフト
-    foreach($lesson_weeks as $lesson_week=>$name){
-      $tag_names[] = 'trial_'.$lesson_week.'_time';
-    }
-
+    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+        //設定があれば差し替え
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
