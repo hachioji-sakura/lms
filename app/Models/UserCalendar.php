@@ -682,7 +682,7 @@ EOT;
     /*
     $calendar = UserCalendar::searchDate($form['start_time'], $form['end_time'])
       ->findStatuses(['rest', 'cancel', 'lecture_cancel'], true)
-      ->where('user_id', $form['teacher_user_id'])->first();
+      ->where('user_id', $form['target_user_id'])->first();
 
     if(isset($calendar)){
       return $this->error_response("同じ時間の予定が存在します", "", $form);
@@ -714,12 +714,12 @@ EOT;
       'place_floor_id' => $form['place_floor_id'],
       'work' => $form['work'],
       'remark' => '',
-      'user_id' => $form['teacher_user_id'],
+      'user_id' => $form['target_user_id'],
       'create_user_id' => $form['create_user_id'],
       'status' => $status
     ]);
 
-    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], 'new', false);
     $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
       $is_sendmail = true;
