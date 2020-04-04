@@ -446,7 +446,7 @@ class Trial extends Model
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,
-      'teacher_user_id' => $teacher->user_id,
+      'target_user_id' => $teacher->user_id,
       'send_mail' => 'teacher',
     ];
     $charge_student_form = [
@@ -773,6 +773,9 @@ class Trial extends Model
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
+
+    //体験授業は、30分、60分の2択
+    if($course_minutes>60) $course_minutes = 60;
 
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
