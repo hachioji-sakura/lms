@@ -77,9 +77,9 @@
       $calendar.fullCalendar("removeEvents", -1);
     });
   }
-  function event_render(events, element, title, is_teacher){
+  function event_render(events, element, title, view_mode){
     var _status_style = status_style(events.status);
-    if(is_teacher==false){
+    if(view_mode=='students'){
       _status_style = status_style(events.status);
     }
     else {
@@ -311,7 +311,7 @@
             title = user_name+remark;
             break;
         }
-        event_render(event, element, title, true);
+        event_render(event, element, title, view_mode);
       },
       events: function(start, end, timezone, callback) {
         start = start.format('YYYY-MM-DD');

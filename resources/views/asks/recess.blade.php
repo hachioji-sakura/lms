@@ -14,11 +14,13 @@
       @if(count($item->relations) > 1)
       <select name="student_id" class="form-control select2" required="true">
         @foreach($item->relations as $relation)
-         <option value="{{ $relation->student->id }}">
+         <option value="{{ $relation->student_id }}">
            {{$relation->student->name()}}
          </option>
         @endforeach
       </select>
+      @elseif(count($item->relations) > 1)
+      <input type="hidden" name="student_id" value="{{$item->relations[0]->student_id}}"></input>
       @endif
     </div>
     <div class="col-12 mb-2">
