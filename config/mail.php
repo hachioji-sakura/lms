@@ -58,7 +58,7 @@ return [
     'from' => [
       //ここの設定を追加
       'address' => env('MAIL_FROM_ADDRESS', null),
-      'name' => env('MAIL_FROM_NAME', null)
+      'name' => env('MAIL_FROM_NAME', "SaKuRa One Net")
     ],
 
     /*

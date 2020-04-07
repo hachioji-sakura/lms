@@ -98,6 +98,7 @@
     <span class="description-text">
       <?php
        $is_first=false;
+       $is_find = false;
       ?>
       @foreach($attributes['lesson_week'] as $week_day => $week_name)
         {{-- 必要な曜日の予定のみ表示 --}}
@@ -123,7 +124,10 @@
                    {{$week_name}}
                    {{$time_slot["from"]}}～{{$time_slot["to"]}}
                  </label>
-                 <?php $is_first=true; ?>
+                 <?php
+                 $is_first = true;
+                 $is_find = true;
+                 ?>
               @else
                 <i class="fa fa-times mr-1"></i>
                 {{$week_name}}
@@ -137,6 +141,12 @@
         @endif
       @endforeach
       </table>
+      @if($is_find==false)
+      <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" id="no_data_message">
+        <i class="fa fa-exclamation-triangle mr-1"></i>
+        予定が空いていません
+      </h6>
+      @endif
     </span>
   </div>
 </div>
@@ -244,10 +254,12 @@ function select_lesson_week_change(){
 function lesson_week_datetime_validate(){
   console.log("lesson_week_datetime_validate");
   var lesson_week_datetime = $("input.lesson_week_datetime:checked");
+  var calendar_setting_id = $("input[name='calendar_setting_id']:checked");
+
   if(!lesson_week_datetime) return;
 
   console.log("lesson_week_datetime_validate:"+lesson_week_datetime.length);
-  if(lesson_week_datetime.length<1){
+  if(lesson_week_datetime.length<1 && calendar_setting_id<1){
     front.showValidateError($("span.teacher_schedule"), '通常授業の曜日・時間帯を指定してください');
     return false;
   }

@@ -64,7 +64,7 @@
         if(event['student_name']){
           title = event['student_name']+'('+event['subject']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
         }
-        event_render(event, element, title, true);
+        event_render(event, element, title, 'teachers');
       },
       @endslot
     @endcomponent

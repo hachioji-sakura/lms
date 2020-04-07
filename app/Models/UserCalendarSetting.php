@@ -628,7 +628,7 @@ EOT;
       'work' => $this->work,
       'exchanged_calendar_id' => 0,
       'remark' => $this->remark,
-      'teacher_user_id' => $this->user_id,
+      'target_user_id' => $this->user_id,
       'create_user_id' => 1,
     ];
 

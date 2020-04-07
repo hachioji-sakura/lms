@@ -2,6 +2,7 @@
 
 return [
   "validate_timezone_error" => '時間帯範囲が間違っています',
+  "confirm_send" => "送信しますか？",
   "confirm_update" => "更新しますか？",
   "confirm_delete" => "削除しますか？",
   "confirm_add" => "登録しますか？",
