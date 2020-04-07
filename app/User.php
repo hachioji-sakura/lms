@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,7 +22,7 @@ use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
 use Hash;
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Common;
     use Notifiable;
@@ -388,5 +388,13 @@ EOT;
 
       $comments = $comments->get();
       return ["data" => $comments, 'count' => $count];
+    }
+    public function getJWTIdentifier()
+    {
+      return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+      return [];
     }
 }
