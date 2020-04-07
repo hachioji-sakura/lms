@@ -94,7 +94,7 @@ function get_lesson_check(name){
   var is_english = false;
   var is_piano = false;
   var is_kids_lesson = false;
-  if($('input[name="'+name+'"][type="checkbox"]').length > 0){
+  if($('input[name="'+name+'"][type="checkbox"],input[name="'+name+'"][type="radio"]').length > 0){
     is_school = $('input[name="'+name+'"][value="1"]').prop("checked");
     is_english = $('input[name="'+name+'"][value="2"]').prop("checked");
     is_piano = $('input[name="'+name+'"][value="3"]').prop("checked");

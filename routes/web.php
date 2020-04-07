@@ -20,6 +20,7 @@ if(isset($_GET["locale"]) && !empty($_GET["locale"])){
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
+Route::get('test','Controller@test');
 Route::get('send_access_key','AuthController@send_access_key');
 
 Route::get('managers/login','ManagerController@login');
@@ -81,6 +82,7 @@ Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_
 Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
 Route::put('calendars/{id}/remind','UserCalendarController@remind');
+Route::put('calendars/{id}/cancel','UserCalendarController@force_cancel');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
 Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
 Route::get('calendars/check','UserCalendarController@setting_check');
@@ -136,6 +138,8 @@ Route::resource('textbooks','TextbookController');
 Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
 Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
 Route::get('teachers/{id}/students','TeacherController@get_charge_students');
+Route::get('teachers/{id}/students/create','TeacherController@add_charge_student_page');
+Route::post('teachers/{id}/students','TeacherController@add_charge_student');
 
 Route::get('register','StudentParentController@register');
 Route::post('register','StudentParentController@register_update');
@@ -223,6 +227,7 @@ Route::put('teachers/{id}/ask/{ask_id}','TeacherController@ask_update');
 Route::get('teachers/{id}/announcements','TeacherController@announcements');
 
 Route::get('managers/{id}/calendar','ManagerController@calendar');
+Route::get('managers/{id}/schedule','ManagerController@schedule');
 Route::get('managers/{id}/unsubscribe','ManagerController@unsubscribe');
 Route::get('managers/{id}/recess','ManagerController@recess');
 Route::get('managers/{id}/resume','ManagerController@resume');

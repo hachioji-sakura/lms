@@ -22,7 +22,7 @@
     <ul class="nav nav-treeview">
       @foreach($keys as $index => $item)
       <li class="nav-item">
-         <a href="/{{$domain}}?key={{$item['attribute_value']}}" class="nav-link @if($item['attribute_value']===$select_key) active @endif">
+         <a href="/{{$domain}}?select_key={{$item['attribute_value']}}" class="nav-link @if($item['attribute_value']===$select_key) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$item['attribute_name']}}
          </a>
        </li>

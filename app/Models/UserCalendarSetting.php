@@ -342,7 +342,6 @@ EOT;
     UserCalendarSetting::where('id', $this->id)->update($data);
     $tag_names = ['course_type', 'lesson'];
     foreach($tag_names as $tag_name){
-      \Log::warning("UserCalendarTagSetting:".$tag_name."=".$form[$tag_name]);
       if(!empty($form[$tag_name])){
         UserCalendarTagSetting::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
@@ -629,7 +628,7 @@ EOT;
       'work' => $this->work,
       'exchanged_calendar_id' => 0,
       'remark' => $this->remark,
-      'teacher_user_id' => $this->user_id,
+      'target_user_id' => $this->user_id,
       'create_user_id' => 1,
     ];
 

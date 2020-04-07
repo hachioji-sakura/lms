@@ -19,11 +19,23 @@
             @endif
           </h3>
           <div class="card-tools">
-            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}}{{__('labels.add')}}" page_form="dialog" page_url="/calendar_settings/create?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-primary btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.setting')}}{{__('labels.add')}}" page_form="dialog"
+            @if($domain=="teachers")
+              page_url="/calendar_settings/create?teacher_id={{$item->id}}"
+            @elseif($domain=="managers")
+              page_url="/calendar_settings/create?manager_id={{$item->id}}"
+            @endif
+             role="button">
               <i class="fa fa-plus"></i>
               <span class="btn-label">{{__('labels.setting')}}{{__('labels.add')}}</span>
             </a>
-            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.repeat_schedule_add')}}" page_form="dialog" page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}" role="button">
+            <a class="btn btn-outline-success btn-sm float-left mr-1" href="javascript:void(0);" page_title="{{__('labels.repeat_schedule_add')}}" page_form="dialog"
+            @if($domain=="teachers")
+              page_url="/calendar_settings/all_to_calendar?teacher_id={{$item->id}}"
+            @elseif($domain=="managers")
+              page_url="/calendar_settings/all_to_calendar?manager_id={{$item->id}}"
+            @endif
+             role="button">
               <i class="fa fa-calendar-plus"></i>
               <span class="btn-label">{{__('labels.repeat_schedule_add')}}</span>
             </a>
@@ -112,7 +124,10 @@
               </div>
               <div class="col-12 col-md-6 mt-1">
                 <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting->id}}" class="text-sm">
-                  {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:{{$setting['last_schedule']['date']}}
+                  {{__('labels.regist_schedule_count', ['count' => $setting['calendar_count']])}} /    {{__('labels.last_regist_date')}}:
+                  @isset($setting['last_schedule'])
+                  {{$setting['last_schedule']['date']}}
+                  @endisset
                 </a>
               </div>
               <div class="col-12 col-md-6 text-right mt-1">

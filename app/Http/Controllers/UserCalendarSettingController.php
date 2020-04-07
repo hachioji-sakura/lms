@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Manager;
 use App\Models\Lecture;
 use App\Models\ChargeStudent;
 use App\Models\UserTag;
@@ -145,7 +146,6 @@ class UserCalendarSettingController extends UserCalendarController
       $form['piano_lesson'] = $request->get('piano_lesson');
       $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
-      $form['course_type'] = $request->get('course_type');
       $form['place'] = $request->get('place');
 
       //生徒と講師の情報が予定追加時には必須としている
@@ -174,11 +174,37 @@ class UserCalendarSettingController extends UserCalendarController
         }
       }
 
+      if($request->has('manager_id')){
+        $form['manager_id'] = $request->get('manager_id');
+        $manager = Manager::where('id', $form['manager_id'])->first();
+        if(!isset($manager)){
+          //講師が存在しない
+          abort(400, "存在しない講師");
+        }
+        $form['user_id'] = $manager->user_id;
+      }
+      $form['course_type'] = $schedule_type;
+      if($schedule_type=='other'){
+        $form['work'] = $request->get('work');
+      }
+      else if($schedule_type=='office_work'){
+        $form['work'] = 9;
+      }
+      else {
+        $form['course_type'] = $request->get('course_type');
+        unset($form['work']);
+      }
+
       return $form;
     }
     public function update_form(Request $request, $id=0){
       $user = $this->login_details($request);
       $form = $request->all();
+      $schedule_type = "";
+      if($request->has('schedule_type')){
+        $schedule_type = $request->get('schedule_type');
+      }
+
       $form['create_user_id'] = $user->user_id;
       if($request->has('lesson_week_count')){
         $form['lesson_week_count'] = $request->get('lesson_week_count');
@@ -203,17 +229,16 @@ class UserCalendarSettingController extends UserCalendarController
       }
       if($request->has('course_minutes')){
         $form['course_minutes'] = $request->get('course_minutes');
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
+        if($schedule_type=='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['from_time_slot'].' +'.$form['course_minutes'].' minutes'));
       }
       if($request->has('end_hours') && $request->has('end_minutes')){
-        $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
+        if($schedule_type!='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
       $form['charge_subject'] = $request->get('charge_subject');
       $form['english_talk_lesson'] = $request->get('english_talk_lesson');
       $form['piano_lesson'] = $request->get('piano_lesson');
       $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
-      $form['course_type'] = $request->get('course_type');
       $form['place'] = $request->get('place');
 
       if($request->has('teacher_id')){
@@ -514,8 +539,16 @@ class UserCalendarSettingController extends UserCalendarController
         $param = $this->get_param($request, $id);
         $settings = [$param['item']];
       }
+      if(count($settings) < 1) {
+        return $this->bad_request("setting not found");
+      }
       if($param['user']->role !== 'manager'){
-        return $this->forbidden("This User is not manager role.");
+        //自分以外の設定があったらforbidden
+        foreach($settings as $setting){
+          if($setting->user_id != $param['user']->user_id){
+            return $this->forbidden("This User is not manager role.");
+          }
+        }
       }
       if(!$request->has('start_date') || !$request->has('end_date')){
         return $this->bad_request();
@@ -548,6 +581,7 @@ class UserCalendarSettingController extends UserCalendarController
           }
           foreach($setting->members as $member){
             $is_delete = true;
+            if($member->user_id == $setting->user_id) continue;
             foreach($form['students'] as $student){
               if($member->user_id == $student->user_id){
                 $is_delete = false;
@@ -568,7 +602,7 @@ class UserCalendarSettingController extends UserCalendarController
     /**
      * 新規登録
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illumin156ate\Http\Response
      */
     public function store(Request $request)
     {
@@ -587,7 +621,6 @@ class UserCalendarSettingController extends UserCalendarController
       $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         $setting = UserCalendarSetting::add($form);
-
         if($setting != null){
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){

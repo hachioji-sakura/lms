@@ -77,9 +77,9 @@
       $calendar.fullCalendar("removeEvents", -1);
     });
   }
-  function event_render(events, element, title, is_teacher){
+  function event_render(events, element, title, view_mode){
     var _status_style = status_style(events.status);
-    if(is_teacher==false){
+    if(view_mode=='students'){
       _status_style = status_style(events.status);
     }
     else {
@@ -103,7 +103,7 @@
     var t2="";
     $(element[0])
       .css('color', textColor)
-      .css('border-color', bgcolor)
+      .css('border-color', "#FFFFFF")
       .css('background-color', bgcolor)
       .css('cursor', 'pointer')
       .html('<div class="p-1 text-center">'+icon+t1+'<span class="d-none d-sm-inline-block">'+t2+'</span></div>');
@@ -299,13 +299,19 @@
           case 'office_work':
             title = event['user_name']+':'+event['work_name']+remark;
             break;
+          case 'training':
+            title = event['user_name']+remark;
+            if(view_mode=='students'){
+              title = event['schedule_type_name']+remark;
+            }
+            break;
           case 'new':
             break;
           default:
             title = user_name+remark;
             break;
         }
-        event_render(event, element, title, true);
+        event_render(event, element, title, view_mode);
       },
       events: function(start, end, timezone, callback) {
         start = start.format('YYYY-MM-DD');

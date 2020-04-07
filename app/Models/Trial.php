@@ -90,10 +90,13 @@ class Trial extends Model
       case "fix":
       case "presence":
       case "new":
-        $status = 'fix';
-        if(count($this->calendars) < 1) $status = 'new';
+      case "cancel":
+        $status = 'new';
         if($this->is_confirm_trial_lesson()==true){
           $status = 'confirm';
+        }
+        else if($this->is_all_fix_trial_lesson()==true){
+          $status = 'fix';
         }
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
@@ -103,8 +106,19 @@ class Trial extends Model
     }
     return $this->status;
   }
+  public function is_all_fix_trial_lesson(){
+    $is_find = false;
+    foreach($this->calendars as $calendar){
+      if($calendar->status=='cancel') continue;
+      if($calendar->status=='new') return false;
+      if($calendar->status=='confirm') return false;
+      if($calendar->status=='fix') $is_find = true;
+    }
+    return $is_find;
+  }
   public function is_confirm_trial_lesson(){
     foreach($this->calendars as $calendar){
+      if($calendar->status=='cancel') continue;
       if($calendar->status=='new') return true;
       if($calendar->status=='confirm') return true;
     }
@@ -112,10 +126,12 @@ class Trial extends Model
   }
   public function is_presence_trial_lesson(){
     if(count($this->calendars) < 1) return false;
+    $is_find = false;
     foreach($this->calendars as $calendar){
-      if($calendar->status!='presence') return false;
+      if($calendar->status=='presence') $is_find = true;
+      if($calendar->is_last_status()==false) return false;
     }
-    return true;
+    return $is_find;
   }
   public function is_regular_schedule_fix(){
     if(count($this->user_calendar_settings) < 1) return false;
@@ -404,7 +420,7 @@ class Trial extends Model
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
-    $calendar = UserCalendar::findTrialStudent($this->id)->findStatuses(['cancel'], true)->get();
+    $calendar = UserCalendar::findTrialStudent($this->id)->get();
     return $calendar;
   }
   public function get_calendar_settings(){
@@ -430,7 +446,7 @@ class Trial extends Model
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,
-      'teacher_user_id' => $teacher->user_id,
+      'target_user_id' => $teacher->user_id,
       'send_mail' => 'teacher',
     ];
     $charge_student_form = [
@@ -757,6 +773,9 @@ class Trial extends Model
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
+
+    //体験授業は、30分、60分の2択
+    if($course_minutes>60) $course_minutes = 60;
 
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
@@ -1089,19 +1108,19 @@ class Trial extends Model
             $data["status"] = "teacher_ng";
           }
         }
-
-        //echo "候補:曜日[".$week_day.'][st='.$data["status"].'is_free=['.$is_free.']]'.$time."<br>";
+        //echo "候補:曜日[".$week_day.'][st='.$data["status"].'/is_free=['.$is_free.']]'.$time."<br>";
         //３－３．現状の講師のカレンダー設定とブッキングしたらfalse
         if($is_free===true){
           $f = date('H:i:00', strtotime('2000-01-01 '.$time.'00'));
           $t = date('H:i:00', strtotime('+'.$this->course_minutes.'minute 2000-01-01 '.$time.'00'));
-
           foreach($teacher->user->calendar_settings as $setting){
             if($setting->lesson_week != $week_day) continue;
             //echo "conflict?:".$week_day.'?='.$setting->lesson_week.'/'.$f."-".$t." / ".$setting->from_time_slot."-".$setting->to_time_slot."<br>";
             if($setting->is_conflict_setting("week", 0 , $week_day,$f,$t)==true){
               //echo "conflict!!<br>";
-              $is_free = false;
+              if($setting->is_group()==false){
+                $is_free = false;
+              }
               $data["status"] = "time_conflict";
               $data["conflict_calendar_setting"] = $setting;
               break;

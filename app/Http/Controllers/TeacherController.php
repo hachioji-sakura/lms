@@ -140,8 +140,10 @@ class TeacherController extends StudentController
     ])->with($param);
   }
   private function get_students(Request $request, $teacher_id){
+
     $students =  Student::findChargeStudent($teacher_id)
       ->searchWord($request->search_word)->get();
+
     $from_date = date('Y-m-d 00:00:00');
     //TODO:暫定で14日先の予定を表示する
     $to_date = date('Y-m-d 23:59:59', strtotime('+14 day'));
@@ -458,7 +460,7 @@ class TeacherController extends StudentController
       $param = $this->get_param($request, $id);
       $form = $request->all();
       $res = $this->api_response();
-      if($form['checked_at_type']==='fix'){
+      if(isset($form['checked_at_type']) && $form['checked_at_type']==='fix'){
         //確認済み
         $res = $this->_month_work_confirm($request);
         $message = '月次勤務実績を確認済みにしました。';
@@ -511,4 +513,36 @@ class TeacherController extends StudentController
       }
       return $this->api_response(200, "", "", $items);
     }
+    /**
+     * 担当生徒追加ページ
+     *
+     * @param  array  $param
+     * @return array
+     */
+    protected function add_charge_student_page(Request $request , $id){
+      $param = $this->get_param($request, $id);
+      $charge_students = [];
+      $already_students = $param['item']->get_charge_students();
+      $ids = [];
+      foreach($already_students as $s){
+        $ids[] = $s->id;
+      }
+      $students = Student::whereNotIn('id', $ids)->findStatuses(['regular','trial'])->get();
+      $param['_edit'] = false;
+      return view('teachers.add_charge_student', [
+        'charge_students' => $students,
+      ])->with($param);
+    }
+    protected function add_charge_student(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $res = $this->transaction($request, function() use ($request, $param){
+        if(!$request->has('student_id')){
+          return $this->bad_request();
+        }
+        return $param['item']->add_charge_student($request->get('student_id'), $param['user']->user_id);
+      }, '担当生徒登録', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, $res['message']);
+    }
+
 }

@@ -104,6 +104,7 @@ class UserController extends Controller
         'is_asc'=>$request->is_asc,
         'is_desc'=>$request->is_desc,
       ],
+      'search_status' => $request->search_status,
       'search_keyword' => $request->search_keyword,
       'is_unchecked' => $request->is_unchecked,
     ];

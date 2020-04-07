@@ -62,7 +62,7 @@
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
         </label>
-        {{$item[$key]}}
+        {!!nl2br($item[$key])!!}
         @endif
       </div>
     </div>
@@ -118,7 +118,7 @@
               <small title="{{$item["id"]}}" class="ml-2 badge badge-{{config('status_style')[$member->status]}} mt-1 mr-1">{{$member->status_name()}}</small>
             </th>
             <td class="p-1 text-sm text-center">
-              @if($member->status!="new" )
+              @if($member->is_last_status()==true )
                 <i class="fa fa-times mr-1"></i>
               @else
               <div class="input-group">

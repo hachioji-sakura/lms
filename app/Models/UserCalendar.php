@@ -371,7 +371,7 @@ EOT;
   public function lesson($is_value=false){
     $val = "";
     if($this->is_teaching()==true){
-      $en = [1=>'School', 2=>'English Talk', 3=>'Piano', 4=>'Kids Lesson'];
+      $en = [1=>'School', 2=>'English Conversation', 3=>'Piano', 4=>'Kids Lesson'];
       $val = $this->get_attribute('lesson', $is_value);
       if(is_numeric($val) && $is_value==false){
         if(isset($en[intval($val)])){
@@ -466,7 +466,7 @@ EOT;
   public function teaching_type_name(){
     if(app()->getLocale()=='en') return ucfirst($this->teaching_type)." Lesson";
     $ret = $this->get_attribute_name('teaching_type', $this->teaching_type);
-    if(empty($ret)){
+    if(empty($ret) && $this->is_teaching()==true){
       $type = $this->get_teaching_type();
       UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
       $ret = $this->get_attribute_name('teaching_type', $type);
@@ -682,7 +682,7 @@ EOT;
     /*
     $calendar = UserCalendar::searchDate($form['start_time'], $form['end_time'])
       ->findStatuses(['rest', 'cancel', 'lecture_cancel'], true)
-      ->where('user_id', $form['teacher_user_id'])->first();
+      ->where('user_id', $form['target_user_id'])->first();
 
     if(isset($calendar)){
       return $this->error_response("同じ時間の予定が存在します", "", $form);
@@ -714,12 +714,12 @@ EOT;
       'place_floor_id' => $form['place_floor_id'],
       'work' => $form['work'],
       'remark' => '',
-      'user_id' => $form['teacher_user_id'],
+      'user_id' => $form['target_user_id'],
       'create_user_id' => $form['create_user_id'],
       'status' => $status
     ]);
 
-    $calendar->memberAdd($form['teacher_user_id'], $form['create_user_id'], 'new', false);
+    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], 'new', false);
     $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
       $is_sendmail = true;
@@ -801,11 +801,17 @@ EOT;
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
+      else {
+        UserCalendarTag::clearTags($this->id, $tag_name);
+      }
     }
     $tag_names = ['matching_decide', 'charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+      else {
+        UserCalendarTag::clearTags($this->id, $tag_name);
       }
     }
     //事務システムも更新
@@ -974,12 +980,17 @@ EOT;
   public function teacher_mail($title, $param, $type, $template){
     $param['send_to'] = 'teacher';
     $param['item'] = $this->details(1);
+    $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
+      $is_send_mail = true;
       $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+    }
+    if($is_send_mail==false){
+      $this->user->send_mail($title, $param, $type, $template, $this->user->get_locale());
     }
     return;
   }
@@ -1152,6 +1163,8 @@ EOT;
 
   public function register_mail($param=[], $login_user_id){
     $title = $this->register_mail_title();
+    \Log::warning("d3:".$title);
+
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
     $u = User::where('id', $login_user_id)->first();

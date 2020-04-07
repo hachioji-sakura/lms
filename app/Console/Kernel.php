@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('remind:trial tomorrow')->dailyAt('18:00');
 
-        $schedule->command('dailywork:ask')->dailyAt('18:00');
+        $schedule->command('dailyproc:ask')->dailyAt('18:00');
 
         //$schedule->command('calendarsetting:make')->dailyAt('18:00');
 

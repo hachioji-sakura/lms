@@ -270,6 +270,8 @@ EOT;
    */
   public function scopeFindChargeStudent($query, $id)
   {
+    //TODO:charge_studentsの追加が必要の場合(charge_studentsにあれば担当生徒とする場合は以下のフィルタを変更する）
+    //担当生徒＝講師にその生徒との通常授業の設定があること(charge_studentsテーブルはいったん依存させない）
     $where_raw = <<<EOT
       students.user_id in (
         select user_id from lms.user_calendar_member_settings where user_calendar_setting_id in (

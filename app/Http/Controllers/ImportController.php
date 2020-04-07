@@ -64,6 +64,7 @@ class ImportController extends UserController
      */
     public function index(Request $request, $object)
     {
+      $this->token = $request->header('api-token');
       if($object==='concealment'){
         $res = $this->concealment();
         return $res;
@@ -90,6 +91,8 @@ class ImportController extends UserController
      */
     public function import(Request $request, $object)
     {
+      $this->token = $request->header('api-token');
+
       set_time_limit(1200);
       if($object==='concealment'){
         $res = $this->concealment();
@@ -284,12 +287,12 @@ class ImportController extends UserController
      * @return boolean
      */
     private function managers_import($items){
-      return $this->transaction(null, function() use ($items){
         $c = 0;
         foreach($items as $item){
           if($this->store_manager($item)) $c++;
         }
         return $this->api_response(200, '', '', 'count['.$c.']');
+        return $this->transaction(null, function() use ($items){
       }, 'インポート', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
@@ -391,8 +394,20 @@ class ImportController extends UserController
       if(isset($bank_account_type[intval($item['bank_acount_type'])])){
         $_bank_account_type = $bank_account_type[intval($item['bank_acount_type'])];
       }
-
+      $teacher = null;
+      $user_id = -1;
       if(!isset($manager)){
+        //登録されていないが、講師側に同一氏名のユーザーが存在する場合
+        $teacher = Teacher::where('name_last', $item['name_last'])->where('name_first', $item['name_first'])->first();
+        if(isset($teacher)){
+          //兼務
+          $user_id = $teacher->user_id;
+        }
+      }
+      else {
+        $user_id = $manager->user_id;
+      }
+      if($user_id < 1){
         //認証情報登録
         $res = $this->user_create([
           'name' => $item['staff_no'],
@@ -401,7 +416,13 @@ class ImportController extends UserController
           'image_id' => $item['image_id'],
           'status' => $item['status'],
         ]);
-        if($this->is_success_response($res)){
+        if($this->is_success_response($res)) $user_id = $res['data']->id;
+      }
+      if(!isset($manager)){
+        $manager = Manager::where('name_last', $item['name_last'])->where('name_first', $item['name_first'])->first();
+      }
+      if(!isset($manager)){
+        if($user_id > 0 ){
           //講師情報登録
           $manager = Manager::create([
             'status' => $status,
@@ -409,7 +430,7 @@ class ImportController extends UserController
             'name_first' => $item['name_first'],
             'kana_last' => $item['kana_last'],
             'kana_first' => $item['kana_first'],
-            'user_id' => $res['data']->id,
+            'user_id' => $user_id,
             'bank_no' => $item['bank_no'],
             'bank_branch_no' => $item['bank_branch_no'],
             'bank_account_type' => $_bank_account_type,
@@ -417,18 +438,13 @@ class ImportController extends UserController
             'bank_account_name' => $item['bank_acount_name'],
             'create_user_id' => 1
           ]);
-          $user_id = $res['data']->id;
         }
         else {
           @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['staff_no']."登録エラー:email=".$user->email." / name=".$user->name, 'error', $this->logic_name);
           return false;
         }
-        $this->store_user_tag($manager->user_id, 'manager_no', $item['staff_no'], false);
       }
       else {
-        if($item['status']==1 && $manager->user->status==0){
-          $item['status'] = 0;
-        }
         $manager->update([
           'status' => $status,
           'name_last' => $item['name_last'],
@@ -441,10 +457,9 @@ class ImportController extends UserController
           'bank_account_no' => $item['bank_acount_no'],
           'bank_account_name' => $item['bank_acount_name'],
         ]);
-        $manager->user->update([
-          'status' => $item['status'],
-        ]);
       }
+      $this->store_user_tag($user_id, 'manager_no', $item['staff_no'], false);
+
       return true;
     }
 
@@ -528,9 +543,6 @@ class ImportController extends UserController
         if($item['lesson_id2']!='0') $this->store_user_tag($teacher->user_id, 'lesson', $item['lesson_id2'], false);
       }
       else {
-        if($item['status']==1 && $teacher->user->status==0){
-          $item['status'] = 0;
-        }
         $teacher->update([
           'name_last' => $item['name_last'],
           'name_first' => $item['name_first'],
@@ -542,9 +554,6 @@ class ImportController extends UserController
           'bank_account_type' => $_bank_account_type,
           'bank_account_no' => $item['bank_acount_no'],
           'bank_account_name' => $item['bank_acount_name'],
-        ]);
-        $teacher->user->update([
-          'status' => $item['status'],
         ]);
       }
       return true;
@@ -604,40 +613,36 @@ class ImportController extends UserController
           $item['kana_first'] = mb_convert_kana($kanas[1], "KVC");
       }
       //student_noを持った生徒が登録済みかどうか
+      //事務員の可能性もある
+      $parent_user = User::where('email', $item['email'])->first();
+      //認証情報登録(保護者として登録）
+      if(!isset($parent_user)){
+        $res = $this->user_create([
+          'name' => $item['family_name'].'',
+          'password' => $item['password'],
+          'email' => $item['email'],
+          'image_id' => 4,
+          'status' => $item['status'],
+        ]);
+        if($this->is_success_response($res)){
+          $parent_user = $res['data'];
+        }
+      }
+      $parent = StudentParent::where('user_id', $parent_user->id)->first();
+      if(!isset($parent)){
+        //保護者情報登録
+        $parent = StudentParent::create([
+          'status' => $status,
+          'name_last' => $item['family_name'],
+          'name_first' => $item['first_name'],
+          'kana_last' => $item['kana_last'],
+          'kana_first' => $item['kana_first'],
+          'user_id' => $parent_user->id,
+          'create_user_id' => 1,
+        ]);
+      }
       $student = Student::hasTag('student_no', $item['student_no'])->first();
       if(!isset($student)){
-        //認証情報登録(保護者として登録）
-        $parent_user = User::where('email', $item['email'])->first();
-        if(!isset($parent_user)){
-          $res = $this->user_create([
-            'name' => $item['family_name'].'',
-            'password' => $item['password'],
-            'email' => $item['email'],
-            'image_id' => 4,
-            'status' => $item['status'],
-          ]);
-          if($this->is_success_response($res)){
-            //保護者情報登録
-            $parent_user = $res['data'];
-            $StudentParent = new StudentParent;
-            $parent = $StudentParent->create([
-              'status' => $status,
-              'name_last' => $item['family_name'],
-              'name_first' => $item['first_name'],
-              'kana_last' => $item['kana_last'],
-              'kana_first' => $item['kana_first'],
-              'user_id' => $parent_user->id,
-              'create_user_id' => 1,
-            ]);
-          }
-          else {
-            @$this->remind("事務管理システム:email=".$item['email']." / name=".$item['student_no']."保護者登録エラー:email=".$parent_user->email." / name=".$parent_user->name, 'error', $this->logic_name);
-            return false;
-          }
-        }
-        else {
-          $parent = StudentParent::where('user_id', $parent_user->id)->first();
-        }
         //認証情報なし：新規登録
         $res = $this->user_create([
           'name' => $item['student_no'],
@@ -683,7 +688,6 @@ class ImportController extends UserController
           'gender' => $item['gender'],
         ]);
         if($status == 'unsubscribe'){
-          @$this->remind("退会生徒:email=".$item['email']." / name=".$item['student_no'], 'info', $this->logic_name);
           //削除時のみ更新
           $student->user->update([
             'status' => $item['status'],

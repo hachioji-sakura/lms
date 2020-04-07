@@ -16,8 +16,30 @@ class GeneralAttributeController extends UserController
     */
     public function index(Request $request)
     {
+      if(!$request->has('_line')){
+        $request->merge([
+          '_line' => $this->pagenation_line,
+        ]);
+      }
+      if(!$request->has('_page')){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      else if($request->get('_page')==0){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+
       $param = $this->get_param($request);
       $_table = $this->search($request, $param['select_key']);
+
+      $page_data = $this->get_pagedata($_table['count'] , $param['_line'], $param['_page']);
+      foreach($page_data as $key => $val){
+        $param[$key] = $val;
+      }
+
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -59,6 +81,7 @@ class GeneralAttributeController extends UserController
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
       $ret = $this->get_common_param($request);
       $ret['keys'] = $keys;
+      $ret['select_key'] = $request->get('select_key');
       return $ret;
     }
     private function search(Request $request, $attribute_key)
@@ -74,7 +97,7 @@ class GeneralAttributeController extends UserController
       $items = $this->_search_pagenation($request, $items);
 
       $items = $this->_search_sort($request, $items);
-
+      $count = $items->count();
       $items = $items->get();
       $fields = [
         "attribute_value" => [
@@ -98,7 +121,7 @@ class GeneralAttributeController extends UserController
           "button" => ["edit", "delete"]
         ]
       ];
-      return ["items" => $items->toArray(), "fields" => $fields];
+      return ["items" => $items->toArray(), "fields" => $fields, 'count' => $count];
     }
     private function _search_scope(Request $request, $items)
     {

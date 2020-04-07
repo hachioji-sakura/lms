@@ -34,6 +34,7 @@ class Controller extends BaseController
       return $json;
     }
     public function is_success_response($json){
+      if(!isset($json["status"])) return false;
       if($json["status"]==="0") return true;
       if($json["status"]===200) return true;
       if($json["status"]==="success") return true;
@@ -100,19 +101,10 @@ class Controller extends BaseController
         }
       }
       $mail_log_res = MailLog::add(config('mail.from')['address'], $to, $title, $param, $type, $template, $locale);
-      try {
-        $mail = Mail::to($to);
-        if($is_send_support_mail==true){
-          $mail = $mail->cc(config('app.support_mail'));
+      if($this->is_success_response($mail_log_res)){
+        if(isset($mail_log_res['data'])){
+          $mail_log_res['data']->send();
         }
-        $res = $mail->send(new CommonNotification($title, $param, $type, $template));
-        $mail_log_res['data']->update(['status' => 'sended']);
-        return $res;
-      }
-      catch(\Exception $e){
-        $mail_log_res['data']->update(['status' => 'error']);
-        $this->send_slack('メール送信エラー:'.$e->getMessage(), 'error', 'Controller.send_mail');
-        return true;
       }
     }
     public function send_slack($message, $msg_type, $username=null, $channel=null) {
