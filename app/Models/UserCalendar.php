@@ -141,6 +141,7 @@ EOT;
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
         $query = $query->orWhereRaw($where_raw,[$_like,$_like,$_like,$_like,$_like,$_like,$_like]);
+        $query = $query->orWhere('id', $_search_word);
       }
     });
     return $query;
@@ -659,10 +660,13 @@ EOT;
     }
     return null;
   }
-  public function is_holiday($date=""){
+  public function is_holiday($date="", $is_public=true, $is_private=true){
     if(empty($date)) $date = $this->start_time;
     $holiday = (new UserCalendar())->get_holiday($date);
-    if($holiday!=null) return true;
+    if($holiday!=null){
+      if($holiday->is_private_holiday==true && $is_private==true) return true;
+      if($holiday->is_public_holiday==true && $is_public==true) return true;
+    }
     return false;
   }
   //本モデルはcreateではなくaddを使う

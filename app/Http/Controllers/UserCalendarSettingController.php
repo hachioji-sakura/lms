@@ -317,7 +317,7 @@ class UserCalendarSettingController extends UserCalendarController
             "to_calendar" => [
               "method" => "to_calendar",
               "label" => "予定登録",
-              "style" => "outline-secondary",
+              "style" => "outline-success",
             ],
             "delete_calendar" => [
               "method" => "delete_calendar",

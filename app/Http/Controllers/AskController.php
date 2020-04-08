@@ -89,27 +89,7 @@ class AskController extends MilestoneController
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = [
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'login_user' => $user,
-      'origin' => $request->origin,
-      'item_id' => $request->item_id,
-      'teacher_id' => $request->teacher_id,
-      'manager_id' => $request->manager_id,
-      'student_id' => $request->student_id,
-      'access_key' => $request->key,
-      'search_word'=>$request->search_word,
-      '_page' => $request->get('_page'),
-      '_line' => $request->get('_line'),
-      '_origin' => $request->get('_origin'),
-      'attributes' => $this->attributes(),
-    ];
-    $ret['filter'] = [
-      'search_status'=>$request->status,
-    ];
-
+    $ret = $this->get_common_param($request);
     if(!isset($user)) {
       if($request->has('key') && $this->is_enable_token($ret['access_key'])){
         $user = User::where('access_key', $ret['access_key'])->first();
@@ -133,10 +113,8 @@ class AskController extends MilestoneController
         abort(404);
       }
       $ret['item'] = $item->details();
-      if($this->is_manager($user->role)!=true &&
-        $ret['item']->target_user_id != $user->user_id &&
-        $ret['item']->charge_user_id != $user->user_id ){
-          abort(403);
+      if($ret['item']->is_access($user->user_id)==false){
+          abort(403, "hogehoge");
       }
     }
     return $ret;
@@ -204,6 +182,8 @@ class AskController extends MilestoneController
    */
   public function status_update(Request $request, $id, $status)
   {
+    \Log::warning("status_update1");
+
     $param = $this->get_param($request, $id);
     $res = $this->api_response();
     $is_send = true;
@@ -213,6 +193,7 @@ class AskController extends MilestoneController
       $status = $request->get('status');
     }
 
+    \Log::warning("status_update2");
     if($status!="remind"){
       //remind以外はステータスの更新
       if($ask->status != $status){
@@ -331,9 +312,11 @@ class AskController extends MilestoneController
       $item = Ask::add($form);
       return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+    /*
     if($res["data"]==null){
       $res = $this->error_response("同じ内容がすでに登録されています。");
     }
+    */
     return $res;
    }
    public function destroy(Request $request, $id)
