@@ -18,7 +18,6 @@
           <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
           <br>
           <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
-          <br>
         </a>
       </div>
       <div class="col-5 col-lg-4 col-md-4">
@@ -31,7 +30,7 @@
           @endif
         @endforeach
         <br>
-        @if($calendar->is_management()==false)
+        @if($calendar->is_teaching()==true)
           @foreach($calendar['subject'] as $subject)
           <span class="text-xs mx-2">
             <small class="badge badge-primary mt-1 mr-1">

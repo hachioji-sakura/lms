@@ -63,14 +63,14 @@ EOT;
   static protected function already_data($form){
     $type = $form['type'];
     //重複チェック
-    if(!isset($form['status'])){
-      $form['status'] = 'new';
-    }
     $ask = Ask::where('type', $type)
-      ->where('status', $form['status'])
+      ->whereNotIn('status', ['cancel', 'closed', 'complete'])
       ->where('target_model', $form['target_model'])
       ->where('target_model_id', $form['target_model_id']);
 
+    if(isset($form['status'])){
+      $ask = $ask->whereIn('status', $form['status']);
+    }
     if(isset($form['start_date'])){
       $ask = $ask->where('start_date', $form['start_date']);
     }
@@ -139,13 +139,6 @@ EOT;
       $form['status'] = "new";
     }
 
-    /*
-    if(Ask::already_data($type, $form)!=null){
-      \Log::warning("競合！");
-      return null;
-    }
-    */
-
     $ask = Ask::create([
       'start_date' => $form['start_date'],
       'end_date' => $form['end_date'],
@@ -170,25 +163,11 @@ EOT;
     $ask->remind_mail($form['create_user_id']);
     return $ask;
   }
-  public function start_date($format = "Y年n月j日", $is_week_label=true){
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "Y/n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($this->start_date));
-    if($is_week_label==true) $d .= '('.$weeks[date('w',  strtotime($this->start_date))].')';
-    return $d;
+  public function start_date($format = "Y年n月j日"){
+    return $this->dateweek_format($this->start_date, $format);
   }
-  public function end_date($format = "Y年n月j日", $is_week_label=true){
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "Y/n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($this->end_date));
-    if($is_week_label==true) $d .= '('.$weeks[date('w',  strtotime($this->end_date))].')';
-    return $d;
+  public function end_date($format = "Y年n月j日"){
+    return $this->dateweek_format($this->end_date, $format);
   }
 
   public function change($form, $file=null, $is_file_delete = false){
@@ -353,6 +332,7 @@ EOT;
   }
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
+
     if($this->target_user_id==1) return false;
     $title = $this->type_name();//.':'.$this->status_name();
     $param['send_to'] = 'teacher';
@@ -366,6 +346,9 @@ EOT;
   }
   public function charge_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
+    if (!View::exists($template)) {
+      return false;
+    }
 
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
@@ -457,5 +440,20 @@ EOT;
         break;
     }
     return $ret;
+  }
+  public function is_access($user_id){
+    $u = User::where('id', $user_id)->first();
+    if(!isset($u)) return false;
+    $u = $u->details();
+    if($u->role=="manager") return true;
+    if($this->charge_user_id == $user_id ) return true;
+    if($this->target_user_id == $user_id ) return true;
+    if($u->role=="parent"){
+      $s = Student::where('user_id', $this->target_user_id)->first();
+      if(isset($s) && $s->is_parent($u->id)==true) return true;
+      $s = Student::where('user_id', $this->charge_user_id)->first();
+      if(isset($s) && $s->is_parent($u->id)==true) return true;
+    }
+    return false;
   }
 }

@@ -2,7 +2,7 @@
 <input type="hidden" name="target_model_id" value="{{$item->id}}">
 <input type="hidden" name="target_model" value="{{$domain}}">
 <input type="hidden" name="charge_user_id" value="1">
-<input type="hidden" name="target_user_id" value="{{$user->user_id}}">
+<input type="hidden" name="target_user_id" value="{{$item->user_id}}">
 <div class="row mb-3">
   <div class="col-12 mb-2">
     <label for="name" class="w-100">

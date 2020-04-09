@@ -72,6 +72,34 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
+  public function scopeSearchWord($query, $word)
+  {
+    $search_words = explode(' ', $word);
+    $where_raw = <<<EOT
+      user_calendar_settings.remark like ?
+      OR user_calendar_settings.id in (
+        select um.user_calendar_setting_id from user_calendar_member_settings um
+        left join common.students s on s.user_id = um.user_id
+        left join common.teachers t on t.user_id = um.user_id
+        left join common.managers m on m.user_id = um.user_id
+        where
+          concat(s.name_last ,' ', s.name_first) like ?
+          OR concat(t.name_last ,' ', t.name_first) like ?
+          OR concat(m.name_last ,' ', m.name_first) like ?
+          OR concat(s.kana_last ,' ', s.kana_first) like ?
+          OR concat(t.kana_last ,' ', t.kana_first) like ?
+          OR concat(m.kana_last ,' ', m.kana_first) like ?
+       )
+EOT;
+    $query = $query->where(function($query)use($search_words, $where_raw){
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhereRaw($where_raw,[$_like,$_like,$_like,$_like,$_like,$_like,$_like]);
+        $query = $query->orWhere('id', $_search_word);
+      }
+    });
+    return $query;
+  }
   public function scopeOrderByWeek($query){
     $weeks = [];
     foreach(config('attribute.lesson_week') as $index=>$name){
@@ -285,7 +313,7 @@ EOT;
     $this->delete();
   }
   public function change($form){
-    \Log::warning("UserCalendar::change");
+    \Log::warning("UserCalendarSetting::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
@@ -362,8 +390,8 @@ EOT;
     $member = UserCalendarMemberSetting::where('user_calendar_setting_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
-    if(isset($memeber)){
-      $member = $memeber->update(['remark', $remark]);
+    if(isset($member)){
+      $member->update(['remark' => $remark]);
     }
     else {
       $member = UserCalendarMemberSetting::create([
@@ -425,7 +453,7 @@ EOT;
     do {
       $is_add = true;
       //休校日ではない場合、候補とする
-      if(!$this->is_holiday($target_date, true, true)){
+      if(!$this->is_holiday($target_date,false,true)){
         if($this->lesson_week_count > 0){
           $is_add = false;
           //第何週か指定がある場合
@@ -448,7 +476,7 @@ EOT;
         $c = $month_week_count;
         $target_month = date("m", strtotime($target_date));
       }
-    } while(strtotime($end_date) > strtotime($target_date));
+    } while(strtotime($end_date) >= strtotime($target_date));
 
     $ret = [];
     foreach($add_calendar_date as $date){
