@@ -163,25 +163,11 @@ EOT;
     $ask->remind_mail($form['create_user_id']);
     return $ask;
   }
-  public function start_date($format = "Y年n月j日", $is_week_label=true){
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "Y/n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($this->start_date));
-    if($is_week_label==true) $d .= '('.$weeks[date('w',  strtotime($this->start_date))].')';
-    return $d;
+  public function start_date($format = "Y年n月j日"){
+    return $this->dateweek_format($this->start_date, $format);
   }
-  public function end_date($format = "Y年n月j日", $is_week_label=true){
-    $weeks = config('week');
-    if(app()->getLocale()=='en'){
-      $format = "Y/n/j";
-      $weeks = config('week_en');
-    }
-    $d = date($format,  strtotime($this->end_date));
-    if($is_week_label==true) $d .= '('.$weeks[date('w',  strtotime($this->end_date))].')';
-    return $d;
+  public function end_date($format = "Y年n月j日"){
+    return $this->dateweek_format($this->end_date, $format);
   }
 
   public function change($form, $file=null, $is_file_delete = false){
@@ -346,9 +332,6 @@ EOT;
   }
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
-    if (!View::exists($template)) {
-      return false;
-    }
 
     if($this->target_user_id==1) return false;
     $title = $this->type_name();//.':'.$this->status_name();

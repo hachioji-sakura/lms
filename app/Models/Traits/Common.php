@@ -69,9 +69,10 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date){
+  public function dateweek_format($date, $format = "n月j日"){
     if(empty($date)) return "-";
-    $format = "n月j日";
+
+    $date = str_replace('/', '-', $date);
     $weeks = config('week');
     if(app()->getLocale()=='en'){
       $format = "n/j";
