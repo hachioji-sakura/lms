@@ -313,7 +313,7 @@ EOT;
     $this->delete();
   }
   public function change($form){
-    \Log::warning("UserCalendar::change");
+    \Log::warning("UserCalendarSetting::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
       'remark', 'place', 'work', 'enable_start_date', 'enable_end_date', 'lecture_id', 'status',
@@ -390,8 +390,8 @@ EOT;
     $member = UserCalendarMemberSetting::where('user_calendar_setting_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
-    if(isset($memeber)){
-      $member = $memeber->update(['remark', $remark]);
+    if(isset($member)){
+      $member->update(['remark' => $remark]);
     }
     else {
       $member = UserCalendarMemberSetting::create([

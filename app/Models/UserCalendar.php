@@ -790,7 +790,6 @@ EOT;
     UserCalendar::where('id', $this->id)->update($data);
     if(empty($this->teaching_type)){
       $type = $this->get_teaching_type();
-      \Log::warning("type=".$type);
 
       UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
     }
@@ -846,8 +845,8 @@ EOT;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
-    if(isset($memeber)){
-      $member = $memeber->update(['status', $status]);
+    if(isset($member)){
+      $member->update(['remark' => $remark]);
     }
     else {
       $member = UserCalendarMember::create([
@@ -1167,7 +1166,6 @@ EOT;
 
   public function register_mail($param=[], $login_user_id){
     $title = $this->register_mail_title();
-    \Log::warning("d3:".$title);
 
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
