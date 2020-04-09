@@ -144,7 +144,7 @@
                       @endif
                     @endforeach
 --}}
-                    @if($calendar->is_management()==false)
+                    @if($calendar->is_teaching()==false)
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">
                         <small class="badge badge-primary mt-1 mr-1">
