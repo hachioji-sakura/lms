@@ -790,6 +790,7 @@ EOT;
       $this->update([
         'unsubscribe_date' => $start_date,
       ]);
+      $this->unsubscribe();
     }
   }
   public function unsubscribe(){
@@ -821,6 +822,7 @@ EOT;
         'recess_start_date' => $start_date,
         'recess_end_date' => $end_date,
       ]);
+      $this->recess();
     }
   }
   public function recess(){

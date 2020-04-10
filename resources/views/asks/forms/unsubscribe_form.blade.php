@@ -21,7 +21,7 @@
         {{__('labels.unsubscribe')}}{{__('labels.date')}}
       </label>
       <span class="ml-3">
-        {{$already_data->start_date()}}
+        {{$already_data["start_date"]}}
       </span>
       </div>
   </div>
