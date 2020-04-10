@@ -2,7 +2,7 @@
 <input type="hidden" name="target_model_id" value="{{$item->id}}">
 <input type="hidden" name="target_model" value="{{$domain}}">
 <input type="hidden" name="charge_user_id" value="1">
-<input type="hidden" name="target_user_id" value="{{$user->user_id}}">
+<input type="hidden" name="target_user_id" value="{{$item->user_id}}">
 <input type="hidden" name="end_date" value="">
 
 <div class="row mb-3">
@@ -21,7 +21,7 @@
         {{__('labels.unsubscribe')}}{{__('labels.date')}}
       </label>
       <span class="ml-3">
-        {{$already_data->start_date()}}
+        {{$already_data["start_date"]}}
       </span>
       </div>
   </div>

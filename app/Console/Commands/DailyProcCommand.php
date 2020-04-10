@@ -89,6 +89,7 @@ class DailyProcCommand extends Command
       }
       //休会キャンセルの処理
       //$d = date("Y-m-d",strtotime("-1 day ".$d));
+      /*
       $asks = Ask::where('status', 'cancel')->findTypes(['recess', 'unsubscribe'])
         ->get();
       foreach($asks as $ask){
@@ -128,6 +129,7 @@ class DailyProcCommand extends Command
           @$this->send_slack("failed[id=".$ask->id."][type=".$ask->type."]", 'warning', "daily_proc");
         }
       }
+      */
       return $result;
    }
    protected function send_slack($message, $msg_type, $username=null, $channel=null) {

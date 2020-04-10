@@ -53,6 +53,9 @@
           @if(count($asks) > 0)
           <ul class="mailbox-attachments clearfix row">
             @foreach($asks as $ask)
+            <?php
+            $target_model_data = $ask->get_target_model_data();
+            ?>
             <li class="col-12" accesskey="" target="">
               <div class="row">
                 <div class="col-7 mt-1 text-lg">
@@ -70,7 +73,10 @@
                 </div>
                 <div class="col-12 col-md-5 text-muted">
                   @if($ask->target_model=='students')
-                    生徒氏名:{{$ask->get_target_model_data()->name()}} 様<br>
+                    <a href="/students/{{$target_model_data->id}}" target="_blank">
+                    生徒氏名:{{$target_model_data->name()}} 様
+                    </a>
+                    <br>
                   @endif
                   @if($ask->type=='recess')
                     {{__('labels.duration')}}:{{$ask["duration"]}}

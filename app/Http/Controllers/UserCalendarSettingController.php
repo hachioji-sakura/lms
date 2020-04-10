@@ -317,7 +317,7 @@ class UserCalendarSettingController extends UserCalendarController
             "to_calendar" => [
               "method" => "to_calendar",
               "label" => "予定登録",
-              "style" => "outline-secondary",
+              "style" => "outline-success",
             ],
             "delete_calendar" => [
               "method" => "delete_calendar",
@@ -573,11 +573,7 @@ class UserCalendarSettingController extends UserCalendarController
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
-            $already_setting = $setting->members->where('user_id', $student->user_id);
-            if(!isset($already_setting)){
-              //既存メンバー以外に指定されている場合、追加
-              $setting->memberAdd($student->user_id, $form['create_user_id']);
-            }
+            $setting->memberAdd($student->user_id, $form['create_user_id']);
           }
           foreach($setting->members as $member){
             $is_delete = true;

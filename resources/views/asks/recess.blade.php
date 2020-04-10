@@ -1,7 +1,6 @@
 @extends('layouts.loginbox')
 @section('title', __('labels.recess').__('labels.contact'))
 @section('title_header', __('labels.recess').__('labels.contact'))
-
 @section('content')
 @if($item->user->details()->role=='parent')
 <form id="recess_form" method="POST" action="/recess">
@@ -11,16 +10,20 @@
       <label for="name" class="w-100">
         {{__('labels.students')}}{{__('labels.name')}}
       </label>
-      @if(count($item->relations) > 1)
+      <?php
+      $students = $item->get_enable_students();
+      ?>
+      @if(count($students) > 1)
       <select name="student_id" class="form-control select2" required="true">
-        @foreach($item->relations as $relation)
-         <option value="{{ $relation->student_id }}">
-           {{$relation->student->name()}}
+        @foreach($students as $student)
+         <option value="{{ $student->id }}">
+           {{$student->name()}}
          </option>
         @endforeach
       </select>
-      @elseif(count($item->relations) > 1)
-      <input type="hidden" name="student_id" value="{{$item->relations[0]->student_id}}"></input>
+      @elseif(count($students) == 1)
+      <input type="hidden" name="student_id" value="{{$students[0]->id}}"></input>
+      <span>{{$students[0]->name()}}</span>
       @endif
     </div>
     <div class="col-12 mb-2">

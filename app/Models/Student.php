@@ -771,10 +771,10 @@ EOT;
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
   }
-  public function already_ask_data($type, $login_user_id){
+  public function already_ask_data($type, $login_user_id, $status=['new', 'commit']){
     $form = [
       'type' => $type,
-      'status' => 'commit',
+      'status' => $status,
       'target_model' => str_replace('common.', '',$this->table),
       'target_model_id' => $this->id,
       'target_user_id' => $this->user_id,
@@ -790,6 +790,7 @@ EOT;
       $this->update([
         'unsubscribe_date' => $start_date,
       ]);
+      $this->unsubscribe();
     }
   }
   public function unsubscribe(){
@@ -821,6 +822,7 @@ EOT;
         'recess_start_date' => $start_date,
         'recess_end_date' => $end_date,
       ]);
+      $this->recess();
     }
   }
   public function recess(){

@@ -321,7 +321,6 @@ class StudentController extends UserController
    //重複登録があるかチェック
    $param['already_data'] = $item->already_ask_data('recess', $item->user_id);
    $param['unsubscribe_data'] = $item->already_ask_data('unsubscribe', $item->user_id);
-   var_dump($param['already_data']);
    return view('asks.recess', [
    ])->with($param);
   }
@@ -787,7 +786,7 @@ class StudentController extends UserController
      case "recess":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['recess'];
-         $default_status = 'commit';
+         $form['search_status'] = ['new', 'commit'];
        }
        break;
      case "phone":
