@@ -37,6 +37,7 @@ return [
   'trial_entry'      => '体験授業お申込みはこちら',
   'keep_login'      => 'ログイン状態を維持する',
   'input_login_id' => 'ログインID またはメールアドレス',
+  'student_login_id' => 'ログインID',
   'input_password' => 'パスワード',
   'password' => 'パスワード',
   'password_confirm' => 'パスワード（確認）',

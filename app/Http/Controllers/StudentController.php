@@ -1167,6 +1167,11 @@ class StudentController extends UserController
            'status' => 0
          ];
          User::where('id', $item->user_id)->update($update_params);
+       }elseif(isset($form['email'])){
+         $update_params = [
+           'email' => $form['email']
+         ];
+         User::where('id', $item->user_id)->update($update_params);
        }
 
        return $this->api_response(200, '', '', $item);
@@ -1174,6 +1179,7 @@ class StudentController extends UserController
 
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
+
 
 
 }
