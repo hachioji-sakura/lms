@@ -18,4 +18,8 @@ class Faq extends Milestone
   {
     return $this->attribute_name('faq_type', $this->type);
   }
+  public function change($form, $file=null, $is_file_delete = false){
+    $this->update($form);
+    return $this;
+  }
 }

@@ -70,6 +70,7 @@ class UserController extends Controller
        'access_key' => $request->key,
        'origin' => $request->origin,
        'item_id' => $request->item_id,
+       'action' => $request->action,
     ];
 
     if(empty($ret['list_date'])){
@@ -174,8 +175,8 @@ class UserController extends Controller
       }
     }
     else {
-      $param['error_message'] = $res['message'];
-      $param['error_message_description'] = $res['description'];
+      if(isset($res['message'])) $param['error_message'] = $res['message'];
+      if(isset($res['description'])) $param['error_message_description'] = $res['description'];
     }
     return back()->withInput()->with($param);
   }
