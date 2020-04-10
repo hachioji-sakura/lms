@@ -83,7 +83,7 @@ EOT;
     $ask = $ask->first();
     if(isset($ask)) {
       //重複登録あり
-      return $ask;
+      return $ask->details();
     }
     return null;
   }
@@ -163,13 +163,14 @@ EOT;
     $ask->remind_mail($form['create_user_id']);
     return $ask;
   }
+  /*
   public function start_date($format = "Y年n月j日"){
     return $this->dateweek_format($this->start_date, $format);
   }
   public function end_date($format = "Y年n月j日"){
     return $this->dateweek_format($this->end_date, $format);
   }
-
+  */
   public function change($form, $file=null, $is_file_delete = false){
     if(isset($form["status"]) && isset($form["login_user_id"])){
       $this->_change($form);
@@ -199,8 +200,9 @@ EOT;
     $item = parent::details();
     $item["type_name"] = $this->type_name();
     $item["status_name"] = $this->status_name();
-    $item["duration"] = $this->start_date().'～'.$this->end_date("n月j日");
-    $item["start_date"] = $this->start_date();
+    $item["label_start_date"] = $this->dateweek_format($this->start_date, "Y年n月j日");
+    $item["label_end_date"] = $this->dateweek_format($this->end_date, "Y年n月j日");
+    $item["duration"] = $item["label_start_date"].'～'.$this->dateweek_format($this->end_date, "n月j日");
     if($this->charge_user_id==1) $item["charge_user_name"] = "事務";
     else $item["charge_user_name"] = $this->charge_user->get_name();
 

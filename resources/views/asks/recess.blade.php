@@ -1,6 +1,6 @@
+@extends('layouts.loginbox')
 @section('title', __('labels.recess').__('labels.contact'))
 @section('title_header', __('labels.recess').__('labels.contact'))
-
 @section('content')
 @if($item->user->details()->role=='parent')
 <form id="recess_form" method="POST" action="/recess">

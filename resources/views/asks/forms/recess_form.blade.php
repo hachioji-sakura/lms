@@ -19,7 +19,7 @@
       {{__('labels.recess')}}{{__('labels.date')}}
     </label>
     <span class="ml-3">
-      {{$already_data->start_date()}}～{{$already_data->end_date()}}
+      {{$already_data["duration"]}}
     </span>
     </div>
 </div>

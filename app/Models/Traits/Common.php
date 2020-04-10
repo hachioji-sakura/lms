@@ -73,6 +73,9 @@ trait Common
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
+    $date = str_replace('年', '-', $date);
+    $date = str_replace('月', '-', $date);
+    $date = str_replace('日', '', $date);
     $weeks = config('week');
     if(app()->getLocale()=='en'){
       $format = "n/j";
