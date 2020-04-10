@@ -29,6 +29,7 @@ Route::get('forget','AuthController@forget');
 Route::post('forget','AuthController@reset_mail');
 Route::get('users/email/{email}','UserController@email_check');
 
+
 Route::get('password','UserController@password');
 Route::post('password','UserController@password_update');
 Route::get('password/setting','AuthController@password_setting');
@@ -187,6 +188,8 @@ Route::post('teachers/{id}/tag','TeacherController@update');
 Route::get('managers/{id}/tag','ManagerController@tag_page');
 Route::post('managers/{id}/tag','ManagerController@update');
 
+Route::get( 'students/{id}/create_login_info' , 'StudentController@create_login_info');
+Route::post( 'students/{id}/create_login_info' , 'StudentController@register_login_info');
 
 Route::get('students/{id}/subject','StudentController@get_subject');
 Route::get('teachers/{id}/subject','TeacherController@get_subject');
