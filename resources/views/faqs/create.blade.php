@@ -69,15 +69,36 @@
                     内容
                     <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                   </label>
-                  <textarea type="text" id="body" name="body" class="" rows=5 required="true"  maxlength=500 uitype="ckeditor"
+                  <textarea type="text" id="body" name="body" class="" rows=5 required="true"  maxlength=5000 uitype="ckeditor"
                   @if(isset($_edit) && $_edit==true)
                     placeholder="(変更前) {{$item['body']}}" >{{$item['body']}}</textarea>
                   @else
-                    placeholder="500文字まで" ></textarea>
+                    placeholder="5000文字まで" ></textarea>
                   @endif
                 </div>
               </div>
-              <div class="col-12">
+              <div class="col-6">
+                <div class="form-group">
+                  <label for="publiced_at" class="w-100">
+                    {{__('labels.sort_no')}}
+                    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+                  </label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                    <input type="text" name="sort_no" class="form-control float-left" inputtype="number"
+                    @if(isset($_edit) && $_edit==true)
+                      value="{{$item['sort_no']}}"
+                    @endif
+                    @if(!(isset($_edit) && $_edit==true))
+                    minvalue="1"
+                    @endif
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
                 <div class="form-group">
                   <label for="publiced_at" class="w-100">
                     {{__('labels.publiced_at')}}
@@ -92,6 +113,8 @@
                       value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
                     @elseif(isset($item) && isset($item['publiced_at']) && $item['publiced_at']!='9999-12-31')
                       value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
+                    @else
+                      value = "{{date('Y/m/d')}}"
                     @endif
                     @if(!(isset($_edit) && $_edit==true))
                     minvalue="{{date('Y/m/d')}}"
