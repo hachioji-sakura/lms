@@ -641,9 +641,6 @@ class StudentController extends UserController
        if(empty($form['search_from_date'])){
          $from_date = date('Y-m-d', strtotime("now"));
        }
-       if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-d', strtotime("+1 month"));
-       }
        if(empty($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
            $statuses = ['confirm'];
