@@ -7,6 +7,7 @@ return [
   "confirm_delete" => "削除しますか？",
   "confirm_add" => "登録しますか？",
   "info_add" => "登録しました",
+  "message_already_email" => "このメールアドレスは登録済みです",
   "error_exchange_target" => "振替対象の授業を選択してください",
   "error_single_exchange_is_one_student" => "振替対象の生徒を一人にしてください",
   "error_group_exchange" => "グループレッスンの振替はできません",

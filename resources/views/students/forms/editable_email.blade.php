@@ -9,7 +9,7 @@
       <a href="javascript:void(0);" onClick="email_form_edit()" class="btn btn-sm btn-success ml-2"><i class="fa fa-edit"></i></a>
     </div>
     <div class="w-100 email-edit" style="display:none;">
-      <input type="text" id="email" name="email" class="form-control w-50 float-left" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="このメールアドレスは登録済みです" value="{{$item['email']}}">
+      <input type="text" id="email" name="email" class="form-control w-50 float-left" placeholder="例：hachioji@sakura.com"  required="true" inputtype="email" query_check="users/email" query_check_error="{{__('message_already_email')}}" value="{{$item['email']}}">
       <a href="javascript:void(0);" onClick="email_form_edited()" class="btn btn-sm btn-success float-left mt-1 ml-2"><i class="fa fa-check"></i></a>
     </div>
   </div>

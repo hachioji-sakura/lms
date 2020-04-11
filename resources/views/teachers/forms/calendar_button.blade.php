@@ -79,7 +79,7 @@
   </span>
 </a>
 @endif
-@if($calendar->work!=10)
+@if($calendar->work!=10 && $calendar->schedule_type_code()!="training")
   {{-- 季節講習の予定は事務システム側の再編成で行うので、変更・削除はできない --}}
   <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/edit" role="button" class="btn btn-default btn-sm ml-1">
     <i class="fa fa-edit"></i>
