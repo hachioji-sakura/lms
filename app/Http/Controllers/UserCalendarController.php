@@ -803,8 +803,8 @@ class UserCalendarController extends MilestoneController
       if($status!="rest_cancel" && $status!="lecture_cancel") return null;
       //休み取り消し依頼 or 休講申請
       $ask_form = [
-        'type'=>$status,
-        'status'=>'new'
+        'type'=> $status,
+        'status'=> ['new']
       ];
       if($status=="lecture_cancel"){
         //休講申請の場合の担当はuser_id=1(事務)
