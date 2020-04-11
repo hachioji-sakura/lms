@@ -697,7 +697,17 @@ EOT;
 
     $status = 'new';
     if($form['work']==9) $status = 'fix';
-
+    $target_user = User::where('id', $form['target_user_id'])->first();
+    if(isset($target_user)){
+      //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
+      $target_user = $target_user->details();
+      if($target_user->status=='recess'){
+        $status = 'cancel';
+      }
+      if($target_user->status=='unsubscribe'){
+        return $this->error_response("この予定主催者は退職（退会）しています");
+      }
+    }
 
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && empty($form['work'])){
@@ -849,6 +859,21 @@ EOT;
       $member->update(['remark' => $remark]);
     }
     else {
+
+      if($this->work==9) $status = 'fix';
+      $target_user = User::where('id', $user_id)->first();
+      if(isset($target_user)){
+        //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
+        $target_user = $target_user->details();
+        if($target_user->status=='recess'){
+          $status = 'cancel';
+        }
+        if($target_user->status=='unsubscribe'){
+          //退会時は登録しない
+          return null;
+        }
+      }
+
       $member = UserCalendarMember::create([
           'calendar_id' => $this->id,
           'user_id' => $user_id,
