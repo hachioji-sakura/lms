@@ -1111,7 +1111,7 @@ class StudentController extends UserController
     $result = '';
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    return view('dashboard.email',$param);
+    return view('auth.email_edit',$param);
   }
   public function email_edit(Request $request, $id)
   {

@@ -348,7 +348,7 @@ class TrialController extends UserCalendarController
      $u = User::where('email', $form['email'])->first();
      if(isset($u)){
        if($u->details()->role != 'parent'){
-         abort(403, 'このメールアドレスは登録済みです。');
+         abort(403, __('messages.message_already_email'));
        }
      }
      $res = $this->transaction($request, function() use ($request){

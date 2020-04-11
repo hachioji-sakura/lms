@@ -208,7 +208,7 @@ class UserController extends Controller
       abort(403);
     }
 
-    return view('dashboard.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
+    return view('auth.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
   }
   /**
    * パスワード更新
