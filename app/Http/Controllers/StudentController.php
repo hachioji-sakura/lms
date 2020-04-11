@@ -777,6 +777,7 @@ class StudentController extends UserController
      case "unsubscribe":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['unsubscribe'];
+         $form['search_status'] = ['new', 'commit'];
          $default_status = 'commit';
        }
        break;
