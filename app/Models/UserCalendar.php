@@ -733,7 +733,7 @@ EOT;
       'status' => $status
     ]);
 
-    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], 'new', false);
+    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], $status, false);
     $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
       $is_sendmail = true;
