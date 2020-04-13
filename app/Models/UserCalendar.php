@@ -840,7 +840,6 @@ EOT;
       else if($form['send_mail']=='teacher'){
         $is_teacher_mail = true;
       }
-
       if($is_teacher_mail==true){
         $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
       }
@@ -1007,7 +1006,7 @@ EOT;
   }
   public function teacher_mail($title, $param, $type, $template){
     $param['send_to'] = 'teacher';
-    $param['item'] = $this->details(1);
+    $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
@@ -1024,7 +1023,7 @@ EOT;
   }
   public function student_mail($title, $param, $type, $template, $is_rest_send=false){
     $param['send_to'] = 'student';
-    $param['item'] = $this->details(1);
+    $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $u = $member->user->details('students');
