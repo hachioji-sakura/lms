@@ -26,7 +26,7 @@ class ChangeBodyMails extends Migration
     public function down()
     {
         Schema::connection('mysql_common')->table('mails', function (Blueprint $table) {
-          $table->string('body')->default('')->comment('内容')->change();
+          //$table->string('body')->default('')->comment('内容')->change();
         });
     }
 }

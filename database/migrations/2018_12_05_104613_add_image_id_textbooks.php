@@ -14,7 +14,7 @@ class AddImageIdTextbooks extends Migration
     public function up()
     {
         Schema::table('textbooks', function (Blueprint $table) {
-          $table->string('image_id')->default(0)->after('url')->comment('本の写真など');
+          $table->integer('image_id')->default(0)->after('url')->comment('本の写真など');
         });
     }
 

@@ -26,7 +26,7 @@ class ChangeBodyFaqs extends Migration
     public function down()
     {
         Schema::table('faqs', function (Blueprint $table) {
-          $table->string('body')->nullable(false)->comment('内容')->change();
+          //$table->string('body')->nullable(false)->comment('内容')->change();
         });
     }
 }

@@ -14,7 +14,7 @@ class AddParentAskIdAsks extends Migration
     public function up()
     {
         Schema::table('asks', function (Blueprint $table) {
-          $table->string('parent_ask_id')->default(0)->index('index_parent_ask_id')->comment('親依頼ID')->after("type");
+          $table->integer('parent_ask_id')->default(0)->index('index_parent_ask_id')->comment('親依頼ID')->after("type");
         });
     }
 

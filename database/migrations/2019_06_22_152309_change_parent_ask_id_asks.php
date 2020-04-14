@@ -14,7 +14,7 @@ class ChangeParentAskIdAsks extends Migration
     public function up()
     {
         Schema::table('asks', function (Blueprint $table) {
-          $table->integer('parent_ask_id')->default(0)->change();
+          //$table->integer('parent_ask_id')->default(0)->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeParentAskIdAsks extends Migration
     public function down()
     {
         Schema::table('asks', function (Blueprint $table) {
-          $table->string('parent_ask_id')->default(0)->change();
+          //$table->string('parent_ask_id')->default(0)->change();
         });
     }
 }

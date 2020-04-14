@@ -14,7 +14,7 @@ class ChangeImageIdTextbooks extends Migration
     public function up()
     {
         Schema::table('textbooks', function (Blueprint $table) {
-          $table->integer('image_id')->default(0)->change();
+          //$table->integer('image_id')->default(0)->change();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeImageIdTextbooks extends Migration
     public function down()
     {
         Schema::table('textbooks', function (Blueprint $table) {
-          $table->string('image_id')->default(0)->change();
+          //$table->string('image_id')->default(0)->change();
         });
     }
 }
