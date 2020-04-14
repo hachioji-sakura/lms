@@ -312,3 +312,7 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+
+Route::get('parents/{id}/messages', 'MessageController@show_list');
+Route::get('teachers/{id}/messages', 'MessageController@show_list');
+Route::get('managers/{id}/messages', 'MessageController@show_list');
