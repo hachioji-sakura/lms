@@ -230,6 +230,7 @@ return [
   'user_examinations' => 'Examinations',
   'user_answers' => 'Answers',
   'trials' => 'Trials',
+  'regular' => 'regular',
   'trial' => 'Trial',
   'images' => 'images',
   'lectures' => 'lecture',

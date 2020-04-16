@@ -232,6 +232,7 @@ return [
   'user_examinations' => 'テキスト・実施',
   'user_answers' => 'テキスト・回答',
   'trials' => '体験申し込み',
+  'regular' => '通常',
   'trial' => '体験',
   'images' => '画像',
   'lectures' => 'レクチャー',

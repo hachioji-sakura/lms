@@ -40,7 +40,7 @@
   </div>
   @endif
 </div>
-@if($student2!=null)
+@if($_edit==false || ($_edit==true && $student2!=null))
 <div class="row collapse student2">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-user-graduate mr-1"></i>
@@ -64,7 +64,7 @@
   </div>
 </div>
 @endif
-@if($student3!=null)
+@if($_edit==false || ($_edit==true && $student3!=null))
 <div class="row collapse student3">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-user-graduate mr-1"></i>

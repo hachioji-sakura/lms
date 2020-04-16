@@ -65,7 +65,7 @@ return [
   "warning_calendar_rest" => "振替対象外となることを確認しました。",
   "trial_entry1" => "体験授業をお申し込みいただきまして、\n誠にありがとうございます。",
   "trial_entry2" => "２営業日以内に、当塾よりご連絡いたしますので、\n何卒宜しくお願い致します。",
-  "info_calendar_delete" => "授業予定が削除されました。",
+  "info_calendar_delete" => "予定が削除されました。",
   "info_calendar_add" => ":trial授業予定を追加いたしました。",
   "info_calendar_update" => ":trial授業の予定を変更いたしました。",
   "info_calendar_setting_delete" => "繰り返し予定が削除されました。",
