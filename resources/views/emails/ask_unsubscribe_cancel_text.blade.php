@@ -1,5 +1,5 @@
 @include('emails.common')
-
+{{$user->name()}} 様
 {{__('messages.info_unsubscribe_cancel')}}
 
 …………………………………………………………………………………………

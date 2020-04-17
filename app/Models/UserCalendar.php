@@ -890,18 +890,6 @@ EOT;
     $this->update(['checked_at' => $check_date]);
     return false;
   }
-  public function is_cancel_status(){
-    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest"){
-      return true;
-    }
-    return false;
-  }
-  public function is_last_status(){
-    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
-      return true;
-    }
-    return false;
-  }
   public function is_checked(){
     if(!empty($this->checked_at)){
       return true;
@@ -1163,17 +1151,6 @@ EOT;
         return true;
       }
     }
-    return false;
-  }
-  public function is_enable_status($status){
-    if($status=='cancel') return false;
-    if($this->is_rest_status($status)==true) return false;
-    return false;
-  }
-  public function is_rest_status($status){
-    if($status=="rest") return true;
-    if($status=="lecture_cancel") return true;
-    if($status=="absence") return true;
     return false;
   }
   //振替可能残り時間
