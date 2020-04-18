@@ -1,5 +1,4 @@
 @include('emails.common')
-
 {{$user->name()}} 様
 以下の、休会依頼をキャンセルいたしました。
 

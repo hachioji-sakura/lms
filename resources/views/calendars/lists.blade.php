@@ -41,7 +41,7 @@
   </div>
   <div class="col-12 col-md-4">
     <div class="form-group">
-      <label for="is_exchange" class="w-100">
+      <label for="is_desc" class="w-100">
         {{__('labels.sort_no')}}
       </label>
       <label class="mx-2">

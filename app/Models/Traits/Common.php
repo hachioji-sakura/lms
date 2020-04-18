@@ -118,4 +118,32 @@ trait Common
     if(isset($_lists) && isset($_lists[$value])) return $_lists[$value];
     return "";
   }
+  public function is_enable_status($status=""){
+    if(empty($status)) $status = $this->status;
+    if($status=='cancel') return false;
+    if($this->is_rest_status($status)==true) return false;
+    return false;
+  }
+  public function is_rest_status($status=""){
+    if(empty($status)) $status = $this->status;
+    if($status=="rest") return true;
+    if($status=="lecture_cancel") return true;
+    if($status=="absence") return true;
+    return false;
+  }
+  public function is_cancel_status($status=""){
+    if(empty($status)) $status = $this->status;
+    if($status==="lecture_cancel" || $status==="cancel" || $status==="rest"){
+      return true;
+    }
+    return false;
+  }
+  public function is_last_status($status=""){
+    if(empty($status)) $status = $this->status;
+    if($this->is_rest_status($status)) return true;
+    if($status==="cancel" || $status==="presence"){
+      return true;
+    }
+    return false;
+  }
 }

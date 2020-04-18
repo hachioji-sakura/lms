@@ -105,6 +105,8 @@ class StudentController extends UserController
    */
   public function search(Request $request)
   {
+    $param = $this->get_param($request);
+    $form = $request->all();
     $items = $this->model()->with('user.image');
 
     $user = $this->login_details($request);
@@ -119,6 +121,14 @@ class StudentController extends UserController
 
     $items = $this->_search_scope($request, $items);
 
+    $sort = 'asc';
+    if(isset($form['is_desc']) && $form['is_desc']==1){
+      $sort = 'desc';
+    }
+    $request->merge([
+      '_sort' => 'id',
+      '_sort_order' => $sort,
+    ]);
    $items = $this->_search_pagenation($request, $items);
 
    $items = $this->_search_sort($request, $items);
@@ -143,6 +153,17 @@ class StudentController extends UserController
     //検索ワード
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
+    }
+
+    if(isset($request->search_keyword)){
+      $items = $items->searchWord($request->search_keyword);
+    }
+
+    if(isset($request->search_grade)){
+      $items->hasTags('grade', $request->search_grade);
+    }
+    if(isset($request->search_lesson)){
+      $items->hasTags('lesson', $request->search_lesson);
     }
 
     //ステータス
@@ -682,7 +703,6 @@ class StudentController extends UserController
        break;
    }
    $is_exchange = false;
-   $is_desc = false;
 
    if(!empty($form['is_exchange']) && $form['is_exchange']==1){
      $is_exchange = true;
@@ -805,7 +825,6 @@ class StudentController extends UserController
 
    $statuses = [];
    $types = [];
-   $is_desc = false;
 
    $sort = 'asc';
    if(isset($form['is_desc']) && $form['is_desc']==1){
@@ -847,7 +866,6 @@ class StudentController extends UserController
 
    $statuses = [];
    $types = [];
-   $is_desc = false;
 
    $sort = 'asc';
    if(isset($form['is_desc']) && $form['is_desc']==1){
