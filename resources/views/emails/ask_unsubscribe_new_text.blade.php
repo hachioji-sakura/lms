@@ -1,12 +1,12 @@
 @include('emails.common')
 
-{{$user_name}} 様
-ご連絡頂いた休会の件、承知致しました。
+{{$user->name()}} 様
+以下の退会依頼を登録しました。
 
 …………………………………………………………………………………………
 {{__('labels.'.$ask->target_model)}}{{__('labels.name')}}: {{$target_model->name()}}
-{{__('labels.recess')}}{{__('labels.day')}}: {{$ask["duration"]}}
-{{__('labels.recess')}}{{__('labels.reason')}}:
+{{__('labels.unsubscribe')}}{{__('labels.date')}}: {{$ask["label_start_date"]}}
+{{__('labels.unsubscribe')}}{{__('labels.reason')}}:
 {{$ask->body}}
 …………………………………………………………………………………………
 

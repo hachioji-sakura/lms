@@ -41,11 +41,9 @@ class CalendarSettingCommand extends Command
      */
     public function handle()
     {
+      $view_mode = false;
       if(!empty($this->option("view_mode"))){
         $view_mode = true;
-      }
-      else {
-        $view_mode = false;
       }
       $this->to_calendar($this->option("start_date"), $this->option("end_date"), $this->option("range_month"), $this->option("week_count"), $this->option("id"), $view_mode);
     }

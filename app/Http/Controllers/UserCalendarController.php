@@ -410,7 +410,6 @@ class UserCalendarController extends MilestoneController
       */
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $_table["count"] = 0;
       $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
       foreach($page_data as $key => $val){
         $param[$key] = $val;
@@ -454,7 +453,6 @@ class UserCalendarController extends MilestoneController
       */
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $_table["count"] = 0;
       $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
       foreach($page_data as $key => $val){
         $param[$key] = $val;
@@ -617,9 +615,6 @@ class UserCalendarController extends MilestoneController
         $item = $item->details(1);
       }
       $fields = [
-        "id" => [
-          "label" => "ID",
-        ],
         "datetime" => [
           "label" => __('labels.datetime'),
           "link" => "show",
@@ -629,6 +624,9 @@ class UserCalendarController extends MilestoneController
         ],
         "work_name" => [
           "label" => __('labels.work'),
+        ],
+        "status_name" => [
+          "label" => __('labels.status'),
         ],
         "user_name" => [
           "label" => __('labels.charge_user'),
@@ -745,6 +743,10 @@ class UserCalendarController extends MilestoneController
       if(isset($request->search_keyword)){
         $items = $items->searchWord($request->search_keyword);
       }
+      //検索ワード
+      if(isset($request->search_word)){
+        $items = $items->searchWord($request->search_word);
+      }
 
       return $items;
     }
@@ -801,8 +803,8 @@ class UserCalendarController extends MilestoneController
       if($status!="rest_cancel" && $status!="lecture_cancel") return null;
       //休み取り消し依頼 or 休講申請
       $ask_form = [
-        'type'=>$status,
-        'status'=>'new'
+        'type'=> $status,
+        'status'=> ['new']
       ];
       if($status=="lecture_cancel"){
         //休講申請の場合の担当はuser_id=1(事務)

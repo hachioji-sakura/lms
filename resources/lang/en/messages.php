@@ -7,6 +7,7 @@ return [
  "confirm_delete" => "Do you want to delete?",
  "confirm_add" => "Do you want to register?",
  "info_add" => "Has registered.",
+ "message_already_email" => "This email address is already registered.",
  "error_exchange_target" => "Please select classes for transfer",
  "error_single_exchange_is_one_student" => "Please leave only one student for transfer",
  "error_group_exchange" => "Group lessons can not be transferred",

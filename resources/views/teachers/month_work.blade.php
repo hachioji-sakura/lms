@@ -7,7 +7,7 @@
 
 @section('contents')
 <section class="content">
-  <form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work">
+  <form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work" onsubmit="return false;">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="target_month" value="{{$target_month}}" >
@@ -144,7 +144,7 @@
                       @endif
                     @endforeach
 --}}
-                    @if($calendar->is_management()==false)
+                    @if($calendar->is_teaching()==false)
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">
                         <small class="badge badge-primary mt-1 mr-1">

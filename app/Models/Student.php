@@ -99,6 +99,11 @@ class Student extends Model
    */
   public function grade()
   {
+    $grade = $this->tag_value('grade');
+    $default_grade = $this->default_grade();
+    if($grade != $default_grade){
+      UserTag::setTag($this->user_id,'grade',$default_grade,1);
+    }
     return $this->tag_name('grade');
   }
   /**
@@ -249,20 +254,20 @@ EOT;
    */
   public function scopeHasTag($query, $tag_key, $tag_value)
   {
-    $where_raw = <<<EOT
-      $this->table.user_id in (select user_id from user_tags where tag_key=? and tag_value=?)
-EOT;
-    return $query->whereRaw($where_raw,[$tag_key, $tag_value]);
+    return $this->scopeHasTags($query, $tag_key, $tag_value);
   }
   /**
   *　スコープ：タグ複数値いずれかを持っているか
    */
   public function scopeHasTags($query, $tag_key, $tag_values)
   {
-    $where_raw = <<<EOT
-      $this->table.user_id in (select user_id from user_tags where tag_key=? and tag_value in ($tag_values))
-EOT;
-    return $query->whereRaw($where_raw,[$tag_key]);
+    if(gettype($tag_values) == "string") $tag_values = explode(',', $tag_values.',');
+    return $query->whereIn('user_id' , function ($query) use($tag_key, $tag_values){
+          $query->select('user_id')
+                  ->from('user_tags')
+                  ->where('tag_key', $tag_key)
+                  ->whereIn('tag_value', $tag_values);
+    });
   }
   /**
    *　スコープ：担当生徒
@@ -771,10 +776,10 @@ EOT;
       $str = preg_replace($patterns, $romaji, $str);
       return $str;
   }
-  public function already_ask_data($type, $login_user_id){
+  public function already_ask_data($type, $login_user_id, $status=['new', 'commit']){
     $form = [
       'type' => $type,
-      'status' => 'commit',
+      'status' => $status,
       'target_model' => str_replace('common.', '',$this->table),
       'target_model_id' => $this->id,
       'target_user_id' => $this->user_id,
@@ -790,6 +795,7 @@ EOT;
       $this->update([
         'unsubscribe_date' => $start_date,
       ]);
+      $this->unsubscribe();
     }
   }
   public function unsubscribe(){
@@ -821,6 +827,7 @@ EOT;
         'recess_start_date' => $start_date,
         'recess_end_date' => $end_date,
       ]);
+      $this->recess();
     }
   }
   public function recess(){

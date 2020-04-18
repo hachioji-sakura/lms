@@ -70,6 +70,7 @@ class UserController extends Controller
        'access_key' => $request->key,
        'origin' => $request->origin,
        'item_id' => $request->item_id,
+       'action' => $request->action,
     ];
 
     if(empty($ret['list_date'])){
@@ -88,6 +89,10 @@ class UserController extends Controller
       ],
       'ask_filter' => [
         'search_type' => $request->search_type,
+      ],
+      'user_filter' => [
+        'search_grade' => $request->search_grade,
+        'search_lesson' => $request->search_lesson,
       ],
       'calendar_filter' => [
         'search_from_date'=>$request->search_from_date,
@@ -174,8 +179,8 @@ class UserController extends Controller
       }
     }
     else {
-      $param['error_message'] = $res['message'];
-      $param['error_message_description'] = $res['description'];
+      if(isset($res['message'])) $param['error_message'] = $res['message'];
+      if(isset($res['description'])) $param['error_message_description'] = $res['description'];
     }
     return back()->withInput()->with($param);
   }
@@ -207,7 +212,7 @@ class UserController extends Controller
       abort(403);
     }
 
-    return view('dashboard.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
+    return view('auth.password', ['user' => $user])->with(["search_word"=>$request->search_word]);
   }
   /**
    * パスワード更新

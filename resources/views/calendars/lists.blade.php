@@ -1,7 +1,64 @@
 @section('title')
   {{$domain_name}} {{__('labels.list')}}
 @endsection
-@extends('dashboard.common')
+
+@section('list_filter')
+@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_from_date" class="w-100">
+        {{__('labels.date')}}(FROM)
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['calendar_filter']['search_from_date']))
+          value="{{$filter['calendar_filter']['search_from_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="form-group">
+      <label for="search_to_date" class="w-100">
+        {{__('labels.date')}}(TO)
+      </label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+        </div>
+        <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+        @if(isset($filter['calendar_filter']['search_to_date']))
+          value="{{$filter['calendar_filter']['search_to_date']}}"
+        @endif
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="form-group">
+      <label for="is_desc" class="w-100">
+        {{__('labels.sort_no')}}
+      </label>
+      <label class="mx-2">
+      <input type="checkbox" value="1" name="is_desc" class="icheck flat-green"
+      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
+        checked
+      @endif
+      >{{__('labels.date')}} {{__('labels.desc')}}
+      </label>
+    </div>
+  </div>
+  @component('calendars.filter', ['domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'user'=>$user, 'filter'=>$filter])
+  @endcomponent
+  @endslot
+@endcomponent
+
+@endsection
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -33,97 +90,6 @@
 </ul>
 @endsection
 
-
-@section('contents')
-<div class="card">
-<div class="card-header">
-  <h3 class="card-title">@yield('title')</h3>
-  <div class="card-tools pt-2">
-    @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-      @slot("addon_button")
-      @if(isset($user_calendar_setting_id ))
-      <ul class="pagination pagination-sm m-0 float-left text-sm">
-        <li class="page-item mr-1">
-          <a class="btn btn-outline-secondary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$user_calendar_setting_id}}/to_calendar" page_title="繰り返しスケジュール登録">
-            <span class="btn-label">
-              予定登録
-            </span>
-          </a>
-        </li>
-        <li class="page-item mr-1">
-          <a class="btn btn-outline-danger btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$user_calendar_setting_id}}/delete_calendar" page_title="繰り返しスケジュール削除">
-            <span class="btn-label">
-              予定削除
-            </span>
-          </a>
-        </li>
-      </ul>
-      @endif
-      @endslot
-    @endcomponent
-  </div>
-</div>
-<div class="card-body table-responsive p-0">
-  @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
-  @endcomponent
-</div>
-</div>
-@component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
-  @slot("search_form")
-  <div class="col-4">
-    <label for="search_week" class="w-100">
-      曜日
-    </label>
-    <div class="w-100">
-      <select name="search_week[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
-        @foreach($attributes['lesson_week'] as $index=>$name)
-          <option value="{{$index}}"
-          @if(isset($filter['calendar_filter']['search_week']) && in_array($index, $filter['calendar_filter']['search_week'])==true)
-          selected
-          @endif
-          >{{$name}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  <div class="col-4">
-    <label for="search_work" class="w-100">
-      {{__('labels.work')}}
-    </label>
-    <div class="w-100">
-      <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
-        @foreach($attributes['work'] as $index=>$name)
-          <option value="{{$index}}"
-          @if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
-          selected
-          @endif
-          >{{$name}}</option>
-        @endforeach
-      </select>
-    </div>
-  </div>
-  <div class="col-4">
-    <label for="search_place" class="w-100">
-      {{__('labels.place')}}
-    </label>
-    <div class="w-100">
-      <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
-        @foreach($attributes['places'] as $place)
-          <option value="{{$place->id}}"
-          @if(isset($filter['calendar_filter']['search_place']) && in_array($place->id, $filter['calendar_filter']['search_place'])==true)
-          selected
-          @endif
-          >{{$place->name()}}</option>
-        @endforeach
-      </select>
-    </div>
-  @endslot
-@endcomponent
-
-
-@endsection
-
-
 @section('page_footer')
   <dt>
     @if(isset($teacher_id) && $teacher_id>0)
@@ -135,3 +101,6 @@
     </a>
   </dt>
 @endsection
+
+@extends('dashboard.common')
+@include('dashboard.lists')

@@ -141,6 +141,7 @@ EOT;
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
         $query = $query->orWhereRaw($where_raw,[$_like,$_like,$_like,$_like,$_like,$_like,$_like]);
+        $query = $query->orWhere('id', $_search_word);
       }
     });
     return $query;
@@ -659,10 +660,13 @@ EOT;
     }
     return null;
   }
-  public function is_holiday($date=""){
+  public function is_holiday($date="", $is_public=true, $is_private=true){
     if(empty($date)) $date = $this->start_time;
     $holiday = (new UserCalendar())->get_holiday($date);
-    if($holiday!=null) return true;
+    if($holiday!=null){
+      if($holiday->is_private_holiday==true && $is_private==true) return true;
+      if($holiday->is_public_holiday==true && $is_public==true) return true;
+    }
     return false;
   }
   //本モデルはcreateではなくaddを使う
@@ -693,7 +697,17 @@ EOT;
 
     $status = 'new';
     if($form['work']==9) $status = 'fix';
-
+    $target_user = User::where('id', $form['target_user_id'])->first();
+    if(isset($target_user)){
+      //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
+      $target_user = $target_user->details();
+      if($target_user->status=='recess'){
+        $status = 'cancel';
+      }
+      if($target_user->status=='unsubscribe'){
+        return $this->error_response("この予定主催者は退職（退会）しています");
+      }
+    }
 
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && empty($form['work'])){
@@ -719,7 +733,7 @@ EOT;
       'status' => $status
     ]);
 
-    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], 'new', false);
+    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], $status, false);
     $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
       $is_sendmail = true;
@@ -786,7 +800,6 @@ EOT;
     UserCalendar::where('id', $this->id)->update($data);
     if(empty($this->teaching_type)){
       $type = $this->get_teaching_type();
-      \Log::warning("type=".$type);
 
       UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
     }
@@ -827,7 +840,6 @@ EOT;
       else if($form['send_mail']=='teacher'){
         $is_teacher_mail = true;
       }
-
       if($is_teacher_mail==true){
         $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
       }
@@ -842,10 +854,25 @@ EOT;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
-    if(isset($memeber)){
-      $member = $memeber->update(['status', $status]);
+    if(isset($member)){
+      $member->update(['remark' => $remark]);
     }
     else {
+
+      if($this->work==9) $status = 'fix';
+      $target_user = User::where('id', $user_id)->first();
+      if(isset($target_user)){
+        //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
+        $target_user = $target_user->details();
+        if($target_user->status=='recess'){
+          $status = 'cancel';
+        }
+        if($target_user->status=='unsubscribe'){
+          //退会時は登録しない
+          return null;
+        }
+      }
+
       $member = UserCalendarMember::create([
           'calendar_id' => $this->id,
           'user_id' => $user_id,
@@ -861,18 +888,6 @@ EOT;
   }
   public function checked($check_date){
     $this->update(['checked_at' => $check_date]);
-    return false;
-  }
-  public function is_cancel_status(){
-    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest"){
-      return true;
-    }
-    return false;
-  }
-  public function is_last_status(){
-    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
-      return true;
-    }
     return false;
   }
   public function is_checked(){
@@ -979,7 +994,7 @@ EOT;
   }
   public function teacher_mail($title, $param, $type, $template){
     $param['send_to'] = 'teacher';
-    $param['item'] = $this->details(1);
+    $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
@@ -996,7 +1011,7 @@ EOT;
   }
   public function student_mail($title, $param, $type, $template, $is_rest_send=false){
     $param['send_to'] = 'student';
-    $param['item'] = $this->details(1);
+    $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $u = $member->user->details('students');
@@ -1138,17 +1153,6 @@ EOT;
     }
     return false;
   }
-  public function is_enable_status($status){
-    if($status=='cancel') return false;
-    if($this->is_rest_status($status)==true) return false;
-    return false;
-  }
-  public function is_rest_status($status){
-    if($status=="rest") return true;
-    if($status=="lecture_cancel") return true;
-    if($status=="absence") return true;
-    return false;
-  }
   //振替可能残り時間
   public function get_exchange_remaining_time(){
     $students = $this->get_students();
@@ -1163,7 +1167,6 @@ EOT;
 
   public function register_mail($param=[], $login_user_id){
     $title = $this->register_mail_title();
-    \Log::warning("d3:".$title);
 
     $param['item'] = $this->details(0);
     $param['send_to'] = 'teacher';
