@@ -90,6 +90,10 @@ class UserController extends Controller
       'ask_filter' => [
         'search_type' => $request->search_type,
       ],
+      'user_filter' => [
+        'search_grade' => $request->search_grade,
+        'search_lesson' => $request->search_lesson,
+      ],
       'calendar_filter' => [
         'search_from_date'=>$request->search_from_date,
         'search_to_date'=>$request->search_to_date,
