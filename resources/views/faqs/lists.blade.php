@@ -29,11 +29,19 @@
                     <i class="fa fa-info-circle mx-1"></i>{{$item->title}}<br>
                   </a>
                 </div>
-                <div class="col-6 mt-1 text-sm">
+                {{--
+                <div class="col-12 mt-1 text-sm" >
+                    <i class="fa fa-tag mx-1"></i>{{$item->type_name()}}
+                </div>
+                --}}
+                <div class="col-12 mt-1 text-sm">
                   {{__('labels.publiced_at')}}： {{date('Y-m-d', strtotime($item["publiced_at"]))}}
                 </div>
                 @if(isset($user) && $user->role=='manager')
-                <div class="col-12 text-sm mt-1 text-right">
+                <div class="col-4 mt-1 text-sm">
+                  {{__('labels.sort_no')}}： {{$item['sort_no']}}
+                </div>
+                <div class="col-8 text-sm mt-1 text-right">
                   <a class="btn btn-sm btn-success"  href="/{{$domain}}/{{$item['id']}}/edit" role="button" >
                     <i class="fa fa-edit mr-1"></i>{{__('labels.edit')}}
                   </a>

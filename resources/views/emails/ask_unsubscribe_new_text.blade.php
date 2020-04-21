@@ -1,6 +1,7 @@
 @include('emails.common')
+
 {{$user->name()}} 様
-{{__('messages.info_unsubscribe_cancel')}}
+以下の退会依頼を登録しました。
 
 …………………………………………………………………………………………
 {{__('labels.'.$ask->target_model)}}{{__('labels.name')}}: {{$target_model->name()}}

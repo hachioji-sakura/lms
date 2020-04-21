@@ -27,7 +27,7 @@
             </label>
             <select name="student_id" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="student_id_change()">
               @foreach($item["students"] as $member)
-                @if($member->status!='rest' && $member->status!='lecture_cancel') @continue @endif
+                @if($member->is_rest_status()==false) @continue @endif
                  <option
                  value="{{ $member->user->student->id }}"
                  member_id ="{{ $member->id }}"

@@ -78,10 +78,6 @@ class MailLogController extends MilestoneController
       "created_date" => [
         "label" => __('labels.add_datetime'),
       ],
-      "buttons" => [
-        "label" => __('labels.control'),
-        "button" => ["edit"]
-      ]
     ];
 
     return ['items' => $items, 'fields' => $fields, 'count' => $count];

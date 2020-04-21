@@ -37,7 +37,7 @@
 	                  base.showPage('dialog', "subDialog", "勤怠をつける", "/calendars/"+event.id+"/status_update/presence");
 	                }
 	                else{
-	                  base.showPage('dialog', "subDialog", "休み連絡", "/calendars/"+event.id+"/status_update/lecture_cancel");
+	                  base.showPage('dialog', "subDialog", "休み連絡", "/calendars/"+event.id+"/status_update/rest");
 	                }
 	                break;
 	              case "rest":
