@@ -12,6 +12,7 @@ return [
  "error_single_exchange_is_one_student" => "Please leave only one student for transfer",
  "error_group_exchange" => "Group lessons can not be transferred",
  "error_already_reagisted" => "It has already been registered.",
+ "error_no_checked" => "Not selected.",
  "warning_telephone_not_hyphen" => "Hyphen (-) unnecessary",
  "confirm_rest_cancel" => "Do you want to send a cancellation notice?",
  "info_proxy_contact_for_student" => "The following lesson schedule has been finalized.",

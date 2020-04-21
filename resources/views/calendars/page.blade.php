@@ -31,7 +31,7 @@
             {{$field['label']}}
           </label>
           @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
-        @elseif($key==='teaching_name')
+        @elseif($key==='teaching_name' || $key==='course')
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
         </label>
@@ -87,6 +87,20 @@
       }
     }
   }
+  function member_delete_validate(){
+    var _ret = false;
+    $('input[type="checkbox"].calendar_member_delete').each(function(i, e){
+      var _checked = $(this).prop('checked');
+      if(_checked) _ret = true;
+      return ;
+    });
+    if(_ret==false){
+      console.log('error');
+      front.showValidateError($("#delete_member_list"), "{{__('messages.error_no_checked')}}");
+      return false;
+    }
+    return true;
+  }
   </script>
   @endslot
   {{-- フォーム部分カスタマイズ --}}
@@ -100,14 +114,14 @@
         <label for="member_delete" class="w-100">
           参加生徒削除
         </label>
-        <table class="table w-80">
+        <table class="table w-80" id="delete_member_list">
           <tr class="bg-gray">
             <th class="p-1 pl-2 text-sm "><i class="fa fa-user mr-1"></i>{{__('labels.students')}}</th>
             <th class="p-1 pl-2 text-sm"><i class="fa fa-trash mr-1"></i>
               <label class="mx-2">
                 {{__('labels.delete')}}
               </label>
-              <input class="form-check-input icheck flat-red ml-2" type="checkbox" name="all_calendar_member_delete" value="delete" onChange='all_calendar_member_delete_check();' >
+              <input class="form-check-input icheck flat-red ml-2" type="checkbox" name="all_calendar_member_delete" value="delete" onChange='all_calendar_member_delete_check();' validate = "member_delete_validate();">
             </th>
           </tr>
           @foreach($item["students"] as $member)
@@ -123,7 +137,7 @@
               @else
               <div class="input-group">
                 <div class="form-check">
-                  <input class="form-check-input icheck flat-red calendar_member_delete" type="checkbox" name="{{$member->id}}_delete" id="{{$member->id}}_delete" value="delete" required="true" >
+                  <input class="form-check-input icheck flat-red calendar_member_delete" type="checkbox" name="{{$member->id}}_delete" id="{{$member->id}}_delete" value="delete">
                   <label class="form-check-label" for="{{$member->id}}_delete"></label>
                 </div>
               </div>

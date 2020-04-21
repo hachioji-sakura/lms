@@ -87,7 +87,7 @@ trait Common
   }
   public function scopeFieldWhereIn($query, $field, $vals, $is_not=false)
   {
-    if(gettype($vals) == "string") $vals = explode(',', $vals.',');
+    if(gettype($vals) == "string" || gettype($vals) == "integer") $vals = explode(',', $vals.',');
 
     if(count($vals) > 0){
       if($is_not===true){
