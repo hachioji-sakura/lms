@@ -686,6 +686,7 @@ class UserCalendarMember extends Model
     }
   }
   public function already_ask_data($data){
+    //休み取り消し依頼
     $form = [
       'type' => $data['type'],
       'status' => $data['status'],

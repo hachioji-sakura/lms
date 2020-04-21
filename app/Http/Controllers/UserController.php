@@ -402,4 +402,5 @@ class UserController extends Controller
   public function user_login($user_id){
     Auth::loginUsingId($user_id);
   }
+
 }

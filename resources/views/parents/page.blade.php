@@ -145,6 +145,20 @@
                       <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}
                     </a>
                   </div>
+                  <div class="col-6 float-left mt-1">
+                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/create_login_info" page_title="{{__('labels.login_setting')}}" role="button" class="btn  btn-sm btn-flat btn-block
+                    @if($charge_student->student->status == 'unsubscribe')
+                     btn-secondary
+                     disabled
+                    ">
+                      <i class="fa fa-ban mr-1"></i>{{__('labels.login_setting')}}
+                    @else
+                    btn-info
+                    ">
+                      <i class="fa fa-key mr-1"></i>{{__('labels.login_setting')}}
+                    @endif
+                    </a>
+                  </div>
                   {{--
                   <div class="col-6 float-left mt-1">
                     <a title="{{__('labels.late_arrival_description')}}" href="javascript:void(0);" page_title="{{__('labels.late_arrival')}}" page_form="dialog" page_url="/students/{{$charge_student->id}}/late_arrival" role="button" class="btn btn-danger btn-sm btn-flat btn-block">

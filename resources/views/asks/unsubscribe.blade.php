@@ -11,14 +11,20 @@
       <label for="name" class="w-100">
         {{__('labels.students')}}{{__('labels.name')}}
       </label>
-      @if(count($item->relations) > 1)
+      <?php
+      $students = $item->get_enable_students();
+      ?>
+      @if(count($students) > 1)
       <select name="student_id" class="form-control select2" required="true">
-        @foreach($item->relations as $relation)
-         <option value="{{ $relation->student->id }}">
-           {{$relation->student->name()}}
+        @foreach($students as $student)
+         <option value="{{ $student->id }}">
+           {{$student->name()}}
          </option>
         @endforeach
       </select>
+      @elseif(count($students) == 1)
+      <input type="hidden" name="student_id" value="{{$students[0]->id}}"></input>
+      <span>{{$students[0]->name()}}</span>
       @endif
     </div>
     <div class="col-12 mb-2">

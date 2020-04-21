@@ -321,7 +321,6 @@ class StudentController extends UserController
    //重複登録があるかチェック
    $param['already_data'] = $item->already_ask_data('recess', $item->user_id);
    $param['unsubscribe_data'] = $item->already_ask_data('unsubscribe', $item->user_id);
-   var_dump($param['already_data']);
    return view('asks.recess', [
    ])->with($param);
   }
@@ -787,7 +786,7 @@ class StudentController extends UserController
      case "recess":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['recess'];
-         $default_status = 'commit';
+         $form['search_status'] = ['new', 'commit'];
        }
        break;
      case "phone":
@@ -1034,6 +1033,7 @@ class StudentController extends UserController
        if(isset($form['email'])){
          User::where('id', $item->user_id)->update(['email'=>$form['email']]);
        }
+
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
@@ -1140,4 +1140,45 @@ class StudentController extends UserController
     }
     return $this->save_redirect($res, $param, '更新しました。');
   }
+
+  public function create_login_info_page(Request $request, $id = null){
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = false;
+    $param['student'] = $param['item'];
+    return view($this->domain.'.create_login_info', $param);
+  }
+
+  public function set_login_info(Request $request, $id = null){
+    $param = $this->get_param($request, $id);
+    $req = $this->save_validate($request);
+    if(!$this->is_success_response($req)){
+      return $req;
+    }
+    $res =  $this->transaction($request, function() use ($request, $id){
+       $user = $this->login_details($request);
+       $form = $request->all();
+       $item = $this->model()->where('id',$id)->first();
+
+       if(isset($form['email']) && isset($form['password'])){
+         $update_params = [
+           'email' => $form['email'],
+           'password' => Hash::make($form['password']),
+           'status' => 0
+         ];
+         User::where('id', $item->user_id)->update($update_params);
+       }elseif(isset($form['email'])){
+         $update_params = [
+           'email' => $form['email']
+         ];
+         User::where('id', $item->user_id)->update($update_params);
+       }
+
+       return $this->api_response(200, '', '', $item);
+    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
+
+    return $this->save_redirect($res, $param, '設定を更新しました。');
+  }
+
+
+
 }

@@ -95,8 +95,9 @@ class HomeController extends Controller
             break;
           */
           case "parent" :
-            if(count($user->relations)==1){
-              return redirect('/students/'.$user->relations[0]->student_id.'/'.$view);
+            $students = $user->get_enable_students();
+            if(count($students)==1){
+              return redirect('/students/'.$students[0]->id.'/'.$view);
             }
             else if($request->has('student_id')){
               return redirect('/students/'.$request->get('student_id').'/'.$view);

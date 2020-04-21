@@ -123,6 +123,16 @@ class StudentParent extends Teacher
     $items = StudentRelation::where('student_parent_id', $this->id)->get();
     return $items;
   }
+  public function get_enable_students(){
+    $relations = $this->relation();
+    $students = [];
+    foreach($relations as $relation){
+      if($relation->student->status=='regular'){
+        $students[] = $relation->student;
+      }
+    }
+    return $students;
+  }
   public function details(){
     $item = $this;
     $students = [];
