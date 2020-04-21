@@ -1019,10 +1019,10 @@ EOT;
       return 'e'.$grade;
     }
     else if($grade>=7 && $grade<=9){
-      return 'j'.($grade-7)+1;
+      return 'j'.($grade-6);
     }
     else if($grade>=10 && $grade<=12){
-      return 'h'.($grade-10)+1;
+      return 'h'.($grade-9);
     }
     else if($grade>=13 && $grade<=16){
       return 'university';
