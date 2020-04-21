@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="form-group">
     <label for="email" class="w-100">
-      {{__('labels.student_login_id')}}
+      {{__('labels.login_id')}}
       @if(!(isset($_edit) && $_edit===true))
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       @endif

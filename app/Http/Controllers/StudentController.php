@@ -1141,14 +1141,14 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '更新しました。');
   }
 
-  public function create_login_info(Request $request, $id = null){
+  public function create_login_info_page(Request $request, $id = null){
     $param = $this->get_param($request, $id);
     $param['_edit'] = false;
     $param['student'] = $param['item'];
     return view($this->domain.'.create_login_info', $param);
   }
 
-  public function register_login_info(Request $request, $id = null){
+  public function set_login_info(Request $request, $id = null){
     $param = $this->get_param($request, $id);
     $req = $this->save_validate($request);
     if(!$this->is_success_response($req)){

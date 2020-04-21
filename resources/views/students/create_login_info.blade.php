@@ -10,6 +10,7 @@
     </div>
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/create_login_info">
       @csrf
+      @method('PUT')
       @if($item->user->status == 1)
         @include($domain.'.forms.student_id')
         @include($domain.'.forms.password')
@@ -18,7 +19,7 @@
       @else
         {{__('labels.no_data')}}
       @endif
-      <div class="col-12">
+      <div class="col-12 mt-5">
         <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
           @if($item->user->status == 1)
           ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}

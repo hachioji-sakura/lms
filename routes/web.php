@@ -188,8 +188,8 @@ Route::post('teachers/{id}/tag','TeacherController@update');
 Route::get('managers/{id}/tag','ManagerController@tag_page');
 Route::post('managers/{id}/tag','ManagerController@update');
 
-Route::get( 'students/{id}/create_login_info' , 'StudentController@create_login_info');
-Route::post( 'students/{id}/create_login_info' , 'StudentController@register_login_info');
+Route::get( 'students/{id}/create_login_info' , 'StudentController@create_login_info_page');
+Route::put( 'students/{id}/create_login_info' , 'StudentController@set_login_info');
 
 Route::get('students/{id}/subject','StudentController@get_subject');
 Route::get('teachers/{id}/subject','TeacherController@get_subject');
