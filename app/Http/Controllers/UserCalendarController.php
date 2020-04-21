@@ -995,7 +995,6 @@ class UserCalendarController extends MilestoneController
         $res = $this->_status_update($request, $param, $id, $status);
         $param['item'] = UserCalendar::where('id', $param['item']->id)->first();
       }
-
       return $this->save_redirect($res, $param, $this->status_update_message[$status]);
     }
     public function rest_change(Request $request, $id)
@@ -1136,12 +1135,36 @@ class UserCalendarController extends MilestoneController
         return $res;
       }
       $res = $this->transaction($request, function() use ($request,$id){
+        $param = $this->get_param($request);
         $item = $this->model()->where('id',$id)->first();
         $form = $this->create_form($request);
         //statusは更新対象にしない
         if(!empty($form['status'])) unset($form['status']);
+
+        //生徒をカレンダーメンバーに追加
+        if(!empty($form['students'])){
+          foreach($form['students'] as $student){
+            $item->memberAdd($student->user_id, $form['create_user_id'], 'confirm');
+          }
+          foreach($item->members as $member){
+            $is_delete = true;
+            if($member->user_id == $item->user_id) continue;
+            foreach($form['students'] as $student){
+              if($member->user_id == $student->user_id){
+                $is_delete = false;
+                break;
+              }
+            }
+            if($is_delete == true){
+              //既存メンバーが指定されていない場合、削除
+              $member->dispose($param['user']->user_id);
+            }
+          }
+        }
+
         $item->change($form);
         return $this->api_response(200, '', '', $item);
+
       }, '授業予定更新', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;

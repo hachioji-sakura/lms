@@ -43,6 +43,29 @@ class UserCalendarMember extends Model
     //振替先のカレンダー
     return $this->hasMany('App\Models\UserCalendar', 'exchanged_calendar_id', 'calendar_id');
   }
+  public function scopeFindRestType($vals, $is_not){
+    return $this->scopeFieldWhereIn($query, 'rest_type', $vals, $is_not);
+  }
+  public function scopeFindRestStatuses($vals, $is_not){
+    return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
+  }
+  public function scopeSearchExchangeLimitDate($query, $from_date, $to_date)
+  {
+    if(!empty($from_date)) $query = $query->where('exchange_limit_date', '>=', $from_date);
+    if(!empty($to_date)) $query = $query->where('exchange_limit_date', '<=', $to_date);
+    return $query;
+  }
+  public function scopeSearchWord($query, $word)
+  {
+    $query = $query->where(function($query)use($search_words, $where_raw){
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhere('remark', 'like', $_search_word);
+        $query = $query->orWhere('rest_result', 'like', $_search_word);
+      }
+    });
+    return $query;
+  }
   public function user(){
     return $this->belongsTo('App\User', 'user_id');
   }
@@ -702,10 +725,15 @@ class UserCalendarMember extends Model
     $already_data = Ask::already_data($form);
     return $already_data;
   }
-  public function is_last_status(){
-    if($this->status==="lecture_cancel" || $this->status==="cancel" || $this->status==="rest" || $this->status==="absence" || $this->status==="presence"){
-      return true;
-    }
-    return false;
+  public function details(){
+    $item = $this;
+    $item['status_name'] = $this->status_name();
+    $u = $this->user->details();
+    $item['user_name'] = $u->name();
+    $item['user_role_name'] = $u['role_name'];
+    $item['rest_result'] = $this->rest_result();
+    $item['str_exchange_limit_date'] = $this->dateweek_format($this->exchange_limit_date);
+
+    return $this;
   }
 }

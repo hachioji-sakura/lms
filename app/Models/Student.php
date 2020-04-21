@@ -261,7 +261,7 @@ EOT;
    */
   public function scopeHasTags($query, $tag_key, $tag_values)
   {
-    if(gettype($tag_values) == "string") $tag_values = explode(',', $tag_values.',');
+    if(gettype($tag_values) == "string" || gettype($tag_values) == "integer") $tag_values = explode(',', $tag_values.',');
     return $query->whereIn('user_id' , function ($query) use($tag_key, $tag_values){
           $query->select('user_id')
                   ->from('user_tags')
@@ -1019,10 +1019,10 @@ EOT;
       return 'e'.$grade;
     }
     else if($grade>=7 && $grade<=9){
-      return 'j'.($grade-7);
+      return 'j'.($grade-6);
     }
     else if($grade>=10 && $grade<=12){
-      return 'h'.($grade-10);
+      return 'h'.($grade-9);
     }
     else if($grade>=13 && $grade<=16){
       return 'university';

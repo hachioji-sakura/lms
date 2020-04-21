@@ -383,10 +383,14 @@ EOT;
     return $val;
   }
   public function course($is_value=false){
+    $ret = "";
     if($this->is_teaching()==true){
-      return $this->get_attribute('course_type', $is_value);
+      $ret = $this->get_attribute('course_type', $is_value);
     }
-    return "";
+    if(empty($ret)){
+      $ret = "";
+    }
+    return $ret;
   }
   public function course_minutes($is_value=false){
     //return $this->get_attribute('course_minutes', $is_value);
@@ -532,6 +536,7 @@ EOT;
     return false;
   }
   public function is_group(){
+    if($this->work==7) return true;
     $tag =  $this->get_tag('course_type');
     if(isset($tag) && $tag->tag_value=="group") return true;
     /*
@@ -854,11 +859,7 @@ EOT;
     $member = UserCalendarMember::where('calendar_id' , $this->id)
       ->where('user_id', $user_id)->first();
 
-    if(isset($member)){
-      $member->update(['remark' => $remark]);
-    }
-    else {
-
+    if(!isset($member)){
       if($this->work==9) $status = 'fix';
       $target_user = User::where('id', $user_id)->first();
       if(isset($target_user)){

@@ -12,6 +12,7 @@ return [
   "error_single_exchange_is_one_student" => "振替対象の生徒を一人にしてください",
   "error_group_exchange" => "グループレッスンの振替はできません",
   "error_already_reagisted" => "すでに登録されています",
+  "error_no_checked" => "対象が選択されていません",
   "warning_telephone_not_hyphen" => "ハイフン(-)不要",
   "confirm_rest_cancel" => "休み取り消し連絡を送信しますか？\n（先生が承諾しなかれば、休み取り消しは完了となりません）",
   "info_proxy_contact_for_student" => "生徒の代わりに連絡をします。",
