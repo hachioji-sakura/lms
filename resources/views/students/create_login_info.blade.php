@@ -19,7 +19,7 @@
       @else
         {{__('labels.no_data')}}
       @endif
-      <div class="col-12 mt-5">
+      <div class="col-12">
         <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
           @if($item->user->status == 1)
           ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}
