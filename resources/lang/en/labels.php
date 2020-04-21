@@ -39,6 +39,8 @@ return [
   'keep_login'      => 'Keep Login Status',
   'input_login_id' => 'login_id or your e-mail',
   'input_password' => 'login password',
+  'login_id' => 'login id',
+  'login_setting' => 'login setting',
   'password' => 'Password',
   'password_confirm' => 'Password (confirm)',
   'password_forget' => 'Forgot your password? ',
