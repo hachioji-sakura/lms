@@ -233,7 +233,7 @@ class TeacherController extends StudentController
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
          'send_to' => $send_to,
-       ], 'text', 'entry');
+       ], 'text', 'entry',$form['locale']);
        $login_user = $this->login_details($request);
        if(!isset($login_user)){
          return view($this->domain.'.entry',
@@ -326,7 +326,7 @@ class TeacherController extends StudentController
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($create_user->email, '登録完了', $form, 'text', 'register', $res['data']->user->get_locale());
+        $this->send_mail($create_user->email, '登録完了', $form, 'text', 'register', $res['data']->user->locale);
         Auth::loginUsingId($create_user->user_id);
 
         if($this->domain==="managers"){
@@ -395,7 +395,7 @@ class TeacherController extends StudentController
           'access_key' => $access_key,
           'send_to' => 'manager',
         ], 'text', 'entry',
-        $param['item']->user->get_locale()
+        $param['item']->user->locale
       );
       }
       return $this->save_redirect($res, $param, $message);

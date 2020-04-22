@@ -84,6 +84,7 @@ EOT;
         'image_id' => 3,
         'status' => 1,
         'access_key' => $form['access_key'],
+        'locale' => $form['locale'],
         'password' => '-',
     ]);
     $teacher = Teacher::create([

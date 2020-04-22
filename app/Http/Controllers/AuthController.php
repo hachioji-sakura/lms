@@ -67,19 +67,19 @@ class AuthController extends UserController
        return back()->with(['error_message' => __('messages.error_email')]);
      }
      $user = $_user->first();
-     $locale = $user->get_locale();
+     $locale = $user->locale;
      $access_key = $this->create_token();
      $user->update(['access_key' => $access_key]);
      $this->send_mail($email,
       __('labels.password_setting'),
       [
-      'locale' => $user->get_locale(),
+      'locale' => $user->locale,
       'user_name' => $user->details()["name"],
       'access_key' => $access_key
       ],
       'text',
       'password_reset',
-      $user->get_locale()
+      $user->locale
     );
      return back()->with(['success_message' =>  __('messages.info_password_setting_send')]);
    }
