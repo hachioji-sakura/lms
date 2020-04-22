@@ -10,6 +10,7 @@
     </div>
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/create_login_info">
       @csrf
+      @method('PUT')
       @if($item->user->status == 1)
         @include($domain.'.forms.student_id')
         @include($domain.'.forms.password')

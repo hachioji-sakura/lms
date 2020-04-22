@@ -106,6 +106,8 @@ class StudentController extends UserController
    */
   public function search(Request $request)
   {
+    $param = $this->get_param($request);
+    $form = $request->all();
     $items = $this->model()->with('user.image');
 
     $user = $this->login_details($request);
@@ -120,6 +122,14 @@ class StudentController extends UserController
 
     $items = $this->_search_scope($request, $items);
 
+    $sort = 'asc';
+    if(isset($form['is_desc']) && $form['is_desc']==1){
+      $sort = 'desc';
+    }
+    $request->merge([
+      '_sort' => 'id',
+      '_sort_order' => $sort,
+    ]);
    $items = $this->_search_pagenation($request, $items);
 
    $items = $this->_search_sort($request, $items);
@@ -144,6 +154,17 @@ class StudentController extends UserController
     //検索ワード
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
+    }
+
+    if(isset($request->search_keyword)){
+      $items = $items->searchWord($request->search_keyword);
+    }
+
+    if(isset($request->search_grade)){
+      $items->hasTags('grade', $request->search_grade);
+    }
+    if(isset($request->search_lesson)){
+      $items->hasTags('lesson', $request->search_lesson);
     }
 
     //ステータス
@@ -642,9 +663,6 @@ class StudentController extends UserController
        if(empty($form['search_from_date'])){
          $from_date = date('Y-m-d', strtotime("now"));
        }
-       if(empty($form['search_to_date'])){
-         $to_date = date('Y-m-d', strtotime("+1 month"));
-       }
        if(empty($form['search_status'])){
          if($this->is_student_or_parent($user->role)){
            $statuses = ['confirm'];
@@ -686,7 +704,6 @@ class StudentController extends UserController
        break;
    }
    $is_exchange = false;
-   $is_desc = false;
 
    if(!empty($form['is_exchange']) && $form['is_exchange']==1){
      $is_exchange = true;
@@ -781,6 +798,7 @@ class StudentController extends UserController
      case "unsubscribe":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['unsubscribe'];
+         $form['search_status'] = ['new', 'commit'];
          $default_status = 'commit';
        }
        break;
@@ -808,7 +826,6 @@ class StudentController extends UserController
 
    $statuses = [];
    $types = [];
-   $is_desc = false;
 
    $sort = 'asc';
    if(isset($form['is_desc']) && $form['is_desc']==1){
@@ -850,7 +867,6 @@ class StudentController extends UserController
 
    $statuses = [];
    $types = [];
-   $is_desc = false;
 
    $sort = 'asc';
    if(isset($form['is_desc']) && $form['is_desc']==1){
@@ -1113,7 +1129,7 @@ class StudentController extends UserController
     $result = '';
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    return view('dashboard.email',$param);
+    return view('auth.email_edit',$param);
   }
   public function email_edit(Request $request, $id)
   {
@@ -1142,14 +1158,14 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '更新しました。');
   }
 
-  public function create_login_info(Request $request, $id = null){
+  public function create_login_info_page(Request $request, $id = null){
     $param = $this->get_param($request, $id);
     $param['_edit'] = false;
     $param['student'] = $param['item'];
     return view($this->domain.'.create_login_info', $param);
   }
 
-  public function register_login_info(Request $request, $id = null){
+  public function set_login_info(Request $request, $id = null){
     $param = $this->get_param($request, $id);
     $req = $this->save_validate($request);
     if(!$this->is_success_response($req)){

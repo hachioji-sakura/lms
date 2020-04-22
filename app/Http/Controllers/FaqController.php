@@ -44,6 +44,7 @@ class FaqController extends MilestoneController
       $items = $items->findTypes(['teacher','manager'], true);
     }
     $items = $this->_search_sort($request, $items);
+    $items = $items->orderBy('sort_no');
     $count = $items->count();
     $items = $items->get();
     foreach($items as $item){
@@ -77,21 +78,7 @@ class FaqController extends MilestoneController
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = [
-      'domain' => $this->domain,
-      'domain_name' => __('labels.'.$this->domain),
-      'user' => $user,
-      'origin' => $request->origin,
-      'action' => $request->action,
-      'item_id' => $request->item_id,
-      'teacher_id' => $request->teacher_id,
-      'manager_id' => $request->manager_id,
-      'student_id' => $request->student_id,
-      'search_word'=>$request->search_word,
-      'search_type'=>$request->search_type,
-      '_origin' => $request->get('_origin'),
-      'attributes' => $this->attributes(),
-    ];
+    $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $create_user = $item->create_user->details();
@@ -257,5 +244,78 @@ class FaqController extends MilestoneController
       ->with($param);
   }
 
+  /**
+   * 新規登録ロジック
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function _store(Request $request)
+  {
+    $form = $this->create_form($request);
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $item = $this->model();
+    foreach($form as $key=>$val){
+      $item = $item->where($key, $val);
+    }
+    $item = $item->first();
+    if(isset($item)){
+      return $this->error_response('すでに登録済みです');
+    }
 
+    $res = $this->transaction($request, function() use ($request, $form){
+      $item = $this->model()->create($form);
+      if($request->hasFile('upload_file')){
+        if ($request->file('upload_file')->isValid([])) {
+          $item->file_upload($request->file('upload_file'));
+        }
+      }
+      return $this->api_response(200, '', '', $item);
+    }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+   }
+   /**
+    * 新規登録
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function store(Request $request)
+   {
+     $param = $this->get_param($request);
+
+     $res = $this->_store($request);
+     //生徒詳細からもCALLされる
+     $url="";
+     if($this->is_success_response($res)){
+       $url =  '/faqs/'.$res['data']->id.'/edit';
+     }
+     return $this->save_redirect($res, $param, '登録しました。', $url);
+   }
+
+   public function _update(Request $request, $id)
+   {
+     $res = $this->save_validate($request);
+     if(!$this->is_success_response($res)){
+       return $res;
+     }
+     $res =  $this->transaction($request, function() use ($request, $id){
+       $form = $this->update_form($request);
+       $item = $this->model()->where('id', $id)->first();
+       $is_file_delete = false;
+       if($request->get('upload_file_delete')==1){
+         $is_file_delete = true;
+       }
+       $file = null;
+       if($request->hasFile('upload_file')){
+         if ($request->file('upload_file')->isValid([])) {
+           $file = $request->file('upload_file');
+         }
+       }
+       $item->change($form, $file, $is_file_delete);
+       return $this->api_response(200, '', '', $item);
+     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
+   }
 }

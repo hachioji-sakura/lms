@@ -76,6 +76,7 @@ class MailLog extends Model
                           ->where('template', $template)
                           ->where('locale', $locale)
                           ->where('subject', $title)
+                          ->where('body', $body)
                           ->where('created_at', '>' , $t)
                           ->first();
     if(isset($already_mail_log)){
