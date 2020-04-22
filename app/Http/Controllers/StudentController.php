@@ -11,6 +11,7 @@ use App\Models\GeneralAttribute;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\Models\Comment;
+use App\Models\Message;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -1179,6 +1180,83 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
 
+  public function message_list(Request $request, $id = null){
+    $params = $this->get_param($request, $id);
+    $messages = $this->message_search($request, $id);
+
+    $fields = [
+      'title' => [
+        'label' => __('labels.title'),
+      ],
+      'type' => [
+        'label' => __('labels.message_type'),
+      ],
+      'target_user' =>[
+        'label' => __('labels.create_user'),
+      ],
+      'created_at' => [
+        'label' => __('labels.send_time'),
+      ],
+    ];
+    $message_params = [
+      'items' => $messages,
+      'fields' => $fields,
+    ];
+
+    $page_data = $this->get_pagedata($messages->count() , $params['_line'], $params["_page"]);
+    foreach($page_data as $key => $val){
+      $params[$key] = $val;
+    }
+  //  dd($params);
+    return view('messages.list',$message_params)->with($params);
+}
+
+  public function message_search(Request $request,$id){
+    $login_user = $this->login_details($request);
+    $query = Message::query();
+    $query = $this->make_search_query($request, $query, $id);
+    $query = $query->orderBy('created_at','desc');
+//   dd($query->toSql(),$query->getBindings());
+    $messages = $query->paginate(20);
+    return $messages;
+  }
+
+  public function make_search_query(Request $request, $query, $id){
+    //managerがアクセスしたときに見られるようにuserとりなおし
+    $user = $this->model()->where('id',$id)->first();
+    if($request->has('search_status') && $request->get('search_status') == 'inbox'){
+      $query = $query->where('target_user_id',$user->user_id);
+      if($this->domain == "parents" ){
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $query = $query->orWhere('target_user_id',$student->user_id);
+        }
+      }
+    }elseif($request->has('search_status') && $request->get('search_status') == 'send'){
+      $query = $query->where('create_user_id',$user->user_id);
+      if($this->domain == "parents" ){
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $query = $query->orWhere('create_user_id',$student->user_id);
+        }
+      }
+    }else{
+      $query = $query->FindMyMessage($user->user_id);
+      if($this->domain == "parents" ){
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $student_id = $student->user_id;
+          $query = $query->orWhere(function ($query) use($student_id){
+            $query = $query->FindMyMessage($student_id);
+          });
+        }
+      }
+    }
+    if($request->has('search_word')){
+      $query = $query->searchWord($request->get('search_word'));
+    }
+    return $query;
+  }
 
 
 }

@@ -329,4 +329,11 @@ return [
   'not_require_student_confirm' => '生徒の確認を必要としない',
   'schedule_start_hope_date' => '授業開始希望日',
   'verification_code' => '認証コード',
+  'message_list' => 'メッセージ一覧',
+  'message_type' => '種別',
+  'file' => 'ファイル',
+  'send_time' => '送信日時',
+  'reply' => '返信',
+  'new' => '新規',
+  'message' => 'メッセージ'
 ];

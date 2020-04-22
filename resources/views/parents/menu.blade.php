@@ -23,6 +23,11 @@
             <i class="fa fa-user-cog nav-icon"></i>{{__('labels.users')}}{{__('labels.setting')}}
           </a>
         </li>
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/messages?search_status=all" class="nav-link">
+            <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
+          </a>
+        </li>
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >

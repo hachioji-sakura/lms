@@ -321,4 +321,11 @@ return [
   "error_user_calendar_settings_no_member" => "Insufficient member settings!",
   'schedule_start_hope_date' => 'Schedule Start Date',
   'verification_code' => 'Verification Code',
+  'message_list' => 'Message List',
+  'message_type' => 'Message Type',
+  'file' => 'file',
+  'send_time' => 'send time',
+  'reply' => 'reply',
+  'new' => 'NEW',
+  'message' => 'message',
 ];

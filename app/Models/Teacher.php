@@ -245,4 +245,24 @@ EOT;
     }
     return $this->error_response(__('messages.error_already_reagisted'), '');
   }
+
+  public function scopeFindChargeTeachers($query, $id){
+    //idは生徒id
+    return $query->whereIn('user_id', function($query) use($id)
+          {
+            $query->select('user_id')->from('lms.user_calendar_settings')
+                ->whereIn('id', function($query) use($id)
+                {
+                  $query->select('user_calendar_setting_id')
+                      ->from('lms.user_calendar_member_settings')
+                      ->where('user_id', function($query) use ($id)
+                      {
+                        $query->select('user_id')
+                            ->from('common.students')
+                            ->where('id', $id);
+                      });
+                });
+          });
+  }
+
 }
