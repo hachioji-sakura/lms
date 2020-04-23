@@ -49,7 +49,7 @@
           <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
         @if($calendar->status=='new')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/remind?trial_id={{$item->id}}" page_title="{{__('labels.delete')}}" class="mr-1 underline text-sm">
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/remind?trial_id={{$item->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 underline text-sm">
           <i class="fa fa-envelope"></i>{{__('labels.schedule_remind')}}
         </a>
         @endif
