@@ -817,10 +817,9 @@ class Trial extends Model
     else $trial_enable_times = null;
     //講師の対象日のカレンダーを取得
     $_time_list = $time_list;
-    /*
-    $minute_count = intval($this->course_minutes / 10);
-    */
-    $minute_count = 6;
+    $course_minutes = intval($this->course_minutes);
+    if($course_minutes > 60) $course_minutes = 60;
+    $minute_count = intval($course_minutes / 10);
     foreach($_time_list as $i => $_time){
       $_time_list[$i]["conflict_calendar"] = null;
       $_time_list[$i]["is_time_conflict"] = false;
