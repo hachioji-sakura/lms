@@ -14,6 +14,7 @@
       @endif
       " alt="{{$index}}">
          {{$name}}
+         <input type="checkbox" name="{{$prefix}}_{{$index}}_time[]" value="disabled" class="week_time" style="display:none;"></input>
       </th>
       @endforeach
     </tr>
@@ -73,12 +74,23 @@
     function week_validate(){
       var _is_scceuss = false;
       if( $("input.week_time[type='checkbox']", $(".carousel-item.active")).length > 0){
-        $("input.week_time[type='checkbox'][value!='disabled']:checked", $(".carousel-item.active")).each(function(index, value){
+        var _week_input = [];
+        $("input.week_time[type='checkbox']", $(".carousel-item.active")).each(function(index, value){
           var val = $(this).val();
-          if(val!='disabled'){
+          var name = $(this).attr('name');
+          var checked = $(this).prop('checked');
+          if(!_week_input[name])  _week_input[name] = false;
+          if(val!='disabled' && checked==true){
             _is_scceuss = true;
+            _week_input[name] = true;
           }
         });
+        console.log(_week_input[name]);
+        for(var key in _week_input){
+          if(_week_input[key] == false){
+            $("input.week_time[name='"+key+"'][value='disabled']").prop('checked', true);
+          }
+        }
         if(!_is_scceuss){
           front.showValidateError('#week_table', '希望の時間帯を１つ以上選択してください');
         }
