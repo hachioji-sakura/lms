@@ -1219,11 +1219,6 @@ class StudentController extends UserController
       'fields' => $fields,
     ];
 
-    $page_data = $this->get_pagedata($messages->count() , $params['_line'], $params["_page"]);
-    foreach($page_data as $key => $val){
-      $params[$key] = $val;
-    }
-  //  dd($params);
     return view('messages.list',$message_params)->with($params);
 }
 

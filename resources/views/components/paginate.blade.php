@@ -1,4 +1,4 @@
-@if ($paginator->lastPage() > 1)
+@if ($paginator->lastPage() > 0)
 <ul class="pagination pagination-sm m-0 float-right text-sm">
     @if( $paginator->currentPage() != 1)
     <li class="page-item">

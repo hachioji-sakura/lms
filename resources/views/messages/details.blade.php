@@ -65,6 +65,15 @@
     </div>
     <div class="card-body">
       {!!nl2br($root_message->body)!!}
+      @if(!empty($root_message->s3_url))
+        <br>
+        <span class="mr-1">
+          <a href="{{$root_message->s3_url}}" target="_blank">
+            <i class="fa fa-link mr-1"></i>
+            {{$root_message->s3_alias}}
+          </a>
+        </span>
+      @endif
     </div>
     <div class="card-footer">
       @if(count($items) > 1)
@@ -72,14 +81,23 @@
         @foreach($items as $item)
           @if($loop->first)
           @else
-            <div class="direct-chat-msg  {{$item->create_user_id == $root_message->create_user_id ? '' : 'right'}} {{$item->id == $id ? 'bg-primary' : ''}}">
+            <div class="direct-chat-msg">
               <div class="direct-chat-info clearfix">
                 <span class="direct-chat-name {{$item->create_user_id == $root_message->create_user_id ? 'float-left' : 'float-right'}}">{{$item->create_user->details()->name()}}</span>
                 <span class=" {{$item->create_user_id == $root_message->create_user_id ? 'float-right' : 'float-left'}}">{{$item->created_at}}</span>
               </div>
               <img class="direct-chat-img mr-2" src="{{$item->create_user->icon()}}" alt=""></img>
-              <div class="direct-chat-text">
+              <div class="direct-chat-text {{$item->create_user_id == $root_message->create_user_id ? '' : 'right'}} {{$item->id == $id ? 'bg-secondary' : ''}}">
                 {!!nl2br($item->body)!!}
+                @if(!empty($item->s3_url))
+                  <br>
+                  <span class="mr-1">
+                    <a href="{{$item->s3_url}}" target="_blank">
+                      <i class="fa fa-link mr-1"></i>
+                      {{$item->s3_alias}}
+                    </a>
+                  </span>
+                @endif
               </div>
             </div>
           @endif

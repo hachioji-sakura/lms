@@ -5,7 +5,7 @@
   @else
   /messages/{{$item->id}}/reply
   @endif
-  ">
+  " enctype="multipart/form-data">
     @csrf
     <div class="row">
       <div class ="col-12">
@@ -20,7 +20,7 @@
         @else
           @if($item->create_user_id == $user->user_id)
           {{$item->target_user->details()->name()}}
-          <input type="hidden" name="target_user_id" value="{{$item->target_user_id}}">
+          <input type="hidden" name="target_user_id[]" value="{{$item->target_user_id}}">
           @else
           {{$item->create_user->details()->name()}}
           <input type="hidden" name="target_user_id" value="{{$item->create_user_id}}">

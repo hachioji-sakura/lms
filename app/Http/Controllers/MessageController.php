@@ -21,35 +21,34 @@ class MessageController extends CommentController
     }
 
     public function list(Request $request, $id = null){
+      $params = $this->get_param($request, $id);
       $user = $this->login_details($request);
       $role = $user->role;
       if( $role == 'manager'){
-        $messages = $this->model()->get();
+        $messages = $this->model()->paginate(20);
       }else{
         abort(403);
       }
       $fields = [
-        'id' => [
-          'label' => '詳細',
-        ],
-        'create_user' =>[
-          'label' => 'from'
-        ],
-        'target_user' => [
-          'label' => 'to'
-        ],
         'title' => [
-          'label' => 'タイトル',
+          'label' => __('labels.title'),
+        ],
+        'type' => [
+          'label' => __('labels.message_type'),
+        ],
+        'target_user' =>[
+          'label' => __('labels.create_user'),
+        ],
+        'created_at' => [
+          'label' => __('labels.send_time'),
         ],
       ];
-      $params = [
+      $message_params = [
         'items' => $messages,
         'fields' => $fields,
-        'domain' => $this->domain,
-        'domain_name' => 'メッセージ',
-        'user' => $user
       ];
-      return view( $this->domain.'.list',$params);
+
+      return view( $this->domain.'.list',$message_params)->with($params);
     }
 
 
@@ -125,6 +124,7 @@ class MessageController extends CommentController
       foreach($target_users as $target_user){
         $form = $this->create_form($request,$target_user);
         $res = $this->save_validate($request);
+
         if(!$this->is_success_response($res)){
           return $res;
         }

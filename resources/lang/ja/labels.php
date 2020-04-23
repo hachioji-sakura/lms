@@ -336,7 +336,7 @@ return [
   'send_time' => '送信日時',
   'reply' => '返信',
   'new' => '新規',
-  'message' => 'メッセージ'
+  'message' => 'メッセージ',
   'sheat' => '座席',
   'result' => '結果',
 ];
