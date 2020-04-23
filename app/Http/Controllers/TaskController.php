@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class TaskController extends Controller
+class TaskController extends MilestoneController
 {
+    public function model(){
+      return Task::query();
+    }
     /**
      * Display a listing of the resource.
      *
