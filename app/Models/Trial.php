@@ -447,7 +447,6 @@ class Trial extends Model
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,
       'target_user_id' => $teacher->user_id,
-      'send_mail' => 'teacher',
     ];
     $charge_student_form = [
       'teacher_id' => $teacher->id,
@@ -480,7 +479,7 @@ class Trial extends Model
         $charge_student_form['student_id'] = $trial_student->student->id;
         ChargeStudent::add($charge_student_form);
       }
-      $calendar->register_mail([], $form['create_user_id']);
+      if(isset($form['send_mail']) && $form['send_mail']=='teacher')  $calendar->register_mail([], $form['create_user_id']);
     }
     return $this->api_response(200,"","",$calendar);
   }
@@ -818,7 +817,10 @@ class Trial extends Model
     else $trial_enable_times = null;
     //講師の対象日のカレンダーを取得
     $_time_list = $time_list;
+    /*
     $minute_count = intval($this->course_minutes / 10);
+    */
+    $minute_count = 6;
     foreach($_time_list as $i => $_time){
       $_time_list[$i]["conflict_calendar"] = null;
       $_time_list[$i]["is_time_conflict"] = false;
@@ -866,7 +868,6 @@ class Trial extends Model
             }
           }
           if($_time_list[$i]['is_time_conflict']===false && $_time_list[$i]['is_place_conflict']===false){
-            //echo "競合チェック：pass:[".$_time_list[$i]["duration"]."][".$tag->tag_value."][".$now_calendar->place."]";
             $_free_place = "";
             $is_place_conflict = true;
             foreach($this->get_tags('lesson_place') as $tag){
