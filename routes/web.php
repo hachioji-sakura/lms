@@ -78,7 +78,6 @@ Route::get('calendar_settings/check','UserCalendarSettingController@setting_chec
 Route::get('calendar_settings/{id}/fee','UserCalendarSettingController@get_fee');
 
 Route::resource('calendar_members','UserCalendarMemberController');
-Route::put('calendar_members/{id}/rest_type','UserCalendarMemberController@rest_type_update');
 
 Route::get('calendars/{id}/status_update/{status}','UserCalendarController@status_update_page');
 Route::put('calendars/{id}/status_update/{status}','UserCalendarController@status_update');
