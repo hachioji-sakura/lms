@@ -7,9 +7,9 @@
   </a>
 </li>
 <li class="nav-item">
-  <a alt="student_name" href="/students/{{$user->id}}/schedule" class="nav-link">
+  <a alt="student_name" href="/students/{{$user->id}}/schedule?list=month" class="nav-link">
     <i class="fa fa-clock"></i>
-    <span class="d-none d-sm-inline-block">{{__('labels.schedule_list')}}</span>
+    <span class="d-none d-sm-inline-block">{{__('labels.month_schedule_list')}}</span>
   </a>
 </li>
 @elseif($user->role==="parent")
