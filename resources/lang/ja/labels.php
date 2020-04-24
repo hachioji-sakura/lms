@@ -332,4 +332,5 @@ return [
   'verification_code' => '認証コード',
   'sheat' => '座席',
   'result' => '結果',
+  'reset' => 'リセット',
 ];
