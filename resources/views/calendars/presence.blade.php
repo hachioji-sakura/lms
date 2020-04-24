@@ -182,7 +182,8 @@
 		        <input type="text" name="dummy" style="display:none;" / >
             <input type="hidden" value="1" name="is_all_student" />
             @method('PUT')
-            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence" {{__('labels.close_button')}}
+            <button type="button" class="btn btn-success btn-submit btn-block"  accesskey="{{$domain}}_single_presence"
+            >
                 <i class="fa fa-check-circle mr-1"></i>
                 @if($item->work==9)
                 {{__('labels.calendar_button_working')}}
