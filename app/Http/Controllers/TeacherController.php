@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\UserCalendar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App;
 /*
 */
 use DB;
@@ -92,7 +93,6 @@ class TeacherController extends StudentController
   */
   public function show(Request $request, $id)
   {
-
     $param = $this->get_param($request, $id);
     if($request->has('api')){
       $model = $this->model()->where('id',$id)->first();
@@ -260,6 +260,10 @@ class TeacherController extends StudentController
     */
    public function register(Request $request)
    {
+     $user = User::where('access_key',$request->get('key'))->first();
+     App::setLocale($user->locale);
+     session()->regenerate();
+     session()->put('locale', $user->locale);
      $result = '';
      $param = [
        'domain' => $this->domain,

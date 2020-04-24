@@ -16,7 +16,10 @@ Auth::routes();
 
 if(isset($_GET["locale"]) && !empty($_GET["locale"])){
   App::setLocale($_GET["locale"]);
+//  session()->put('locale',$_GET['locale']);
+  \Log::warning('hoge');
 }
+
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
@@ -312,7 +315,3 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
-
-Route::get('parents/{id}/messages', 'MessageController@show_list');
-Route::get('teachers/{id}/messages', 'MessageController@show_list');
-Route::get('managers/{id}/messages', 'MessageController@show_list');

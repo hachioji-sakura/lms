@@ -19,8 +19,7 @@
     <div class="row">
       @component('students.forms.name', ['attributes' => $attributes, 'prefix'=>'']) @endcomponent
       @component('students.forms.email', [ 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
-      @component('teachers.forms.select_locale')
-      @endcomponent
+      @component('teachers.forms.select_locale')@endcomponent
     </div>
     <div class="col-12">
       <h6 class="text-sm p-2 pl-2 mb-4" >

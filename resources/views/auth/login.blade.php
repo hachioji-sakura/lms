@@ -6,7 +6,7 @@
 <form id="login_form" method="POST" action="{{ route('login') }}">
   @csrf
   <input type="text" name="dummy" style="display:none;" / >
-  @component('auth.login.login_form', [])
+  @component('auth.login.login_form', ['locale' => $locale])
   @endcomponent
   <div class="form-group row mb-3">
       <div class="col-12">
