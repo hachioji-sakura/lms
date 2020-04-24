@@ -16,6 +16,7 @@
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
             $calendar.fullCalendar('unselect');
+            @if($user->role!='student')
             switch(event.own_member.status){
               case "confirm":
                 base.showPage('dialog', "subDialog", "予定確認", "/calendars/"+event.id+"/status_update/fix?student_id={{$item->id}}");
@@ -41,6 +42,9 @@
                 console.log("/calendars/"+event.id+"?student_id={{$item->id}}");
                 break;
             }
+            @else
+            base.showPage('dialog', "subDialog", "カレンダー詳細", "/calendars/"+event.id+"?student_id={{$item->id}}");
+            @endif
           },
           @endslot
         @endcomponent

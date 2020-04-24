@@ -39,6 +39,7 @@
           </p>
         </a>
       </li>
+      @if($user->role!='student')
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=confirm" class="nav-link  @if($view=="schedule" && $list=="confirm") active @endif">
           <i class="fa fa-hourglass nav-icon"></i>
@@ -58,6 +59,7 @@
           </p>
         </a>
       </li>
+      @endif
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=exchange" class="nav-link @if($view=="schedule" && $list=="exchange") active @endif">
           <i class="fa fa-exchange-alt nav-icon"></i>
@@ -69,12 +71,14 @@
           </p>
         </a>
       </li>
+      @if($user->role!='student')
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
           <i class="fa fa-history nav-icon "></i>
           {{__('labels.schedule_history')}}
         </a>
       </li>
+      @endif
     </ul>
   </li>
   <li class="nav-item has-treeview menu-open">
@@ -86,11 +90,13 @@
     </p>
     </a>
     <ul class="nav nav-treeview pl-2">
+      @if($user->role!='student')
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
           <i class="fa fa-user-edit nav-icon"></i>{{__('labels.students')}}{{__('labels.setting')}}
         </a>
       </li>
+      @endif
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.milestones')}}{{__('labels.add')}}">
           <i class="fa fa-flag nav-icon"></i>{{__('labels.milestones')}}{{__('labels.add')}}

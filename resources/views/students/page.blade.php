@@ -62,6 +62,7 @@
               @endif
               @endforeach
             </h6>
+            {{--
             <div class="card-footer p-0">
               <ul class="nav flex-column">
                 @if(!empty($item->recess_duration()))
@@ -118,17 +119,19 @@
                     <i class="fa fa-user-edit mr-2"></i>{{__('labels.students')}}{{__('labels.setting')}}
                   </a>
                 </li>
-                {{--
-                <li class="nav-item">
-                  <a href="/examinations" class="nav-link active">
-                    <i class="fa fa-file-signature mr-2"></i>
-                    確認テスト
-                    <span class="float-right badge bg-danger">New</span>
-                  </a>
-                </li>
-                --}}
               </ul>
             </div>
+            --}}
+            {{--
+            <li class="nav-item">
+              <a href="/examinations" class="nav-link active">
+                <i class="fa fa-file-signature mr-2"></i>
+                確認テスト
+                <span class="float-right badge bg-danger">New</span>
+              </a>
+            </li>
+            --}}
+
           @endslot
       @endcomponent
 		</div>
