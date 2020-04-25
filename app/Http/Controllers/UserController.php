@@ -44,9 +44,9 @@ class UserController extends Controller
 
     return $attributes;
   }
-  public function get_common_param(Request $request){
+  public function get_common_param(Request $request, $is_not_login_error=true){
     $user = $this->login_details($request);
-    if(empty($user)){
+    if(empty($user) && $is_not_login_error==true){
       //ログインしていない
       abort(419);
     }
