@@ -116,6 +116,12 @@ class StudentParent extends Teacher
         $update_form[$key] = $form[$key];
       }
     }
+    if(!empty($form['parent_name_last']) && empty($form['name_last'])){
+      $update_form['name_last'] = $form['parent_name_last'];
+    }
+    if(!empty($form['parent_name_first']) && empty($form['name_first'])){
+      $update_form['name_first'] = $form['parent_name_first'];
+    }
     $this->update($update_form);
     return $this;
   }
