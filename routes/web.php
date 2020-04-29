@@ -293,6 +293,7 @@ Route::resource('asks','AskController');
 Route::resource('maillogs','MailLogController');
 
 
+
 Route::get('api_tuition','TuitionController@get_api_tuition');
 Route::resource('tuitions','TuitionController');
 Route::resource('faqs','FaqController');
@@ -311,3 +312,12 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+
+Route::get('tasks/','TaskController@index');
+Route::get('tasks/create', 'TaskController@create');
+Route::get('students/{id}/create_tasks', 'StudentController@create_tasks');
+Route::get('students/{id}/tasks', 'StudentController@task_list');
+Route::post('tasks/create', 'TaskController@store');
+Route::get('tasks/{id}/edit', 'TaskController@edit');
+Route::put('tasks/{id}/edit', 'TaskController@update');
+Route::delete('tasks/{id}/delete','TaskController@destroy');

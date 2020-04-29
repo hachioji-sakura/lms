@@ -11,6 +11,7 @@ use App\Models\GeneralAttribute;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\Models\Comment;
+use App\Models\Task;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -1196,6 +1197,21 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
 
+  public function create_tasks(Request $request, $id = null){
+    $param = $this->get_param($request);
+    $user = $this->login_details($request);
+    $param['target_user'] = $this->model()->where('id',$id)->first();
+    $param['_edit'] = false;
+    return view('tasks.create')->with($param);
+  }
 
+  public function task_list(Request $request, $id = null){
+    $param = $this->get_param($request);
+    $user = $this->login_details($request);
+    $param['target_user'] = $this->model()->where('id',$id)->first();
+    $target_user = $this->model()->where('id',$id)->first();
+    $param['items'] = Task::where('target_user_id', $target_user->user_id)->orderBy('end_schedule','asc')->paginate(20);
+    return view('tasks.list')->with($param);
+  }
 
 }

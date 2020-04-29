@@ -332,4 +332,8 @@ return [
   'verification_code' => '認証コード',
   'sheat' => '座席',
   'result' => '結果',
+  'add_tasks' => '課題追加',
+  'tasks_remarks' => 'タスク詳細',
+  'start_schedule' => '開始予定日',
+  'end_schedule' => '終了予定日',
 ];

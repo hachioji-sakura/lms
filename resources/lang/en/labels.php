@@ -325,4 +325,6 @@ return [
   'verification_code' => 'Verification Code',
   'sheat' => 'Sheat',
   'result' => 'Result',
+  'add_tasks' => 'Add Task',
+  'tasks_remarks' => 'Task Remarks',
 ];

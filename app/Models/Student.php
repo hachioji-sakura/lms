@@ -1050,4 +1050,8 @@ EOT;
     }
     return null;
   }
+
+  public function target_milestone(){
+    return $this->hasMany('App\Models\Milestone', 'target_user_id', 'user_id');
+  }
 }
