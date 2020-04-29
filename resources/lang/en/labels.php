@@ -325,5 +325,5 @@ return [
   'verification_code' => 'Verification Code',
   'sheat' => 'Sheat',
   'result' => 'Result',
-  'reset' => 'reset',
+  'reset' => 'Reset',
 ];

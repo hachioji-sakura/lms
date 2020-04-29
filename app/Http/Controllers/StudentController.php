@@ -1182,18 +1182,16 @@ class StudentController extends UserController
            'password' => Hash::make($form['password']),
            'status' => 0
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }elseif(isset($form['email'])){
          $update_params = [
            'email' => $form['email']
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }elseif(!empty($form['reset'])){
          $update_params = [
            'status' => 1
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }
+       User::where('id', $item->user_id)->update($update_params);
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
