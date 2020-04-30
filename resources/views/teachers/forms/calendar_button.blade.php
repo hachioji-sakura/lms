@@ -90,9 +90,11 @@
   </a>
   @endif
 @endif
+@if($calendar->is_group()==true)
 <a href="javascript:void(0);" page_title="メンバー設定" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/members/setting" role="button" class="btn btn-default btn-sm ml-1">
   <i class="fa fa-user-cog"></i>
 </a>
+@endif
 @if($calendar->is_group()==true)
 <a href="javascript:void(0);" page_title="メンバー追加" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/members/create" role="button" class="btn btn-default btn-sm ml-1">
   <i class="fa fa-user-plus"></i>
