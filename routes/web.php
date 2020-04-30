@@ -14,12 +14,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 Auth::routes();
 
-if(isset($_GET["locale"]) && !empty($_GET["locale"])){
-  App::setLocale($_GET["locale"]);
-//  session()->put('locale',$_GET['locale']);
-  \Log::warning('hoge');
-}
-
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
