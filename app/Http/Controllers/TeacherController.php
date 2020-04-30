@@ -260,10 +260,6 @@ class TeacherController extends StudentController
     */
    public function register(Request $request)
    {
-     $user = User::where('access_key',$request->get('key'))->first();
-     App::setLocale($user->locale);
-     session()->regenerate();
-     session()->put('locale', $user->locale);
      $result = '';
      $param = [
        'domain' => $this->domain,
@@ -273,12 +269,16 @@ class TeacherController extends StudentController
      ];
      if(isset($param['user'])){
        $param['result'] = 'logout';
+       App::setLocale($param['user']->locale);
        return view($this->domain.'.register',$param);
      }
      else {
        $access_key = $request->get('key');
        if(!$this->is_enable_token($access_key)){
          $param['result'] = 'token_error';
+         if(isset($param['user'])){
+           App::setLocale($param['user']->locale);
+         }
          return view($this->domain.'.register',$param);
        }
        $user = User::where('access_key',$access_key);
@@ -286,6 +286,9 @@ class TeacherController extends StudentController
          abort(404);
        }
        $param['item'] = $user->first()->details($this->domain);
+       App::setLocale($user->first()->locale);
+       session()->regenerate();
+       session()->put('locale', $user->first()->locale);
        $domain = $this->domain;
        if($param['item']->role == 'teacher' && $this->domain!='teachers'){
          abort(403, 'このページの有効期限がきれています');

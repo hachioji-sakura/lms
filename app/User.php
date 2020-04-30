@@ -207,6 +207,7 @@ class User extends Authenticatable
             break;
         }
         $item['email'] = $this->email;
+        $item['locale'] = $this->locale;
         if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
         return $item;
       }
