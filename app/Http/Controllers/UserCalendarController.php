@@ -1423,6 +1423,7 @@ class UserCalendarController extends MilestoneController
       if($holiday!=null && $holiday->is_private_holiday() == true){
         return $this->error_response('休校日のため予定は登録できません');
       }
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {
           abort(400, "日時パラメータ不正");
@@ -1452,7 +1453,6 @@ class UserCalendarController extends MilestoneController
 
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         return $this->api_response(200, '', '', $calendar);
-        $res = $this->transaction($request, function() use ($request){
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
@@ -1494,4 +1494,63 @@ class UserCalendarController extends MilestoneController
       $ret = $this->api_response();
       return $ret;
     }
+
+    /**
+     *
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function member_create_page(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+
+      //TODO work=7
+      if($param['item']["work"]!=7) abort(403);
+      return view($this->domain.'.member_create', [])->with($param);
+    }
+    public function member_create(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+
+      //TODO work=7
+      if($param['item']["work"]!=7) abort(403);
+      $res = $this->transaction($request, function() use ($request, $param, $id){
+        $form = $this->create_form($request);
+        $calendar = UserCalendar::where('id', $id)->first();
+        //生徒をカレンダーメンバーに追加
+        if(!empty($form['students'])){
+          foreach($form['students'] as $student){
+            $calendar->memberAdd($student->user_id, $form['create_user_id'], $form['to_status']);
+          }
+        }
+
+        $is_sendmail = false;
+        if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
+          $is_sendmail = true;
+          //新規登録時に変更メールを送らない
+          unset($form['send_mail']);
+        }
+        if($is_sendmail == true){
+          $calendar->register_mail([], $form['create_user_id']);
+        }
+
+        return $this->api_response(200, '', '', $calendar);
+      }, 'メンバー追加しました', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    /**
+     *
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function member_setting_page(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+
+      //TODO work=7
+      if($param['item']["work"]!=7) abort(403);
+      return view($this->domain.'.member_setting', [])->with($param);
+    }
+
 }
