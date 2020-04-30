@@ -32,7 +32,7 @@ class AddLocaleUsers extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('common.users', function (Blueprint $table) {
             //
             $table->dropColumn('locale');
         });
