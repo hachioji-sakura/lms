@@ -66,7 +66,9 @@
                       <form method="POST" id="delete_task" action="/tasks/{{$item->id}}/delete">
                         @csrf
                         @method('DELETE')
-                          <a href="javascript:void(0);" role="button" class="btn-sm btn-submit btn-secondary btn-block btn-confirm" confirm="削除しますか？" ><i class="fa fa-trash-alt"></i></a>
+                          <button type="button" form="delete_task" class="btn-sm btn-submit btn-primary">
+                            <i class="fa fa-times"></i>
+                          </button>
                       </form>
                     </div>
                   </div>
@@ -96,10 +98,10 @@
 <script>
 $(function(){
   base.pageSettinged("delete_task");
-  $("a.btn-submit").on('click', function(e){
+  $('button.btn-submit[form="delete_task"]').on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('delete_task')){
-      $("form").submit();
+      $("form#delete_task").submit();
     }
   });
 })
