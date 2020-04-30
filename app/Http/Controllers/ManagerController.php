@@ -31,12 +31,12 @@ class ManagerController extends TeacherController
           abort(403);
         }
         $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
-        $asks = $this->get_ask([], $ret['item']->user_id);
-        $ret['ask_count'] = $asks["count"];
+        $count = $this->get_ask([], $ret['item']->user_id, true);
+        $ret['ask_count'] = $count;
         $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe', 'phone'];
         foreach($lists as $list){
-          $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
-          $ret[$list.'_count'] = $asks["count"];
+          $count = $this->get_ask(["list" => $list], $ret['item']->user_id, true);
+          $ret[$list.'_count'] = $count;
         }
       }
       else {
