@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\UserCalendarMember;
+use App\Models\PlaceFloorSheat;
 
 class UserCalendarMemberController extends UserCalendarController
 {
@@ -50,7 +51,7 @@ class UserCalendarMemberController extends UserCalendarController
       else {
         abort(403, 'このページにはアクセスできません(2)');
       }
-      $ret['item'] = $item->calendar->details();
+      $ret['item'] = $item->details();
       $ret['member_id'] = $id;
     }
     return $ret;
@@ -110,12 +111,6 @@ class UserCalendarMemberController extends UserCalendarController
         "link" => function($row){
           return "/calendars?id=".$row['calendar_id'];
         },
-      ],
-      "place_floor_name" => [
-        "label" => __('labels.place'),
-      ],
-      "work_name" => [
-        "label" => __('labels.work'),
       ],
       "status_name" => [
         "label" => __('labels.status'),
@@ -207,6 +202,21 @@ class UserCalendarMemberController extends UserCalendarController
     }
 
     return $items;
+  }
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $sheats = PlaceFloorSheat::where('place_floor_id', $param['item']->calendar->place_floor_id)->orderBy('sort_no')->get();
+    $param['sheats'] = $sheats;
+    return view($this->domain.'.create', [
+      '_edit' => true])
+      ->with($param);
   }
 
 }

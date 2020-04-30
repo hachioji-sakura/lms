@@ -25,7 +25,7 @@
               {{__('labels.students')}}
               <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             </label>
-            <select name="student_id" class="form-control select2" multiple="multiple" width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="student_id_change()">
+            <select name="student_id" class="form-control select2"  width=100% placeholder="{{__('labels.charge_student')}}" required="true" onChange="student_id_change()">
               @foreach($item["students"] as $member)
                 @if($member->is_rest_status()==false) @continue @endif
                  <option

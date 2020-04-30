@@ -85,6 +85,11 @@ Route::put('calendars/{id}/remind','UserCalendarController@remind');
 Route::put('calendars/{id}/cancel','UserCalendarController@force_cancel');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
 Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
+Route::get('calendars/{id}/members/create','UserCalendarController@member_create_page');
+Route::post('calendars/{id}/members','UserCalendarController@member_create');
+Route::get('calendars/{id}/members/setting','UserCalendarController@member_setting_page');
+Route::put('calendars/{id}/members/setting','UserCalendarController@member_setting');
+
 Route::get('calendars/check','UserCalendarController@setting_check');
 Route::get('space_calendars','UserCalendarController@space_calendars');
 
