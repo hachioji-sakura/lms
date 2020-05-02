@@ -250,9 +250,9 @@ class UserCalendarMember extends Model
 
     return $this;
   }
-  public function rest_result(){
+  public function get_rest_result(){
     $rest_result = "";
-    if(!empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
+    if(isset($this->rest_result) && !empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
     if($this->rest_type == 'a1'){
       $rest_result = '休み1:'.$rest_result;
     }
@@ -683,7 +683,7 @@ class UserCalendarMember extends Model
     $u = $this->user->details();
     $item['user_name'] = $u->name();
     $item['user_role_name'] = $u['role_name'];
-    $item['rest_result'] = $this->rest_result();
+    $item['rest_result'] = $this->get_rest_result();
     $item['str_exchange_limit_date'] = $this->dateweek_format($this->exchange_limit_date);
 
     return $this;

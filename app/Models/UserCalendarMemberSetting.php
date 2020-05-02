@@ -455,7 +455,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
       }
     }
   }
-  public function rest_result(){
+  public function get_rest_result(){
     return "";
   }
 }
