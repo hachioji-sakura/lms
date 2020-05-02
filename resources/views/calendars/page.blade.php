@@ -25,11 +25,21 @@
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>
-          <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
-          @if($item->is_online()==true)
-          <small class="badge badge-info mt-1 mr-1 text-sm">
-            <i class="fa fa-globe">{{__('labels.online')}}</i>
-          </small>
+          @if(!(isset($user) && ($user->role=="teacher" || $user->role=="manager")))
+            @if($item->is_online()==true)
+            <small class="badge badge-info mt-1 mr-1 text-sm">
+              <i class="fa fa-globe">{{__('labels.online')}}</i>
+            </small>
+            @else
+              <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
+            @endif
+          @else
+            <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
+            @if($item->is_online()==true)
+            <small class="badge badge-info mt-1 mr-1 text-sm">
+              <i class="fa fa-globe">{{__('labels.online')}}</i>
+            </small>
+            @endif
           @endif
         @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
           <label for="{{$key}}" class="w-100">

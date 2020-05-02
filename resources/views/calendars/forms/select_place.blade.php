@@ -20,15 +20,26 @@
         @endforeach
       </select>
       <div class="form-check mt-2 text-info">
-          <input class="form-check-input icheck flat-red" type="checkbox" name="is_online" id="is_online" value="true"
+          <input type="hidden" name="is_online" value="false" />
+          <input class="form-check-input icheck flat-red" type="checkbox" name="_is_online" id="is_online" value="true"
           @if($item->is_online()==true)
             checked
           @endif
+          onChange="is_online_click()"
           >
           <i class="fa fa-globe"></i>
           <label class="form-check-label" for="is_online">
               {{__('labels.online')}}
           </label>
+          <script>
+          function is_online_click(){
+            console.log('is_online_click');
+            $('input[name="is_online"]').val('false');
+            if($('input[name="_is_online"]').prop('checked')==true){
+              $('input[name="is_online"]').val('true');
+            }
+          }
+          </script>
       </div>
     </div>
   </div>
