@@ -95,7 +95,7 @@
                 </a>
                 <small title="{{$setting->id}}" class="ml-1 badge badge-{{config('status_style')[$setting['status']]}} mt-1 mr-1">{{$setting['status_name']}}</small>
               </div>
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-8">
                 <span class="mr-2">
                   @if($setting->is_teaching()==true)
                     {{$setting['course']}} /  {{$setting['course_minutes_name']}}
@@ -103,6 +103,11 @@
                     {{$setting['work_name']}}
                   @endif
                 </span>
+                @if($setting->is_online()==true)
+                <small class="badge badge-info mr-1 text-sm">
+                  <i class="fa fa-globe">{{__('labels.online')}}</i>
+                </small>
+                @endif
               </div>
               <div class="col-12">
                 @if($setting->work!=9)

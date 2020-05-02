@@ -7,6 +7,7 @@ return [
   'man' => '男性',
   'woman' => '女性',
   'other' => 'その他',
+  'online' => 'オンライン',
   'search_keyword' => 'キーワード検索',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',

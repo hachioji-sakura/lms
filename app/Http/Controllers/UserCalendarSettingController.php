@@ -141,12 +141,24 @@ class UserCalendarSettingController extends UserCalendarController
       else if($request->has('end_hours') && $request->has('end_minutes')){
         if($schedule_type!='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
-      $form['charge_subject'] = $request->get('charge_subject');
-      $form['english_talk_lesson'] = $request->get('english_talk_lesson');
-      $form['piano_lesson'] = $request->get('piano_lesson');
-      $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
+      switch(intval($form['lesson'])){
+        case 1:
+          $form['charge_subject'] = $request->get('charge_subject');
+          break;
+        case 2:
+          $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+          break;
+        case 3:
+          $form['piano_lesson'] = $request->get('piano_lesson');
+          break;
+        case 4:
+          $form['kids_lesson'] = $request->get('kids_lesson');
+          break;
+      }
       $form['place'] = $request->get('place');
+      $form['is_online'] = 'false';
+      if($request->has('is_online') && $request->get('is_online')=='true') $form['is_online'] = 'true';
 
       //生徒と講師の情報が予定追加時には必須としている
       //講師の指定
@@ -234,12 +246,25 @@ class UserCalendarSettingController extends UserCalendarController
       if($request->has('end_hours') && $request->has('end_minutes')){
         if($schedule_type!='class') $form['to_time_slot'] = date('H:i:s', strtotime("2000-01-01 ".$form['end_hours'].':'.$form['end_minutes']));
       }
-      $form['charge_subject'] = $request->get('charge_subject');
-      $form['english_talk_lesson'] = $request->get('english_talk_lesson');
-      $form['piano_lesson'] = $request->get('piano_lesson');
-      $form['kids_lesson'] = $request->get('kids_lesson');
       $form['lesson'] = $request->get('lesson');
+      switch(intval($form['lesson'])){
+        case 1:
+          $form['charge_subject'] = $request->get('charge_subject');
+          break;
+        case 2:
+          $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+          break;
+        case 3:
+          $form['piano_lesson'] = $request->get('piano_lesson');
+          break;
+        case 4:
+          $form['kids_lesson'] = $request->get('kids_lesson');
+          break;
+      }
+
       $form['place'] = $request->get('place');
+      $form['is_online'] = 'false';
+      if($request->has('is_online') && $request->get('is_online')=='true') $form['is_online'] = 'true';
 
       if($request->has('teacher_id')){
         //講師の指定
@@ -421,7 +446,10 @@ class UserCalendarSettingController extends UserCalendarController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-      if(!$this->is_student_or_parent($param['user']->role)){
+      if($this->is_student_or_parent($param['user']->role)==true){
+        unset($param['fields']['status_name']);
+      }
+      else {
         $param['fields']['enable_date'] = [
           'label' => __('labels.setting_term'),
           'size' => 12,
@@ -824,7 +852,10 @@ class UserCalendarSettingController extends UserCalendarController
       $this->user_login($request->get('user'));
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-      if(!$this->is_student_or_parent($param['user']->role)){
+      if($this->is_student_or_parent($param['user']->role)==true){
+        unset($param['fields']['status_name']);
+      }
+      else {
         $param['fields']['enable_date'] = [
           'label' => __('labels.setting_term'),
           'size' => 12,
@@ -837,4 +868,81 @@ class UserCalendarSettingController extends UserCalendarController
       $param['action'] = '';
       return $param;
     }
+    /**
+     * ステータス更新ページ
+     *
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function status_update_page(Request $request, $id, $status)
+    {
+      if(!$request->has('user')){
+        if (!View::exists($this->domain.'.'.$status)) {
+          abort(404, 'ページがみつかりません(100)');
+        }
+      }
+      $param = $this->page_access_check($request, $id);
+      $page_title = $this->page_title($param['item'], $status);
+      if($request->has('user')){
+        if($status=='fix'){
+          $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $id)->where('user_id', $request->get('user'))->first();
+          if($member->status==$status || $member->status=='cancel')   return redirect('/'.$this->domain.'/'.$param['item']->id.'?user='.$request->get('user'));
+        }
+        return view('calendars.simplepage', ["subpage"=>$status,"page_title" => $page_title ])->with($param);
+      }
+
+      return view($this->domain.'.'.$status, [])->with($param);
+    }
+    /**
+     * ステータス更新
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
+     * @param  int  $id
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function status_update(Request $request, $id, $status)
+    {
+      $param = $this->get_param($request, $id);
+      \Log::warning("UserCalendarSettingController::_status_update(".$status.")");
+      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+        $form = $request->all();
+        $param['item'] = $this->model()->where('id', $param['item']->id)->first();
+        $members = $param['item']->members;
+        $_remark = '';
+        $_access_key = '';
+        if($status==='cancel'){
+          $_remark = $request->get('cancel_reason');
+        }
+        else if($status==='rest'){
+          $_remark = $request->get('rest_reason');
+        }
+
+        if($param['item']->work!=9){
+          foreach($members as $member){
+            \Log::warning("d1");
+            //メンバーステータスの個別指定がある場合
+            if(isset($form['is_all_student']) && $form['is_all_student']==1){
+              //全生徒指定がある場合
+              $member->status_update($status, $_remark, $param['user']->user_id);
+            }
+            else if(!empty($form[$member->id.'_status'])){
+              \Log::warning("d2");
+              $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
+            }
+          }
+        }
+        else {
+          foreach($members as $member){
+            $member->status_update($status, $_remark, $member_user_id);
+            break;
+          }
+        }
+        return $this->api_response(200, '', '', $param['item']);
+      }, 'カレンダーステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, $this->status_update_message[$status]);
+    }
+
 }
