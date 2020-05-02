@@ -19,6 +19,17 @@
           @endforeach
         @endforeach
       </select>
+      <div class="form-check mt-2 text-info">
+          <input class="form-check-input icheck flat-red" type="checkbox" name="is_online" id="is_online" value="true"
+          @if($item->is_online()==true)
+            checked
+          @endif
+          >
+          <i class="fa fa-globe"></i>
+          <label class="form-check-label" for="is_online">
+              {{__('labels.online')}}
+          </label>
+      </div>
     </div>
   </div>
 </div>

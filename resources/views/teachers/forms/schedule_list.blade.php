@@ -18,6 +18,11 @@
           <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}}
           <br>
           <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
+          @if($calendar->is_online()==true)
+          <small class="badge badge-info mr-1 text-sm">
+            <i class="fa fa-globe">{{__('labels.online')}}</i>
+          </small>
+          @endif
         </a>
       </div>
       <div class="col-5 col-lg-4 col-md-4">

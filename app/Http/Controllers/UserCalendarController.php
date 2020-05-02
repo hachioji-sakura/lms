@@ -209,13 +209,25 @@ class UserCalendarController extends MilestoneController
       if($schedule_type!='class')  $form['end_time'] = $form['start_date'].' '.$form['end_hours'].':'.$form['end_minutes'].':00';
     }
 
-    $form['charge_subject'] = $request->get('charge_subject');
-    $form['english_talk_lesson'] = $request->get('english_talk_lesson');
-    $form['piano_lesson'] = $request->get('piano_lesson');
-    $form['kids_lesson'] = $request->get('kids_lesson');
     $form['lesson'] = $request->get('lesson');
+    switch(intval($form['lesson'])){
+      case 1:
+        $form['charge_subject'] = $request->get('charge_subject');
+        break;
+      case 2:
+        $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+        break;
+      case 3:
+        $form['piano_lesson'] = $request->get('piano_lesson');
+        break;
+      case 4:
+        $form['kids_lesson'] = $request->get('kids_lesson');
+        break;
+    }
     $form['place_floor_id'] = $request->get('place_floor_id');
     $form['is_exchange'] = false;
+    $form['is_online'] = 'false';
+    if($request->has('is_online') && $request->get('is_online')=='true') $form['is_online'] = 'true';
     //事務の指定
     if($request->has('manager_id')){
       $form['manager_id'] = $request->get('manager_id');

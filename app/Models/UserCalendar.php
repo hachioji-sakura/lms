@@ -304,6 +304,10 @@ EOT;
     if($d < 0) return false;
     return true;
   }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
+  }
   //振替対象の場合:true
   public function is_exchange_target(){
     if($this->is_single()==false) return false;
@@ -814,7 +818,7 @@ EOT;
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
     //TODO 将来的にsubject_exprに関するロジックは不要
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -1212,45 +1216,57 @@ EOT;
     //講師のステータスでみるものは、confirmとlecture_cancel
     foreach($this->members as $member){
       if($member->user_id != $this->user_id) continue;
-      switch($member->status){
-        case "confirm":
-        case "lecture_cancel":
-          $status = $member->status;
-          break;
+      if($this->work==9){
+        //事務のカレンダーの場合
+        $status = $member->status;
+      }
+      else {
+        switch($member->status){
+          case "confirm":
+          case "lecture_cancel":
+            $status = $member->status;
+            break;
+        }
       }
     }
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      if($_member->role != 'student') continue;
-      switch($member->status){
-        case "fix":
-          //fixのメンバーがいれば、fix
-          $status = 'fix';
-          break;
-        case "presence":
-          //fixでないかつ、presenceのメンバーがいれば、presence
-          if($status!='fix') $status='presence';
-          break;
-        case "absence":
-          //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
-          if($status=='new' || $status=='confirm' || $status=='rest' || $status=='lecture_cancel') $status='absence';
-          break;
-        case "lecture_cancel":
-          //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
-          if($status=='new' || $status=='confirm' || $status=='rest') $status='lecture_cancel';
-          break;
-        case "rest":
-          //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
-          if($status=='new' || $status=='confirm') $status='rest';
-          break;
-        case "cancel":
-          //new,confirm なんらかcancelステータスしかない場合、cancel
-          if($status=='new' || $status=='confirm') $status='cancel';
-          break;
-        case "confirm":
-          if($status=='new') $status='confirm';
-          break;
+    if($this->work==9){
+      //事務のカレンダーの場合
+      if($status=='new' || $status=='confirm') $status='fix';
+    }
+    else {
+      foreach($this->members as $member){
+        if(!isset($member->user)) continue;
+        $_member = $member->user->details('students');
+        if($_member->role != 'student') continue;
+        switch($member->status){
+          case "fix":
+            //fixのメンバーがいれば、fix
+            $status = 'fix';
+            break;
+          case "presence":
+            //fixでないかつ、presenceのメンバーがいれば、presence
+            if($status!='fix') $status='presence';
+            break;
+          case "absence":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm' || $status=='rest' || $status=='lecture_cancel') $status='absence';
+            break;
+          case "lecture_cancel":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm' || $status=='rest') $status='lecture_cancel';
+            break;
+          case "rest":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm') $status='rest';
+            break;
+          case "cancel":
+            //new,confirm なんらかcancelステータスしかない場合、cancel
+            if($status=='new' || $status=='confirm') $status='cancel';
+            break;
+          case "confirm":
+            if($status=='new') $status='confirm';
+            break;
+        }
       }
     }
     if($this->status != $status){
