@@ -177,8 +177,8 @@ $(function(){
           form_data[value+"_name"] = _name;
         }
         if(value=='place_floor_id'){
-          if($('input[name="is_online"]').prop('checked')){
-            form_data[value+"_name"] += '/ <i class="fa fa-globe"></i>{{__('labels.online')}}';            
+          if($('input[name="is_online"]').val()=='true'){
+            form_data[value+"_name"] += '/ <i class="fa fa-globe"></i>{{__('labels.online')}}';
           }
         }
       }

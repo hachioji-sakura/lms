@@ -157,8 +157,7 @@ class UserCalendarSettingController extends UserCalendarController
           break;
       }
       $form['place'] = $request->get('place');
-      $form['is_online'] = 'false';
-      if($request->has('is_online') && $request->get('is_online')=='true') $form['is_online'] = 'true';
+      if($request->has('is_online')) $form['is_online'] = $request->get('is_online');
 
       //生徒と講師の情報が予定追加時には必須としている
       //講師の指定
@@ -263,8 +262,7 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       $form['place'] = $request->get('place');
-      $form['is_online'] = 'false';
-      if($request->has('is_online') && $request->get('is_online')=='true') $form['is_online'] = 'true';
+      if($request->has('is_online')) $form['is_online'] = $request->get('is_online');
 
       if($request->has('teacher_id')){
         //講師の指定
