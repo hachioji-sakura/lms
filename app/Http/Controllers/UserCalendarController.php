@@ -1534,7 +1534,10 @@ class UserCalendarController extends MilestoneController
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
-            $calendar->memberAdd($student->user_id, $form['create_user_id'], $form['to_status']);
+            $member = $calendar->memberAdd($student->user_id, $form['create_user_id']);
+            if($member != null){
+              $member->status_update($form['to_status'], '', $param['user']->user_id);
+            }
           }
         }
         return $this->api_response(200, '', '', $calendar);
