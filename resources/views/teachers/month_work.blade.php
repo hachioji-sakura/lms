@@ -114,6 +114,12 @@
                       <br>
                       <span class="mr-2">
                         <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
+                        @if($calendar->is_online()==true)
+                        <small class="badge badge-info mr-1 text-sm">
+                          <i class="fa fa-globe"></i>
+                            <span class="k">{{__('labels.online')}}</span>
+                        </small>
+                        @endif
                       </span>
                       <span class="text-sm mr-2">
                         @if($calendar->is_teaching()==true)
