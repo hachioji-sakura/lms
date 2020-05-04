@@ -1174,31 +1174,33 @@ class StudentController extends UserController
     if(!$this->is_success_response($req)){
       return $req;
     }
+
     $res =  $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
        $item = $this->model()->where('id',$id)->first();
-
        if(isset($form['email']) && isset($form['password'])){
          $update_params = [
            'email' => $form['email'],
            'password' => Hash::make($form['password']),
            'status' => 0
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }elseif(isset($form['email'])){
          $update_params = [
            'email' => $form['email']
          ];
-         User::where('id', $item->user_id)->update($update_params);
+       }elseif(!empty($form['reset'])){
+         $update_params = [
+           'status' => 1
+         ];
        }
+       User::where('id', $item->user_id)->update($update_params);
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
 
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
-
 
 
 }
