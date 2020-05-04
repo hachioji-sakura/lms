@@ -114,6 +114,12 @@
                       <br>
                       <span class="mr-2">
                         <i class="fa fa-map-marker"></i>{{$calendar["place_floor_name"]}}
+                        @if($calendar->is_online()==true)
+                        <small class="badge badge-info mr-1 text-sm">
+                          <i class="fa fa-globe"></i>
+                            <span class="k">{{__('labels.online')}}</span>
+                        </small>
+                        @endif
                       </span>
                       <span class="text-sm mr-2">
                         @if($calendar->is_teaching()==true)
@@ -126,24 +132,6 @@
                   </div>
                   <div class="col-12 col-md-4">
                     @component('calendars.forms.label_students', ['item' => $calendar, 'user'=>$user, 'set_br' => false , 'status_visible'=> false]) @endcomponent
-{{-- componentにより共通化
-                    @foreach($calendar->members as $member)
-                      @if(!isset($member->user)) ERROR!!({{$member->user_id}}) @continue @endif
-                      @if($member->user->details()->role==="student")
-                        @if($member->status=="rest")
-                        <span class="mr-2 text-danger">
-                        <i class="fa fa-user-times"></i>
-                        {{$member->user->details()->name}}
-                        </span>
-                        @else
-                        <span class="mr-2">
-                        <i class="fa fa-user-graduate"></i>
-                        {{$member->user->details()->name}}
-                        </span>
-                        @endif
-                      @endif
-                    @endforeach
---}}
                     @if($calendar->is_teaching()==false)
                       @foreach($calendar['subject'] as $subject)
                       <span class="text-xs mx-2">

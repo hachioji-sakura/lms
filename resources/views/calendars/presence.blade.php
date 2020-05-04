@@ -47,14 +47,21 @@
         </div>
         <script>
         function status_change(){
+          console.log("status_change");
           var status = $("input[name='status']:checked").val();
           if(status=="presence"){
             $("#presence_list").collapse('show');
             $("#presence_list input").show();
+            $("input.presence_check[type='radio'][value='presence']").each(function(index, value){
+              $(this).iCheck('check');
+            });
           }
           else {
             $("#presence_list").collapse('hide');
             $("#presence_list input").hide();
+            $("input.presence_check[type='radio'][value='absence']").each(function(index, value){
+              $(this).iCheck('check');
+            });
           }
         }
         function status_presence_check(){
@@ -115,7 +122,7 @@
                 <th class="p-1 pl-2">
                   {{$member->user->details()->name}}</th>
                 <td class="p-1 text-sm text-center">
-                  @if($member->status!="fix" )
+                  @if($member->status!="fix" && $member->status!="presence" && $member->status!="absence")
                     <i class="fa fa-times mr-1"></i>{{$member->status_name()}}
                   @else
                   <div class="input-group">

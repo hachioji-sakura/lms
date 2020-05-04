@@ -83,9 +83,6 @@ class Controller extends BaseController
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
-      if(config('app.env')==="local"){
-        return true;
-      }
       $user_check = User::where('email', $to)->first();
       if(!isset($user_check)){
         if(strpos($to,'yasui.hideo') === false){

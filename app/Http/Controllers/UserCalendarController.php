@@ -209,13 +209,24 @@ class UserCalendarController extends MilestoneController
       if($schedule_type!='class')  $form['end_time'] = $form['start_date'].' '.$form['end_hours'].':'.$form['end_minutes'].':00';
     }
 
-    $form['charge_subject'] = $request->get('charge_subject');
-    $form['english_talk_lesson'] = $request->get('english_talk_lesson');
-    $form['piano_lesson'] = $request->get('piano_lesson');
-    $form['kids_lesson'] = $request->get('kids_lesson');
     $form['lesson'] = $request->get('lesson');
+    switch(intval($form['lesson'])){
+      case 1:
+        $form['charge_subject'] = $request->get('charge_subject');
+        break;
+      case 2:
+        $form['english_talk_lesson'] = $request->get('english_talk_lesson');
+        break;
+      case 3:
+        $form['piano_lesson'] = $request->get('piano_lesson');
+        break;
+      case 4:
+        $form['kids_lesson'] = $request->get('kids_lesson');
+        break;
+    }
     $form['place_floor_id'] = $request->get('place_floor_id');
     $form['is_exchange'] = false;
+    if($request->has('is_online')) $form['is_online'] = $request->get('is_online');
     //事務の指定
     if($request->has('manager_id')){
       $form['manager_id'] = $request->get('manager_id');
@@ -356,7 +367,7 @@ class UserCalendarController extends MilestoneController
         //それ以外は、自分に関連するもの（親子）のみ表示する
         $ret['item'] = $item->details($user->user_id);
       }
-      if($request->has('student_id')){
+      if($request->has('student_id') && gettype($request->get('student_id'))!='array'){
         $student = Student::where('id', $request->get('student_id'))->first();
         if(isset($student)){
           $ret['item']->own_member = $ret['item']->get_member($student->user_id);
@@ -543,10 +554,10 @@ class UserCalendarController extends MilestoneController
       $items = $this->_search_scope($request, $items);
       $items = $this->_search_pagenation($request, $items);
       $items = $this->_search_sort($request, $items);
-      \Log::warning("--------------UserCalendarController::api_index  start---------------------------");
-      \Log::warning($items->toSql());
+      //\Log::warning("--------------UserCalendarController::api_index  start---------------------------");
+      //\Log::warning($items->toSql());
       $items = $items->get();
-      \Log::warning("--------------UserCalendarController::api_index  end---------------------------");
+      //\Log::warning("--------------UserCalendarController::api_index  end---------------------------");
       foreach($items as $item){
         $item = $item->details($user_id);
         if($user_id > 0) {
@@ -760,7 +771,9 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->get_param($request, $id);
       $param['fields'] = $this->show_fields($param['item']);
-
+      if($this->is_student_or_parent($param['user']->role)==true){
+        unset($param['fields']['status_name']);
+      }
       $form = $request->all();
       if(!isset($form['action'])){
         $form['action'] = '';
@@ -790,8 +803,9 @@ class UserCalendarController extends MilestoneController
 
       $page_title = $this->page_title($param['item'], $status);
       if($request->has('user')){
-        if($status=='fix' && $param['item']->status=='fix'){
-          return redirect('/'.$this->domain.'/'.$param['item']->id.'?user='.$request->get('user'));
+        if($status=='fix' || $status=='rest'){
+          $member = UserCalendarMember::where('calendar_id', $id)->where('user_id', $request->get('user'))->first();
+          if($member->status==$status || $member->status=='cancel')   return redirect('/'.$this->domain.'/'.$param['item']->id.'?user='.$request->get('user'));
         }
         return view('calendars.simplepage', ["subpage"=>$status,"page_title" => $page_title ])->with($param);
       }
@@ -1142,6 +1156,7 @@ class UserCalendarController extends MilestoneController
         if(!empty($form['status'])) unset($form['status']);
 
         //生徒をカレンダーメンバーに追加
+        /*TODO メンバー追加は通常の更新ではやらない
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
             $item->memberAdd($student->user_id, $form['create_user_id'], 'confirm');
@@ -1161,7 +1176,7 @@ class UserCalendarController extends MilestoneController
             }
           }
         }
-
+        */
         $item->change($form);
         return $this->api_response(200, '', '', $item);
 
@@ -1504,7 +1519,6 @@ class UserCalendarController extends MilestoneController
     public function member_create_page(Request $request, $id)
     {
       $param = $this->page_access_check($request, $id);
-
       //TODO work=7
       if($param['item']["work"]!=7) abort(403);
       return view($this->domain.'.member_create', [])->with($param);
@@ -1512,7 +1526,6 @@ class UserCalendarController extends MilestoneController
     public function member_create(Request $request, $id)
     {
       $param = $this->page_access_check($request, $id);
-
       //TODO work=7
       if($param['item']["work"]!=7) abort(403);
       $res = $this->transaction($request, function() use ($request, $param, $id){
@@ -1521,22 +1534,15 @@ class UserCalendarController extends MilestoneController
         //生徒をカレンダーメンバーに追加
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
-            $calendar->memberAdd($student->user_id, $form['create_user_id'], $form['to_status']);
+            $member = $calendar->memberAdd($student->user_id, $form['create_user_id']);
+            if($member != null){
+              $member->status_update($form['to_status'], '', $param['user']->user_id);
+            }
           }
         }
-
-        $is_sendmail = false;
-        if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
-          $is_sendmail = true;
-          //新規登録時に変更メールを送らない
-          unset($form['send_mail']);
-        }
-        if($is_sendmail == true){
-          $calendar->register_mail([], $form['create_user_id']);
-        }
-
         return $this->api_response(200, '', '', $calendar);
       }, 'メンバー追加しました', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, 'メンバー追加しました');
     }
     /**
      *
@@ -1547,10 +1553,41 @@ class UserCalendarController extends MilestoneController
     public function member_setting_page(Request $request, $id)
     {
       $param = $this->page_access_check($request, $id);
-
       //TODO work=7
-      if($param['item']["work"]!=7) abort(403);
+      //if($param['item']["work"]!=7) abort(403);
       return view($this->domain.'.member_setting', [])->with($param);
+    }
+    public function member_setting(Request $request, $id)
+    {
+      $param = $this->page_access_check($request, $id);
+      $message = 'メンバーのステータスを更新しました';
+      $res = $this->transaction($request, function() use ($request, $id, $param){
+        //TODO work=7
+        $form = $this->create_form($request);
+        if($request->get('action')=='remind') {
+          $form['to_status'] = 'remind';
+          $message = '連絡通知しました。';
+        }
+        if($request->has('rest_type')) {
+          $form['rest_type'] = $request->get('rest_type');
+        }
+        if($request->has('rest_result')) {
+          $form['rest_result'] = $request->get('rest_result');
+        }
+        //生徒をカレンダーメンバーに追加
+        if(!empty($form['students'])){
+          foreach($form['students'] as $student){
+            $member = UserCalendarMember::where('calendar_id', $id)->where('user_id', $student->user_id)->first();
+            $member->status_update($form['to_status'], '', $param['user']->user_id);
+            if($form['to_status']=='rest' && !empty($form['rest_type'])){
+              $member->update_rest_type($form['rest_type'], $form['rest_result']);
+            }
+          }
+        }
+        $calendar = UserCalendar::where('id', $id)->first();
+        return $this->api_response(200, '', '', $calendar);
+      }, $message, __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, $message);
     }
 
 }

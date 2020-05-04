@@ -20,28 +20,31 @@
               {{$field['label']}}
             </label>
             <small title="id={{$item["id"]}},work={{$item["work"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
-          @elseif($key==="place")
+          @elseif($key==="place_floor_name")
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            <small title="{{$item["id"]}}" class="badge badge-success mt-1 mr-1">{{$item->place()}}</small>
+            @if(!(isset($user) && ($user->role=="teacher" || $user->role=="manager")))
+              @if($item->is_online()==true)
+              <small class="badge badge-info mt-1 mr-1 text-sm">
+                <i class="fa fa-globe">{{__('labels.online')}}</i>
+              </small>
+              @else
+                <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
+              @endif
+            @else
+              <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
+              @if($item->is_online()==true)
+                <small class="badge badge-info mt-1 mr-1 text-sm">
+                  <i class="fa fa-globe">{{__('labels.online')}}</i>
+                </small>
+              @endif
+            @endif
           @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
             </label>
-            @foreach($item->students as $member)
-          {{--
-              <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="">
-            --}}
-            <span>
-                <i class="fa fa-user-graduate mr-1"></i>
-                {{$member->user->details('students')->name}}
-              </span>
-          {{--
-              </a>
-              --}}
-              <br>
-            @endforeach
+            @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
           @elseif(isset($item[$key]) && gettype($item[$key])=='array')
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}

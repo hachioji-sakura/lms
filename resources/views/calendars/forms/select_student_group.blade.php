@@ -12,7 +12,7 @@
   </div>
   <script>
   $(function(){
-    get_charge_students();
+    //get_charge_students();
   });
   var _student_group = {};
   function select_student_group_change(){
