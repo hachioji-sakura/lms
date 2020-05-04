@@ -336,4 +336,10 @@ return [
   'tasks_remarks' => 'タスク詳細',
   'start_schedule' => '開始予定日',
   'end_schedule' => '終了予定日',
+  'setting_details' => '詳細設定',
+  'evaluation' => '評価',
+  'evaluation_button' => '評価する',
+  'contents' => '内容',
+  'review' => 'レビュー',
+
 ];

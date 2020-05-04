@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\TaskComment;
+use App\Models\Review;
 use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends MilestoneController
 {
@@ -35,7 +38,9 @@ class TaskController extends MilestoneController
         //
         $param = $this->get_param($request);
         $user = $this->login_details($request);
+        $param['target_user'] = $user;
         $param['_edit'] = false;
+        dd($param);
         return view($this->domain . '.create',$param);
     }
 
@@ -107,6 +112,10 @@ class TaskController extends MilestoneController
     public function show(Request $request, $id)
     {
         //
+        $param = $this->get_param($request);
+        $item = $this->model()->where('id',$id)->first();
+        $param['item'] = $item;
+        return view($this->domain. '.details')->with($param);
     }
 
     /**
@@ -173,6 +182,92 @@ class TaskController extends MilestoneController
       return $form;
     }
 
+    public function show_cancel_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      return view($this->domain.'.cancel')->with($param);
+    }
+
+    public function cancel(Request $request,$id){
+      $param = $this->get_param($request,$id);
+      $form = [];
+      $form['status'] = 'cancel';
+      $res = $this->change_status($request , $id, $form);
+      return $this->save_redirect($res,$param,'キャンセルしました。');
+    }
+
+    public function progress(Request $request ,$id){
+      $param = $this->get_param($request,$id);
+      $form = [];
+      $form['status'] = 'progress';
+      $form['start_date'] = date('Y/m/d');
+      $res = $this->change_status($request, $id, $form);
+      return $this->save_redirect($res,$param,'タスクを開始しました。');
+    }
+
+    public function done(Request $request ,$id){
+      $param = $this->get_param($request,$id);
+      $form = [];
+      $form['status'] = 'done';
+      $form['end_date'] = date('Y/m/d');
+      $res = $this->change_status($request, $id, $form);
+      return $this->save_redirect($res,$param,'タスクを完了しました。');
+    }
+
+    public function change_status(Request $request, $id, $form){
+      $param = $this->get_param($request);
+      $res =  $this->transaction($request, function() use ($request, $id, $form){
+        $item = $this->model()->where('id', $id)->first();
+        if(isset($form['review'])){
+          $this->model()->where('id',$id)->update($form['task']);
+          $task = $this->model()->where('id',$id)->first();
+          $task->reviews()->create($form['review']);
+          $task->task_comments()->create($form['comment']);
+        }else{
+          $this->model()->where('id',$id)->update($form);
+        }
+        return $this->api_response(200, '', '', $item);
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+    }
+
+    public function show_review_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      return view($this->domain.'.review')->with($param);
+    }
+
+    public function review(Request $request, Int $id){
+      $param = $this->get_param($request, $id);
+      $user = $this->login_details($request);
+      $form = [];
+      $form['task'] = [
+        'status' => 'complete',
+        'evaluation' => $request->get('evaluation'),
+      ];
+
+      if(!empty($request->get('review'))){
+        $form['review'] = [
+          'body' => $request->get('review'),
+          'create_user_id' => $user->id,
+        ];
+
+        $form['comment'] = [
+          'body' => 'レビューしました。',
+          'type' => 'task',
+          'create_user_id' => $user->id,
+        ];
+      }
+      $res =$this->change_status($request,$id,$form);
+      return $this->save_redirect($res,$param,'評価しました。');
+    }
+
+    public function save_review(Request $request,$form){
+      $res =  $this->transaction($request, function() use ($request, $form){
+        $item = Review::create($form);
+        return $this->api_response(200, '', '', $item);
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -196,5 +291,24 @@ class TaskController extends MilestoneController
           return $this->api_response(200, '', '', $item);
         }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
         return $res;
+    }
+
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details($request);
+      if(!isset($user)) {
+        abort(403);
+      }
+      $ret = $this->get_common_param($request);
+      if(is_numeric($id) && $id > 0){
+        $item = $this->model()->where('id','=',$id)->first();
+        if($this->is_student($user->role) &&
+          $item['target_user_id'] !== $user->user_id){
+            //生徒は自分宛てのもののみ
+            abort(404);
+        }
+        $item = $item->details();
+        $ret['item'] = $item->details();
+      }
+      return $ret;
     }
 }

@@ -315,9 +315,19 @@ Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswer
 
 Route::get('tasks/','TaskController@index');
 Route::get('tasks/create', 'TaskController@create');
-Route::get('students/{id}/create_tasks', 'StudentController@create_tasks');
 Route::get('students/{id}/tasks', 'StudentController@task_list');
 Route::post('tasks/create', 'TaskController@store');
+Route::get('students/{id}/create_tasks', 'StudentController@create_tasks');
 Route::get('tasks/{id}/edit', 'TaskController@edit');
 Route::put('tasks/{id}/edit', 'TaskController@update');
 Route::delete('tasks/{id}/delete','TaskController@destroy');
+Route::get('tasks/{id}', 'TaskController@show');
+Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
+Route::put('tasks/{id}/cancel', 'TaskController@cancel');
+Route::put('tasks/{id}/progress', 'TaskController@progress');
+Route::put('tasks/{id}/done', 'TaskController@done');
+Route::get('tasks/{id}/review', 'TaskController@show_review_page');
+Route::put('tasks/{id}/review', 'TaskController@review');
+
+
+Route::post('task_comments/create', 'TaskCommentController@store');

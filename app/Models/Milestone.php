@@ -170,4 +170,8 @@ class Milestone extends Model
     }
     $this->delete();
   }
+
+  public function tasks(){
+    return $this->hasMany('App\Models\Task', 'milestone_id', 'id');
+  }
 }

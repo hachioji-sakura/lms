@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Review;
 
-class Task extends MIlestone
+class Task extends Milestone
 {
     //
     protected $connection = 'mysql';
@@ -13,7 +14,6 @@ class Task extends MIlestone
 
     public static $rules = array(
         'title' => 'required',
-        'remarks' => 'required',
         'status' => 'required',
         'target_user_id' => 'required',
         'create_user_id' => 'required',
@@ -21,16 +21,23 @@ class Task extends MIlestone
         'end_schedule' => 'required',
     );
 
-    public function teachers(){
-      return $this->belongsToMany('App\Models\Teacher');
+    public function scopeActiveTasks($query){
+      return $query->whereIn('status',["new","progress","done"]);;
     }
 
+    public function task_comments(){
+      return $this->hasMany('App\Models\TaskComment','task_id')->orderBy('created_at','desc');
+    }
+
+    public function reviews(){
+      return $this->hasMany('App\Models\Review', 'task_id');
+    }
 
     public function milestones(){
-      return $this->belongsToMany('App\Models\Milestone');
+      return $this->belongsTo('App\Models\Milestone', 'milestone_id');
     }
 
-    public function textbook(){
+    public function textbooks(){
       return $this->belogsToMany('App\Models\Textbook');
     }
 

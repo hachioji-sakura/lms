@@ -327,4 +327,9 @@ return [
   'result' => 'Result',
   'add_tasks' => 'Add Task',
   'tasks_remarks' => 'Task Remarks',
+  'setting_details' => 'Setting Details',
+  'evaluation' => 'Evaluation',
+  'contents' => 'Contents',
+  'review' => 'Review',
+
 ];

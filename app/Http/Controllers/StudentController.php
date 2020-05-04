@@ -1206,10 +1206,10 @@ class StudentController extends UserController
   }
 
   public function task_list(Request $request, $id = null){
-    $param = $this->get_param($request);
+    $param = $this->get_param($request,$id);
     $user = $this->login_details($request);
-    $param['target_user'] = $this->model()->where('id',$id)->first();
     $target_user = $this->model()->where('id',$id)->first();
+    $param['target_user'] = $target_user;
     $param['items'] = Task::where('target_user_id', $target_user->user_id)->orderBy('end_schedule','asc')->paginate(20);
     return view('tasks.list')->with($param);
   }
