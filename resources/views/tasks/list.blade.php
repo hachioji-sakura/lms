@@ -8,14 +8,20 @@
   <div class="card-header">
     <div class="row">
       <div class="col-8">
+        @if(isset($target_user))
         <h3 class="card-title">{{$target_user->details()->name()}}さんのタスク</h3>
+        @else
+        <h3 class="card-title">タスク一覧</h3>
+        @endif
       </div>
       <div class="col-4">
+        @if(isset($target_user))
         <div class="float-right">
           <a href="javascript:void(0)" page_form="dialog" page_title="For {{$target_user->details()->name}}" page_url="/{{$target_user->details()->domain}}/{{$target_user->id}}/create_tasks" title="{{__('labels.add_button')}}" role="button"  class="btn btn-primary">
             <i class="fa fa-plus"></i>
           </a>
         </div>
+        @endif
       </div>
     </div>
   </div>

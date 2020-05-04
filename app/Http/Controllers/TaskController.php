@@ -25,7 +25,8 @@ class TaskController extends MilestoneController
     {
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        return view($this->domain . '.list',$param);
+        $param['items'] = $this->model()->paginate(20);
+        return view($this->domain . '.list')->with($param);
     }
 
     /**
@@ -232,6 +233,7 @@ class TaskController extends MilestoneController
 
     public function show_review_page(Request $request, $id){
       $param = $this->get_param($request,$id);
+      $param['_edit'] = false;
       return view($this->domain.'.review')->with($param);
     }
 

@@ -11,12 +11,17 @@ class ReviewController extends MilestoneController
     return Review::query();
   }
 
-  public function edit(){
-
+  public function edit(Request $request, $id){
+    $param = get_param($request,$id);
+    $param['_edit'] = true;
+    return view('tasks.review')->with($param);
   }
 
-  public function update(){
-
+  public function update_form(request){
+    $form = [
+      'body' =>$request->get('body'),
+    ];
+    return $form;
   }
 
   public function destroy(){

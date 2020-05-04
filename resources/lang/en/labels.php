@@ -325,6 +325,7 @@ return [
   'verification_code' => 'Verification Code',
   'sheat' => 'Sheat',
   'result' => 'Result',
+  'tasks' => 'Task',
   'add_tasks' => 'Add Task',
   'tasks_remarks' => 'Task Remarks',
   'setting_details' => 'Setting Details',

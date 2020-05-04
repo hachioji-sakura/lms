@@ -1,5 +1,7 @@
 @extends('dashboard.common')
 
+@section('title', $item->target_user->details()->name().'さんの'.$domain_name)
+
 @section('contents')
 <div class="card">
   <div class="card-header">
