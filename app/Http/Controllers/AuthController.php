@@ -153,7 +153,7 @@ class AuthController extends UserController
        $this->send_mail($request->get('new_email'), $title, [
          'user_name' => $user->name(),
          'verification_code' => $verification_code,
-       ], 'text', 'send_accesskey');
+       ], 'text', 'send_accesskey',$user->locale);
        return $this->api_response(200, "", "");
      }, $title, __FILE__, __FUNCTION__, __LINE__ );
      return $res;

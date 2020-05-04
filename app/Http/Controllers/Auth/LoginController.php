@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App;
 
 class LoginController extends Controller
 {
@@ -99,6 +100,7 @@ class LoginController extends Controller
       if(empty($form['locale'])){
         $form['locale'] = '';
       }
+      App::setlocale($form['locale']);
       return view('auth.login')->with($form);
     }
 }
