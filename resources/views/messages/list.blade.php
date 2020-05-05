@@ -15,9 +15,9 @@
     </a>
     @isset($item)
     <ul class="nav nav-treeview">
-      @foreach(config('attribute.message_status') as $index => $name)
+      @foreach(config('attribute.message_box') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}/{{$item->id}}/messages?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
+         <a href="/{{$domain}}/{{$item->id}}/messages?search_list={{$index}}" class="nav-link @if(isset($filter['search_list']) && $index===$filter['search_list']) active @endif">
            <i class="fa fa-envelope nav-icon"></i>{{$name}}
          </a>
        </li>
@@ -87,8 +87,8 @@
             </td>
             <td class="d-md-block d-none">
               <span class="text-xs ms-2">
-                <small class="badge badge-{{config('attribute.message_type')['color'][$item->type]}}  ml-2 mr-1">
-                  {{config('attribute.message_type')['type'][$item->type]}}
+                <small class="badge badge-{{config('status_style')[$item->type]}}  ml-2 mr-1">
+                  {{config('attribute.message_type')[$item->type]}}
                 </small>
               </span>
             </td>

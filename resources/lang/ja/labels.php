@@ -339,4 +339,5 @@ return [
   'message' => 'メッセージ',
   'sheat' => '座席',
   'result' => '結果',
+  'request_error' => 'リクエストエラー',
 ];

@@ -1227,7 +1227,6 @@ class StudentController extends UserController
     $query = Message::query();
     $query = $this->make_search_query($request, $query, $id);
     $query = $query->orderBy('created_at','desc');
-//   dd($query->toSql(),$query->getBindings());
     $messages = $query->paginate(20);
     return $messages;
   }
@@ -1235,7 +1234,7 @@ class StudentController extends UserController
   public function make_search_query(Request $request, $query, $id){
     //managerがアクセスしたときに見られるようにuserとりなおし
     $user = $this->model()->where('id',$id)->first();
-    if($request->has('search_status') && $request->get('search_status') == 'inbox'){
+    if($request->has('search_list') && $request->get('search_list') == 'inbox'){
       $query = $query->where('target_user_id',$user->user_id);
       if($this->domain == "parents" ){
         $students = $user->get_enable_students();
@@ -1243,7 +1242,7 @@ class StudentController extends UserController
           $query = $query->orWhere('target_user_id',$student->user_id);
         }
       }
-    }elseif($request->has('search_status') && $request->get('search_status') == 'send'){
+    }elseif($request->has('search_list') && $request->get('search_list') == 'send'){
       $query = $query->where('create_user_id',$user->user_id);
       if($this->domain == "parents" ){
         $students = $user->get_enable_students();
@@ -1254,6 +1253,7 @@ class StudentController extends UserController
     }else{
       $query = $query->FindMyMessage($user->user_id);
       if($this->domain == "parents" ){
+        //自分の子供あてのメッセージを取得
         $students = $user->get_enable_students();
         foreach($students as $student){
           $student_id = $student->user_id;

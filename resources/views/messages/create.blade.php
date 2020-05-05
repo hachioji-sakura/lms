@@ -49,7 +49,7 @@
           @endforeach
         </select>
         @else
-        {{config('attribute.message_type')['type'][$item->type]}}
+        {{config('attribute.message_type')[$item->type]}}
         <input type="hidden" name="type" value="{{$item->type}}">
         @endif
       </div>

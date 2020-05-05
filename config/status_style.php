@@ -25,5 +25,11 @@ return array(
   'send' => 'warning',
   'error' => 'danger',
   'sended' => 'success',
+  'information' => 'primary',
+  'promotion' => 'danger',
+  'examination' => 'info',
+  'study' => 'success',
+  'other' => 'secondary',
+
   );
 ?>

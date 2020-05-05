@@ -119,4 +119,7 @@ return [
  "message_hope_to_join" => "Do you want to join?",
  "info_send_verification_code" => "Enter it below verify your email.",
  "info_use_verification_code" => "Please enter the following authentication code when changing your email address",
+ "message_title" => "You have a message from :user_name",
+ "send_info" => "Message was sent successfully",
+ "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
  ];

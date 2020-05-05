@@ -331,5 +331,6 @@ return [
   'send_time' => 'send time',
   'reply' => 'reply',
   'new' => 'NEW',
-  'message' => 'message',
+  'message' => 'Message',
+  'request_error' => 'Request error',
 ];

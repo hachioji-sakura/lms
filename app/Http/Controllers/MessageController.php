@@ -71,7 +71,7 @@ class MessageController extends CommentController
         'items' => $items,
         'root_message' => $root_message,
         'domain' => $this->domain,
-        'domain_name' => 'メッセージ',
+        'domain_name' => __('labels.message'),
         'id' => $id,
       ];
       return view($this->domain.'.details',$message_params)->with($params);
@@ -79,18 +79,18 @@ class MessageController extends CommentController
 
     public function create(Request $request){
       $param = $this->get_param($request);
-      $user = $this->login_details($request);
-      $message_type = config('attribute.message_type')['type'];
+      $user = $param['user'];
+      $message_type = config('attribute.message_type');
       if($this->is_teacher($user->role)){
         $charge_users = Student::findChargeStudent($user->id)->get();
       }elseif($this->is_parent($user->role)){
         //TODO　担当はcharge_studentsで管理するように変更していく
         $students = Student::findChild($user->id)->get();
+        $ids = [];
         foreach($students as $student){
-          $id = $student->id;
-          $query = Teacher::findChargeTeachers($id);
+          array_push($ids,$student->id);
         }
-        $charge_users = $query->get();
+        $charge_users = Teacher::findChargeTeachers($ids)->get();
       }elseif($this->is_manager($user->role)){
         $charge_users = Student::findStatuses('regular',false)->get();
       }else {
@@ -106,11 +106,10 @@ class MessageController extends CommentController
       return view($this->domain.'.create',$select_params)->with($param);
     }
 
-    public function create_form(Request $request, $target_user_id = null){
+    public function create_form(Request $request){
       $user = $this->login_details($request);
       $form = [];
       $form['create_user_id'] = $user->user_id;
-      $form['target_user_id'] = $target_user_id;
       $form['body'] = $request->get('body', ENT_QUOTES, 'UTF-8');
       $form['title'] = $request->get('title');
       $form['type'] = $request->get('type');
@@ -121,8 +120,9 @@ class MessageController extends CommentController
     public function _store(Request $request)
     {
       $target_users = $request->get('target_user_id');
+      $form = $this->create_form($request);
       foreach($target_users as $target_user){
-        $form = $this->create_form($request,$target_user);
+        $form['target_user_id'] = $target_user;
         $res = $this->save_validate($request);
 
         if(!$this->is_success_response($res)){
@@ -134,7 +134,7 @@ class MessageController extends CommentController
         }
         $item = $item->first();
         if(isset($item)){
-          return $this->error_response('すでに登録済みです');
+          return $this->error_response(__('message_duplicated_error',['user_name' => $item->target_user->details()->name()]));
         }
 
         $res = $this->transaction($request, function() use ($request, $form){
@@ -145,7 +145,7 @@ class MessageController extends CommentController
             }
           }
           return $this->api_response(200, '', '', $item);
-        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+        }, __('messages.send_info'), __FILE__, __FUNCTION__, __LINE__ );
 
         if($this->is_success_response($res)){
           //メールを送信する
@@ -153,15 +153,16 @@ class MessageController extends CommentController
           $template = 'message';
           $type = 'text';
           $param = ['item' => $item ];
-          $item->target_user->send_mail($item->title, $param, $type ,$template);
+          $item->target_user->send_mail(__('messages.message_title',['user_name' => $item->create_user->details()->name()]), $param, $type ,$template);
         }
       }
       return $res;
      }
 
     public function reply(Request $request, $id){
-      $user = $this->login_details($request);
-      $item = $this->model()->where('id',$id)->first();
+      $param = $this->get_param($request,$id);
+      $user = $param['user'];
+      $item = $param['item'];
       $_reply = true;
       $params = [
         'item' => $item,
@@ -177,7 +178,7 @@ class MessageController extends CommentController
       $form = $request->all();
       //保存時にパラメータをチェック
       if(empty($form['title']) || empty($form['body']) ){
-        return $this->bad_request('リクエストエラー','/タイトル='.$form['title'].'/内容='.$form['body']);
+        return $this->bad_request(__('labels.request_error').'/'.__('labels.title').'='.$form['title'].'/'.__('labels.body').'='.$form['body']);
       }
       return $this->api_response(200, '', '');
     }
@@ -204,8 +205,7 @@ class MessageController extends CommentController
           $students = $user->get_enable_students();
           $_fail_check = 0;
           foreach($students as $student){
-            $student_id = $student->user_id;
-            if($item['create_user_id'] == $student_id || $item['target_user_id'] == $student_id){
+            if($item['create_user_id'] == $student->user_id || $item['target_user_id'] == $student->user_id){
               $_fail_check++;
             }
           }
