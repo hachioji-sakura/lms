@@ -9,6 +9,7 @@ return [
   'other' => 'その他',
   'online' => 'オンライン',
   'search_keyword' => 'キーワード検索',
+  'signup' =>     'アカウント登録',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
   'faqs'             => 'FAQ',

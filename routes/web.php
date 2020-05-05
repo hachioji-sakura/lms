@@ -162,6 +162,12 @@ Route::post('managers/register','ManagerController@register_update');
 Route::get('managers/{id}/month_work/{target_moth?}','ManagerController@month_work');
 Route::post('managers/{id}/month_work','ManagerController@month_work_confirm');
 
+Route::get('signup','StudentParentController@entry');
+Route::post('signup','StudentParentController@entry_store');
+Route::get('parents/register','StudentParentController@register');
+Route::post('parents/register','StudentParentController@register_update');
+
+
 Route::get('students/{id}/email_edit','StudentController@email_edit_page');
 Route::get('managers/{id}/email_edit','ManagerController@email_edit_page');
 Route::get('teachers/{id}/email_edit','TeacherController@email_edit_page');

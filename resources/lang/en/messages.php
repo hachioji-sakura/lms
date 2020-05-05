@@ -120,4 +120,7 @@ return [
  "message_hope_to_join" => "Do you want to join?",
  "info_send_verification_code" => "Enter it below verify your email.",
  "info_use_verification_code" => "Please enter the following authentication code when changing your email address",
+ "copyright" => "Copyright © Kunitachi, Hachioji, and Hino's private instruction schools SaKuRa One All Rights Reserved.",
+ "info_signup" => "The URL for main registration will be sent to the email address you entered.",
+ "already_signup" => "If you have already registered, please log in here to use",
  ];

@@ -9,6 +9,7 @@ return [
   'other' => 'Other',
   'online' => 'Online',
   'search_keyword' => 'Search Word',
+  'signup' =>     'Sign Up',
   'login'             => 'Login',
   'manual'             => 'Manual',
   'faqs'             => 'FAQ',

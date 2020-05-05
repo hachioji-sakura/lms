@@ -112,11 +112,11 @@ class StudentParentController extends TeacherController
   }
 
   /**
-   * 体験授業申し込みページ
-   *
+   * ユーザー登録
+   *　TODO　体験授業申し込みページ側で、登録されるようにしていたが、
+   * BtoCでの利用を考えると、体験授業なしで、登録できる仕組みがあったほうがよい
    * @return \Illuminate\Http\Response
    */
-   /*
   public function entry(Request $request)
   {
     $param = [
@@ -128,7 +128,6 @@ class StudentParentController extends TeacherController
       ['sended' => ''])
       ->with($param);
    }
-   */
    /**
     * 本登録ページ
     *

@@ -125,4 +125,7 @@ return [
   "message_hope_to_join" => "ご入会を希望しますか？",
   "info_send_verification_code" => "認証コードを送信しました。",
   "info_use_verification_code" => "メールアドレス変更の際、以下の認証コードを入力してください",
+  "copyright" => "Copyright © 国立・八王子・日野の個別指導塾 さくら One All Rights Reserved.",
+  "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
+  "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
 ];

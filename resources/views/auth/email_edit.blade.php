@@ -14,7 +14,7 @@
                   {{__('labels.email')}}
                   <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                 </label>
-                <input type="text" name="new_email" class="form-control" placeholder="{{$user->email}}" required="true" inputtype="email" inputtype="email" query_check="users/email" query_check_error="{{__('messages.message_already_email')}}">
+                <input type="text" name="new_email" class="form-control" placeholder="{{$user->email}}" required="true" inputtype="email" query_check="users/email" query_check_error="{{__('messages.message_already_email')}}">
               </div>
             </div>
           </div>
