@@ -47,20 +47,20 @@ class TeacherController extends StudentController
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
       $lists = ['cancel', 'confirm', 'exchange', 'today', 'rest_contact'];
       foreach($lists as $list){
-        $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
-        $ret[$list.'_count'] = $calendars["count"];
+        $count = $this->get_schedule(["list" => $list], $ret['item']->user_id, '', '', true);
+        $ret[$list.'_count'] = $count;
       }
-      $asks = $this->get_ask([], $ret['item']->user_id);
-      $ret['ask_count'] = $asks["count"];
+      $asks = $this->get_ask([], $ret['item']->user_id, true);
+      $ret['ask_count'] = $count;
       $lists = ['lecture_cancel', 'rest_cancel'];
       foreach($lists as $list){
-        $asks = $this->get_ask(["list" => $list], $ret['item']->user_id);
-        $ret[$list.'_count'] = $asks["count"];
+        $count = $this->get_ask(["list" => $list], $ret['item']->user_id, true);
+        $ret[$list.'_count'] = $count;
       }
       $lists = ['confirm_list', 'fix_list'];
       foreach($lists as $list){
-        $calendar_settings = $this->get_calendar_settings(["list" => $list], $ret['item']->user_id);
-        $ret[$list.'_setting_count'] = $calendar_settings["count"];
+        $count = $this->get_calendar_settings(["list" => $list], $ret['item']->user_id, true);
+        $ret[$list.'_setting_count'] = $count;
       }
 
     }
@@ -430,9 +430,12 @@ class TeacherController extends StudentController
 
       //当月1日より、checked_atに日にちが入っている
       $is_checked = false;
-      $check_calendars = $calendars->where('checked_at','>', $from_date);
-      if(count($check_calendars) == count($calendars)){
-        $is_checked=true;
+      $check_calendars = [];
+      if($calendars!=null){
+        $check_calendars = $calendars->where('checked_at','>', $from_date);
+        if(count($check_calendars) == count($calendars)){
+          $is_checked=true;
+        }
       }
 
       //未入力の予定＝最終ステータス以外

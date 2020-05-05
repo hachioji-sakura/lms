@@ -7,6 +7,7 @@ return [
   'man' => 'Man',
   'woman' => 'Woman',
   'other' => 'Other',
+  'online' => 'Online',
   'search_keyword' => 'Search Word',
   'login'             => 'Login',
   'manual'             => 'Manual',
@@ -326,4 +327,5 @@ return [
   'language' => 'Language',
   'sheat' => 'Sheat',
   'result' => 'Result',
+  'reset' => 'Reset',
 ];

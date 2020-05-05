@@ -128,13 +128,15 @@ class MailLog extends Model
       App::setLocale($this->locale);
       $data = [];
       $item = $this;
-      Mail::raw($this->body, function($mail) use ($item, $is_send_support_mail){
-        $mail = $mail->to($item->to_address);
-        $mail = $mail->subject($item->subject);
-        if($is_send_support_mail==true){
-          $mail = $mail->cc(config('app.support_mail'));
-        }
-      });
+      if(config('app.env')!=="local"){
+        Mail::raw($this->body, function($mail) use ($item, $is_send_support_mail){
+          $mail = $mail->to($item->to_address);
+          $mail = $mail->subject($item->subject);
+          if($is_send_support_mail==true){
+            $mail = $mail->cc(config('app.support_mail'));
+          }
+        });
+      }
       $this->update(['status' => 'sended']);
     }
     catch(\Exception $e){

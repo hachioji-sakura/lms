@@ -1,15 +1,23 @@
-<div class="col-12 mt-2 couse_type_group">
+<div class="col-12 mt-2">
   <div class="form-group">
     <label for="send_mail" class="w-100">
       {{__('labels.schedule_change_remind')}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group" >
-      <input class="form-check-input icheck flat-grey" type="radio" name="send_mail" id="send_none" value="none" required="true" checked>
-      <label class="form-check-label mr-3" for="send_none" checked>
+      <input class="form-check-input icheck flat-grey" type="radio" name="send_mail" id="send_none" value="none" required="true"
+      @if(!isset($default_send_teacher) || $default_send_teacher==false)
+      checked
+      @endif
+      >
+      <label class="form-check-label mr-3" for="send_none">
         {{__('labels.no_remind')}}
       </label>
-      <input class="form-check-input icheck flat-red" type="radio" name="send_mail" id="send_teacher" value="teacher" required="true" >
+      <input class="form-check-input icheck flat-red" type="radio" name="send_mail" id="send_teacher" value="teacher" required="true"
+      @if(isset($default_send_teacher) && $default_send_teacher==true)
+      checked
+      @endif
+      >
       <label class="form-check-label mr-3" for="send_teacher">
         {{__('labels.send_to_teacher')}}
       </label>

@@ -83,11 +83,11 @@ class StudentController extends UserController
       }
       $lists = ['cancel', 'confirm', 'exchange', 'month', 'rest_contact'];
       foreach($lists as $list){
-        $calendars = $this->get_schedule(["list" => $list], $ret['item']->user_id);
-        $ret[$list.'_count'] = $calendars['count'];
+        $count = $this->get_schedule(["list" => $list], $ret['item']->user_id, '', '', true);
+        $ret[$list.'_count'] = $count;
       }
-      $asks = $this->get_ask([], $ret['item']->user_id);
-      $ret['ask_count'] = $asks['count'];
+      $count = $this->get_ask([], $ret['item']->user_id, true);
+      $ret['ask_count'] = $count;
     }
     else {
       if(!$this->is_manager_or_teacher($user->role)){
@@ -589,7 +589,7 @@ class StudentController extends UserController
      'calendar_settings' => $calendar_settings['data'],
    ])->with($param);
  }
- public function get_calendar_settings($form, $user_id){
+ public function get_calendar_settings($form, $user_id, $is_count_only = false){
    $user = User::where('id', $user_id)->first()->details();
    if(!isset($form['list'])) $form['list'] = '';
    switch($form['list']){
@@ -609,7 +609,7 @@ class StudentController extends UserController
 
    $calendar_settings = $user->get_calendar_settings($form);
    $count = count($calendar_settings);
-
+   if($is_count_only == true) return $count;
    if(isset($form['_page']) && isset($form['_line'])){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
    }
@@ -624,7 +624,7 @@ class StudentController extends UserController
    return ["data" => $calendar_settings, 'count' => $count];
  }
 
- public function get_schedule($form, $user_id, $from_date = '', $to_date = ''){
+ public function get_schedule($form, $user_id, $from_date = '', $to_date = '', $is_count_only = false){
    $user = User::where('id', $user_id)->first()->details();
    $form['_sort'] ='start_time';
    $statuses = [];
@@ -757,6 +757,7 @@ class StudentController extends UserController
      $calendars = $calendars->searchWord($form['search_keyword']);
    }
    $count = $calendars->count();
+   if($is_count_only==true) return $count;
    $calendars = $calendars->sortStarttime($sort);
 
    if(isset($form['_page']) && isset($form['_line'])){
@@ -775,7 +776,7 @@ class StudentController extends UserController
 
    return ["data" => $calendars, 'count' => $count];
  }
- public function get_ask($form, $user_id){
+ public function get_ask($form, $user_id, $is_count_only = false){
    if(!isset($form['list'])) $form['list'] = '';
    $default_status = 'new';
    switch($form['list']){
@@ -797,14 +798,15 @@ class StudentController extends UserController
      case "unsubscribe":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['unsubscribe'];
-         $form['search_status'] = ['new', 'commit'];
-         $default_status = 'commit';
+         $form['search_status'] = ['new'];
        }
        break;
      case "recess":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['recess'];
-         $form['search_status'] = ['new', 'commit'];
+       }
+       if(!isset($form['search_status'])){
+         $form['search_status'] = ['new'];
        }
        break;
      case "phone":
@@ -843,6 +845,7 @@ class StudentController extends UserController
      $asks = $asks->findUser($user_id);
    }
    $count = $asks->count();
+   if($is_count_only==true) return $count;
    $asks = $asks->sortEnddate($sort);
 
    if(isset($form['_page']) && isset($form['_line'])){
@@ -852,7 +855,7 @@ class StudentController extends UserController
    $asks = $asks->get();
    return ["data" => $asks, 'count' => $count];
  }
- public function get_tuition($form, $id){
+ public function get_tuition($form, $id, $is_count_only = false){
    if(!isset($form['list'])) $form['list'] = '';
    $default_status = 'new';
    switch($form['list']){
@@ -881,6 +884,7 @@ class StudentController extends UserController
    }
 
    $count = $tuitions->count();
+   if($is_count_only==true) return $count;
 
    //echo $tuitions->toSql();
    $tuitions = $tuitions->get();
@@ -1170,31 +1174,33 @@ class StudentController extends UserController
     if(!$this->is_success_response($req)){
       return $req;
     }
+
     $res =  $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
        $item = $this->model()->where('id',$id)->first();
-
        if(isset($form['email']) && isset($form['password'])){
          $update_params = [
            'email' => $form['email'],
            'password' => Hash::make($form['password']),
            'status' => 0
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }elseif(isset($form['email'])){
          $update_params = [
            'email' => $form['email']
          ];
-         User::where('id', $item->user_id)->update($update_params);
+       }elseif(!empty($form['reset'])){
+         $update_params = [
+           'status' => 1
+         ];
        }
+       User::where('id', $item->user_id)->update($update_params);
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
 
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
-
 
 
 }

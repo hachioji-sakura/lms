@@ -83,10 +83,6 @@ class Controller extends BaseController
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
-      if(config('app.env')==="local"){
-        return true;
-      }
-
       $mail_log_res = MailLog::add(config('mail.from')['address'], $to, $title, $param, $type, $template, $locale);
       if($this->is_success_response($mail_log_res)){
         if(isset($mail_log_res['data'])){
