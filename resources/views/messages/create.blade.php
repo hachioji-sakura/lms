@@ -23,7 +23,7 @@
           <input type="hidden" name="target_user_id[]" value="{{$item->target_user_id}}">
           @else
           {{$item->create_user->details()->name()}}
-          <input type="hidden" name="target_user_id" value="{{$item->create_user_id}}">
+          <input type="hidden" name="target_user_id[]" value="{{$item->create_user_id}}">
           @endif
         @endif
       </div>
@@ -32,7 +32,7 @@
            <label>{{__('labels.title')}}</label>
            @if($_reply == false)
            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-           <input type="text" name="title" class="form-control" placeholder="タイトル" required="true" required="true" >
+           <input type="text" name="title" class="form-control" placeholder="タイトル" required="true"minlength="5" maxlength="50" >
            @else
            Re:{{$item->title}}
            <input type="hidden" name="title" value="Re:{{$item->title}}">
@@ -61,7 +61,7 @@
         <div class="form-group">
           <label>{{__('labels.body')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <textarea class="form-control" name="body" rows="5" placeholder="{{__('labels.required')}}" required="true"></textarea>
+          <textarea class="form-control" name="body" rows="5"  required="true" minlength="10" maxlength="5000"></textarea>
           @if($_reply == false)
           <input type="hidden" name="parent_message_id" value="0">
           @else

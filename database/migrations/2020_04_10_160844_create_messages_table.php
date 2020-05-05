@@ -17,7 +17,7 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->integer('parent_message_id')->nullable(false);
             $table->string('title')->nullable(false)->comment('件名');
-            $table->string('body')->nullable(false)->comment('内容');
+            $table->string('body',10000)->nullable(false)->comment('内容');
             $table->string('type')->nullable(false);
             $table->string('s3_url')->nullable()->default(null);
             $table->string('s3_alias')->nullable()->default(null);

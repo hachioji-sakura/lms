@@ -24,6 +24,22 @@
        @endforeach
     </ul>
     @endif
+    <li class="nav-item has-treeview menu-open mt-2">
+      <a href="#" class="nav-link">
+        <i class="nav-icon fa fa-comment"></i>
+        <p>
+          {{__('labels.message')}}
+          <i class="right fa fa-angle-left"></i>
+        </p>
+      </a>
+      <ul class="nav nav-treeview">
+        <li class="nav-item">
+          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" class="nav-link">
+            <i class="fa fa-pen-square nav-icon"></i>{{__('labels.new').__('labels.message')}}
+          </a>
+        </li>
+      </ul>
+    </li>
   </li>
 </ul>
 @endsection
@@ -46,11 +62,6 @@
             {{__('labels.message_list')}}
           </h3>
         </div>
-        <div class="col-12">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" role="button" class="btn btn-primary btn-sm" >
-            <i class="fa fa-pen-square mr-2"></i>{{__('labels.new')}}
-          </a>
-        </div>
       </div>
       <div class="card-tools">
         @component('components.search_word', ['search_word' => $search_word])
@@ -61,45 +72,41 @@
         <!-- 検索 -->
       </div>
     </div>
-    <div class="card-body table-responsive p-0">
+    <div class="card-body p-0">
       @if(count($items) > 0)
-      <table class="table table-hover table-striped table-sm">
-        <tbody>
-          @foreach($fields as $field)
-            @if($field['label'] == __('labels.message_type'))
-            <th class="d-md-block d-none">
-              {{$field['label']}}
-            </th>
-            @else
-            <th>{{$field['label']}}</th>
-            @endif
-          @endforeach
-          @foreach($items as $item)
-          <tr>
-            <td>
+      <ul class="products-list product-list-in-card pl-2 pr-2">
+        <li class="item  bg-light">
+          <div class="row">
+            @foreach($fields as $field)
+              <div class="col-4">
+                <label class="">
+                  {{$field['label']}}
+                </label>
+              </div>
+            @endforeach
+          </div>
+        </li>
+        @foreach($items as $item)
+        <li class="item">
+          <div class="row">
+            <div class="col-4 text-truncate">
               <a href="/messages/{{$item->id}}/details" title="{{$item->id}}">
-                <i class="fa fa-tag mr-1"></i>
                 {{$item->title}}
-                @if(!empty($item->s3_url))
-                   <i class="fas fa-paperclip"></i>
-                @endif
               </a>
-            </td>
-            <td class="d-md-block d-none">
-              <span class="text-xs ms-2">
-                <small class="badge badge-{{config('status_style')[$item->type]}}  ml-2 mr-1">
-                  {{config('attribute.message_type')[$item->type]}}
-                </small>
-              </span>
-            </td>
-            <td>{{$item->create_user->details()->name()}}</td>
-            <td>
-                {{$item->created_at}}
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
+              @if(!empty($item->s3_url))
+                 <i class="fas fa-paperclip"></i>
+              @endif
+            </div>
+            <div class="col-4">
+              {{$item->create_user->details()->name()}}
+            </div>
+            <div class="col-4">
+              {{$item->dateweek_format($item->created_at,'Y/m/d H:m:s')}}
+            </div>
+          </div>
+        </li>
+        @endforeach
+      </ul>
       @else
       <div class="alert">
         <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>

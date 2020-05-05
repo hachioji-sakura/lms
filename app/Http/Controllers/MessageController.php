@@ -33,9 +33,6 @@ class MessageController extends CommentController
         'title' => [
           'label' => __('labels.title'),
         ],
-        'type' => [
-          'label' => __('labels.message_type'),
-        ],
         'target_user' =>[
           'label' => __('labels.create_user'),
         ],

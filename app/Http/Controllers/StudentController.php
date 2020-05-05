@@ -1199,13 +1199,9 @@ class StudentController extends UserController
   public function message_list(Request $request, $id = null){
     $params = $this->get_param($request, $id);
     $messages = $this->message_search($request, $id);
-
     $fields = [
       'title' => [
         'label' => __('labels.title'),
-      ],
-      'type' => [
-        'label' => __('labels.message_type'),
       ],
       'target_user' =>[
         'label' => __('labels.create_user'),
@@ -1225,6 +1221,7 @@ class StudentController extends UserController
   public function message_search(Request $request,$id){
     $login_user = $this->login_details($request);
     $query = Message::query();
+    $query = $query->where('parent_message_id','0');
     $query = $this->make_search_query($request, $query, $id);
     $query = $query->orderBy('created_at','desc');
     $messages = $query->paginate(20);

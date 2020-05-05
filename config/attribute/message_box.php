@@ -1,6 +1,10 @@
 <?php
 return array(
-//  'all' => 'すべてのメッセージ',
+  'all' => [
+      'icon' => 'envelope',
+      'name' => 'すべてのメッセージ',
+    ],
+  /*
   'inbox' => [
       'icon' => 'envelope',
       'name' => '受信箱'
@@ -9,5 +13,6 @@ return array(
       'icon' => 'paper-plane',
       'name' => '送信済'
     ],
+    */
 );
 ?>
