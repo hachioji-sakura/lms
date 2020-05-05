@@ -7,7 +7,7 @@
     <span id="student_name_last">{{$item['name_last']}}</span>
     @else
     <label for="{{$prefix}}name_last">
-      {{__('labels.name_first')}}
+      {{__('labels.name_last')}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <input type="text" id="name_last" name="{{$prefix}}name_last" class="form-control" placeholder="例：八王子" required="true" inputtype="zenkaku" @isset($item) value="{{$item['name_last']}}" @endisset>

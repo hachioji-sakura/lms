@@ -324,6 +324,7 @@ return [
   "error_user_calendar_settings_no_member" => "Insufficient member settings!",
   'schedule_start_hope_date' => 'Schedule Start Date',
   'verification_code' => 'Verification Code',
+  'language' => 'Language',
   'sheat' => 'Sheat',
   'result' => 'Result',
   'reset' => 'Reset',

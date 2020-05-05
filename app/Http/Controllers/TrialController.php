@@ -457,20 +457,18 @@ class TrialController extends UserCalendarController
        $user_name = $user['name'];
        //講師以外には送らない
        if(!$this->is_teacher($user->role)) continue;
-
-       $this->send_mail($email,
-        $title,
-        [
-        'login_user' => $login_user,
-        'user_name' => $user_name,
-        'send_from' => $send_from,
-        'send_to' => $send_to,
-        'item' => $calendar
-        ],
+       $member->user->send_mail(
+         $title,
+         [
+         'login_user' => $login_user,
+         'user_name' => $user_name,
+         'send_from' => $send_from,
+         'send_to' => $send_to,
+         'item' => $calendar
+         ],
         'text',
         $template,
-        $member->user->get_locale()
-      );
+       );
      }
      return true;
    }

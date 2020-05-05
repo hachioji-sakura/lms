@@ -1001,10 +1001,10 @@ EOT;
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
       $is_send_mail = true;
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     if($is_send_mail==false){
-      $this->user->send_mail($title, $param, $type, $template, $this->user->get_locale());
+      $this->user->send_mail($title, $param, $type, $template, $this->user->locale);
     }
     return;
   }
@@ -1018,7 +1018,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     return;
   }
