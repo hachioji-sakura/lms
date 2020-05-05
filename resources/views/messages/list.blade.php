@@ -17,8 +17,8 @@
     <ul class="nav nav-treeview">
       @foreach(config('attribute.message_box') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}/{{$item->id}}/messages?search_list={{$index}}" class="nav-link @if(isset($filter['search_list']) && $index===$filter['search_list']) active @endif">
-           <i class="fa fa-envelope nav-icon"></i>{{$name}}
+         <a href="/{{$domain}}/{{$item->id}}/messages?search_list={{$index}}" class="nav-link @if(isset($search_list) && $index===$search_list) active @endif">
+          <i class="fa fa-{{$name['icon']}} nav-icon"></i>{{$name['name']}}
          </a>
        </li>
        @endforeach
@@ -47,8 +47,8 @@
           </h3>
         </div>
         <div class="col-12">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" role="button" class="btn btn-primary btn-sm btn-block col-1" >
-            <i class="fa fa-envelope mr-1"></i>{{__('labels.new')}}
+          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" role="button" class="btn btn-primary btn-sm" >
+            <i class="fa fa-pen-square mr-2"></i>{{__('labels.new')}}
           </a>
         </div>
       </div>

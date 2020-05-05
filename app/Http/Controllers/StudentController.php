@@ -1217,8 +1217,8 @@ class StudentController extends UserController
     $message_params = [
       'items' => $messages,
       'fields' => $fields,
+      'search_list' => $request->get('search_list'),
     ];
-
     return view('messages.list',$message_params)->with($params);
 }
 

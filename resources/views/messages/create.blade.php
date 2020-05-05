@@ -27,7 +27,7 @@
           @endif
         @endif
       </div>
-      <div class="col-6">
+      <div class="col-12">
          <div class="form-group">
            <label>{{__('labels.title')}}</label>
            @if($_reply == false)
@@ -39,6 +39,9 @@
            @endif
          </div>
       </div>
+      <input type="hidden" name="type" value="information">
+      <!--
+      種別は用途が曖昧なためいったん出さない
       <div class ="col-6">
         <label>{{__('labels.message_type')}}</label>
         @if($_reply == false)
@@ -53,6 +56,7 @@
         <input type="hidden" name="type" value="{{$item->type}}">
         @endif
       </div>
+    -->
       <div class="col-12">
         <div class="form-group">
           <label>{{__('labels.body')}}</label>
