@@ -5,6 +5,7 @@
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <!--- スレッドビューまで封印
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -13,6 +14,7 @@
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
+
     @isset($item)
     <ul class="nav nav-treeview">
       @foreach(config('attribute.message_box') as $index => $name)
@@ -24,6 +26,7 @@
        @endforeach
     </ul>
     @endif
+    -->
     <li class="nav-item has-treeview menu-open mt-2">
       <a href="#" class="nav-link">
         <i class="nav-icon fa fa-comment"></i>
@@ -78,7 +81,7 @@
         <li class="item  bg-light">
           <div class="row">
             @foreach($fields as $field)
-              <div class="col-4">
+              <div class="col-3">
                 <label class="">
                   {{$field['label']}}
                 </label>
@@ -89,19 +92,25 @@
         @foreach($items as $item)
         <li class="item">
           <div class="row">
-            <div class="col-4 text-truncate">
-              <a href="/messages/{{$item->id}}/details" title="{{$item->id}}">
-                {{$item->title}}
-              </a>
+            <div class="col-3 text-truncate">
               @if(!empty($item->s3_url))
                  <i class="fas fa-paperclip"></i>
               @endif
+              <a href="javascript:void(0)" page_url="/messages/{{$item->id}}/details" page_title="{{$item->title}}" page_form="dialog" title="{{$item->id}}">
+                {{$item->title}}
+              </a>
             </div>
-            <div class="col-4">
+            <div class="col-3">
               {{$item->create_user->details()->name()}}
             </div>
-            <div class="col-4">
-              {{$item->dateweek_format($item->created_at,'Y/m/d H:m:s')}}
+            <div class="col-3">
+              {{$item->dateweek_format($item->created_at,'Y/m/d H:m')}}
+            </div>
+            <div class="col-3">
+              <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm">
+                <i class="fa fa-reply mr-2"></i>{{__('labels.reply')}}
+              </a>
+
             </div>
           </div>
         </li>

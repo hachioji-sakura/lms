@@ -340,4 +340,6 @@ return [
   'sheat' => '座席',
   'result' => '結果',
   'request_error' => 'リクエストエラー',
+  'original_message' => '元のメッセージ',
+  'from' => '送信者',
 ];

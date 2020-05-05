@@ -27,7 +27,7 @@
           @endif
         @endif
       </div>
-      <div class="col-12">
+      <div class="col-12 mt-2">
          <div class="form-group">
            <label>{{__('labels.title')}}</label>
            @if($_reply == false)
@@ -39,6 +39,19 @@
            @endif
          </div>
       </div>
+      @if($_reply)
+        <div class="col-12">
+          <label for="original_message" class="w-100">
+            {{__('labels.original_message')}}
+             <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#original_message"><i class="fas fa-plus"></i></button>
+          </label>
+        </div>
+        <div class="collapse" id="original_message">
+          <div class="col-12">
+            {!!nl2br($item->body)!!}
+          </div>
+        </div>
+      @endif
       <input type="hidden" name="type" value="information">
       <!--
       種別は用途が曖昧なためいったん出さない
@@ -57,7 +70,7 @@
         @endif
       </div>
     -->
-      <div class="col-12">
+      <div class="col-12 mt-2">
         <div class="form-group">
           <label>{{__('labels.body')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
@@ -91,3 +104,11 @@
     </div>
   </form>
 </div>
+
+<script>
+<script>
+$(function(){
+  base.pageSettinged("message_create",null);
+});
+</script>
+</script>

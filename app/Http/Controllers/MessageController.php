@@ -48,7 +48,11 @@ class MessageController extends CommentController
       return view( $this->domain.'.list',$message_params)->with($params);
     }
 
-
+     public function details(Request $request ,$id){
+       $param = $this->get_param($request, $id);
+       return view($this->domain.'.simple_details')->with($param);
+     }
+/*
     public function details(Request $request, $id){
       $params = $this->get_param($request,$id);
       $user = $this->login_details($request);
@@ -73,6 +77,7 @@ class MessageController extends CommentController
       ];
       return view($this->domain.'.details',$message_params)->with($params);
     }
+    */
 
     public function create(Request $request){
       $param = $this->get_param($request);

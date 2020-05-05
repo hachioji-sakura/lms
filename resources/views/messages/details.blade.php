@@ -1,5 +1,5 @@
 @extends('dashboard.common')
-
+<!-- スレッドビューまで封印　-->
 @section('title', $items->first()->title)
 
 @section('page_sidemenu')

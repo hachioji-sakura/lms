@@ -1221,7 +1221,8 @@ class StudentController extends UserController
   public function message_search(Request $request,$id){
     $login_user = $this->login_details($request);
     $query = Message::query();
-    $query = $query->where('parent_message_id','0');
+    //スレッドビューまで封印
+//    $query = $query->where('parent_message_id','0');
     $query = $this->make_search_query($request, $query, $id);
     $query = $query->orderBy('created_at','desc');
     $messages = $query->paginate(20);

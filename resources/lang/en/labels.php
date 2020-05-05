@@ -333,4 +333,6 @@ return [
   'new' => 'NEW',
   'message' => 'Message',
   'request_error' => 'Request error',
+  'original_message' => 'Original message',
+  'from' => 'From',
 ];
