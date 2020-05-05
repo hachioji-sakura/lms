@@ -1,19 +1,11 @@
 @include('emails.common')
 
-@if($item->target_user->role == "parent")
+@if($item->target_user->details()->role == "parent" || $item->target_user->details()->role == "student")
 {{__('messages.mail_dear',['user_name' => $item->target_user->details()->name])}}
-@elseif($item->target_user->role == "teacher")
+@elseif($item->target_user->details()->role == "teacher")
 {{__('messages.mail_dear_teacher',['user_name' => $item->target_user->details()->name])}}
-@elseif($item->target_user->role == "manager")
+@elseif($item->target_user->details()->role == "manager")
 {{__('messages.mail_dear_manager',['user_name' => $item->target_user->details()->name])}}
-@endif
-
-@if($item->create_user->role == "parent")
-{{__('messages.mail_dear',['user_name' => $item->create_user->details()->name])}}
-@elseif($item->create_user->role == "teacher")
-{{__('messages.mail_dear_teacher',['user_name' => $item->create_user->details()->name])}}
-@elseif($item->create_user->role == "manager")
-{{__('messages.mail_dear_manager',['user_name' => $item->create_user->details()->name])}}
 @endif
 
 --------------------------------------

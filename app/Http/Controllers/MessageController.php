@@ -153,7 +153,15 @@ class MessageController extends CommentController
           $template = 'message';
           $type = 'text';
           $param = ['item' => $item ];
-          $item->target_user->send_mail(__('messages.message_title',['user_name' => $item->create_user->details()->name()]), $param, $type ,$template);
+          if($item->create_user->details()->role == "parent"){
+            $title_of_honor = "様";
+          }elseif($item->create_user->details()->role == "teacher"){
+            $title_of_honor = "先生";
+          }else{
+            $title_of_honor = "さん";
+          }
+
+          $item->target_user->send_mail(__('messages.message_title',['user_name' => $item->create_user->details()->name(),'title_of_honor' => $title_of_honor]), $param, $type ,$template);
         }
       }
       return $res;
