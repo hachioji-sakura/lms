@@ -150,10 +150,15 @@ class AuthController extends UserController
          'verification_code' => $verification_code,
          'email_verified_at' => date('Y-m-d H:i:s', strtotime("+1 day ".date('Y-m-d H:i:s'))),
        ]);
+       if( !empty(session('locale')) ){
+         $locale = session('locale');
+       }else{
+         $locale = $user->locale;
+       }
        $this->send_mail($request->get('new_email'), $title, [
          'user_name' => $user->name(),
          'verification_code' => $verification_code,
-       ], 'text', 'send_accesskey',$user->locale);
+       ], 'text', 'send_accesskey',$locale);
        return $this->api_response(200, "", "");
      }, $title, __FILE__, __FUNCTION__, __LINE__ );
      return $res;
