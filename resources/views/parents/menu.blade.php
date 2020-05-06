@@ -24,7 +24,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="/{{$domain}}/{{$item->id}}/messages?search_list=inbox" class="nav-link">
+          <a href="/{{$domain}}/{{$item->id}}/messages" class="nav-link">
             <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
           </a>
         </li>
