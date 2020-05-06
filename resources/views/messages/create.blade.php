@@ -106,9 +106,9 @@
 </div>
 
 <script>
-<script>
+
 $(function(){
   base.pageSettinged("message_create",null);
 });
-</script>
+
 </script>

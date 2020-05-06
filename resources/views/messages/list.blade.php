@@ -38,7 +38,7 @@
       <ul class="nav nav-treeview">
         <li class="nav-item">
           <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" class="nav-link">
-            <i class="fa fa-pen-square nav-icon"></i>{{__('labels.new').__('labels.message')}}
+            <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.message')}}
           </a>
         </li>
       </ul>
@@ -78,21 +78,10 @@
     <div class="card-body p-0">
       @if(count($items) > 0)
       <ul class="products-list product-list-in-card pl-2 pr-2">
-        <li class="item  bg-light">
-          <div class="row">
-            @foreach($fields as $field)
-              <div class="col-3">
-                <label class="">
-                  {{$field['label']}}
-                </label>
-              </div>
-            @endforeach
-          </div>
-        </li>
         @foreach($items as $item)
         <li class="item">
           <div class="row">
-            <div class="col-3 text-truncate">
+            <div class="col-7 text-truncate">
               @if(!empty($item->s3_url))
                  <i class="fas fa-paperclip"></i>
               @endif
@@ -100,17 +89,22 @@
                 {{$item->title}}
               </a>
             </div>
-            <div class="col-3">
-              {{$item->create_user->details()->name()}}
-            </div>
-            <div class="col-3">
-              {{$item->dateweek_format($item->created_at,'Y/m/d H:m')}}
-            </div>
-            <div class="col-3">
-              <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm">
-                <i class="fa fa-reply mr-2"></i>{{__('labels.reply')}}
-              </a>
+            <div class="col-5">
+              <div class="row">
+                <div class="col-7">
+                  {{$item->create_user->details()->name()}}
+                </div>
+                <div class="col-5">
+                  <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-reply"></i>
+                  </a>
+                </div>
+              </div>
 
+              <small class="text-muted">
+                <i class="fa fa-clock mr-1"></i>
+                {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
+              </small>
             </div>
           </div>
         </li>
@@ -137,4 +131,12 @@
     </div>
     @endslot
   @endcomponent
+@endsection
+
+@section('page_footer')
+<dt>
+  <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="{{__('labels.new')}}{{__('labels.message')}}" class="btn btn-app">
+    <i class="fa fa-plus mr-1"></i>{{__('labels.new')}}
+  </a>
+</dt>
 @endsection
