@@ -1,3 +1,5 @@
+@section('title' , __('labels.signup'))
+
 @include('layouts.start')
 @include('layouts.end')
 @include('layouts.modal')
@@ -23,18 +25,10 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
       <div class="input-group">
-        <label for="name_first">
-          {{__('labels.name_first')}}
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        </label>
-        <input type="text" id="name_first" name="name_first" class="form-control" placeholder="例：太郎" required="true" inputtype="zenkaku" >
-      </div>
-      <div class="input-group">
       	<div class="input-group-prepend">
       		<span class="input-group-text"><i class="fa fa-envelope"></i></span>
       	</div>
-      	<input type="email" class="form-control" placeholder="Email" required="true" inputtype="email" query_check="users/email" query_check_error="{{__('messages.message_already_email')}}">
-
+      	<input name="email" type="email" class="form-control" placeholder="Email" required="true" inputtype="email" >
         <div class="input-group-append">
           <button type="button" class="btn btn-submit btn-success"><i class="fa fa-arrow-right"></i></button>
         </div>
@@ -43,6 +37,17 @@
     <!-- /.lockscreen credentials -->
 
   </div>
+  @if(!empty($result))
+    @if($result=='already')
+      <div class="alert alert-danger text-sm pr-2 text-sm mt-4">
+        このメールアドレスは、すでに登録済みです
+      </div>
+    @elseif($result=='success')
+    <div class="alert alert-success text-sm pr-2 text-sm mt-4">
+      {{$email}}に本登録用のURLを送信しました
+    </div>
+    @endif
+  @endif
   <!-- /.lockscreen-item -->
   <div class="text-center text-muted">
     {!!nl2br(__('messages.already_signup'))!!}

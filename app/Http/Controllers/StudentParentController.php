@@ -125,9 +125,63 @@ class StudentParentController extends TeacherController
       'attributes' => $this->attributes(),
     ];
     return view($this->domain.'.entry',
-      ['sended' => ''])
+      ['result' => ''])
       ->with($param);
    }
+   /**
+    * 仮登録処理
+    *
+    * @return \Illuminate\Http\Response
+    */
+   public function entry_store(Request $request)
+   {
+     $param = [
+       'domain' => $this->domain,
+       'domain_name' => __('labels.'.$this->domain),
+       'attributes' => $this->attributes(),
+       'email' => $request->get('email'),
+     ];
+
+     $result = '';
+     $form = $request->all();
+     $res = $this->api_response(200);
+     $access_key = $this->create_token();
+
+     $user = User::where('email', $form['email'])->first();
+     $result = '';
+     if(!isset($user)){
+       $res =  $this->transaction($request, function() use ($request,$access_key){
+         $form = $request->all();
+         $form["access_key"] = $access_key;
+         $form["name_last"] = '';
+         $form["name_first"] = '';
+         $form["password"] = 'sakusaku';
+         $item = StudentParent::entry($form);
+         return $this->api_response(200, '', '', $item);
+       }, __('labels.'.$this->domain).'登録', __FILE__, __FUNCTION__, __LINE__ );
+       $result = 'success';
+     }
+     else {
+       if($user->status===1){
+         //すでにユーザーが仮登録されている場合は、tokenを更新
+         $user->update( ['access_key' => $access_key]);
+         $result = 'success';
+       }
+       else {
+         //本登録済み
+         $result = 'already';
+       }
+     }
+     if($this->is_success_response($res)){
+       $this->send_mail($form['email'],
+         '仮登録完了', [
+         'access_key' => $access_key,
+       ], 'text', 'signup');
+     }
+     return view($this->domain.'.entry',
+       ['result' => $result])->with($param);
+   }
+
    /**
     * 本登録ページ
     *
@@ -220,27 +274,26 @@ class StudentParentController extends TeacherController
       return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
         $parent = StudentParent::where('user_id', $user->id)->first();
-        $parent->profile_update([
-          'name_last' => $form['parent_name_last'],
-          'name_first' => $form['parent_name_first'],
-          'kana_last' => $form['parent_kana_last'],
-          'kana_first' => $form['parent_kana_first'],
-          'phone_no' => $form['phone_no'],
-          'status' => 'regular',
-          'create_user_id' => $form['create_user_id'],
-        ]);
-
+        if(!isset($parent)){
+          $parent = StudentParent::create([
+                  'name_last' => $form['parent_name_last'],
+                  'name_first' => $form['parent_name_first'],
+                  'kana_last' => $form['parent_kana_last'],
+                  'kana_first' => $form['parent_kana_first'],
+                  'phone_no' => $form['phone_no'],
+                  'post_no' => $form['post_no'],
+                  'address' => $form['address'],
+                  'status' => 'regular',
+                  'create_user_id' => $form['create_user_id'],
+                  'user_id' => $user->id,
+                  'create_user_id' => $user->id,
+                  'status' => 'regular',
+                ]);
+        }
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
-/*
-        $trial = Trial::where('id', $form['trial_id'])->first();
-        //体験申し込みの生徒を本登録
-        foreach($trial->trial_students as $trial_student){
-          $trial_student->student->regular();
-        }
-*/
         return $this->api_response(200, "", "", $user);
-      }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
+      }, 'アカウント登録', __FILE__, __FUNCTION__, __LINE__ );
     }
 
 }

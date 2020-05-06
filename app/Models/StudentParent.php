@@ -45,6 +45,7 @@ class StudentParent extends Teacher
   }
   static public function entry($form){
     $ret = [];
+
     $parent_user = User::where('email', $form['email'])->first();
     $parent = null;
     if(isset($parent_user)){
