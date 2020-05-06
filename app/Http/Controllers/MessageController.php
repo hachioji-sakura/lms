@@ -222,6 +222,8 @@ class MessageController extends CommentController
           if($_fail_check == 0 && ($item['create_user_id'] !== $user->user_id && $item['target_user_id'] !== $user->user_id)){
             abort(403);
           }
+        }elseif($user->id == 1){
+          //rootなら何でも見られる
         }elseif($this->is_teacher($role) || $this->is_manager($role)){
           //先生、事務は自分が関係する投稿のみ
           //事務は/messagesですべてのレコードを見る

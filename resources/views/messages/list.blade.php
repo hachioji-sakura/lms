@@ -81,18 +81,33 @@
         @foreach($items as $item)
         <li class="item">
           <div class="row">
-            <div class="col-7 text-truncate">
+            <div class="col-6 text-truncate">
+              <div class="row">
+                <div class="col-12">
+                  <a href="javascript:void(0)" page_url="/messages/{{$item->id}}/details" page_title="{{$item->title}}" page_form="dialog" title="{{$item->id}}">
+                    {{$item->title}}
+                  </a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 text-truncate">
+                  <small>
+                    {{$item->body}}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-1">
               @if(!empty($item->s3_url))
                  <i class="fas fa-paperclip"></i>
               @endif
-              <a href="javascript:void(0)" page_url="/messages/{{$item->id}}/details" page_title="{{$item->title}}" page_form="dialog" title="{{$item->id}}">
-                {{$item->title}}
-              </a>
             </div>
             <div class="col-5">
               <div class="row">
                 <div class="col-7">
-                  {{$item->create_user->details()->name()}}
+                  <small>
+                    {{$item->create_user->details()->name()}}
+                  </small>
                 </div>
                 <div class="col-5">
                   <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm">
@@ -100,11 +115,12 @@
                   </a>
                 </div>
               </div>
-
-              <small class="text-muted">
-                <i class="fa fa-clock mr-1"></i>
-                {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
-              </small>
+              <div class="row">
+                <small class="text-muted">
+                  <i class="fa fa-clock mr-1"></i>
+                  {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
+                </small>
+              </div>
             </div>
           </div>
         </li>
