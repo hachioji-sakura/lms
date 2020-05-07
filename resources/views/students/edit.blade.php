@@ -1,9 +1,13 @@
 @include($domain.'.create_form')
 <div id="students_edit" class="direct-chat-msg">
+  @if($_edit==true)
   <form method="POST"  action="/{{$domain}}/{{$item->id}}">
+  @method('PUT')
+  @else
+  <form method="POST"  action="/{{$domain}}">
+  @endif
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    @method('PUT')
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -58,7 +62,13 @@
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_edit">
                   <i class="fa fa-edit mr-1"></i>
+                  @if($_edit==true)
+                  <i class="fa fa-edit mr-1"></i>
                   {{__('labels.update_button')}}
+                  @else
+                  <i class="fa fa-plus mr-1"></i>
+                  {{__('labels.add_button')}}
+                  @endif
                 </button>
             </div>
           </div>

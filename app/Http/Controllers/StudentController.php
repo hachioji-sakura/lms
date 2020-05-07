@@ -31,6 +31,9 @@ class StudentController extends UserController
   public function model(){
     return Student::query();
   }
+  public function empty_model(){
+    return new Student;
+  }
 
   /**
    * 一覧表示
@@ -192,9 +195,9 @@ class StudentController extends UserController
     }
     */
     $param['student'] = null;
-
+    $param['item'] = $this->empty_model();
     return view($this->domain.'.create',
-      ['error_message' => ''])
+      ['error_message' => '', '_edit' => false, 'item' => null])
       ->with($param);
    }
 
@@ -944,8 +947,8 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
     $param['item']['name'] = $param['item']->name();
     $param['item']['kana'] = $param['item']->kana();
-    $param['item']['birth_day'] = $param['item']->birth_day();
-    $param['item']['gender'] = $param['item']->gender();
+    $param['item']['birth_day'] = $param['item']->label_birth_day();
+    $param['item']['gender'] = $param['item']->label_gender();
     $fields = [
       'name' => [
         'label' => __('labels.name'),
