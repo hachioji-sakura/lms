@@ -7,6 +7,7 @@ return [
   'man' => 'Man',
   'woman' => 'Woman',
   'other' => 'Other',
+  'online' => 'Online',
   'search_keyword' => 'Search Word',
   'login'             => 'Login',
   'manual'             => 'Manual',
@@ -323,8 +324,10 @@ return [
   "error_user_calendar_settings_no_member" => "Insufficient member settings!",
   'schedule_start_hope_date' => 'Schedule Start Date',
   'verification_code' => 'Verification Code',
+  'language' => 'Language',
   'sheat' => 'Sheat',
   'result' => 'Result',
+  'reset' => 'Reset',
   'message_list' => 'Message List',
   'message_type' => 'Message Type',
   'file' => 'file',
@@ -334,5 +337,4 @@ return [
   'message' => 'Message',
   'request_error' => 'Request error',
   'original_message' => 'Original message',
-  'from' => 'From',
-];
+  'from' => 'From',];

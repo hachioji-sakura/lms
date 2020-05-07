@@ -26,6 +26,7 @@
         </div>
       </div>
     </a>
+    @if($user->role!=="student")
     <a href="javascript:void(0);" class="dropdown-item"  page_title="{{__('labels.account_setting')}}" page_form="dialog" page_url="/{{$user["domain"]}}/{{$user->id}}/edit" >
       <i class="fa fa-user-edit mr-2"></i>{{__('labels.account_setting')}}
     </a>
@@ -38,6 +39,7 @@
     <a href="/faqs" class="dropdown-item" >
       <i class="fa fa-question-circle mr-2"></i>{{__('labels.faqs')}}
     </a>
+    @endif
     @if($user->role!=="parent")
       @if(app()->getLocale()=='en')
       <a href="/home?locale=ja" class="dropdown-item" >

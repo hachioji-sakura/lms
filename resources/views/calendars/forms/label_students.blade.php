@@ -19,8 +19,8 @@
     @endif
     {{$member->user->details('students')->name}}
     @if($status_visible==true)
-      @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && !empty(trim($member->rest_result())))
-      ({{$member->rest_result()}})
+      @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && $member->is_rest_status()==true && !empty(trim($member->get_rest_result())))
+      ({{$member->get_rest_result()}})
       @else
       <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->status]}} mt-1">{{$member->status_name()}}</small>
       @endif

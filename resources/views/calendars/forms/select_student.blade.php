@@ -14,7 +14,8 @@
   </div>
   <input type="hidden" name="student_name" value="{{$item['student_name']}}">
 </div>
-@elseif(isset($_edit) && $_edit==true && $item->is_group()==true && $item->is_last_status()==false)
+@endif
+@if(!(isset($_edit) && $_edit==true))
 <div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">

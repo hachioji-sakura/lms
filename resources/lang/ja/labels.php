@@ -7,6 +7,7 @@ return [
   'man' => '男性',
   'woman' => '女性',
   'other' => 'その他',
+  'online' => 'オンライン',
   'search_keyword' => 'キーワード検索',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
@@ -329,7 +330,9 @@ return [
   'require_student_confirm' => '生徒の確認を必要とする',
   'not_require_student_confirm' => '生徒の確認を必要としない',
   'schedule_start_hope_date' => '授業開始希望日',
-  'verification_code' => '認証コード',
+  'verification_code' => '認証コード',  'sheat' => '座席',
+  'result' => '結果',
+  'reset' => 'リセット',
   'message_list' => 'メッセージ一覧',
   'message_type' => '種別',
   'file' => 'ファイル',
@@ -339,7 +342,7 @@ return [
   'message' => 'メッセージ',
   'sheat' => '座席',
   'result' => '結果',
+
   'request_error' => 'リクエストエラー',
   'original_message' => '元のメッセージ',
-  'from' => '送信者',
-];
+  'from' => '送信者',];

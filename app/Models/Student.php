@@ -44,7 +44,7 @@ class Student extends Model
   public function name()
   {
     if(preg_match('/^[^ -~｡-ﾟ\x00-\x1f\t]+$/u', $this->name_last)){
-      if (App::isLocale('en') && $this->user->get_locale()!='en') {
+      if (App::isLocale('en') && $this->user->locale!='en') {
         return $this->romaji();
       }
     }
@@ -1010,21 +1010,20 @@ EOT;
     }
     //学年の計算
     $grade = $n_y - $b_y - $m;
-
     //結果を返す
-    if($grade < 1){
+    if($grade < 2){
       return 'toddler';
     }
-    else if($grade>=1 && $grade<=6){
-      return 'e'.$grade;
+    else if($grade>=2 && $grade<=7){
+      return 'e'.($grade-1);
     }
-    else if($grade>=7 && $grade<=9){
-      return 'j'.($grade-6);
+    else if($grade>=8 && $grade<=10){
+      return 'j'.($grade-7);
     }
-    else if($grade>=10 && $grade<=12){
-      return 'h'.($grade-9);
+    else if($grade>=11 && $grade<=13){
+      return 'h'.($grade-10);
     }
-    else if($grade>=13 && $grade<=16){
+    else if($grade>=14 && $grade<=16){
       return 'university';
     }
     else if($grade>17){

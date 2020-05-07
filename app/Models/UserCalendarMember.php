@@ -113,6 +113,8 @@ class UserCalendarMember extends Model
     $this->status_update("remind", "", $login_user_id);
   }
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
+    \Log::warning("UserCalendarMember::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
+
     $is_update = false;
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
@@ -137,68 +139,19 @@ class UserCalendarMember extends Model
         }
         break;
       case "confirm":
-        if($this->status=='new' || $this->status=='confirm'){
-          $is_update = true;
-          $is_send_teacher_mail = false;
-        }
-        break;
-      case "fix":
-        if($this->calendar->status=='confirm' || $this->calendar->status=='new'){
-          $is_update = true;
-        }
-        break;
-      case "cancel":
-        if($this->status=='confirm' || $this->status=='fix'){
-          $is_update = true;
-        }
-        break;
-      case "rest":
-        if($this->status=='fix'){
-          $is_update = true;
-        }
+        $is_send_teacher_mail = false;
         break;
       case "presence":
-        $is_send_mail = false;
-        $is_send_teacher_mail = false;
-        if($this->status=='fix' || $this->status=='absence'){
-          $is_update = true;
-        }
-        break;
       case "absence":
         $is_send_mail = false;
         $is_send_teacher_mail = false;
-        if($this->status=='fix' || $this->status=='presence'){
-          $is_update = true;
-        }
         break;
     }
-    if($is_update){
-      $this->update($update_form);
-      $param['token'] = $update_form['access_key'];
-      $res = $this->_office_system_api('PUT');
-      switch($status){
-        case "confirm":
-          $this->calendar->status_to_confirm($remark, $this->user_id);
-          break;
-        case "fix":
-          $this->calendar->status_to_fix($remark, $this->user_id);
-          break;
-        case "cancel":
-          $this->calendar->status_to_cancel($remark, $this->user_id);
-          break;
-        case "rest":
-          $this->calendar->status_to_rest($remark, $this->user_id);
-          break;
-        case "absence":
-          $this->calendar->status_to_absence($remark, $this->user_id);
-          break;
-        case "presence":
-          $this->calendar->status_to_presence($remark, $this->user_id);
-          break;
-      }
-    }
+    UserCalendarMember::where('id', $this->id)->update($update_form);
+    $param['token'] = $update_form['access_key'];
+    $res = $this->_office_system_api('PUT');
+    $this->calendar->set_status();
 
-    \Log::warning("UserCalendarMember::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -288,6 +241,7 @@ class UserCalendarMember extends Model
           break;
         }
       }
+
       if($is_absence==false){
         //生徒の欠席ステータスがない場合、休みステータスに変更
         $this->calendar->update(['status' => 'rest']);
@@ -296,9 +250,9 @@ class UserCalendarMember extends Model
 
     return $this;
   }
-  public function rest_result(){
+  public function get_rest_result(){
     $rest_result = "";
-    if(!empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
+    if(isset($this->rest_result) && !empty(trim($this->rest_result))) $rest_result = trim($this->rest_result);
     if($this->rest_type == 'a1'){
       $rest_result = '休み1:'.$rest_result;
     }
@@ -503,8 +457,6 @@ class UserCalendarMember extends Model
     //TODO 更新者を取得しても、事務システム側のデータ単位が異なるので適切に設定することができない
     //このロジックはあまり意味がない
     $postdata['updateuser'] = $__user_id;
-    \Log::warning("debug:".$__user_id);
-
     if($this->calendar->work==6 || $this->calendar->work==7 || $this->calendar->work==8){
       $postdata['updateuser'] = $teacher_no;
       switch($this->calendar->status){
@@ -731,7 +683,7 @@ class UserCalendarMember extends Model
     $u = $this->user->details();
     $item['user_name'] = $u->name();
     $item['user_role_name'] = $u['role_name'];
-    $item['rest_result'] = $this->rest_result();
+    $item['rest_result'] = $this->get_rest_result();
     $item['str_exchange_limit_date'] = $this->dateweek_format($this->exchange_limit_date);
 
     return $this;

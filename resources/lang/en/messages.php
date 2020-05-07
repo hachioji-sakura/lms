@@ -84,6 +84,7 @@ return [
  "info_lecture_cancel_to_commit" => "The following cancellation requests have been approved.",
  "info_lecture_cancel" => "I have notified of the following class schedule cancellation requests.\nAfter approving the request, it will be canceled.",
  'info_rest_cancel' => "The following class cancellation request has been registered.\nPlease operate approval or send back on the request screen",
+ 'mail_title_calendar_new' => 'schedule added',
  'mail_title_calendar_confirm' => 'Please confirm the class schedule',
  'mail_title_calendar_fix' => 'schedule is decided',
  'mail_title_calendar_cancel' => 'canceled the class schedule',

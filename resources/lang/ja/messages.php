@@ -86,6 +86,7 @@ return [
   "info_lecture_cancel_to_commit" => "以下の休講依頼について\n承認されました。",
   "info_lecture_cancel" => "以下の 授業予定の休講依頼を連絡しました。\n依頼承認後、休講となります。",
   'info_rest_cancel' => "以下の 授業予定の休み取り消し依頼が登録されました。\n依頼画面にて、承認もしくは、差戻しを操作してください",
+  'mail_title_calendar_new' => '予定を追加しました',
   'mail_title_calendar_confirm' => '予定をご確認ください',
   'mail_title_calendar_fix' => '予定が確定しました',
   'mail_title_calendar_cancel' => '予定をキャンセルしました',

@@ -423,9 +423,6 @@ class TrialController extends UserCalendarController
        $res = $trial->trial_to_calendar($form);
        return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-     if($this->is_success_response($res)){
-       $this->confirm_mail($param, $res["data"]->details($user->user_id));
-     }
      return $this->save_redirect($res, $param, "授業予定の確認連絡をしました。", $this->domain.'/'.$id);
    }
    /**
@@ -460,20 +457,18 @@ class TrialController extends UserCalendarController
        $user_name = $user['name'];
        //講師以外には送らない
        if(!$this->is_teacher($user->role)) continue;
-
-       $this->send_mail($email,
-        $title,
-        [
-        'login_user' => $login_user,
-        'user_name' => $user_name,
-        'send_from' => $send_from,
-        'send_to' => $send_to,
-        'item' => $calendar
-        ],
+       $member->user->send_mail(
+         $title,
+         [
+         'login_user' => $login_user,
+         'user_name' => $user_name,
+         'send_from' => $send_from,
+         'send_to' => $send_to,
+         'item' => $calendar
+         ],
         'text',
-        $template,
-        $member->user->get_locale()
-      );
+        $template
+       );
      }
      return true;
    }
