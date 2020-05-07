@@ -105,20 +105,24 @@
               @endif
             </div>
             <div class="col-5">
-              <div class="row float-right">
+              <div class="row">
                 <div class="col-12">
-                  <small>
-                    <i class="fa fa-user mr-1"></i>
+                  <small class=" float-right">
+                    <i class="fas fa-paper-plane mr-1"></i>
                     {{$item->create_user->details()->name()}}
                   </small>
                 </div>
-              </div>
-              <div class="row mb-2 float-right">
                 <div class="col-12">
-                  <small class="text-muted">
+                  <small class=" float-right">
+                    <i class="fas fa-inbox mr-1"></i>
+                    {{$item->target_user->details()->name()}}
+                  </small>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted float-right">
                     <i class="fa fa-clock mr-1"></i>
                     {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
-                </small>
+                  </small>
                 </div>
               </div>
             </div>

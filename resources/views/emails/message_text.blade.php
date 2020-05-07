@@ -9,9 +9,10 @@
 @endif
 
 --------------------------------------
-{{__('labels.title')}}:{{$item->title}}
+{{__('labels.title')}}:
+{{$item->title}}
 
-{{__('labels.body')}}
+{{__('labels.body')}}:
 {{$item->body}}
 
 
