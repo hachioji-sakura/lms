@@ -340,9 +340,12 @@ return [
   'reply' => '返信',
   'new' => '新規',
   'message' => 'メッセージ',
+  'messages' => 'メッセージ',
   'sheat' => '座席',
   'result' => '結果',
-
   'request_error' => 'リクエストエラー',
   'original_message' => '元のメッセージ',
-  'from' => '送信者',];
+  'from' => '送信者',
+  'message_title' => '件名',
+  'messages_description' => '重要連絡',
+];

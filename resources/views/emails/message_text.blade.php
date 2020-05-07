@@ -8,8 +8,9 @@
 {{__('messages.mail_dear_manager',['user_name' => $item->target_user->details()->name])}}
 @endif
 
+{{__('messages.message_first_sentence')}}
 --------------------------------------
-{{__('labels.title')}}:
+{{__('labels.message_title')}}:
 {{$item->title}}
 
 {{__('labels.body')}}:

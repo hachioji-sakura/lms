@@ -9,7 +9,7 @@
     @csrf
     <div class="row">
       <div class ="col-12">
-        <label>{{__('labels.target_user')}}</label>
+        <label>To</label>
         @if($_reply == false)
         <!--
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
@@ -17,6 +17,7 @@
         -->
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         <select name="target_user_id[]" class="form-control select2" width="100%">
+          <option value=" "></option>
           @foreach($charge_users as $target_user)
             <option value="{{$target_user->user_id}}">{{$target_user->name_last}} {{$target_user->name_first}}</option>
           @endforeach
@@ -33,7 +34,7 @@
       </div>
       <div class="col-12 mt-2">
          <div class="form-group">
-           <label>{{__('labels.title')}}</label>
+           <label>{{__('labels.message_title')}}</label>
            @if($_reply == false)
            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
            <input type="text" name="title" class="form-control" placeholder="タイトル" required="true"minlength="5" maxlength="50" >

@@ -128,4 +128,5 @@ return [
   "message_title" => ":user_name :title_of_honorからメッセージが届いてます。",
   "send_info" => "送信しました。",
   "message_duplicated_error" => ":user_nameさん宛てにのメールが重複しているため送信できませんでした。",
+  "message_first_sentence" => "以下のメッセージをご確認ください。",
 ];

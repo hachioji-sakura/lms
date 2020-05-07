@@ -123,4 +123,5 @@ return [
  "message_title" => "You have a message from :user_name",
  "send_info" => "Message was sent successfully",
  "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
+ "message_first_sentence" => "You recieved following message on system. Please check it.",
  ];

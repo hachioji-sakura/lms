@@ -1,7 +1,7 @@
 
 @extends('dashboard.common')
 
-@section('title', $domain_name)
+@section('title', $domain_name.__('labels.message'))
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -38,7 +38,7 @@
       <ul class="nav nav-treeview">
         @if($enable_create)
         <li class="nav-item">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create?id={{$id}}&domain={{$domain}}" page_title="メッセージ送信" class="nav-link">
+          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create?id={{$id}}&domain={{$domain}}" page_title="{{__('labels.new').__('labels.message')}}" class="nav-link">
             <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.message')}}
           </a>
         </li>
@@ -168,9 +168,11 @@
 @endsection
 
 @section('page_footer')
+@if($enable_create)
 <dt>
   <a href="javascript:void(0);" page_form="dialog" page_url='/messages/create?id={{$id}}&domain={{$domain}}' page_title="{{__('labels.new')}}{{__('labels.message')}}" class="btn btn-app">
     <i class="fa fa-plus mr-1"></i>{{__('labels.new')}}
   </a>
 </dt>
+@endif
 @endsection

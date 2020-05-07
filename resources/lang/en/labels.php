@@ -334,7 +334,11 @@ return [
   'send_time' => 'send time',
   'reply' => 'reply',
   'new' => 'NEW',
-  'message' => 'Message',
+  'message' => 'Messages',
+  'messages' => 'Messages',
   'request_error' => 'Request error',
   'original_message' => 'Original message',
-  'from' => 'From',];
+  'from' => 'From',
+  'message_title' => 'Title',
+  'messages_description' => 'Important contacts to parents',
+];

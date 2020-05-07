@@ -105,6 +105,19 @@
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/{{$domain}}/{{$item->id}}/messages" class="">
+        <div class="info-box">
+          <span class="info-box-icon bg-warning">
+            <i class="fa fa-envelope"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">{{__('labels.messages')}}</b>
+            <span class="text-sm">{{__('labels.messages_description')}}</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a class="" href="/student_groups?teacher_id={{$item->id}}" >
         <div class="info-box">
           <span class="info-box-icon bg-secondary">
