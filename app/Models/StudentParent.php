@@ -65,6 +65,8 @@ class StudentParent extends Teacher
         'name_last' => $form['name_last'],
         'name_first' => $form['name_first'],
         'phone_no' => $form['phone_no'],
+        'post_no' => $form['post_no'],
+        'address' => $form['address'],
         'kana_last' => '',
         'kana_first' => '',
         'user_id' => $parent_user->id,

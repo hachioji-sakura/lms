@@ -155,6 +155,9 @@ class StudentParentController extends TeacherController
          $form["access_key"] = $access_key;
          $form["name_last"] = '';
          $form["name_first"] = '';
+         $form["phone_no"] = '';
+         $form["address"] = '';
+         $form["post_no"] = '';
          $form["password"] = 'sakusaku';
          $item = StudentParent::entry($form);
          return $this->api_response(200, '', '', $item);
@@ -177,6 +180,10 @@ class StudentParentController extends TeacherController
          '仮登録完了', [
          'access_key' => $access_key,
        ], 'text', 'signup');
+     }
+     else {
+       $result = $res['message'];
+       $param['res'] = $res;
      }
      return view($this->domain.'.entry',
        ['result' => $result])->with($param);
@@ -284,11 +291,21 @@ class StudentParentController extends TeacherController
                   'post_no' => $form['post_no'],
                   'address' => $form['address'],
                   'status' => 'regular',
-                  'create_user_id' => $form['create_user_id'],
                   'user_id' => $user->id,
                   'create_user_id' => $user->id,
-                  'status' => 'regular',
                 ]);
+        }
+        else {
+          $parent->profile_update([
+            'name_last' => $form['parent_name_last'],
+            'name_first' => $form['parent_name_first'],
+            'kana_last' => $form['parent_kana_last'],
+            'kana_first' => $form['parent_kana_first'],
+            'phone_no' => $form['phone_no'],
+            'post_no' => $form['post_no'],
+            'address' => $form['address'],
+            'status' => 'regular',
+          ]);
         }
         $user->set_password($form['password']);
         $user->update(['status' => 0]);

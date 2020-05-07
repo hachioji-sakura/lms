@@ -46,6 +46,10 @@
     <div class="alert alert-success text-sm pr-2 text-sm mt-4">
       {{$email}}に本登録用のURLを送信しました
     </div>
+    @else
+    <div class="alert alert-danger text-sm pr-2 text-sm mt-4">
+      {{$result}} / {{$res['description']}}
+    </div>
     @endif
   @endif
   <!-- /.lockscreen-item -->
