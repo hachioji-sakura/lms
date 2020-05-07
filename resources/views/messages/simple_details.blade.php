@@ -1,19 +1,14 @@
-<div class="row">
-  <div class="col-12">
-    <label for="create_user" class="w-100 bg-success">
-      <i class="fas fa-user ml-1 mr-1"></i>{{__('labels.from')}}
-    </label>
-    {{$item->create_user->details()->name()}}
+<div class="card-header p-0">
+  <div class="row">
+    <div class="col-12">
+      <label for="create_user" class="w-100">
+        <i class="fas fa-user ml-1 mr-1"></i>{{$item->create_user->details()->name()}}
+      </label>
+    </div>
   </div>
 </div>
+
 <div class="row mt-3">
-  <div class="col-12">
-    <label for="body" class="w-100 bg-success">
-      <i class="fas fa-file-alt  ml-1 mr-1"></i>{{__('labels.body')}}
-    </label>
-  </div>
-</div>
-<div class="row">
   <div class="col-12 ">
     {!! nl2br($item->body) !!}
   </div>

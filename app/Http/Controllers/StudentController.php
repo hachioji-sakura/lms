@@ -1199,6 +1199,7 @@ class StudentController extends UserController
   public function message_list(Request $request, $id = null){
     $params = $this->get_param($request, $id);
     $messages = $this->message_search($request, $id);
+    $login_user = $this->login_details($request);
     $fields = [
       'title' => [
         'label' => __('labels.title'),
@@ -1210,16 +1211,24 @@ class StudentController extends UserController
         'label' => __('labels.send_time'),
       ],
     ];
+    $user = $params['item'];
+    if($login_user->user_id == $user->user_id){
+      $enable_create = true;
+    }else{
+      $enable_create = false;
+    }
     $message_params = [
       'items' => $messages,
       'fields' => $fields,
       'search_list' => $request->get('search_list'),
+      'id' => $id,
+      'enable_create' => $enable_create,
     ];
     return view('messages.list',$message_params)->with($params);
 }
 
   public function message_search(Request $request,$id){
-    $login_user = $this->login_details($request);
+    $login_user = $this->login_details($request,$id);
     $query = Message::query();
     //スレッドビューまで封印
 //    $query = $query->where('parent_message_id','0');

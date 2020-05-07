@@ -36,11 +36,13 @@
         </p>
       </a>
       <ul class="nav nav-treeview">
+        @if($enable_create)
         <li class="nav-item">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="メッセージ送信" class="nav-link">
+          <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create?id={{$id}}&domain={{$domain}}" page_title="メッセージ送信" class="nav-link">
             <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.message')}}
           </a>
         </li>
+        @endif
       </ul>
     </li>
   </li>
@@ -103,23 +105,35 @@
               @endif
             </div>
             <div class="col-5">
-              <div class="row">
-                <div class="col-7">
+              <div class="row float-right">
+                <div class="col-12">
                   <small>
+                    <i class="fa fa-user mr-1"></i>
                     {{$item->create_user->details()->name()}}
                   </small>
                 </div>
-                <div class="col-5">
-                  <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm">
-                    <i class="fa fa-reply"></i>
-                  </a>
+              </div>
+              <div class="row mb-2 float-right">
+                <div class="col-12">
+                  <small class="text-muted">
+                    <i class="fa fa-clock mr-1"></i>
+                    {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
+                </small>
                 </div>
               </div>
+            </div>
+            <div class="col-12">
               <div class="row">
-                <small class="text-muted">
-                  <i class="fa fa-clock mr-1"></i>
-                  {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
-                </small>
+                <div class="col-12">
+                  @if($enable_create)
+                  <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm float-right">
+                    <i class="fa fa-reply mr-1"></i>{{__('labels.reply')}}
+                  </a>
+                  @endif
+                  <a href="javascript:void(0)" page_url="/messages/{{$item->id}}/details" page_title="{{$item->title}}" page_form="dialog" title="{{$item->id}}" class="btn btn-sm btn-secondary  float-right mr-2">
+                    <i class="fa fa-file-alt mr-1"></i>{{__('labels.details')}}
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -151,7 +165,7 @@
 
 @section('page_footer')
 <dt>
-  <a href="javascript:void(0);" page_form="dialog" page_url="/messages/create" page_title="{{__('labels.new')}}{{__('labels.message')}}" class="btn btn-app">
+  <a href="javascript:void(0);" page_form="dialog" page_url='/messages/create?id={{$id}}&domain={{$domain}}' page_title="{{__('labels.new')}}{{__('labels.message')}}" class="btn btn-app">
     <i class="fa fa-plus mr-1"></i>{{__('labels.new')}}
   </a>
 </dt>

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Message;
 use App\Models\Teacher;
+use App\Models\StudentParent;
+use App\Models\Manager;
+
 
 class MessageController extends CommentController
 {
@@ -43,6 +46,7 @@ class MessageController extends CommentController
       $message_params = [
         'items' => $messages,
         'fields' => $fields,
+        'enable_create' => true,
       ];
 
       return view( $this->domain.'.list',$message_params)->with($params);
@@ -81,9 +85,21 @@ class MessageController extends CommentController
 
     public function create(Request $request){
       $param = $this->get_param($request);
-      $user = $param['user'];
+      $domain = $request->get('domain');
+      $id = $request->get('id');
+
+      if( $domain == "managers" ){
+        $user = Manager::where('id',$id)->first();
+      }elseif( $domain == "teachers"){
+        $user = Teacher::where('id',$id)->first();
+      }elseif( $domain == "parents"){
+        $user = StudentParent::where('id',$id)->first();
+      }else{
+        $user = $param['user'];
+      }
       $message_type = config('attribute.message_type');
-      if($this->is_teacher($user->role)){
+      $role = $user->details()->role;
+      if($this->is_teacher($role)){
         $charge_users = Student::findChargeStudent($user->id)->get();
       }elseif($this->is_parent($user->role)){
         //TODO　担当はcharge_studentsで管理するように変更していく
@@ -93,7 +109,7 @@ class MessageController extends CommentController
           array_push($ids,$student->id);
         }
         $charge_users = Teacher::findChargeTeachers($ids)->get();
-      }elseif($this->is_manager($user->role)){
+      }elseif($this->is_manager($role)){
         $charge_users = Student::findStatuses('regular',false)->get();
       }else {
         abort(403);
