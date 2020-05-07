@@ -467,7 +467,7 @@ class TrialController extends UserCalendarController
          'item' => $calendar
          ],
         'text',
-        $template,
+        $template
        );
      }
      return true;
