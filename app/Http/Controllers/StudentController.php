@@ -186,9 +186,11 @@ class StudentController extends UserController
   public function create(Request $request)
   {
     $param = $this->get_param($request);
+    /*
     if(!$this->is_parent($param['user']->role)){
       abort(403);
     }
+    */
     $param['student'] = null;
 
     return view($this->domain.'.create',

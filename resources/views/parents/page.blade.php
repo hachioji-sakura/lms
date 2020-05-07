@@ -52,6 +52,16 @@
               <i class="fa fa-users mr-1"></i>
               登録生徒
             </h3>
+            <div class="card-title text-sm">
+              <ul class="pagination pagination-sm m-0 float-left text-sm">
+                <li class="page-item">
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create" page_title="生徒追加">
+                  <i class="fa fa-plus"></i>
+                  <span class="btn-label">登録する</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <!-- /.card-header -->
           <div class="card-body table-responsive p-0">
