@@ -92,7 +92,7 @@ class MessageController extends CommentController
         $user = Manager::where('id',$id)->first();
       }elseif( $domain == "teachers"){
         $user = Teacher::where('id',$id)->first();
-      }elseif( $domain == "parents"){
+      }elseif( $domain == "parent"){
         $user = StudentParent::where('id',$id)->first();
       }else{
         $user = $param['user'];
@@ -101,7 +101,7 @@ class MessageController extends CommentController
       $role = $user->details()->role;
       if($this->is_teacher($role)){
         $charge_users = Student::findChargeStudent($user->id)->get();
-      }elseif($this->is_parent($user->role)){
+      }elseif($this->is_parent($role)){
         //TODO　担当はcharge_studentsで管理するように変更していく
         $students = Student::findChild($user->id)->get();
         $ids = [];

@@ -2,9 +2,9 @@
   <div class="row">
     <div class="col-12">
       <label for="create_user" class="w-100">
-        To:<i class="fas fa-paper-plane mr-1"></i>{{$item->create_user->details()->name()}}
+        <i class="fas fa-inbox mr-1"></i>From:{{$item->create_user->details()->name()}}
         →
-        From:<i class="fas fa-inbox mr-1"></i>{{$item->target_user->details()->name()}}
+        <i class="fas fa-paper-plane mr-1"></i>To:{{$item->target_user->details()->name()}}
       </label>
     </div>
   </div>
