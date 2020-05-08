@@ -46,6 +46,7 @@ class MessageController extends CommentController
       $message_params = [
         'items' => $messages,
         'fields' => $fields,
+        'id' => $user->user_id,
         'enable_create' => true,
       ];
 
