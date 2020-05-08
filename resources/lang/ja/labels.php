@@ -330,6 +330,7 @@ return [
   'require_student_confirm' => '生徒の確認を必要とする',
   'not_require_student_confirm' => '生徒の確認を必要としない',
   'schedule_start_hope_date' => '授業開始希望日',
+  'schedule_start_date' => '授業開始日',
   'verification_code' => '認証コード',  'sheat' => '座席',
   'result' => '結果',
   'reset' => 'リセット',
