@@ -409,6 +409,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     switch($status){
       case "remind":
+        unset($update_form['status']);
         $is_send_teacher_mail = false;
         $is_send_mail = true;
         //リマインド操作＝事務 or 講師

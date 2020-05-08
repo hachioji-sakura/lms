@@ -67,19 +67,19 @@ class AuthController extends UserController
        return back()->with(['error_message' => __('messages.error_email')]);
      }
      $user = $_user->first();
-     $locale = $user->get_locale();
+     $locale = $user->locale;
      $access_key = $this->create_token();
      $user->update(['access_key' => $access_key]);
      $this->send_mail($email,
       __('labels.password_setting'),
       [
-      'locale' => $user->get_locale(),
+      'locale' => $user->locale,
       'user_name' => $user->details()["name"],
       'access_key' => $access_key
       ],
       'text',
       'password_reset',
-      $user->get_locale()
+      $user->locale
     );
      return back()->with(['success_message' =>  __('messages.info_password_setting_send')]);
    }
@@ -150,10 +150,15 @@ class AuthController extends UserController
          'verification_code' => $verification_code,
          'email_verified_at' => date('Y-m-d H:i:s', strtotime("+1 day ".date('Y-m-d H:i:s'))),
        ]);
+       if( !empty(session('locale')) ){
+         $locale = session('locale');
+       }else{
+         $locale = $user->locale;
+       }
        $this->send_mail($request->get('new_email'), $title, [
          'user_name' => $user->name(),
          'verification_code' => $verification_code,
-       ], 'text', 'send_accesskey');
+       ], 'text', 'send_accesskey',$locale);
        return $this->api_response(200, "", "");
      }, $title, __FILE__, __FUNCTION__, __LINE__ );
      return $res;

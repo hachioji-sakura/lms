@@ -14,9 +14,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 Auth::routes();
 
-if(isset($_GET["locale"]) && !empty($_GET["locale"])){
-  App::setLocale($_GET["locale"]);
-}
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
@@ -316,7 +313,13 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+Route::get('messages/create','MessageController@create');
+Route::post('messages/create','MessageController@store');
+Route::get('messages/{id}/details','MessageController@details');
+Route::get('messages/{id}/reply','MessageController@reply');
+Route::post('messages/{id}/reply','MessageController@store');
+Route::get('messages','MessageController@list');
 
-Route::get('parents/{id}/messages', 'MessageController@show_list');
-Route::get('teachers/{id}/messages', 'MessageController@show_list');
-Route::get('managers/{id}/messages', 'MessageController@show_list');
+Route::get('parents/{id}/messages', 'StudentParentController@message_list');
+Route::get('teachers/{id}/messages', 'TeacherController@message_list');
+Route::get('managers/{id}/messages', 'ManagerController@message_list');

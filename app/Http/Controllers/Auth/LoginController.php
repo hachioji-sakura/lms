@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App;
 
 class LoginController extends Controller
 {
@@ -43,12 +44,15 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
       \Log::warning("LoginController::authenticated");
+      $user = Auth::user();
       session()->regenerate();
       session()->put('login_role', null);
       session()->put('error_message', "");
       session()->put('error_post_message', "");
-      session()->put('locale', $request->get('locale'));
-      $user = Auth::user();
+      session()->put('locale', $user->locale);
+      if($request->has('locale')){
+        session()->put('locale', $request->get('locale'));
+      }
       if($user->status==1){
         //体験状態のためログインはできない
         session()->put('error_message', __("messages.error_login_disabled"));
@@ -83,5 +87,20 @@ class LoginController extends Controller
         return redirect('managers/login');
       }
       return redirect($this->redirectTo);
+    }
+
+    /*
+    * ログイン画面を出すメソッド
+    * facadeのオーバーライド
+    * locale対応のために追加
+    */
+    public function showLoginForm(Request $request)
+    {
+      $form = $request->all();
+      if(empty($form['locale'])){
+        $form['locale'] = '';
+      }
+      App::setlocale($form['locale']);
+      return view('auth.login')->with($form);
     }
 }
