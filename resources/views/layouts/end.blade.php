@@ -44,6 +44,7 @@ $(function(){
 <script>
 $(function(){
   Push.create("プッシュ通知！");
+  alert('通知テスト');
   var _timer = null;
   $(window).on('scroll',function(){
     var heroBottom = $('.main-header').height();
