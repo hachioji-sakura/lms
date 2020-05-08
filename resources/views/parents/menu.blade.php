@@ -23,6 +23,11 @@
             <i class="fa fa-user-cog nav-icon"></i>{{__('labels.users')}}{{__('labels.setting')}}
           </a>
         </li>
+        <li class="nav-item">
+          <a href="/{{$domain}}/{{$item->id}}/messages" class="nav-link">
+            <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
+          </a>
+        </li>
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >
@@ -76,6 +81,11 @@
 </ul>
 @endsection
 @section('page_footer')
+<dt>
+    <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-app">
+      <i class="fa fa-envelope mr-1"></i>受信メッセージ一覧
+    </a>
+</dt>
 {{--
 <dt>
   <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">

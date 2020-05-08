@@ -23,6 +23,11 @@
       <i class="fa fa-calendar-alt nav-icon"></i>カレンダー
     </a>
   </li>
+  <li class="nav-item">
+    <a href="/{{$domain}}/{{$item->id}}/messages" class="nav-link">
+      <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
+    </a>
+  </li>
   @if($user->role==="manager")
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">

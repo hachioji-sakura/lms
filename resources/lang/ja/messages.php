@@ -125,4 +125,8 @@ return [
   "message_hope_to_join" => "ご入会を希望しますか？",
   "info_send_verification_code" => "認証コードを送信しました。",
   "info_use_verification_code" => "メールアドレス変更の際、以下の認証コードを入力してください",
+  "message_title" => ":user_name :title_of_honorからメッセージが届いてます。",
+  "send_info" => "送信しました。",
+  "message_duplicated_error" => ":user_nameさん宛てにのメールが重複しているため送信できませんでした。",
+  "message_first_sentence" => "以下のメッセージをご確認ください。",
 ];
