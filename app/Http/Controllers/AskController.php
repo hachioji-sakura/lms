@@ -89,7 +89,8 @@ class AskController extends MilestoneController
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = $this->get_common_param($request);
+    //ログインしていない場合でも利用するケースがある
+    $ret = $this->get_common_param($request, false);
     if(!isset($user)) {
       if($request->has('key') && $this->is_enable_token($ret['access_key'])){
         $user = User::where('access_key', $ret['access_key'])->first();

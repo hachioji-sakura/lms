@@ -114,6 +114,8 @@ $(function(){
     }
     return false;
   });
+  //1時間経過したら再読み込み
+  setTimeout('window.location.reload();', 3600000);
 });
 function status_style(status){
   var status_style = {

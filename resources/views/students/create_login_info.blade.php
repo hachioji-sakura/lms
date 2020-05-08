@@ -8,29 +8,33 @@
         </h5>
       </div>
     </div>
-    <form method="POST"  action="/{{$domain}}/{{$item->id}}/create_login_info">
-      @csrf
-      @method('PUT')
-      @if($item->user->status == 1)
-        @include($domain.'.forms.student_id')
-        @include($domain.'.forms.password')
-      @elseif($item->user->status == 0)
-        @include($domain.'.forms.student_id', ['_edit' => true])
-      @else
-        {{__('labels.no_data')}}
-      @endif
-      <div class="col-12">
-        <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
-          @if($item->user->status == 1)
-          ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}
-          @elseif($item->user->status == 0)
-          ><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
-          @else
-          disabled><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
-          @endif
-        </button>
+    <div class="row">
+      <form method="POST"  action="/{{$domain}}/{{$item->id}}/create_login_info">
+        @csrf
+        @method('PUT')
+        @if($item->user->status == 1)
+          @include($domain.'.forms.student_id')
+          @include($domain.'.forms.password')
+        @elseif($item->user->status == 0)
+          @include($domain.'.forms.student_id', ['_edit' => true])
+        @else
+          {{__('labels.no_data')}}
+        @endif
       </div>
-    </form>
+      <div class="row">
+        <div class="col-12">
+          <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
+            @if($item->user->status == 1)
+            ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}
+            @elseif($item->user->status == 0)
+            ><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
+            @else
+            disabled><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
+            @endif
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 <script>

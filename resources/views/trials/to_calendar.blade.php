@@ -52,6 +52,7 @@
                 @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
                 @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
                 @component('trials.forms.matching_decide', ['attributes' => $attributes]) @endcomponent
+                @component('calendars.forms.mail_send_confirm', ['default_send_teacher' => true]); @endcomponent
                 <div class="col-6 mb-1">
                   <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                     <i class="fa fa-arrow-circle-left mr-1"></i>

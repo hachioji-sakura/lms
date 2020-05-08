@@ -368,7 +368,7 @@ EOT;
       */
     }
     UserCalendarSetting::where('id', $this->id)->update($data);
-    $tag_names = ['course_type', 'lesson'];
+    $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTagSetting::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -683,9 +683,8 @@ EOT;
       $calendar->memberAdd($member->user_id, 1, $default_status);
     }
     if($default_status=='fix'){
-      $calendar->update(['status' => 'confirm']);
       UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
-      $calendar->status_to_fix('', 1);
+      $calendar->update(['status' => $default_status]);
     }
     return $this->api_response(200, "", "", $calendar);
   }
