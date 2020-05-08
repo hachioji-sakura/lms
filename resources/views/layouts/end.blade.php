@@ -43,6 +43,7 @@ $(function(){
 </body>
 <script>
 $(function(){
+  Push.create("プッシュ通知！");
   var _timer = null;
   $(window).on('scroll',function(){
     var heroBottom = $('.main-header').height();

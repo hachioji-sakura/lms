@@ -57,7 +57,8 @@
 <!-- jQuery -->
 <script src="{{asset('js/plugins/jquery/jquery.min.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-
+<!-- Push.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="{{asset('js/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- Select2 -->
