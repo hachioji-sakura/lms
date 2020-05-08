@@ -185,6 +185,7 @@ EOT;
     $item['subject'] = $this->subject();
     $item['course_minutes_name'] = $this->course_minutes();
     $item['week_setting'] = $this->week_setting();
+    $item['schedule_start_date'] = $this->dateweek_format($this->enable_start_date);
     $item['enable_date'] = $this->enable_date();
     $item['place_floor_name'] = "";
     $item['calendar_count'] = count($this->calendars);
