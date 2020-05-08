@@ -44,7 +44,7 @@ class Student extends Model
   public function name()
   {
     if(preg_match('/^[^ -~｡-ﾟ\x00-\x1f\t]+$/u', $this->name_last)){
-      if (App::isLocale('en') && $this->user->get_locale()!='en') {
+      if (App::isLocale('en') && $this->user->locale!='en') {
         return $this->romaji();
       }
     }

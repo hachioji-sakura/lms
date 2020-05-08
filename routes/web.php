@@ -14,9 +14,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 Auth::routes();
 
-if(isset($_GET["locale"]) && !empty($_GET["locale"])){
-  App::setLocale($_GET["locale"]);
-}
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
@@ -85,6 +82,11 @@ Route::put('calendars/{id}/remind','UserCalendarController@remind');
 Route::put('calendars/{id}/cancel','UserCalendarController@force_cancel');
 Route::get('calendars/{id}/rest_change','UserCalendarController@rest_change_page');
 Route::put('calendars/{id}/rest_change','UserCalendarController@rest_change');
+Route::get('calendars/{id}/members/create','UserCalendarController@member_create_page');
+Route::post('calendars/{id}/members','UserCalendarController@member_create');
+Route::get('calendars/{id}/members/setting','UserCalendarController@member_setting_page');
+Route::put('calendars/{id}/members/setting','UserCalendarController@member_setting');
+
 Route::get('calendars/check','UserCalendarController@setting_check');
 Route::get('space_calendars','UserCalendarController@space_calendars');
 
@@ -312,7 +314,16 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+Route::get('messages/create','MessageController@create');
+Route::post('messages/create','MessageController@store');
+Route::get('messages/{id}/details','MessageController@details');
+Route::get('messages/{id}/reply','MessageController@reply');
+Route::post('messages/{id}/reply','MessageController@store');
+Route::get('messages','MessageController@list');
 
+Route::get('parents/{id}/messages', 'StudentParentController@message_list');
+Route::get('teachers/{id}/messages', 'TeacherController@message_list');
+Route::get('managers/{id}/messages', 'ManagerController@message_list');
 Route::get('tasks/','TaskController@index');
 Route::get('tasks/create', 'TaskController@create');
 Route::get('students/{id}/tasks', 'StudentController@task_list');
@@ -328,6 +339,4 @@ Route::put('tasks/{id}/progress', 'TaskController@progress');
 Route::put('tasks/{id}/done', 'TaskController@done');
 Route::get('tasks/{id}/review', 'TaskController@show_review_page');
 Route::put('tasks/{id}/review', 'TaskController@review');
-
-
 Route::post('task_comments/create', 'TaskCommentController@store');

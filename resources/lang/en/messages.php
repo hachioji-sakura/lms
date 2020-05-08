@@ -84,6 +84,7 @@ return [
  "info_lecture_cancel_to_commit" => "The following cancellation requests have been approved.",
  "info_lecture_cancel" => "I have notified of the following class schedule cancellation requests.\nAfter approving the request, it will be canceled.",
  'info_rest_cancel' => "The following class cancellation request has been registered.\nPlease operate approval or send back on the request screen",
+ 'mail_title_calendar_new' => 'schedule added',
  'mail_title_calendar_confirm' => 'Please confirm the class schedule',
  'mail_title_calendar_fix' => 'schedule is decided',
  'mail_title_calendar_cancel' => 'canceled the class schedule',
@@ -119,4 +120,8 @@ return [
  "message_hope_to_join" => "Do you want to join?",
  "info_send_verification_code" => "Enter it below verify your email.",
  "info_use_verification_code" => "Please enter the following authentication code when changing your email address",
+ "message_title" => "You have a message from :user_name",
+ "send_info" => "Message was sent successfully",
+ "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
+ "message_first_sentence" => "You recieved following message on system. Please check it.",
  ];

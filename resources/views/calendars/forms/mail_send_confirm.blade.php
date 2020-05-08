@@ -1,4 +1,4 @@
-<div class="col-12 mt-2 couse_type_group">
+<div class="col-12 mt-2">
   <div class="form-group">
     <label for="send_mail" class="w-100">
       {{__('labels.schedule_change_remind')}}
@@ -10,7 +10,7 @@
       checked
       @endif
       >
-      <label class="form-check-label mr-3" for="send_none" checked>
+      <label class="form-check-label mr-3" for="send_none">
         {{__('labels.no_remind')}}
       </label>
       <input class="form-check-input icheck flat-red" type="radio" name="send_mail" id="send_teacher" value="teacher" required="true"

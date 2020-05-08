@@ -111,7 +111,7 @@ class Milestone extends Model
     if(!isset($u)) return $controller->bad_request();
     $param['user'] = $u->details();
     $param['send_to'] = $param['user']->role;
-    $res = $this->_send_mail($mail, $title, $param, $type, $template, $u->get_locale());
+    $res = $this->_send_mail($mail, $title, $param, $type, $template, $u->locale);
     return $res;
   }
   public function default_importance($type){

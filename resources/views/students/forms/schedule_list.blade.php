@@ -14,7 +14,14 @@
         <br>
         <i class="fa fa-clock mx-1"></i>{{$calendar["timezone"]}} / {{$calendar->teaching_type_name()}}
         <br>
+        @if($calendar->is_online()==true)
+        <small class="badge badge-info mx-1">
+          <i class="fa fa-globe"></i>
+          {{__('labels.online')}}
+        </small>
+        @else
         <i class="fa fa-map-marker mx-1"></i>{{$calendar["place_floor_name"]}}
+        @endif
         </a>
       </div>
       <div class="col-7 col-lg-4 col-md-4">

@@ -86,6 +86,7 @@ return [
   "info_lecture_cancel_to_commit" => "以下の休講依頼について\n承認されました。",
   "info_lecture_cancel" => "以下の 授業予定の休講依頼を連絡しました。\n依頼承認後、休講となります。",
   'info_rest_cancel' => "以下の 授業予定の休み取り消し依頼が登録されました。\n依頼画面にて、承認もしくは、差戻しを操作してください",
+  'mail_title_calendar_new' => '予定を追加しました',
   'mail_title_calendar_confirm' => '予定をご確認ください',
   'mail_title_calendar_fix' => '予定が確定しました',
   'mail_title_calendar_cancel' => '予定をキャンセルしました',
@@ -124,4 +125,8 @@ return [
   "message_hope_to_join" => "ご入会を希望しますか？",
   "info_send_verification_code" => "認証コードを送信しました。",
   "info_use_verification_code" => "メールアドレス変更の際、以下の認証コードを入力してください",
+  "message_title" => ":user_name :title_of_honorからメッセージが届いてます。",
+  "send_info" => "送信しました。",
+  "message_duplicated_error" => ":user_nameさん宛てにのメールが重複しているため送信できませんでした。",
+  "message_first_sentence" => "以下のメッセージをご確認ください。",
 ];

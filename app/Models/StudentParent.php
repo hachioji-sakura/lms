@@ -116,6 +116,19 @@ class StudentParent extends Teacher
         $update_form[$key] = $form[$key];
       }
     }
+    if(!empty($form['parent_name_last']) && empty($form['name_last'])){
+      $update_form['name_last'] = $form['parent_name_last'];
+    }
+    if(!empty($form['parent_name_first']) && empty($form['name_first'])){
+      $update_form['name_first'] = $form['parent_name_first'];
+    }
+    if(!empty($form['parent_kana_last']) && empty($form['kana_last'])){
+      $update_form['kana_last'] = $form['parent_kana_last'];
+    }
+    if(!empty($form['parent_kana_first']) && empty($form['kana_first'])){
+      $update_form['kana_first'] = $form['parent_kana_first'];
+    }
+
     $this->update($update_form);
     return $this;
   }
@@ -127,7 +140,7 @@ class StudentParent extends Teacher
     $relations = $this->relation();
     $students = [];
     foreach($relations as $relation){
-      if($relation->student->status=='regular'){
+      if($relation->student->status=='regular' || $relation->student->status=='recess'){
         $students[] = $relation->student;
       }
     }

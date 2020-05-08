@@ -304,6 +304,10 @@ EOT;
     if($d < 0) return false;
     return true;
   }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
+  }
   //振替対象の場合:true
   public function is_exchange_target(){
     if($this->is_single()==false) return false;
@@ -765,7 +769,6 @@ EOT;
     $old_item = $this->replicate();
 
     $update_fields = [
-      'status',
       'start_time',
       'end_time',
       'remark',
@@ -802,6 +805,7 @@ EOT;
     }
 
     if(isset($data['status_name']))  unset($data['status_name']);
+    \Log::warning("-------change----------");
     UserCalendar::where('id', $this->id)->update($data);
     if(empty($this->teaching_type)){
       $type = $this->get_teaching_type();
@@ -814,22 +818,16 @@ EOT;
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
     //TODO 将来的にsubject_exprに関するロジックは不要
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserCalendarTag::clearTags($this->id, $tag_name);
       }
     }
     $tag_names = ['matching_decide', 'charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserCalendarTag::clearTags($this->id, $tag_name);
       }
     }
     //事務システムも更新
@@ -1003,10 +1001,10 @@ EOT;
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
       $is_send_mail = true;
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     if($is_send_mail==false){
-      $this->user->send_mail($title, $param, $type, $template, $this->user->get_locale());
+      $this->user->send_mail($title, $param, $type, $template, $this->user->locale);
     }
     return;
   }
@@ -1020,7 +1018,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     return;
   }
@@ -1060,6 +1058,7 @@ EOT;
   public function is_kids_lesson(){
     return $this->has_tag('lesson', 4);
   }
+  /*
   public function status_to_confirm($remark, $login_user_id){
     if($this->status!='new') return false;
     $status = 'confirm';
@@ -1134,15 +1133,43 @@ EOT;
     if($this->status!='fix' && $this->status!="presence") return false;
     $status = 'absence';
     //カレンダー：欠席
-    $this->update(['status' => $status]);
+    $is_update = true;
+    \Log::warning("-------status_to_absence----------");
+    foreach($this->members as $member){
+      if(!isset($member->user)) continue;
+      $_member = $member->user->details('students');
+      \Log::warning("status:".$member->status);
+      if($_member->role == 'student' && $member->is_rest_status($member->status)!=true){
+        $is_update = false;
+      }
+    }
+    if($is_update == true){
+      \Log::warning("-------is_update----------");
+      $this->update(['status' => $status]);
+    }
   }
   public function status_to_presence(){
     //授業予定→出席、　欠席（間違えた場合）→出席
     if($this->status!='fix' && $this->status!="absence") return false;
     $status = 'presence';
+    $is_update = false;
+    \Log::warning("-------status_to_presence----------");
     //カレンダー：出席
-    $this->update(['status' => $status]);
+    foreach($this->members as $member){
+      if(!isset($member->user)) continue;
+      $_member = $member->user->details('students');
+      \Log::warning("status:".$member->status);
+      if($_member->role == 'student' && $member->status=='presence'){
+        $is_update = true;
+      }
+    }
+    //出席者が一人でもいたら、出席
+    if($is_update == true){
+      \Log::warning("-------is_update----------");
+      $this->update(['status' => $status]);
+    }
   }
+  */
   public function exist_rest_student(){
     //欠席 or 休み or　休講
     foreach($this->members as $member){
@@ -1182,5 +1209,68 @@ EOT;
     $u = User::where('id', $login_user_id)->first();
     $param['login_user'] = $u->details();
     return $this->teacher_mail($title, $param, 'text', $this->delete_mail_template);
+  }
+  public function set_status(){
+    $status = "new";
+    $is_update = false;
+    //講師のステータスでみるものは、confirmとlecture_cancel
+    foreach($this->members as $member){
+      if($member->user_id != $this->user_id) continue;
+      if($this->work==9){
+        //事務のカレンダーの場合
+        $status = $member->status;
+      }
+      else {
+        switch($member->status){
+          case "confirm":
+          case "lecture_cancel":
+            $status = $member->status;
+            break;
+        }
+      }
+    }
+    if($this->work==9){
+      //事務のカレンダーの場合
+      if($status=='new' || $status=='confirm') $status='fix';
+    }
+    else {
+      foreach($this->members as $member){
+        if(!isset($member->user)) continue;
+        $_member = $member->user->details('students');
+        if($_member->role != 'student') continue;
+        switch($member->status){
+          case "fix":
+            //fixのメンバーがいれば、fix
+            $status = 'fix';
+            break;
+          case "presence":
+            //fixでないかつ、presenceのメンバーがいれば、presence
+            if($status!='fix') $status='presence';
+            break;
+          case "absence":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm' || $status=='rest' || $status=='lecture_cancel') $status='absence';
+            break;
+          case "lecture_cancel":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm' || $status=='rest') $status='lecture_cancel';
+            break;
+          case "rest":
+            //new,confirm なんらかの休みステータスしかない場合、absence＞lecture_cancel＞rest
+            if($status=='new' || $status=='confirm') $status='rest';
+            break;
+          case "cancel":
+            //new,confirm なんらかcancelステータスしかない場合、cancel
+            if($status=='new' || $status=='confirm') $status='cancel';
+            break;
+          case "confirm":
+            if($status=='new') $status='confirm';
+            break;
+        }
+      }
+    }
+    if($this->status != $status){
+      UserCalendar::where('id', $this->id)->update(['status' => $status]);
+    }
   }
 }

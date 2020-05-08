@@ -423,38 +423,13 @@ class UserCalendarMemberSetting extends UserCalendarMember
         }
         break;
       case "confirm":
-        if($this->status=='new' || $this->status=='confirm'){
-          $is_update = true;
           $is_send_teacher_mail = false;
-        }
         break;
-      case "fix":
-        if($this->setting->status=='confirm' || $this->setting->status=='new'){
-          $is_update = true;
-        }
-        break;
-      case "cancel":
-        if($this->status=='confirm' || $this->status=='fix'){
-          $is_update = true;
-        }
-        break;
-    }
-    if($is_update){
-      $this->update($update_form);
-      $param['token'] = $update_form['access_key'];
-      $res = $this->_office_system_api('PUT');
-      switch($status){
-        case "confirm":
-          $this->setting->status_to_confirm($remark, $this->user_id);
-          break;
-        case "fix":
-          $this->setting->status_to_fix($remark, $this->user_id);
-          break;
-        case "cancel":
-          $this->setting->status_to_cancel($remark, $this->user_id);
-          break;
       }
-    }
+    $this->update($update_form);
+    $param['token'] = $update_form['access_key'];
+    $res = $this->_office_system_api('PUT');
+    $this->setting->set_status();
 
     \Log::warning("UserCalendarMemberSetting::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
     //ステータス別のメッセージ文言取得
@@ -479,5 +454,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $this->setting->teacher_mail($title, $param, $type, $template);
       }
     }
+  }
+  public function get_rest_result(){
+    return "";
   }
 }
