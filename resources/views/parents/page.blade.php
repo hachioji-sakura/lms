@@ -55,9 +55,9 @@
             <div class="card-title text-sm">
               <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
-                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create" page_title="生徒追加">
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create?student_parent_id={{$item->id}}" page_title="生徒追加">
                   <i class="fa fa-plus"></i>
-                  <span class="btn-label">登録する</span>
+                  <span class="btn-label">生徒登録</span>
                   </a>
                 </li>
               </ul>

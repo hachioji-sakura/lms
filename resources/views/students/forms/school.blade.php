@@ -103,7 +103,10 @@ function grade_select_change(){
 }
 function is_school(grade_name){
   var ret = false;
-  if(grade_name.substring(0,1)=="高"){
+  if(grade_name.substring(0,1)=="幼"){
+    ret = true;
+  }
+  else if(grade_name.substring(0,1)=="高"){
     ret = true;
   }
   else if(grade_name.substring(0,1)=="中"){

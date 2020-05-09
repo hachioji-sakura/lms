@@ -194,6 +194,7 @@ class StudentController extends UserController
       abort(403);
     }
     */
+    if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
     $param['item'] = $this->empty_model();
     return view($this->domain.'.create',
@@ -208,29 +209,23 @@ class StudentController extends UserController
     */
    public function store(Request $request)
    {
-     /*
-     TODO: 申し込みベースで生徒を追加するので、不要
+     if(!$request->has('student_parent_id')) abort(403);
      $param = $this->get_param($request);
-     if(!$this->is_parent($param['user']->role)){
-       abort(403);
-     }
      $form = $request->all();
-     $parent = StudentParent::where('id', $param['user']->id)->first();
+     $parent = StudentParent::where('id', $param['student_parent_id']->id)->first();
+     if(!isset($parent)) abort(403);
      $form['create_user_id'] = $param['user']->user_id;
-     $student = $parent->brother_add($form);
-     if(isset($student)){
-       $form['parent_name_first'] = $param['user']->name_first;
-       $form['parent_name_last'] = $param['user']->name_last;
-       $form['send_to'] = 'parent';
-       $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
-       $param['success_message'] = '生徒情報登録完了しました。';
-     }
-     else {
-       $param['error_message'] = '生徒登録に失敗しました。';
-     }
-     return redirect('/home')
-      ->with($param);
-      */
+     $res = $this->transaction($request, function() use ($request){
+       $form = $request->all();
+       $form["accesskey"] = '';
+       $form["password"] = 'sakusaku';
+       if(!empty($form['student2_name_last'])){
+         $form['course_type'] = 'family';
+       }
+       $trial = Trial::entry($form);
+       return $trial;
+     }, $param['domain_name'].'を登録', __FILE__, __FUNCTION__, __LINE__ );
+     return $this->save_redirect($res, $param, $param['domain_name'].'を登録しました');
    }
    /**
     * データ更新時のパラメータチェック
