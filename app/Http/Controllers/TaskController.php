@@ -245,12 +245,13 @@ class TaskController extends MilestoneController
       $param = $this->get_param($request, $id);
       $user = $this->login_details($request);
       $form = [];
-      $form['task'] = [
-        'status' => 'complete',
-        'evaluation' => $request->get('evaluation'),
-      ];
+
 
       if(!empty($request->get('review'))){
+        $form['task'] = [
+          'status' => 'complete',
+          'evaluation' => $request->get('evaluation'),
+        ];
         $form['review'] = [
           'body' => $request->get('review'),
           'create_user_id' => $user->id,
@@ -260,6 +261,11 @@ class TaskController extends MilestoneController
           'body' => 'レビューしました。',
           'type' => 'task',
           'create_user_id' => $user->id,
+        ];
+      }else {
+        $form = [
+          'status' => 'complete',
+          'evaluation' => $request->get('evaluation'),
         ];
       }
       $res =$this->change_status($request,$id,$form);
