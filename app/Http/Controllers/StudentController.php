@@ -1234,61 +1234,7 @@ class StudentController extends UserController
       'enable_create' => $enable_create,
     ];
     return view('messages.list',$message_params)->with($params);
-}
-
-
-
-
-
-
-
-
-  public function message_search(Request $request,$id){
-    $login_user = $this->login_details($request,$id);
-    $query = Message::query();
-    //スレッドビューまで封印
-//    $query = $query->where('parent_message_id','0');
-    $query = $this->make_search_query($request, $query, $id);
-    $query = $query->orderBy('created_at','desc');
-    $messages = $query->paginate(20);
-    return $messages;
-  } public function message_list(Request $request, $id = null){
-    $params = $this->get_param($request, $id);
-    $messages = $this->message_search($request, $id);
-    $login_user = $this->login_details($request);
-    $fields = [
-      'title' => [
-        'label' => __('labels.title'),
-      ],
-      'target_user' =>[
-        'label' => __('labels.create_user'),
-      ],
-      'created_at' => [
-        'label' => __('labels.send_time'),
-      ],
-    ];
-    $user = $params['item'];
-    if($login_user->user_id == $user->user_id){
-      $enable_create = true;
-    }else{
-      $enable_create = false;
-    }
-    $message_params = [
-      'items' => $messages,
-      'fields' => $fields,
-      'search_list' => $request->get('search_list'),
-      'id' => $id,
-      'enable_create' => $enable_create,
-    ];
-    return view('messages.list',$message_params)->with($params);
-}
-
-
-
-
-
-
-
+  }
 
   public function message_search(Request $request,$id){
     $login_user = $this->login_details($request,$id);
@@ -1300,6 +1246,7 @@ class StudentController extends UserController
     $messages = $query->paginate(20);
     return $messages;
   }
+
   public function make_search_query(Request $request, $query, $id){
     //managerがアクセスしたときに見られるようにuserとりなおし
     $user = $this->model()->where('id',$id)->first();
@@ -1338,4 +1285,38 @@ class StudentController extends UserController
     return $query;
   }
 
+  public function create_tasks(Request $request, $id = null){
+    $param = $this->get_param($request);
+    $user = $this->login_details($request);
+    $param['target_user'] = $this->model()->where('id',$id)->first();
+    $param['_edit'] = false;
+    return view('tasks.create')->with($param);
+  }
+
+  public function task_list(Request $request, $id = null){
+    $param = $this->get_param($request,$id);
+    $user = $this->login_details($request);
+    $target_user = $this->model()->where('id',$id)->first();
+    $param['target_user'] = $target_user;
+    $items = $this->task_search($request, $target_user->user_id);
+    $param['items'] = $items->paginate(20);
+
+    $task = Task::first();
+    if(!empty($task)){
+      $param['status_count'] = $task->status_count($target_user->user_id);
+    }else{
+      foreach(config('attribute.task_status') as $key => $value){
+        $param['status_count'][$key] = 0;
+      }
+      $param['status_count']['all'] = 0;
+    }
+
+    return view('tasks.list')->with($param);
+  }
+
+
+  public function task_search($request, $id){
+    $tasks = Task::findTargetUser($id)->searchQuery($request,$id)->orderBy('end_schedule','asc');
+    return $tasks;
+  }
 }

@@ -116,6 +116,10 @@ class TaskController extends MilestoneController
         $param = $this->get_param($request);
         $item = $this->model()->where('id',$id)->first();
         $param['item'] = $item;
+        $param['target_user'] = $item->target_user->details();
+        $param['status_count'] = $item->status_count($item->target_user->details()->user_id);
+        $param['items'] = $this->model()->findTargetUser($item->target_user->details()->user_id);
+        $param['domain'] = $item->target_user->details()->domain;
         return view($this->domain. '.details')->with($param);
     }
 

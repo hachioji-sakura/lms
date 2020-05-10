@@ -8,7 +8,7 @@
           <?php $comment = $comment->details(); ?>
           @if($comment_type==='all' || $comment->type===$comment_type)
             <?php $__c++; ?>
-            <div class="direct-chat-msg p-1 {{$comment->tasks->target_user_id == $comment->create_user_id ? 'right' : ''}}">
+            <div class="direct-chat-msg p-1 {{$comment->target_user_id == $comment->create_user_id ? 'right' : ''}}">
               <div class="direct-chat-infos clearfix">
                 <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
                 <span class="direct-chat-timestamp float-right">{{$comment["created_date"]}}</span>

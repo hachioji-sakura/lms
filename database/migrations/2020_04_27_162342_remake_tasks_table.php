@@ -18,7 +18,7 @@ class RemakeTasksTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
           $table->increments('id');
           $table->string('title')->nullable(false);
-          $table->string('remarks')->nullable(true);
+          $table->string('remarks',10000)->nullable(true);
           $table->integer('milestone_id')->nullable(true);
           $table->string('type')->nullable(true);
           $table->string('status')->nullable(false);

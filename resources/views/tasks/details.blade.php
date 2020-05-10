@@ -2,17 +2,30 @@
 
 @section('title', $item->target_user->details()->name().'さんの'.$domain_name)
 
+@section('page_sidemenu')
+  @include('tasks.menu')
+@endsection
+
 @section('contents')
 <div class="card">
   <div class="card-header">
-    <small class="badge badge-{{config('attribute.task_status')['style'][$item->status]}}">
-      {{config('attribute.task_status')['status'][$item->status]}}
+    <small class="badge badge-{{config('status_style')[$item->status]}}">
+      {{config('attribute.task_status')[$item->status]}}
     </small>
     <div class="row mt-1">
       <div class="col-8 text-truncate">
         <h3 class="card-title text-truncate">
           {{$item->title}}
         </h3>
+        @if(!empty  ($item->evaluation))
+        @for($i=1;$i<=$item->evaluation;$i++)
+        <span class="fa fa-star" style="color:orange;"></span>
+        @endfor
+        @for($i=1;$i<=5-$item->evaluation;$i++)
+        <span class="far fa-star"></span>
+        @endfor
+        ({{$item->evaluation}})
+        @endif
       </div>
       <div class="col-4">
         @if(isset($item->s3_url))
@@ -59,7 +72,7 @@
         </a>
         @endif
         @if( $item->status != "complete" && $item->status != "done")
-        <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" class="btn btn-sm btn-info mr-1" role="button">
+        <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-info mr-1" role="button">
           <i class="fa fa-edit"></i>
         </a>
         @endif
@@ -92,6 +105,7 @@
       </div>
     </div>
     @endif
+    <!--
     @if($item->reviews->count() > 0)
     <div class="row mt-2">
       <div class="col-12">
@@ -107,9 +121,6 @@
         <div class="col-12">
           <div class="callout callout-warning">
             <h4>{{$review->create_user->details()->name()}}</h4>
-            @for($i=1;$i<=$item->evaluation;$i++)
-            <span class="fa fa-star" style="color:orange;"></span>
-            @endfor
             <p>{!!nl2br($review->body)!!}</p>
             <small class="text-muted">{{$review->created_at}}</small>
           </div>
@@ -119,6 +130,8 @@
     </div>
     @endif
   </div>
+  -->
+  <!--
   <div class="card-footer">
     <div class="card-bordered">
       <div class="card-header">
@@ -150,5 +163,7 @@
 
     </div>
   </div>
+-->
 </div>
+
 @endsection

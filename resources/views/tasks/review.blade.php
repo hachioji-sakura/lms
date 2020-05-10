@@ -20,6 +20,7 @@
         </div>
       </div>
     </div>
+<!--
     <div class="row">
       <div class="col-12">
         <label for="review" class="ml-2">
@@ -31,6 +32,7 @@
         <textarea name="review" class="form-control mb-2" placeholder="タスクをレビューしてください。"></textarea>
       </div>
     </div>
+  -->
     <div class="row">
       <div class="col-6">
         <button type="submit" class="btn btn-submit btn-primary w-100">
