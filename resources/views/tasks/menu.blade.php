@@ -18,7 +18,9 @@
         <li class="nav-item">
           <a href="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}"  class="nav-link">
             <i class="fa fa-{{config('attribute.status_icon')[$key]}} nav-icon"></i>{{$value}}
+            @if(!empty($status_count[$key]))
             <span class="badge badge-{{config('status_style')[$key]}}">{{$status_count[$key]}}</span>
+            @endif
           </a>
         </li>
         @endforeach

@@ -25,7 +25,18 @@ class TaskController extends MilestoneController
     {
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        $param['items'] = $this->model()->paginate(20);
+        $param['items'] = $this->model()->searchQuery($request)->paginate(20);
+        $target_user = Auth::user();
+        $param['target_user'] = $target_user;
+        $task = Task::first();
+        if(!empty($task)){
+          $param['status_count'] = $task->status_count();
+        }else{
+          foreach(config('attribute.task_status') as $key => $value){
+            $param['status_count'][$key] = 0;
+          }
+          $param['status_count']['all'] = 0;
+        }
         return view($this->domain . '.list')->with($param);
     }
 
@@ -245,7 +256,6 @@ class TaskController extends MilestoneController
       $param = $this->get_param($request, $id);
       $user = $this->login_details($request);
       $form = [];
-
 
       if(!empty($request->get('review'))){
         $form['task'] = [

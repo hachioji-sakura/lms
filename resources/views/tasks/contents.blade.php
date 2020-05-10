@@ -86,6 +86,15 @@
       @endisset
       >
   </div>
+  <div class="col-12">
+    <label for="search_status" class="w-100">
+      {{__('labels.status')}}
+    </label>
+      @foreach(config('attribute.task_status') as $key => $value)
+      <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="evaluation" value="{{$key}}">
+      <label class="form-check-label">{{$value}}</label>
+      @endforeach
+  </div>
   @endslot
 @endcomponent
 <script>

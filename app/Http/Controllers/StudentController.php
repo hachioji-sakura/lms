@@ -1310,7 +1310,6 @@ class StudentController extends UserController
       }
       $param['status_count']['all'] = 0;
     }
-
     return view('tasks.list')->with($param);
   }
 

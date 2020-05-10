@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Review;
+use DB;
 
 
 class Task extends Milestone
@@ -42,14 +43,13 @@ class Task extends Milestone
       return $this->belogsToMany('App\Models\Textbook');
     }
 
-    public function scopeSearchQuery($query,$request, $id){
+    public function scopeSearchQuery($query,$request){
       if($request->has('search_status') ){
-        $query = $query->status($request->get('search_status'));
+        $query = $query->findStatuses($request->get('search_status'));
       }
       if($request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));
       }
-//     dd($query->toSql(), $query->getBindings());
       return $query;
     }
 
@@ -65,11 +65,17 @@ class Task extends Milestone
       return $query;
     }
 
-    public function status_count($user_id){
-      foreach(config('attribute.task_status') as $key => $value){
-        $status_count[$key] = $this->findTargetUser($user_id)->status($key)->count();
+    public function status_count($user_id = null){
+      if(empty($user_id)){
+        $query = $this->query();
+      }else{
+        $query = $this->query()->findTargetUser($user_id);
       }
-      $status_count['all'] = $this->findTargetUser($user_id)->count();
+      $status_count['all'] = $query->count();
+      $counts = $query->select(DB::raw('count(*) as count,status'))->groupBy('status')->get();
+      foreach($counts as $count){
+        $status_count[$count['status']] = $count['count'];
+      }
       return $status_count;
     }
 
