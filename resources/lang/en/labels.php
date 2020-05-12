@@ -8,6 +8,7 @@ return [
   'woman' => 'Woman',
   'other' => 'Other',
   'online' => 'Online',
+  'study_record' => 'Study Record',
   'search_keyword' => 'Search Word',
   'signup' =>     'Sign Up',
   'login'             => 'Login',

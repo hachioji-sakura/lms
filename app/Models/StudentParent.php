@@ -79,14 +79,7 @@ class StudentParent extends Teacher
 
   public function brother_add($form, $status=0){
     $ret = [];
-    $student = null;
-    foreach($this->relation() as $relation){
-      if($relation->student->name_last ==$form['name_last'] &&
-        $relation->student->name_first == $form['name_first'] ){
-          $student = $relation->student;
-          break;
-      }
-    }
+    $student = $this->get_child($form['name_last'], $form['name_first']);
     if(isset($student)){
       //すでに同姓同名の子供を登録済み
       return $student;
@@ -101,6 +94,15 @@ class StudentParent extends Teacher
     ]);
     $student->profile_update($form);
     return $student;
+  }
+  public function get_child($name_last, $name_first){
+    foreach($this->relation() as $relation){
+      if($relation->student->name_last ==$name_last &&
+        $relation->student->name_first == $name_first ){
+          return $relation->student;
+      }
+    }
+    return null;
   }
   public function profile_update($form){
     $update_fields = [

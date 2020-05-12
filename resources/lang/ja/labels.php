@@ -8,6 +8,7 @@ return [
   'woman' => '女性',
   'other' => 'その他',
   'online' => 'オンライン',
+  'study_record' => '学習記録',
   'search_keyword' => 'キーワード検索',
   'signup' =>     'アカウント登録',
   'login'             => 'ログイン',

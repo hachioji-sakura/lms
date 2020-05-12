@@ -111,26 +111,9 @@
     @endforeach
     </table>
     <script>
-    function subject_validate(){
-      var _is_scceuss = false;
-      var is_school = $('input[type="checkbox"][name="lesson[]"][value="1"]').prop("checked");
-      if(!is_school) return true;
-      if( $("input.subject_level[type='radio']", $(".carousel-item.active")).length > 0){
-        $("input.subject_level[type='radio'][value!=1]:checked", $(".carousel-item.active")).each(function(index, value){
-          var val = $(this).val();
-          if(val!=1){
-            _is_scceuss = true;
-          }
-        });
-        if(!_is_scceuss){
-          front.showValidateError('#subject_table', '希望科目を１つ以上選択してください');
-        }
-      }
-      else {
-        return true;
-      }
-      return _is_scceuss;
-    }
+    $(function(){
+      subject_onload();
+    });
     </script>
   </div>
 </div>

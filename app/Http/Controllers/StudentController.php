@@ -212,20 +212,23 @@ class StudentController extends UserController
      if(!$request->has('student_parent_id')) abort(403);
      $param = $this->get_param($request);
      $form = $request->all();
-     $parent = StudentParent::where('id', $param['student_parent_id']->id)->first();
+     $parent = StudentParent::where('id', $param['student_parent_id'])->first();
+     $res = $this->api_response(200);
      if(!isset($parent)) abort(403);
-     $form['create_user_id'] = $param['user']->user_id;
-     $res = $this->transaction($request, function() use ($request){
-       $form = $request->all();
-       $form["accesskey"] = '';
-       $form["password"] = 'sakusaku';
-       if(!empty($form['student2_name_last'])){
-         $form['course_type'] = 'family';
-       }
-       $trial = Trial::entry($form);
-       return $trial;
-     }, $param['domain_name'].'を登録', __FILE__, __FUNCTION__, __LINE__ );
-     return $this->save_redirect($res, $param, $param['domain_name'].'を登録しました');
+     $student = $parent->get_child($form['name_last'], $form['name_first']);
+     if(isset($student)){
+       $res = $this->error_response('この生徒は登録済みです');
+     }
+     if($this->is_success_response($res)){
+       $form['create_user_id'] = $param['user']->user_id;
+       $res = $this->transaction($request, function() use ($parent, $form){
+         $form["accesskey"] = '';
+         $form["password"] = 'sakusaku';
+         $student = $parent->brother_add($form,1);
+         return $student;
+       }, '生徒登録', __FILE__, __FUNCTION__, __LINE__ );
+     }
+     return $this->save_redirect($res, $param, '生徒を登録しました');
    }
    /**
     * データ更新時のパラメータチェック
@@ -920,8 +923,23 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
     $param['student'] = $param['item'];
-    return view($this->domain.'.edit',$param);
+    return view($this->domain.'.create',$param);
   }
+  /**
+   * Show the form for setting editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function setting_page(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    $param['student'] = $param['item'];
+    return view($this->domain.'.setting',$param);
+  }
+
   /**
    * Show the form for editing the specified resource.
    *

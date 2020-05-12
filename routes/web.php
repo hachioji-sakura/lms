@@ -168,6 +168,9 @@ Route::get('parents/register','StudentParentController@register');
 Route::post('parents/register','StudentParentController@register_update');
 
 
+Route::get('students/{id}/setting','StudentController@setting_page');
+
+
 Route::get('students/{id}/email_edit','StudentController@email_edit_page');
 Route::get('managers/{id}/email_edit','ManagerController@email_edit_page');
 Route::get('teachers/{id}/email_edit','TeacherController@email_edit_page');
