@@ -1,6 +1,6 @@
 <?php
 return array(
-    'new' => '未着手',
+    'new' => '新着',
     'progress' => '着手中',
     'done' => 'レビュー待ち',
     'complete' => '完了',

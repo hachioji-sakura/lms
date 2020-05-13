@@ -7,24 +7,16 @@
 @endsection
 
 @section('page_footer')
-<dt>
-  <form method="POST" action="/tasks/{{$item->id}}/progress">
-    @csrf
-    @method('PUT')
-    <button type="submit" title="開始する" class="btn btn-app"><i class="fa fa-play"></i>{{__('labels.start')}}</button>
-  </form>
-</dt>
-<dt>
-  <form method="POST" action="/tasks/{{$item->id}}/done">
-    @csrf
-    @method('PUT')
-    <button type="submit" title="完了する" class="btn btn-app">
-      <i class="fa fa-stop"></i>
-      {{__('labels.complete')}}
-    </button>
-  </form>
-</dt>
+  @foreach($buttons as $key => $value)
+  <dt>
+    <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
+    <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
+    {{$value}}
+    </a>
+  </dt>
+  @endforeach
 @endsection
+
 
 @section('contents')
 <div class="card">
@@ -69,36 +61,18 @@
       </div>
     </div>
     <div class="card-tools float-right">
+
+    </div>
+  </div>
+  <div class="d-none d-sm-block">
+    <div class="card-header">
       <div class="btn-group">
-        @if($item->status == 'new' && $item->target_user_id == $user->user_id )
-        <form method="POST" action="/tasks/{{$item->id}}/progress">
-          @csrf
-          @method('PUT')
-          <button type="submit" title="開始する" class="btn btn-sm btn-submit btn-primary mr-1"><i class="fa fa-play"></i></button>
-        </form>
-        @endif
-        @if($item->status == 'progress' && $item->target_user_id == $user->user_id)
-        <form method="POST" action="/tasks/{{$item->id}}/done">
-          @csrf
-          @method('PUT')
-          <button type="submit" title="完了する" class="btn btn-sm btn-submit btn-success mr-1"><i class="fa fa-stop"></i></button>
-        </form>
-        @endif
-        @if($item->status == "done" && $item->create_user_id == $user->user_id)
-        <a href="javascript:void(0)" title="評価する" page_form="dialog" page_title="{{$item->title}}の評価" page_url="/tasks/{{$item->id}}/review" class="btn btn-sm btn-warning mr-1" role="button">
-        <i class="fas fa-pen"></i>
-        </a>
-        @endif
-        @if( $item->status != "complete" && $item->status != "done")
-        <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-info mr-1" role="button">
-          <i class="fa fa-edit"></i>
-        </a>
-        @endif
-        @if( ($item->status == "new" || $item->status == "progress") && $item->create_user_id == $user->user_id )
-        <a href="javascript:void(0)" page_title="「{{$item->title}}」をキャンセルしますか？" page_form="dialog" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
-          <i class="fa fa-trash"></i>
-        </a>
-        @endif
+        @foreach($buttons as $key => $value)
+          <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-sm btn-{{config('status_style')[$key]}} mr-1" role="button">
+          <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
+          {{$value}}
+          </a>
+        @endforeach
       </div>
     </div>
   </div>

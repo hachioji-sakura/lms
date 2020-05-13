@@ -4,6 +4,6 @@ return array(
     'progress' => 'play',
     'done' => 'stop',
     'complete' => 'pen',
-    'cancel' => 'trash',
+    'cancel' => 'ban',
 );
 ?>

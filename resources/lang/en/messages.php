@@ -125,4 +125,5 @@ return [
  "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
  "message_first_sentence" => "You recieved following message on system. Please check it.",
  "task_title" => "You have a task from :user_name",
+ "task_confirm" => "Are you sure?",
  ];

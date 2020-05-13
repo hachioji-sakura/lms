@@ -151,7 +151,31 @@ class TaskController extends MilestoneController
         $param['status_count'] = $item->status_count($item->target_user->details()->user_id);
         $param['items'] = $this->model()->findTargetUser($item->target_user->details()->user_id);
         $param['domain'] = $item->target_user->details()->domain;
+        $param['buttons'] = $this->get_buttons($item);
         return view($this->domain. '.details')->with($param);
+    }
+
+    public function get_buttons($item){
+      $buttons = [];
+      //未着手に戻る
+      if( $item->status == "progress"){
+        $buttons['new'] = __('labels.new_button');
+      }
+      //開始する
+      if($item->status == "new" || $item->status == "done"){
+        $buttons['progress'] = __('labels.progress_button');
+      }
+      //完了する
+      if($item->status == "progress" || $item->status == "complete"){
+        $buttons['done'] = __('labels.done_button');
+      }
+      //レビューする
+      if($item->status == "done"){
+        $buttons['complete'] = __('labels.review_button');
+      }
+      //キャンセルする
+      $buttons['cancel'] = __('labels.cancel');
+      return $buttons;
     }
 
     /**
@@ -200,7 +224,7 @@ class TaskController extends MilestoneController
           }
         }
         $item->change($form, $file, $is_file_delete);
-        
+
         return $this->api_response(200, '', '', $item);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
       if($this->is_success_response($res)){
@@ -221,9 +245,36 @@ class TaskController extends MilestoneController
       return $form;
     }
 
+    public function show_new_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['action'] = 'new';
+      return view($this->domain.'.confirm')->with($param);
+    }
+
     public function show_cancel_page(Request $request, $id){
       $param = $this->get_param($request,$id);
       return view($this->domain.'.cancel')->with($param);
+    }
+
+    public function show_progress_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['action'] = 'progress';
+      return view($this->domain.'.confirm')->with($param);
+    }
+
+    public function show_done_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['action'] = 'done';
+      return view($this->domain.'.confirm')->with($param);
+    }
+
+    public function new(Request $request ,$id){
+      $param = $this->get_param($request,$id);
+      $form = [];
+      $form['status'] = 'new';
+      $form['start_date'] = null;
+      $res = $this->change_status($request, $id, $form);
+      return $this->save_redirect($res,$param,'タスクを未着手にしました。');
     }
 
     public function cancel(Request $request,$id){
@@ -239,6 +290,7 @@ class TaskController extends MilestoneController
       $form = [];
       $form['status'] = 'progress';
       $form['start_date'] = date('Y/m/d');
+      $form['end_date'] = null;
       $res = $this->change_status($request, $id, $form);
       return $this->save_redirect($res,$param,'タスクを開始しました。');
     }

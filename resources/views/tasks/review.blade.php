@@ -1,5 +1,5 @@
 <div id="review_form">
-  <form method="POST" action="/tasks/{{$item->id}}/review">
+  <form method="POST" action="/tasks/{{$item->id}}/complete">
     @csrf
     @method('PUT')
     <div class="row mb-2">
