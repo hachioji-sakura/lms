@@ -50,9 +50,8 @@ class TaskController extends MilestoneController
         //
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        $param['target_user'] = $user;
+        $param['target_user'] = Student::where('id', $request->get('student_id'))->first();
         $param['_edit'] = false;
-        dd($param);
         return view($this->domain . '.create',$param);
     }
 
@@ -87,14 +86,35 @@ class TaskController extends MilestoneController
           }
           return $this->api_response(200, '', '', $item);
         }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+        if($this->is_success_response($res)){
+          $this->sendmail($res);
+        }
         return $res;
+     }
+
+     public function sendmail($res){
+       //メールを送信する
+       $item = $res['data']->details();
+       $template = 'task';
+       $type = 'text';
+       $param = ['item' => $item ];
+       if($item->create_user->details()->role == "parent"){
+         $title_of_honor = "様";
+       }elseif($item->create_user->details()->role == "teacher"){
+         $title_of_honor = "先生";
+       }else{
+         $title_of_honor = "さん";
+       }
+
+       $item->target_user->send_mail(__('messages.task_title',['user_name' => $item->create_user->details()->name(),'title_of_honor' => $title_of_honor]), $param, $type ,$template);
+       return $res;
      }
 
     public function create_form(Request $request){
       $user = $this->login_details($request);
       $form = [];
       $form['title'] = $request->get('title');
-      $form['remarks'] = $request->get('remarks');
+      $form['body'] = $request->get('body');
       $form['milestone_id'] = $request->get('milestone_id');
       $form['type'] = $request->get('type');
       $form['status'] = 'new'; //登録時はnew
@@ -110,8 +130,8 @@ class TaskController extends MilestoneController
     {
       $form = $request->all();
       //保存時にパラメータをチェック
-      if(empty($form['title']) || empty($form['start_schedule']) || empty($form['end_schedule']) ) {
-        return $this->bad_request('リクエストエラー', 'タイトル='.$form['title'].'/開始予定='.$form['start_schedule'].'終了予定='.$form['end_schedule']);
+      if(empty($form['title']) || empty($form['type']) ) {
+        return $this->bad_request('リクエストエラー', 'タイトル='.$form['title'].'/タイプ='.$form['type']);
       }
       return $this->api_response(200, '', '');
     }
@@ -168,7 +188,7 @@ class TaskController extends MilestoneController
         $form = $this->update_form($request);
         $item = $this->model()->where('id', $id)->first();
         $this->model()->where('id',$id)->update($form);
-        /*
+
         $is_file_delete = false;
         if($request->get('upload_file_delete')==1){
           $is_file_delete = true;
@@ -180,16 +200,19 @@ class TaskController extends MilestoneController
           }
         }
         $item->change($form, $file, $is_file_delete);
-        */
+        
         return $this->api_response(200, '', '', $item);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      if($this->is_success_response($res)){
+        $this->sendmail($res);
+      }
       return $res;
     }
 
     public function update_form(Request $request){
       $form = [];
       $form['title'] = $request->get('title');
-      $form['remarks'] = $request->get('remarks');
+      $form['body'] = $request->get('body');
       $form['milestone_id'] = $request->get('milestone_id');
       $form['type'] = $request->get('type');
       $form['start_schedule'] = $request->get('start_schedule');

@@ -19,8 +19,6 @@ class Task extends Milestone
         'status' => 'required',
         'target_user_id' => 'required',
         'create_user_id' => 'required',
-        'start_schedule' => 'required',
-        'end_schedule' => 'required',
     );
 
     public function scopeActiveTasks($query){
@@ -45,7 +43,11 @@ class Task extends Milestone
 
     public function scopeSearchQuery($query,$request){
       if($request->has('search_status') ){
-        $query = $query->findStatuses($request->get('search_status'));
+        if($request->get('search_status') == 'active'){
+          $query = $query->activeTasks();
+        }else{
+          $query = $query->findStatuses($request->get('search_status'));
+        }
       }
       if($request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));

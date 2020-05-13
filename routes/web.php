@@ -320,18 +320,16 @@ Route::get('messages/{id}/details','MessageController@details');
 Route::get('messages/{id}/reply','MessageController@reply');
 Route::post('messages/{id}/reply','MessageController@store');
 Route::get('messages','MessageController@list');
-
 Route::get('parents/{id}/messages', 'StudentParentController@message_list');
 Route::get('teachers/{id}/messages', 'TeacherController@message_list');
 Route::get('managers/{id}/messages', 'ManagerController@message_list');
+
 Route::get('tasks/','TaskController@index');
 Route::get('tasks/create', 'TaskController@create');
 Route::get('students/{id}/tasks', 'StudentController@task_list');
 Route::post('tasks/create', 'TaskController@store');
-Route::get('students/{id}/create_tasks', 'StudentController@create_tasks');
 Route::get('tasks/{id}/edit', 'TaskController@edit');
 Route::put('tasks/{id}/edit', 'TaskController@update');
-Route::delete('tasks/{id}/delete','TaskController@destroy');
 Route::get('tasks/{id}', 'TaskController@show');
 Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
 Route::put('tasks/{id}/cancel', 'TaskController@cancel');

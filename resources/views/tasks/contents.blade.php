@@ -7,11 +7,11 @@
         </h3>
         {{__('labels.tasks').__('labels.list')}}
         @else
-        <h3 class="card-title">タスク一覧</h3>
+        <h3 class="card-title">{{__('labels.tasks').__('labels.list')}}</h3>
         @endif
         @if(isset($target_user))
-        <div class="">
-          <a href="javascript:void(0)" page_form="dialog" page_title="For {{$target_user->details()->name}}" page_url="/{{$target_user->details()->domain}}/{{$target_user->id}}/create_tasks" title="{{__('labels.add_button')}}" role="button"  class="btn btn-primary btn-sm">
+        <div class="d-none d-sm-block">
+            <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$target_user->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-primary btn-sm">
             <i class="fa fa-plus"></i>
             {{__('labels.add_button')}}
           </a>
@@ -22,7 +22,7 @@
     <div class="card-tools">
       @component('components.search_word', ['search_word' => $search_word])
       @endcomponent
-      <div class="pagenate">
+      <div class="paginate">
         {{$items->appends(Request::query())->links('components.paginate')}}
       </div>
       <!-- 検索 -->
@@ -34,8 +34,16 @@
       @foreach($items as $item)
       <li class="item {{$item->status == "cancel" ? 'bg-info' : ''}}">
         <div class="row">
-          <div class="col-6">
+          <div class="col-8">
             <div class="row">
+              <div class="col-12">
+                <small class="badge badge-{{config('status_style')[$item->status]}}">
+                  {{config('attribute.task_status')[$item->status]}}
+                </small>
+                @if(!empty($item->s3_url))
+                   <i class="fas fa-paperclip"></i>
+                @endif
+              </div>
               <div class="col-12 text-truncate">
                 <a href="/tasks/{{$item->id}}" title="{{__('labels.details')}}">
                   {{$item->title}}
@@ -43,25 +51,29 @@
               </div>
               <div class="col-12 text-truncate">
                 <small class="text-muted">
-                  {{$item->remarks}}
+                  {{$item->body}}
                 </small>
               </div>
             </div>
           </div>
-          <div class="col-3">
-            <small class="badge badge-{{config('status_style')[$item->status]}}">
-              {{config('attribute.task_status')[$item->status]}}
-            </small>
-            <br/>
-            <small class="badge badge-danger">
-              <i class="fas fa-stopwatch mr-1"></i>{{$item->end_schedule}}
-            </small>
-          </div>
-          <div class="col-3">
-            <a href="/tasks/{{$item->id}}" title="{{$item->id}}" class="btn btn-secondary btn-sm">
-              <i class="fa fa-file-alt mr-1"></i>
-              {{__('labels.details')}}
-            </a>
+
+          <div class="col-4">
+            <div class="row">
+              <div class="col-12">
+                <a href="/tasks/{{$item->id}}" title="{{$item->id}}" class="btn btn-secondary btn-sm float-right">
+                  <i class="fa fa-file-alt mr-1"></i>
+                  {{__('labels.details')}}
+                </a>
+              </div>
+            </div>
+            <div class="row mt-1">
+              <div class="col-12">
+                <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-info float-right" role="button">
+                  <i class="fa fa-edit"></i>
+                  {{__('labels.edit')}}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </li>
@@ -90,22 +102,14 @@
     <label for="search_status" class="w-100">
       {{__('labels.status')}}
     </label>
+    <div class="row">
       @foreach(config('attribute.task_status') as $key => $value)
+      <div class="col-sm-12 col-md-2">
       <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="evaluation" value="{{$key}}">
       <label class="form-check-label">{{$value}}</label>
+      </div>
       @endforeach
+    </div>
   </div>
   @endslot
 @endcomponent
-<script>
-$(function(){
-  base.pageSettinged("delete_task");
-  $('button.btn-submit[form="delete_task"]').on('click', function(e){
-    e.preventDefault();
-    if(front.validateFormValue('delete_task')){
-      $("form#delete_task").submit();
-    }
-  });
-})
-
-</script>

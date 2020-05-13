@@ -1285,14 +1285,6 @@ class StudentController extends UserController
     return $query;
   }
 
-  public function create_tasks(Request $request, $id = null){
-    $param = $this->get_param($request);
-    $user = $this->login_details($request);
-    $param['target_user'] = $this->model()->where('id',$id)->first();
-    $param['_edit'] = false;
-    return view('tasks.create')->with($param);
-  }
-
   public function task_list(Request $request, $id = null){
     $param = $this->get_param($request,$id);
     $user = $this->login_details($request);
@@ -1313,9 +1305,8 @@ class StudentController extends UserController
     return view('tasks.list')->with($param);
   }
 
-
   public function task_search($request, $id){
-    $tasks = Task::findTargetUser($id)->searchQuery($request,$id)->orderBy('end_schedule','asc');
+    $tasks = Task::findTargetUser($id)->searchQuery($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
 }

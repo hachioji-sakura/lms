@@ -6,6 +6,26 @@
   @include('tasks.menu')
 @endsection
 
+@section('page_footer')
+<dt>
+  <form method="POST" action="/tasks/{{$item->id}}/progress">
+    @csrf
+    @method('PUT')
+    <button type="submit" title="開始する" class="btn btn-app"><i class="fa fa-play"></i>{{__('labels.start')}}</button>
+  </form>
+</dt>
+<dt>
+  <form method="POST" action="/tasks/{{$item->id}}/done">
+    @csrf
+    @method('PUT')
+    <button type="submit" title="完了する" class="btn btn-app">
+      <i class="fa fa-stop"></i>
+      {{__('labels.complete')}}
+    </button>
+  </form>
+</dt>
+@endsection
+
 @section('contents')
 <div class="card">
   <div class="card-header">
@@ -13,11 +33,11 @@
       {{config('attribute.task_status')[$item->status]}}
     </small>
     <div class="row mt-1">
-      <div class="col-8 text-truncate">
-        <h3 class="card-title text-truncate">
+      <div class="col-12">
+        <h3 class="card-title">
           {{$item->title}}
         </h3>
-        @if(!empty  ($item->evaluation))
+        @if(!empty($item->evaluation))
         @for($i=1;$i<=$item->evaluation;$i++)
         <span class="fa fa-star" style="color:orange;"></span>
         @endfor
@@ -26,9 +46,7 @@
         @endfor
         ({{$item->evaluation}})
         @endif
-      </div>
-      <div class="col-4">
-        @if(isset($item->s3_url))
+        @if(!empty($item->s3_url))
         <a href="{{$item->s3_url}}" class="float-right">
           <i class="fa fa-link mr-1"></i>
           {{$item->s3_alias}}
@@ -86,7 +104,15 @@
   </div>
 
   <div class="card-body">
-    @if(isset($item->remarks))
+    @if(isset($item->body))
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+            {!!nl2br($item->body)!!}
+        </div>
+      </div>
+    </div>
+    <!--詳細の折り畳みレイアウト
     <div class="row mt-2">
       <div class="col-12">
         <label for="contents" class="w-100">
@@ -99,11 +125,12 @@
       <div class="row">
         <div class="col-12">
           <div class="form-group">
-              {!!nl2br($item->remarks)!!}
+              {!!nl2br($item->body)!!}
           </div>
         </div>
       </div>
     </div>
+  -->
     @endif
     <!--
     @if($item->reviews->count() > 0)

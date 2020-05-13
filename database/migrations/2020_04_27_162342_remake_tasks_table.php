@@ -18,9 +18,9 @@ class RemakeTasksTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
           $table->increments('id');
           $table->string('title')->nullable(false);
-          $table->string('remarks',10000)->nullable(true);
+          $table->string('body',10000)->nullable(true);
           $table->integer('milestone_id')->nullable(true);
-          $table->string('type')->nullable(true);
+          $table->string('type')->nullable(false);
           $table->string('status')->nullable(false);
           $table->integer('target_user_id')->nullable(false)->index('index_target_user_id');
           $table->integer('create_user_id')->nullable(false)->index('index_create_user_id');
@@ -28,9 +28,9 @@ class RemakeTasksTable extends Migration
           $table->string('priority')->nullable(true);
           $table->string ('s3_url')->nullable(true);
           $table->string ('s3_alias')->nullable(true);
-          $table->date('start_schedule')->nullable(false);
+          $table->date('start_schedule')->nullable(true);
           $table->date('start_date')->nullable(true);
-          $table->date('end_schedule')->nullable(false);
+          $table->date('end_schedule')->nullable(true);
           $table->date('end_date')->nullable(true);
           $table->timestamps();
         });
