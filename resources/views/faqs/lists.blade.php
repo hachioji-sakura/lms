@@ -34,8 +34,13 @@
                     <i class="fa fa-tag mx-1"></i>{{$item->type_name()}}
                 </div>
                 --}}
-                <div class="col-12 mt-1 text-sm">
-                  {{__('labels.publiced_at')}}： {{date('Y-m-d', strtotime($item["publiced_at"]))}}
+                <div class="col-4 mt-1 text-sm">
+                  {{__('labels.publiced_at')}}： {{$item->label_publiced_at()}}
+                </div>
+                <div class="col-8 text-sm mt-1 text-right">
+                  <a class="btn btn-sm btn-secondary"  href="/{{$domain}}/{{$item['id']}}/page" role="button" >
+                    <i class="fa fa-file mr-1"></i>{{__('labels.details')}}
+                  </a>
                 </div>
                 @if(isset($user) && $user->role=='manager')
                 <div class="col-4 mt-1 text-sm">
