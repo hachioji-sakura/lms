@@ -68,7 +68,7 @@
             </div>
             <div class="row mt-1">
               <div class="col-12">
-                <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-info float-right" role="button">
+                <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-success float-right" role="button">
                   <i class="fa fa-edit"></i>
                   {{__('labels.edit')}}
                 </a>
