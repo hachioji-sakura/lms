@@ -75,7 +75,7 @@ class TaskController extends MilestoneController
         }
         $item = $item->first();
         if(isset($item)){
-          return $this->error_response('すでに登録済みです');
+          return $this->error_response(__('messages.task_already_registered'));
         }
         $res = $this->transaction($request, function() use ($request, $form){
           $item = $this->model()->create($form);
@@ -85,7 +85,7 @@ class TaskController extends MilestoneController
             }
           }
           return $this->api_response(200, '', '', $item);
-        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+        }, __('messages.registered'), __FILE__, __FUNCTION__, __LINE__ );
         if($this->is_success_response($res)){
           $this->sendmail($res);
         }
@@ -174,7 +174,9 @@ class TaskController extends MilestoneController
         $buttons['complete'] = __('labels.review_button');
       }
       //キャンセルする
-      $buttons['cancel'] = __('labels.cancel');
+      if($item->status != "cancel"){
+        $buttons['cancel'] = __('labels.cancel');
+      }
       return $buttons;
     }
 
@@ -226,7 +228,7 @@ class TaskController extends MilestoneController
         $item->change($form, $file, $is_file_delete);
 
         return $this->api_response(200, '', '', $item);
-      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.updated'), __FILE__, __FUNCTION__, __LINE__ );
       if($this->is_success_response($res)){
         $this->sendmail($res);
       }
@@ -253,7 +255,8 @@ class TaskController extends MilestoneController
 
     public function show_cancel_page(Request $request, $id){
       $param = $this->get_param($request,$id);
-      return view($this->domain.'.cancel')->with($param);
+      $param['action'] = 'cancel';
+      return view($this->domain.'.confirm')->with($param);
     }
 
     public function show_progress_page(Request $request, $id){
@@ -274,7 +277,7 @@ class TaskController extends MilestoneController
       $form['status'] = 'new';
       $form['start_date'] = null;
       $res = $this->change_status($request, $id, $form);
-      return $this->save_redirect($res,$param,'タスクを未着手にしました。');
+      return $this->save_redirect($res,$param, __('messages.task_status_new'));
     }
 
     public function cancel(Request $request,$id){
@@ -282,7 +285,7 @@ class TaskController extends MilestoneController
       $form = [];
       $form['status'] = 'cancel';
       $res = $this->change_status($request , $id, $form);
-      return $this->save_redirect($res,$param,'キャンセルしました。');
+      return $this->save_redirect($res,$param,__('messages.task_status_cancel'));
     }
 
     public function progress(Request $request ,$id){
@@ -292,7 +295,7 @@ class TaskController extends MilestoneController
       $form['start_date'] = date('Y/m/d');
       $form['end_date'] = null;
       $res = $this->change_status($request, $id, $form);
-      return $this->save_redirect($res,$param,'タスクを開始しました。');
+      return $this->save_redirect($res,$param, __('messages.task_status_progress'));
     }
 
     public function done(Request $request ,$id){
@@ -300,8 +303,9 @@ class TaskController extends MilestoneController
       $form = [];
       $form['status'] = 'done';
       $form['end_date'] = date('Y/m/d');
+      $form['evaluation'] = null;
       $res = $this->change_status($request, $id, $form);
-      return $this->save_redirect($res,$param,'タスクを完了しました。');
+      return $this->save_redirect($res,$param,__('messages.task_status_done'));
     }
 
     public function change_status(Request $request, $id, $form){
@@ -317,7 +321,7 @@ class TaskController extends MilestoneController
           $this->model()->where('id',$id)->update($form);
         }
         return $this->api_response(200, '', '', $item);
-      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.updated'), __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
 
@@ -354,14 +358,14 @@ class TaskController extends MilestoneController
         ];
       }
       $res =$this->change_status($request,$id,$form);
-      return $this->save_redirect($res,$param,'評価しました。');
+      return $this->save_redirect($res,$param, __('messages.task_status_complete'));
     }
 
     public function save_review(Request $request,$form){
       $res =  $this->transaction($request, function() use ($request, $form){
         $item = Review::create($form);
         return $this->api_response(200, '', '', $item);
-      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.registered'), __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
 

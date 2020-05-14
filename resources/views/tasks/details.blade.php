@@ -1,6 +1,7 @@
 @extends('dashboard.common')
 
 @section('title', $item->target_user->details()->name().'さんの'.$domain_name)
+@section('title_header', $item->target_user->details()->name().'さんの'.$domain_name)
 
 @section('page_sidemenu')
   @include('tasks.menu')
@@ -8,12 +9,14 @@
 
 @section('page_footer')
   @foreach($buttons as $key => $value)
-  <dt>
-    <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
-    <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
-    {{$value}}
-    </a>
-  </dt>
+      <dt>
+        <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{$key == 'complete' ? __('messages.task_review_confirm'): __('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
+        <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
+        <small class="text-sm">
+        {{$value}}
+        </small>
+        </a>
+      </dt>
   @endforeach
 @endsection
 
@@ -61,7 +64,9 @@
       </div>
     </div>
     <div class="card-tools float-right">
-
+      <a href="/{{$domain}}/{{$target_user->id}}/tasks" class="btn btn-sm btn-primary">
+        <i class="fa fa-arrow-left"></i>
+      </a>
     </div>
   </div>
   <div class="d-none d-sm-block">

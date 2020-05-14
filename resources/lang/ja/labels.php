@@ -361,6 +361,7 @@ return [
   'review_button' => 'レビューする',
   'progress_button' => '着手中にする',
   'done_button' => 'レビュー待ちにする',
-  'new_button' => '新着にする'
+  'new_button' => '新着にする',
+  'active' => 'アクティブ',
 
 ];

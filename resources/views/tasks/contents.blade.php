@@ -32,23 +32,12 @@
     <div class="row">
       <div class="col-12">
         {{__('labels.status').__('labels.filter')}}
-      </div>
-      <div class="col-12">
-        <div class="btn-group">
-        @foreach(config('attribute.task_status') as $key => $value)
-          <a href="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}"  class="btn btn-default mr-1 {{$request->query('search_status') == $key ? 'active' :''}}">
-            <div class="d-block d-sm-none">
-              <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
-            </div>
-            <div class="d-none d-sm-block">
-              {{$value}}
-            </div>
-            @if(!empty($status_count[$key]))
-            <span class="badge badge-{{config('status_style')[$key]}}">{{$status_count[$key]}}</span>
-            @endif
-          </a>
-        @endforeach
-        </div>
+        <select name="type" class="form-control select2"  onChange="location.href=value;">
+          <option value="tasks">{{__('labels.active')}}</option>
+          @foreach(config('attribute.task_status') as $key => $value)
+          <option value="tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
+          @endforeach
+        </select>
       </div>
     </div>
   </div>
@@ -56,7 +45,7 @@
     @if(count($items)> 0)
     <ul class="products-list product-list-in-card pl-2 pr-2">
       @foreach($items as $item)
-      <li class="item {{$item->status == "cancel" ? 'bg-info' : ''}}">
+      <li class="item">
         <div class="row">
           <div class="col-8">
             <div class="row">

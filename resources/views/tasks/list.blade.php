@@ -1,7 +1,7 @@
 @extends('dashboard.common')
 
-@section('title_header',$domain_name)
-@section('title',$domain_name)
+@section('title_header', $target_user->details()->name().'さんの'.__('labels.tasks'))
+@section('title', $target_user->details()->name().'さんの'.__('labels.tasks'))
 
 @section('page_sidemenu')
  @include('tasks.menu')

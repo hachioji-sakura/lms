@@ -42,12 +42,11 @@ class Task extends Milestone
     }
 
     public function scopeSearchQuery($query,$request){
-      if($request->has('search_status') ){
-        if($request->get('search_status') == 'active'){
-          $query = $query->activeTasks();
-        }else{
-          $query = $query->findStatuses($request->get('search_status'));
-        }
+      $search_status = $request->query('search_status','active');
+      if($search_status == 'active'){
+        $query = $query->activeTasks();
+      }else{
+        $query = $query->findStatuses($request->get('search_status'));
       }
       if($request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));

@@ -126,4 +126,13 @@ return [
  "message_first_sentence" => "You recieved following message on system. Please check it.",
  "task_title" => "You have a task from :user_name",
  "task_confirm" => "Are you sure?",
+ 'task_review_confirm' => 'Please evaluate this task.',
+ 'task_already_registered' => 'This task has already registered.',
+ 'registered' => 'Registered',
+ 'updated' => 'Updated',
+ 'task_status_new' => 'A status of this task is updated to [new]',
+ 'task_status_cancel' => 'A status of this task is updated to [cancel]',
+ 'task_status_progress' => 'A status of this task is updated to [progress]',
+ 'task_status_done' => 'A status of this task is updated to [done]',
+ 'task_status_complete' => 'A status of this task is updated to [complete]',
  ];

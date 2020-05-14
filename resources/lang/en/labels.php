@@ -357,5 +357,6 @@ return [
   'review' => 'Review',
   'start_button' => 'Start',
   'done_button' => 'Done',
-  'new_button' => 'new'
+  'new_button' => 'New',
+  'active' => 'Active',
 ];

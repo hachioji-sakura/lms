@@ -9,9 +9,11 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a href="/{{$domain}}/{{$target_user->id}}/tasks"  class="nav-link">
+          <a href="/{{$domain}}/{{$target_user->id}}/tasks" class="nav-link">
             <i class="fa fa-tasks nav-icon"></i>{{__('labels.all')}}
+            @if($status_count['all'] > 0)
             <span class="badge badge-primary">{{$status_count['all']}}</span>
+            @endif
           </a>
         </li>
         @foreach(config('attribute.task_status') as $key => $value)

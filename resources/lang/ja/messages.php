@@ -131,4 +131,13 @@ return [
   "message_first_sentence" => "以下のメッセージをご確認ください。",
   "task_title" => ":user_name :title_of_honorがタスクを登録しました。",
   'task_confirm' => '変更してよろしいですか？',
+  'task_review_confirm' => '評価してください。',
+  'task_already_registered' => '既に登録済みです。',
+  'registered' => '登録しました',
+  'updated' => '更新しました',
+  'task_status_new' => 'タスクを新着にしました。',
+  'task_status_cancel' => 'タスクをキャンセルしました。',
+  'task_status_progress' => 'タスクを着手中にしました。',
+  'task_status_done' => 'タスクをレビュー待ちにしました。',
+  'task_status_complete' => 'タスクを完了しました。',
 ];

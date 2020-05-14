@@ -5,6 +5,7 @@
         @csrf
         @method('PUT')
         <button type="submit" class="btn btn-submit btn-primary w-100">
+          <i class="fa fa-check"></i>
           OK
         </button>
       </form>

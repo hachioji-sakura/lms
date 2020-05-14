@@ -1286,7 +1286,6 @@ class StudentController extends UserController
   }
 
   public function task_list(Request $request, $id = null){
-
     $param = $this->get_param($request,$id);
     $user = $this->login_details($request);
     $target_user = $this->model()->where('id',$id)->first();
