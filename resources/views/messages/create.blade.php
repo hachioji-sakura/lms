@@ -33,7 +33,7 @@
            <label>{{__('labels.message_title')}}</label>
            @if($_reply == false)
            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-           <input type="text" name="title" class="form-control" placeholder="タイトル" required="true"minlength="5" maxlength="50" >
+           <input type="text" name="title" class="form-control" placeholder="タイトル" required="true" maxlength="50" >
            @else
            Re:{{$item->title}}
            <input type="hidden" name="title" value="Re:{{$item->title}}">
@@ -75,7 +75,7 @@
         <div class="form-group">
           <label>{{__('labels.body')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <textarea class="form-control" name="body" rows="5"  required="true" minlength="10" maxlength="5000"></textarea>
+          <textarea class="form-control" name="body" rows="5"  required="true" maxlength="5000"></textarea>
           @if($_reply == false)
           <input type="hidden" name="parent_message_id" value="0">
           @else
