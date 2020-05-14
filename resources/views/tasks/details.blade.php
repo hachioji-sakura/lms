@@ -66,6 +66,7 @@
     <div class="card-tools float-right">
       <a href="/{{$domain}}/{{$target_user->id}}/tasks" class="btn btn-sm btn-primary">
         <i class="fa fa-arrow-left"></i>
+        {{__('labels.back_button')}}
       </a>
     </div>
   </div>
