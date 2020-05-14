@@ -28,6 +28,30 @@
       <!-- 検索 -->
     </div>
   </div>
+  <div class="card-header">
+    <div class="row">
+      <div class="col-12">
+        {{__('labels.status').__('labels.filter')}}
+      </div>
+      <div class="col-12">
+        <div class="btn-group">
+        @foreach(config('attribute.task_status') as $key => $value)
+          <a href="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}"  class="btn btn-default mr-1 {{$request->query('search_status') == $key ? 'active' :''}}">
+            <div class="d-block d-sm-none">
+              <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
+            </div>
+            <div class="d-none d-sm-block">
+              {{$value}}
+            </div>
+            @if(!empty($status_count[$key]))
+            <span class="badge badge-{{config('status_style')[$key]}}">{{$status_count[$key]}}</span>
+            @endif
+          </a>
+        @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="card-body p-0">
     @if(count($items)> 0)
     <ul class="products-list product-list-in-card pl-2 pr-2">

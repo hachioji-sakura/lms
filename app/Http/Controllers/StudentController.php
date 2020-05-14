@@ -1286,13 +1286,13 @@ class StudentController extends UserController
   }
 
   public function task_list(Request $request, $id = null){
+
     $param = $this->get_param($request,$id);
     $user = $this->login_details($request);
     $target_user = $this->model()->where('id',$id)->first();
     $param['target_user'] = $target_user;
     $items = $this->task_search($request, $target_user->user_id);
     $param['items'] = $items->paginate(20);
-
     $task = Task::first();
     if(!empty($task)){
       $param['status_count'] = $task->status_count($target_user->user_id);
@@ -1302,6 +1302,7 @@ class StudentController extends UserController
       }
       $param['status_count']['all'] = 0;
     }
+    $param['request'] = $request;
     return view('tasks.list')->with($param);
   }
 
