@@ -11,12 +11,8 @@
       <div class ="col-12">
         <label>To</label>
         @if($_reply == false)
-        <!--
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         <select name="target_user_id[]" class="form-control select2" width="100%" multiple="multiple">
-        -->
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <select name="target_user_id[]" class="form-control select2" width="100%">
           <option value=" "></option>
           @foreach($charge_users as $target_user)
             <option value="{{$target_user->user_id}}">{{$target_user->name_last}} {{$target_user->name_first}}</option>
