@@ -1,10 +1,10 @@
 
   <div id="create_tasks" class="form-group">
     @if($_edit)
-    <form method="POST" action="/tasks/{{$item->id}}/edit" enctype="multipart/form-data">
+    <form method="POST" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
       @method('PUT')
     @else
-    <form method="POST" action="/tasks/create" enctype="multipart/form-data">
+    <form method="POST" action="/tasks" enctype="multipart/form-data">
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_user->user_id}}">

@@ -37,7 +37,7 @@
       <div class="col-6">
         <button type="submit" class="btn btn-submit btn-primary w-100">
           <i class="fa fa-pen"></i>
-          {{__('labels.evaluation_button')}}
+          {{__('labels.review_button')}}
         </button>
       </div>
       <div class="col-6">

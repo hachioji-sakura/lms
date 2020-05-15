@@ -1,7 +1,7 @@
 @extends('dashboard.common')
 
-@section('title', $item->target_user->details()->name().'さんの'.$domain_name)
-@section('title_header', $item->target_user->details()->name().'さんの'.$domain_name)
+@section('title', $item->title)
+@section('title_header', $item->title)
 
 @section('page_sidemenu')
   @include('tasks.menu')
@@ -10,10 +10,10 @@
 @section('page_footer')
   @foreach($buttons as $key => $value)
       <dt>
-        <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{$key == 'complete' ? __('messages.task_review_confirm'): __('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
-        <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
+        <a href="javascript:void(0)" title="{{$value['label']}}" page_form="dialog" page_title="{{$key == 'complete' ? __('messages.task_review_confirm'): __('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
+        <i class="fa fa-{{$value['icon']}}"></i>
         <small class="text-sm">
-        {{$value}}
+        {{$value['label']}}
         </small>
         </a>
       </dt>
@@ -74,9 +74,9 @@
     <div class="card-header">
       <div class="btn-group">
         @foreach($buttons as $key => $value)
-          <a href="javascript:void(0)" title="{{$value}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-sm btn-{{config('status_style')[$key]}} mr-1" role="button">
-          <i class="fa fa-{{config('attribute.status_icon')[$key]}}"></i>
-          {{$value}}
+          <a href="javascript:void(0)" title="{{$value['label']}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-sm btn-{{config('status_style')[$key]}} mr-1" role="button">
+          <i class="fa fa-{{$value['icon']}}"></i>
+          {{$value['label']}}
           </a>
         @endforeach
       </div>

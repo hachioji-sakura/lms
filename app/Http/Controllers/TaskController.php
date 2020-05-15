@@ -25,18 +25,10 @@ class TaskController extends MilestoneController
     {
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        $param['items'] = $this->model()->searchQuery($request)->paginate(20);
+        $param['items'] = $this->model()->search($request)->paginate($pagenate_line);
         $target_user = Auth::user();
         $param['target_user'] = $target_user;
-        $task = Task::first();
-        if(!empty($task)){
-          $param['status_count'] = $task->status_count();
-        }else{
-          foreach(config('attribute.task_status') as $key => $value){
-            $param['status_count'][$key] = 0;
-          }
-          $param['status_count']['all'] = 0;
-        }
+        $param['status_count'] = $target_user->get_task_count($target_user->user_id);
         return view($this->domain . '.list')->with($param);
     }
 
@@ -148,7 +140,7 @@ class TaskController extends MilestoneController
         $item = $this->model()->where('id',$id)->first();
         $param['item'] = $item;
         $param['target_user'] = $item->target_user->details();
-        $param['status_count'] = $item->status_count($item->target_user->details()->user_id);
+        $param['status_count'] = $item->target_user->student->get_task_count();
         $param['items'] = $this->model()->findTargetUser($item->target_user->details()->user_id);
         $param['domain'] = $item->target_user->details()->domain;
         $param['buttons'] = $this->get_buttons($item);
@@ -159,23 +151,38 @@ class TaskController extends MilestoneController
       $buttons = [];
       //未着手に戻る
       if( $item->status == "progress"){
-        $buttons['new'] = __('labels.new_button');
+        $buttons['new'] = [
+            'label' => __('labels.new_button'),
+            'icon' => 'plus',
+          ];
       }
       //開始する
       if($item->status == "new" || $item->status == "done"){
-        $buttons['progress'] = __('labels.progress_button');
+        $buttons['progress'] = [
+            'label' => __('labels.progress_button'),
+            'icon' => 'play',
+          ];
       }
       //完了する
       if($item->status == "progress" || $item->status == "complete"){
-        $buttons['done'] = __('labels.done_button');
+        $buttons['done'] = [
+            'label' => __('labels.done_button'),
+            'icon' => 'stop',
+          ];
       }
       //レビューする
       if($item->status == "done"){
-        $buttons['complete'] = __('labels.review_button');
+        $buttons['complete'] = [
+            'label' => __('labels.review_button'),
+            'icon' => 'pen'
+          ];
       }
       //キャンセルする
       if($item->status != "cancel"){
-        $buttons['cancel'] = __('labels.cancel');
+        $buttons['cancel'] = [
+            'label' => __('labels.cancel'),
+            'icon' => 'ban',
+        ];
       }
       return $buttons;
     }

@@ -324,13 +324,19 @@ Route::get('parents/{id}/messages', 'StudentParentController@message_list');
 Route::get('teachers/{id}/messages', 'TeacherController@message_list');
 Route::get('managers/{id}/messages', 'ManagerController@message_list');
 
-Route::get('tasks/','TaskController@index');
-Route::get('tasks/create', 'TaskController@create');
+
+Route::resource('tasks','TaskController');
 Route::get('students/{id}/tasks', 'StudentController@task_list');
+
+/*
+Route::get('tasks/','TaskController@index');
+Route::get('tasks/{id}', 'TaskController@show');
+Route::get('tasks/create', 'TaskController@create');
 Route::post('tasks/create', 'TaskController@store');
 Route::get('tasks/{id}/edit', 'TaskController@edit');
 Route::put('tasks/{id}/edit', 'TaskController@update');
-Route::get('tasks/{id}', 'TaskController@show');
+*/
+
 Route::get('tasks/{id}/new', 'TaskController@show_new_page');
 Route::put('tasks/{id}/new', 'TaskController@new');
 Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
