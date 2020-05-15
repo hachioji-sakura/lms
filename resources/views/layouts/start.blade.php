@@ -51,7 +51,7 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
 <!-- Theme style -->
-<link rel="stylesheet" href="{{asset('dist/css/adminlte.css?v=1')}}">
+<link rel="stylesheet" href="{{asset('dist/css/adminlte.css?v=2')}}">
 
 
 <!-- jQuery -->
