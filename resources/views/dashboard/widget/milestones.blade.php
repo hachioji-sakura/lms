@@ -13,7 +13,6 @@
       </button>
     </div>
   </div>
-  <!-- /.card-header -->
   <div class="card-body">
     <ul class="products-list product-list-in-card pl-2 pr-2" id="milestone_list">
       <?php $is_exist=false; ?>
@@ -64,12 +63,7 @@
         <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
       </div>
       @endif
-
     </ul>
-
-
-    </div>
-    <!-- /.card-body -->
   </div>
 </div>
 @endsection
