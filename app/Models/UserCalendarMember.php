@@ -148,9 +148,10 @@ class UserCalendarMember extends Model
         $is_send_teacher_mail = false;
         break;
     }
-    UserCalendarMember::where('id', $this->id)->update($update_form);
+    $m = UserCalendarMember::where('id', $this->id)->first();
+    $m->update($update_form);
     $param['token'] = $update_form['access_key'];
-    $res = $this->_office_system_api('PUT');
+    $res = $m->_office_system_api('PUT');
     $this->calendar->set_status();
 
     //ステータス別のメッセージ文言取得
