@@ -271,6 +271,7 @@ return [
   'charge_student' => '担当生徒',
   'charge_teacher' => '担当講師',
   'recess_or_unsubscribe' => '休会・退会',
+  'retirement' => '退職',
   'unsubscribe' => '退会',
   'recess' => '休会',
   'emergency_lecture_cancel' => '当日休講連絡',

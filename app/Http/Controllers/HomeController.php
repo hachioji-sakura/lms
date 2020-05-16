@@ -62,7 +62,8 @@ class HomeController extends Controller
           }
         }
         Auth::logout();
-        return redirect('/login?status='.$user->status);
+        $param = ['error_message' => __('messages.error_login_disabled'), 'error_message_description' => ''];
+        return back()->withInput()->with($param);
       }
       else {
         return redirect('/login');
