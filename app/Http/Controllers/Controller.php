@@ -83,20 +83,6 @@ class Controller extends BaseController
         //開発環境の場合、本来の送信先は使わない
         $to = config('app.debug_mail');
       }
-      $user_check = User::where('email', $to)->first();
-      if(!isset($user_check)){
-        if(strpos($to,'yasui.hideo') === false){
-          $this->send_slack("存在しないユーザー\n".$to, "info", "send_mail");
-          return true;
-        }
-      }
-      else {
-        $role = $user_check->details()->role;
-        if($role=="student" || $role=="parent"){
-          $this->send_slack("（生徒・保護者あてのメール送信はしない）", "info", "send_mail");
-          //return true;
-        }
-      }
       $mail_log_res = MailLog::add(config('mail.from')['address'], $to, $title, $param, $type, $template, $locale);
       if($this->is_success_response($mail_log_res)){
         if(isset($mail_log_res['data'])){

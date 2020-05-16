@@ -145,7 +145,7 @@ class StudentParent extends Teacher
     $relations = $this->relation();
     $students = [];
     foreach($relations as $relation){
-      if($relation->student->status=='regular'){
+      if($relation->student->status=='regular' || $relation->student->status=='recess'){
         $students[] = $relation->student;
       }
     }

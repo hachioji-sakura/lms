@@ -34,7 +34,7 @@ class UserCalendar extends Model
       $trial ='['. __('labels.trial_lesson').']';
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
-    return $title;
+    return __('messages.mail_title_until_today').$title;
   }
   public function delete_mail_title(){
     $trial = "";
@@ -844,10 +844,10 @@ EOT;
         $is_teacher_mail = true;
       }
       if($is_teacher_mail==true){
-        $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
+        $this->teacher_mail(__('messages.info_change_calendar'), ['old_item' => $old_item], 'text', 'calendar_update');
       }
       if($is_student_mail==true){
-        $this->student_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
+        $this->student_mail(__('messages.info_change_calendar'), ['old_item' => $old_item], 'text', 'calendar_update');
       }
     }
     return $this;
@@ -1001,10 +1001,10 @@ EOT;
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
       $is_send_mail = true;
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     if($is_send_mail==false){
-      $this->user->send_mail($title, $param, $type, $template, $this->user->get_locale());
+      $this->user->send_mail($title, $param, $type, $template, $this->user->locale);
     }
     return;
   }
@@ -1018,7 +1018,7 @@ EOT;
       //休み予定の場合送信しない
       if($is_rest_send==false && $member->status=='rest') continue;
       $param['user_name'] = $u->name();
-      $member->user->send_mail($title, $param, $type, $template, $member->user->get_locale());
+      $member->user->send_mail($title, $param, $type, $template, $member->user->locale);
     }
     return;
   }

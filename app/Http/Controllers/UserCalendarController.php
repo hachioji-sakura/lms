@@ -1310,7 +1310,7 @@ class UserCalendarController extends MilestoneController
          ],
          'text',
          $template,
-         $send_data['user']->user->get_locale()
+         $send_data['user']->user->locale
        );
       }
 
@@ -1349,6 +1349,9 @@ class UserCalendarController extends MilestoneController
         if($param['user']->role==="teacher"){
           $param['teachers'][] = $param['user'];
           $param['teacher_id'] = $param['user']->id;
+        }
+        else if($param['user']->role==="staff"){
+          $param['item']->work = 9;
         }
         else if($param['user']->role==="manager"){
           if($request->has('teacher_id')){

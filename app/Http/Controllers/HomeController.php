@@ -62,22 +62,23 @@ class HomeController extends Controller
           }
         }
         Auth::logout();
-        return redirect('/login?status='.$user->status);
+        $param = ['error_message' => __('messages.error_login_disabled'), 'error_message_description' => ''];
+        return back()->withInput()->with($param);
       }
       else {
         return redirect('/login');
       }
     }
     public function unsubscribe(Request $request){
-      return $this->student_parent_view($request, 'unsubscribe');
+      return $this->_role_redirect($request, 'unsubscribe');
     }
     public function recess(Request $request){
-      return $this->student_parent_view($request, 'recess');
+      return $this->_role_redirect($request, 'recess');
     }
     public function late_arrival(Request $request){
-      return $this->student_parent_view($request, 'late_arrival');
+      return $this->_role_redirect($request, 'late_arrival');
     }
-    public function student_parent_view(Request $request, $view){
+    public function _role_redirect(Request $request, $view){
       $user = Auth::user();
       if(isset($user)){
         if($request->has('locale')){
@@ -95,16 +96,16 @@ class HomeController extends Controller
             break;
           */
           case "parent" :
-            $students = $user->get_enable_students();
-            if(count($students)==1){
-              return redirect('/students/'.$students[0]->id.'/'.$view);
-            }
-            else if($request->has('student_id')){
-              return redirect('/students/'.$request->get('student_id').'/'.$view);
-            }
-            else {
-              return redirect('/parents/'.$user->id.'/'.$view);
-            }
+              $students = $user->get_enable_students();
+              if(count($students)==1){
+                return redirect('/students/'.$students[0]->id.'/'.$view);
+              }
+              else if($request->has('student_id')){
+                return redirect('/students/'.$request->get('student_id').'/'.$view);
+              }
+              else {
+                return redirect('/parents/'.$user->id.'/'.$view);
+              }
             break;
           case "student" :
             return redirect('/students/'.$user->id.'/'.$view);

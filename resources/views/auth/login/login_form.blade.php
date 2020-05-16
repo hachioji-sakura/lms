@@ -1,4 +1,6 @@
-<input type="hidden" name="locale" value="ja" >
+@if(!empty($locale))
+<input type="hidden" name="locale" value="{{$locale}}" >
+@endif
 <div class="form-group row mb-3">
   <div class="input-group">
     <div class="input-group-prepend">

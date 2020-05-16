@@ -14,9 +14,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 Auth::routes();
 
-if(isset($_GET["locale"]) && !empty($_GET["locale"])){
-  App::setLocale($_GET["locale"]);
-}
 //indexページをログインにする
 Route::redirect('/', '/login', 301);
 Route::get('token_test/{key}','Controller@token_test');
@@ -182,10 +179,10 @@ Route::put('parents/{id}/email_edit','StudentParentController@email_edit');
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
 Route::get('parents/{id}/agreement','StudentParentController@agreement_page');
-Route::get('parents/{id}/delete','StudentParentController@delete_page');
-Route::get('students/{id}/delete','StudentController@delete_page');
-Route::get('managers/{id}/delete','ManagerController@delete_page');
-Route::get('teachers/{id}/delete','TeacherController@delete_page');
+Route::get('managers/{id}/retirement','ManagerController@retirement_page');
+Route::get('teachers/{id}/retirement','TeacherController@retirement_page');
+Route::put('managers/{id}/retirement','ManagerController@retirement');
+Route::put('teachers/{id}/retirement','TeacherController@retirement');
 Route::get('parents/{id}/remind','StudentParentController@remind_page');
 Route::get('students/{id}/remind','StudentController@remind_page');
 Route::get('managers/{id}/remind','ManagerController@remind_page');
@@ -325,3 +322,13 @@ Route::get('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController
 Route::post('examinations/{textbook_id}/{chapter_id}', 'UserExaminationController@start_examination');
 //Route::redirect('examinations/{textbook_id}/{chapter_id}/{question_id}', '/examinations/{textbook_id}/{chapter_id}', 301);
 Route::post('examinations/{textbook_id}/{chapter_id}/{question_id}', 'UserAnswerController@answer');
+Route::get('messages/create','MessageController@create');
+Route::post('messages/create','MessageController@store');
+Route::get('messages/{id}/details','MessageController@details');
+Route::get('messages/{id}/reply','MessageController@reply');
+Route::post('messages/{id}/reply','MessageController@store');
+Route::get('messages','MessageController@list');
+
+Route::get('parents/{id}/messages', 'StudentParentController@message_list');
+Route::get('teachers/{id}/messages', 'TeacherController@message_list');
+Route::get('managers/{id}/messages', 'ManagerController@message_list');

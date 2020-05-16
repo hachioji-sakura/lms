@@ -5,6 +5,7 @@
 @include($domain.'.menu')
 
 
+
 @section('contents')
 {{--
 <section class="content-header">
@@ -199,7 +200,15 @@
         <!-- /.card -->
     </div>
     <div class="col-12">
-    @component('parents.forms.agreement', ['item' => $item, 'domain' => $domain]) @endcomponent
+    @component('parents.forms.agreement', ['item' => $item, 'domain' => $domain])
+      @slot('messages')
+      <div class="col-12 p-2">
+        <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-flat btn-sm btn-block btn-primary">
+          <i class="fa fa-envelope mr-1"></i>受信メッセージ一覧
+        </a>
+      </div>
+      @endslot
+    @endcomponent
     {{--
     @foreach($item->relations as $relation)
     @component('students.forms.agreement', ['item' => $relation->student, 'domain' => $domain]) @endcomponent
