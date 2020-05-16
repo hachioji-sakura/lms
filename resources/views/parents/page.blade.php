@@ -130,6 +130,7 @@
 
                 <div calss="row text-sm">
                   @if($user->role!=="student")
+                  @if($charge_student->student->is_hachiojisakura()==true)
                   <div class="col-6 float-left mt-1">
                     <a href="/students/{{$charge_student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-calendar-check mr-1"></i>{{__('labels.month_schedule_list')}}
@@ -150,6 +151,7 @@
                       <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.exchange_schedule_list')}}
                     </a>
                   </div>
+                  @endif
                   <div class="col-6 float-left mt-1">
                     <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                       <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}
