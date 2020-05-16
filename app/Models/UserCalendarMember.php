@@ -525,6 +525,11 @@ class UserCalendarMember extends Model
         }
         if(isset($res["data"]["altlimitdate"])){
           $exchange_limit_date = trim($res["data"]["altlimitdate"]);
+          if(strtotime('2020-04-01 00:00:00') < strtotime($this->calendar->start_time)
+            && strtotime('2020-06-01 00:00:00') > strtotime($this->calendar->start_time)){
+              //TODO 2020-04-01 ～ 2020-05-31の振替期限は、2020-12-31にする
+              $exchange_limit_date = '2020-12-31';
+          }
         }
         if(isset($res["data"]["comment"])){
           $comment = trim($res["data"]["comment"]);
