@@ -1350,6 +1350,9 @@ class UserCalendarController extends MilestoneController
           $param['teachers'][] = $param['user'];
           $param['teacher_id'] = $param['user']->id;
         }
+        else if($param['user']->role==="staff"){
+          $param['item']->work = 9;
+        }
         else if($param['user']->role==="manager"){
           if($request->has('teacher_id')){
             $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
