@@ -3,9 +3,6 @@
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
-@include('dashboard.widget.milestones')
-
-@include('dashboard.widget.star_comments')
 
 {{--まだ対応しない
 @include('dashboard.widget.events')
@@ -144,47 +141,33 @@
           </div>
         </div>
         <div class="card-body">
-
           <ul class="nav nav-pills ml-auto float-right mb-2">
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default active" href="#tab_milestones" data-toggle="tab">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.milestones' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/milestones">
                 <i class="fa fa-flag"></i>
+                {{__('labels.milestones')}}
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default" href="#tab_comments" data-toggle="tab">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.comments' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/comments">
                 <i class="fa fa-comments"></i>
+                {{__(('labels.comments'))}}
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default" href="#tab_tasks" data-toggle="tab">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks">
                 <i class="fa fa-tasks"></i>
+                {{__('labels.tasks')}}
               </a>
             </li>
           </ul>
           <div class="tab-content">
-
             <div class="tab-pane active" id="tab_milestones">
               <div class="row">
-                <div class="col-12">
-                  @yield('milestones')
-                </div>
+                  @yield('sub_contents')
               </div>
             </div>
-            <div class="tab-pane" id="tab_comments">
-              <div class="row">
-                @yield('star_comments')
-                @yield('comments')
-              </div>
-            </div>
-
-            <div class="tab-pane" id="tab_tasks">
-              <div class="row">
-              </div>
-            </div>
-
           </div>
-
         </div>
       </div>
     </div>

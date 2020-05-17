@@ -214,6 +214,9 @@ Route::get('students/{id}/late_arrival','StudentController@late_arrival');
 Route::get('students/{id}/resume','StudentController@resume');
 Route::get('students/{id}/tuition','StudentController@tuition');
 Route::get('students/{id}/announcements','StudentController@show');
+Route::get('students/{id}/comments','StudentController@show_comment_page');
+Route::get('students/{id}/milestones','StudentController@show_milestone_page');
+Route::get('students/{id}/tasks','StudentController@show_task_page');
 
 
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
@@ -326,16 +329,8 @@ Route::get('managers/{id}/messages', 'ManagerController@message_list');
 
 
 Route::resource('tasks','TaskController');
-Route::get('students/{id}/tasks', 'StudentController@task_list');
-
-/*
-Route::get('tasks/','TaskController@index');
-Route::get('tasks/{id}', 'TaskController@show');
-Route::get('tasks/create', 'TaskController@create');
-Route::post('tasks/create', 'TaskController@store');
-Route::get('tasks/{id}/edit', 'TaskController@edit');
-Route::put('tasks/{id}/edit', 'TaskController@update');
-*/
+//生徒画面に取り込み
+//Route::get('students/{id}/tasks', 'StudentController@task_list');
 
 Route::get('tasks/{id}/new', 'TaskController@show_new_page');
 Route::put('tasks/{id}/new', 'TaskController@new');
