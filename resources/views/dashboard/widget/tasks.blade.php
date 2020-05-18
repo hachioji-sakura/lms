@@ -1,4 +1,5 @@
 @section('tasks')
+<!--
   <div class="col-md-4 col-sm-12">
     <div class="card mb-2">
       <div class="card-header">
@@ -12,13 +13,14 @@
         <select name="type" class="form-control select2"  onChange="location.href=value;">
           <option value="{{$target_user->id}}/tasks">{{__('labels.active')}}</option>
           @foreach(config('attribute.task_status') as $key => $value)
-          <option value="{{$target_user->id}}/tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
+          <option value="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
           @endforeach
         </select>
       </div>
     </div>
   </div>
-  <div class="col-md-8 col-sm-12">
+-->
+  <div class="col-md-12 col-sm-12">
     <div class="card">
       <div class="card-header">
         <div class="row">

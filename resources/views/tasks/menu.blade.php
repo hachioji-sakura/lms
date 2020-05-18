@@ -16,7 +16,7 @@
         @foreach(config('attribute.task_status') as $key => $value)
         <li class="nav-item">
           <a href="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}"  class="nav-link">
-            {{$value}}
+            <i class="fa fa-@if($key == 'new')plus @elseif($key == 'progress')play @elseif($key == 'done')stop @elseif($key == 'complete')pen @elseif($key == 'cancel')ban @endif mr-1"></i>{{$value}}
             @if(!empty($status_count[$key]))
             <span class="badge badge-{{config('status_style')[$key]}}">{{$status_count[$key]}}</span>
             @endif

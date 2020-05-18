@@ -165,9 +165,9 @@
     <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>
-  <dt>
-  <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->user_id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-app">
+<dt>
+  <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-app">
       <i class="fa fa-tasks"></i>{{__('labels.tasks')}}{{__('labels.add')}}
     </a>
-  </dt>
+</dt>
 @endsection
