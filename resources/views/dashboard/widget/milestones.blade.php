@@ -8,9 +8,6 @@
       <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.milestones')}}{{__('labels.add')}}">
           <i class="fa fa-pen nav-icon"></i>
       </a>
-      <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-          <i class="fa fa-minus"></i>
-      </button>
     </div>
   </div>
   <div class="card-body">

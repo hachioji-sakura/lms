@@ -7,9 +7,7 @@
     <form method="POST" action="/tasks" enctype="multipart/form-data">
     @endif
       @csrf
-      <input type="hidden" name="target_user_id" value="{{$target_user->user_id}}">
-
-
+      <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
@@ -46,10 +44,10 @@
         <div class="row mt-2 collpase" id="setting_details">
           <div class="col-6">
             <label>{{__('labels.milestones')}}</label>
-            <span class="right badge badge-primary ml-1">{{__('labels.optional')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <select name="milestone_id" class="form-control select2" width="100%">
-              <option value=" ">選択しない</option>
-              @foreach($target_user->target_milestone as $milestone)
+              <option value=" ">{{__('labels.selectable')}}</option>
+              @foreach($target_student->target_milestone as $milestone)
                 <option value="{{$milestone->id}}" {{$_edit && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
               @endforeach
             </select>
@@ -60,19 +58,19 @@
         <div class="row mt-2">
           <div class="col-12">
             <label>{{__('labels.tasks_remarks')}}</label>
-            <span class="right badge badge-primary ml-1">{{__('labels.optional')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <textarea name="body" class="form-control" placeholder="{{__('labels.tasks_remarks')}}" >{{$_edit ? $item->body : ''}}</textarea>
           </div>
         </div>
         <div class="row mt-2">
           <div class="col-6">
             <label>{{__('labels.start_schedule')}}</label>
-            <span class="right badge badge-primary ml-1">{{__('labels.optional')}}</span>
-            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   plaminceholder=""  value="{{$_edit ? $item->start_schedule : ""}}">
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   placeholder=""  value="{{$_edit ? $item->start_schedule : ""}}">
           </div>
           <div class="col-6">
             <label>{{__('labels.end_schedule')}}</label>
-            <span class="right badge badge-primary ml-1">{{__('labels.optional')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <input type="text" name="end_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}" placeholder=""  value="{{$_edit ? $item->end_schedule : "" }}">
           </div>
         </div>

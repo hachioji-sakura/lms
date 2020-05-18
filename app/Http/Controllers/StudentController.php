@@ -283,7 +283,7 @@ class StudentController extends UserController
    $target_user = $this->model()->where('id',$id)->first();
    $param['target_user'] = $target_user;
    $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
-   $param['status_count'] = $target_user->get_task_count();
+   $param['status_count'] = $target_user->get_target_task_count();
    $param['request'] = $request;
 
 
@@ -379,7 +379,7 @@ class StudentController extends UserController
     $target_user = $this->model()->where('id',$id)->first();
     $param['target_user'] = $target_user;
     $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
-    $param['status_count'] = $target_user->get_task_count();
+    $param['status_count'] = $target_user->get_target_task_count();
     $param['request'] = $request;
 
 
@@ -1396,7 +1396,7 @@ class StudentController extends UserController
     $param['target_user'] = $target_user;
     $items = $this->task_search($request, $target_user->user_id);
     $param['items'] = $items->paginate($this->pagenation_line);
-    $param['status_count'] = $target_user->get_task_count();
+    $param['status_count'] = $target_user->get_target_task_count();
     $param['request'] = $request;
     return view('tasks.list')->with($param);
   }

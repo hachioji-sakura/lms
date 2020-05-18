@@ -11,9 +11,9 @@
       </div>
       <div class="card-body">
         <select name="type" class="form-control select2"  onChange="location.href=value;">
-          <option value="{{$target_user->id}}/tasks">{{__('labels.active')}}</option>
+          <option value="{{$item->id}}/tasks">{{__('labels.active')}}</option>
           @foreach(config('attribute.task_status') as $key => $value)
-          <option value="/{{$domain}}/{{$target_user->id}}/tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
+          <option value="/{{$domain}}/{{$item->id}}/tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
           @endforeach
         </select>
       </div>
@@ -31,15 +31,12 @@
           </div>
         </div>
         <div class="card-tools">
-          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$target_user->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter"></i>
           </a>
-          <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-              <i class="fa fa-minus"></i>
-          </button>
           <!--
           <div class="paginate">
             {{$tasks->appends(Request::query())->links('components.paginate')}}

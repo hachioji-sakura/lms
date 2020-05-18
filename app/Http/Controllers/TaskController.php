@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class TaskController extends MilestoneController
 {
     public $domain = 'tasks';
+    public $pagenate_line = 20;
     public function model(){
       return Task::query();
     }
@@ -25,10 +26,8 @@ class TaskController extends MilestoneController
     {
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        $param['items'] = $this->model()->search($request)->paginate($pagenate_line);
-        $target_user = Auth::user();
-        $param['target_user'] = $target_user;
-        $param['status_count'] = $target_user->get_task_count($target_user->user_id);
+        $param['items'] = $this->model()->search($request)->paginate($this->pagenate_line);
+        $param['request'] = $request;
         return view($this->domain . '.list')->with($param);
     }
 
@@ -42,7 +41,7 @@ class TaskController extends MilestoneController
         //
         $param = $this->get_param($request);
         $user = $this->login_details($request);
-        $param['target_user'] = Student::where('id', $request->get('student_id'))->first();
+        $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
         $param['_edit'] = false;
         return view($this->domain . '.create',$param);
     }
@@ -77,7 +76,7 @@ class TaskController extends MilestoneController
             }
           }
           return $this->api_response(200, '', '', $item);
-        }, __('messages.registered'), __FILE__, __FUNCTION__, __LINE__ );
+        }, __('messages.info_add'), __FILE__, __FUNCTION__, __LINE__ );
         if($this->is_success_response($res)){
           $this->sendmail($res);
         }
@@ -139,53 +138,13 @@ class TaskController extends MilestoneController
         $param = $this->get_param($request);
         $item = $this->model()->where('id',$id)->first();
         $param['item'] = $item;
-        $param['target_user'] = $item->target_user->details();
-        $param['status_count'] = $item->target_user->student->get_task_count();
+        $param['target_student'] = $item->target_user->details();
+        $param['status_count'] = $item->target_user->student->get_target_task_count();
         $param['items'] = $this->model()->findTargetUser($item->target_user->details()->user_id);
         $param['domain'] = $item->target_user->details()->domain;
-        $param['buttons'] = $this->get_buttons($item);
         return view($this->domain. '.details')->with($param);
     }
 
-    public function get_buttons($item){
-      $buttons = [];
-      //未着手に戻る
-      if( $item->status == "progress"){
-        $buttons['new'] = [
-            'label' => __('labels.new_button'),
-            'icon' => 'plus',
-          ];
-      }
-      //開始する
-      if($item->status == "new" || $item->status == "done"){
-        $buttons['progress'] = [
-            'label' => __('labels.progress_button'),
-            'icon' => 'play',
-          ];
-      }
-      //完了する
-      if($item->status == "progress" || $item->status == "complete"){
-        $buttons['done'] = [
-            'label' => __('labels.done_button'),
-            'icon' => 'stop',
-          ];
-      }
-      //レビューする
-      if($item->status == "done"){
-        $buttons['complete'] = [
-            'label' => __('labels.review_button'),
-            'icon' => 'pen'
-          ];
-      }
-      //キャンセルする
-      if($item->status != "cancel"){
-        $buttons['cancel'] = [
-            'label' => __('labels.cancel'),
-            'icon' => 'ban',
-        ];
-      }
-      return $buttons;
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -235,7 +194,7 @@ class TaskController extends MilestoneController
         $item->change($form, $file, $is_file_delete);
 
         return $this->api_response(200, '', '', $item);
-      }, __('messages.updated'), __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
       if($this->is_success_response($res)){
         $this->sendmail($res);
       }
@@ -328,7 +287,7 @@ class TaskController extends MilestoneController
           $this->model()->where('id',$id)->update($form);
         }
         return $this->api_response(200, '', '', $item);
-      }, __('messages.updated'), __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
 
@@ -372,7 +331,7 @@ class TaskController extends MilestoneController
       $res =  $this->transaction($request, function() use ($request, $form){
         $item = Review::create($form);
         return $this->api_response(200, '', '', $item);
-      }, __('messages.registered'), __FILE__, __FUNCTION__, __LINE__ );
+      }, __('messages.info_add'), __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
 

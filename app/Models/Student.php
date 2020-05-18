@@ -1065,7 +1065,7 @@ EOT;
     return $this->hasMany('App\Models\Task', 'create_user_id', 'user_id');
   }
 
-  public function get_task_count(){
+  public function get_target_task_count(){
     $query = $this->target_task();
     $status_count['all'] = $query->count();
     $counts = $query->select(DB::raw('count(*) as count,status'))->groupBy('status')->get();

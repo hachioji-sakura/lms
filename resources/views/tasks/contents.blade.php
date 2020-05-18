@@ -7,28 +7,29 @@
         </h3>
         {{__('labels.tasks').__('labels.list')}}
         @else
-        <h3 class="card-title">{{__('labels.tasks').__('labels.list')}}</h3>
+        <h3 class="card-title">
+          <i class="fa fa-tasks"></i>
+          {{__('labels.tasks').__('labels.list')}}
+        </h3>
         @endif
-        @if(isset($target_user))
+<!--
         <div class="d-none d-sm-block">
-            <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$target_user->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-primary btn-sm">
+            <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create" title="{{__('labels.add_button')}}" role="button" class="btn btn-primary btn-sm">
             <i class="fa fa-plus"></i>
             {{__('labels.add_button')}}
           </a>
         </div>
-        @endif
+-->
       </div>
     </div>
     <div class="card-tools">
       @component('components.search_word', ['search_word' => $search_word])
       @endcomponent
-      <div class="paginate">
-        {{$items->appends(Request::query())->links('components.paginate')}}
-      </div>
+      {{$items->appends(Request::query())->links('components.paginate')}}
       <!-- 検索 -->
     </div>
-  </div>
-  <div class="card-header">
+
+    <br/>
     <div class="row">
       <div class="col-12">
         {{__('labels.status').__('labels.filter')}}

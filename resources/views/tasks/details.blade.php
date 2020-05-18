@@ -8,16 +8,11 @@
 @endsection
 
 @section('page_footer')
-  @foreach($buttons as $key => $value)
-      <dt>
-        <a href="javascript:void(0)" title="{{$value['label']}}" page_form="dialog" page_title="{{$key == 'complete' ? __('messages.task_review_confirm'): __('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-app" role="button">
-        <i class="fa fa-{{$value['icon']}}"></i>
-        <small class="text-sm">
-        {{$value['label']}}
-        </small>
-        </a>
-      </dt>
-  @endforeach
+  @component('tasks.components.buttons',[
+    'item' => $item,
+    'is_footer' => true,
+  ])
+  @endcomponent
 @endsection
 
 
@@ -64,7 +59,7 @@
       </div>
     </div>
     <div class="card-tools float-right">
-      <a href="/{{$domain}}/{{$target_user->id}}/tasks" class="btn btn-sm btn-primary">
+      <a href="/{{$domain}}/{{$target_student->id}}/tasks" class="btn btn-sm btn-primary">
         <i class="fa fa-arrow-left"></i>
         {{__('labels.back_button')}}
       </a>
@@ -73,12 +68,11 @@
   <div class="d-none d-sm-block">
     <div class="card-header">
       <div class="btn-group">
-        @foreach($buttons as $key => $value)
-          <a href="javascript:void(0)" title="{{$value['label']}}" page_form="dialog" page_title="{{__('messages.task_confirm')}}" page_url="/tasks/{{$item->id}}/{{$key}}" class="btn btn-sm btn-{{config('status_style')[$key]}} mr-1" role="button">
-          <i class="fa fa-{{$value['icon']}}"></i>
-          {{$value['label']}}
-          </a>
-        @endforeach
+      @component('tasks.components.buttons',[
+        'item' => $item,
+        'is_footer' => false,
+      ])
+      @endcomponent
       </div>
     </div>
   </div>
