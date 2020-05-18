@@ -152,6 +152,15 @@
                       <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.exchange_schedule_list')}}
                     </a>
                   </div>
+                  @else
+                  <div class="col-6 float-left mt-1">
+                    <a href="javascript:void(0);"
+                    page_title="体験授業申し込み" page_form="dialog"
+                    page_url="/trial_request?student_id={{$charge_student->id}}"
+                    role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                      <i class="fa fa-hand-point-right mr-1"></i>体験授業申し込み
+                    </a>
+                  </div>
                   @endif
                   <div class="col-6 float-left mt-1">
                     <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">

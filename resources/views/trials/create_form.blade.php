@@ -13,6 +13,22 @@
 </div>
 @endsection
 
+@section('trial_form_v2')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-file-invoice mr-1"></i>
+    体験授業お申込み内容
+  </div>
+  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  <?php
+    $is_label = $_edit;
+    if(isset($user) && $user->role=='manager') $is_label = false;
+  ?>
+  @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+</div>
+@endsection
+
+
 @section('student_form')
 @component('trials.forms.entry_students', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 <div class="row">
@@ -31,6 +47,19 @@
   @component('students.forms.address', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
 </div>
 @endsection
+
+@section('lesson_week_form_v2')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-calendar-alt mr-1"></i>
+    通塾スケジュールにつきまして
+  </div>
+  @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => false, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+</div>
+@endsection
+
 @section('lesson_week_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">

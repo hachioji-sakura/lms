@@ -6,7 +6,7 @@ $(function(){
   var form_data = util.getLocalData('trials_entry');
   @endif
   base.pageSettinged("trials_entry", form_data);
-  grade_select_change();
+  subject_onload();
 
   $('#trials_entry').carousel({ interval : false});
   if(form_data && !util.isEmpty(form_data['student2_name_last'])){
@@ -88,8 +88,12 @@ $(function(){
       if(form_data[value+'[]']){
         $("input[name='"+value+'[]'+"']:checked").each(function() {
           var t = $(this).parent().parent().text().trim();
-          t = t.replace_all('[MAP]', '');
-          form_data[value+"_name"] += t+'<br>';
+          if(!util.isEmpty(t)){
+            console.log(t);
+            t = t.replace_all('[MAP]', '');
+            t = t.replace_all('<br>', '');
+            form_data[value+"_name"] += t.trim()+'<br>';
+          }
         });
       }
     });

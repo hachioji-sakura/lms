@@ -189,7 +189,7 @@ class StudentController extends UserController
    */
   public function create(Request $request)
   {
-    $param = $this->get_param($request);
+    $param = $this->get_common_param($request);
     if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
     $param['item'] = $this->empty_model();
