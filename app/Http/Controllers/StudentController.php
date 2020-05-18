@@ -276,7 +276,7 @@ class StudentController extends UserController
    */
    //目標データ取得
    $milestones = $model->target_milestones->sortByDesc('created_at');
-   $view = "page";
+   $view = "page.milestones";
    $param['view'] = $view;
 
    //タスクデータ取得
