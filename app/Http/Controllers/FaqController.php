@@ -143,6 +143,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
   public function update_form(Request $request){
@@ -153,6 +154,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
 
