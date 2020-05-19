@@ -94,10 +94,6 @@ class FaqController extends MilestoneController
 
       $ret['item'] = $item;
     }
-
-    if(empty($user) && strpos($request->url(),"edit")){
-      abort(403);
-    }
     return $ret;
   }
 
@@ -304,6 +300,17 @@ class FaqController extends MilestoneController
        $url =  '/faqs/'.$res['data']->id.'/edit';
      }
      return $this->save_redirect($res, $param, '登録しました。', $url);
+   }
+
+   public function edit(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+     if(empty($param['user'])){
+       abort(403);
+     }
+     return view($this->domain.'.create', [
+       '_edit' => true])
+       ->with($param);
    }
 
    public function _update(Request $request, $id)
