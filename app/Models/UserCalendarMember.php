@@ -517,7 +517,7 @@ class UserCalendarMember extends Model
         \Log::info("事務システムAPI 休み判別:".$_url."\n".$message);
 
         $cancel = "";
-        $exchange_limit_date = "";
+        $exchange_limit_date = $this->exchange_limit_date;
         $comment = "";
         $cancel_reason = "";
         if(isset($res["data"]["cancel"])) {
