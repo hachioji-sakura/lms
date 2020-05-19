@@ -94,6 +94,10 @@ class FaqController extends MilestoneController
 
       $ret['item'] = $item;
     }
+
+    if(empty($user) && strpos($request->url(),"edit")){
+      abort(403);
+    }
     return $ret;
   }
 
