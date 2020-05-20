@@ -27,14 +27,14 @@
         <h3 class="card-title">
           {{$item->title}}
         </h3>
-        @if(!empty($item->evaluation))
-        @for($i=1;$i<=$item->evaluation;$i++)
+        @if(!empty($item->stars))
+        @for($i=1;$i<=$item->stars;$i++)
         <span class="fa fa-star" style="color:orange;"></span>
         @endfor
-        @for($i=1;$i<=5-$item->evaluation;$i++)
+        @for($i=1;$i<=5-$item->stars;$i++)
         <span class="far fa-star"></span>
         @endfor
-        ({{$item->evaluation}})
+        ({{$item->stars}})
         @endif
         @if(!empty($item->s3_url))
         <a href="{{$item->s3_url}}" class="float-right">
@@ -106,7 +106,7 @@
     </div>
   -->
     @endif
-    <!--
+    {{--
     @if($item->reviews->count() > 0)
     <div class="row mt-2">
       <div class="col-12">
@@ -131,7 +131,7 @@
     </div>
     @endif
   </div>
-  -->
+  --}}
   <!--
   <div class="card-footer">
     <div class="card-bordered">

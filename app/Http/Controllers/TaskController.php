@@ -145,7 +145,16 @@ class TaskController extends MilestoneController
         return view($this->domain. '.details')->with($param);
     }
 
-
+    public function detail_dialog(Request $request, $id){
+      $param = $this->get_param($request);
+      $item = $this->model()->where('id',$id)->first();
+      $param['item'] = $item;
+      $param['target_student'] = $item->target_user->details();
+      $param['status_count'] = $item->target_user->student->get_target_task_count();
+      $param['items'] = $this->model()->findTargetUser($item->target_user->details()->user_id);
+      $param['domain'] = $item->target_user->details()->domain;
+      return view($this->domain. '.simple_details')->with($param);
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -207,6 +216,7 @@ class TaskController extends MilestoneController
       $form['body'] = $request->get('body');
       $form['milestone_id'] = $request->get('milestone_id');
       $form['type'] = $request->get('type');
+      $form['status'] = $request->get('status');
       $form['start_schedule'] = $request->get('start_schedule');
       $form['end_schedule'] = $request->get('end_schedule');
 
@@ -258,7 +268,7 @@ class TaskController extends MilestoneController
       $param = $this->get_param($request,$id);
       $form = [];
       $form['status'] = 'progress';
-      $form['start_date'] = date('Y/m/d');
+      $form['start_date'] = date('Y/m/d H:i:s');
       $form['end_date'] = null;
       $res = $this->change_status($request, $id, $form);
       return $this->save_redirect($res,$param, __('messages.task_status_progress'));
@@ -268,8 +278,8 @@ class TaskController extends MilestoneController
       $param = $this->get_param($request,$id);
       $form = [];
       $form['status'] = 'done';
-      $form['end_date'] = date('Y/m/d');
-      $form['evaluation'] = null;
+      $form['end_date'] = date('Y/m/d H:i:s');
+      $form['stars'] = null;
       $res = $this->change_status($request, $id, $form);
       return $this->save_redirect($res,$param,__('messages.task_status_done'));
     }
@@ -304,8 +314,7 @@ class TaskController extends MilestoneController
 
       if(!empty($request->get('review'))){
         $form['task'] = [
-          'status' => 'complete',
-          'evaluation' => $request->get('evaluation'),
+          'stars' => $request->get('stars'),
         ];
         $form['review'] = [
           'body' => $request->get('review'),
@@ -319,12 +328,11 @@ class TaskController extends MilestoneController
         ];
       }else {
         $form = [
-          'status' => 'complete',
-          'evaluation' => $request->get('evaluation'),
+          'stars' => $request->get('stars'),
         ];
       }
       $res =$this->change_status($request,$id,$form);
-      return $this->save_redirect($res,$param, __('messages.task_status_complete'));
+      return $this->save_redirect($res,$param, __('messages.task_reviewed'));
     }
 
     public function save_review(Request $request,$form){

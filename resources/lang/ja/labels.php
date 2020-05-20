@@ -336,6 +336,7 @@ return [
   'reset' => 'リセット',
   'message_list' => 'メッセージ一覧',
   'message_type' => '種別',
+  'attachment' => '添付',
   'file' => 'ファイル',
   'send_time' => '送信日時',
   'reply' => '返信',
@@ -359,9 +360,10 @@ return [
   'evaluation_button' => '評価する',
   'contents' => '内容',
   'review_button' => 'レビューする',
-  'progress_button' => '着手中にする',
-  'done_button' => 'レビュー待ちにする',
-  'new_button' => '新着にする',
+  'progress_button' => '開始',
+  'done_button' => '完了',
+  'new_button' => '停止',
   'active' => 'アクティブ',
+  'task_schedule' => '予定',
 
 ];

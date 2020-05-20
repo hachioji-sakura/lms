@@ -22,7 +22,7 @@ class Task extends Milestone
     );
 
     public function scopeActiveTasks($query){
-      return $query->whereIn('status',["new","progress","done"]);;
+      return $query->whereIn('status',["new","progress"]);;
     }
 
     public function task_comments(){

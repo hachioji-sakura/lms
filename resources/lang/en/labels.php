@@ -334,6 +334,7 @@ return [
   'message_list' => 'Message List',
   'message_type' => 'Message Type',
   'file' => 'file',
+  'attachment' => 'attachment',
   'send_time' => 'send time',
   'reply' => 'reply',
   'new' => 'NEW',
@@ -360,4 +361,5 @@ return [
   'done_button' => 'Done',
   'new_button' => 'New',
   'active' => 'Active',
+  'task_schedule' => 'schedule',
 ];

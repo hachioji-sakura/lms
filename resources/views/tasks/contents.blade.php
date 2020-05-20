@@ -119,7 +119,7 @@
     <div class="row">
       @foreach(config('attribute.task_status') as $key => $value)
       <div class="col-sm-12 col-md-2">
-      <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="evaluation" value="{{$key}}">
+      <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="stars" value="{{$key}}">
       <label class="form-check-label">{{$value}}</label>
       </div>
       @endforeach

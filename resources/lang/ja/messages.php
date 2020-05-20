@@ -134,9 +134,9 @@ return [
   'task_review_confirm' => '評価してください。',
   'task_already_registered' => '既に登録済みです。',
   'info_updated' => '更新しました。',
-  'task_status_new' => 'タスクを新着にしました。',
-  'task_status_cancel' => 'タスクをキャンセルしました。',
+  'task_status_new' => 'タスクを未着手にしました。',
+  'task_status_cancel' => 'タスクを削除しました。',
   'task_status_progress' => 'タスクを着手中にしました。',
-  'task_status_done' => 'タスクをレビュー待ちにしました。',
-  'task_status_complete' => 'タスクを完了しました。',
+  'task_status_done' => 'タスクを完了しました。',
+  'task_reviewed' => 'レビューしました。',
 ];

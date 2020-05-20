@@ -52,7 +52,17 @@
               @endforeach
             </select>
           </div>
-
+          @if($_edit)
+          <div class="col-6">
+            <label>{{__('labels.status')}}</label>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            <select name="status" class="form-control select2" width="100%">
+              @foreach(config('attribute.task_status') as $key => $value)
+                <option value="{{$key}}" {{$_edit && $key == $item->status ? 'selected ': ''}}>{{$value}}</option>
+              @endforeach
+            </select>
+          </div>
+          @endif
         </div>
 
         <div class="row mt-2">

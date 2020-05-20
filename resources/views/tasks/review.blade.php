@@ -1,10 +1,10 @@
 <div id="review_form">
-  <form method="POST" action="/tasks/{{$item->id}}/complete">
+  <form method="POST" action="/tasks/{{$item->id}}/review">
     @csrf
     @method('PUT')
     <div class="row mb-2">
       <div class="col-12">
-        <label for="evaluation" class="ml-2">
+        <label for="stars" class="ml-2">
           {{__('labels.evaluation')}}
         </label>
         <span class="badge badge-danger ml-1">
@@ -12,8 +12,8 @@
         </span>
         <div class="form-check">
           @for($i=1;$i<=5;$i++)
-          <input class="frm-check-input icheck flat-green" type="radio" name="evaluation" id="evaluation" value="{{$i}}" required="true" checked>
-          <label class="form-check-label" for="evaluation">
+          <input class="frm-check-input icheck flat-green" type="radio" name="stars" id="stars" value="{{$i}}" required="true" checked>
+          <label class="form-check-label" for="stars">
             {{$i}}
           </label>
           @endfor

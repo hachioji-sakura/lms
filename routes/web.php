@@ -332,6 +332,7 @@ Route::resource('tasks','TaskController');
 //生徒画面に取り込み
 //Route::get('students/{id}/tasks', 'StudentController@task_list');
 
+Route::get('tasks/{id}/detail_dialog', 'TaskController@detail_dialog');
 Route::get('tasks/{id}/new', 'TaskController@show_new_page');
 Route::put('tasks/{id}/new', 'TaskController@new');
 Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
@@ -340,6 +341,6 @@ Route::get('tasks/{id}/progress', 'TaskController@show_progress_page');
 Route::put('tasks/{id}/progress', 'TaskController@progress');
 Route::get('tasks/{id}/done', 'TaskController@show_done_page');
 Route::put('tasks/{id}/done', 'TaskController@done');
-Route::get('tasks/{id}/complete', 'TaskController@show_review_page');
-Route::put('tasks/{id}/complete', 'TaskController@review');
+Route::get('tasks/{id}/review', 'TaskController@show_review_page');
+Route::put('tasks/{id}/review', 'TaskController@review');
 Route::post('task_comments/create', 'TaskCommentController@store');

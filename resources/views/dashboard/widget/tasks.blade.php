@@ -41,6 +41,7 @@
           <div class="paginate">
             {{$tasks->appends(Request::query())->links('components.paginate')}}
           </div>
+          -->
           <!-- 検索 -->
         </div>
       </div>
@@ -50,47 +51,65 @@
           @foreach($tasks as $item)
           <li class="item">
             <div class="row">
-              <div class="col-8">
+              <div class="col-12">
                 <div class="row">
-                  <div class="col-12">
+                  <div class="col-3">
                     <small class="badge badge-{{config('status_style')[$item->status]}}">
                       {{config('attribute.task_status')[$item->status]}}
                     </small>
-                    @if(!empty($item->s3_url))
-                       <i class="fas fa-paperclip"></i>
-                    @endif
                   </div>
-                  <div class="col-12 text-truncate">
-                    <a href="/tasks/{{$item->id}}" title="{{__('labels.details')}}">
+                  <div class="col-9">
+                    <small class="text-muted float-right">
+                      {{$item->create_user->details()->name()}}
+                      {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:m',strtotime($item->created_at))}}
+                    </small>
+                  </div>
+                  <div class="col-4 text-truncate">
+                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       {{$item->title}}
                     </a>
                   </div>
-                  <div class="col-12 text-truncate">
+                  <div class="col-8 text-truncate">
                     <small class="text-muted">
                       {{$item->body}}
                     </small>
                   </div>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="row">
+                  @if(!empty($item->s3_url))
                   <div class="col-12">
-                    <a href="/tasks/{{$item->id}}" title="{{$item->id}}" class="btn btn-secondary btn-sm float-right">
-                      <i class="fa fa-file-alt mr-1"></i>
-                      {{__('labels.details')}}
+                    <a href="{{$item->s3_url}}" class="">
+                      <i class="fa fa-link fa-sm"></i>
+                      <small>
+                        {{$item->s3_alias}}
+                      </small>
                     </a>
                   </div>
-                </div>
-                <div class="row mt-1">
-                  <div class="col-12">
-                    <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="編集する" class="btn btn-sm btn-success float-right" role="button">
-                      <i class="fa fa-edit"></i>
-                      {{__('labels.edit')}}
-                    </a>
-                  </div>
+                  @endif
                 </div>
               </div>
             </div>
+            <div class="row">
+              <div class="col-12">
+                @component('tasks.components.buttons',[
+                  'item' => $item,
+                  'is_footer' => false,
+                ])
+                @endcomponent
+                <div class="float-right">
+                  <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
+                    <i class="fa fa-file-alt"></i>
+                  </a>
+                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                @if($item->status != "cancel")
+                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                @endif
+                </div>
+              </div>
+            </div>
+
           </li>
           @endforeach
         </ul>

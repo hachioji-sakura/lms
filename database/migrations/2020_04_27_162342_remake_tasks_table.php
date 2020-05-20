@@ -24,14 +24,14 @@ class RemakeTasksTable extends Migration
           $table->string('status')->nullable(false);
           $table->integer('target_user_id')->nullable(false)->index('index_target_user_id');
           $table->integer('create_user_id')->nullable(false)->index('index_create_user_id');
-          $table->integer('evaluation')->nullable(true);
+          $table->integer('stars')->nullable(true);
           $table->string('priority')->nullable(true);
           $table->string ('s3_url')->nullable(true);
           $table->string ('s3_alias')->nullable(true);
-          $table->date('start_schedule')->nullable(true);
-          $table->date('start_date')->nullable(true);
-          $table->date('end_schedule')->nullable(true);
-          $table->date('end_date')->nullable(true);
+          $table->datetime('start_schedule')->nullable(true);
+          $table->datetime('start_date')->nullable(true);
+          $table->datetime('end_schedule')->nullable(true);
+          $table->datetime('end_date')->nullable(true);
           $table->timestamps();
         });
     }

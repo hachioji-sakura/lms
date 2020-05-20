@@ -133,5 +133,5 @@ return [
  'task_status_cancel' => 'A status of this task is updated to [cancel]',
  'task_status_progress' => 'A status of this task is updated to [progress]',
  'task_status_done' => 'A status of this task is updated to [done]',
- 'task_status_complete' => 'A status of this task is updated to [complete]',
+ 'task_reviewed' => 'Reviewed',
  ];

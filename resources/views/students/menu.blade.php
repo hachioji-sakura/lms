@@ -155,6 +155,7 @@
 @endif
 @endsection
 @section('page_footer')
+{{--  Footerに動作ボタンは入れない？？
 <dt>
   <a class="btn btn-app" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="目標登録">
     <i class="fa fa-flag"></i>{{__('labels.milestones')}}{{__('labels.setting')}}
@@ -170,4 +171,5 @@
       <i class="fa fa-tasks"></i>{{__('labels.tasks')}}{{__('labels.add')}}
     </a>
 </dt>
+--}}
 @endsection
