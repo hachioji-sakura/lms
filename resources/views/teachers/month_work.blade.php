@@ -7,7 +7,7 @@
 
 @section('contents')
 <section class="content">
-  <form method="POST"  action="/{{$domain}}/{{$item->id}}/month_work" onsubmit="return false;">
+  <form id="month_work_post" method="POST"  action="/{{$domain}}/{{$item->id}}/month_work">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="target_month" value="{{$target_month}}" >
@@ -234,9 +234,10 @@
       base.pageSettinged('month_work_confirm', []);
       //submit
       $("button.btn-submit").on('click', function(e){
+        console.log('submit');
         e.preventDefault();
         if(front.validateFormValue('month_work_confirm')){
-          $("form").submit();
+          $("#month_work_post").submit();
         }
       });
     });

@@ -1,4 +1,4 @@
-<div class="col-12 col-md-6">
+<div class="col-12">
   <div class="form-group">
     <label for="start_date" class="w-100">
       {{__('labels.date')}}

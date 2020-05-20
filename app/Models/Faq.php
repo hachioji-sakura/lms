@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Faq extends Milestone
 {
+
   protected $table = 'lms.faqs';
   protected $guarded = array('id');
 
@@ -20,6 +21,8 @@ class Faq extends Milestone
   }
   public function change($form, $file=null, $is_file_delete = false){
     $this->update($form);
-    return $this;
+  }
+  public function label_publiced_at(){
+    return $this->dateweek_format($this->publiced_at, 'Y年n月j日');
   }
 }

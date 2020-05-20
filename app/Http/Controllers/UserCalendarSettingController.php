@@ -51,16 +51,21 @@ class UserCalendarSettingController extends UserCalendarController
           'label' => __('labels.status'),
           'size' => 6,
         ],
-        'repeat_setting_name' => [
-          'label' => __('labels.repeat'),
-          'size' => 6,
-        ],
-        'place_floor_name' => [
-          'label' => __('labels.place'),
-          'size' => 6,
-        ],
       ];
-
+      if($item->is_teaching()==true && !empty($item->enable_start_date)){
+        $base_ret['schedule_start_date'] = [
+            'label' => __('labels.schedule_start_date'),
+            'size' => 6,
+        ];
+      }
+      $base_ret['repeat_setting_name'] = [
+        'label' => __('labels.repeat'),
+        'size' => 6,
+      ];
+      $base_ret['place_floor_name'] = [
+        'label' => __('labels.place'),
+        'size' => 6,
+      ];
       if($item->work==9){
         $ret = [
           'user_name' => [

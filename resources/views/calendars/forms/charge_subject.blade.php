@@ -76,6 +76,7 @@
      var grade_code = "";
      if(!util.isEmpty(grade)){
        grade_code = grade.substr(0,1);
+       if(grade_code=='u') grade_code='h';
      }
      $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
        options[$(this).val()] = $(this).text();

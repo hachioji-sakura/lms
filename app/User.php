@@ -33,7 +33,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'name', 'image_id', 'email', 'password', 'status', 'access_key'
+        'id', 'name', 'image_id', 'email', 'password', 'status', 'access_key','locale'
     ];
 
     /**
@@ -207,6 +207,7 @@ class User extends Authenticatable
             break;
         }
         $item['email'] = $this->email;
+        $item['locale'] = $this->locale;
         if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
         return $item;
       }
@@ -293,10 +294,7 @@ EOT;
     {
       return $this->get_work_times('lesson', $minute);
     }
-    public function get_locale(){
-      if($this->has_tag('english_teacher', 'foreigner')) return "en";
-      return "ja";
-    }
+
     public function send_mail($title, $param, $type, $template){
       $param['user'] = $this->details();
       if(!isset($param['login_user'])){
@@ -305,7 +303,7 @@ EOT;
           $param['login_user'] = $u->details();
         }
       }
-      $res = $this->_send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->get_locale());
+      $res = $this->_send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->locale);
       return $res;
     }
     public function get_mail_address(){

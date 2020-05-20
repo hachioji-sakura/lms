@@ -9,7 +9,7 @@
     <input type="hidden" name="schedule_type" value="other" >
   @endif
 @else
-<div class="col-6 mt-2">
+<div class="col-12 mt-2">
   <div class="form-group">
     <label for="schedule_type" class="w-100">
       {{__('labels.schedule_type')}}

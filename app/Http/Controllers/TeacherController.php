@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\UserCalendar;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App;
 /*
 */
 use DB;
@@ -233,7 +234,7 @@ class TeacherController extends StudentController
          'user_name' => $form['name_last'].' '.$form['name_first'],
          'access_key' => $access_key,
          'send_to' => $send_to,
-       ], 'text', 'entry');
+       ], 'text', 'entry',$form['locale']);
        $login_user = $this->login_details($request);
        if(!isset($login_user)){
          return view($this->domain.'.entry',
@@ -269,12 +270,16 @@ class TeacherController extends StudentController
      ];
      if(isset($param['user'])){
        $param['result'] = 'logout';
+       App::setLocale($param['user']->locale);
        return view($this->domain.'.register',$param);
      }
      else {
        $access_key = $request->get('key');
        if(!$this->is_enable_token($access_key)){
          $param['result'] = 'token_error';
+         if(isset($param['user'])){
+           App::setLocale($param['user']->locale);
+         }
          return view($this->domain.'.register',$param);
        }
        $user = User::where('access_key',$access_key);
@@ -282,6 +287,9 @@ class TeacherController extends StudentController
          abort(404);
        }
        $param['item'] = $user->first()->details($this->domain);
+       App::setLocale($user->first()->locale);
+       session()->regenerate();
+       session()->put('locale', $user->first()->locale);
        $domain = $this->domain;
        if($param['item']->role == 'teacher' && $this->domain!='teachers'){
          abort(403, 'このページの有効期限がきれています');
@@ -326,7 +334,7 @@ class TeacherController extends StudentController
       if($this->is_success_response($res)){
         $create_user = $res['data']->user->details($this->domain);
         $form['send_to'] = $create_user->role;
-        $this->send_mail($create_user->email, '登録完了', $form, 'text', 'register', $res['data']->user->get_locale());
+        $this->send_mail($create_user->email, '登録完了', $form, 'text', 'register', $res['data']->user->locale);
         Auth::loginUsingId($create_user->user_id);
 
         if($this->domain==="managers"){
@@ -395,7 +403,7 @@ class TeacherController extends StudentController
           'access_key' => $access_key,
           'send_to' => 'manager',
         ], 'text', 'entry',
-        $param['item']->user->get_locale()
+        $param['item']->user->locale
       );
       }
       return $this->save_redirect($res, $param, $message);
@@ -547,5 +555,32 @@ class TeacherController extends StudentController
       }, '担当生徒登録', __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $res['message']);
     }
+    public function retirement_page(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $param['item']['name'] = $param['item']->name();
+      $param['item']['kana'] = $param['item']->kana();
+      $param['item']['birth_day'] = $param['item']->birth_day();
+      $param['item']['gender'] = $param['item']->gender();
+      $fields = [
+        'name' => [
+          'label' => __('labels.name'),
+        ],
+      ];
+      $param['action'] = 'retirement';
+      return view('teachers.retirement', [
+        'fields'=>$fields])
+        ->with($param);
+    }
+    public function retirement(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
 
+      $res = $this->transaction($request, function() use ($request, $id){
+        $form = $request->all();
+        $item = $this->model()->where('id', $id)->first()->unsubscribe();
+        return $this->api_response(200, '', '', $item);
+      }, '退職ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, '退職ステータス更新しました');
+    }
 }

@@ -11,6 +11,7 @@ use App\Models\GeneralAttribute;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\Models\Comment;
+use App\Models\Message;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -937,33 +938,8 @@ class StudentController extends UserController
     return view($this->domain.'.tag',$param);
 
   }
-  public function delete_page(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $param['item']['name'] = $param['item']->name();
-    $param['item']['kana'] = $param['item']->kana();
-    $param['item']['birth_day'] = $param['item']->birth_day();
-    $param['item']['gender'] = $param['item']->gender();
-    $fields = [
-      'name' => [
-        'label' => __('labels.name'),
-      ],
-      'kana' => [
-        'label' => 'フリガナ',
-      ],
-      'birth_day' => [
-        'label' => '生年月日',
-      ],
-      'gender' => [
-        'label' => '性別',
-      ],
-    ];
-    return view('components.page', [
-      'action' => 'delete',
-      'fields'=>$fields])
-      ->with($param);
-  }
   public function remind_page(Request $request, $id)
+
   {
     $param = $this->get_param($request, $id);
     $param['item']['name'] = $param['item']->name();
@@ -1056,29 +1032,6 @@ class StudentController extends UserController
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
-  }
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-
-    $res = $this->_delete($request, $id);
-    return $this->save_redirect($res, $param, '削除しました。');
-  }
-
-  public function _delete(Request $request, $id)
-  {
-    return $this->transaction($request, function() use ($request){
-      $form = $request->all();
-      $item = $this->model()->where('id', $id)->first();
-      $item->user->update(['status' => 9]);
-      return $this->api_response(200, '', '', $item);
-    }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
 
   public function ask_create_page(Request $request, $id){
@@ -1174,24 +1127,27 @@ class StudentController extends UserController
     if(!$this->is_success_response($req)){
       return $req;
     }
+
     $res =  $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
        $item = $this->model()->where('id',$id)->first();
-
        if(isset($form['email']) && isset($form['password'])){
          $update_params = [
            'email' => $form['email'],
            'password' => Hash::make($form['password']),
            'status' => 0
          ];
-         User::where('id', $item->user_id)->update($update_params);
        }elseif(isset($form['email'])){
          $update_params = [
            'email' => $form['email']
          ];
-         User::where('id', $item->user_id)->update($update_params);
+       }elseif(!empty($form['reset'])){
+         $update_params = [
+           'status' => 1
+         ];
        }
+       User::where('id', $item->user_id)->update($update_params);
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -1199,6 +1155,84 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
 
+  public function message_list(Request $request, $id = null){
+    $params = $this->get_param($request, $id);
+    $messages = $this->message_search($request, $id);
+    $login_user = $this->login_details($request);
+    $fields = [
+      'title' => [
+        'label' => __('labels.title'),
+      ],
+      'target_user' =>[
+        'label' => __('labels.create_user'),
+      ],
+      'created_at' => [
+        'label' => __('labels.send_time'),
+      ],
+    ];
+    $user = $params['item'];
+    if($login_user->user_id == $user->user_id){
+      $enable_create = true;
+    }else{
+      $enable_create = false;
+    }
+    $message_params = [
+      'items' => $messages,
+      'fields' => $fields,
+      'search_list' => $request->get('search_list'),
+      'id' => $id,
+      'enable_create' => $enable_create,
+    ];
+    return view('messages.list',$message_params)->with($params);
+}
 
+  public function message_search(Request $request,$id){
+    $login_user = $this->login_details($request,$id);
+    $query = Message::query();
+    //スレッドビューまで封印
+//    $query = $query->where('parent_message_id','0');
+    $query = $this->make_search_query($request, $query, $id);
+    $query = $query->orderBy('created_at','desc');
+    $messages = $query->paginate(20);
+    return $messages;
+  }
+
+  public function make_search_query(Request $request, $query, $id){
+    //managerがアクセスしたときに見られるようにuserとりなおし
+    $user = $this->model()->where('id',$id)->first();
+    if($request->has('search_list') && $request->get('search_list') == 'inbox'){
+      $query = $query->where('target_user_id',$user->user_id);
+      if($this->domain == "parents" ){
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $query = $query->orWhere('target_user_id',$student->user_id);
+        }
+      }
+    }elseif($request->has('search_list') && $request->get('search_list') == 'send'){
+      $query = $query->where('create_user_id',$user->user_id);
+      if($this->domain == "parents" ){
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $query = $query->orWhere('create_user_id',$student->user_id);
+        }
+      }
+    }else{
+      $query = $query->FindMyMessage($user->user_id);
+      if($this->domain == "parents" ){
+        //自分の子供あてのメッセージを取得
+        $students = $user->get_enable_students();
+        foreach($students as $student){
+          $student_id = $student->user_id;
+          $query = $query->orWhere(function ($query) use($student_id){
+            $query = $query->FindMyMessage($student_id);
+          });
+        }
+      }
+    }
+    if($request->has('search_word')){
+      $query = $query->searchWord($request->get('search_word'));
+    }
+    return $query;
+  }
 
 }
