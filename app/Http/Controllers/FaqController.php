@@ -38,10 +38,16 @@ class FaqController extends MilestoneController
     $items = $this->_search_scope($request, $items);
     //$items = $this->_search_pagenation($request, $items);
     if(!(isset($user) && $this->is_manager($user->role))){
+      //マネージャ権限以外
       $items = $items->where('publiced_at' , '<=', date('Y-m-d'));
     }
-    if((isset($user) && $this->is_manager_or_teacher($user->role))){
+    if(!(isset($user) && $this->is_manager_or_teacher($user->role))){
+      //マネージャ、講師権限以外
       $items = $items->findTypes(['teacher','manager'], true);
+    }
+    else if(isset($user) && $this->is_teacher($user->role)){
+      //講師
+      $items = $items->findTypes(['manager'], true);
     }
     $items = $this->_search_sort($request, $items);
     $items = $items->orderBy('sort_no');
@@ -78,7 +84,7 @@ class FaqController extends MilestoneController
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = $this->get_common_param($request);
+    $ret = $this->get_common_param($request, false);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $create_user = $item->create_user->details();
@@ -118,7 +124,7 @@ class FaqController extends MilestoneController
       $items = $items->where(function($items)use($search_words){
         foreach($search_words as $_search_word){
           if(empty($_search_word)) continue;
-          $_like = '%'.$_search_word.'%';
+          $_like = '%'.trim($_search_word).'%';
           $items->orWhere('title','like',$_like)->orWhere('body','like',$_like);
         }
       });
@@ -137,6 +143,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
   public function update_form(Request $request){
@@ -147,6 +154,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
 
@@ -292,6 +300,17 @@ class FaqController extends MilestoneController
        $url =  '/faqs/'.$res['data']->id.'/edit';
      }
      return $this->save_redirect($res, $param, '登録しました。', $url);
+   }
+
+   public function edit(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+     if(empty($param['user'])){
+       abort(403);
+     }
+     return view($this->domain.'.create', [
+       '_edit' => true])
+       ->with($param);
    }
 
    public function _update(Request $request, $id)

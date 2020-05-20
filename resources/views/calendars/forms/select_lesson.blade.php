@@ -1,5 +1,5 @@
 @if(count($teacher->get_tags('lesson'))>1 && $_edit==false)
-<div class="col-12 col-md-6 mt-2 schedule_type schedule_type_class schedule_type_other">
+<div class="col-12 mt-2 schedule_type schedule_type_class schedule_type_other">
   <div class="form-group">
     <label for="course_type" class="w-100">
       レッスン

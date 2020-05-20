@@ -22,7 +22,9 @@ class UserCalendarSetting extends UserCalendar
       'to_time_slot' => 'required'
   );
   public function register_mail_title(){
-    return __('messages.info_calendar_setting_add');
+    $title = __('messages.info_calendar_setting_add');
+    return __('messages.mail_title_until_today').$title;
+
   }
   public function delete_mail_title(){
     return __('messages.info_calendar_setting_delete');
@@ -185,6 +187,7 @@ EOT;
     $item['subject'] = $this->subject();
     $item['course_minutes_name'] = $this->course_minutes();
     $item['week_setting'] = $this->week_setting();
+    $item['schedule_start_date'] = $this->dateweek_format($this->enable_start_date);
     $item['enable_date'] = $this->enable_date();
     $item['place_floor_name'] = "";
     $item['calendar_count'] = count($this->calendars);

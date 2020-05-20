@@ -3,7 +3,6 @@
 @else
 <div id="{{$domain}}_">
 @endisset
-
 @if(!empty($page_message))
 <div class="col-12 my-1">
   @if(isset($action) && $action=='delete')

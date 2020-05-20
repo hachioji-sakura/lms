@@ -4,36 +4,23 @@
 
 @section('content')
 @if($item->user->details()->role=='parent')
-<form id="unsubscribe_form" method="POST" action="/unsubscribe">
-  @method('GET')
-  <div class="row mb-3">
-    <div class="col-12 mb-2">
-      <label for="name" class="w-100">
-        {{__('labels.students')}}{{__('labels.name')}}
-      </label>
-      <?php
-      $students = $item->get_enable_students();
-      ?>
-      @if(count($students) > 1)
-      <select name="student_id" class="form-control select2" required="true">
-        @foreach($students as $student)
-         <option value="{{ $student->id }}">
-           {{$student->name()}}
-         </option>
-        @endforeach
-      </select>
-      @elseif(count($students) == 1)
-      <input type="hidden" name="student_id" value="{{$students[0]->id}}"></input>
-      <span>{{$students[0]->name()}}</span>
-      @endif
-    </div>
-    <div class="col-12 mb-2">
-      <button type="submit" class="btn btn-submit btn-primary btn-block">
-        {{__('labels.students').__('labels.select')}}
-      </button>
-    </div>
+<div class="row mb-3">
+  <div class="col-12 mb-2">
+    <label for="name" class="w-100">
+      退会する生徒
+    </label>
+    <?php
+    $students = $item->get_enable_students();
+    ?>
+    @if(count($students) >= 1)
+    @foreach($students as $student)
+    <a href="/students/{{$student->id }}/unsubscribe" class="text-primary"><i class="fa fa-arrow-alt-circle-right mr-1"></i>
+      {{$student->name()}}
+    </a><br>
+    @endforeach
+    @endif
   </div>
-</form>
+</div>
 @else
   @if($already_data==null && $recess_data==null)
   {{-- 新規登録可能 --}}

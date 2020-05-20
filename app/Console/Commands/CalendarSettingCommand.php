@@ -50,7 +50,7 @@ class CalendarSettingCommand extends Command
     public function to_calendar($start_date='', $end_date='', $range_month=1, $week_count=5, $id=0, $view_mode=false)
     {
       $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
-      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month, 'warning', "remind_trial_calendar");
+      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
 
       //パラメータ指定がない場合
       //登録範囲　3か月分, 5週目の授業あり、開始日＝今日
@@ -58,7 +58,7 @@ class CalendarSettingCommand extends Command
       if(empty($week_count)) $week_count=5;
       if(empty($start_date)) $start_date=date('Y-m-d');
 
-      $settings = UserCalendarSetting::enable();
+      $settings = UserCalendarSetting::where('status', 'fix');
       if(!empty($id)){
         $settings = $settings->where('id', $id);
       }
@@ -71,11 +71,18 @@ class CalendarSettingCommand extends Command
       $request = new Request();
       $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
-          if($setting->is_enable()==false) continue;
           if($setting->has_enable_member()==false) continue;
+
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
+          $s = null;
+          $e = null;
+          if(!empty($settng->enable_start_date)) $s = strtotime($settng->enable_start_date);
+          if(!empty($settng->enable_end_date)) $e = strtotime($settng->enable_end_date);
           foreach($dates as $date => $val){
+            $d = strtotime($date);
             if(empty($date)) continue;
+            if($e!=null && $e < $d) continue; //設定終了済み
+            if($s!=null && $s > $d) continue; //設定開始前
             $this->info('add_calendar / setting_id='.$setting->id.' / date='.$date);
             if($view_mode==false){
               $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));

@@ -1,4 +1,4 @@
-<div class="col-12 col-md-6">
+<div class="col-12">
   <div class="form-group">
     <label for="start_hours" class="w-100">
       {{__('labels.start_time')}}
@@ -35,7 +35,7 @@
     </div>
   </div>
 </div>
-<div class="col-12 col-md-6 schedule_type schedule_type_other schedule_type_office_work">
+<div class="col-12 schedule_type schedule_type_other schedule_type_office_work">
   <div class="form-group">
     <label for="end_hours" class="w-100">
       {{__('labels.end_time')}}
