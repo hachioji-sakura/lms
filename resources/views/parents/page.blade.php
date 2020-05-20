@@ -156,7 +156,7 @@
                   <div class="col-6 float-left mt-1">
                     <a href="javascript:void(0);"
                     page_title="体験授業申し込み" page_form="dialog"
-                    page_url="/trial_request?student_id={{$charge_student->id}}"
+                    page_url="/parents/{{$item->id}}/trial_request?student_id={{$charge_student->id}}"
                     role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-hand-point-right mr-1"></i>体験授業申し込み
                     </a>

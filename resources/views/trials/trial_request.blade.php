@@ -1,13 +1,20 @@
 @include('trials.create_form')
 <div class="direct-chat-msg">
-  <form method="POST"  action="/trial_request">
+  @if($_edit==true)
+  <form method="POST"  action="/trials/{{$item->id}}">
+    @method('PUT')
+  @else
+  <form method="POST"  action="/parents/{{$student_parent_id}}/trial_request">
+  @endif
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <div class="col-12">
-      授業を受ける生徒様：{{$student1->name()}}
+      授業を受ける生徒様：{{$student1->name()}} 様 / {{$student1->grade()}}
     </div>
     <input type="hidden" name="grade_name" value="{{$student1->grade()}}">
     <input type="hidden" class="grade" name="grade" value="{{$student1->tag_value('grade')}}">
+    <input type="hidden" name="student_id" value="{{$student1->id}}">
+    <input type="hidden" name="student_parent_id" value="{{$student_parent_id}}">
     <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
@@ -212,10 +219,17 @@
               </a>
             </div>
             <div class="col-12 mb-1">
+              @if($_edit==true)
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
-                    授業の申し込みを行う
+                  申し込み内容を変更する
                     <i class="fa fa-caret-right ml-1"></i>
                 </button>
+              @else
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                  授業の申し込みを行う
+                  <i class="fa fa-caret-right ml-1"></i>
+              </button>
+              @endif
             </div>
           </div>
         </div>

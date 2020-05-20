@@ -128,8 +128,8 @@ Route::resource('trials','TrialController');
 Route::get('entry','TrialController@trial');
 Route::post('entry','TrialController@trial_store');
 
-Route::get('trial_request','TrialController@trial_request_page');
-Route::post('trial_request','TrialController@trial_request');
+Route::get('parents/{id}/trial_request','StudentParentController@trial_request_page');
+Route::post('parents/{id}/trial_request','StudentParentController@trial_request');
 
 
 Route::get('api_lectures','LectureController@api_index');

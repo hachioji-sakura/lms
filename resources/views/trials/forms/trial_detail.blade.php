@@ -60,12 +60,12 @@
             @endforeach
             <span class="text-xs mx-2">
               <small class="badge badge-info mt-1 mr-1">
-                週{{$item->trial_students->first()->student->tag_name("lesson_week_count")}}回
+                週{{$item->student->tag_name("lesson_week_count")}}回
               </small>
             </span>
             <span class="text-xs mx-2">
               <small class="badge badge-info mt-1 mr-1">
-                {{$item->trial_students->first()->student->tag_name("course_minutes")}}授業
+                {{$item->student->tag_name("course_minutes")}}授業
               </small>
             </span>
           </span>

@@ -38,6 +38,7 @@ class Comment extends Milestone
     foreach($_types as $index => $val){
       $types[] = $index;
     }
+    $types[] = 'trial';
     return $this->scopeFindTypes($query, $types);
   }
   public function scopeChecked($query, $user_id)

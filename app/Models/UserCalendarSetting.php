@@ -38,19 +38,6 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
-  public function scopeFindTrialStudent($query, $trial_id)
-  {
-    $where_raw = <<<EOT
-      lms.user_calendar_settings.id in (
-        select user_calendar_setting_id from
-        lms.user_calendar_member_settings ums
-        inner join common.students s on s.user_id = ums.user_id
-        inner join lms.trial_students ts on s.id = ts.student_id
-        where ts.trial_id=?)
-EOT;
-
-    return $query->whereRaw($where_raw,[$trial_id]);
-  }
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
   }

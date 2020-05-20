@@ -316,5 +316,68 @@ class StudentParentController extends TeacherController
         return $this->api_response(200, "", "", $user);
       }, 'アカウント登録', __FILE__, __FUNCTION__, __LINE__ );
     }
+    public function trial_request_page(Request $request, $id)
+    {
+      if(!$request->has('student_id')) abort(403);
+      $param = $this->get_param($request, $id);
+      $edit = false;
 
+      //登録申し込み情報
+      $trial = Trial::where('student_parent_id', $id)
+      ->where('student_id', $request->get('student_id'))
+      ->where('status', '!=' ,'cancel')
+      ->first();
+      if(isset($trial)){
+        $param['item'] = $trial;
+        $edit = true;
+      }
+      else {
+        $param['item'] = new Trial();
+      }
+      $param['student1'] = Student::where('id', $request->get('student_id'))->first();
+      $param['student_parent_id'] = $id;
+      return view('trials.trial_request', [
+        '_edit' => $edit])
+        ->with($param);
+    }
+    public function trial_request(Request $request, $id)
+    {
+
+      $form = $request->all();
+      if(!$request->has('student_id')) abort(403);
+      $param = $this->get_param($request, $id);
+      $access_key = $this->create_token();
+      $request->merge([
+        'access_key' => $access_key,
+      ]);
+      $form = $request->all();
+      $form['student_parent_id'] = $id;
+      if(!empty($form['trial_date1'])){
+        $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
+        $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
+      }
+      if(!empty($form['trial_date2'])){
+        $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
+        $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
+      }
+      if(!empty($form['trial_date3'])){
+        $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
+        $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
+      }
+      $form['create_user_id'] = $param['user']->user_id;
+      $res = $this->transaction($request, function() use ($form){
+        $item = Trial::entry($form);
+        return $this->api_response(200, '', '', $item);
+      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
+
+      if($this->is_success_response($res)){
+        $param['item']->user->send_mail(
+          '体験授業のお申込み、ありがとうございます', [
+          'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
+          'access_key' => $access_key,
+          'send_to' => 'parent',
+        ], 'text', 'trial');
+      }
+      return $this->save_redirect($res, [], '');
+    }
 }

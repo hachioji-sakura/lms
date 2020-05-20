@@ -666,14 +666,4 @@ class TrialController extends UserCalendarController
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
-  public function trial_request_page(Request $request)
-  {
-    if(!$request->has('student_id')) abort(403);
-    $param = $this->get_common_param($request, false);
-    $param['item'] = new Trial();
-    $param['student1'] = Student::where('id', $request->get('student_id'))->first();
-    return view($this->domain.'.trial_request', [
-      '_edit' => false])
-      ->with($param);
-  }
 }
