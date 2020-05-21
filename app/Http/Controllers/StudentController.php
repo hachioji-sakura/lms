@@ -282,7 +282,8 @@ class StudentController extends UserController
    //タスクデータ取得
    $target_user = $this->model()->where('id',$id)->first();
    $param['target_user'] = $target_user;
-   $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+   //$tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+   $tasks = $this->task_search($request, $target_user->user_id)->get();
    $param['status_count'] = $target_user->get_target_task_count();
    $param['request'] = $request;
 
@@ -378,7 +379,8 @@ class StudentController extends UserController
 
     $target_user = $this->model()->where('id',$id)->first();
     $param['target_user'] = $target_user;
-    $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+    //$tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+    $tasks = $this->task_search($request, $target_user->user_id)->get();
     $param['status_count'] = $target_user->get_target_task_count();
     $param['request'] = $request;
 

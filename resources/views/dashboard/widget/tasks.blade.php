@@ -40,11 +40,11 @@
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter"></i>
           </a>
-          <!--
+          {{--
           <div class="paginate">
             {{$tasks->appends(Request::query())->links('components.paginate')}}
           </div>
-          -->
+          --}}
           <!-- 検索 -->
         </div>
       </div>

@@ -1,10 +1,10 @@
 
   <div id="create_tasks" class="form-group">
     @if($_edit)
-    <form method="POST" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
+    <form method="POST" id="create_task_form" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
       @method('PUT')
     @else
-    <form method="POST" action="/tasks" enctype="multipart/form-data">
+    <form method="POST" action="/tasks" id="create_task_form" enctype="multipart/form-data">
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
@@ -35,7 +35,9 @@
       <div class="row mt-2">
         <div class="col-12">
           <h3 class="card-title">
+            <label>
             {{__('labels.setting_details')}}
+            </label>
              <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#setting_details"><i class="fas fa-plus"></i></button>
           </h3>
         </div>
@@ -107,18 +109,35 @@
           </div>
         </div>
       </div>
-
+      @if($_edit)
+      <input type="hidden" name="mail_send" value="false">
+      @else
       <div class="row mt-2">
         <div class="col-12">
-          <button type="submit" class="btn btn-submit btn-primary btn-block"><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
+          <label>
+            {{__('labels.notification')}}
+          </label>
+          <div class="input-group">
+            <div class="form-check">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
+              <label class="form-check-label" for="mail_send_yes">
+                {{__('labels.task_remind')}}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
+              <label class="form-check-label" for="mail_send_no">
+                {{__('labels.no_remind')}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+      <div class="row mt-2">
+        <div class="col-12">
+          <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_tasks"><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
         </div>
       </div>
     </form>
   </div>
-
-
-<script>
-$(function(){
-  base.pageSettinged("create_tasks",null);
-});
-</script>
