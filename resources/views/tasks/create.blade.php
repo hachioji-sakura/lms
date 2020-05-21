@@ -35,7 +35,9 @@
       <div class="row mt-2">
         <div class="col-12">
           <h3 class="card-title">
+            <label>
             {{__('labels.setting_details')}}
+            </label>
              <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#setting_details"><i class="fas fa-plus"></i></button>
           </h3>
         </div>
