@@ -156,7 +156,7 @@
             </li>
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks">
-                <i class="fa fa-tasks"></i>
+                <i class="fa fa-list-alt"></i>
                 {{__('labels.tasks')}}
               </a>
             </li>
