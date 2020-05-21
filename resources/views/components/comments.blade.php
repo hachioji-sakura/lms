@@ -1,30 +1,30 @@
 
 <?php $__c=0; ?>
 <div class="tab-pane {{$is_active}}" id="comments_tab_{{$comment_type}}">
-  <div class="card card-widget">
-    <div class="card-comments">
+  <div class="card card-prirary cardutline direct-chat direct-chat-primary">
+    <div class="card-body">
+      <div class="dirct-chat-messages">
         @foreach($comments as $comment)
           <?php $comment = $comment->details(); ?>
           @if($comment_type==='all' || $comment->type===$comment_type)
             <?php $__c++; ?>
-            <div class="card-comment">
-              <img class="img-circle img-sm mr-1" src="{{$comment->create_user->details()->icon}}" alt="User Image">
-              <span class="username">{{$comment->create_user->details()->name}}
-                <span class="text-muted float-right">
-                  {{$comment["created_date"]}}
-                </span>
-              </span>
-              <div class="comment-text">
-                {!!nl2br($comment->body)!!}
+            <div class="direct-chat-msg p-1 {{$comment->target_user_id == $comment->create_user_id ? 'right' : ''}}">
+              <div class="direct-chat-infos clearfix">
+                <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
+                <span class="direct-chat-timestamp float-right">{{$comment["created_date"]}}</span>
               </div>
-              @if(!empty($comment->s3_url))
-              <span class="mr-1">
-                <a href="{{$comment->s3_url}}" target="_blank">
-                  <i class="fa fa-link mr-1"></i>
-                  {{$comment->s3_alias}}
-                </a>
-              </span>
-              @endif
+              <img class="direct-chat-img img-sm mr-1" src="{{$comment->create_user->details()->icon}}" alt="User Image">
+              <div class="direct-chat-text">
+                {!!nl2br($comment->body)!!}
+                @if(isset($comment->s3_url))
+                <span class="mr-1">
+                  <a href="{{$comment->s3_url}}" target="_blank">
+                    <i class="fa fa-link mr-1"></i>
+                    {{$comment->s3_alias}}
+                  </a>
+                </span>
+                @endif
+              </div>
               @if(isset($is_edit) && $is_edit==true)
                 @if($user->user_id === $comment->create_user_id)
                 <span class="float-right mr-1">
@@ -36,16 +36,15 @@
                   </a>
                 @endif
               @endif
-            </div>
-          @endif
+            @endif
+          </div>
         @endforeach
         @if($__c < 1)
-          <div class="card-comment">
-            <div class="comment-text">
-              コメントはありません
-            </div>
-          </div>
+        <div class="alert">
+          <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+        </div>
         @endif
+      </div>
     </div>
   </div>
 </div>
