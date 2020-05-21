@@ -344,6 +344,9 @@ class StudentParentController extends TeacherController
 
       $form = $request->all();
       if(!$request->has('student_id')) abort(403);
+      $student = Student::where('id', $request->get('student_id'))->first();
+      if(!isset($student)) abort(403);
+
       $param = $this->get_param($request, $id);
       $access_key = $this->create_token();
       $request->merge([
@@ -372,7 +375,7 @@ class StudentParentController extends TeacherController
       if($this->is_success_response($res)){
         $param['item']->user->send_mail(
           '体験授業のお申込み、ありがとうございます', [
-          'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
+          'user_name' => $student->name(),
           'access_key' => $access_key,
           'send_to' => 'parent',
         ], 'text', 'trial');
