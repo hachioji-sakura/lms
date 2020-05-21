@@ -107,7 +107,31 @@
           </div>
         </div>
       </div>
-
+      @if($_edit)
+      <input type="hidden" name="mail_send" value="false">
+      @else
+      <div class="row mt-2">
+        <div class="col-12">
+          <label>
+            {{__('labels.notification')}}
+          </label>
+          <div class="input-group">
+            <div class="form-check">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
+              <label class="form-check-label" for="mail_send_yes">
+                {{__('labels.task_remind')}}
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
+              <label class="form-check-label" for="mail_send_no">
+                {{__('labels.no_remind')}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
       <div class="row mt-2">
         <div class="col-12">
           <button type="submit" class="btn btn-submit btn-primary btn-block"><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
