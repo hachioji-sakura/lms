@@ -101,6 +101,7 @@ Route::get('api_english_group_calendars','UserCalendarController@api_english_gro
 Route::resource('calendars','UserCalendarController');
 
 
+Route::get('trials/{id}/dialog','TrialController@show_dialog');
 Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::post('trials/{id}/to_calendar','TrialController@to_calendar_confirm');
 Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting');

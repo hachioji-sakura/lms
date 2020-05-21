@@ -302,6 +302,16 @@ class TrialController extends UserCalendarController
       'fields'=>$fields])
       ->with($param);
   }
+  public function show_dialog(Request $request, $id)
+  {
+    if(!$request->has('student_parent_id')) abort(403);
+    $param = $this->get_common_param($request);
+    $item = Trial::where('id', $id)->first();
+    if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id'))abort(403);
+    $param['item'] = $item->details();
+    return view('trials.forms.trial_detail', [])
+      ->with($param);
+  }
   /**
    * Show the form for editing the specified resource.
    *

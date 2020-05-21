@@ -319,22 +319,21 @@ class StudentParentController extends TeacherController
     public function trial_request_page(Request $request, $id)
     {
       if(!$request->has('student_id')) abort(403);
+      $student = Student::where('id', $request->get('student_id'))->first();
+      if(!isset($student)) abort(403);
       $param = $this->get_param($request, $id);
       $edit = false;
 
       //登録申し込み情報
-      $trial = Trial::where('student_parent_id', $id)
-      ->where('student_id', $request->get('student_id'))
-      ->where('status', '!=' ,'cancel')
-      ->first();
-      if(isset($trial)){
+      $trial = $student->trial();
+      if($trial!=null){
         $param['item'] = $trial;
         $edit = true;
       }
       else {
         $param['item'] = new Trial();
       }
-      $param['student1'] = Student::where('id', $request->get('student_id'))->first();
+      $param['student1'] = $student;
       $param['student_parent_id'] = $id;
       return view('trials.trial_request', [
         '_edit' => $edit])

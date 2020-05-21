@@ -1061,4 +1061,11 @@ EOT;
     if(count($this->user->calendar_member_settings) > 0) return true;
     return false;
   }
+  public function trial()
+  {
+    $trial = Trial::where('student_id', $this->id)
+                ->where('status', '!=', 'cancel')
+                ->first();
+    return $trial;
+  }
 }
