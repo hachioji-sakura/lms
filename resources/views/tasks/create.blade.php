@@ -141,17 +141,3 @@
       </div>
     </form>
   </div>
-
-
-<script>
-$(function(){
-  base.pageSettinged("create_tasks",null);
-  $('button.btn-submit').on('click', function(e){
-    e.preventDefault
-    if(front.validateFormValue('create_tasks')){
-      console.log('hoge');
-      $("form#create_task_form").submit();
-    }
-  });
-});
-</script>
