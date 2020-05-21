@@ -30,6 +30,7 @@ return array(
   'examination' => 'info',
   'study' => 'success',
   'other' => 'secondary',
-
+  'done' => 'success',
+  'progress' => 'primary',
   );
 ?>

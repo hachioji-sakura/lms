@@ -3730,6 +3730,11 @@ input[type="button"].btn-block {
 	color: #ffffff;
 	background-color: #007bff;
 }
+.nav-pills .nav-link.btn.active,
+.nav-pills .show > .nav-link.btn {
+	color: #ffffff;
+	background-color: #007bff;
+}
 
 .nav-fill .nav-item {
 	flex: 1 1 auto;
@@ -11773,6 +11778,9 @@ label:not(.form-check-label):not(.custom-file-label) {
 	color: #007bff;
 	*/
 	color: #ffffff;
+}
+.nav-pills .nav-link.btn {
+	color: #6c757d;
 }
 
 /*

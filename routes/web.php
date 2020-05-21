@@ -214,6 +214,9 @@ Route::get('students/{id}/late_arrival','StudentController@late_arrival');
 Route::get('students/{id}/resume','StudentController@resume');
 Route::get('students/{id}/tuition','StudentController@tuition');
 Route::get('students/{id}/announcements','StudentController@show');
+Route::get('students/{id}/comments','StudentController@show_comment_page');
+Route::get('students/{id}/milestones','StudentController@show_milestone_page');
+Route::get('students/{id}/tasks','StudentController@show_task_page');
 
 
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
@@ -295,6 +298,7 @@ Route::resource('asks','AskController');
 Route::resource('maillogs','MailLogController');
 
 
+
 Route::get('api_tuition','TuitionController@get_api_tuition');
 Route::resource('tuitions','TuitionController');
 Route::resource('faqs','FaqController');
@@ -319,7 +323,24 @@ Route::get('messages/{id}/details','MessageController@details');
 Route::get('messages/{id}/reply','MessageController@reply');
 Route::post('messages/{id}/reply','MessageController@store');
 Route::get('messages','MessageController@list');
-
 Route::get('parents/{id}/messages', 'StudentParentController@message_list');
 Route::get('teachers/{id}/messages', 'TeacherController@message_list');
 Route::get('managers/{id}/messages', 'ManagerController@message_list');
+
+
+Route::resource('tasks','TaskController');
+//生徒画面に取り込み
+//Route::get('students/{id}/tasks', 'StudentController@task_list');
+
+Route::get('tasks/{id}/detail_dialog', 'TaskController@detail_dialog');
+Route::get('tasks/{id}/new', 'TaskController@show_new_page');
+Route::put('tasks/{id}/new', 'TaskController@new');
+Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
+Route::put('tasks/{id}/cancel', 'TaskController@cancel');
+Route::get('tasks/{id}/progress', 'TaskController@show_progress_page');
+Route::put('tasks/{id}/progress', 'TaskController@progress');
+Route::get('tasks/{id}/done', 'TaskController@show_done_page');
+Route::put('tasks/{id}/done', 'TaskController@done');
+Route::get('tasks/{id}/review', 'TaskController@show_review_page');
+Route::put('tasks/{id}/review', 'TaskController@review');
+Route::post('task_comments/create', 'TaskCommentController@store');
