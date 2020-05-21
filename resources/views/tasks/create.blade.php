@@ -1,7 +1,7 @@
 
   <div id="create_tasks" class="form-group">
     @if($_edit)
-    <form method="POST" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
+    <form method="POST"  action="/tasks/{{$item->id}}" enctype="multipart/form-data">
       @method('PUT')
     @else
     <form method="POST" action="/tasks" enctype="multipart/form-data">
@@ -136,7 +136,7 @@
       @endif
       <div class="row mt-2">
         <div class="col-12">
-          <button type="button" class="btn btn-submit btn-primary btn-block"><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} accesskey="create_tasks" mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
+          <button type="button" class="btn btn-submit btn-primary btn-block accesskey="create_tasks""><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
         </div>
       </div>
     </form>
@@ -149,7 +149,8 @@ $(function(){
   $('button.btn-submit').on('click', function(e){
     e.preventDefault
     if(front.validateFormValue('create_tasks')){
-      $("#create_tasks").subtmit();
+      console.log('hoge');
+      $("form").submit();
     }
   });
 });
