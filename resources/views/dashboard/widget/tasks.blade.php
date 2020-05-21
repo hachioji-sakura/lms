@@ -34,6 +34,9 @@
           <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
+          <a href="/students/{{$item->id}}/tasks?search_status=done" class="btn btn-tool">
+            <i class="fa fa-check"></i>
+          </a>
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter"></i>
           </a>
@@ -59,24 +62,31 @@
                     </small>
                   </div>
                   <div class="col-9">
-                    <small class="text-muted float-right">
-                      {{$item->create_user->details()->name()}}
-                      {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:m',strtotime($item->created_at))}}
-                    </small>
+                    @if(!empty($item->stars))
+                    <div class="float-right">
+                      @for($i=1;$i<=$item->stars;$i++)
+                      <span class="fa fa-star" style="color:orange;"></span>
+                      @endfor
+                      @for($i=1;$i<=5-$item->stars;$i++)
+                      <span class="far fa-star"></span>
+                      @endfor
+                      ({{$item->stars}})
+                    </div>
+                    @endif
                   </div>
-                  <div class="col-4 text-truncate">
+                  <div class="col-12 col-md-4 text-truncate">
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       {{$item->title}}
                     </a>
                   </div>
-                  <div class="col-8 text-truncate">
+                  <div class="col-12 col-md-8 text-truncate">
                     <small class="text-muted">
                       {{$item->body}}
                     </small>
                   </div>
                   @if(!empty($item->s3_url))
                   <div class="col-12">
-                    <a href="{{$item->s3_url}}" class="">
+                    <a href="{{$item->s3_url}}" target="_blank">
                       <i class="fa fa-link fa-sm"></i>
                       <small>
                         {{$item->s3_alias}}
@@ -109,7 +119,13 @@
                 </div>
               </div>
             </div>
-
+            <div class="col-12">
+              <small class="text-muted float-right">
+                <i class="fa fa-clock"></i>
+                {{$item->create_user->details()->name()}}/
+                {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:m',strtotime($item->created_at))}}
+              </small>
+            </div>
           </li>
           @endforeach
         </ul>
@@ -139,8 +155,8 @@
         <div class="row">
           @foreach(config('attribute.task_status') as $key => $value)
           <div class="col-sm-12 col-md-2">
-          <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]"  value="{{$key}}">
-          <label class="form-check-label">{{$value}}</label>
+          <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="status_{{$key}}" value="{{$key}}">
+          <label class="form-check-label" for="status_{{$key}}" id="status_{{$key}}">{{$value}}</label>
           </div>
           @endforeach
         </div>

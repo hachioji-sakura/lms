@@ -25,8 +25,7 @@ class TaskController extends MilestoneController
     public function index(Request $request)
     {
         $param = $this->get_param($request);
-        $user = $this->login_details($request);
-        $param['items'] = $this->model()->search($request)->paginate($this->pagenate_line);
+        $param['items'] = $this->model()->search($request)->paginate($param['_line']);
         $param['request'] = $request;
         return view($this->domain . '.list')->with($param);
     }

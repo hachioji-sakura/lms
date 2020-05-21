@@ -15,7 +15,7 @@
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
+        <div class="">
           <h3 class="card-title">
             @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
                 @slot('courtesy')

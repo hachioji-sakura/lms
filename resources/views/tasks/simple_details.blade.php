@@ -66,7 +66,7 @@
     </div>
 
     @if(!empty($item->s3_url))
-    <a href="{{$item->s3_url}}">
+    <a href="{{$item->s3_url}}" target="_blank">
       <i class="fa fa-link mr-1"></i>
       {{$item->s3_alias}}
     </a>
