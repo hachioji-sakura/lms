@@ -1,10 +1,10 @@
 
   <div id="create_tasks" class="form-group">
     @if($_edit)
-    <form method="POST"  action="/tasks/{{$item->id}}" enctype="multipart/form-data">
+    <form method="POST" id="create_task_form" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
       @method('PUT')
     @else
-    <form method="POST" action="/tasks" enctype="multipart/form-data">
+    <form method="POST" action="/tasks" id="create_task_form" enctype="multipart/form-data">
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
@@ -136,7 +136,7 @@
       @endif
       <div class="row mt-2">
         <div class="col-12">
-          <button type="button" class="btn btn-submit btn-primary btn-block accesskey="create_tasks""><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
+          <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="create_tasks"><i class="fa {{$_edit ? 'fa-edit':'fa-plus-circle'}} mr-1"></i>{{$_edit ? __('labels.update_button') : __('labels.add_button')}}</button>
         </div>
       </div>
     </form>
@@ -150,7 +150,7 @@ $(function(){
     e.preventDefault
     if(front.validateFormValue('create_tasks')){
       console.log('hoge');
-      $("form").submit();
+      $("form#create_task_form").submit();
     }
   });
 });
