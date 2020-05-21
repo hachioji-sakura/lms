@@ -26,7 +26,7 @@
         <div class="row">
           <div class="col-12">
             <h3 class="card-title">
-              <i class="fa fa-list-alt"></i>{{__('labels.tasks')}}
+              <i class="fa fa-list-alt mr-1"></i>{{__('labels.tasks')}}
             </h3>
           </div>
         </div>
