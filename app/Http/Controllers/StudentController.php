@@ -1152,6 +1152,7 @@ class StudentController extends UserController
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
+
   public function ask_create_page(Request $request, $id){
     $param = $this->get_param($request, $id);
 

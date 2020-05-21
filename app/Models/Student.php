@@ -1078,10 +1078,10 @@ EOT;
     return $status_count;
   }
 
-}
   public function is_hachiojisakura(){
     //TODO 八王子さくらの生徒の場合True
     //カレンダーがある
+    if($this->status=='trial') return false;
     if(count($this->user->calendar_members) > 0) return true;
     //カレンダー設定がある
     if(count($this->user->calendar_member_settings) > 0) return true;
