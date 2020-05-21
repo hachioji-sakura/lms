@@ -141,7 +141,7 @@
           </div>
         </div>
         <div class="card-body">
-          <ul class="nav nav-pills ml-auto float-right mb-2">
+          <ul class="nav nav-pills ml-auto float-left mb-2">
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.milestones' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/milestones">
                 <i class="fa fa-flag"></i>

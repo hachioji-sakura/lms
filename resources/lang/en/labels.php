@@ -363,4 +363,6 @@ return [
   'new_button' => 'New',
   'active' => 'Active',
   'task_schedule' => 'schedule',
+  'task_remind' => 'notify',
+  'notification' => 'notification',
 ];
