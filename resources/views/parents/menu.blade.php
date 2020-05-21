@@ -82,8 +82,8 @@
 @endsection
 @section('page_footer')
 <dt>
-    <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-app">
-      <i class="fa fa-envelope mr-1"></i>受信メッセージ一覧
+    <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-app bg-danger">
+      <i class="fa fa-envelope mr-1"></i>メッセージ一覧
     </a>
 </dt>
 {{--

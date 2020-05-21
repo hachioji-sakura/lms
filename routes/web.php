@@ -170,10 +170,10 @@ Route::put('parents/{id}/email_edit','StudentParentController@email_edit');
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
 Route::get('parents/{id}/agreement','StudentParentController@agreement_page');
-Route::get('parents/{id}/delete','StudentParentController@delete_page');
-Route::get('students/{id}/delete','StudentController@delete_page');
-Route::get('managers/{id}/delete','ManagerController@delete_page');
-Route::get('teachers/{id}/delete','TeacherController@delete_page');
+Route::get('managers/{id}/retirement','ManagerController@retirement_page');
+Route::get('teachers/{id}/retirement','TeacherController@retirement_page');
+Route::put('managers/{id}/retirement','ManagerController@retirement');
+Route::put('teachers/{id}/retirement','TeacherController@retirement');
 Route::get('parents/{id}/remind','StudentParentController@remind_page');
 Route::get('students/{id}/remind','StudentController@remind_page');
 Route::get('managers/{id}/remind','ManagerController@remind_page');

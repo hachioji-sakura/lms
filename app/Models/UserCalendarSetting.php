@@ -22,7 +22,9 @@ class UserCalendarSetting extends UserCalendar
       'to_time_slot' => 'required'
   );
   public function register_mail_title(){
-    return __('messages.info_calendar_setting_add');
+    $title = __('messages.info_calendar_setting_add');
+    return __('messages.mail_title_until_today').$title;
+
   }
   public function delete_mail_title(){
     return __('messages.info_calendar_setting_delete');

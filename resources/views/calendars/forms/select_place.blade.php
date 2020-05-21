@@ -1,4 +1,4 @@
-<div class="col-12 col-md-6">
+<div class="col-12">
   <div class="form-group">
     <label for='place_floor_id' class="w-100">
       {{__('labels.place')}}
@@ -20,7 +20,13 @@
         @endforeach
       </select>
       <div class="form-check mt-2 text-info">
-          <input type="hidden" name="is_online" value="false" />
+          <input type="hidden" name="is_online"
+          @if($item->is_online()==true)
+          value="true"
+          @else
+          value="false"
+          @endif
+          />
           <input class="form-check-input icheck flat-red" type="checkbox" name="_is_online" id="is_online" value="true"
           @if($item->is_online()==true)
             checked

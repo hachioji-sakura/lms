@@ -8,7 +8,7 @@
     @if(count($items) > 0)
     <ul class="mailbox-attachments clearfix row">
       @foreach($items as $item)
-      <li class="col-lg-4 col-md-4 col-12 @if($item->user->status===9) bg-gray @else bg-white @endif" accesskey="" target="">
+      <li class="col-lg-4 col-md-4 col-12 @if($item->status==='unsubscribe') bg-gray @else bg-white @endif" accesskey="" target="">
         <input type="hidden" value="{{$loop->index}}" name="__index__" id="__index__">
         <input type="hidden" value="{{$item->id}}" name="id">
         <div class="row">
@@ -52,13 +52,13 @@
         </div>
         <div class="row my-2">
           <div class="col-12">
-          @if($domain!="students" && $item->user->status===1)
+          @if($domain!="students" && $item->status==='trial')
             <a class="btn btn-primary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
               <i class="fa fa-envelope mr-1"></i>
               {{__('labels.register_ask')}}
             </a>
           @endif
-          @if($item->user->status===0 && !($domain=="managers" && $item->id===1))
+          @if($item->status==='regular' && !($domain=="managers" && $item->id===1))
           {{--
             <a class="btn btn-success btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="編集">
               <i class="fa fa-edit"></i>
@@ -68,19 +68,17 @@
             </a>
           --}}
           @endif
-          @if($item->user->status===0 && $domain==="teachers" && $item->is_manager()===false)
+          @if($item->status==='regular' && $domain==="teachers" && $item->is_manager()===false)
             <a class="btn my-1 btn-info btn-sm text-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/to_manager" page_title="事務兼務">
               <i class="fa fa-users-cog mr-1"></i>
               {{__('labels.additional_officer')}}
             </a>
           @endif
-          @if($user->role!=="parent" && !($domain=="managers" && $item->id===1) && $item->user->status!==9)
-          {{--
-            <a class="btn my-1 btn-danger btn-sm " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/delete" page_title="削除">
-              <i class="fa fa-lock mr-1"></i>
-              {{__('labels.lock')}}
+          @if(!($domain=="managers" && $item->id===1) && $item->status!='unsubscribe' && ($domain=="managers" || $domain=="teachers"))
+            <a class="btn my-1 btn-danger btn-sm float-right " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/retirement" page_title="退職ステータス更新">
+              <i class="fa fa-user-slash mr-1"></i>
+              {{__('labels.retirement')}}
             </a>
-          --}}
           @endif
         </div>
         </div>

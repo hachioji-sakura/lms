@@ -113,9 +113,12 @@ class UserCalendarMember extends Model
     $this->status_update("remind", "", $login_user_id);
   }
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
-    \Log::warning("UserCalendarMember::status_update(".$status."):".$this->id."/user_id=".$this->user_id);
+    \Log::warning("UserCalendarMember::status_update(".$status.")(login_user_id=".$login_user_id."):".$this->id."/user_id=".$this->user_id);
 
-    $is_update = false;
+    $is_update = true;
+    if($status=='remind'){
+      $is_update = false;
+    }
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
     $param = [];
@@ -126,11 +129,10 @@ class UserCalendarMember extends Model
     switch($status){
       case "remind":
         unset($update_form['status']);
-        $is_send_teacher_mail = false;
-        $is_send_mail = true;
         //リマインド操作＝事務 or 講師
-        if($this->calendar->status!='confirm'){
+        if($this->calendar->status=='absence' || $this->calendar->status=='presence'){
           $is_send_mail = false;
+          $is_send_teacher_mail = false;
         }
         $status = $this->calendar->status;
         $param['token'] = $this->access_key;
@@ -148,11 +150,15 @@ class UserCalendarMember extends Model
         $is_send_teacher_mail = false;
         break;
     }
-    UserCalendarMember::where('id', $this->id)->update($update_form);
-    $param['token'] = $update_form['access_key'];
-    $res = $this->_office_system_api('PUT');
-    $this->calendar->set_status();
 
+    if($is_update==true){
+      \Log::warning("status_update");
+      $m = UserCalendarMember::where('id', $this->id)->first();
+      $m->update($update_form);
+      $param['token'] = $update_form['access_key'];
+      $res = $m->_office_system_api('PUT');
+      $this->calendar->set_status();
+    }
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -169,9 +175,9 @@ class UserCalendarMember extends Model
       //代理の場合
       $param['is_proxy'] = true;
     }
-
-    if($is_send_mail){
+    if($is_send_mail==true){
       //このユーザーにメール送信
+      \Log::warning("send_mail(".$title.")");
       $this->user->send_mail($title, $param, $type, $template);
     }
     if($is_send_teacher_mail==true && $u->role!="teacher"){
@@ -516,7 +522,7 @@ class UserCalendarMember extends Model
         \Log::info("事務システムAPI 休み判別:".$_url."\n".$message);
 
         $cancel = "";
-        $exchange_limit_date = "";
+        $exchange_limit_date = null;
         $comment = "";
         $cancel_reason = "";
         if(isset($res["data"]["cancel"])) {
@@ -524,6 +530,11 @@ class UserCalendarMember extends Model
         }
         if(isset($res["data"]["altlimitdate"])){
           $exchange_limit_date = trim($res["data"]["altlimitdate"]);
+          if(strtotime('2020-04-01 00:00:00') < strtotime($this->calendar->start_time)
+            && strtotime('2020-06-01 00:00:00') > strtotime($this->calendar->start_time)){
+              //TODO 2020-04-01 ～ 2020-05-31の振替期限は、2020-12-31にする
+              $exchange_limit_date = '2020-12-31';
+          }
         }
         if(isset($res["data"]["comment"])){
           $comment = trim($res["data"]["comment"]);

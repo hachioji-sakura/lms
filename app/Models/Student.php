@@ -820,6 +820,7 @@ EOT;
     if(strtotime($this->unsubscribe_date) <= strtotime(date('Y-m-d'))){
       //退会開始日経過＝ステータスを退会
       $this->update(['status' => 'unsubscribe']);
+      $this->user->update(['status' => 9]);
     }
     return ['user_calendar_members' => $user_calendar_members,];
   }
