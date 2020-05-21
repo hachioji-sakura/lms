@@ -34,7 +34,7 @@ class UserCalendar extends Model
       $trial ='['. __('labels.trial_lesson').']';
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
-    return $title;
+    return __('messages.mail_title_until_today').$title;
   }
   public function delete_mail_title(){
     $trial = "";
@@ -844,10 +844,10 @@ EOT;
         $is_teacher_mail = true;
       }
       if($is_teacher_mail==true){
-        $this->teacher_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
+        $this->teacher_mail(__('messages.info_change_calendar'), ['old_item' => $old_item], 'text', 'calendar_update');
       }
       if($is_student_mail==true){
-        $this->student_mail('予定変更につきましてご確認ください', ['old_item' => $old_item], 'text', 'calendar_update');
+        $this->student_mail(__('messages.info_change_calendar'), ['old_item' => $old_item], 'text', 'calendar_update');
       }
     }
     return $this;

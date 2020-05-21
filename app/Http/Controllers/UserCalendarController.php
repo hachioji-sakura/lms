@@ -1350,6 +1350,9 @@ class UserCalendarController extends MilestoneController
           $param['teachers'][] = $param['user'];
           $param['teacher_id'] = $param['user']->id;
         }
+        else if($param['user']->role==="staff"){
+          $param['item']->work = 9;
+        }
         else if($param['user']->role==="manager"){
           if($request->has('teacher_id')){
             $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
@@ -1561,12 +1564,15 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->page_access_check($request, $id);
       $message = 'メンバーのステータスを更新しました';
+      if($request->get('action')=='remind') {
+        $message = '連絡通知しました。';
+      }
+
       $res = $this->transaction($request, function() use ($request, $id, $param){
         //TODO work=7
         $form = $this->create_form($request);
         if($request->get('action')=='remind') {
           $form['to_status'] = 'remind';
-          $message = '連絡通知しました。';
         }
         if($request->has('rest_type')) {
           $form['rest_type'] = $request->get('rest_type');
@@ -1578,9 +1584,14 @@ class UserCalendarController extends MilestoneController
         if(!empty($form['students'])){
           foreach($form['students'] as $student){
             $member = UserCalendarMember::where('calendar_id', $id)->where('user_id', $student->user_id)->first();
-            $member->status_update($form['to_status'], '', $param['user']->user_id);
-            if($form['to_status']=='rest' && !empty($form['rest_type'])){
-              $member->update_rest_type($form['rest_type'], $form['rest_result']);
+            if($request->get('action')=='remind') {
+              $member->remind($param['user']->user_id);
+            }
+            else {
+              $member->status_update($form['to_status'], '', $param['user']->user_id, false, false);
+              if($form['to_status']=='rest' && !empty($form['rest_type'])){
+                $member->update_rest_type($form['rest_type'], $form['rest_result']);
+              }
             }
           }
         }

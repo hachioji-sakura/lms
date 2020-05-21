@@ -1044,33 +1044,8 @@ class StudentController extends UserController
     return view($this->domain.'.tag',$param);
 
   }
-  public function delete_page(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $param['item']['name'] = $param['item']->name();
-    $param['item']['kana'] = $param['item']->kana();
-    $param['item']['birth_day'] = $param['item']->birth_day();
-    $param['item']['gender'] = $param['item']->gender();
-    $fields = [
-      'name' => [
-        'label' => __('labels.name'),
-      ],
-      'kana' => [
-        'label' => 'フリガナ',
-      ],
-      'birth_day' => [
-        'label' => '生年月日',
-      ],
-      'gender' => [
-        'label' => '性別',
-      ],
-    ];
-    return view('components.page', [
-      'action' => 'delete',
-      'fields'=>$fields])
-      ->with($param);
-  }
   public function remind_page(Request $request, $id)
+
   {
     $param = $this->get_param($request, $id);
     $param['item']['name'] = $param['item']->name();
@@ -1163,29 +1138,6 @@ class StudentController extends UserController
 
        return $this->api_response(200, '', '', $item);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
-  }
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-
-    $res = $this->_delete($request, $id);
-    return $this->save_redirect($res, $param, '削除しました。');
-  }
-
-  public function _delete(Request $request, $id)
-  {
-    return $this->transaction($request, function() use ($request){
-      $form = $request->all();
-      $item = $this->model()->where('id', $id)->first();
-      $item->user->update(['status' => 9]);
-      return $this->api_response(200, '', '', $item);
-    }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
   }
 
   public function ask_create_page(Request $request, $id){
