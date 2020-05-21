@@ -173,6 +173,7 @@
 @endif
 @endsection
 @section('page_footer')
+{{--  Footerに動作ボタンは入れない？？
 <dt>
   <a class="btn btn-app" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="目標登録">
     <i class="fa fa-flag"></i>{{__('labels.milestones')}}{{__('labels.setting')}}
@@ -183,11 +184,10 @@
     <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
   </a>
 </dt>
-{{-- まだ対応しない
-  <dt>
-    <a class="btn btn-app" href="javascript:void(0);" accesskey="task_add" disabled>
-      <i class="fa fa-plus"></i>{{__('labels.tasks')}}{{__('labels.add')}}
+<dt>
+  <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-app">
+      <i class="fa fa-tasks"></i>{{__('labels.tasks')}}{{__('labels.add')}}
     </a>
-  </dt>
+</dt>
 --}}
 @endsection

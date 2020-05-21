@@ -11,8 +11,10 @@ use App\Models\Ask;
 use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
+use App\Models\Task;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
+use DB;
 
 class Student extends Model
 {
@@ -1053,6 +1055,30 @@ EOT;
     }
     return null;
   }
+
+  public function target_milestone(){
+    return $this->hasMany('App\Models\Milestone', 'target_user_id', 'user_id');
+  }
+
+  public function target_task(){
+    return $this->hasMany('App\Models\Task', 'target_user_id', 'user_id');
+  }
+
+  public function create_task(){
+    return $this->hasMany('App\Models\Task', 'create_user_id', 'user_id');
+  }
+
+  public function get_target_task_count(){
+    $query = $this->target_task();
+    $status_count['all'] = $query->count();
+    $counts = $query->select(DB::raw('count(*) as count,status'))->groupBy('status')->get();
+    foreach($counts as $count){
+      $status_count[$count['status']] = $count['count'];
+    }
+    return $status_count;
+  }
+
+}
   public function is_hachiojisakura(){
     //TODO 八王子さくらの生徒の場合True
     //カレンダーがある

@@ -143,6 +143,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
   public function update_form(Request $request){
@@ -153,6 +154,7 @@ class FaqController extends MilestoneController
     $form['type'] = $request->get('type');
     $form['title'] = $request->get('title');
     $form['body'] = $request->get('body');
+    $form['sort_no'] = $request->get('sort_no');
     return $form;
   }
 
@@ -298,6 +300,17 @@ class FaqController extends MilestoneController
        $url =  '/faqs/'.$res['data']->id.'/edit';
      }
      return $this->save_redirect($res, $param, '登録しました。', $url);
+   }
+
+   public function edit(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+     if(empty($param['user'])){
+       abort(403);
+     }
+     return view($this->domain.'.create', [
+       '_edit' => true])
+       ->with($param);
    }
 
    public function _update(Request $request, $id)

@@ -12,6 +12,7 @@ use App\Models\Ask;
 use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
+use App\Models\Task;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -273,15 +274,120 @@ class StudentController extends UserController
    */
    //目標データ取得
    $milestones = $model->target_milestones->sortByDesc('created_at');
-   $view = "page";
+   $view = "page.milestones";
    $param['view'] = $view;
+
+   //タスクデータ取得
+   $target_user = $this->model()->where('id',$id)->first();
+   $param['target_user'] = $target_user;
+   $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+   $param['status_count'] = $target_user->get_target_task_count();
+   $param['request'] = $request;
+
+
    return view($this->domain.'.'.$view, [
      'item' => $item,
      'comments'=>$comments,
      'star_comments'=>$star_comments,
      'milestones'=>$milestones,
+     'tasks' => $tasks,
    ])->with($param);
   }
+
+  public function init_show_page($request,$id){
+    $param = $this->get_param($request, $id);
+    $model = $this->model()->where('id',$id);
+    if(!isset($model)){
+       abort(404);
+    }
+    if($request->has('api')){
+      if(isset($model)) $model = $model->first()->details();
+      return $this->api_response(200, '','', $model);
+    }
+
+    $model = $model->first()->user;
+    $item = $model->details();
+    $item['tags'] = $model->tags();
+    $user = $param['user'];
+    $init = [
+      'param' => $param,
+      'item' => $item,
+      'model' => $model,
+    ];
+
+    return $init;
+  }
+
+  public function show_milestone_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.milestones";
+    $param['view'] = $view;
+
+    $milestones = $model->target_milestones->sortByDesc('created_at');
+
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'milestones' => $milestones,
+   ])->with($param);
+  }
+
+  public function show_comment_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.comments";
+    $param['view'] = $view;
+
+   //コメントデータ取得
+   $form = $request->all();
+   $comments = $model->get_comments($form);
+   $star_comments = $model->get_comments(['is_star' => true]);
+   /*
+   $comments = $model->target_comments;
+   if($this->is_teacher($user->role)){
+     //講師の場合、公開されたコメントのみ閲覧可能
+     $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
+   }
+   $comments = $comments->sortByDesc('created_at');
+   */
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'comments'=>$comments,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+  }
+
+  public function show_task_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.tasks";
+    $param['view'] = $view;
+
+    $target_user = $this->model()->where('id',$id)->first();
+    $param['target_user'] = $target_user;
+    $tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
+    $param['status_count'] = $target_user->get_target_task_count();
+    $param['request'] = $request;
+
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'tasks' => $tasks,
+   ])->with($param);
+  }
+
+
   public function emergency_lecture_cancel(Request $request, $id)
   {
      $param = $this->get_param($request, $id);
@@ -1167,7 +1273,8 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, '設定を更新しました。');
   }
 
-  public function message_list(Request $request, $id = null){
+
+ public function message_list(Request $request, $id = null){
     $params = $this->get_param($request, $id);
     $messages = $this->message_search($request, $id);
     $login_user = $this->login_details($request);
@@ -1196,7 +1303,7 @@ class StudentController extends UserController
       'enable_create' => $enable_create,
     ];
     return view('messages.list',$message_params)->with($params);
-}
+  }
 
   public function message_search(Request $request,$id){
     $login_user = $this->login_details($request,$id);
@@ -1247,4 +1354,19 @@ class StudentController extends UserController
     return $query;
   }
 
+  public function task_list(Request $request, $id = null){
+    $param = $this->get_param($request,$id);
+    $target_user = $this->model()->where('id',$id)->first();
+    $param['target_user'] = $target_user;
+    $items = $this->task_search($request, $target_user->user_id);
+    $param['items'] = $items->paginate($this->pagenation_line);
+    $param['status_count'] = $target_user->get_target_task_count();
+    $param['request'] = $request;
+    return view('tasks.list')->with($param);
+  }
+
+  public function task_search($request, $id){
+    $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
+    return $tasks;
+  }
 }

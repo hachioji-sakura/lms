@@ -126,6 +126,19 @@ return [
  "send_info" => "Message was sent successfully",
  "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
  "message_first_sentence" => "You recieved following message on system. Please check it.",
+
+ "task_title" => "You have a task from :user_name",
+ "task_confirm" => "Are you sure?",
+ 'task_review_confirm' => 'Please evaluate this task.',
+ 'task_already_registered' => 'This task has already registered.',
+ 'info_updated' => 'Updated.',
+ 'task_status_new' => 'A status of this task is updated to [new]',
+ 'task_status_cancel' => 'A status of this task is updated to [cancel]',
+ 'task_status_progress' => 'A status of this task is updated to [progress]',
+ 'task_status_done' => 'A status of this task is updated to [done]',
+ 'task_reviewed' => 'Reviewed',
  "copyright" => "Copyright © Kunitachi, Hachioji, and Hino's private instruction schools SaKuRa One All Rights Reserved.",
  "info_signup" => "The URL for main registration will be sent to the email address you entered.",
- "already_signup" => "If you have already registered, please log in here to use", ];
+ "already_signup" => "If you have already registered, please log in here to use", 
+ ];
+
