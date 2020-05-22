@@ -109,7 +109,7 @@ class TaskController extends MilestoneController
       $form['type'] = $request->get('type');
       $form['status'] = 'new'; //登録時はnew
       $form['target_user_id'] = $request->get('target_user_id');
-      $form['create_user_id'] = $user->id;
+      $form['create_user_id'] = $user->user_id;
       $form['start_schedule'] = $request->get('start_schedule');
       $form['end_schedule'] = $request->get('end_schedule');
 
