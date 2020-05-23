@@ -370,5 +370,6 @@ return [
   'task_schedule' => '予定',
   'task_remind' => '通知する',
   'notification' => '通知',
+  'homework_request_list' => '宿題要望一覧'
 
 ];

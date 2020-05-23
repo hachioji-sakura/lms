@@ -77,6 +77,22 @@
         <!-- 検索 -->
       </div>
     </div>
+    <div class="card-header">
+      <ul class="nav nav-pills ml-auto float-left mb-2">
+        <li class="nav-item mr-1">
+          <a class="nav-link btn btn-sm btn-default" href="/{{$domain}}/{{$item->id}}/messages">
+            <i class="fas fa-globe-asia"></i>
+            {{__('labels.all')}}
+          </a>
+        </li>
+        <li class="nav-item mr-1">
+          <a class="nav-link btn btn-sm btn-default {{$search_type == "parent_homework_request" ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/messages?search_type=parent_homework_request">
+            <i class="far fa-clipboard"></i>
+            {{__('labels.homework_request_list')}}
+          </a>
+        </li>
+      </ul>
+    </div>
     <div class="card-body p-0">
       @if(count($items) > 0)
       <ul class="products-list product-list-in-card pl-2 pr-2">
@@ -86,6 +102,12 @@
             <div class="col-6 text-truncate">
               <div class="row">
                 <div class="col-12">
+                  @if($item->message_tasks->count() > 0)
+                      <span class="badge badge-primary">
+                        <i class="fa fa-file-alt"></i>
+                        {{$item->message_tasks()->count()}}
+                      </span>
+                  @endif
                   <a href="javascript:void(0)" page_url="/messages/{{$item->id}}/details" page_title="{{$item->title}}" page_form="dialog" title="{{$item->id}}">
                     {{$item->title}}
                   </a>
@@ -130,13 +152,9 @@
               <div class="row">
                 <div class="col-12">
                   @if($item->type == 'homework_request' && $item->create_user->details()->role == 'parent')
-                  <a href="javascript:void(0);" page_form="dialog" page_url="/tasks/create?message_id={{$item->id}}" page_title="{{__('labels.tasks').__('labels.add_button')}}" class="btn btn-outline-primary btn-sm float-left {{$item->message_tasks->count() > 0 ? 'disabled' : ''}}" >
-                    <i class="fa fa-{{$item->message_tasks->count() > 0 ? 'check' : 'plus'}} mr-1"></i>
+                  <a href="javascript:void(0);" page_form="dialog" page_url="/tasks/create?message_id={{$item->id}}" page_title="{{__('labels.tasks').__('labels.add_button')}}" class="btn btn-outline-primary btn-sm float-left" >
+                    <i class="fa fa-plus" mr-1"></i>
                     {{__('labels.tasks').__('labels.add_button')}}
-                    @if($item->message_tasks->count() > 0)
-                        <span class="badge badge-primary">{{$item->message_tasks()->count()}}</span>
-                      </a>
-                    @endif
                   </a>
                   @endif
 

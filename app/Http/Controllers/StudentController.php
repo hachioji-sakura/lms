@@ -1266,7 +1266,7 @@ class StudentController extends UserController
 
  public function message_list(Request $request, $id = null){
     $params = $this->get_param($request, $id);
-    $messages = $this->message_search($request, $id);
+    $messages = $this->message_search($request, $id)->paginate($params['_line']);
     $login_user = $this->login_details($request);
     $fields = [
       'title' => [
@@ -1289,6 +1289,7 @@ class StudentController extends UserController
       'items' => $messages,
       'fields' => $fields,
       'search_list' => $request->get('search_list'),
+      'search_type' => $request->Get('search_type'),
       'id' => $id,
       'enable_create' => $enable_create,
     ];
@@ -1302,7 +1303,7 @@ class StudentController extends UserController
 //    $query = $query->where('parent_message_id','0');
     $query = $this->make_search_query($request, $query, $id);
     $query = $query->orderBy('created_at','desc');
-    $messages = $query->paginate(20);
+    $messages = $query;
     return $messages;
   }
 
@@ -1340,6 +1341,13 @@ class StudentController extends UserController
     }
     if($request->has('search_word')){
       $query = $query->searchWord($request->get('search_word'));
+    }
+    if($request->has('search_type') ){
+      if($request->get('search_type') == "parent_homework_request"){
+        $query = $query->findParentHomeworkRequest();
+      }else{
+        $query = $query->findTypes($request->get('search_type'));
+      }
     }
     return $query;
   }

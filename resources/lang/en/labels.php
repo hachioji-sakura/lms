@@ -365,4 +365,5 @@ return [
   'task_schedule' => 'schedule',
   'task_remind' => 'notify',
   'notification' => 'notification',
+  'homework_request_list' => 'List from parent\'s requests'
 ];

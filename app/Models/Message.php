@@ -27,8 +27,16 @@ class Message extends Comment
                    ->orWhere('create_user_id',$id);
     }
 
+    public function scopeFindParentHomeworkRequest($query){
+      return $query->findTypes('homework_request')->has('create_parents');
+    }
+
+    public function create_parents(){
+      return $this->belongsTo('App\Models\StudentParent','create_user_id','user_id');
+    }
+
     public function message_tasks(){
-      return $this->hasMany('App\Models\Task','message_id','id');
+      return $this->hasMany('App\Models\Task','message_id','id')->where('status','<>','cancel');
     }
 
 }

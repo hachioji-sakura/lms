@@ -75,6 +75,11 @@
                     @endif
                   </div>
                   <div class="col-12 col-md-4 text-truncate">
+                    @if(!empty($item->message_id))
+                    <span class="badge badge-primary">
+                      <i class="fa fa-inbox"></i>
+                    </span>
+                    @endif
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       {{$item->title}}
                     </a>
@@ -97,7 +102,7 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-1">
               <div class="col-12">
                 @component('tasks.components.buttons',[
                   'item' => $item,
