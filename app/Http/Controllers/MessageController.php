@@ -28,7 +28,7 @@ class MessageController extends CommentController
       $user = $this->login_details($request);
       $role = $user->role;
       if( $role == 'manager'){
-        $messages = $this->model()->paginate(20);
+        $messages = $this->model()->paginate($param['_line']);
       }else{
         abort(403);
       }

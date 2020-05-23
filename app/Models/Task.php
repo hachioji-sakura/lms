@@ -37,6 +37,10 @@ class Task extends Milestone
       return $this->belongsTo('App\Models\Milestone', 'milestone_id');
     }
 
+    public function messages(){
+      return $this->belongsTo('App\Models\Message','message_id');
+    }
+
     public function textbooks(){
       return $this->belogsToMany('App\Models\Textbook');
     }

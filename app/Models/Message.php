@@ -27,4 +27,8 @@ class Message extends Comment
                    ->orWhere('create_user_id',$id);
     }
 
+    public function message_tasks(){
+      return $this->hasMany('App\Models\Task','message_id','id');
+    }
+
 }

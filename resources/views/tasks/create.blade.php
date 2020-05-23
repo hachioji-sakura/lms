@@ -7,7 +7,40 @@
     <form method="POST" action="/tasks" id="create_task_form" enctype="multipart/form-data">
     @endif
       @csrf
+      @if(!empty($message))
+      <input type="hidden" name="message_id" value="{{$message->id}}">
+      <div class="row">
+        <div class="col-12">
+          <h3 class="card-title">
+            <label>
+            {{__('labels.original_message')}}
+            </label>
+             <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#original_message"><i class="fas fa-plus"></i></button>
+          </h3>
+        </div>
+      </div>
+      <div class="collapse"  id="original_message">
+        <div class="row mt-2 collpase">
+          <div class="col-12">
+            <label>{{$message->title}}</label>
+            <div class="form-group">
+              {!!nl2br($message->body)!!}
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+      @if($target_students->count() > 1)
+      <label>{{__('labels.target_user')}}</label>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+      <select name="target_user_id" class="form-control"  required="true">
+        @foreach($target_students as $student)
+        <option value="{{$student->user_id}}">{{$student->details()->name()}}</option>
+        @endforeach
+      </select>
+      @else
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      @endif
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
@@ -141,3 +174,26 @@
       </div>
     </form>
   </div>
+  <script>
+  function get_milestones(){
+    var student_id = ($('name=student_id').val())|0
+    service.getAjax(false,'/tasks/get_milestones?student_id='+student_id, milestones,
+      function(result,st,xhr){
+        if(result['status']===200){
+          //ここに成功時の処理
+          var student_id_form = $("select[name='milestone_id']");
+          student_id_form.empty();
+          student_id_form.select2('destroy');
+          $.each(reult['data'], function(id,val){
+            var _option = '<option value="'+id+'">'+val+'</option>'
+          })
+          $()
+        }
+      }、
+      function(xhr,st,err){
+        messageCode = "error";
+        messageParam= "\n"+err.message+"\n"+xhr.responseText;
+        alert("システムエラーが発生しました\n"+messageParam);
+      });
+  }
+  </script>

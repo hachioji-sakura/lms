@@ -129,6 +129,17 @@
             <div class="col-12">
               <div class="row">
                 <div class="col-12">
+                  @if($item->type == 'homework_request' && $item->create_user->details()->role == 'parent')
+                  <a href="javascript:void(0);" page_form="dialog" page_url="/tasks/create?message_id={{$item->id}}" page_title="{{__('labels.tasks').__('labels.add_button')}}" class="btn btn-outline-primary btn-sm float-left {{$item->message_tasks->count() > 0 ? 'disabled' : ''}}" >
+                    <i class="fa fa-{{$item->message_tasks->count() > 0 ? 'check' : 'plus'}} mr-1"></i>
+                    {{__('labels.tasks').__('labels.add_button')}}
+                    @if($item->message_tasks->count() > 0)
+                        <span class="badge badge-primary">{{$item->message_tasks()->count()}}</span>
+                      </a>
+                    @endif
+                  </a>
+                  @endif
+
                   @if($enable_create)
                   <a href="javascript:void(0);" page_form="dialog" page_url="/messages/{{$item->id}}/reply" page_title="{{__('labels.reply')}}" class="btn btn-primary btn-sm float-right">
                     <i class="fa fa-reply mr-1"></i>{{__('labels.reply')}}

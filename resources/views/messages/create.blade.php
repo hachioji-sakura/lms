@@ -53,14 +53,11 @@
           </div>
         </div>
       @endif
-      <input type="hidden" name="type" value="information">
-      <!--
-      種別は用途が曖昧なためいったん出さない
       <div class ="col-6">
         <label>{{__('labels.message_type')}}</label>
         @if($_reply == false)
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <select name="type" class="form-control">
+        <select name="type" name="type" class="form-control" required>
           @foreach($message_type as $key => $value)
             <option value="{{$key}}">{{$value}}</option>
           @endforeach
@@ -70,7 +67,6 @@
         <input type="hidden" name="type" value="{{$item->type}}">
         @endif
       </div>
-    -->
       <div class="col-12 mt-2">
         <div class="form-group">
           <label>{{__('labels.body')}}</label>

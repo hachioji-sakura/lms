@@ -7,6 +7,8 @@ use App\Models\Task;
 use App\Models\TaskComment;
 use App\Models\Review;
 use App\Models\Student;
+use App\Models\StudentParent;
+use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -39,8 +41,18 @@ class TaskController extends MilestoneController
     {
         //
         $param = $this->get_param($request);
-        $user = $this->login_details($request);
-        $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
+        if($request->has('message_id') && is_numeric($request->get('message_id')) ){
+          $message = Message::find($request->get('message_id'));
+          $param['message'] = $message;
+          $target_parent = StudentParent::where( 'user_id', $message->create_user_id)->first();
+          $target_students = Student::findChild($target_parent->id)->get();
+          $param['target_students'] = $target_students;
+          $param['target_student'] = $target_students->first();
+        }elseif($request->has('student_id') && is_numeric($request->get('student_id'))){
+          $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
+        }else {
+          $param['target_students'] = Student::all()->get();
+        }
         $param['_edit'] = false;
         return view($this->domain . '.create',$param);
     }
@@ -106,6 +118,7 @@ class TaskController extends MilestoneController
       $form['title'] = $request->get('title');
       $form['body'] = $request->get('body');
       $form['milestone_id'] = $request->get('milestone_id');
+      $form['message_id'] = $request->get('message_id');
       $form['type'] = $request->get('type');
       $form['status'] = 'new'; //登録時はnew
       $form['target_user_id'] = $request->get('target_user_id');
