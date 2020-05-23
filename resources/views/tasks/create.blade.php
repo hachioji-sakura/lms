@@ -39,7 +39,7 @@
         @endforeach
       </select>
       @else
-      <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      <input type="hidden" name="target_user_id" value="{{$target_students->first()->user_id}}">
       @endif
       <div class="row mt-2">
         <div class="col-12">
@@ -82,7 +82,7 @@
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <select name="milestone_id" class="form-control select2" width="100%">
               <option value=" ">{{__('labels.selectable')}}</option>
-              @foreach($target_student->target_milestone as $milestone)
+              @foreach($target_students->first()->target_milestone as $milestone)
                 <option value="{{$milestone->id}}" {{$_edit && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
               @endforeach
             </select>

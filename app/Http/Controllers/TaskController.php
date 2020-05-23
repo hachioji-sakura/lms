@@ -47,9 +47,8 @@ class TaskController extends MilestoneController
           $target_parent = StudentParent::where( 'user_id', $message->create_user_id)->first();
           $target_students = Student::findChild($target_parent->id)->get();
           $param['target_students'] = $target_students;
-          $param['target_student'] = $target_students->first();
         }elseif($request->has('student_id') && is_numeric($request->get('student_id'))){
-          $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
+          $param['target_students'] = Student::where('id', $request->get('student_id'));
         }else {
           $param['target_students'] = Student::all()->get();
         }
