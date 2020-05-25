@@ -123,7 +123,7 @@
               <small class="text-muted float-right">
                 <i class="fa fa-clock"></i>
                 {{$item->create_user->details()->name()}}/
-                {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:m',strtotime($item->created_at))}}
+                {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
               </small>
             </div>
           </li>

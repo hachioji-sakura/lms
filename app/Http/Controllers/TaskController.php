@@ -203,7 +203,7 @@ class TaskController extends MilestoneController
 
         return $this->api_response(200, '', '', $item);
       }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
-      if($this->is_success_response($res)){
+      if($this->is_success_response($res) && $request->get('mail_send') == "yes"){
         $this->sendmail($res);
       }
       return $res;
