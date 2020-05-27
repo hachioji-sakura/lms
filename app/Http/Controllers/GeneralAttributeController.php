@@ -71,8 +71,8 @@ class GeneralAttributeController extends UserController
       if($this->is_manager_or_teacher($user->role)!==true){
         abort(403);
       }
-      if(!empty($request->get('key'))){
-        $attribute_key = $request->get('key');
+      if(!empty($request->get('select_key'))){
+        $attribute_key = $request->get('select_key');
       }
       $select_key = GeneralAttribute::findKey('keys')->findVal($attribute_key)->first();
       if(!isset($select_key)){
@@ -81,7 +81,8 @@ class GeneralAttributeController extends UserController
       $keys = GeneralAttribute::findKey('keys')->get()->toArray();
       $ret = $this->get_common_param($request);
       $ret['keys'] = $keys;
-      $ret['select_key'] = $request->get('select_key');
+      $ret['select_key'] = $select_key->attribute_value;
+      $ret['select_key_name'] = $select_key->attribute_name;
       return $ret;
     }
     private function search(Request $request, $attribute_key)
