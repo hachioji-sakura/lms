@@ -344,3 +344,6 @@ Route::put('tasks/{id}/done', 'TaskController@done');
 Route::get('tasks/{id}/review', 'TaskController@show_review_page');
 Route::put('tasks/{id}/review', 'TaskController@review');
 Route::post('task_comments/create', 'TaskCommentController@store');
+
+Route::resource('curriculums','CurriculumController');
+Route::resource('curriculum_tags','CarriculamTagController');
