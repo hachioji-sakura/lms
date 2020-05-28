@@ -340,11 +340,15 @@ EOT;
     }
     $form['lecture_id'] = $lecture_id;
     $data = [];
+
+    if(array_key_exists('enable_end_date', $form)){
+      $data['enable_end_date'] = null;
+    }
+
     foreach($update_fields as $field){
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
-
     if(isset($data['from_time_slot']) && isset($data['to_time_slot'])){
       //course_minutesは、time_slotから補完
       $data['course_minutes'] = intval(strtotime('2000-01-01 '.$data['to_time_slot']) - strtotime('2000-01-01 '.$data['from_time_slot']))/60;

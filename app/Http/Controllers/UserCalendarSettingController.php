@@ -293,6 +293,7 @@ class UserCalendarSettingController extends UserCalendarController
           $form['students'][] = $student;
         }
       }
+      
       return $form;
     }
 
