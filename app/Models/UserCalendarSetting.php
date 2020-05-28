@@ -342,7 +342,7 @@ EOT;
     $data = [];
 
     if(array_key_exists('enable_end_date', $form)){
-      $data['enable_end_date'] = '';
+      $data['enable_end_date'] = null;
     }
 
     foreach($update_fields as $field){
