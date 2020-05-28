@@ -54,7 +54,7 @@
           <i class="fa fa-calendar-minus"></i>
         </a>
         @elseif($setting->status=='new')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/confirm" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/remind" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
           <i class="fa fa-envelope"></i>
         </a>
         @endif
