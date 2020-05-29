@@ -111,7 +111,9 @@
               </div>
               <div class="col-12">
                 @if($setting->work!=9)
+                  @if($setting->has_enable_member()==false)
                   <small class="ml-1 mr-1 text-sm text-danger">{{__('messages.error_user_calendar_settings_no_member')}}</small>
+                  @endif
                   @foreach($setting->members as $member)
                     @if($member->user->details()->role==="student")
                       <span class="mr-2">
