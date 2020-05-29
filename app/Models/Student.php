@@ -940,7 +940,9 @@ EOT;
     $conflict_calendar_members = [];
 
     $this->update(['status' => 'regular']);
-    $calendars = UserCalendar::rangeDate($this->recess_end_date)
+    //休会終了日の次の日からのカレンダーを再開する
+    $restart_date = date("Y-m-d", strtotime("+1 day ".$this->recess_end_date));
+    $calendars = UserCalendar::rangeDate($restart_date)
                   ->findUser($this->user_id)
                   ->findStatuses(['fix','cancel'])
                   ->get();
