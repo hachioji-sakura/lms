@@ -365,4 +365,6 @@ return [
   'task_schedule' => 'schedule',
   'task_remind' => 'notify',
   'notification' => 'notification',
+  'curriculums' => 'curriculums',
+  'curriculums_name' => 'Curriculums Name',
 ];

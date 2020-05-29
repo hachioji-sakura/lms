@@ -3,82 +3,68 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Curriculum;
+use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
 
-class SubjectController extends Controller
+class SubjectController extends CurriculumController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+  public $domain = 'subjects';
+  public function model(){
+    return Subject::query();
+  }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+  public function create(Request $request){
+    $param = $this->get_param($request);
+    $param['_edit'] = false;
+    return view($this->domain.'.create')->with($param);
+  }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+  public function _store(Request $request)
+  {
+      //
+      $form = $this->create_form($request);
+      $item = $this->model();
+      foreach($form as $key=>$val){
+        $item = $item->where($key,$val);
+      }
+      $item = $item->first();
+      if(isset($item)){
+        return $this->error_response('すでに登録済みです');
+      }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+      $res = $this->transaction($request, function() use ($request, $form){
+        $item = $this->model()->create($form);
+        return $this->api_response(200, '', '', $item);
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+  }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+  public function edit(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    return view($this->domain.'.create')->with($param);
+  }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+  public function _update(Request $request, $id)
+  {
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
     }
+    $res =  $this->transaction($request, function() use ($request, $id){
+      $form = $this->update_form($request);
+      $item = $this->model()->where('id', $id)->first();
+      $is_file_delete = false;
+      if($request->get('upload_file_delete')==1){
+        $is_file_delete = true;
+      }
+      $item->update($form);
+      return $this->api_response(200, '', '', $item);
+    }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+
 }

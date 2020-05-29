@@ -346,4 +346,6 @@ Route::put('tasks/{id}/review', 'TaskController@review');
 Route::post('task_comments/create', 'TaskCommentController@store');
 
 Route::resource('curriculums','CurriculumController');
-Route::resource('curriculum_tags','CarriculamTagController');
+Route::get('curriculums/{id}/delete', 'CurriculumController@delete');
+Route::resource('subjects','SubjectController');
+Route::get('subjects/{id}/delete', 'SubjectController@delete');

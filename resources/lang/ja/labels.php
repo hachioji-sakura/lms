@@ -370,5 +370,6 @@ return [
   'task_schedule' => '予定',
   'task_remind' => '通知する',
   'notification' => '通知',
-
+  'curriculums' => '単元',
+  'curriculums_name' => '単元名',
 ];

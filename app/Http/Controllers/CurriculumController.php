@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Curriculum;
-use App\Models\GeneralAttribute;
+use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
+
 
 class CurriculumController extends MilestoneController
 {
@@ -30,9 +32,7 @@ class CurriculumController extends MilestoneController
 
     public function create(Request $request){
       $param = $this->get_param($request);
-      //GeneralAttibuteを使わないならCurriculumTagsとのリレーションテーブルを持たせる？？
-      $subjects = GeneralAttribute::where('attribute_key','charge_subject')->get();
-      dd($subjects);
+      $subjects = Subject::get();
       $param['subjects'] = $subjects;
       $param['_edit'] = false;
       return view($this->domain.'.create')->with($param);
@@ -48,12 +48,10 @@ class CurriculumController extends MilestoneController
     public function _store(Request $request)
     {
         //
-
         $form = $this->create_form($request);
-
         $item = $this->model();
         foreach($form as $key=>$val){
-          $item = $item->where($key, $val);
+          $item = $item->where($key,$val);
         }
         $item = $item->first();
         if(isset($item)){
@@ -62,22 +60,17 @@ class CurriculumController extends MilestoneController
 
         $res = $this->transaction($request, function() use ($request, $form){
           $item = $this->model()->create($form);
-          $item = $this->model()->curriculum_tags()->create();
+          $item->subjects()->attach($request->get('subject_ids'));
           return $this->api_response(200, '', '', $item);
         }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
         return $res;
-
     }
 
     public function create_form(Request $request){
-      $form['curriculum'] = [
-        'name' => $request->get('name')
+      $form = [
+        'name' => $request->get('name'),
+        'create_user_id' => Auth::user()->id,
       ];
-      foreach($request->get('subjects') as $subject_name){
-
-      }
-
-
       return $form;
     }
 
@@ -87,9 +80,11 @@ class CurriculumController extends MilestoneController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function _show($id)
+    public function show( Request $request, $id = null)
     {
         //
+        $param = $this->get_param($request, $id);
+        return view($this->domain.'.details')->with($param);
     }
 
     /**
@@ -98,10 +93,14 @@ class CurriculumController extends MilestoneController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function _edit($id)
-    {
-        //
-    }
+     public function edit(Request $request, $id)
+     {
+       $param = $this->get_param($request, $id);
+       $subjects = Subject::get();
+       $param['subjects'] = $subjects;
+       $param['_edit'] = true;
+       return view($this->domain.'.create')->with($param);
+     }
 
     /**
      * Update the specified resource in storage.
@@ -110,10 +109,42 @@ class CurriculumController extends MilestoneController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function _update(Request $request, $id)
-    {
-        //
-    }
+     public function _update(Request $request, $id)
+     {
+       $res = $this->save_validate($request);
+       if(!$this->is_success_response($res)){
+         return $res;
+       }
+
+       $res =  $this->transaction($request, function() use ($request, $id){
+         $form = $this->update_form($request);
+         $item = $this->model()->where('id', $id)->first();
+         $is_file_delete = false;
+         if($request->get('upload_file_delete')==1){
+           $is_file_delete = true;
+         }
+         $item->update_curriculum($form,$request->get('subject_ids'));
+         return $this->api_response(200, '', '', $item);
+       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+       return $res;
+     }
+
+     public function save_validate(Request $request)
+     {
+       $form = $request->all();
+       //保存時にパラメータをチェック
+       if(empty($form['name']) ){
+         return $this->bad_request('リクエストエラー', '名前='.$form['name']);
+       }
+       return $this->api_response(200, '', '');
+     }
+
+     public function update_form(Request $request){
+       $form = [
+         'name' => $request->get('name'),
+       ];
+       return $form;
+     }
 
     /**
      * Remove the specified resource from storage.
@@ -121,8 +152,20 @@ class CurriculumController extends MilestoneController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function _destroy($id)
+
+     public function delete(Request $request, $id){
+       $param = $this->get_param($request,$id);
+       return view($this->domain.'.delete')->with($param);
+     }
+
+    public function _delete(Request $request, $id)
     {
-        //
+      $form = $request->all();
+      $res = $this->transaction($request, function() use ($request, $form, $id){
+        $item = $this->model()->find($id);
+        $item->dispose();
+        return $this->api_response(200, '', '',$item);
+      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 }
