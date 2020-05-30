@@ -22,8 +22,7 @@
   </div>
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item,'attributes' => $attributes]) @endcomponent
   <?php
-    $is_label = $_edit;
-    if(isset($user) && $user->role=='manager') $is_label = false;
+    $is_label = false;
   ?>
   @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
   @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent

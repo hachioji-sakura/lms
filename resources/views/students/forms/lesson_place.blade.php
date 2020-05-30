@@ -1,4 +1,4 @@
-<div class="col-12">
+<div class="col-12 mt-2">
   <div class="form-group">
     <label for="lesson_place" class="w-100">
       ご希望の校舎

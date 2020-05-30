@@ -180,19 +180,24 @@ class TrialController extends UserCalendarController
     if(!isset($user)) {
       abort(403);
     }
-
-    if($this->is_manager($user->role)!=true){
-      abort(403);
-    }
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       if(!isset($item)){
         abort(404);
       }
+      if($this->is_manager($user->role)!=true){
+        if($this->is_parent($user->role)==true && $user->id != $item->student_parent_id){
+          abort(403);
+        }
+      }
       $ret['item'] = $item->details();
     }
     else {
+
+      if($this->is_manager($user->role)!=true){
+        abort(403);
+      }
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
