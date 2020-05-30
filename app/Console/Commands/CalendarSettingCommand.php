@@ -71,6 +71,7 @@ class CalendarSettingCommand extends Command
       $request = new Request();
       $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
+          if($setting->user->status=='unsubscribe') continue;
           if($setting->has_enable_member()==false) continue;
 
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
@@ -88,7 +89,7 @@ class CalendarSettingCommand extends Command
               $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));
               if(!$this->is_success_response($result)){
                 $this->info($result["message"]."\n".$result["description"]);
-                if($result['message'] != 'already_registered'){
+                if($result['message'] != 'already_registered' && $result['message'] != 'unsubscribe'){
                   $this->info("繰り返しスケジュール登録エラー:\n".$result["message"]."\n".$result["description"]);
                   return false;
                 }
