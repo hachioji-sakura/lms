@@ -88,7 +88,7 @@ class CalendarSettingCommand extends Command
               $result = $setting->add_calendar(date('Y-m-d', strtotime($date)));
               if(!$this->is_success_response($result)){
                 $this->info($result["message"]."\n".$result["description"]);
-                if($result['message'] != 'already_registered'){
+                if($result['message'] != 'already_registered' && $result['message'] != 'unsubscribe'){
                   $this->info("繰り返しスケジュール登録エラー:\n".$result["message"]."\n".$result["description"]);
                   return false;
                 }

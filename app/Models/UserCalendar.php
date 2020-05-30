@@ -715,7 +715,7 @@ EOT;
       }
       if($target_user->status=='unsubscribe'){
         $controller = new Controller;
-        return $controller->error_response("この予定主催者は退職（退会）しています");
+        return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
     }
 
