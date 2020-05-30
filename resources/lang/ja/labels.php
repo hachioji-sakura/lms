@@ -335,7 +335,8 @@ return [
   'schedule_start_hope_date' => '授業開始希望日',
   'schedule_start_date' => '授業開始日',
   'schedule_end_date' => '授業終了日',
-  'verification_code' => '認証コード',  'sheat' => '座席',
+  'verification_code' => '認証コード',
+  'sheat' => '座席',
   'result' => '結果',
   'reset' => 'リセット',
   'message_list' => 'メッセージ一覧',
@@ -369,5 +370,7 @@ return [
   'new_button' => '停止',
   'active' => 'アクティブ',
   'task_schedule' => '予定',
+  'task_remind' => '通知する',
+  'notification' => '通知',
 
 ];

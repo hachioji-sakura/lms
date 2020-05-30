@@ -76,7 +76,7 @@ class TaskController extends MilestoneController
           }
           return $this->api_response(200, '', '', $item);
         }, __('messages.info_add'), __FILE__, __FUNCTION__, __LINE__ );
-        if($this->is_success_response($res)){
+        if($this->is_success_response($res) && $request->get('mail_send') == "yes"){
           $this->sendmail($res);
         }
         return $res;
@@ -109,7 +109,7 @@ class TaskController extends MilestoneController
       $form['type'] = $request->get('type');
       $form['status'] = 'new'; //登録時はnew
       $form['target_user_id'] = $request->get('target_user_id');
-      $form['create_user_id'] = $user->id;
+      $form['create_user_id'] = $user->user_id;
       $form['start_schedule'] = $request->get('start_schedule');
       $form['end_schedule'] = $request->get('end_schedule');
 
@@ -203,7 +203,7 @@ class TaskController extends MilestoneController
 
         return $this->api_response(200, '', '', $item);
       }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
-      if($this->is_success_response($res)){
+      if($this->is_success_response($res) && $request->get('mail_send') == "yes"){
         $this->sendmail($res);
       }
       return $res;

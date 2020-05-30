@@ -40,11 +40,11 @@
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter"></i>
           </a>
-          <!--
+          {{--
           <div class="paginate">
             {{$tasks->appends(Request::query())->links('components.paginate')}}
           </div>
-          -->
+          --}}
           <!-- 検索 -->
         </div>
       </div>
@@ -123,7 +123,7 @@
               <small class="text-muted float-right">
                 <i class="fa fa-clock"></i>
                 {{$item->create_user->details()->name()}}/
-                {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:m',strtotime($item->created_at))}}
+                {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
               </small>
             </div>
           </li>
