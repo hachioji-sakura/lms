@@ -1318,14 +1318,32 @@ class Trial extends Model
     Trial::where('id', $this->id)->update(['status' => 'entry_contact']);
     return $ask;
   }
-  public function hope_to_join($is_commit=false, $schedule_start_hope_date){
+  public function hope_to_join($is_commit=false, $form){
     if($is_commit==false){
       //ステータス：入会希望なし
       Trial::where('id', $this->id)->update(['status' => 'entry_cancel']);
     }
     else {
       //ステータス：入会希望あり
-      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $schedule_start_hope_date]);
+      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $form['schedule_start_hope_date']]);
+      //通塾可能曜日・時間帯タグ
+      $lesson_weeks = config('attribute.lesson_week');
+      foreach($lesson_weeks as $lesson_week=>$name){
+        $tag_names[] = 'lesson_'.$lesson_week.'_time';
+      }
+      foreach($tag_names as $tag_name){
+        if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+          TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        }
+        else {
+          TrialTag::clearTags($this->id, $tag_name);
+        }
+      }
+      $tag_names = ['lesson_week_count', 'course_minutes'];
+      foreach($tag_names as $tag_name){
+        if(empty($form[$tag_name])) $form[$tag_name] = '';
+        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
     }
     return true;
   }

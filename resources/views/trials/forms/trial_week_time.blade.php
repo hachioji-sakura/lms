@@ -24,10 +24,10 @@
             <th class="p-1 text-center bg-gray text-sm lesson_week_time_label">{{$name}}</th>
             @foreach($attributes['lesson_week'] as $week_code => $week_name)
             <td class="p-1 text-center border-right" id="lesson_{{$week_code}}_time_{{$index}}_name">
-              @if(isset($item) && isset($item->student->user) && $item->student->user->has_tag('lesson_'.$week_code.'_time', $index)===true)
+              @if(isset($item) && $item->has_tag('lesson_'.$week_code.'_time', $index)===true)
                 〇
               @else
-                {{$item->student->user->has_tag('lesson_'.$week_code.'_time', $index)}}
+                {{$item->has_tag('lesson_'.$week_code.'_time', $index)}}
               @endif
             </td>
             @endforeach

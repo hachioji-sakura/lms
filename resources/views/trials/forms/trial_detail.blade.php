@@ -17,6 +17,7 @@
           </span>
         </div>
       </div>
+      @if($item->is_trial_lesson_complete()==true)
       <div class="col-sm-6 border-right">
         <div class="description-block">
           <h5 class="description-header">入会希望に関する連絡</h5>
@@ -41,6 +42,7 @@
           </span>
         </div>
       </div>
+      @endif
     </div>
   </div>
 
@@ -60,12 +62,16 @@
             @endforeach
             <span class="text-xs mx-2">
               <small class="badge badge-info mt-1 mr-1">
-                週{{$item->student->tag_name("lesson_week_count")}}回
+                @foreach($item["tagdata"]['lesson_week_count'] as $label)
+                週{{$label}}回
+                @endforeach
               </small>
             </span>
             <span class="text-xs mx-2">
               <small class="badge badge-info mt-1 mr-1">
-                {{$item->student->tag_name("course_minutes")}}授業
+                @foreach($item["tagdata"]['course_minutes'] as $label)
+                  {{$label}}授業
+                @endforeach
               </small>
             </span>
           </span>

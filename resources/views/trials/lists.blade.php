@@ -172,6 +172,17 @@
         </a>
       </li>
       <li class="nav-item">
+        <a href="/{{$domain}}?list=reapply" class="nav-link @if($list=="reapply") active @endif">
+          <i class="fa fa-calendar-alt nav-icon"></i>
+          <p>
+            希望日変更依頼中
+            @if($reapply_count > 0)
+            <span class="badge badge-secondary right">{{$reapply_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
         <a href="/{{$domain}}?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>

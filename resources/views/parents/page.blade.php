@@ -156,15 +156,15 @@
                   <div class="col-6 float-left mt-1">
                     @if($charge_student->student->trial()!=null)
                     <a href="javascript:void(0);"
-                    page_title="体験授業申し込み" page_form="dialog"
+                    page_title="体験申込状況" page_form="dialog"
                     page_url="/trials/{{$charge_student->student->trial()->id}}/dialog?student_parent_id={{$item->id}}"
-                    role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                    role="button" class="btn btn-warning btn-sm btn-flat btn-block">
                       <i class="fa fa-check-circle mr-1"></i>
                       体験申込状況
                     </a>
                     @else
                     <a href="javascript:void(0);"
-                    page_title="体験申込状況" page_form="dialog"
+                    page_title="体験授業申し込み" page_form="dialog"
                     page_url="/parents/{{$item->id}}/trial_request?student_id={{$charge_student->id}}"
                     role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-hand-point-right mr-1"></i>

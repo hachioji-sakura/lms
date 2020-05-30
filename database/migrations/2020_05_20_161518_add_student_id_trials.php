@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use App\Models\Trial;
+use App\Models\TrialStudent;
 
 class AddStudentIdTrials extends Migration
 {
@@ -17,12 +18,10 @@ class AddStudentIdTrials extends Migration
         Schema::table('trials', function (Blueprint $table) {
           $table->integer('student_id')->index('index_student_id')->comment('生徒ID')->after('student_parent_id');
         });
-        $trials = Trial::all();
+        $trial_students = TrialStudent::all();
         //TODO いずれtrial_studentsテーブルを削除する
-        foreach($trials as $trial){
-          foreach($trial->trial_students as $s){
-            $trial->update(['student_id' => $s->student_id]);
-          }
+        foreach($trial_students as $s){
+          Trial::where('id', $s->trial_id)->update(['student_id' => $s->student_id]);
         }
     }
 

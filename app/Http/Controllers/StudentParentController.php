@@ -321,9 +321,8 @@ class StudentParentController extends TeacherController
       if(!$request->has('student_id')) abort(403);
       $student = Student::where('id', $request->get('student_id'))->first();
       if(!isset($student)) abort(403);
-      $param = $this->get_param($request, $id);
       $edit = false;
-
+      $param = $this->get_common_param($request, false);
       //登録申し込み情報
       $trial = $student->trial();
       if($trial!=null){
@@ -335,9 +334,17 @@ class StudentParentController extends TeacherController
       }
       $param['student1'] = $student;
       $param['student_parent_id'] = $id;
-      return view('trials.trial_request', [
-        '_edit' => $edit])
-        ->with($param);
+      if(isset($trial->id) && $trial->status=='reapply'){
+        return view('trials.edit_candidate_date', [
+          '_edit' => $edit])
+          ->with($param);
+      }
+      else if(!isset($trial->id) || $trial->status=='new'){
+        return view('trials.trial_request', [
+          '_edit' => $edit])
+          ->with($param);
+      }
+      abort(403);
     }
     public function trial_request(Request $request, $id)
     {

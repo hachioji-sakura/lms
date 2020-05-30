@@ -38,26 +38,38 @@
           </div>
           <script>
           function status_radio_change(){
-            console.log("status_radio_change");
             var is_cancel = $('input[type="radio"][name="status"][value="cancel"]').prop("checked");
-            $("#schedule_start_hope_date").collapse("hide");
             if(is_cancel){
+              console.log("status_radio_change:hide");
               $("#schedule_start_hope_date").collapse("hide");
             }
             else {
+              console.log("status_radio_change:show");
               $("#schedule_start_hope_date").collapse("show");
             }
           }
           </script>
-          <div class="col-12 mt-2 collapse" id="schedule_start_hope_date">
+        </div>
+        <div class="row collapse" id="schedule_start_hope_date">
+          <?php
+          $trial = $item->get_target_model_data();
+          ?>
+          <div class="col-12 mb-2">
               <label for="start_date" class="w-100">
                 {{__('labels.schedule_start_hope_date')}}
                 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
               </label>
               <div class="input-group">
-                <input type="text" name="schedule_start_hope_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}">
+                <input type="text" name="schedule_start_hope_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}" minvalue="{{date('Y/m/d')}}"
+                @if(isset($trial) && !empty($trial->schedule_start_hope_date))
+                  value ="{{date('Y/m/d', strtotime($trial->schedule_start_hope_date))}}"
+                @endif
+                >
               </div>
           </div>
+          @component('students.forms.lesson_week_count', ['_edit'=>true, 'item'=>$trial, 'attributes' => $attributes]) @endcomponent
+          @component('students.forms.course_minutes', ['_edit'=>true, 'item'=>$trial, '_teacher' => false, 'attributes' => $attributes]) @endcomponent
+          @component('students.forms.work_time', ['_edit'=>true, 'item'=>$trial, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
         </div>
     		<div class="row">
     			<div class="col-12 mb-1">
@@ -74,6 +86,7 @@
 <script>
 $(function(){
   base.pageSettinged("ask_hope_to_join", null);
+  status_radio_change();
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     var _confirm = $(this).attr("confirm");

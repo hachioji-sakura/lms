@@ -29,23 +29,6 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('lesson_week_form_v2')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                次へ
-                <i class="fa fa-arrow-circle-right ml-1"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
           @yield('subject_form')
           <div class="row">
             <div class="col-12 mb-1">
@@ -103,6 +86,7 @@
             <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
             <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
           </div>
+          {{--
           <div class="row">
             <div class="col-12 bg-info p-2 pl-4 mb-4">
               <i class="fa fa-calendar-alt mr-1"></i>
@@ -113,6 +97,7 @@
             <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
             <div class="col-6 p-3"><span id="course_minutes_name"></span></div>
           </div>
+          --}}
           <div class="row">
             <div class="col-12 bg-info p-2 pl-4 subject_confirm">
               <i class="fa fa-pen-square mr-1"></i>

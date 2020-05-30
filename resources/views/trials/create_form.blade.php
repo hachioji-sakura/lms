@@ -10,6 +10,7 @@
     if(isset($user) && $user->role=='manager') $is_label = false;
   ?>
   @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -25,6 +26,17 @@
     if(isset($user) && $user->role=='manager') $is_label = false;
   ?>
   @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+</div>
+@endsection
+
+@section('candidate_form')
+<div class="row">
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-file-invoice mr-1"></i>
+    体験授業希望日時変更のお願い
+  </div>
+  @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>false, 'item'=>$item,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -48,18 +60,6 @@
 </div>
 @endsection
 
-@section('lesson_week_form_v2')
-<div class="row">
-  <div class="col-12 bg-info p-2 pl-4 mb-4">
-    <i class="fa fa-calendar-alt mr-1"></i>
-    通塾スケジュールにつきまして
-  </div>
-  @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => false, 'attributes' => $attributes]) @endcomponent
-  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
-</div>
-@endsection
-
 @section('lesson_week_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
@@ -69,7 +69,6 @@
   @component('students.forms.lesson_week_count', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => false, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
-  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
