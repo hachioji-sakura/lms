@@ -714,7 +714,8 @@ EOT;
         $status = 'cancel';
       }
       if($target_user->status=='unsubscribe'){
-        return $this->error_response("この予定主催者は退職（退会）しています");
+        $controller = new Controller;
+        return $controller->error_response("この予定主催者は退職（退会）しています");
       }
     }
 
