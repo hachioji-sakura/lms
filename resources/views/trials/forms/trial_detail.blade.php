@@ -60,20 +60,26 @@
               </small>
             </span>
             @endforeach
-            <span class="text-xs mx-2">
-              <small class="badge badge-info mt-1 mr-1">
-                @foreach($item["tagdata"]['lesson_week_count'] as $label)
-                週{{$label}}回
-                @endforeach
-              </small>
-            </span>
-            <span class="text-xs mx-2">
-              <small class="badge badge-info mt-1 mr-1">
-                @foreach($item["tagdata"]['course_minutes'] as $label)
+            @foreach($item["tagdata"]['lesson_week_count'] as $label)
+              @if(!empty($label))
+              <span class="text-xs mx-2">
+                <small class="badge badge-info mt-1 mr-1">
+                  週{{$label}}回
+                </small>
+              </span>
+              @endif
+            @endforeach
+
+            @foreach($item["tagdata"]['course_minutes'] as $label)
+              @if(!empty($label))
+              <span class="text-xs mx-2">
+                <small class="badge badge-info mt-1 mr-1">
                   {{$label}}授業
-                @endforeach
-              </small>
-            </span>
+                </small>
+              </span>
+              @endif
+            @endforeach
+
           </span>
         </div>
         <div class="description-block">
