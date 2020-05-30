@@ -158,7 +158,7 @@
                     <a href="javascript:void(0);"
                     page_title="体験申込状況" page_form="dialog"
                     page_url="/trials/{{$charge_student->student->trial()->id}}/dialog?student_parent_id={{$item->id}}"
-                    role="button" class="btn btn-warning btn-sm btn-flat btn-block">
+                    role="button" class="btn btn-danger btn-sm btn-flat btn-block">
                       <i class="fa fa-check-circle mr-1"></i>
                       体験申込状況
                     </a>
