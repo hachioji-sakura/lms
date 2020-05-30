@@ -705,8 +705,9 @@ EOT;
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
 
     $status = 'new';
-    if($form['work']==9) $status = 'fix';
-    $target_user = User::where('id', $form['target_user_id'])->first();
+    if(isset($form['work']) && $form['work']==9) $status = 'fix';
+    $target_user = null;
+    if(isset($form['target_user_id']) && $form['target_user_id']>0) $target_user = User::where('id', $form['target_user_id'])->first();
     if(isset($target_user)){
       //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
       $target_user = $target_user->details();

@@ -198,6 +198,7 @@ class UserCalendarSettingController extends UserCalendarController
           abort(400, "存在しない講師");
         }
         $form['user_id'] = $manager->user_id;
+        $form['target_user_id'] = $manager->user_id;
       }
       $form['course_type'] = $schedule_type;
       if($schedule_type=='other'){
@@ -293,7 +294,7 @@ class UserCalendarSettingController extends UserCalendarController
           $form['students'][] = $student;
         }
       }
-      
+
       return $form;
     }
 
@@ -646,17 +647,16 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function _store(Request $request)
     {
-      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
-        $setting = UserCalendarSetting::add($form);
-        if($setting != null){
+        $res = UserCalendarSetting::add($form);
+        if($this->is_success_response($res)==true){
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
             foreach($form['students'] as $student){
               $setting->memberAdd($student->user_id, $form['create_user_id']);
             }
           }
-          $setting = $setting->details();
+          $setting = $res["data"]->details();
           $is_sendmail = false;
           if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
             $is_sendmail = true;
@@ -668,7 +668,9 @@ class UserCalendarSettingController extends UserCalendarController
           }
           $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
-        return $this->api_response(200, '', '', $setting);
+        return $res;
+        $res = $this->transaction($request, function() use ($request){
+
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
@@ -940,7 +942,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
         else {
           foreach($members as $member){
-            $member->status_update($status, $_remark, $member_user_id);
+            $member->status_update($status, $_remark, $param['user']->user_id);
             break;
           }
         }
