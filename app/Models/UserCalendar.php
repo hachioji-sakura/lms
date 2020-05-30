@@ -756,8 +756,8 @@ EOT;
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
-  public function dispose($login_user_id){
-    if($this->status!='new'){
+  public function dispose($login_user_id, $is_send_mail=true){
+    if($this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
     //事務システム側を先に削除
