@@ -71,7 +71,7 @@ class CalendarSettingCommand extends Command
       $request = new Request();
       $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
-          if($setting->user->status=='unsubscribe') continue;
+          if($setting->user->details()->status=='unsubscribe') continue;
           if($setting->has_enable_member()==false) continue;
 
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
@@ -81,6 +81,7 @@ class CalendarSettingCommand extends Command
           if(!empty($settng->enable_end_date)) $e = strtotime($settng->enable_end_date);
           foreach($dates as $date => $val){
             $d = strtotime($date);
+            $this->info($d.':'.$s.':'.$e);
             if(empty($date)) continue;
             if($e!=null && $e < $d) continue; //設定終了済み
             if($s!=null && $s > $d) continue; //設定開始前
