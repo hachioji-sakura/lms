@@ -534,8 +534,8 @@ class TrialController extends UserCalendarController
       $form['create_user_id'] = $user->user_id;
       //カレンダーステータス変更
       $trial = Trial::where('id', $id)->first();
-      $setting = $trial->to_calendar_setting($form, $form['calendar_id']);
-      return $this->api_response(200, '', '', $setting);
+      $res = $trial->to_calendar_setting($form, $form['calendar_id']);
+      return $res;
     }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }

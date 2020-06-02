@@ -723,8 +723,12 @@ class Trial extends Model
       if(!isset($form[$field])) continue;
       $calendar_setting[$field] = $form[$field];
     }
+    $setting = null;
     if($form['action'] == 'new'){
-      $setting = UserCalendarSetting::add($calendar_setting);
+      $res = UserCalendarSetting::add($calendar_setting);
+      if($this->is_success_response($res)){
+        $setting = $res['data'];
+      }
     }
     else {
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
@@ -732,7 +736,7 @@ class Trial extends Model
     if(isset($setting)){
       $setting->memberAdd($this->student->user_id, $form['create_user_id']);
     }
-    return $setting;
+    return $this->api_response(200, '', '', $setting);
   }
   private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
     $_start = $trial_start_time;

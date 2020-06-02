@@ -109,6 +109,9 @@
                 </small>
                 @endif
               </div>
+              <div class="col-12 text-sm">
+                  設定有効期間：{{$setting->enable_date()}}
+              </div>
               <div class="col-12">
                 @if($setting->work!=9)
                   @if($setting->has_enable_member()==false)
