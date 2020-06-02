@@ -25,8 +25,11 @@ class CurriculumController extends MilestoneController
     {
         //
         $param = $this->get_param($request);
-        $items = $this->model()->paginate($param['_line']);
+        $items = $this->model()->search($request)->paginate($param['_line']);
+
         $param['items'] = $items;
+        $param['subjects'] = Subject::all();
+        $param['search_subject_id'] = $request->get('search_subject_id');
         return view($this->domain.'.list')->with($param);
     }
 
@@ -69,6 +72,7 @@ class CurriculumController extends MilestoneController
     public function create_form(Request $request){
       $form = [
         'name' => $request->get('name'),
+        'remarks' => $request->get('remarks'),
         'create_user_id' => Auth::user()->id,
       ];
       return $form;
@@ -142,6 +146,7 @@ class CurriculumController extends MilestoneController
      public function update_form(Request $request){
        $form = [
          'name' => $request->get('name'),
+         'remarks' => $request->get('remarks'),
        ];
        return $form;
      }

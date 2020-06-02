@@ -169,6 +169,7 @@ return [
   'lesson_time' => 'Lesson Time',
   'lesson_type' => 'Lesson Type',
   'subject' => 'Subject',
+  'subjects'=> 'Subjects',
   'work' => 'Work',
   'place' => 'Place',
   'control' => 'Control',
@@ -367,4 +368,5 @@ return [
   'notification' => 'notification',
   'curriculums' => 'curriculums',
   'curriculums_name' => 'Curriculums Name',
+  'subjects_name' => 'Subjects name',
 ];

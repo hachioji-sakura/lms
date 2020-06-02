@@ -170,6 +170,7 @@ return [
   'lesson_time' => '授業時間',
   'lesson_type' => '授業形態',
   'subject' => '科目',
+  'subjects'=> '科目',
   'work' => '作業',
   'place' => '場所',
   'control' => '操作',
@@ -372,4 +373,5 @@ return [
   'notification' => '通知',
   'curriculums' => '単元',
   'curriculums_name' => '単元名',
+  'subjects_name' => '科目名',
 ];

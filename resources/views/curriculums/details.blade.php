@@ -1,7 +1,7 @@
 <div class="">
   <div class="row">
     <div class="col-6">
-      <label>{{__('labels.curriculums_name')}}</label>
+      <label>{{__('labels.'.$domain.'_name')}}</label>
       <div class="form-group">
         {{$item->name}}
       </div>
@@ -13,6 +13,7 @@
       </div>
     </div>
   </div>
+  @if($domain == "curriculums")
   <div class="row mt-1">
     <div class="col-12">
       <label>{{__('labels.subject')}}</label>
@@ -25,6 +26,17 @@
       </div>
     </div>
   </div>
+  @endif
+  @if(isset($item->remarks))
+  <div class="row">
+    <div class="col-12">
+      <label>{{__('labels.remark')}}</label>
+      <div class="form-group">
+          {!!nl2br($item->remarks)!!}
+      </div>
+    </div>
+  </div>
+  @endif
 </div>
 <div class="row mt-3">
   <div class="col-12">

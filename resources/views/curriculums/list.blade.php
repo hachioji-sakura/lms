@@ -4,37 +4,22 @@
 @section('title', __('labels.'.$domain).__('labels.list'))
 
 @section('page_sidemenu')
- {{--@include('curriculums.menu')--}}
+ @include($domain.'.components.menu')
 @endsection
 
 @section('contents')
 <div class="card">
-  <div class="card-header">
-    <div class="row">
-      <div class="col-12">
-        @if(isset($target_user))
-        <h3 class="card-title">{{$target_user->details()->name()}}さん
-        </h3>
-        {{__('labels.'.$domain).__('labels.list')}}
-        @else
-        <h3 class="card-title">
-          <i class="fa fa-{{$domain}}"></i>
-          {{__('labels.'.$domain).__('labels.list')}}
-        </h3>
-        @endif
-
-        <div class="d-none d-sm-block">
-            <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.'.$domain).__('labels.add')}}" page_url="/{{$domain}}/create" title="{{__('labels.add_button')}}" role="button" class="btn btn-primary btn-sm">
-            <i class="fa fa-plus"></i>
-            {{__('labels.add_button')}}
-          </a>
-        </div>
-      </div>
+  <div class="card-header h-100">
+    <h3 class="card-title">
+      <i class="fa fa-{{$domain}}"></i>
+      {{__('labels.'.$domain).__('labels.list')}}
+    </h3>
+    <div class="card-title text-sm">
+      {{$items->appends(Request::query())->links('components.paginate')}}
     </div>
     <div class="card-tools">
       @component('components.search_word', ['search_word' => $search_word])
       @endcomponent
-      {{$items->appends(Request::query())->links('components.paginate')}}
       <!-- 検索 -->
     </div>
   </div>
@@ -92,9 +77,29 @@
 </div>
 @component('components.list_filter_message', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot('search_form')
-  <div class="col-12 mb-2">
-  </div>
+    <div class="col-12 mb-2">
+        <label for="search_word" class="w-100">
+          {{__('labels.search_keyword')}}
+        </label>
+        <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
+        @isset($filter['search_keyword'])
+        value = "{{$filter['search_keyword']}}"
+        @endisset
+        >
+    </div>
+    <div class="col-12">
+      @if($domain == 'curriculums')
+      <label for="search_subject_id" class="w-100">
+        {{__('labels.subject')}}
+      </label>
+      <select name="search_subject_id" class="form-control select2" width="100%" required="true">
+        <option value=" ">{{__('labels.selectable')}}</option>
+        @foreach($subjects as $subject)
+        <option value="{{$subject->id}}">{{$subject->name}}</option>
+        @endforeach
+      </select>
+      @endif
+    </div>
   @endslot
 @endcomponent
-
 @endsection
