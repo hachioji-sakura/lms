@@ -650,6 +650,7 @@ class UserCalendarSettingController extends UserCalendarController
         $form = $this->create_form($request);
         $res = UserCalendarSetting::add($form);
         if($this->is_success_response($res)==true){
+          $setting  = $res['data'];
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
             foreach($form['students'] as $student){
