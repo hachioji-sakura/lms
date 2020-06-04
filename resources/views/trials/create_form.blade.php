@@ -26,6 +26,7 @@
   ?>
   @component('trials.forms.trial_date', ['_edit'=>$_edit, 'is_label'=>$is_label, 'item'=>$item,'attributes' => $attributes]) @endcomponent
   @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher' => false, 'attributes' => $attributes, 'is_trial' => true]) @endcomponent
 </div>
 @endsection
 

@@ -384,6 +384,7 @@ class TrialController extends UserCalendarController
          '体験授業のお申込み、ありがとうございます', [
          'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
          'access_key' => $access_key,
+         'item' => $res['data'],
          'send_to' => 'parent',
        ], 'text', 'trial');
        return view($this->domain.'.entry',
@@ -410,7 +411,7 @@ class TrialController extends UserCalendarController
      if($request->has('lesson')){
        $lesson = $request->get('lesson');
      }
-     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
+     $param['candidate_teachers'] = $param['item']->candidate_teachers(1, $lesson);
      $param['view'] = 'to_calendar';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
@@ -617,6 +618,7 @@ class TrialController extends UserCalendarController
        $template = 'trial_candidate_date';
        $type = 'text';
        $param['user_name'] = $param['item']->parent->name();
+       if($request->has('add_message')) $param['add_message'] = $request->get('add_message');
        $param['item']->parent->user->send_mail('体験授業希望日時について変更をお願いいたします', $param, $type ,$template);
      }
      return $this->save_redirect($res, [], '体験授業希望日変更願いメールを送信しました。');
@@ -662,7 +664,6 @@ class TrialController extends UserCalendarController
          'trial_end_time2' => $form['trial_end_time2'],
          'trial_start_time3' => $form['trial_start_time3'],
          'trial_end_time3' => $form['trial_end_time3'],
-         'status' => 'new',
        ]);
        $p = StudentParent::where('id', $param['item']->student_parent_id)->first();
        //ログインしない場合、更新後表示できなくなる
