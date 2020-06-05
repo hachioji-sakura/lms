@@ -464,7 +464,7 @@ class Trial extends Model
     $ret = [];
     $lessons = $this->tags->where('tag_key', 'lesson');
     foreach($lessons as $lesson){
-      $_candidate_teachers = $this->_candidate_teachers($teacher_id, $lesson->tag_value);
+      $_candidate_teachers = $this->_candidate_teachers($teacher_id, intval($lesson->tag_value));
       if(isset($_candidate_teachers) && count($_candidate_teachers) > 0){
         $ret[$lesson->tag_value] = $_candidate_teachers;
       }
@@ -479,6 +479,7 @@ class Trial extends Model
     $kids_lesson = [];
     $english_talk_lesson = [];
     $course_minutes = 0;
+
     foreach($this->tags as $tag){
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
@@ -500,6 +501,7 @@ class Trial extends Model
     $teachers = Teacher::findStatuses(["regular"]);
     if($lesson > 0){
       $teachers = $teachers->hasTag('lesson', $lesson);
+
       if($lesson===1){
         //塾の場合、担当可能な科目がある講師
         $teachers = $teachers->chargeSubject($trial_subjects);
@@ -747,19 +749,21 @@ class Trial extends Model
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
-
     //体験授業は、30分、60分の2択
     if($course_minutes>60) $course_minutes = 60;
-
     //１０分ずらしで、授業時間分の範囲を配列に設定する
+    $calendars = $this->get_calendar();
+
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
         break;
       }
+      \Log::warning($_end.":".$trial_end_time);
+
       $_duration = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
-      foreach($this->get_calendar() as $calendar){
+      foreach($calendars as $calendar){
         if($calendar->is_enable_status($calendar->status)==false) continue;
         //この時間範囲にて体験授業がすでに登録されている場合は、無効
         if($calendar->is_conflict($_start, $_end)){

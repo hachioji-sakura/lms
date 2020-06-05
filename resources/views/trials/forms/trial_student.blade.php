@@ -2,7 +2,7 @@
   <div class="card-header">
     <i class="fa fa-user-graduate mr-1"></i>生徒情報
   </div>
-    @component('components.profile', ['item' => $item->student->user->details(), 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
+    @component('components.profile', ['item' => $item->student->user->details(), 'user' => $user, 'domain' => 'students', 'domain_name' => $domain_name])
       @slot('courtesy')
       @endslot
       @slot('alias')
