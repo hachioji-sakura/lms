@@ -20,7 +20,7 @@
         </a>
       </li>
       @foreach(config('attribute.student_status') as $index => $name)
-      @if($index=='unsubscribe' || $index=='recess') @continue @endif
+      @if($index=='recess') @continue @endif
       <li class="nav-item">
         <a href="/{{$domain}}?status={{$index}}" class="nav-link @if($_status==$index) active @endif">
           <i class="fa fa-list-alt nav-icon"></i>{{$name}}

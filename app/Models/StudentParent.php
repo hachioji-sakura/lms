@@ -28,6 +28,15 @@ class StudentParent extends Teacher
   public function relations(){
     return $this->hasMany('App\Models\StudentRelation', 'student_parent_id');
   }
+  public function status_name(){
+    $status_name = "";
+    if(app()->getLocale()=='en') return $this->status;
+
+    if(isset(config('attribute.student_status')[$this->status])){
+      $status_name = config('attribute.student_status')[$this->status];
+    }
+    return $status_name;
+  }
   public function name()
   {
     $name = $this->name_last . ' ' .$this->name_first;
