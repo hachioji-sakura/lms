@@ -25,8 +25,13 @@ class Task extends Milestone
       return $query->whereIn('status',["new","progress"]);;
     }
 
+
     public function task_comments(){
       return $this->hasMany('App\Models\TaskComment','task_id')->orderBy('created_at','desc');
+    }
+
+    public function curriculums(){
+      return $this->belongsToMany('App\Models\Curriculum','task_curriculum','task_id','curriculum_id')->withTimestamps();
     }
 
     public function reviews(){
@@ -51,7 +56,28 @@ class Task extends Milestone
       if($request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));
       }
+      if($request->has('search_type')){
+        $query = $query->findTypes($request->get('search_type'));
+      }
       return $query;
+    }
+
+    public function change($form, $file=null, $is_file_delete = false, $curriculum_ids = null){
+      $s3_url = '';
+      $_form = $this->file_upload($file);
+      $form['s3_url'] = $_form['s3_url'];
+      $form['s3_alias'] = $_form['s3_alias'];
+      if($is_file_delete == true){
+        $form['s3_url'] = "";
+        $form['s3_alias'] = "";
+      }
+      if($is_file_delete==true){
+        //削除指示がある、もしくは、更新する場合、S3から削除
+        $this->s3_delete($this->s3_url);
+      }
+      $this->update($form);
+      $this->curriculums()->sync($curriculum_ids);
+      return $this;
     }
 
     public function dispose(){

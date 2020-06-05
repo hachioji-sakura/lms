@@ -64,6 +64,18 @@
       </div>
       @endif
     </div>
+    <div class="row">
+      <div class="col-12">
+        <label>{{__('labels.curriculums')}}</label>
+        <div class="form-group">
+          @foreach($item->curriculums as $curriculum)
+          <small class="badge badge-primary">
+            {{$curriculum->name}}
+          </small>
+          @endforeach
+        </div>
+      </div>
+    </div>
 
     @if(!empty($item->s3_url))
     <a href="{{$item->s3_url}}" target="_blank">

@@ -369,4 +369,6 @@ return [
   'curriculums' => 'curriculums',
   'curriculums_name' => 'Curriculums Name',
   'subjects_name' => 'Subjects name',
+  'homework' => 'Homeworks',
+  'class_record' => 'Class records',
 ];

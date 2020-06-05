@@ -3,10 +3,8 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\Models\GeneralAttribute;
-use App\Models\Subject;
 
-class CreateSubjectsTable extends Migration
+class CreateTaskCurriculumTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,16 +13,13 @@ class CreateSubjectsTable extends Migration
      */
     public function up()
     {
-
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('task_curriculum', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('name')->nullable(false);
-          $table->string('remarks')->nullable(true);
-          $table->integer('create_user_id');
+          $table->integer('task_id');
+          $table->integer('curriculum_id');
           $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -33,6 +28,6 @@ class CreateSubjectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('task_curriculum');
     }
 }

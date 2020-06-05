@@ -13,8 +13,13 @@ class Curriculum extends Milestone
     protected $guarded = array('id');
 
     public function subjects(){
-      return $this->belongsToMany('App\Models\Subject')->withTimestamps();
+      return $this->belongsToMany('App\Models\Subject','curriculum_subject','curriculum_id','subject_id')->withTimestamps();
     }
+
+    public function tasks(){
+      return $this->belongsToMany('App\Models\Subject','task_curriculum','task_id','curriculum_id')->withTimestamps();
+    }
+
 
     public function details(){
       $item = $this;

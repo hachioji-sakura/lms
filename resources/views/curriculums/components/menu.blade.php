@@ -13,13 +13,18 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-    @foreach($subjects as $subject)
-    <li class="nav-item">
-      <a href="/{{$domain}}?search_subject_id={{$subject->id}}"  class="nav-link {{$search_subject_id == $subject->id ? 'active' : ''}}">
-        {{$subject->name}}
-      </a>
-    </li>
-    @endforeach
+      <li class="nav-item">
+        <a href="/{{$domain}}"  class="nav-link {{empty($search_subject_id)? 'active' : ''}}">
+          {{__('labels.all')}}
+        </a>
+      </li>
+      @foreach($subjects as $subject)
+      <li class="nav-item">
+        <a href="/{{$domain}}?search_subject_id={{$subject->id}}"  class="nav-link {{$search_subject_id == $subject->id ? 'active' : ''}}">
+          {{$subject->name}}
+        </a>
+      </li>
+      @endforeach
     </ul>
   </li>
 </ul>

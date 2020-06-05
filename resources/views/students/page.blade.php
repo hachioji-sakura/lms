@@ -155,9 +155,15 @@
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty($search_type) && $search_type == 'homework' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=homework">
+                <i class="fas fa-book-reader"></i>
+                {{__('labels.homework')}}
+              </a>
+            </li>
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty($search_type) && $search_type == 'class_record' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=class_record&search_status=done">
                 <i class="fa fa-list-alt"></i>
-                {{__('labels.tasks')}}
+                {{__('labels.class_record')}}
               </a>
             </li>
           </ul>

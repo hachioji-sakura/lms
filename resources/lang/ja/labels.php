@@ -374,4 +374,6 @@ return [
   'curriculums' => '単元',
   'curriculums_name' => '単元名',
   'subjects_name' => '科目名',
+  'homework' => '宿題',
+  'class_record' => '授業記録',
 ];
