@@ -75,7 +75,8 @@ class Controller extends BaseController
         }
       }
       */
-      $title = '【'.__('labels.system_name').'】'.$title;
+      //TODO 2020.06.05 システム名を除去する（戻す可能性があるのでコメントあうとにしておく）
+      //$title = '【'.__('labels.system_name').'】'.$title;
       $this->send_slack("メール送信:\n".$to."\n".$title, "info", "send_mail");
       \Log::info("メール送信:\n".$to."\n".$title);
 
