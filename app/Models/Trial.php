@@ -514,7 +514,7 @@ class Trial extends Model
         }
       }
       if($tag->tag_key==='course_minutes'){
-        $course_minutes = $tag->tag_value;
+        $course_minutes = intval($tag->tag_value);
       }
       if($tag->tag_key==='kids_lesson'){
         $kids_lesson[] = $tag->tag_value;
@@ -776,7 +776,6 @@ class Trial extends Model
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
-
     //体験授業は、30分、60分の2択
     if($course_minutes>60) $course_minutes = 60;
 
