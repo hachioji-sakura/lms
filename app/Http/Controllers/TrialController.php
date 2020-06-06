@@ -559,9 +559,8 @@ class TrialController extends UserCalendarController
 
    }
    public function ask_hope_to_join_mail_send(Request $request, $id){
-     $access_key = $this->create_token(2678400);
      $param = $this->get_param($request, $id);
-     $access_key = $this->create_token();
+     $access_key = $this->create_token(2678400);
 
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
        $param['item']->hope_to_join_ask($param['user']->user_id, $access_key);
