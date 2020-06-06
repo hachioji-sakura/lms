@@ -6,7 +6,7 @@
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="fa fa-user-alt"></i></span>
     </div>
-    <input id="email" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required="true" autofocus placeholder="{{__('labels.input_login_id')}}" minlength="3" maxlength="32" inputtype="hankaku">
+    <input id="email" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required="true" autofocus placeholder="{{__('labels.input_login_id')}}" minlength="3" maxlength="512" inputtype="hankaku">
     @if ($errors->has('email'))
         <span class="invalid-feedback" role="alert">
             <strong>{{ $errors->first('email') }}</strong>
