@@ -329,6 +329,8 @@ Route::get('managers/{id}/messages', 'ManagerController@message_list');
 
 
 Route::resource('tasks','TaskController');
+Route::resource('task_reviews','TaskReviewController');
+
 //生徒画面に取り込み
 //Route::get('students/{id}/tasks', 'StudentController@task_list');
 

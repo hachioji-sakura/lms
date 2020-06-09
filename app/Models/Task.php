@@ -34,8 +34,8 @@ class Task extends Milestone
       return $this->belongsToMany('App\Models\Curriculum','task_curriculum','task_id','curriculum_id')->withTimestamps();
     }
 
-    public function reviews(){
-      return $this->hasMany('App\Models\Review', 'task_id');
+    public function task_reviews(){
+      return $this->hasMany('App\Models\TaskReview', 'task_id');
     }
 
     public function milestones(){
@@ -78,6 +78,22 @@ class Task extends Milestone
       $this->update($form);
       $this->curriculums()->sync($curriculum_ids);
       return $this;
+    }
+
+    public function get_evaluation_difference(){
+      $self_evaluation = [];
+      $others_evaluation = [];
+      foreach($this->task_reviews as $review){
+        if($review->create_user_id == $this->target_user_id){
+          $selv_evaluation = $review->create_user_id;
+        }else{
+
+        }
+      }
+
+
+
+      return $evaluations;
     }
 
     public function dispose(){

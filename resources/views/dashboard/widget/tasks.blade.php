@@ -62,15 +62,13 @@
                     </small>
                   </div>
                   <div class="col-9">
-                    @if(!empty($item->stars))
-                    <div class="float-right">
-                      @for($i=1;$i<=$item->stars;$i++)
-                      <span class="fa fa-star" style="color:orange;"></span>
-                      @endfor
-                      @for($i=1;$i<=5-$item->stars;$i++)
-                      <span class="far fa-star"></span>
-                      @endfor
-                      ({{$item->stars}})
+                    @if( $item->task_reviews->count() > 0)
+                    <div class="row float-right">
+                      @foreach($item->task_reviews as $review)
+                        <div class="col-12">
+                          {{$review->evaluation}}:{{$review->create_user->details()->name()}}
+                        </div>
+                      @endforeach
                     </div>
                     @endif
                   </div>
