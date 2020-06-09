@@ -445,7 +445,8 @@ class TeacherController extends StudentController
         $enable_confirm = false;
       }
       else {
-        $unsolved_calendars = $calendars->whereNotIn('status', ['lecture_cancel', 'cancel', 'rest', 'presence', 'absence']);
+        $unsolved_calendars = $calendars->whereNotIn('status', ['lecture_cancel', 'cancel', 'rest', 'presence', 'absence'])
+                                        ->whereNotIn('work' , [5, 11]);
         if(count($unsolved_calendars) > 0){
           $enable_confirm = false;
         }
