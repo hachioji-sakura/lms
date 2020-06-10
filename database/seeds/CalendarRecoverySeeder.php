@@ -35,7 +35,7 @@ class CalendarRecoverySeeder extends Seeder
         $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
         if(!isset($member)){
           echo "del:".$data["id"];
-          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"]]);
+          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
         }
       }
     }
