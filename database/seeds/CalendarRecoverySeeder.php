@@ -22,7 +22,7 @@ class CalendarRecoverySeeder extends Seeder
         $d[intval($data["id"])] = $data;
       }
 
-      //$this->delete_calendar_sync($d);
+      $this->delete_calendar_sync($d);
       $this->post_calendar_sync();
     }
     public function delete_calendar_sync($d){
