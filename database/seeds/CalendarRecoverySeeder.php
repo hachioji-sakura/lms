@@ -22,7 +22,7 @@ class CalendarRecoverySeeder extends Seeder
         $d[intval($data["id"])] = $data;
       }
 
-      $this->delete_calendar_sync($d);
+      //$this->delete_calendar_sync($d);
       $this->post_calendar_sync();
     }
     public function delete_calendar_sync($d){
@@ -35,7 +35,7 @@ class CalendarRecoverySeeder extends Seeder
         $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
         if(!isset($member)){
           echo "del:".$data["id"];
-          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"]]);
+          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
         }
       }
     }
