@@ -54,7 +54,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'management_url' => env('APP_MANAGEMENT_URL', 'https://hachiojisakura.com'),
+    'management_url' => env('APP_MANAGEMENT_URL', 'https://management.sakuraone.jp'),
     'support_mail' => env('APP_SUPPORT_MAIL', 'hachiojisakura-support@hachioji-sakura.com'),
 
     /*
