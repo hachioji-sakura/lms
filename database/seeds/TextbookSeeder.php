@@ -24,7 +24,7 @@ class TextbookSeeder extends Seeder
       DB::table('textbook_answers')->truncate();
       $_publisher = Publisher::create([
         'name' => '八王子サクラ',
-        'url' => 'http://hachiojisakura.com',
+        'url' => 'https://management.sakuraone.jp',
         'create_user_id' => 1,
         ]);
       $_book = Textbook::create([
