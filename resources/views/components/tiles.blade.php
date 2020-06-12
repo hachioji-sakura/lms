@@ -77,12 +77,20 @@
             </a>
           @endif
           @if(!($domain=="managers" && $item->id===1) && $item->status!='unsubscribe' )
-            <a class="btn my-1 btn-danger btn-sm float-right " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/retirement" page_title="退職ステータス更新">
+            <a class="btn my-1 btn-danger btn-sm float-right " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/regular" page_title="アカウントステータス更新">
+              <i class="fa fa-user-slash mr-1"></i>
+              @if($domain=='teachers' || $domain=='managers')
+              入社に戻す
+              @else
+              入会済みに戻す
+              @endif
+            </a>
+            <a class="btn my-1 btn-danger btn-sm float-right " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/retirement" page_title="アカウントステータス更新">
               <i class="fa fa-user-slash mr-1"></i>
               @if($domain=='teachers' || $domain=='managers')
               {{__('labels.retirement')}}
               @else
-              {{__('labels.unsubscribe')}}              
+              {{__('labels.unsubscribe')}}
               @endif
             </a>
           @endif
