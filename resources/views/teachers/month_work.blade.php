@@ -75,7 +75,6 @@
             @endif
             <ul id="month_work_list" class="mailbox-attachments clearfix row">
               @foreach($calendars as $calendar)
-              @if($calendar->work==11) @continue @endif
               <?php $calendar = $calendar->details(1); ?>
                 @if($__date != $calendar["date"])
                 <li class="col-12 p-0" accesskey="" target="">

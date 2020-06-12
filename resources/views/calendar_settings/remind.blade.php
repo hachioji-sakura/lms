@@ -1,9 +1,11 @@
 @component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
   @slot('page_message')
   @if($item['status']==='confirm')
-  生徒あてに通常授業予定確認をを再送します。
+  生徒あてに通常授業予定確認をを連絡します。
   @elseif($item['status']==='fix')
-  生徒、講師あてに通常授業予定を再送します。
+  生徒、講師あてに通常授業予定を連絡します。
+  @elseif($item['status']==='new')
+  講師あてに通常授業予定を連絡します。
   @endif
   @endslot
   @slot('forms')
@@ -20,7 +22,7 @@
       <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_calendar_remind')}}">
             <i class="fa fa-envelope mr-1"></i>
-              {{__('labels.remind_button')}}
+              {{__('labels.send_button')}}
           </button>
       </div>
       <div class="col-12 col-md-6 mb-1">

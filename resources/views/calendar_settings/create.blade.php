@@ -25,7 +25,11 @@
             @if($item->work==9)
             <div class="col-12 mb-1">
               <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                  @if(isset($_edit) && $_edit===true)
                   {{__('labels.update_button')}}
+                  @else
+                  {{__('labels.add_button')}}
+                  @endif
                   <i class="fa fa-caret-right ml-1"></i>
               </button>
             </div>

@@ -445,7 +445,8 @@ class TeacherController extends StudentController
         $enable_confirm = false;
       }
       else {
-        $unsolved_calendars = $calendars->whereNotIn('status', ['lecture_cancel', 'cancel', 'rest', 'presence', 'absence']);
+        $unsolved_calendars = $calendars->whereNotIn('status', ['lecture_cancel', 'cancel', 'rest', 'presence', 'absence'])
+                                        ->whereNotIn('work' , [5, 11]);
         if(count($unsolved_calendars) > 0){
           $enable_confirm = false;
         }
@@ -554,33 +555,5 @@ class TeacherController extends StudentController
         return $param['item']->add_charge_student($request->get('student_id'), $param['user']->user_id);
       }, '担当生徒登録', __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $res['message']);
-    }
-    public function retirement_page(Request $request, $id)
-    {
-      $param = $this->get_param($request, $id);
-      $param['item']['name'] = $param['item']->name();
-      $param['item']['kana'] = $param['item']->kana();
-      $param['item']['birth_day'] = $param['item']->birth_day();
-      $param['item']['gender'] = $param['item']->gender();
-      $fields = [
-        'name' => [
-          'label' => __('labels.name'),
-        ],
-      ];
-      $param['action'] = 'retirement';
-      return view('teachers.retirement', [
-        'fields'=>$fields])
-        ->with($param);
-    }
-    public function retirement(Request $request, $id)
-    {
-      $param = $this->get_param($request, $id);
-
-      $res = $this->transaction($request, function() use ($request, $id){
-        $form = $request->all();
-        $item = $this->model()->where('id', $id)->first()->unsubscribe();
-        return $this->api_response(200, '', '', $item);
-      }, '退職ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-      return $this->save_redirect($res, $param, '退職ステータス更新しました');
     }
 }

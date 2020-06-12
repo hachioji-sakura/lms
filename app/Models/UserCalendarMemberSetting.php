@@ -209,6 +209,24 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     return $res;
   }
+  public function is_recess_or_unsubscribe(){
+    $u = $this->user->details();
+    if($u->role=='student'){
+      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
+        if(strtotime($this->setting->enable_start_time) > strtotime($u->recess_start_date) &&
+          strtotime($this->setting->enable_start_time) < strtotime($u->recess_end_date)){
+            return true;
+        }
+      }
+      if(!empty($u->unsubscribe_date)){
+        if(strtotime($this->setting->enable_start_time) > strtotime($u->unsubscribe_date)){
+            return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public function get_tuition(){
     if($this->setting->is_teaching()!=true){
       return null;

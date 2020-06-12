@@ -21,7 +21,7 @@
       <label class="form-check-label mr-3" for="send_teacher">
         {{__('labels.send_to_teacher')}}
       </label>
-      @if(isset($_edit) && $_edit==true && $item->status!='new')
+      @if(isset($_edit) && $_edit==true && $item->status!='new' && $item->work!=9)
       {{-- status=newではない場合に、生徒に連絡する可能性がある --}}
       <input class="form-check-input icheck flat-red" type="radio" name="send_mail" id="send_both" value="both" required="true" >
       <label class="form-check-label mr-3" for="send_both">

@@ -705,8 +705,9 @@ EOT;
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
 
     $status = 'new';
-    if($form['work']==9) $status = 'fix';
-    $target_user = User::where('id', $form['target_user_id'])->first();
+    if(isset($form['work']) && $form['work']==9) $status = 'fix';
+    $target_user = null;
+    if(isset($form['target_user_id']) && $form['target_user_id']>0) $target_user = User::where('id', $form['target_user_id'])->first();
     if(isset($target_user)){
       //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
       $target_user = $target_user->details();
@@ -714,7 +715,8 @@ EOT;
         $status = 'cancel';
       }
       if($target_user->status=='unsubscribe'){
-        return $this->error_response("この予定主催者は退職（退会）しています");
+        $controller = new Controller;
+        return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
     }
 
@@ -741,8 +743,9 @@ EOT;
       'create_user_id' => $form['create_user_id'],
       'status' => $status
     ]);
-
-    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], $status, false);
+    $post = false;
+    if($form['work']==9) $post = true;
+    $calendar->memberAdd($form['target_user_id'], $form['create_user_id'], $status, $post);
     $is_sendmail = false;
     if(isset($form['send_mail']) && $form['send_mail'] == "teacher"){
       $is_sendmail = true;
@@ -754,8 +757,8 @@ EOT;
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
-  public function dispose($login_user_id){
-    if($this->status!='new'){
+  public function dispose($login_user_id, $is_send_mail=true){
+    if($this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
     //事務システム側を先に削除

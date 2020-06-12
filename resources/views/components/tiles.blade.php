@@ -52,7 +52,9 @@
         </div>
         <div class="row my-2">
           <div class="col-12">
-          @if($domain!="students" && $item->status==='trial')
+            {{-- TODO user->status==1にて判断する必要がある。移行データが、regularかつ初回の登録依頼を出すために、user->status=1としているため --}}
+            {{-- TODO status=regular かつ、user->status=1として、移行データのときだけ表示するほうが安全 --}}
+          @if($domain!="students" && ($item->status==='trial' || $item->user->status==1))
             <a class="btn btn-primary btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/remind" page_title="本登録連絡">
               <i class="fa fa-envelope mr-1"></i>
               {{__('labels.register_ask')}}
@@ -74,10 +76,14 @@
               {{__('labels.additional_officer')}}
             </a>
           @endif
-          @if(!($domain=="managers" && $item->id===1) && $item->status!='unsubscribe' && ($domain=="managers" || $domain=="teachers"))
+          @if(!($domain=="managers" && $item->id===1) && $item->status!='unsubscribe' )
             <a class="btn my-1 btn-danger btn-sm float-right " href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/retirement" page_title="退職ステータス更新">
               <i class="fa fa-user-slash mr-1"></i>
+              @if($domain=='teachers' || $domain=='managers')
               {{__('labels.retirement')}}
+              @else
+              {{__('labels.unsubscribe')}}              
+              @endif
             </a>
           @endif
         </div>

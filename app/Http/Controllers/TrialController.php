@@ -518,8 +518,8 @@ class TrialController extends UserCalendarController
       $form['create_user_id'] = $user->user_id;
       //カレンダーステータス変更
       $trial = Trial::where('id', $id)->first();
-      $setting = $trial->to_calendar_setting($form, $form['calendar_id']);
-      return $this->api_response(200, '', '', $setting);
+      $res = $trial->to_calendar_setting($form, $form['calendar_id']);
+      return $res;
     }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }
@@ -559,9 +559,8 @@ class TrialController extends UserCalendarController
 
    }
    public function ask_hope_to_join_mail_send(Request $request, $id){
-     $access_key = $this->create_token(2678400);
      $param = $this->get_param($request, $id);
-     $access_key = $this->create_token();
+     $access_key = $this->create_token(2678400);
 
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
        $param['item']->hope_to_join_ask($param['user']->user_id, $access_key);
