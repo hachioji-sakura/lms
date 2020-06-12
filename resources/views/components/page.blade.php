@@ -24,7 +24,6 @@
     @endcomponent
   @endif
 
-
   @if(isset($forms) && !empty(trim($forms)))
     {{-- 独自formを利用する場合 --}}
     {{$forms}}
