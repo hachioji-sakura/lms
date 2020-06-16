@@ -334,6 +334,7 @@ return [
   'schedule_start_date' => '授業開始日',
   'schedule_end_date' => '授業終了日',
   'verification_code' => '認証コード',
+  'language' => '言語',
   'sheat' => '座席',
   'result' => '結果',
   'reset' => 'リセット',
