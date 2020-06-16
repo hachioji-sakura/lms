@@ -121,7 +121,7 @@
                 <div class="col-12">
                   <small class="text-muted float-right">
                     <i class="fa fa-clock mr-1"></i>
-                    {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:m',strtotime($item->created_at))}}
+                    {{$item->dateweek_format($item->created_at,'Y/m/d')}} {{date('H:i',strtotime($item->created_at))}}
                   </small>
                 </div>
               </div>

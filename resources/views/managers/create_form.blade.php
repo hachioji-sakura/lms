@@ -47,6 +47,11 @@
 
 @section('lesson_week_form')
 <div class="row">
+  <div class="col-12">
+    <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
+      ※事務作業が可能な曜日・時間帯にチェックをいれてください
+    </h6>
+  </div>
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item' =>$item->user, 'prefix'=>'work', 'attributes' => $attributes, 'title' => '勤務可能な曜日・時間帯']) @endcomponent
 </div>
 @endsection

@@ -375,10 +375,10 @@ class TeacherController extends StudentController
         ],
       ];
       $manager = Manager::where('name_last', $param['item']->name_last)->where('name_first', $param['item']->name_first)->first();
-      return view('components.page', [
-        'action' => 'to_manager',
-        'manager' => $manager,
-        'fields'=>$fields])
+      $param['action'] = 'to_manager';
+      $param['manager'] = $manager;
+      $param['fields'] = $fields;
+      return view('components.page', [])
         ->with($param);
     }
     protected function to_manager(Request $request, $id)
