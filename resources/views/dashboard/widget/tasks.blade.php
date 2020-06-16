@@ -34,7 +34,7 @@
           <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
-          <a href="/students/{{$item->id}}/tasks?search_status=done" class="btn btn-tool">
+          <a href="/students/{{$item->id}}/tasks?search_status=done&search_type={{$request->get('search_type')}}" class="btn btn-tool">
             <i class="fa fa-tasks"></i>
           </a>
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
@@ -54,7 +54,7 @@
           @foreach($tasks as $item)
           <li class="item">
             <div class="row">
-              <div class="col-12">
+              <div class="col-12 ">
                 <div class="row">
                   <div class="col-3">
                     <small class="badge badge-{{config('status_style')[$item->status]}}">
@@ -68,11 +68,19 @@
                         <div class="col-12">
                           {{$review->evaluation}}:{{$review->create_user->details()->name()}}
                         </div>
+                        <div class="progress mb-3">
+                          <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                            <span class="sr-only">40% Complete (success)</span>
+                          </div>
+                        </div>
                       @endforeach
                     </div>
                     @endif
                   </div>
                   <div class="col-12 col-md-4 text-truncate">
+                    @if($item->has_eval_diff())
+                    <i class="icon fa fa-exclamation-triangle"></i>
+                    @endif
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       {{$item->title}}
                     </a>

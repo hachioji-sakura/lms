@@ -33,7 +33,7 @@
       </div>
     </div>
   -->
-    <div class="row">
+    <div class="row mt-2">
       <div class="col-6">
         <button type="submit" class="btn btn-submit btn-primary w-100" accesskey="create_review">
           <i class="fa fa-pen"></i>
