@@ -8,6 +8,7 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      <input type="hidden" name="type" value="{{$task_type}}">
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
@@ -18,22 +19,9 @@
 
       <div class="row mt-2">
         <div class="col-12">
-          <label>{{__('labels.type')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <select name="type" class="form-control"  required="true">
-            @foreach(config('attribute.task_type') as $key => $value)
-            <option value="{{$key}}"
-            @if(!empty($item) && $_edit)
-              {{$item->type == $key ? "selected" : "" }}
-            @endif
-            >{{$value}}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-12">
           <label>{{__('labels.curriculums_name')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <select name="curriculum_ids[]" class="form-control select2"  width=100% required="true" multiple="multiple">
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <select name="curriculum_ids[]" class="form-control select2"  width=100%  multiple="multiple">
             @foreach($curriculums as $curriculum)
             <option value="{{$curriculum->id}}"
             @if(!empty($item) && $_edit)

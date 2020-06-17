@@ -44,6 +44,7 @@ class TaskController extends MilestoneController
         $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
         $param['curriculums'] = Curriculum::get();
         $param['_edit'] = false;
+        $param['task_type'] = $request->get('task_type');
         return view($this->domain . '.create',$param);
     }
 

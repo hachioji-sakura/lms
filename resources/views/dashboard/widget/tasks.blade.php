@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="card-tools">
-          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{$request->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
           <a href="/students/{{$item->id}}/tasks?search_status=done&search_type={{$request->get('search_type')}}" class="btn btn-tool">
@@ -62,33 +62,36 @@
                     </small>
                   </div>
                   <div class="col-9">
-                    @if( $item->task_reviews->count() > 0)
-                    <div class="row float-right">
-                      @foreach($item->task_reviews as $review)
-                        <div class="col-12">
-                          {{$review->evaluation}}:{{$review->create_user->details()->name()}}
-                        </div>
-                        <div class="progress mb-3">
-                          <div class="progress-bar bg-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
-                            <span class="sr-only">40% Complete (success)</span>
-                          </div>
-                        </div>
-                      @endforeach
-                    </div>
-                    @endif
+
                   </div>
                   <div class="col-12 col-md-4 text-truncate">
-                    @if($item->has_eval_diff())
-                    <i class="icon fa fa-exclamation-triangle"></i>
-                    @endif
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       {{$item->title}}
                     </a>
                   </div>
                   <div class="col-12 col-md-8 text-truncate">
-                    <small class="text-muted">
-                      {{$item->body}}
-                    </small>
+                    <div class="row">
+                      <div class="col-6">
+                        <small class="text-muted">
+                          {{$item->body}}
+                        </small>
+                      </div>
+                      <div class="col-6">
+                        @if( $item->task_reviews->count() > 0)
+                          @foreach($item->task_reviews as $review)
+                            <div class="progress mt-2">
+                              <div class="progress-bar" role="progressbar" style="width: {{$review->evaluation*20}}%;" aria-valuenow="{{$review->evaluation*20}}" aria-valuemin="0" aria-valuemax="100">
+                              </div>
+                            </div>
+                            <div>
+                              <small class="text-muted">
+                                {{$review->create_user->details()->name()}} : {{config('attribute.task_review_evaluation')[$review->evaluation-1]}}
+                              </small>
+                            </div>
+                          @endforeach
+                        @endif
+                      </div>
+                    </div>
                   </div>
                   @if(!empty($item->s3_url))
                   <div class="col-12">

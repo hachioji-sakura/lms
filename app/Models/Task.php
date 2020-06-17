@@ -80,25 +80,7 @@ class Task extends Milestone
       return $this;
     }
 
-    public function has_eval_diff(){
-      $self_evaluation = collect();
-      $others_evaluation = collect();
-      foreach($this->task_reviews as $review){
-        if($review->create_user_id == $this->target_user_id){
-          $self_evaluation->push($review->evaluation);
-        }else{
-          $others_evaluation->push( $review->evaluation);
-        }
-      }
 
-      $_diff = false;
-      foreach($others_evaluation as $o_eval){
-        if(abs($self_evaluation->last() - $o_eval) >= 2){
-            $_diff = true;
-        }
-      }
-      return $_diff;
-    }
 
     public function dispose(){
       if(isset($this->s3_url) && !empty($this->s3_url)){
