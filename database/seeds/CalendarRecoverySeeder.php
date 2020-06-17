@@ -75,7 +75,6 @@ EOT;
 
         //キャンセルステータスの同期
         $_sql = $sql." where u.status='cancel' and m.status='cancel' and o.cancel!='c'";
-        $_sql .= " and m.user_id in(select user_id from common.students)";
         $d = DB::select($_sql);
         $this->update_schedule_ontime('', 'c', $d);
 
