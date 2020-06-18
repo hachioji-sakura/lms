@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Review;
+use App\Models\TaskReview;
 use DB;
 
 
@@ -21,8 +21,8 @@ class Task extends Milestone
         'create_user_id' => 'required',
     );
 
-    public function scopeActiveTasks($query){
-      return $query->whereIn('status',["new","progress"]);;
+    public function scopeActiveTasks($query, $statuses){
+      return $query->whereIn('status',$statuses);
     }
 
 
@@ -48,10 +48,18 @@ class Task extends Milestone
 
     public function scopeSearch($query,$request){
       $search_status = $request->query('search_status','active');
+      $search_type = $request->get('search_type');
       if($search_status == 'active'){
-        $query = $query->activeTasks();
+        if($search_type == "homework"){
+          $statuses = ['new','progress'];
+        }elseif($search_type == "class_record"){
+          $statuses = ["done"];
+        }else{
+          $statuses = ['new','progress'];
+        }
+        $query = $query->activeTasks($statuses);
       }else{
-        $query = $query->findStatuses($request->get('search_status'));
+        $query = $query->findStatuses($search_status);
       }
       if($request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));
@@ -59,7 +67,17 @@ class Task extends Milestone
       if($request->has('search_type')){
         $query = $query->findTypes($request->get('search_type'));
       }
+      if(!empty($request->get('eval_min_value')) && !empty($request->get('eval_max_value'))){
+        $query = $query->reviewEvaluationRange($request->get('eval_min_value'), $request->get('eval_max_value'));
+      }
+//dd($query->toSql(), $query->getBindings());
       return $query;
+    }
+
+    public function scopeReviewEvaluationRange($query, $min_value, $max_value){
+      return $query->whereHas('task_reviews', function($query) use ($min_value, $max_value) {
+          $query->whereBetween('evaluation',[$min_value,$max_value]);
+      });
     }
 
     public function change($form, $file=null, $is_file_delete = false, $curriculum_ids = null){

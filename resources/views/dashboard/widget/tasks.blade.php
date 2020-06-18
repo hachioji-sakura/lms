@@ -85,7 +85,7 @@
                             </div>
                             <div>
                               <small class="text-muted">
-                                {{$review->create_user->details()->name()}} : {{config('attribute.task_review_evaluation')[$review->evaluation-1]}}
+                                {{$review->create_user->details()->name()}} : {{config('attribute.task_review_evaluation')[$review->evaluation]}}
                               </small>
                             </div>
                           @endforeach
@@ -157,6 +157,7 @@
           @endisset
           >
       </div>
+
       <div class="col-12">
         <label for="search_status" class="w-100">
           {{__('labels.status')}}
@@ -170,6 +171,26 @@
           @endforeach
         </div>
       </div>
+
+      <div class="col-12 mt-2">
+        <label for="search_evaluation" class="w-100">
+          {{__('labels.evaluation')}}
+        </label>
+        <select class="form-control select2" width=40% name="eval_min_value">
+          <option value="">{{__('labels.selectable')}}</option>
+          @foreach(config('attribute.task_review_evaluation') as $key => $value)
+          <option value="{{$key}}">{{$value}}</option>
+          @endforeach
+        </select>
+        ～
+        <select class="form-control select2" width=40% name="eval_max_value">
+          <option value="">{{__('labels.selectable')}}</option>
+          @foreach(config('attribute.task_review_evaluation') as $key => $value)
+          <option value="{{$key}}">{{$value}}</option>
+          @endforeach
+        </select>
+      </div>
+      <input type="hidden" name="search_type" value="{{request()->search_type}}">
       @endslot
     @endcomponent
   </div>
