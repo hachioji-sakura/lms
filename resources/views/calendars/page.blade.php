@@ -56,9 +56,12 @@
         <small class="badge badge-primary mt-1 mr-1 p-1">
           <i class="fa fa-exchange-alt mr-1"></i>
           {{__('labels.exchange')}}: <span id="exchanged_calendar_datetime">
+            @if(isset($item->exchanged_calendar))
             {{$item->exchanged_calendar->details()["datetime"]}}
+            @endif
           </span>
         </small>
+        @else
         @endif
         <br>
 
