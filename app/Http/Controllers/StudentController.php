@@ -1372,4 +1372,78 @@ class StudentController extends UserController
     $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
+  public function retirement_page(Request $request, $id)
+  {
+    if($this->domain == 'teachers' || $this->domain == 'managers'){
+      $title = __('labels.retirement');
+    }
+    else {
+      $title = __('labels.unsubscribe');
+    }
+    $param = $this->get_param($request, $id);
+    $param['title'] = $title;
+    $param['item']['name'] = $param['item']->name();
+    //$param['item']['kana'] = $param['item']->kana();
+    //$param['item']['birth_day'] = $param['item']->birth_day();
+    //$param['item']['gender'] = $param['item']->gender();
+    $fields = [
+      'name' => [
+        'label' => __('labels.name'),
+      ],
+    ];
+    $param['action'] = 'retirement';
+    return view('auth.status_update', [
+      'fields'=>$fields])
+      ->with($param);
+  }
+  public function retirement(Request $request, $id)
+  {
+    if($this->domain == 'teachers' || $this->domain == 'managers'){
+      $title = __('labels.retirement');
+    }
+    else {
+      $title = __('labels.unsubscribe');
+    }
+    $param = $this->get_param($request, $id);
+
+    $res = $this->transaction($request, function() use ($request, $id){
+      $form = $request->all();
+      $item = $this->model()->where('id', $id)->first()->unsubscribe();
+      return $this->api_response(200, '', '', $item);
+    }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+  }
+  public function regular_page(Request $request, $id)
+  {
+    $title = '入会済み';
+    $param = $this->get_param($request, $id);
+
+    $param['title'] = $title;
+    $param['item']['name'] = $param['item']->name();
+    //$param['item']['kana'] = $param['item']->kana();
+    //$param['item']['birth_day'] = $param['item']->birth_day();
+    //$param['item']['gender'] = $param['item']->gender();
+    $fields = [
+      'name' => [
+        'label' => __('labels.name'),
+      ],
+    ];
+    $param['action'] = 'regular';
+    return view('auth.status_update', [
+      'fields'=>$fields])
+      ->with($param);
+  }
+  public function regular_update(Request $request, $id)
+  {
+    $title = '入会済み';
+    $param = $this->get_param($request, $id);
+
+    $res = $this->transaction($request, function() use ($request, $id){
+      $form = $request->all();
+      $item = $this->model()->where('id', $id)->first()->regular();
+      return $this->api_response(200, '', '', $item);
+    }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+  }
+
 }

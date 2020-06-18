@@ -232,11 +232,17 @@ class UserCalendarMember extends Model
     return true;
   }
   public function update_rest_type($update_rest_type, $update_rest_result){
-    $this->update([
+    $update_data = [
       'status' => 'rest',
       'rest_type' => $update_rest_type,
       'rest_result' => $update_rest_result,
-    ]);
+    ];
+    if($update_rest_type == 'a1'){
+      //a1での更新の場合、振替期限をクリアする
+      $update_data['exchange_limit_date'] = null;
+    }
+    UserCalendarMember::where('id', $this->id)->update($update_data);
+
     $res = $this->_office_system_api('PUT', $update_rest_type, $update_rest_result);
 
     if($this->calendar->status=='absence'){
@@ -550,19 +556,23 @@ class UserCalendarMember extends Model
           $update['remark'] = $comment;
           $is_update = true;
         }
+        if($this->exchange_limit_date != $exchange_limit_date){
+          $update['exchange_limit_date'] = $exchange_limit_date;
+          $is_update = true;
+        }
         if($this->rest_type != $cancel){
           //cancel -> rest_type
           $update['rest_type'] = $cancel;
+          if($cancel=='a1'){
+            //a1での更新の場合、振替期限をクリアする
+            $update['exchange_limit_date'] = null;
+          }
           $is_update = true;
         }
         //cancel_reasonは空になる可能性がある
         if($this->rest_result != $cancel_reason){
           //cancel_reason -> rest_result
           $update['rest_result'] = $cancel_reason;
-          $is_update = true;
-        }
-        if($this->exchange_limit_date != $exchange_limit_date){
-          $update['exchange_limit_date'] = $exchange_limit_date;
           $is_update = true;
         }
 

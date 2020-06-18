@@ -489,7 +489,7 @@ class Trial extends Model
         }
       }
       if($tag->tag_key==='course_minutes'){
-        $course_minutes = $tag->tag_value;
+        $course_minutes = intval($tag->tag_value);
       }
       if($tag->tag_key==='kids_lesson'){
         $kids_lesson[] = $tag->tag_value;

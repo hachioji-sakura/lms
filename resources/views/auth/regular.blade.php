@@ -1,9 +1,15 @@
 <div id="{{$domain}}_{{$action}}">
   <div class="col-12 my-1">
     <h5 class="text-danger">
-      退職ステータスへ更新しますか？
+      {{$title}}ステータスへ更新しますか？
     </h5>
+    <div class="alert alert-warning text-sm pr-2">
+      <h5><i class="icon fa fa-exclamation-triangle"></i> {{__('labels.important')}}</h5>
+      メール等で、本人宛に通知はしません。<br>
+      この機能は、ステータス更新のみ行います。
+    </div>
   </div>
+
   {{-- 詳細表示項目を羅列する --}}
   @if(isset($field_logic))
     {{$field_logic}}
@@ -20,7 +26,7 @@
       <div class="col-12 col-md-6 my-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="退職ステータスに更新しますか？">
             <i class="fa fa-sign-out-alt mr-1"></i>
-              退職ステータスに更新
+              {{$title}}ステータスに更新
           </button>
       </div>
       <div class="col-12 col-md-6 my-1">
