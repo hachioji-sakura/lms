@@ -13,7 +13,7 @@
         <select name="type" class="form-control select2"  onChange="location.href=value;">
           <option value="{{$item->id}}/tasks">{{__('labels.active')}}</option>
           @foreach(config('attribute.task_status') as $key => $value)
-          <option value="/{{$domain}}/{{$item->id}}/tasks?search_status={{$key}}" {{$request->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
+          <option value="/{{$domain}}/{{$item->id}}/tasks?search_status={{$key}}" {{request()->query('search_status') == $key ? 'selected' : "" }}>{{$value}}</option>
           @endforeach
         </select>
       </div>
@@ -26,17 +26,19 @@
         <div class="row">
           <div class="col-12">
             <h3 class="card-title">
-              <i class="fa fa-list-alt mr-1"></i>{{__('labels.tasks')}}
+              <i class="fa fa-{{!empty(request()->get('search_type')) && request()->get('search_type') == 'homework' ? 'book-reader': 'list-alt'}} mr-1"></i>{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')) : __('labels.tasks')}}
             </h3>
           </div>
         </div>
         <div class="card-tools">
-          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{$request->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+          <a href="javascript:void(0)" page_form="dialog" page_title="{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')).__('labels.add') : __('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{request()->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
-          <a href="/students/{{$item->id}}/tasks?search_status=done&search_type={{$request->get('search_type')}}" class="btn btn-tool">
+          @if(!empty(request()->get('search_type') != 'class_record') && request()->get('search_type') != 'class_record')
+          <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool">
             <i class="fa fa-tasks"></i>
           </a>
+          @endif
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter"></i>
           </a>
@@ -77,20 +79,28 @@
                         </small>
                       </div>
                       <div class="col-6">
-                        @if( $item->task_reviews->count() > 0)
-                          @foreach($item->task_reviews as $review)
-                            <div class="progress mt-2">
-                              <div class="progress-bar" role="progressbar" style="width: {{$review->evaluation*20}}%;" aria-valuenow="{{$review->evaluation*20}}" aria-valuemin="0" aria-valuemax="100">
-                              </div>
-                            </div>
-                            <div>
-                              <small class="text-muted">
-                                {{$review->create_user->details()->name()}} : {{config('attribute.task_review_evaluation')[$review->evaluation]}}
-                              </small>
-                            </div>
-                          @endforeach
-                        @endif
+
                       </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-8">
+                    <div class=" row">
+                    @if( $item->task_reviews->count() > 0)
+                      @foreach($item->task_reviews as $review)
+                      <div class="col-6">
+                        <small class="text-muted">
+                          {{$review->create_user->details()->name()}}
+                        </small>
+                        <br/>
+                        @for($i=1;$i<=$review->evaluation;$i++)
+                        <span class="fa fa-star" style="color:{{$review->create_user->details()->role == 'student' ? 'green' : 'orange'}};"></span>
+                        @endfor
+                        @for($i=1;$i<=5-$review->evaluation;$i++)
+                        <span class="far fa-star"></span>
+                        @endfor
+                      </div>
+                      @endforeach
+                    @endif
                     </div>
                   </div>
                   @if(!empty($item->s3_url))
@@ -152,8 +162,8 @@
             {{__('labels.search_keyword')}}
           </label>
           <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
-          @isset($filter['search_keyword'])
-          value = "{{$filter['search_keyword']}}"
+          @if( !empty(request()->get('search_word')))
+          value = "{{request()->get('search_word')}}"
           @endisset
           >
       </div>
@@ -165,7 +175,7 @@
         <div class="row">
           @foreach(config('attribute.task_status') as $key => $value)
           <div class="col-sm-12 col-md-2">
-          <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="status_{{$key}}" value="{{$key}}">
+          <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="status_{{$key}}" value="{{$key}}" {{!empty(request()->get('search_status')) && in_array($key, request()->get('search_status'))? 'checked':''}}>
           <label class="form-check-label" for="status_{{$key}}" id="status_{{$key}}">{{$value}}</label>
           </div>
           @endforeach
@@ -173,22 +183,62 @@
       </div>
 
       <div class="col-12 mt-2">
-        <label for="search_evaluation" class="w-100">
-          {{__('labels.evaluation')}}
-        </label>
-        <select class="form-control select2" width=40% name="eval_min_value">
-          <option value="">{{__('labels.selectable')}}</option>
-          @foreach(config('attribute.task_review_evaluation') as $key => $value)
-          <option value="{{$key}}">{{$value}}</option>
-          @endforeach
-        </select>
-        ～
-        <select class="form-control select2" width=40% name="eval_max_value">
-          <option value="">{{__('labels.selectable')}}</option>
-          @foreach(config('attribute.task_review_evaluation') as $key => $value)
-          <option value="{{$key}}">{{$value}}</option>
-          @endforeach
-        </select>
+
+        <div class="row">
+        <div class="col-6 col-md-4">
+          <label for="search_evaluation" class="w-100">
+            {{__('labels.evaluation')}}(min)
+          </label>
+          <div class="input-group">
+            <select class="form-control select2" width=100% name="eval_min_value">
+              <option value="">{{__('labels.selectable')}}</option>
+              @foreach(config('attribute.task_review_evaluation') as $key => $value)
+              <option value="{{$key}}" {{!empty(request()->get('eval_min_value')) && request()->get('eval_min_value') == $key ? 'selected' :''}}>{{$value}}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="col-6 col-md-4">
+          <label for="search_evaluation" class="w-100">
+            {{__('labels.evaluation')}}(max)
+          </label>
+          <div class="input-group">
+            <select class="form-control select2" width=100% name="eval_max_value">
+              <option value="">{{__('labels.selectable')}}</option>
+              @foreach(config('attribute.task_review_evaluation') as $key => $value)
+              <option value="{{$key}}" {{!empty(request()->get('eval_max_value')) && request()->get('eval_max_value') == $key ? 'selected' :''}}>{{$value}}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <div class="form-group">
+          <label for="search_from_date" class="w-100">
+            {{__('labels.date')}}(FROM)
+          </label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+            <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01" autocomplete="off" inputtype="date" value="{{!empty(request()->get('search_from_date')) ? request()->get('search_from_date') : ''}}">
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="form-group">
+          <label for="search_to_date" class="w-100">
+            {{__('labels.date')}}(TO)
+          </label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+            <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01" autocomplete="off" inputtype="date" value={{!empty(request()->get('search_to_date')) ? request()->get('search_to_date') : ''}}>
+          </div>
+        </div>
       </div>
       <input type="hidden" name="search_type" value="{{request()->search_type}}">
       @endslot

@@ -70,7 +70,10 @@ class Task extends Milestone
       if(!empty($request->get('eval_min_value')) && !empty($request->get('eval_max_value'))){
         $query = $query->reviewEvaluationRange($request->get('eval_min_value'), $request->get('eval_max_value'));
       }
-//dd($query->toSql(), $query->getBindings());
+      if(!empty($request->get('search_from_date')) || !empty($request->get('search_to_date'))){
+        $query = $query->rangeDate($request->get('search_from_date'),$request->get('search_to_date'));
+      }
+
       return $query;
     }
 

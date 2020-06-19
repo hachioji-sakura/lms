@@ -144,26 +144,34 @@
           <ul class="nav nav-pills ml-auto float-left mb-2">
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.milestones' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/milestones">
-                <i class="fa fa-flag"></i>
-                {{__('labels.milestones')}}
-              </a>
-            </li>
-            <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.comments' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/comments">
-                <i class="fa fa-comments"></i>
-                {{__(('labels.comments'))}}
+                <small>
+                  <i class="fa fa-flag"></i>
+                  {{__('labels.milestones')}}
+                </small>
               </a>
             </li>
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty($search_type) && $search_type == 'homework' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=homework">
-                <i class="fas fa-book-reader"></i>
-                {{__('labels.homework')}}
+                <small>
+                  <i class="fas fa-book-reader"></i>
+                  {{__('labels.homework')}}
+                </small>
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty($search_type) && $search_type == 'class_record' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=class_record&search_status=done">
-                <i class="fa fa-list-alt"></i>
-                {{__('labels.class_record')}}
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty($search_type) && $search_type == 'class_record' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=class_record&search_status[]=done">
+                <small>
+                  <i class="fa fa-list-alt"></i>
+                  {{__('labels.class_record')}}
+                </small>
+              </a>
+            </li>
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.comments' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/comments">
+                <small>
+                  <i class="fa fa-comments"></i>
+                  {{__(('labels.comments'))}}
+                </small>
               </a>
             </li>
           </ul>
