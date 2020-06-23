@@ -384,6 +384,7 @@ class StudentParentController extends TeacherController
           '体験授業のお申込み、ありがとうございます', [
           'user_name' => $student->name(),
           'access_key' => $access_key,
+          'item' => $res['data'],
           'send_to' => 'parent',
         ], 'text', 'trial');
       }
