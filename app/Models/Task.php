@@ -67,8 +67,8 @@ class Task extends Milestone
       if($request->has('search_type')){
         $query = $query->findTypes($request->get('search_type'));
       }
-      if(!empty($request->get('eval_min_value')) && !empty($request->get('eval_max_value'))){
-        $query = $query->reviewEvaluationRange($request->get('eval_min_value'), $request->get('eval_max_value'));
+      if(!empty($request->get('search_evaluation'))){
+        $query = $query->reviewEvaluation($request->get('search_evaluation'));
       }
       if(!empty($request->get('search_from_date')) || !empty($request->get('search_to_date'))){
         $query = $query->rangeDate($request->get('search_from_date'),$request->get('search_to_date'));
@@ -77,9 +77,9 @@ class Task extends Milestone
       return $query;
     }
 
-    public function scopeReviewEvaluationRange($query, $min_value, $max_value){
-      return $query->whereHas('task_reviews', function($query) use ($min_value, $max_value) {
-          $query->whereBetween('evaluation',[$min_value,$max_value]);
+    public function scopeReviewEvaluation($query, $evaluation){
+      return $query->whereHas('task_reviews', function($query) use ($evaluation) {
+          $query->whereIn('evaluation',$evaluation);
       });
     }
 

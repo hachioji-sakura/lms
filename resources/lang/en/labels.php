@@ -371,4 +371,6 @@ return [
   'subjects_name' => 'Subjects name',
   'homework' => 'Homeworks',
   'class_record' => 'Class records',
+  'task_understanding' => 'Understanding',
+    'created_date' => 'Created Date',
 ];

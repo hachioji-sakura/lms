@@ -376,4 +376,6 @@ return [
   'subjects_name' => '科目名',
   'homework' => '宿題',
   'class_record' => '授業記録',
+  'task_understanding' => '理解度',
+  'created_date' => '起票日',
 ];

@@ -35,8 +35,8 @@
             <i class="fa fa-pen nav-icon"></i>
           </a>
           @if(!empty(request()->get('search_type') != 'class_record') && request()->get('search_type') != 'class_record')
-          <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool">
-            <i class="fa fa-tasks"></i>
+          <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool" title="{{__('labels.complete').__('labels.tasks')}}">
+            <i class="fa fa-check"></i>
           </a>
           @endif
           <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
@@ -58,51 +58,51 @@
             <div class="row">
               <div class="col-12 ">
                 <div class="row">
-                  <div class="col-3">
-                    <small class="badge badge-{{config('status_style')[$item->status]}}">
+
+                  <div class="col-10 text-wrap">
+                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
+                      <h4>
+                        {{$item->title}}
+                      </h4>
+                    </a>
+                  </div>
+                  <div class="col-2">
+                    <small class="badge badge-{{config('status_style')[$item->status]}}  float-right">
                       {{config('attribute.task_status')[$item->status]}}
                     </small>
                   </div>
-                  <div class="col-9">
 
-                  </div>
-                  <div class="col-12 col-md-4 text-truncate">
-                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
-                      {{$item->title}}
-                    </a>
-                  </div>
-                  <div class="col-12 col-md-8 text-truncate">
+                  <div class="col-12 col-md-9">
                     <div class="row">
-                      <div class="col-6">
+                      <div class="col-12 text-truncate">
                         <small class="text-muted">
                           {{$item->body}}
                         </small>
                       </div>
-                      <div class="col-6">
-
-                      </div>
                     </div>
                   </div>
-                  <div class="col-12 col-md-8">
-                    <div class=" row">
+                  <div class="col">
+                    <div class="row float-right">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
-                      <div class="col-6">
-                        <small class="text-muted">
-                          {{$review->create_user->details()->name()}}
-                        </small>
-                        <br/>
-                        @for($i=1;$i<=$review->evaluation;$i++)
-                        <span class="fa fa-star" style="color:{{$review->create_user->details()->role == 'student' ? 'green' : 'orange'}};"></span>
-                        @endfor
-                        @for($i=1;$i<=5-$review->evaluation;$i++)
-                        <span class="far fa-star"></span>
-                        @endfor
+                      <div class="col-12">
+                        <div class="float-left">
+                          @for($i=1;$i<=$review->evaluation;$i++)
+                          <span class="fa fa-star fa-xs" title="{{$review->evaluation}}" style="color:{{$review->create_user->details()->role == 'student' ? 'green' : 'orange'}};"></span>
+                          @endfor
+                          @for($i=1;$i<=4-$review->evaluation;$i++)
+                          <span class="far fa-star fa-xs" style="color:gray"></span>
+                          @endfor
+                          <small class="text-muted">
+                            /{{$review->create_user->details()->name()}}
+                          </small>
+                        </div>
                       </div>
                       @endforeach
                     @endif
                     </div>
                   </div>
+
                   @if(!empty($item->s3_url))
                   <div class="col-12">
                     <a href="{{$item->s3_url}}" target="_blank">
@@ -116,7 +116,7 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
               <div class="col-12">
                 @component('tasks.components.buttons',[
                   'item' => $item,
@@ -127,7 +127,7 @@
                   <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
                     <i class="fa fa-file-alt"></i>
                   </a>
-                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit?task_type={{request()->get('search_type')}}" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
                     <i class="fa fa-edit"></i>
                   </a>
                 @if($item->status != "cancel")
@@ -183,41 +183,27 @@
       </div>
 
       <div class="col-12 mt-2">
-
         <div class="row">
-        <div class="col-6 col-md-4">
-          <label for="search_evaluation" class="w-100">
-            {{__('labels.evaluation')}}(min)
-          </label>
-          <div class="input-group">
-            <select class="form-control select2" width=100% name="eval_min_value">
-              <option value="">{{__('labels.selectable')}}</option>
-              @foreach(config('attribute.task_review_evaluation') as $key => $value)
-              <option value="{{$key}}" {{!empty(request()->get('eval_min_value')) && request()->get('eval_min_value') == $key ? 'selected' :''}}>{{$value}}</option>
-              @endforeach
-            </select>
+          <div class="col-6 col-md-4">
+            <label for="search_evaluation" class="w-100">
+              {{__('labels.evaluation')}}(min)
+            </label>
+            <div class="input-group">
+              <select class="form-control select2" width=100% name="search_evaluation[]" multiple="multiple">
+                <option value="">{{__('labels.selectable')}}</option>
+                @foreach(config('attribute.task_review_evaluation') as $key => $value)
+                <option value="{{$key}}" {{!empty(request()->get('search_evaluation')) && request()->get('search_evaluation') == $key ? 'selected' :''}}>{{$value}}</option>
+                @endforeach
+              </select>
+            </div>
           </div>
         </div>
-        <div class="col-6 col-md-4">
-          <label for="search_evaluation" class="w-100">
-            {{__('labels.evaluation')}}(max)
-          </label>
-          <div class="input-group">
-            <select class="form-control select2" width=100% name="eval_max_value">
-              <option value="">{{__('labels.selectable')}}</option>
-              @foreach(config('attribute.task_review_evaluation') as $key => $value)
-              <option value="{{$key}}" {{!empty(request()->get('eval_max_value')) && request()->get('eval_max_value') == $key ? 'selected' :''}}>{{$value}}</option>
-              @endforeach
-            </select>
-          </div>
-        </div>
-      </div>
       </div>
 
       <div class="col-6 col-md-4">
         <div class="form-group">
           <label for="search_from_date" class="w-100">
-            {{__('labels.date')}}(FROM)
+            {{__('labels.created_date')}}(FROM)
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
@@ -230,7 +216,7 @@
       <div class="col-6 col-md-4">
         <div class="form-group">
           <label for="search_to_date" class="w-100">
-            {{__('labels.date')}}(TO)
+            {{__('labels.created_date')}}(TO)
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
