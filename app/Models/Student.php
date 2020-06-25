@@ -5,7 +5,6 @@ use App;
 use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
-use App\Models\Student;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;

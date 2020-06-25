@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 //データセット
 use App\User;
-use App\Models\Teacher;
 use App\Models\UserTag;
 use App\Models\ChargeStudent;
 //他
@@ -223,8 +222,10 @@ EOT;
   }
   public function get_charge_students(){
     $items = [];
-    foreach($this->chargeStudents as $charge_student){
-      $detail = $charge_student->student->user->details("students");
+    $charge_students = (new Student)->findChargeStudent($this->id)->get();
+
+    foreach($charge_students as $charge_student){
+      $detail = $charge_student->user->details("students");
       $detail['grade'] = $detail->tag_value('grade');
       $items[$detail->id] = $detail;
     }
