@@ -18,8 +18,8 @@ class CreateSubjectsTable extends Migration
 
         Schema::create('subjects', function (Blueprint $table) {
           $table->increments('id');
-          $table->string('name')->nullable(false);
-          $table->string('remarks')->nullable(true);
+          $table->string('name')->nullable(false)->comment('科目名');
+          $table->string('remarks')->nullable(true)->comment('備考');
           $table->integer('create_user_id');
           $table->timestamps();
         });

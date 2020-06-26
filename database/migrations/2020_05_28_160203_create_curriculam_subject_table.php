@@ -15,8 +15,8 @@ class CreateCurriculamSubjectTable extends Migration
     {
         Schema::create('curriculum_subject', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('curriculum_id');
-            $table->integer('subject_id');
+            $table->integer('curriculum_id')->comment('単元ID');
+            $table->integer('subject_id')->comment('科目ID');
             $table->timestamps();
         });
     }

@@ -26,13 +26,6 @@ class TaskReviewController extends MilestoneController
     public function _store(Request $request){
       $form = $this->create_form($request);
       $item = $this->model();
-      foreach($form as $key=>$val){
-        $item = $item->where($key,$val);
-      }
-      $item = $item->first();
-      if(isset($item)){
-        return $this->error_response('すでに登録済みです');
-      }
 
       $res = $this->transaction($request, function() use ($request, $form){
         $item = $this->model()->updateOrCreate([

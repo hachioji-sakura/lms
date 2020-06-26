@@ -34,7 +34,7 @@
           <a href="javascript:void(0)" page_form="dialog" page_title="{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')).__('labels.add') : __('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{request()->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
-          @if(!empty(request()->get('search_type') != 'class_record') && request()->get('search_type') != 'class_record')
+          @if(!empty(request()->get('search_type')) && request()->get('search_type') != 'class_record')
           <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool" title="{{__('labels.complete').__('labels.tasks')}}">
             <i class="fa fa-check"></i>
           </a>
@@ -82,7 +82,7 @@
                     </div>
                   </div>
                   <div class="col">
-                    <div class="row float-right">
+                    <div class="row">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
                       <div class="col-12">

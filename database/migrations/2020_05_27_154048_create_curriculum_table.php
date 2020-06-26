@@ -16,9 +16,9 @@ class CreateCurriculumTable extends Migration
     {
         Schema::create('curriculums', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable(false);
-            $table->string('remarks')->nullable(true);
-            $table->integer('create_user_id');
+            $table->string('name')->nullable(false)->comment('単元名');
+            $table->string('remarks')->nullable(true)->comment('備考');
+            $table->integer('create_user_id')->comment('登録ユーザー');
             $table->timestamps();
         });
     }

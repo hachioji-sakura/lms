@@ -312,9 +312,6 @@ class StudentController extends UserController
     $item = $model->details();
     $item['tags'] = $model->tags();
     $user = $param['user'];
-    if($request->has('search_type')){
-      $param['search_type'] = $request->get('search_type');
-    }
     $init = [
       'param' => $param,
       'item' => $item,

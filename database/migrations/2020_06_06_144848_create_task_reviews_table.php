@@ -15,10 +15,10 @@ class CreateTaskReviewsTable extends Migration
     {
         Schema::create('task_reviews', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('task_id')->nullable(false);
-            $table->integer('evaluation')->nullable(false);
+            $table->integer('task_id')->nullable(false)->comment('タスクID');
+            $table->integer('evaluation')->nullable(false)->comment('評価');
             //今は使わない。コメントがいるようになったら
-            $table->string('comment')->nullable(true);
+            $table->string('comment')->nullable(true)->comment('レビューコメント');
             $table->integer('create_user_id')->nullable(false);
             $table->timestamps();
         });

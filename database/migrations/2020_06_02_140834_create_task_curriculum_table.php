@@ -15,8 +15,8 @@ class CreateTaskCurriculumTable extends Migration
     {
         Schema::create('task_curriculum', function (Blueprint $table) {
           $table->increments('id');
-          $table->integer('task_id');
-          $table->integer('curriculum_id');
+          $table->integer('task_id')->index('index_task_id')->index('index_subject_id')->comment('タスクID');
+          $table->integer('curriculum_id')->index('index_curriculum_id')->index('index_curriculum_id')->comment('単元ID');
           $table->timestamps();
         });
     }
