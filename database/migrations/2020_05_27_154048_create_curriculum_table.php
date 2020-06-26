@@ -18,6 +18,7 @@ class CreateCurriculumTable extends Migration
             $table->increments('id');
             $table->string('name')->nullable(false)->comment('単元名');
             $table->string('remarks')->nullable(true)->comment('備考');
+            $table->integer('sort_no')->nullable(true)->comment('ソートナンバー');
             $table->integer('create_user_id')->comment('登録ユーザー');
             $table->timestamps();
         });
