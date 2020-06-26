@@ -226,7 +226,7 @@
           <p>
             入会希望あり
             @if($entry_hope_count > 0)
-            <span class="badge badge-primary right">{{$entry_hope_count}}</span>
+            <span class="badge badge-danger right">{{$entry_hope_count}}</span>
             @endif
           </p>
         </a>
