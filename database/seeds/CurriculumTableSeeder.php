@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Models\Curriculum;
 use App\Models\Subject;
+use Illuminate\Support\Facades\DB;
 
 class CurriculumTableSeeder extends Seeder
 {
@@ -23,7 +24,8 @@ class CurriculumTableSeeder extends Seeder
         $h_physical_id = Subject::where('name','物理')->first()->id;
         $h_chemistry_id = Subject::where('name','化学')->first()->id;
 
-
+        DB::table('curriculum_subject')->truncate();
+        DB::table('curriculums')->truncate();
         $datam  = [
           $jh_math_id => [
             '正負の数',
