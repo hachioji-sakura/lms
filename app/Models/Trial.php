@@ -548,12 +548,12 @@ class Trial extends Model
     $teachers = $teachers->get();
 
     //30分ごとの開始時間から授業時間までのslotを作成
-    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $course_minutes);
-    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $course_minutes);
-    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $course_minutes);
+    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $lesson);
+    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $lesson);
+    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $lesson);
 /*TODO 後まわし
-    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $course_minutes);
-    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $course_minutes);
+    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $lesson);
+    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $lesson);
 */
     $ret = [];
     foreach($teachers as $teacher){
@@ -767,7 +767,7 @@ class Trial extends Model
     }
     return $this->api_response(200, '', '', $setting);
   }
-  private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
+  private function get_time_list($trial_start_time, $trial_end_time, $lesson){
     $_start = $trial_start_time;
     $time_list = [];
     if(empty($trial_start_time) || empty($trial_end_time)){
@@ -777,7 +777,8 @@ class Trial extends Model
       return [];
     }
     //体験授業は、30分、60分の2択
-    if($course_minutes>60) $course_minutes = 60;
+    $course_minutes = 30;
+    if($lesson==1) $course_minutes = 60;
 
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
