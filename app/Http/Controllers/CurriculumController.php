@@ -36,7 +36,7 @@ class CurriculumController extends MilestoneController
     public function create(Request $request){
      $this->authorize('create',new Curriculum);
       $param = $this->get_param($request);
-      $subjects = Subject::get();
+      $subjects = Subject::all();
       $param['subjects'] = $subjects;
       $param['_edit'] = false;
       return view($this->domain.'.create')->with($param);
@@ -104,7 +104,7 @@ class CurriculumController extends MilestoneController
      {
        $this->authorize('update',new Curriculum);
        $param = $this->get_param($request, $id);
-       $subjects = Subject::get();
+       $subjects = Subject::all();
        $param['subjects'] = $subjects;
        $param['_edit'] = true;
        return view($this->domain.'.create')->with($param);

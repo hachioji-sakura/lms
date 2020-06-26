@@ -67,9 +67,11 @@
                     </a>
                   </div>
                   <div class="col-2">
+                    @if(request()->get('search_type') != 'class_record')
                     <small class="badge badge-{{config('status_style')[$item->status]}}  float-right">
                       {{config('attribute.task_status')[$item->status]}}
                     </small>
+                    @endif
                   </div>
 
                   <div class="col-12 col-md-9">
@@ -169,24 +171,22 @@
       </div>
 
       <div class="col-12">
-        <label for="search_status" class="w-100">
-          {{__('labels.status')}}
-        </label>
-        <div class="row">
+        <div class="form-group">
+          <label for="search_status" class="w-100">
+            {{__('labels.status')}}
+          </label>
           @foreach(config('attribute.task_status') as $key => $value)
-          <div class="col-sm-12 col-md-2">
           <input class="frm-check-input icheck flat-green" type="checkbox" name="search_status[]" id="status_{{$key}}" value="{{$key}}" {{!empty(request()->get('search_status')) && in_array($key, request()->get('search_status'))? 'checked':''}}>
           <label class="form-check-label" for="status_{{$key}}" id="status_{{$key}}">{{$value}}</label>
-          </div>
           @endforeach
         </div>
       </div>
 
       <div class="col-12 mt-2">
         <div class="row">
-          <div class="col-6 col-md-4">
+          <div class="col-12">
             <label for="search_evaluation" class="w-100">
-              {{__('labels.evaluation')}}(min)
+              {{__('labels.task_understanding')}}
             </label>
             <div class="input-group">
               <select class="form-control select2" width=100% name="search_evaluation[]" multiple="multiple">
@@ -200,7 +200,7 @@
         </div>
       </div>
 
-      <div class="col-6 col-md-4">
+      <div class="col-6 mt-2">
         <div class="form-group">
           <label for="search_from_date" class="w-100">
             {{__('labels.created_date')}}(FROM)
@@ -213,7 +213,7 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-md-4">
+      <div class="col-6 mt-2">
         <div class="form-group">
           <label for="search_to_date" class="w-100">
             {{__('labels.created_date')}}(TO)

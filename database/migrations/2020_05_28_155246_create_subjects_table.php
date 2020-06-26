@@ -20,6 +20,7 @@ class CreateSubjectsTable extends Migration
           $table->increments('id');
           $table->string('name')->nullable(false)->comment('科目名');
           $table->string('remarks')->nullable(true)->comment('備考');
+          $table->integer('sort_no')->nullable(true)->comment('ソートナンバー');
           $table->integer('create_user_id');
           $table->timestamps();
         });

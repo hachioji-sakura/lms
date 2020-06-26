@@ -15,12 +15,15 @@ class SubjectTableSeeder extends Seeder
     {
         //
         $subjects = GeneralAttribute::where('attribute_key','charge_subject')->get();
+        $i = 1;
         foreach($subjects as $subject){
           $form = [
             'name' => $subject->attribute_name,
             'create_user_id' => 1,
+            'sort_no' => $i,
            ];
            Subject::create($form);
+           $i++;
         }
     }
 }
