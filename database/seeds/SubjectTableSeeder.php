@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Models\Subject;
 use App\Models\GeneralAttribute;
+use Illuminate\Support\Facades\DB;
 
 class SubjectTableSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class SubjectTableSeeder extends Seeder
     public function run()
     {
         //
+        DB::table('subjects')->truncate();
         $subjects = GeneralAttribute::where('attribute_key','charge_subject')->get();
         $i = 1;
         foreach($subjects as $subject){
