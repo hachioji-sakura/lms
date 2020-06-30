@@ -672,10 +672,10 @@ class TrialController extends UserCalendarController
   public function cancel(Request $request,$id){
     $param = $this->get_param($request,$id);
     $res = $this->transaction($request, function() use ($request, $id, $param){
-      $trial = Trial::where('id', $id)->first();
+      $trial = $this->model()->where('id', $id)->first();
       $trial->update(['status'=>'cancel']);
       return $this->api_response(200, '', '', $trial);
-    }, '体験削除', __FILE__, __FUNCTION__, __LINE__ );
+    }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
 
     return $this->save_redirect($res,$param,__('messages.info_deleted'));
   }
