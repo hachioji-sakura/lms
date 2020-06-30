@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskComment;
 use App\Models\Review;
 use App\Models\Student;
+use App\Models\Curriculum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,9 @@ class TaskController extends MilestoneController
         $param = $this->get_param($request);
         $user = $this->login_details($request);
         $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
+        $param['curriculums'] = Curriculum::all();
         $param['_edit'] = false;
+        $param['task_type'] = $request->get('task_type');
         return view($this->domain . '.create',$param);
     }
 
@@ -69,6 +72,7 @@ class TaskController extends MilestoneController
         }
         $res = $this->transaction($request, function() use ($request, $form){
           $item = $this->model()->create($form);
+          $item->curriculums()->attach($request->get('curriculum_ids'));
           if($request->hasFile('upload_file')){
             if ($request->file('upload_file')->isValid([])) {
               $item->file_upload($request->file('upload_file'));
@@ -107,7 +111,11 @@ class TaskController extends MilestoneController
       $form['body'] = $request->get('body');
       $form['milestone_id'] = $request->get('milestone_id');
       $form['type'] = $request->get('type');
-      $form['status'] = 'new'; //登録時はnew
+      if($form['type'] == 'class_record'){
+        $form['status'] = 'done';
+      }else{
+        $form['status'] = 'new';
+      }
       $form['target_user_id'] = $request->get('target_user_id');
       $form['create_user_id'] = $user->user_id;
       $form['start_schedule'] = $request->get('start_schedule');
@@ -168,6 +176,8 @@ class TaskController extends MilestoneController
         $param['item'] = $item;
         $param['target_student'] = Student::where('user_id',$item->target_user_id)->first();
         $param['_edit'] = true;
+        $param['task_type'] = $request->get('task_type');
+        $param['curriculums'] = Curriculum::all();
         return view($this->domain.'.create')->with($param);
     }
 
@@ -199,7 +209,7 @@ class TaskController extends MilestoneController
             $file = $request->file('upload_file');
           }
         }
-        $item->change($form, $file, $is_file_delete);
+        $item->change($form, $file, $is_file_delete,$request->get('curriculum_ids'));
 
         return $this->api_response(200, '', '', $item);
       }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );

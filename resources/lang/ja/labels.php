@@ -170,6 +170,7 @@ return [
   'lesson_time' => '授業時間',
   'lesson_type' => '授業形態',
   'subject' => '科目',
+  'subjects'=> '科目',
   'work' => '作業',
   'place' => '場所',
   'control' => '操作',
@@ -371,5 +372,11 @@ return [
   'task_schedule' => '予定',
   'task_remind' => '通知する',
   'notification' => '通知',
-
+  'curriculums' => '単元',
+  'curriculums_name' => '単元名',
+  'subjects_name' => '科目名',
+  'homework' => '宿題',
+  'class_record' => '授業記録',
+  'task_understanding' => '理解度',
+  'created_date' => '起票日',
 ];
