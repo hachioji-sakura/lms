@@ -20,17 +20,17 @@ return array(
     'address' => '東京都八王子市明神町４ー７ー４ 須藤ビル2F/3F/4F',
     'floors' => [
       [
-      'name' => '北口校2F',
+      'name' => '八王子北口校2F',
       'name_en' => 'Hachioji North2F',
       'sheat_count' => 4,
       ],
       [
-      'name' => '北口校3F',
+      'name' => '八王子北口校3F',
       'name_en' => 'Hachioji North3F',
       'sheat_count' => 4,
       ],
       [
-      'name' => '北口校4F',
+      'name' => '八王子北口校4F',
       'name_en' => 'Hachioji North4F',
       'sheat_count' => 4,
       ]
@@ -43,7 +43,7 @@ return array(
     'address' => '東京都八王子市 子安町１丁目７−１３ ２F',
     'floors' => [
       [
-      'name' => '南口校',
+      'name' => '八王子南口校',
       'name_en' => 'Hachioji South',
       'sheat_count' => 2,
       ]

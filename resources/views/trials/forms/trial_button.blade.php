@@ -6,6 +6,9 @@
   <i class="fa fa-edit"></i>
   {{__('labels.edit')}}
 </a>
+<a title="{{$item["id"]}}" href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}/cancel"  role="" class="mr-1 underline">
+  <i class="fa fa-times mr-1"></i>{{__('labels.delete')}}
+</a>
 <br>
 @if($item->is_trial_lesson_complete()==false)
 <a href="trials/{{$item->id}}/to_calendar" role="button" class="btn btn-info btn-sm mt-1">

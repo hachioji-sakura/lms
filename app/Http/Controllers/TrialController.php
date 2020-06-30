@@ -664,4 +664,19 @@ class TrialController extends UserCalendarController
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
+  public function show_cancel_page(Request $request, $id){
+    $param = $this->get_param($request,$id);
+    $param['action'] = 'cancel';
+    return view('components.confirm')->with($param);
+  }
+  public function cancel(Request $request,$id){
+    $param = $this->get_param($request,$id);
+    $res = $this->transaction($request, function() use ($request, $id, $param){
+      $trial = $this->model()->where('id', $id)->first();
+      $trial->update(['status'=>'cancel']);
+      return $this->api_response(200, '', '', $trial);
+    }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
+
+    return $this->save_redirect($res,$param,__('messages.info_deleted'));
+  }
 }

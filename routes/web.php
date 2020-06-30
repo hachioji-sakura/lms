@@ -108,6 +108,8 @@ Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setti
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
 
+Route::get('trials/{id}/cancel','TrialController@show_cancel_page');
+Route::put('trials/{id}/cancel','TrialController@cancel');
 
 Route::get('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join');
 Route::post('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join_mail_send');
@@ -341,6 +343,8 @@ Route::get('managers/{id}/messages', 'ManagerController@message_list');
 
 
 Route::resource('tasks','TaskController');
+Route::resource('task_reviews','TaskReviewController');
+
 //生徒画面に取り込み
 //Route::get('students/{id}/tasks', 'StudentController@task_list');
 
@@ -356,3 +360,8 @@ Route::put('tasks/{id}/done', 'TaskController@done');
 Route::get('tasks/{id}/review', 'TaskController@show_review_page');
 Route::put('tasks/{id}/review', 'TaskController@review');
 Route::post('task_comments/create', 'TaskCommentController@store');
+
+Route::resource('curriculums','CurriculumController');
+Route::get('curriculums/{id}/delete', 'CurriculumController@delete');
+Route::resource('subjects','SubjectController');
+Route::get('subjects/{id}/delete', 'SubjectController@delete');

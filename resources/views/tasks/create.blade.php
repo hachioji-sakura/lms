@@ -8,6 +8,7 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      <input type="hidden" name="type" value="{{$task_type}}">
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
@@ -18,15 +19,15 @@
 
       <div class="row mt-2">
         <div class="col-12">
-          <label>{{__('labels.type')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <select name="type" class="form-control"  required="true">
-            @foreach(config('attribute.task_type') as $key => $value)
-            <option value="{{$key}}"
+          <label>{{__('labels.curriculums_name')}}</label>
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <select name="curriculum_ids[]" class="form-control select2"  width=100%  multiple="multiple">
+            @foreach($curriculums as $curriculum)
+            <option value="{{$curriculum->id}}"
             @if(!empty($item) && $_edit)
-              {{$item->type == $key ? "selected" : "" }}
+              {{$item->curriculums->contains($curriculum->id)  ? "selected" : "" }}
             @endif
-            >{{$value}}</option>
+            >{{$curriculum->name}}</option>
             @endforeach
           </select>
         </div>
@@ -78,12 +79,12 @@
           <div class="col-6">
             <label>{{__('labels.start_schedule')}}</label>
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   placeholder=""  value="{{$_edit ? $item->start_schedule : ""}}">
+            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   placeholder=""  value="{{$_edit && !empty($item->start_schedule) ? date("Y/m/d", strtotime($item->start_schedule)) : ''}}">
           </div>
           <div class="col-6">
             <label>{{__('labels.end_schedule')}}</label>
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <input type="text" name="end_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}" placeholder=""  value="{{$_edit ? $item->end_schedule : "" }}">
+            <input type="text" name="end_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}" placeholder=""  value="{{$_edit && !empty($item->end_schedule) ?  date("Y/m/d", strtotime($item->end_schedule)) : "" }}">
           </div>
         </div>
         <div class="row mt-2">
