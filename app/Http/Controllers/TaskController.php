@@ -225,25 +225,25 @@ class TaskController extends MilestoneController
     public function show_new_page(Request $request, $id){
       $param = $this->get_param($request,$id);
       $param['action'] = 'new';
-      return view($this->domain.'.confirm')->with($param);
+      return view('components.confirm')->with($param);
     }
 
     public function show_cancel_page(Request $request, $id){
       $param = $this->get_param($request,$id);
       $param['action'] = 'cancel';
-      return view($this->domain.'.confirm')->with($param);
+      return view('components.confirm')->with($param);
     }
 
     public function show_progress_page(Request $request, $id){
       $param = $this->get_param($request,$id);
       $param['action'] = 'progress';
-      return view($this->domain.'.confirm')->with($param);
+      return view('components.confirm')->with($param);
     }
 
     public function show_done_page(Request $request, $id){
       $param = $this->get_param($request,$id);
       $param['action'] = 'done';
-      return view($this->domain.'.confirm')->with($param);
+      return view('components.confirm')->with($param);
     }
 
     public function new(Request $request ,$id){

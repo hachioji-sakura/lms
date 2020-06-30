@@ -1,7 +1,7 @@
 <div id="{{$action}}_form">
   <div class="row">
     <div class="col-6">
-      <form method="POST" action="/tasks/{{$item->id}}/{{$action}}">
+      <form method="POST" action="/{{$domain}}/{{$item->id}}/{{$action}}">
         @csrf
         @method('PUT')
         <button type="submit" class="btn btn-submit btn-primary w-100">

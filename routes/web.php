@@ -108,6 +108,8 @@ Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setti
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
 
+Route::get('trials/{id}/cancel','TrialController@show_cancel_page');
+Route::put('trials/{id}/cancel','TrialController@cancel');
 
 Route::get('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join');
 Route::post('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join_mail_send');
