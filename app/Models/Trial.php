@@ -90,7 +90,6 @@ class Trial extends Model
       case "fix":
       case "presence":
       case "new":
-      case "cancel":
         $status = 'new';
         if($this->is_confirm_trial_lesson()==true){
           $status = 'confirm';
