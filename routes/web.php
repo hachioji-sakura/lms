@@ -365,3 +365,6 @@ Route::resource('curriculums','CurriculumController');
 Route::get('curriculums/{id}/delete', 'CurriculumController@delete');
 Route::resource('subjects','SubjectController');
 Route::get('subjects/{id}/delete', 'SubjectController@delete');
+
+Route::resource('schools','SchoolController');
+Route::get('schools/{id}/delete','SchoolController@delete');

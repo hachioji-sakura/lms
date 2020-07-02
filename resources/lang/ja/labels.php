@@ -379,4 +379,6 @@ return [
   'class_record' => '授業記録',
   'task_understanding' => '理解度',
   'created_date' => '起票日',
+  'schools' => '学校',
+  'hp_url' => 'ホームページURL',
 ];
