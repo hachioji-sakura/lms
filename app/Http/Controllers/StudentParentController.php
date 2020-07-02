@@ -284,6 +284,7 @@ class StudentParentController extends TeacherController
       }
       return $this->transaction($request, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
+        //ユーザー登録＝入会ではない
         $parent = StudentParent::where('user_id', $user->id)->first();
         if(!isset($parent)){
           $parent = StudentParent::create([
@@ -294,7 +295,7 @@ class StudentParentController extends TeacherController
                   'phone_no' => $form['phone_no'],
                   'post_no' => $form['post_no'],
                   'address' => $form['address'],
-                  'status' => 'regular',
+                  'status' => 'trial',
                   'user_id' => $user->id,
                   'create_user_id' => $user->id,
                 ]);
@@ -308,7 +309,7 @@ class StudentParentController extends TeacherController
             'phone_no' => $form['phone_no'],
             'post_no' => $form['post_no'],
             'address' => $form['address'],
-            'status' => 'regular',
+            'status' => 'trial',
           ]);
         }
         $user->set_password($form['password']);

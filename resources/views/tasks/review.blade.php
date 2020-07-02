@@ -1,21 +1,22 @@
-<div id="review_form">
-  <form method="POST" action="/tasks/{{$item->id}}/review">
+<div id="create_review">
+  <form method="POST" action="/task_reviews">
     @csrf
-    @method('PUT')
+    <input type="hidden" name="task_id" value="{{$task_id}}"
     <div class="row mb-2">
       <div class="col-12">
-        <label for="stars" class="ml-2">
-          {{__('labels.evaluation')}}
+        <label for="evaluation" class="ml-2">
+          {{__('labels.task_understanding')}}
         </label>
         <span class="badge badge-danger ml-1">
           {{__('labels.required')}}
         </span>
         <div class="form-check">
-          @for($i=1;$i<=5;$i++)
-          <input class="frm-check-input icheck flat-green" type="radio" name="stars" id="stars" value="{{$i}}" required="true" checked>
-          <label class="form-check-label" for="stars">
-            {{$i}}
+          @for($i=4;$i>=1;$i--)
+          <input class="frm-check-input icheck flat-green ml-2" type="radio" name="evaluation" id="evaluation{{$i}}" value="{{$i}}" required="true" {{$i == 4 ? 'checked' : ''}}>
+          <label class="form-check-label" for="evaluation{{$i}}">
+            {{config('attribute.task_review_evaluation')[$i]}}
           </label>
+          <br />
           @endfor
         </div>
       </div>
@@ -33,9 +34,9 @@
       </div>
     </div>
   -->
-    <div class="row">
+    <div class="row mt-2">
       <div class="col-6">
-        <button type="submit" class="btn btn-submit btn-primary w-100">
+        <button type="submit" class="btn btn-submit btn-primary w-100" accesskey="create_review">
           <i class="fa fa-pen"></i>
           {{__('labels.review_button')}}
         </button>
@@ -49,9 +50,3 @@
     </div>
   </form>
 </div>
-
-<script>
-$(function(){
-  base.pageSettinged("review_form");
-});
-</script>

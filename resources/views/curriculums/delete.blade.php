@@ -1,11 +1,11 @@
-<div id="{{$action}}_form">
+<div id="delete_form">
   <div class="row">
     <div class="col-6">
-      <form method="POST" action="/tasks/{{$item->id}}/{{$action}}">
+      <form method="POST" action="/{{$domain}}/{{$item->id}}">
         @csrf
-        @method('PUT')
+        @method('DELETE')
         <button type="submit" class="btn btn-submit btn-primary w-100">
-          <i class="fa fa-check"></i>
+          <i class="fa fa-trash"></i>
           OK
         </button>
       </form>
