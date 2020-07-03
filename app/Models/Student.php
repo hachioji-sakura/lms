@@ -234,6 +234,13 @@ class Student extends Model
     return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
   /**
+   *　リレーション：学校
+   */
+  public function relations(){
+    return $this->belongsTo('App\Models\School', 'school_id');
+  }
+
+  /**
    *　スコープ：ユーザーステータス
    */
    /*
