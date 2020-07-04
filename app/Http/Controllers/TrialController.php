@@ -386,6 +386,7 @@ class TrialController extends UserCalendarController
          'access_key' => $access_key,
          'item' => $res['data'],
          'send_to' => 'parent',
+         'login_user' => $u->details(),
        ], 'text', 'trial');
        return view($this->domain.'.entry',
          ['result' => "success"]);
@@ -411,7 +412,7 @@ class TrialController extends UserCalendarController
      if($request->has('lesson')){
        $lesson = $request->get('lesson');
      }
-     $param['candidate_teachers'] = $param['item']->candidate_teachers(1, $lesson);
+     $param['candidate_teachers'] = $param['item']->candidate_teachers($teacher_id, $lesson);
      $param['view'] = 'to_calendar';
      $param['select_teacher_id'] = $teacher_id;
      $param['select_lesson'] = $lesson;
@@ -657,6 +658,7 @@ class TrialController extends UserCalendarController
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
        $form = $this->create_form($request);
        $param['item']->update([
+         'status' => 'new',
          'trial_start_time1' => $form['trial_start_time1'],
          'trial_end_time1' => $form['trial_end_time1'],
          'trial_start_time2' => $form['trial_start_time2'],
