@@ -21,6 +21,16 @@
             {{$field['label']}}
           </label>
           <small title="id={{$item["id"]}},work={{$item["work"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
+        @elseif($key==="datetime")
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+          <small class="badge badge-success mt-1 mr-1">{{$item[$key]}}</small>
+          @if($item->is_online()==true)
+          <small class="badge badge-info mt-1 mr-1 text-sm">
+            <i class="fa fa-lock">{{__('labels.temporary_schedule')}}</i>
+          </small>
+          @endif
         @elseif($key==="place_floor_name")
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}

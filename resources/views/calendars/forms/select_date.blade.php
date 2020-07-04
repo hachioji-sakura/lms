@@ -17,6 +17,41 @@
       @if(!(isset($_edit) && $_edit==true))
       @endif
       >
+      <div class="form-check mt-2 text-danger">
+          <input type="hidden" name="is_temporary"
+          @if($item->is_temporary()==true)
+          value="true"
+          @else
+          value="false"
+          @endif
+          />
+          <input class="form-check-input icheck flat-red" type="checkbox" name="_is_temporary" id="is_temporary" value="true"
+          @if($_edit==false || ($_edit==true && $item->is_temporary()==true))
+            checked
+          @endif
+          onChange="is_temporary_click()"
+          >
+          <i class="fa fa-lock"></i>
+          <label class="form-check-label" for="is_temporary">
+              {{__('labels.temporary_schedule')}}
+          </label>
+          <script>
+          $(function(){
+            is_temporary_click();
+          });
+          function is_temporary_click(){
+            $('input[name="is_temporary"]').val('false');
+            $('.schedule_change_remind').show();
+            $('.is_temporary_message').hide();
+            if($('input[name="_is_temporary"]').prop('checked')==true){
+              $('input[name="is_temporary"]').val('true');
+              $('.schedule_change_remind').hide();
+              $('.is_temporary_message').show();
+            }
+          }
+          </script>
+      </div>
+
     </div>
   </div>
 </div>

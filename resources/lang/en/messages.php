@@ -138,4 +138,5 @@ return [
  'task_status_done' => 'A status of this task is updated to [done]',
  'task_reviewed' => 'Reviewed',
  'warning_schedule_add' => 'This additional class requires an additional tuition fee and must be approved by the parent.',
+ 'warning_schedule_temporary' => 'This appointment is registered as a temporary schedule and you cannot operate the calendar status.',
  ];

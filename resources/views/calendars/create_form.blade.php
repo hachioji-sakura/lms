@@ -139,6 +139,11 @@
     @endforeach
     <div class="col-6 p-2 font-weight-bold">{{__('labels.remark')}}</div>
     <div class="col-6 p-2"><span id="remark"></span></div>
+    <div class="col-12 is_temporary_message collapse">
+      <div class="alert alert-warning text-sm pr-2">
+      <i class="icon fa fa-exclamation-triangle"></i>{!!nl2br(__('messages.warning_schedule_temporary'))!!}
+      </div>
+    </div>
     @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
 </div>
 @endsection

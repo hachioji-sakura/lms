@@ -1,4 +1,4 @@
-<div class="col-12 mt-2">
+<div class="col-12 mt-2 schedule_change_remind">
   <div class="form-group">
     <label for="send_mail" class="w-100">
       {{__('labels.schedule_change_remind')}}

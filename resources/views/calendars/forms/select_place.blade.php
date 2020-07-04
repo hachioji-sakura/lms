@@ -27,7 +27,7 @@
           value="false"
           @endif
           />
-          <input class="form-check-input icheck flat-red" type="checkbox" name="_is_online" id="is_online" value="true"
+          <input class="form-check-input icheck flat-blue" type="checkbox" name="_is_online" id="is_online" value="true"
           @if($item->is_online()==true)
             checked
           @endif

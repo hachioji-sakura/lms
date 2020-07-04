@@ -227,6 +227,7 @@ class UserCalendarController extends MilestoneController
     $form['place_floor_id'] = $request->get('place_floor_id');
     $form['is_exchange'] = false;
     if($request->has('is_online')) $form['is_online'] = $request->get('is_online');
+    if($request->has('is_temporary')) $form['is_temporary'] = $request->get('is_temporary');
     //事務の指定
     if($request->has('manager_id')){
       $form['manager_id'] = $request->get('manager_id');

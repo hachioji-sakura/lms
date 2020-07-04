@@ -20,7 +20,7 @@
       @endif
     </label>
     <div class="input-group">
-      <div class="form-check ml-2" id="schedule_type_form_group">
+      <div class="form-check" id="schedule_type_form_group">
           <input class="form-check-input icheck flat-green" type="radio" name="schedule_type" id="schedule_type_class" value="class" required="true" onChange="schedule_type_change()"
           @if(isset($_edit) && $_edit==true && $item->is_management()==false)
             checked

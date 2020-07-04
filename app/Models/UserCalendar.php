@@ -308,6 +308,10 @@ EOT;
     if($this->has_tag('is_online', 'true')) return true;
     return false;
   }
+  public function is_temporary(){
+    if($this->has_tag('is_temporary', 'true')) return true;
+    return false;
+  }
   //振替対象の場合:true
   public function is_exchange_target(){
     if($this->is_single()==false) return false;
@@ -821,7 +825,7 @@ EOT;
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
     }
     //TODO 将来的にsubject_exprに関するロジックは不要
-    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
+    $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online', 'is_temporary'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
         UserCalendarTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
