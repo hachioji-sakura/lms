@@ -47,9 +47,9 @@
             @if($item->is_regular_schedule_fix()==true)
             <div class="row mt-2">
               <div class="col-12">
-                <a href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item->id}}/admission" role="button" class="btn btn-sm btn-success float-right mx-1 text-center">
+                <a href="javascript:void(0);" page_title="契約申込に関する連絡" page_form="dialog" page_url="/trials/{{$item->id}}/admission" role="button" class="btn btn-sm btn-success float-right mx-1 text-center">
                   <i class="fa fa-envelope"></i>
-                  入塾案内連絡
+                  契約申込に関する連絡
                 </a>
               </div>
             </div>

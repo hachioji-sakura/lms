@@ -27,7 +27,7 @@
 </a>
 @endif
 @if($item->status=='entry_hope' || $item->status=='entry_guidanced')
-<a class="btn btn-sm btn-flat btn-success mt-1" role="button"  href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
-  <i class="fa fa-envelope mr-1"></i>入塾案内連絡
+<a class="btn btn-sm btn-flat btn-success mt-1" role="button"  href="javascript:void(0);" page_title="契約申込に関する連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
+  <i class="fa fa-envelope mr-1"></i>契約申込に関する連絡
 </a>
 @endif

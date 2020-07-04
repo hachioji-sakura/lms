@@ -1,6 +1,6 @@
 @extends('layouts.simplepage')
 @section('title')
-  入会のご案内
+  契約お申し込み
 @endsection
 @section('title_header')
 <ol class="step">
