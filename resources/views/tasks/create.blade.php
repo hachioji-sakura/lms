@@ -16,22 +16,26 @@
           <input type="text" class="form-control" name="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
         </div>
       </div>
-
       <div class="row mt-2">
-        <div class="col-12">
-          <label>{{__('labels.curriculums_name')}}</label>
+        <div class="col-6">
+          <label>{{__('labels.subjects')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          <select name="curriculum_ids[]" class="form-control select2"  width=100%  multiple="multiple">
-            @foreach($curriculums as $curriculum)
-            <option value="{{$curriculum->id}}"
+          <select name="subject_id" id="select_subject" class="form-control select2">
+            @foreach($subjects as $subject)
+            <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)
-              {{$item->curriculums->contains($curriculum->id)  ? "selected" : "" }}
+              {{$item->curriculums->subjects->contains($basubject->id)  ? "selected" : "" }}
             @endif
-            >{{$curriculum->name}}</option>
+            >
+              {{$subject->name}}</option>
             @endforeach
           </select>
         </div>
+        <div class="col-6" id="curriculums">
+
+        </div>
       </div>
+
 
       <div class="row mt-2">
         <div class="col-12">
@@ -142,3 +146,14 @@
       </div>
     </form>
   </div>
+  <script>
+  $("#add_curriculum").on("click", function(e){
+    $("#curriculums").load('{{request()->task_type}}');
+  });
+  $("#select_subject").on('change', function(e){
+
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val() );
+    base.pageSettinged('curriculum_select');
+
+  });
+  </script>

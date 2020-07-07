@@ -180,4 +180,11 @@ class CurriculumController extends MilestoneController
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
     }
+
+    public function get_select_list(Request $request){
+      $param = $this->get_param($request);
+      $curriculums = $this->model()->searchBySubjectId($request->get('subject_id'))->get();
+      $param['curriculums'] = $curriculums;
+      return view('curriculums.components.select_list')->with($param);
+    }
 }
