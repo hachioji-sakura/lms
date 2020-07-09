@@ -1,7 +1,7 @@
 @section('first_form')
 <div class="row">
   @if($item->work!=9)
-    @if($item->trial_id == 0 && $item["exchanged_calendar_id"]==0)
+    @if($item->trial_id == 0 && $item["exchanged_calendar_id"]==0 && $_edit==false)
     <div class="col-12">
       <div class="alert alert-warning text-sm pr-2 schedule_type schedule_type_class">
         <h5><i class="icon fa fa-exclamation-triangle"></i> {{__('labels.important')}}</h5>
