@@ -613,7 +613,7 @@ EOT;
 
     $schedules = $this->get_add_calendar_date($start_date, $end_date, $range_month, $month_week_count);
     foreach($schedules as $date => $already_calendar){
-      if(isset($already_calendar) && count($already_calendar)>0){
+      if(isset($already_calendar['already_calendars']) && count($already_calendar['already_calendars'])>0){
         //作成済みの場合
         continue;
       }
@@ -709,6 +709,23 @@ EOT;
       $calendar->update(['status' => $default_status]);
     }
     return $this->api_response(200, "", "", $calendar);
+  }
+  public function set_status(){
+    parent::set_status();
+    if($this->status=='fix'){
+      $start_date = $this->enable_start_date;
+      $end_date = $this->enable_end_date;
+      if(strtotime($start_date) < strtotime(date('Y-m-1'))){
+        //今月1日より以前なら、今月1日を登録開始にする
+        $start_date = date('Y-m-1');
+      }
+      if(empty($end_date)){
+        //設定がないなら来月末
+        $end_date = date('Y-m-t', strtotime('+1 month'));
+      }
+      \Log::warning("mogumogu(".$start_date.":".$end_date.")");
+      $this->setting_to_calendar($start_date, $end_date, 1, 5);
+    }
   }
 
 }
