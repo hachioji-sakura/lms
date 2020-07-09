@@ -8,35 +8,62 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
-      <input type="hidden" name="type" value="{{$task_type}}">
-      <div class="row mt-2">
+      <div class="row">
         <div class="col-12">
-          <label>{{__('labels.title')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <input type="text" class="form-control" name="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+          <label>
+            {{__('labels.type')}}
+          </label>
+          <div class="input_group">
+            <label class="form-check-label" for="type_homework">
+              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true">
+              {{__('labels.homework')}}
+            </label>
+            <label class="form-check-label" for="type_class_record">
+              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true">
+              {{__('labels.class_record')}}
+            </label>
+          </div>
         </div>
       </div>
+
       <div class="row mt-2">
         <div class="col-6">
           <label>{{__('labels.subjects')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          <select name="subject_id" id="select_subject" class="form-control select2">
+          <select name="subject_id" id="select_subject" width="100%" class="form-control select2">
+            <option value=" ">{{__('labels.selectable')}}</option>
             @foreach($subjects as $subject)
             <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)
               {{$item->curriculums->subjects->contains($basubject->id)  ? "selected" : "" }}
             @endif
             >
-              {{$subject->name}}</option>
+            {{$subject->name}}</option>
             @endforeach
           </select>
         </div>
-        <div class="col-6" id="curriculums">
+        <div class="col-6">
+          <div class="row">
+            <div class="col-12" id="curriculums">
 
+            </div>
+            <div class="col-12" id="new_curriculums">
+
+            </div>
+          </div>
         </div>
       </div>
-
-
+      <div class="row mt-2">
+        <div class="col-12">
+          <label>{{__('labels.title')}}</label>
+          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+          <a href="javascript:void(0)" class="btn btn-default btn-sm" id="title_set">
+            <i class="fa fa-plus"></i>
+            自動セット
+          </a>
+          <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+        </div>
+      </div>
       <div class="row mt-2">
         <div class="col-12">
           <h3 class="card-title">
@@ -147,13 +174,22 @@
     </form>
   </div>
   <script>
-  $("#add_curriculum").on("click", function(e){
-    $("#curriculums").load('{{request()->task_type}}');
-  });
   $("#select_subject").on('change', function(e){
-
-    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val() );
-    base.pageSettinged('curriculum_select');
-
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(), function(){
+      base.pageSettinged('create_tasks');
+    });
   });
+  $("#title_set").on('click', function(e){
+    var curriculums = "";
+    $("#select_curriculum option:selected").each(function(){
+      curriculums += $(this).text() +"_";
+    });
+    $('input:text[name="new_curriculums[]"]').each(function(){
+      curriculums += $(this).val() + "_";
+    });
+    var title = $("#select_subject option:selected" ).text().trim() + '_' +  curriculums + $('input:radio[name="type"]:checked').parent().parent().text().trim();
+    console.log("hoge");
+    $("#title").val(title);
+  });
+
   </script>
