@@ -1273,7 +1273,7 @@ EOT;
       }
     }
     if($this->status != $status){
-      UserCalendar::where('id', $this->id)->update(['status' => $status]);
+      $this->update(['status' => $status]);
     }
   }
 }
