@@ -362,6 +362,7 @@ Route::put('tasks/{id}/review', 'TaskController@review');
 Route::post('task_comments/create', 'TaskCommentController@store');
 
 Route::get('curriculums/get_select_list','CurriculumController@get_select_list');
+Route::get('curriculums/name/{name}', 'CurriculumController@name_check');
 Route::resource('curriculums','CurriculumController');
 Route::get('curriculums/{id}/delete', 'CurriculumController@delete');
 

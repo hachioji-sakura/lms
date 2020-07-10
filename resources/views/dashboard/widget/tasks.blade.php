@@ -58,10 +58,10 @@
             <div class="row">
               <div class="col-12 ">
                 <div class="row">
-
                   <div class="col-10 text-wrap">
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
                       <h4>
+                        <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'list-alt'}}"></i>
                         {{$item->title}}
                       </h4>
                     </a>
@@ -76,7 +76,7 @@
 
                   <div class="col-12 col-md-9">
                     <div class="row">
-                      <div class="col-12 text-truncate">
+                      <div class="col-12">
                         <small class="text-muted">
                           {{$item->body}}
                         </small>
@@ -129,7 +129,7 @@
                   <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
                     <i class="fa fa-file-alt"></i>
                   </a>
-                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit?task_type={{request()->get('search_type')}}" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
                     <i class="fa fa-edit"></i>
                   </a>
                 @if($item->status != "cancel")

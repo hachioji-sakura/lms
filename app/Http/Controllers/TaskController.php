@@ -74,6 +74,16 @@ class TaskController extends MilestoneController
         }
         $res = $this->transaction($request, function() use ($request, $form){
           $item = $this->model()->create($form);
+          if( !empty($request->get('new_curriculums')) ){
+            foreach( $request->get('new_curriculums') as $curriculum_name){
+              $curriculum = Curriculum::create([
+                'name' => $curriculum_name,
+                'create_user_id' => Auth::user()->id,
+              ]);
+              $curriculum->subjects()->attach($request->get('subject_id'));
+              $item->curriculums()->attach($curriculum->id);
+            }
+          }
           $item->curriculums()->attach($request->get('curriculum_ids'));
           if($request->hasFile('upload_file')){
             if ($request->file('upload_file')->isValid([])) {
@@ -106,6 +116,7 @@ class TaskController extends MilestoneController
        return $res;
      }
 
+
     public function create_form(Request $request){
       $user = $this->login_details($request);
       $form = [];
@@ -118,6 +129,7 @@ class TaskController extends MilestoneController
       }else{
         $form['status'] = 'new';
       }
+
       $form['target_user_id'] = $request->get('target_user_id');
       $form['create_user_id'] = $user->user_id;
       $form['start_schedule'] = $request->get('start_schedule');
@@ -180,6 +192,7 @@ class TaskController extends MilestoneController
         $param['_edit'] = true;
         $param['task_type'] = $request->get('task_type');
         $param['curriculums'] = Curriculum::all();
+        $param['subjects'] = Subject::all();
         return view($this->domain.'.create')->with($param);
     }
 

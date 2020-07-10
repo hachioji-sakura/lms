@@ -27,7 +27,7 @@
       </div>
 
       <div class="row mt-2">
-        <div class="col-6">
+        <div class="col-12 mb-2">
           <label>{{__('labels.subjects')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           <select name="subject_id" id="select_subject" width="100%" class="form-control select2">
@@ -35,22 +35,18 @@
             @foreach($subjects as $subject)
             <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)
-              {{$item->curriculums->subjects->contains($basubject->id)  ? "selected" : "" }}
+              {{$item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
             @endif
             >
             {{$subject->name}}</option>
             @endforeach
           </select>
         </div>
-        <div class="col-6">
-          <div class="row">
-            <div class="col-12" id="curriculums">
+        <div class="col-12" id="curriculums">
 
-            </div>
-            <div class="col-12" id="new_curriculums">
+        </div>
+        <div class="col-12" id="new_curriculums">
 
-            </div>
-          </div>
         </div>
       </div>
       <div class="row mt-2">

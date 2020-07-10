@@ -181,6 +181,15 @@ class CurriculumController extends MilestoneController
       return $res;
     }
 
+    public function name_check(Request $request, $name){
+      $item = Curriculum::where('name', $name)->SearchBySubjectId($request->get('subject_id'))->first();
+      if(isset($item)){
+        $json = $this->api_response(200,"","",["name"=>$name]);
+        return $this->send_json_response($json);
+      }
+      return $this->send_json_response($this->notfound());
+    }
+
     public function get_select_list(Request $request){
       $param = $this->get_param($request);
       $curriculums = $this->model()->searchBySubjectId($request->get('subject_id'))->get();
