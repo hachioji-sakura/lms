@@ -236,6 +236,14 @@ class Student extends Model
     return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
   /**
+   * 体験申し込み
+  */
+  public function trials()
+  {
+    return $this->hasMany('App\Models\Trial', 'student_id')->where('status', '!=', 'cancel');
+  }
+
+  /**
    *　スコープ：ユーザーステータス
    */
    /*
@@ -1095,12 +1103,5 @@ EOT;
     //カレンダー設定がある
     if(count($this->user->calendar_member_settings) > 0) return true;
     return false;
-  }
-  public function trial()
-  {
-    $trial = Trial::where('student_id', $this->id)
-                ->where('status', '!=', 'cancel')
-                ->first();
-    return $trial;
   }
 }
