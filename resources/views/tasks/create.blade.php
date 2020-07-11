@@ -209,13 +209,12 @@
   $("#title_set").on('click', function(e){
     var curriculums = "";
     $("#select_curriculum option:selected").each(function(){
-      curriculums += $(this).text() +"_";
+      curriculums += "_" + $(this).text();
     });
     $('input:text[name="new_curriculums[]"]').each(function(){
-      curriculums += $(this).val() + "_";
+      curriculums += "_" + $(this).val();
     });
-    var title = $("#select_subject option:selected" ).text().trim() + '_' +  curriculums + $('input:radio[name="type"]:checked').parent().parent().text().trim();
-    console.log("hoge");
+    var title = $("#select_subject option:selected" ).text().trim() +  curriculums;
     $("#title").val(title);
   });
 

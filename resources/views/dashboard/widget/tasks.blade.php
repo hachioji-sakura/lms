@@ -129,11 +129,10 @@
                 <i class="fa fa-clock"></i>
                 {{$item->create_user->details()->name()}}/
                 {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
-                <button type="button" class="btn btn-sm btn-secondary rounded-circle toggle-btn ml-2" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-angle-down"></i></button>
+                <a class="toggle-btn ml-2" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-chevron-circle-down fa-lg"></i></a>
               </small>
-
             </div>
-            <div class="row mt-5 collapse" id="setting_details{{$loop->iteration}}">
+            <div class="row mt-4 collapse" id="setting_details{{$loop->iteration}}">
               <div class="col-12">
                 @component('tasks.components.buttons',[
                   'item' => $item,
@@ -148,7 +147,7 @@
                     <i class="fa fa-edit"></i>
                   </a>
                 @if($item->status != "cancel")
-                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
+                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
                     <i class="fa fa-trash"></i>
                   </a>
                 @endif
@@ -178,8 +177,26 @@
           @endisset
           >
       </div>
-
-      <div class="col-12">
+      <div class="col-6">
+        <label>
+          {{__('labels.type')}}
+        </label>
+        <div class="input-group">
+          <div class="form-check">
+            <label class="form-check-label" for="type_class_record">
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_class_record" value="class_record"  {{request()->get('search_type') == 'class_record' ? 'checked': ''}} checked>
+              {{__('labels.class_record')}}
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label" for="type_homework">
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_homework" value="homework" {{request()->get('search_type') == 'homework' ? 'checked': ''}}>
+              {{__('labels.homework')}}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
         <div class="form-group">
           <label for="search_status" class="w-100">
             {{__('labels.status')}}
@@ -235,7 +252,7 @@
           </div>
         </div>
       </div>
-      <input type="hidden" name="search_type" value="{{request()->search_type}}">
+
       @endslot
     @endcomponent
   </div>
