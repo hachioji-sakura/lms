@@ -129,35 +129,33 @@
                 <i class="fa fa-clock"></i>
                 {{$item->create_user->details()->name()}}/
                 {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
-                <button type="button" class="btn btn-tool toggle-btn" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-angle-down"></i></button>
+                <button type="button" class="btn btn-sm btn-secondary rounded-circle toggle-btn ml-2" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-angle-down"></i></button>
               </small>
 
             </div>
-
-            <div class="collapse" id="setting_details{{$loop->iteration}}">
-              <div class="row mt-3">
-                <div class="col-12">
-                  @component('tasks.components.buttons',[
-                    'item' => $item,
-                    'is_footer' => false,
-                  ])
-                  @endcomponent
-                  <div class="float-right">
-                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
-                      <i class="fa fa-file-alt"></i>
-                    </a>
-                    <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
-                      <i class="fa fa-edit"></i>
-                    </a>
-                  @if($item->status != "cancel")
-                    <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
-                      <i class="fa fa-trash"></i>
-                    </a>
-                  @endif
-                  </div>
+            <div class="row mt-5 collapse" id="setting_details{{$loop->iteration}}">
+              <div class="col-12">
+                @component('tasks.components.buttons',[
+                  'item' => $item,
+                  'is_footer' => false,
+                ])
+                @endcomponent
+                <div class="float-right">
+                  <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
+                    <i class="fa fa-file-alt"></i>
+                  </a>
+                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                    <i class="fa fa-edit"></i>
+                  </a>
+                @if($item->status != "cancel")
+                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
+                    <i class="fa fa-trash"></i>
+                  </a>
+                @endif
                 </div>
               </div>
             </div>
+
           </li>
           @endforeach
         </ul>

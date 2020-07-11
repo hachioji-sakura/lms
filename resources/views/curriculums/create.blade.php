@@ -19,7 +19,7 @@
         <div class="col-12">
           <label>{{__('labels.subject')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <select name="subject_ids[]" class="form-control select2" width="100%" multiple="multiple" required="true">
+          <select name="subject_ids[]" class="form-control select2" width="100%" required="true">
             @foreach($subjects as $subject)
             <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)

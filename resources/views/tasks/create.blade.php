@@ -14,15 +14,19 @@
             {{__('labels.type')}}
           </label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <div class="input_group">
-            <label class="form-check-label" for="type_homework">
-              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{$_edit && $item->type == 'homework' ? 'checked': ''}}>
-              {{__('labels.homework')}}
-            </label>
-            <label class="form-check-label" for="type_class_record">
-              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{$_edit && $item->type == 'class_record' ? 'checked': ''}}>
-              {{__('labels.class_record')}}
-            </label>
+          <div class="input-group">
+            <div class="form-check">
+              <label class="form-check-label" for="type_class_record">
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{$_edit && $item->type == 'class_record' ? 'checked': ''}} checked>
+                {{__('labels.class_record')}}
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label" for="type_homework">
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{$_edit && $item->type == 'homework' ? 'checked': ''}}>
+                {{__('labels.homework')}}
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -151,14 +155,14 @@
           </label>
           <div class="input-group">
             <div class="form-check">
-              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
               <label class="form-check-label" for="mail_send_yes">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
                 {{__('labels.task_remind')}}
               </label>
             </div>
             <div class="form-check">
-              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
               <label class="form-check-label" for="mail_send_no">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
                 {{__('labels.no_remind')}}
               </label>
             </div>
