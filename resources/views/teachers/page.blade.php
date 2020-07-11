@@ -12,167 +12,229 @@
 --}}
 
 @section('contents')
-<section id="member" class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-4">
-        @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
-            @slot('courtesy')
-            @endslot
-            @slot('alias')
-              <h6 class="widget-user-desc">
-                @foreach($item->user->tags as $tag)
-                  @if($tag->tag_key=="teacher_no")
-                    <small class="badge badge-dark mt-1 mr-1">
-                      {{$tag->keyname()}}{{$tag->name()}}
-                    </small>
-                  @endif
-                  @if($tag->tag_key=="lesson")
-                    <small class="badge badge-primary mt-1 mr-1">
-                      {{$tag->name()}}
-                    </small>
-                  @endif
-                  @if($user->role==="manager" && $tag->tag_key=="teacher_character")
-                    <small class="badge badge-info mt-1 mr-1">
-                      {{$tag->name()}}
-                    </small>
-                  @endif
-                @endforeach
-              </h6>
-            @endslot
-        @endcomponent
-			</div>
-			<div class="col-md-8">
-			</div>
+<section id="member" class="mb-1">
+	<div class="row">
+		<div class="col-12">
+      @component('components.profile', ['item' => $item, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name])
+          @slot('courtesy')
+          @endslot
+          @slot('alias')
+            <h6 class="widget-user-desc">
+              @foreach($item->user->tags as $tag)
+                @if($tag->tag_key=="teacher_no")
+                  <small class="badge badge-dark mt-1 mr-1">
+                    {{$tag->keyname()}}{{$tag->name()}}
+                  </small>
+                @endif
+                @if($tag->tag_key=="lesson")
+                  <small class="badge badge-primary mt-1 mr-1">
+                    {{$tag->name()}}
+                  </small>
+                @endif
+                @if($user->role==="manager" && $tag->tag_key=="teacher_character")
+                  <small class="badge badge-info mt-1 mr-1">
+                    {{$tag->name()}}
+                  </small>
+                @endif
+              @endforeach
+            </h6>
+          @endslot
+      @endcomponent
 		</div>
 	</div>
 </section>
-<section class="content-header">
-	<div class="container-fluid">
-		<div class="row">
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/{{$domain}}/{{$item->id}}/calendar" class="">
-        <div class="info-box">
-          <span class="info-box-icon bg-info">
-            <i class="fa fa-calendar"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.calendar_page')}}</b>
-            <span class="text-sm">{{__('labels.calendar_page_description')}}</span>
-          </div>
+<section class="mb-1">
+	<div class="row">
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a href="/{{$domain}}/{{$item->id}}/month_work" class="">
+      <div class="info-box">
+        <span class="info-box-icon bg-success">
+          <i class="fa fa-tasks"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.work_record')}}</b>
+          <span class="text-sm">{{__('labels.work_record_description')}}</span>
         </div>
-        </a>
       </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=today" class="">
-        <div class="info-box">
-          <span class="info-box-icon bg-info">
-            <i class="fa fa-clock"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.today_schedule_list')}}</b>
-            <span class="text-sm">{{__('labels.today_schedule_list_description')}}</span>
-            <b class="info-box-text text-lg"></b>
-            <span class="text-sm"></span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
-        <div class="info-box">
-          <span class="info-box-icon bg-primary">
-            <i class="fa fa-plus"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.schedule_add')}}</b>
-            <span class="text-sm">{{__('labels.schedule_add_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/{{$domain}}/{{$item->id}}/month_work" class="">
-        <div class="info-box">
-          <span class="info-box-icon bg-success">
-            <i class="fa fa-tasks"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.work_record')}}</b>
-            <span class="text-sm">{{__('labels.work_record_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/{{$domain}}/{{$item->id}}/messages" class="">
-        <div class="info-box">
-          <span class="info-box-icon bg-warning">
-            <i class="fa fa-envelope"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.messages')}}</b>
-            <span class="text-sm">{{__('labels.messages_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="/student_groups?teacher_id={{$item->id}}" >
-        <div class="info-box">
-          <span class="info-box-icon bg-secondary">
-            <i class="fa fa-users"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.student_groups')}}</b>
-            <span class="text-sm">{{__('labels.student_groups_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="/{{$domain}}/{{$item->id}}/calendar_settings" >
-        <div class="info-box">
-          <span class="info-box-icon bg-secondary">
-            <i class="fa fa-calendar-alt"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.regular_schedule_list')}}</b>
-            <span class="text-sm">{{__('labels.regular_schedule_list_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}{{__('labels.setting')}}">
-        <div class="info-box">
-          <span class="info-box-icon bg-secondary">
-            <i class="fa fa-user-cog"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.teacher_setting')}}</b>
-            <span class="text-sm">{{__('labels.teacher_setting_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      {{--
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/emergency_lecture_cancel" page_title="{{__('labels.emergency_lecture_cancel')}}">
-        <div class="info-box">
-          <span class="info-box-icon bg-danger">
-            <i class="fa fa-exclamation-triangle"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">{{__('labels.emergency_lecture_cancel')}}</b>
-            <span class="text-sm">{{__('labels.emergency_lecture_cancel_description')}}</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      --}}
+      </a>
     </div>
-	</div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a href="/{{$domain}}/{{$item->id}}/calendar" class="">
+      <div class="info-box">
+        <span class="info-box-icon bg-success">
+          <i class="fa fa-calendar"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.calendar_page')}}</b>
+          <span class="text-sm">{{__('labels.calendar_page_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a href="/{{$domain}}/{{$item->id}}/messages" class="">
+      <div class="info-box">
+        <span class="info-box-icon bg-warning">
+          <i class="fa fa-envelope"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.messages')}}</b>
+          <span class="text-sm">{{__('labels.messages_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a href="/{{$domain}}/{{$item->id}}/schedule?list=today" class="">
+      <div class="info-box">
+        <span class="info-box-icon bg-info">
+          <i class="fa fa-clock"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.today_schedule_list')}}
+            @if($today_count > 0)
+            <span class="badge badge-primary float-right">{{$today_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.today_schedule_list_description')}}</span>
+          <b class="info-box-text text-lg"></b>
+          <span class="text-sm"></span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/{{$domain}}/{{$item->id}}/schedule?list=exchange">
+      <div class="info-box">
+        <span class="info-box-icon bg-info">
+          <i class="fa fa-hourglass"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.adjust_schedule_list')}}
+            @if($confirm_count > 0)
+            <span class="badge badge-danger float-right">{{$confirm_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.adjust_schedule_list_description')}}</span>
+        </div>
+
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/{{$domain}}/{{$item->id}}/schedule?list=exchange">
+      <div class="info-box">
+        <span class="info-box-icon bg-info">
+          <i class="fa fa-exchange-alt"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.exchange_schedule_list')}}
+            @if($exchange_count > 0)
+            <span class="badge badge-danger float-right">{{$exchange_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.exchange_schedule_list_description')}}</span>
+        </div>
+
+      </div>
+      </a>
+    </div>
+    {{--
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
+      <div class="info-box">
+        <span class="info-box-icon bg-primary">
+          <i class="fa fa-plus"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.schedule_add')}}</b>
+          <span class="text-sm">{{__('labels.schedule_add_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    --}}
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/{{$domain}}/{{$item->id}}/calendar_settings?list=fix_list" >
+      <div class="info-box">
+        <span class="info-box-icon bg-primary">
+          <i class="fa fa-user-clock"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.regular_schedule_list')}}
+            @if($fix_list_setting_count > 0)
+            <span class="badge badge-primary float-right">{{$fix_list_setting_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.regular_schedule_list_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/{{$domain}}/{{$item->id}}/calendar_settings?list=confirm_list" >
+      <div class="info-box">
+        <span class="info-box-icon bg-primary">
+          <i class="fa fa-exclamation-triangle"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.regular_schedule_confirm')}}
+            @if($confirm_list_setting_count > 0)
+            <span class="badge badge-warning float-right">{{$confirm_list_setting_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.regular_schedule_confirm_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/student_groups?teacher_id={{$item->id}}" >
+      <div class="info-box">
+        <span class="info-box-icon bg-secondary">
+          <i class="fa fa-users"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.student_groups')}}</b>
+          <span class="text-sm">{{__('labels.student_groups_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{$domain_name}}{{__('labels.setting')}}">
+      <div class="info-box">
+        <span class="info-box-icon bg-secondary">
+          <i class="fa fa-user-cog"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.teacher_setting')}}</b>
+          <span class="text-sm">{{__('labels.teacher_setting_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    {{--
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/emergency_lecture_cancel" page_title="{{__('labels.emergency_lecture_cancel')}}">
+      <div class="info-box">
+        <span class="info-box-icon bg-danger">
+          <i class="fa fa-exclamation-triangle"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">{{__('labels.emergency_lecture_cancel')}}</b>
+          <span class="text-sm">{{__('labels.emergency_lecture_cancel_description')}}</span>
+        </div>
+      </div>
+      </a>
+    </div>
+    --}}
+  </div>
 </section>
 <section class="content mb-2">
   <div class="row">
