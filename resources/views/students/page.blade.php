@@ -153,7 +153,7 @@
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks'  ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks">
                 <small>
-                  <i class="fas fa-book-reader"></i>
+                  <i class="fas fa-history"></i>
                   {{__('labels.learning_record')}}
                 </small>
               </a>

@@ -13,13 +13,14 @@
           <label>
             {{__('labels.type')}}
           </label>
+          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input_group">
             <label class="form-check-label" for="type_homework">
-              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true">
+              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{$_edit && $item->type == 'homework' ? 'checked': ''}}>
               {{__('labels.homework')}}
             </label>
             <label class="form-check-label" for="type_class_record">
-              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true">
+              <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{$_edit && $item->type == 'class_record' ? 'checked': ''}}>
               {{__('labels.class_record')}}
             </label>
           </div>
@@ -35,7 +36,7 @@
             @foreach($subjects as $subject)
             <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)
-              {{$item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
+              {{$item->curriculums->count() >0 && $item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
             @endif
             >
             {{$subject->name}}</option>
@@ -53,11 +54,14 @@
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <a href="javascript:void(0)" class="btn btn-default btn-sm" id="title_set">
-            <i class="fa fa-plus"></i>
-            自動セット
-          </a>
-          <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+            <div class="input-group-append">
+              <button class="btn btn-info" type="button" id="title_set">
+                <i class="fa fa-copy"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="row mt-2">
@@ -170,8 +174,31 @@
     </form>
   </div>
   <script>
+
+  $(function(){
+    var grade = "{{$target_student->tag_value('grade')}}";
+    var school = grade.match(/^./)[0];
+    console.log(school);
+    $('select#select_subject option').each(function(){
+      if($(this).text().match("選択") != null ){
+      }else if(school == "e" && $(this).text().match("小学") == null){
+        $(this).remove();
+      }else if(school == "j" && $(this).text().match("中学") == null){
+        $(this).remove();
+      }else if(school == "h" &&  ($(this).text().match("中学") != null   || $(this).text().match("小学") != null)){
+        $(this).remove();
+      }
+    });
+    @if($_edit && $item->curriculums->count() > 0)
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val()
+    +"&task_id={{$item->id}}", function(){
+      base.pageSettinged('create_tasks');
+    });
+    @endif
+  });
+
   $("#select_subject").on('change', function(e){
-    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(), function(){
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
       base.pageSettinged('create_tasks');
     });
   });
@@ -187,5 +214,6 @@
     console.log("hoge");
     $("#title").val(title);
   });
+
 
   </script>

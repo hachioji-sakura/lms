@@ -26,13 +26,17 @@
         <div class="row">
           <div class="col-12">
             <h3 class="card-title">
-              <i class="fa fa-{{!empty(request()->get('search_type')) && request()->get('search_type') == 'homework' ? 'book-reader': 'list-alt'}} mr-1"></i>{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')) : __('labels.tasks')}}
+              <i class="fa fa-history mr-1"></i>
+              {{__('labels.learning_record')}}
             </h3>
           </div>
         </div>
         <div class="card-tools">
-          <a href="javascript:void(0)" page_form="dialog" page_title="{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')).__('labels.add') : __('labels.tasks').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{request()->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+          <a href="javascript:void(0)" page_form="dialog" page_title="{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')).__('labels.add') : __('labels.learning_record').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{request()->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
+          </a>
+          <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.curriculums').__('labels.add')}}" page_url="/curriculums/create" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+            <i class="fa fa-sitemap nav-icon"></i>
           </a>
           @if(!empty(request()->get('search_type')) && request()->get('search_type') != 'class_record')
           <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool" title="{{__('labels.complete').__('labels.tasks')}}">
@@ -56,19 +60,21 @@
           @foreach($tasks as $item)
           <li class="item">
             <div class="row">
-              <div class="col-12 ">
+              <div class="col-md-1 col-2">
+                <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
+                  <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
+                </small>
+              </div>
+              <div class="col-md-10 col-10">
                 <div class="row">
                   <div class="col-10 text-wrap">
-                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button">
-                      <h4>
-                        <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'list-alt'}}"></i>
+                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
                         {{$item->title}}
-                      </h4>
                     </a>
                   </div>
                   <div class="col-2">
-                    @if(request()->get('search_type') != 'class_record')
-                    <small class="badge badge-{{config('status_style')[$item->status]}}  float-right">
+                    @if($item->type != 'class_record')
+                    <small class="badge badge-{{config('status_style')[$item->status]}} float-right">
                       {{config('attribute.task_status')[$item->status]}}
                     </small>
                     @endif
@@ -118,34 +124,39 @@
                 </div>
               </div>
             </div>
-            <div class="row mt-3">
-              <div class="col-12">
-                @component('tasks.components.buttons',[
-                  'item' => $item,
-                  'is_footer' => false,
-                ])
-                @endcomponent
-                <div class="float-right">
-                  <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
-                    <i class="fa fa-file-alt"></i>
-                  </a>
-                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
-                    <i class="fa fa-edit"></i>
-                  </a>
-                @if($item->status != "cancel")
-                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
-                    <i class="fa fa-trash"></i>
-                  </a>
-                @endif
-                </div>
-              </div>
-            </div>
             <div class="col-12">
               <small class="text-muted float-right">
                 <i class="fa fa-clock"></i>
                 {{$item->create_user->details()->name()}}/
                 {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
+                <button type="button" class="btn btn-tool toggle-btn" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-angle-down"></i></button>
               </small>
+
+            </div>
+
+            <div class="collapse" id="setting_details{{$loop->iteration}}">
+              <div class="row mt-3">
+                <div class="col-12">
+                  @component('tasks.components.buttons',[
+                    'item' => $item,
+                    'is_footer' => false,
+                  ])
+                  @endcomponent
+                  <div class="float-right">
+                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
+                      <i class="fa fa-file-alt"></i>
+                    </a>
+                    <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                  @if($item->status != "cancel")
+                    <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-{{config('status_style')['cancel']}} mr-1" role="button">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                  @endif
+                  </div>
+                </div>
+              </div>
             </div>
           </li>
           @endforeach

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Curriculum;
 use App\Models\Subject;
+use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -192,8 +193,12 @@ class CurriculumController extends MilestoneController
 
     public function get_select_list(Request $request){
       $param = $this->get_param($request);
+      if(!empty($request->get('task_id'))){
+        $param['item'] = Task::find($request->get('task_id'));
+      }
       $curriculums = $this->model()->searchBySubjectId($request->get('subject_id'))->get();
       $param['curriculums'] = $curriculums;
+      $param['_edit'] = true;
       return view('curriculums.components.select_list')->with($param);
     }
 }

@@ -372,5 +372,6 @@ return [
   'homework' => 'Homeworks',
   'class_record' => 'Class records',
   'task_understanding' => 'Understanding',
-    'created_date' => 'Created Date',
+  'created_date' => 'Created Date',
+  'learning_record' => 'Learning Records',
 ];
