@@ -20,6 +20,7 @@
           <label>{{__('labels.subject')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <select name="subject_ids[]" class="form-control select2" width="100%" required="true">
+            <option value="">{{__('labels.selectable')}}</option>
             @foreach($subjects as $subject)
             <option value="{{$subject->id}}"
             @if(!empty($item) && $_edit)
