@@ -7,13 +7,6 @@
     <form method="POST" action="/{{$domain}}" id="create_{{$domain}}_form" enctype="multipart/form-data">
     @endif
       @csrf
-      <div class="row mt-2">
-        <div class="col-12">
-          <label>{{__('labels.'.$domain.'_name')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <input type="text" class="form-control" name="name" placeholder="{{__('labels.curriculums_name')}}" required="true" value="{{$_edit ? $item->name : ''}}">
-        </div>
-      </div>
       @if($domain == 'curriculums')
       <div class="row mt-2">
         <div class="col-12">
@@ -32,6 +25,14 @@
         </div>
       </div>
       @endif
+      <div class="row mt-2">
+        <div class="col-12">
+          <label>{{__('labels.'.$domain.'_name')}}</label>
+          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+          <input type="text" class="form-control" name="name" placeholder="{{__('labels.curriculums_name')}}" required="true" value="{{$_edit ? $item->name : ''}}">
+        </div>
+      </div>
+
 
       <div class="row mt-2">
         <div class="col-12">

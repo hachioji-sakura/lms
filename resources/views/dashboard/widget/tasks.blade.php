@@ -65,7 +65,7 @@
                   <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
                 </small>
               </div>
-              <div class="col-md-10 col-10">
+              <div class="col-md-11 col-10">
                 <div class="row">
                   <div class="col-10 text-wrap">
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
