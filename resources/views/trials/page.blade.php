@@ -26,7 +26,7 @@
             @component('trials.forms.trial_calendar',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
           </div>
           <div class="card-footer">
-            <a class="btn btn-sm btn-flat btn-success float-right ml-2" role="button"  href="javascript:void(0);" page_title="入会希望を受け取る連絡を出す" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_hope_to_join">
+            <a class="btn btn-sm btn-flat btn-success float-right ml-2" role="button"  href="javascript:void(0);" page_title="入会希望に関するご連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_hope_to_join">
               <i class="fa fa-envelope mr-1"></i>
               入会希望に関するご連絡
             </a>
@@ -47,7 +47,7 @@
             @if($item->is_regular_schedule_fix()==true)
             <div class="row mt-2">
               <div class="col-12">
-                <a href="javascript:void(0);" page_title="入会案内を連絡メール" page_form="dialog" page_url="/trials/{{$item->id}}/admission" role="button" class="btn btn-sm btn-success float-right mx-1 text-center">
+                <a href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item->id}}/admission" role="button" class="btn btn-sm btn-success float-right mx-1 text-center">
                   <i class="fa fa-envelope"></i>
                   入塾案内連絡
                 </a>

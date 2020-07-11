@@ -19,6 +19,7 @@
     <div class="row">
       @component('students.forms.name', ['attributes' => $attributes, 'prefix' => '']) @endcomponent
       @component('students.forms.email', ['attributes' => $attributes]) @endcomponent
+      <input type="hidden" name="locale" value="ja">
     </div>
     <div class="col-12">
       <h6 class="text-sm p-2 pl-2 mb-4" >

@@ -108,6 +108,8 @@ Route::post('trials/{id}/to_calendar_setting','TrialController@to_calendar_setti
 Route::get('trials/{id}/admission','TrialController@admission_mail');
 Route::post('trials/{id}/admission','TrialController@admission_mail_send');
 
+Route::get('trials/{id}/cancel','TrialController@show_cancel_page');
+Route::put('trials/{id}/cancel','TrialController@cancel');
 
 Route::get('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join');
 Route::post('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join_mail_send');
@@ -169,11 +171,23 @@ Route::put('teachers/{id}/email_edit','TeacherController@email_edit');
 Route::put('parents/{id}/email_edit','StudentParentController@email_edit');
 
 Route::get('students/{id}/agreement','StudentController@agreement_page');
-Route::get('parents/{id}/agreement','StudentParentController@agreement_page');
 Route::get('managers/{id}/retirement','ManagerController@retirement_page');
+Route::get('parents/{id}/agreement','StudentParentController@agreement_page');
+Route::get('students/{id}/retirement','StudentController@retirement_page');
 Route::get('teachers/{id}/retirement','TeacherController@retirement_page');
+Route::get('parents/{id}/retirement','StudentParentController@retirement_page');
+Route::put('students/{id}/retirement','StudentController@retirement');
 Route::put('managers/{id}/retirement','ManagerController@retirement');
 Route::put('teachers/{id}/retirement','TeacherController@retirement');
+Route::put('parents/{id}/retirement','StudentParentController@retirement');
+Route::get('students/{id}/regular','StudentController@regular_page');
+Route::put('students/{id}/regular','StudentController@regular_update');
+Route::get('teachers/{id}/regular','TeacherController@regular_page');
+Route::put('teachers/{id}/regular','TeacherController@regular_update');
+Route::get('managers/{id}/regular','ManagerController@regular_page');
+Route::put('managers/{id}/regular','ManagerController@regular_update');
+Route::get('parentss/{id}/regular','StudentParentController@regular_page');
+Route::put('parentss/{id}/regular','StudentParentController@regular_update');
 Route::get('parents/{id}/remind','StudentParentController@remind_page');
 Route::get('students/{id}/remind','StudentController@remind_page');
 Route::get('managers/{id}/remind','ManagerController@remind_page');
@@ -214,6 +228,9 @@ Route::get('students/{id}/late_arrival','StudentController@late_arrival');
 Route::get('students/{id}/resume','StudentController@resume');
 Route::get('students/{id}/tuition','StudentController@tuition');
 Route::get('students/{id}/announcements','StudentController@show');
+Route::get('students/{id}/comments','StudentController@show_comment_page');
+Route::get('students/{id}/milestones','StudentController@show_milestone_page');
+Route::get('students/{id}/tasks','StudentController@show_task_page');
 
 
 Route::get('teachers/{id}/calendar','TeacherController@calendar');
@@ -295,6 +312,7 @@ Route::resource('asks','AskController');
 Route::resource('maillogs','MailLogController');
 
 
+
 Route::get('api_tuition','TuitionController@get_api_tuition');
 Route::resource('tuitions','TuitionController');
 Route::resource('faqs','FaqController');
@@ -319,7 +337,31 @@ Route::get('messages/{id}/details','MessageController@details');
 Route::get('messages/{id}/reply','MessageController@reply');
 Route::post('messages/{id}/reply','MessageController@store');
 Route::get('messages','MessageController@list');
-
 Route::get('parents/{id}/messages', 'StudentParentController@message_list');
 Route::get('teachers/{id}/messages', 'TeacherController@message_list');
 Route::get('managers/{id}/messages', 'ManagerController@message_list');
+
+
+Route::resource('tasks','TaskController');
+Route::resource('task_reviews','TaskReviewController');
+
+//生徒画面に取り込み
+//Route::get('students/{id}/tasks', 'StudentController@task_list');
+
+Route::get('tasks/{id}/detail_dialog', 'TaskController@detail_dialog');
+Route::get('tasks/{id}/new', 'TaskController@show_new_page');
+Route::put('tasks/{id}/new', 'TaskController@new');
+Route::get('tasks/{id}/cancel', 'TaskController@show_cancel_page');
+Route::put('tasks/{id}/cancel', 'TaskController@cancel');
+Route::get('tasks/{id}/progress', 'TaskController@show_progress_page');
+Route::put('tasks/{id}/progress', 'TaskController@progress');
+Route::get('tasks/{id}/done', 'TaskController@show_done_page');
+Route::put('tasks/{id}/done', 'TaskController@done');
+Route::get('tasks/{id}/review', 'TaskController@show_review_page');
+Route::put('tasks/{id}/review', 'TaskController@review');
+Route::post('task_comments/create', 'TaskCommentController@store');
+
+Route::resource('curriculums','CurriculumController');
+Route::get('curriculums/{id}/delete', 'CurriculumController@delete');
+Route::resource('subjects','SubjectController');
+Route::get('subjects/{id}/delete', 'SubjectController@delete');

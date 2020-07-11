@@ -67,8 +67,6 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       (
-       (lms.user_calendar_settings.enable_start_date is null OR lms.user_calendar_settings.enable_start_date < ?)
-       AND
        (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
       )
 EOT;
@@ -271,6 +269,22 @@ EOT;
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
     $course_minutes = intval(strtotime('2000-01-01 '.$form['to_time_slot']) - strtotime('2000-01-01 '.$form['from_time_slot']))/60;
+    $status = 'new';
+    if(isset($form['work']) && $form['work']==9) $status = 'fix';
+    $target_user = null;
+    if(isset($form['target_user_id']) && $form['target_user_id']>0) $target_user = User::where('id', $form['target_user_id'])->first();
+    if(isset($target_user)){
+      //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
+      $target_user = $target_user->details();
+      if($target_user->status=='recess'){
+        $status = 'cancel';
+      }
+      if($target_user->status=='unsubscribe'){
+        $controller = new Controller;
+        return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
+      }
+    }
+
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -291,15 +305,16 @@ EOT;
       'from_time_slot' => $form['from_time_slot'],
       'to_time_slot' => $form['to_time_slot'],
       'create_user_id' => $form['create_user_id'],
+      'status' => $status
     ]);
     $calendar_setting->memberAdd($form['user_id'], $form['create_user_id'], '主催者', false);
     $calendar_setting->change($form);
 
-    return $calendar_setting;
+    return $calendar_setting->api_response(200, "", "", $calendar_setting);
   }
   //本モデルはdeleteではなくdisposeを使う
-  public function dispose($login_user_id){
-    if($this->status!='new'){
+  public function dispose($login_user_id, $is_send_mail=true){
+    if($this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
 
@@ -340,11 +355,15 @@ EOT;
     }
     $form['lecture_id'] = $lecture_id;
     $data = [];
+
+    if(array_key_exists('enable_end_date', $form)){
+      $data['enable_end_date'] = null;
+    }
+
     foreach($update_fields as $field){
       if(!isset($form[$field])) continue;
       $data[$field] = $form[$field];
     }
-
     if(isset($data['from_time_slot']) && isset($data['to_time_slot'])){
       //course_minutesは、time_slotから補完
       $data['course_minutes'] = intval(strtotime('2000-01-01 '.$data['to_time_slot']) - strtotime('2000-01-01 '.$data['from_time_slot']))/60;
@@ -594,7 +613,7 @@ EOT;
 
     $schedules = $this->get_add_calendar_date($start_date, $end_date, $range_month, $month_week_count);
     foreach($schedules as $date => $already_calendar){
-      if(isset($already_calendar) && count($already_calendar)>0){
+      if(isset($already_calendar['already_calendars']) && count($already_calendar['already_calendars'])>0){
         //作成済みの場合
         continue;
       }
@@ -690,6 +709,23 @@ EOT;
       $calendar->update(['status' => $default_status]);
     }
     return $this->api_response(200, "", "", $calendar);
+  }
+  public function set_status(){
+    parent::set_status();
+    if($this->status=='fix'){
+      $start_date = $this->enable_start_date;
+      $end_date = $this->enable_end_date;
+      if(strtotime($start_date) < strtotime(date('Y-m-1'))){
+        //今月1日より以前なら、今月1日を登録開始にする
+        $start_date = date('Y-m-1');
+      }
+      if(empty($end_date)){
+        //設定がないなら来月末
+        $end_date = date('Y-m-t', strtotime('+1 month'));
+      }
+      \Log::warning("mogumogu(".$start_date.":".$end_date.")");
+      $this->setting_to_calendar($start_date, $end_date, 1, 5);
+    }
   }
 
 }

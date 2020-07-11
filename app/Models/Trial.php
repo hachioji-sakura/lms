@@ -85,12 +85,12 @@ class Trial extends Model
   }
   public function get_status(){
     //体験授業登録状況により、ステータスは変動する
+    $status = $this->status;
     switch($this->status){
       case "confirm":
       case "fix":
       case "presence":
       case "new":
-      case "cancel":
         $status = 'new';
         if($this->is_confirm_trial_lesson()==true){
           $status = 'confirm';
@@ -101,10 +101,13 @@ class Trial extends Model
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
         }
-        if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
-        return $status;
+        break;
     }
-    return $this->status;
+    if($this->parent->status=='regular'){
+      $status = 'complete';
+    }
+    if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
+    return $status;
   }
   public function is_all_fix_trial_lesson(){
     $is_find = false;
@@ -514,7 +517,7 @@ class Trial extends Model
         }
       }
       if($tag->tag_key==='course_minutes'){
-        $course_minutes = $tag->tag_value;
+        $course_minutes = intval($tag->tag_value);
       }
       if($tag->tag_key==='kids_lesson'){
         $kids_lesson[] = $tag->tag_value;
@@ -548,12 +551,12 @@ class Trial extends Model
     $teachers = $teachers->get();
 
     //30分ごとの開始時間から授業時間までのslotを作成
-    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $course_minutes);
-    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $course_minutes);
-    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $course_minutes);
+    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $lesson);
+    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $lesson);
+    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $lesson);
 /*TODO 後まわし
-    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $course_minutes);
-    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $course_minutes);
+    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $lesson);
+    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $lesson);
 */
     $ret = [];
     foreach($teachers as $teacher){
@@ -749,8 +752,12 @@ class Trial extends Model
       if(!isset($form[$field])) continue;
       $calendar_setting[$field] = $form[$field];
     }
+    $setting = null;
     if($form['action'] == 'new'){
-      $setting = UserCalendarSetting::add($calendar_setting);
+      $res = UserCalendarSetting::add($calendar_setting);
+      if($this->is_success_response($res)){
+        $setting = $res['data'];
+      }
     }
     else {
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
@@ -761,9 +768,9 @@ class Trial extends Model
         $setting->memberAdd($student->user_id, $form['create_user_id']);
       }
     }
-    return $setting;
+    return $this->api_response(200, '', '', $setting);
   }
-  private function get_time_list($trial_start_time, $trial_end_time, $course_minutes){
+  private function get_time_list($trial_start_time, $trial_end_time, $lesson){
     $_start = $trial_start_time;
     $time_list = [];
     if(empty($trial_start_time) || empty($trial_end_time)){
@@ -772,9 +779,9 @@ class Trial extends Model
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
-
     //体験授業は、30分、60分の2択
-    if($course_minutes>60) $course_minutes = 60;
+    $course_minutes = 30;
+    if($lesson==1) $course_minutes = 60;
 
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){

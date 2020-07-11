@@ -268,7 +268,6 @@ class MilestoneController extends UserController
     public function store(Request $request)
     {
       $param = $this->get_param($request);
-
       $res = $this->_store($request);
       //生徒詳細からもCALLされる
       return $this->save_redirect($res, $param, '登録しました。');

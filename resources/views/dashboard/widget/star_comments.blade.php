@@ -94,9 +94,6 @@
         <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
             <i class="fa fa-filter nav-icon"></i>
         </a>
-        <button type="button" class="btn btn-default btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-            <i class="fa fa-minus"></i>
-        </button>
       </div>
     </div>
     <div class="card-body">

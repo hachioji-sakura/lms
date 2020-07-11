@@ -5,14 +5,15 @@ use App;
 use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
-use App\Models\Student;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
+use App\Models\Task;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
+use DB;
 
 class Student extends Model
 {
@@ -971,20 +972,30 @@ EOT;
   }
   public function regular(){
     $this->user->update(['status' => 0]);
-    $this->update(['status' => 'regular']);
+    $update_form = ['status' => 'regular'];
+    if(isset($this->recess_start_date)){
+      $update_form['recess_start_date'] = null;
+      $update_form['recess_end_date'] = null;
+      $update_form['unsubscribe_date'] = null;
+    }
+    $this->update($update_form);
     //カレンダー設定を有効にする
+    /*
     UserCalendarSetting::findUser($this->user_id)
                   ->where('status', 'new')
                   ->update(['status' => 'fix']);
+    */
     //受講料を有効にする
+    /*
     Tuition::where('student_id', $this->id)->update(['start_date'=>date('Y-m-d')]);
-
+    */
+    /*
     $settings = $this->get_calendar_settings([]);
     $res = [];
     foreach($settings as $setting){
       $res = array_merge($res, $setting->setting_to_calendar(date('Y-m-d')));
     }
-    return $res;
+    */
   }
   /**
    *　プロパティ：標準学年（年齢から算出）
@@ -1051,4 +1062,27 @@ EOT;
     }
     return null;
   }
+
+  public function target_milestone(){
+    return $this->hasMany('App\Models\Milestone', 'target_user_id', 'user_id');
+  }
+
+  public function target_task(){
+    return $this->hasMany('App\Models\Task', 'target_user_id', 'user_id');
+  }
+
+  public function create_task(){
+    return $this->hasMany('App\Models\Task', 'create_user_id', 'user_id');
+  }
+
+  public function get_target_task_count(){
+    $query = $this->target_task();
+    $status_count['all'] = $query->count();
+    $counts = $query->select(DB::raw('count(*) as count,status'))->groupBy('status')->get();
+    foreach($counts as $count){
+      $status_count[$count['status']] = $count['count'];
+    }
+    return $status_count;
+  }
+
 }

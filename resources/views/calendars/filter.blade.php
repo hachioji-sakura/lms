@@ -26,7 +26,6 @@
     {{__('labels.place')}}
   </label>
   <div class="w-100">
-
     @foreach($attributes['places'] as $place)
       <label class="mx-2">
       <input type="checkbox" value="{{$place->id}}" name="search_place[]" class="icheck flat-green"
