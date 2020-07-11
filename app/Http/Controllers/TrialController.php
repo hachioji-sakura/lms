@@ -380,6 +380,7 @@ class TrialController extends UserCalendarController
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
      if($this->is_success_response($res)){
+       $u = $res['data']->parent->user;
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [
          'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
