@@ -105,7 +105,7 @@
       </a>
     </div>
     <div class="col-12 col-lg-4 col-md-6 mb-1">
-      <a class="" href="/{{$domain}}/{{$item->id}}/schedule?list=exchange">
+      <a class="" href="/{{$domain}}/{{$item->id}}/schedule?list=confirm">
       <div class="info-box">
         <span class="info-box-icon bg-info">
           <i class="fa fa-hourglass"></i>
