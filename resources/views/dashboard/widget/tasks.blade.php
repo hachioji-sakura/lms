@@ -89,7 +89,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col">
+                  <div class="col-6">
                     <div class="row">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
