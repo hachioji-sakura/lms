@@ -383,10 +383,10 @@ class StudentController extends UserController
     //$tasks = $this->task_search($request, $target_user->user_id)->paginate($this->pagenation_line);
     $tasks = $this->task_search($request, $target_user->user_id)->get();
     $param['status_count'] = $target_user->get_target_task_count();
-   return view($this->domain.'.'.$view, [
-     'item' => $item,
-     'tasks' => $tasks,
-   ])->with($param);
+     return view($this->domain.'.'.$view, [
+       'item' => $item,
+       'tasks' => $tasks,
+     ])->with($param);
   }
 
 

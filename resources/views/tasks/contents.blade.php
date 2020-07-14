@@ -62,11 +62,22 @@
                 <a href="/tasks/{{$item->id}}" title="{{__('labels.details')}}">
                   {{$item->title}}
                 </a>
+                <small>
+                  by {{$item->create_user->details()->name()}}
+                </small>
               </div>
               <div class="col-12 text-truncate">
                 <small class="text-muted">
                   {{$item->body}}
                 </small>
+              </div>
+              <div class="col-12 text-truncate">
+                <small class="text-muted">
+                  <a href="{{$item->target_user->details()->domain}}/{{$item->target_user->details()->id}}/tasks">
+                    {{$item->target_user->details()->name()}}
+                  </a>
+                </small>
+
               </div>
             </div>
           </div>

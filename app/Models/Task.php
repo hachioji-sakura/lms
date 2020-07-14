@@ -55,7 +55,7 @@ class Task extends Milestone
         }elseif($search_type == "class_record"){
           $statuses = ["done"];
         }else{
-          $statuses = ['new','progress'];
+          $statuses = ['new','progress','done'];
         }
         $query = $query->activeTasks($statuses);
       }else{

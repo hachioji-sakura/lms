@@ -8,6 +8,7 @@ use App\Models\TaskComment;
 use App\Models\Review;
 use App\Models\Student;
 use App\Models\Curriculum;
+use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +44,7 @@ class TaskController extends MilestoneController
         $user = $this->login_details($request);
         $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
         $param['curriculums'] = Curriculum::all();
+        $param['subjects'] = Subject::all();
         $param['_edit'] = false;
         $param['task_type'] = $request->get('task_type');
         return view($this->domain . '.create',$param);
@@ -72,6 +74,9 @@ class TaskController extends MilestoneController
         }
         $res = $this->transaction($request, function() use ($request, $form){
           $item = $this->model()->create($form);
+          if( !empty($request->get('new_curriculums')) ){
+            $this->create_curriculum($request,$item);
+          }
           $item->curriculums()->attach($request->get('curriculum_ids'));
           if($request->hasFile('upload_file')){
             if ($request->file('upload_file')->isValid([])) {
@@ -84,6 +89,17 @@ class TaskController extends MilestoneController
           $this->sendmail($res);
         }
         return $res;
+     }
+
+     public function create_curriculum(Request $request, $item){
+       foreach( $request->get('new_curriculums') as $curriculum_name){
+         $curriculum = Curriculum::create([
+           'name' => $curriculum_name,
+           'create_user_id' => Auth::user()->id,
+         ]);
+         $curriculum->subjects()->attach($request->get('subject_id'));
+         $item->curriculums()->attach($curriculum->id);
+       }
      }
 
      public function sendmail($res){
@@ -104,6 +120,7 @@ class TaskController extends MilestoneController
        return $res;
      }
 
+
     public function create_form(Request $request){
       $user = $this->login_details($request);
       $form = [];
@@ -116,6 +133,7 @@ class TaskController extends MilestoneController
       }else{
         $form['status'] = 'new';
       }
+
       $form['target_user_id'] = $request->get('target_user_id');
       $form['create_user_id'] = $user->user_id;
       $form['start_schedule'] = $request->get('start_schedule');
@@ -178,6 +196,7 @@ class TaskController extends MilestoneController
         $param['_edit'] = true;
         $param['task_type'] = $request->get('task_type');
         $param['curriculums'] = Curriculum::all();
+        $param['subjects'] = Subject::all();
         return view($this->domain.'.create')->with($param);
     }
 
@@ -210,6 +229,9 @@ class TaskController extends MilestoneController
           }
         }
         $item->change($form, $file, $is_file_delete,$request->get('curriculum_ids'));
+        if( !empty($request->get('new_curriculums')) ){
+          $this->create_curriculum($request,$item);
+        }
 
         return $this->api_response(200, '', '', $item);
       }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
