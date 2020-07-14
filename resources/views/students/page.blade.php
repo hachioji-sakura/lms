@@ -151,18 +151,10 @@
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty(request()->search_type) && request()->search_type == 'homework' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=homework">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks'  ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks">
                 <small>
-                  <i class="fas fa-book-reader"></i>
-                  {{__('labels.homework')}}
-                </small>
-              </a>
-            </li>
-            <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.tasks' && !empty(request()->search_type) && request()->search_type == 'class_record' ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}/tasks?search_type=class_record&search_status[]=done">
-                <small>
-                  <i class="fa fa-list-alt"></i>
-                  {{__('labels.class_record')}}
+                  <i class="fas fa-history"></i>
+                  {{__('labels.learning_record')}}
                 </small>
               </a>
             </li>

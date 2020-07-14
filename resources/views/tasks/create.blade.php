@@ -8,31 +8,66 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
-      <input type="hidden" name="type" value="{{$task_type}}">
+      <div class="row">
+        <div class="col-12">
+          <label>
+            {{__('labels.type')}}
+          </label>
+          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+          <div class="input-group">
+            <div class="form-check">
+              <label class="form-check-label" for="type_class_record">
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{$_edit && $item->type == 'class_record' ? 'checked': ''}} checked>
+                {{__('labels.class_record')}}
+              </label>
+            </div>
+            <div class="form-check">
+              <label class="form-check-label" for="type_homework">
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{$_edit && $item->type == 'homework' ? 'checked': ''}}>
+                {{__('labels.homework')}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-12 mb-2">
+          <label>{{__('labels.subjects')}}</label>
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <select name="subject_id" id="select_subject" width="100%" class="form-control select2">
+            <option value=" ">{{__('labels.selectable')}}</option>
+            @foreach($subjects as $subject)
+            <option value="{{$subject->id}}"
+            @if(!empty($item) && $_edit)
+              {{$item->curriculums->count() >0 && $item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
+            @endif
+            >
+            {{$subject->name}}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="col-12" id="curriculums">
+
+        </div>
+        <div class="col-12" id="new_curriculums">
+
+        </div>
+      </div>
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.title')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <input type="text" class="form-control" name="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+            <div class="input-group-append">
+              <button class="btn btn-info" type="button" id="title_set">
+                <i class="fa fa-copy"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="row mt-2">
-        <div class="col-12">
-          <label>{{__('labels.curriculums_name')}}</label>
-          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          <select name="curriculum_ids[]" class="form-control select2"  width=100%  multiple="multiple">
-            @foreach($curriculums as $curriculum)
-            <option value="{{$curriculum->id}}"
-            @if(!empty($item) && $_edit)
-              {{$item->curriculums->contains($curriculum->id)  ? "selected" : "" }}
-            @endif
-            >{{$curriculum->name}}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-
       <div class="row mt-2">
         <div class="col-12">
           <h3 class="card-title">
@@ -120,14 +155,14 @@
           </label>
           <div class="input-group">
             <div class="form-check">
-              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
               <label class="form-check-label" for="mail_send_yes">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_yes" value="yes" required="true">
                 {{__('labels.task_remind')}}
               </label>
             </div>
             <div class="form-check">
-              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
               <label class="form-check-label" for="mail_send_no">
+              <input class="frm-check-input icheck flat-green" type="radio" name="mail_send" id="mail_send_no" value="no" required="true" checked>
                 {{__('labels.no_remind')}}
               </label>
             </div>
@@ -142,3 +177,46 @@
       </div>
     </form>
   </div>
+  <script>
+
+  $(function(){
+    var grade = "{{$target_student->tag_value('grade')}}";
+    var school = grade.match(/^./)[0];
+    console.log(school);
+    $('select#select_subject option').each(function(){
+      if($(this).text().match("選択") != null ){
+      }else if(school == "e" && $(this).text().match("小学") == null){
+        $(this).remove();
+      }else if(school == "j" && $(this).text().match("中学") == null){
+        $(this).remove();
+      }else if(school == "h" &&  ($(this).text().match("中学") != null   || $(this).text().match("小学") != null)){
+        $(this).remove();
+      }
+    });
+    @if($_edit && $item->curriculums->count() > 0)
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val()
+    +"&task_id={{$item->id}}", function(){
+      base.pageSettinged('create_tasks');
+    });
+    @endif
+  });
+
+  $("#select_subject").on('change', function(e){
+    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
+      base.pageSettinged('create_tasks');
+    });
+  });
+  $("#title_set").on('click', function(e){
+    var curriculums = "";
+    $("#select_curriculum option:selected").each(function(){
+      curriculums += "_" + $(this).text();
+    });
+    $('input:text[name="new_curriculums[]"]').each(function(){
+      curriculums += "_" + $(this).val();
+    });
+    var title = $("#select_subject option:selected" ).text().trim() +  curriculums;
+    $("#title").val(title);
+  });
+
+
+  </script>
