@@ -51,7 +51,7 @@
               登録生徒
             </h3>
             <div class="card-title text-sm">
-              {{--
+              {{-- TODO : 実用化されるまでコメントアウト
               <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
                   <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create?student_parent_id={{$item->id}}" page_title="生徒追加">
@@ -152,6 +152,7 @@
                     </a>
                   </div>
                   @else
+                  {{-- TODO : 実用化されるまでコメントアウト
                   <div class="col-6 float-left mt-1">
                     @if(count($charge_student->student->trials)>0 && $charge_student->student->trials[0]!=null)
                     <a href="javascript:void(0);"
@@ -171,6 +172,7 @@
                     </a>
                     @endif
                   </div>
+                  --}}
                   @endif
                   <div class="col-6 float-left mt-1">
                     <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">

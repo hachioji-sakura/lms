@@ -26,10 +26,12 @@
             @component('trials.forms.trial_calendar',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
           </div>
           <div class="card-footer text-right">
+            {{-- TODO : 実用化されるまでコメントアウト
             <a class="btn btn-sm btn-flat btn-danger ml-2" role="button"  href="javascript:void(0);" page_title="希望日時変更をお願いする" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_candidate">
               <i class="fa fa-envelope mr-1"></i>
               体験希望日時変更の依頼
             </a>
+            --}}
             <a class="btn btn-sm btn-flat btn-success ml-2" role="button"  href="javascript:void(0);" page_title="入会希望を受け取る連絡を出す" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_hope_to_join">
               <i class="fa fa-envelope mr-1"></i>
               入会希望に関するご連絡

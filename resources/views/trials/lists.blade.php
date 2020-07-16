@@ -171,6 +171,7 @@
           </p>
         </a>
       </li>
+      {{-- TODO : 実用化されるまでコメントアウト
       <li class="nav-item">
         <a href="/{{$domain}}?list=reapply" class="nav-link @if($list=="reapply") active @endif">
           <i class="fa fa-calendar-alt nav-icon"></i>
@@ -182,6 +183,7 @@
           </p>
         </a>
       </li>
+      --}}
       <li class="nav-item">
         <a href="/{{$domain}}?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
