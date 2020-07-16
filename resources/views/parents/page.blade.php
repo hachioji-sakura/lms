@@ -3,9 +3,6 @@
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
-
-
-
 @section('contents')
 {{--
 <section class="content-header">
@@ -156,7 +153,7 @@
                   </div>
                   @else
                   <div class="col-6 float-left mt-1">
-                    @if($charge_student->student->trials[0]!=null)
+                    @if(count($charge_student->student->trials)>0 && $charge_student->student->trials[0]!=null)
                     <a href="javascript:void(0);"
                     page_title="体験申込状況" page_form="dialog"
                     page_url="/trials/{{$charge_student->student->trials[0]->id}}/dialog?student_parent_id={{$item->id}}"
