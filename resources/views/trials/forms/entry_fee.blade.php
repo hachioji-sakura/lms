@@ -10,25 +10,25 @@
 --}}
 @if($user->has_tag('lesson',1)==true)
   {{-- 塾 --}}
-  20,000円
+  20,000円（税抜き）
 @elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false)
   {{-- 英会話(中国語以外） --}}
-  15,000円
+  15,000円（税抜き）
 @elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true)
   {{-- 中国語 --}}
-  15,000円
+  15,000円（税抜き）
 @elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true)
   {{-- 幼児教室 --}}
-  15,000円
+  15,000円（税抜き）
 @elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true)
   {{-- そろばん --}}
-  10,000円
+  10,000円（税抜き）
 @elseif($user->has_tag('lesson',3)==true)
   {{-- ピアノ --}}
-  10,000円
+  10,000円（税抜き）
 @elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true)
   {{-- ダンス --}}
-  5,000円
+  5,000円（税抜き）
 @else
   0円
 @endif

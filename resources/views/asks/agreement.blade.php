@@ -25,7 +25,7 @@
               </label>
               <textarea type="text" id="body" name="remark" class="form-control bg-light" placeholder="" readonly>
 @component('asks.forms.agreement_policy', []) @endcomponent
-1, 2, 3, 4をご了承していただけますならば、
+1, 2, 3, 4, 5をご了承していただけますならば、
 下記ボタンよりご連絡いただけますと幸いです。
               </textarea>
             </div>
