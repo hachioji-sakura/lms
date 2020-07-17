@@ -598,7 +598,6 @@ class UserCalendarSettingController extends UserCalendarController
     }
     public function _update(Request $request, $id)
     {
-      return $res = $this->transaction($request, function() use ($request, $id){
         $form = $this->update_form($request);
         $param = $this->get_param($request, $id);
         $form['create_user_id'] = $param['user']->user_id;
@@ -626,6 +625,7 @@ class UserCalendarSettingController extends UserCalendarController
         $res = $setting->change($form);
         //TODO 更新失敗しても更新成功のエラーメッセージが表示されてしまう
         return $this->api_response(200, '', '', $setting);
+        return $res = $this->transaction($request, function() use ($request, $id){
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
     /**
