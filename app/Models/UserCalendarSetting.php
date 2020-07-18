@@ -333,7 +333,7 @@ EOT;
   public function change($form){
     $old_item = $this->replicate();
     $old_item->id = $this->id;
-    //$old_item = $old_item->details(1);
+    $old_item = $old_item->details($this->user_id);
 
     \Log::warning("UserCalendarSetting::change");
     $update_fields = [

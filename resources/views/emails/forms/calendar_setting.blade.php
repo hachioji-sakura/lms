@@ -1,5 +1,7 @@
 <?php
-$item = $item->details(1);
+if(empty($item["lesson"]) || empty($item["work_name"])){
+  $item = $item->details(1);
+}
  ?>
 @if($item->is_teaching()==true)
 ■{{__('labels.regular_schedule_setting')}}

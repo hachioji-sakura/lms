@@ -169,6 +169,19 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
+  public function scopeFindTrialStudent($query, $trial_id)
+  {
+    $where_raw = <<<EOT
+      lms.user_calendars.id in (
+        select calendar_id from
+        lms.user_calendar_members um
+        inner join common.students s on s.user_id = um.user_id
+        inner join lms.trial_students ts on s.id = ts.student_id
+        where ts.trial_id=?)
+EOT;
+
+    return $query->whereRaw($where_raw,[$trial_id]);
+  }
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
@@ -758,7 +771,7 @@ EOT;
   public function change($form){
     $old_item = $this->replicate();
     $old_item->id = $this->id;
-    $old_item = $old_item->details(1);
+    $old_item = $old_item->details($this->user_id);
     $update_fields = [
       'start_time',
       'end_time',
