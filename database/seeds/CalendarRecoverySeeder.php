@@ -107,6 +107,11 @@ EOT;
 
         //2020.4-2020.5の振替期限は、2020-12-31
         $this->update_exchange_limit_date_20201231();
+
+        //schedule_onetime.subject_exprの補完 work=3（面談）,4（試験監督）,9（事務作業）以外
+        $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9)";
+        $d = DB::select($_sql);
+        $this->subject_expr_sync($d);
     }
     public function update_schedule_ontime($confirm, $cancel, $d){
       $id = [];
@@ -168,4 +173,16 @@ EOT;
       }
 
     }
+    public function subject_expr_sync($d){
+      $updated_id = [];
+      foreach($d as $row){
+        if(isset($updated_id[$row->schedule_onetime_id]) && $updated_id[$row->schedule_onetime_id]===true) continue;
+        $calendar = UserCalendar::where('id', $row->calendar_id)->first();
+        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $row->schedule_onetime_id)->update([
+          'subject_expr' => implode (',', $calendar->subject())
+        ]);
+        $updated_id[$row->schedule_onetime_id] = true;
+      }
+    }
+
 }
