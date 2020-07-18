@@ -1,4 +1,5 @@
 /**
+* https://github.com/hideo-yasui/base.git
 * baseプラグイン
 * 汎用的なページ処理をまとめる
 * @namespace
