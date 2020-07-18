@@ -682,8 +682,17 @@ EOT;
       'create_user_id' => 1,
     ];
 
+    $single_tag_name = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
+    $multi_tag_names = ['matching_decide', 'charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
+
     foreach($this->tags as $tag){
-      $form[$tag->tag_key] = $tag->tag_value;
+      if(in_array($tag->tag_key, $single_tag_name)==true){
+        $form[$tag->tag_key] = $tag->tag_value;
+      }
+      else if(in_array($tag->tag_key, $multi_tag_names)==true){
+        if(!isset($form[$tag->tag_key])) $form[$tag->tag_key]=[];
+        $form[$tag->tag_key][] = $tag->tag_value;
+      }
     }
 
 /*
