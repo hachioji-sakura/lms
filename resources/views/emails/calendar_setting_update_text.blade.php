@@ -2,10 +2,10 @@
 
 @if($send_to==='student')
 {{$user["name"]}} 様
-{{__('messages.info_calendar_setting_update', ['trial'=>''])}}
+{{$mail_title}}
 @elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user["name"]])}}
-{{__('messages.info_calendar_setting_update', ['trial'=>''])}}
+{{$mail_title}}
 {{__('messages.info_login_confirm')}}
 @endif
 …………………………………………………………………………………………
