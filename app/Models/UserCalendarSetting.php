@@ -331,6 +331,10 @@ EOT;
     $this->delete();
   }
   public function change($form){
+    $old_item = $this->replicate();
+    $old_item->id = $this->id;
+    $old_item = $old_item->details($this->user_id);
+
     \Log::warning("UserCalendarSetting::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
@@ -404,6 +408,27 @@ EOT;
     }
     //事務システムも更新
     $this->office_system_api("PUT");
+
+    $mail_title = __('messages.info_calendar_setting_update');
+    if($this->is_teaching()==true) $mail_title = __('messages.info_regular_lesson_setting_update');
+    if(isset($form['send_mail'])){
+      $is_teacher_mail = false;
+      $is_student_mail = false;
+      if($form['send_mail']=='both'){
+        $is_teacher_mail = true;
+        $is_student_mail = true;
+      }
+      else if($form['send_mail']=='teacher'){
+        $is_teacher_mail = true;
+      }
+      if($is_teacher_mail==true){
+        $this->teacher_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+      }
+      if($is_student_mail==true){
+        $this->student_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+      }
+    }
+
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark='', $is_api=true){
