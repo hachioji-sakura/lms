@@ -135,7 +135,7 @@ return [
   "send_info" => "送信しました。",
   "message_duplicated_error" => ":user_nameさん宛てにのメールが重複しているため送信できませんでした。",
   "message_first_sentence" => "以下のメッセージをご確認ください。",
-  "task_title" => ":user_name :title_of_honorがタスクを登録しました。",
+  "task_title" => ":user_name :title_of_honorが:task_typeを登録しました。",
   'task_confirm' => '変更してよろしいですか？',
   'task_review_confirm' => '評価してください。',
   'task_already_registered' => '既に登録済みです。',

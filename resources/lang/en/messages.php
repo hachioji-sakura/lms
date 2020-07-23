@@ -132,7 +132,7 @@ return [
  "send_info" => "Message was sent successfully",
  "message_duplicated_error" => "We couldn't send the email to :user_name because it was duplicated.",
  "message_first_sentence" => "You recieved following message on system. Please check it.",
- "task_title" => "You have a task from :user_name",
+ "task_title" => "You have a :task_type from :user_name",
  "task_confirm" => "Are you sure?",
  'task_review_confirm' => 'Please evaluate this task.',
  'task_already_registered' => 'This task has already registered.',
