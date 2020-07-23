@@ -425,7 +425,8 @@
 					else {
 						alertMessage(result["message"], result["description"], _logout);
 						//10秒経過で自動ログアウト
-						setTimeout(_logout, 10000);
+						if(util.isFunction(error)) error(xhr, st, null);
+						else setTimeout(_logout, 10000);
 					}
 				}
 			).
