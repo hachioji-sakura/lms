@@ -8,7 +8,7 @@
 {{__('messages.mail_dear_manager',['user_name' => $item->target_user->details()->name])}}
 @endif
 
-{{__('labels.message_title')}}:
+
 {{$item->title}}
 
 @if(!empty($item->body))

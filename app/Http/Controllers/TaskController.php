@@ -116,7 +116,7 @@ class TaskController extends MilestoneController
          $title_of_honor = "さん";
        }
 
-       $item->target_user->send_mail(__('messages.task_title',['user_name' => $item->create_user->details()->name(),'title_of_honor' => $title_of_honor]), $param, $type ,$template);
+       $item->target_user->send_mail(__('messages.task_title',['user_name' => $item->create_user->details()->name(),'title_of_honor' => $title_of_honor,'task_type' => config('attribute.task_type')[$item->type]]), $param, $type ,$template);
        return $res;
      }
 
