@@ -32,7 +32,7 @@
         <small class="badge badge-danger mt-1 mr-1">
           {{__('labels.exchange_remaining_time', ["time" => $calendar->get_exchange_remaining_time()])}}
         </small>
-        @if($domain=='teachers')
+        @if($user->role=='teacher' || $user->role=='manager')
         <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.exchange_add')}}" page_form="dialog" page_url="/calendars/create?exchanged_calendar_id={{$calendar["id"]}}" role="button" class="btn btn-primary btn-sm ml-1 float-right">
           <i class="fa fa-exchange-alt"></i>
           <span class="ml-1 btn-label">
