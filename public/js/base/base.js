@@ -498,6 +498,14 @@
 			  document.body.style.position = 'absolute';
 			  document.body.style.top = `-${window.scrollY}px`;
 				*/
+				$("#"+form_id).unbind("hide.bs.modal");
+				$("#"+form_id).unbind("hidden.bs.modal");
+				$("#"+form_id).on('hide.bs.modal', function () {
+					console.log('modal close');
+					if(front.isInput(form_id)==true){
+						return confirm("このフォームを閉じますか？\n入力したデータは残りません。");
+					}
+				});
 				$("#"+form_id).on('hidden.bs.modal', function () {
 					console.log('modal close');
 					// モーダルが閉じられ時

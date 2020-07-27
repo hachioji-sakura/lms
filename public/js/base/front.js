@@ -19,7 +19,8 @@
 		showValidateError : showValidateError,
 		clearValidateError : clearValidateError,
 		inputAdjust	: inputAdjust,
-		setInputAdjust : setInputAdjust
+		setInputAdjust : setInputAdjust,
+		isInput : isInput
 	};
 
 	/**
@@ -613,6 +614,22 @@
 
 		if(!util.isEmpty(maxl) && maxl>0 && val.length > maxl) val = (val+"").substring(0, maxl);
 		return val;
+	}
+	function isInput(formId){
+		var ret = false;
+		$("input[type=text], textarea, select", $("#"+formId)).each(function(){
+			if(ret==true) return;
+			if(!util.isEmpty(_getFormValue(this))){
+				ret = true;
+			}
+		});
+		$("input[type=checkbox]:checked,input[type=radio]:checked", $("#"+formId)).each(function(){
+			if(ret==true) return;
+			if(!util.isEmpty(_getFormValue(this))){
+				ret = true;
+			}
+		});
+		return ret;
 	}
 	root.front = $.extend({}, root.front, public_method);
 
