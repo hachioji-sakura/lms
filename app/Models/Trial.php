@@ -1327,14 +1327,45 @@ class Trial extends Model
     return $ask;
   }
   public function hope_to_join($is_commit=false, $form){
+    \Log::warning("Trial::hope_to_join start");
     if($is_commit==false){
       //ステータス：入会希望なし
-      Trial::where('id', $this->id)->update(['status' => 'entry_cancel']);
+      $update_data = [
+        'status' => 'entry_cancel'
+      ];
     }
     else {
       //ステータス：入会希望あり
-      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $form['schedule_start_hope_date']]);
+      $update_data = [
+        'status' => 'entry_hope',
+        'schedule_start_hope_date' => $form['schedule_start_hope_date']
+      ];
+
+      if(!isset($form['remark']) || empty($form['remark'])){
+         $form['remark'] = '';
+      }
+      else {
+        $update_data['remark'] = $form['remark'];
+        $comment = Comment::where('target_user_id', $this->student->user_id)
+                          ->where('type', 'entry')->first();
+        if(isset($comment)){
+          $comment->update(['body' => $form['remark']]);
+        }
+        else {
+          Comment::create([
+            'title' => '入会希望時のご要望',
+            'body' => $form["remark"],
+            'type' => 'entry',
+            'create_user_id' => $this->create_user_id,
+            'target_user_id' => $this->student->user_id,
+            'publiced_at' => date('Y-m-d'),
+            'importance' => 10,
+          ]);
+        }
+      }
+
       //通塾可能曜日・時間帯タグ
+      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
       $lesson_weeks = config('attribute.lesson_week');
       foreach($lesson_weeks as $lesson_week=>$name){
         $tag_names[] = 'lesson_'.$lesson_week.'_time';
@@ -1347,12 +1378,22 @@ class Trial extends Model
           TrialTag::clearTags($this->id, $tag_name);
         }
       }
-      $tag_names = ['lesson_week_count', 'course_minutes'];
+      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type'];
+      foreach($tag_names as $tag_name){
+        if(empty($form[$tag_name])) $form[$tag_name] = '';
+        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+      //科目タグ
+      $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
+      foreach($charge_subject_level_items as $charge_subject_level_item){
+        $tag_names[] = $charge_subject_level_item['attribute_value'];
+      }
       foreach($tag_names as $tag_name){
         if(empty($form[$tag_name])) $form[$tag_name] = '';
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
+    Trial::where('id', $this->id)->update($update_data);
     return true;
   }
 
