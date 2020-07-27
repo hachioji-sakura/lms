@@ -46,7 +46,6 @@
       <a href="/teachers/{{$user->id}}/schedule?list=confirm" class="dropdown-item">{{__('labels.adjust_schedule_list')}}</a>
       <a href="/teachers/{{$user->id}}/schedule?list=cancel" class="dropdown-item">{{__('labels.rest_schedule_list')}}</a>
       <a href="/teachers/{{$user->id}}/schedule?list=history" class="dropdown-item">{{__('labels.schedule_history')}}</a>
-      <a class="dropdown-item" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?teacher_id={{$user->id}}" page_title="{{__('labels.schedule_add')}}">{{__('labels.schedule_add')}}</a>
     </div>
   </li>
 @elseif($user->role==="manager")

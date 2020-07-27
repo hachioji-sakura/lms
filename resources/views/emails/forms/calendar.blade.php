@@ -1,5 +1,7 @@
 <?php
-$item = $item->details(1);
+if(empty($item["lesson"]) || empty($item["work_name"])){
+  $item = $item->details(1);
+}
  ?>
 @if($item->is_teaching()==true)
 ■{{$item->teaching_type_name()}}
@@ -7,7 +9,8 @@ $item = $item->details(1);
 ■{{$item['work_name']}}
 @endif
 {{__('labels.datetime')}}：{{$item['datetime']}}
-{{__('labels.place')}}：{{$item['place_floor_name']}}
+{{__('labels.place')}}：{{$item['place_floor_name']}}@if($item->is_online()==true)/{{__('labels.online')}}@endif
+
 @if($send_to!=='student')
 ({{__('labels.status')}}：{{$item->status_name()}})
 @endif

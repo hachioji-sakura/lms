@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Curriculum;
 use App\Models\Subject;
+use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -23,7 +24,6 @@ class CurriculumController extends MilestoneController
     public function index(Request $request)
     {
         //
-        $this->authorize('view',new Curriculum);
         $param = $this->get_param($request);
         $items = $this->model()->search($request)->paginate($param['_line']);
 
@@ -34,7 +34,7 @@ class CurriculumController extends MilestoneController
     }
 
     public function create(Request $request){
-     $this->authorize('create',new Curriculum);
+
       $param = $this->get_param($request);
       $subjects = Subject::all();
       $param['subjects'] = $subjects;
@@ -52,7 +52,7 @@ class CurriculumController extends MilestoneController
     public function _store(Request $request)
     {
         //
-        $this->authorize('create',new Curriculum);
+
         $form = $this->create_form($request);
         $item = $this->model();
         foreach($form as $key=>$val){
@@ -90,7 +90,6 @@ class CurriculumController extends MilestoneController
     {
         //
         $param = $this->get_param($request, $id);
-        $this->authorize('view',$param['item']);
         return view($this->domain.'.details')->with($param);
     }
 
@@ -102,7 +101,6 @@ class CurriculumController extends MilestoneController
      */
      public function edit(Request $request, $id)
      {
-       $this->authorize('update',new Curriculum);
        $param = $this->get_param($request, $id);
        $subjects = Subject::all();
        $param['subjects'] = $subjects;
@@ -119,7 +117,6 @@ class CurriculumController extends MilestoneController
      */
      public function _update(Request $request, $id)
      {
-       $this->authorize('update',new Curriculum);
        $res = $this->save_validate($request);
        if(!$this->is_success_response($res)){
          return $res;
@@ -164,14 +161,12 @@ class CurriculumController extends MilestoneController
      */
 
      public function delete(Request $request, $id){
-       $this->authorize('delete',new Curriculum);
        $param = $this->get_param($request,$id);
        return view($this->domain.'.delete')->with($param);
      }
 
     public function _delete(Request $request, $id)
     {
-      $this->authorize('delete',new Curriculum);
       $form = $request->all();
       $res = $this->transaction($request, function() use ($request, $form, $id){
         $item = $this->model()->find($id);
@@ -179,5 +174,25 @@ class CurriculumController extends MilestoneController
         return $this->api_response(200, '', '',$item);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
+    }
+
+    public function name_check(Request $request, $name){
+      $item = Curriculum::where('name', $name)->SearchBySubjectId($request->get('subject_id'))->first();
+      if(isset($item)){
+        $json = $this->api_response(200,"","",["name"=>$name]);
+        return $this->send_json_response($json);
+      }
+      return $this->send_json_response($this->notfound());
+    }
+
+    public function get_select_list(Request $request){
+      $param = $this->get_param($request);
+      if(!empty($request->get('task_id'))){
+        $param['item'] = Task::find($request->get('task_id'));
+      }
+      $curriculums = $this->model()->searchBySubjectId($request->get('subject_id'))->get();
+      $param['curriculums'] = $curriculums;
+      $param['_edit'] = true;
+      return view('curriculums.components.select_list')->with($param);
     }
 }
