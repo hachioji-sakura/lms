@@ -113,7 +113,7 @@
 			if(!val) return true;
 			if(val==null) return true;
 			if(typeof val == "number" && val==0) return false;
-			if(typeof val=="object") return false;
+			if(typeof val=="object" && val.length) return false;
 			if(val==undefined) return true;
 			if(val=="") return true;
 			return false;
