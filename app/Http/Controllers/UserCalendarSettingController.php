@@ -833,7 +833,7 @@ class UserCalendarSettingController extends UserCalendarController
       if($target_member==null){
         return $this->bad_request('this setting does not has student.');
       }
-      $res = $target_member->get_api_lesson_fee();
+      $res = $target_member->get_lesson_fee();
       if($res==null){
         return $this->error_response('api error');
       }
