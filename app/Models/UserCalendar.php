@@ -757,7 +757,8 @@ EOT;
   //本モデルはupdateではなくchangeを使う
   public function change($form){
     $old_item = $this->replicate();
-
+    $old_item->id = $this->id;
+    $old_item = $old_item->details($this->user_id);
     $update_fields = [
       'start_time',
       'end_time',

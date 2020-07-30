@@ -3018,7 +3018,7 @@
 	"work" => [
 		"3" => [
 			"attribute_value" => "3",
-			"attribute_name" => "面談（入塾前無料）",
+			"attribute_name" => "面談",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "1",

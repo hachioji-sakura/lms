@@ -57,7 +57,10 @@ return [
   'schedule_add' => '予定追加',
   'repeat_schedule_add' => '繰り返し予定追加',
   'trial_lesson' => '体験授業',
-  'schedule_add_description' => '授業の追加・振替',
+  'schedule_add_description' => '授業の追加',
+  'adjust_schedule_list_description' => '確認操作が必要な予定',
+  'exchange_schedule_list_description' => '振替対象の確認・振替授業の登録',
+  'regular_schedule_confirm_description' => '確認操作が必要な繰返予定設定',
   'year_month' => ':year年:month月',
   'year_month_day' => ':year年:month月:day日',
   'contact_page' => 'お問い合わせ',
@@ -381,4 +384,5 @@ return [
   'class_record' => '授業記録',
   'task_understanding' => '理解度',
   'created_date' => '起票日',
+  'learning_record' => '学習記録',
 ];

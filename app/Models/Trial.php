@@ -85,6 +85,7 @@ class Trial extends Model
   }
   public function get_status(){
     //体験授業登録状況により、ステータスは変動する
+    $status = $this->status;
     switch($this->status){
       case "confirm":
       case "fix":
@@ -100,10 +101,13 @@ class Trial extends Model
         else if($this->is_presence_trial_lesson()==true){
           $status = 'presence';
         }
-        if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
-        return $status;
+        break;
     }
-    return $this->status;
+    if($this->parent->status=='regular'){
+      $status = 'complete';
+    }
+    if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
+    return $status;
   }
   public function is_all_fix_trial_lesson(){
     $is_find = false;

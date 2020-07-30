@@ -318,6 +318,10 @@ EOT;
     $this->delete();
   }
   public function change($form){
+    $old_item = $this->replicate();
+    $old_item->id = $this->id;
+    $old_item = $old_item->details($this->user_id);
+
     \Log::warning("UserCalendarSetting::change");
     $update_fields = [
       'from_time_slot', 'to_time_slot', 'lesson_week', 'lesson_week_count', 'schedule_method', 'place_floor_id',
@@ -391,6 +395,27 @@ EOT;
     }
     //事務システムも更新
     $this->office_system_api("PUT");
+
+    $mail_title = __('messages.info_calendar_setting_update');
+    if($this->is_teaching()==true) $mail_title = __('messages.info_regular_lesson_setting_update');
+    if(isset($form['send_mail'])){
+      $is_teacher_mail = false;
+      $is_student_mail = false;
+      if($form['send_mail']=='both'){
+        $is_teacher_mail = true;
+        $is_student_mail = true;
+      }
+      else if($form['send_mail']=='teacher'){
+        $is_teacher_mail = true;
+      }
+      if($is_teacher_mail==true){
+        $this->teacher_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+      }
+      if($is_student_mail==true){
+        $this->student_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+      }
+    }
+
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark='', $is_api=true){
@@ -600,7 +625,7 @@ EOT;
 
     $schedules = $this->get_add_calendar_date($start_date, $end_date, $range_month, $month_week_count);
     foreach($schedules as $date => $already_calendar){
-      if(isset($already_calendar) && count($already_calendar)>0){
+      if(isset($already_calendar['already_calendars']) && count($already_calendar['already_calendars'])>0){
         //作成済みの場合
         continue;
       }
@@ -669,8 +694,17 @@ EOT;
       'create_user_id' => 1,
     ];
 
+    $single_tag_name = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
+    $multi_tag_names = ['matching_decide', 'charge_subject', 'kids_lesson', 'english_talk_lesson', 'piano_lesson'];
+
     foreach($this->tags as $tag){
-      $form[$tag->tag_key] = $tag->tag_value;
+      if(in_array($tag->tag_key, $single_tag_name)==true){
+        $form[$tag->tag_key] = $tag->tag_value;
+      }
+      else if(in_array($tag->tag_key, $multi_tag_names)==true){
+        if(!isset($form[$tag->tag_key])) $form[$tag->tag_key]=[];
+        $form[$tag->tag_key][] = $tag->tag_value;
+      }
     }
 
 /*
@@ -696,6 +730,23 @@ EOT;
       $calendar->update(['status' => $default_status]);
     }
     return $this->api_response(200, "", "", $calendar);
+  }
+  public function set_status(){
+    parent::set_status();
+    if($this->status=='fix'){
+      $start_date = $this->enable_start_date;
+      $end_date = $this->enable_end_date;
+      if(strtotime($start_date) < strtotime(date('Y-m-1'))){
+        //今月1日より以前なら、今月1日を登録開始にする
+        $start_date = date('Y-m-1');
+      }
+      if(empty($end_date)){
+        //設定がないなら来月末
+        $end_date = date('Y-m-t', strtotime('+1 month'));
+      }
+      \Log::warning("mogumogu(".$start_date.":".$end_date.")");
+      $this->setting_to_calendar($start_date, $end_date, 1, 5);
+    }
   }
 
 }

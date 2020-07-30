@@ -251,13 +251,20 @@ class TuitionController extends MilestoneController
      return $res;
    }
    public function get_api_tuition(Request $request){
-     $fields = ['lesson', 'course', 'course_minutes', 'lesson_week_count', 'grade', 'teacher_id'];
+     $fields = ['lesson', 'course', 'course_minutes', 'grade', 'teacher_id'];
      foreach($fields as $field){
        if(!$request->has($field)){
          return $this->bad_request($field.' not found');
        }
      }
+
      $form = $request->all();
+     $fields = ['lesson', 'course', 'course_minutes', 'lesson_week_count', 'grade', 'teacher_id', 'subject'];
+     foreach($fields as $field){
+       if(!$request->has($field)){
+         $form[$field] = "";
+       }
+     }
      if(!$request->has('is_juken')){
        $form['is_juken'] = 0;
      }
@@ -267,10 +274,8 @@ class TuitionController extends MilestoneController
                                                          $form['lesson_week_count'],
                                                          $form['grade'],
                                                          $form['is_juken'],
-                                                         $form['teacher_id']);
-     if($res==null){
-       return $this->error_response('api error');
-     }
+                                                         $form['teacher_id'],
+                                                         $form['subject']);
      return $res;
    }
 }

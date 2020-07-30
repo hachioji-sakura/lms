@@ -90,6 +90,8 @@
 <script src="{{asset('js/plugins/ckeditor/ckeditor.js')}}"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="{{asset('js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
+<!-- jpostal-->
+<script type="text/javascript" src="https://jpostal-1006.appspot.com/jquery.jpostal.js"></script>
 
 <!-- AdminLTE App -->
 <script src="{{asset('dist/js/adminlte.js')}}"></script>

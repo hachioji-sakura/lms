@@ -13,10 +13,12 @@
         @component('components.calendar', ['user' => $user, 'teacher_id' => $item->id, 'domain' => $domain, 'filter'=>$filter, 'item'=>$item, 'attributes' => $attributes])
           @slot('event_select')
           // 選択可
+          @if($user->role=='manager')
           selectable: true,
           select: function(start, end, jsEvent, view , resource){
             event_create(start, end, jsEvent, view , resource);
           },
+          @endif
           @endslot
           @slot('event_click')
           eventClick: function(event, jsEvent, view) {
