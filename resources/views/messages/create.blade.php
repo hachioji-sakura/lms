@@ -109,7 +109,20 @@
 <script>
 
 $(function(){
-  base.pageSettinged("message_create",null);
+  var form_data = util.getLocalData('{{$domain}}_create');
+  console.log("input");
+  console.log(form_data);
+  base.pageSettinged("{{$domain}}_create",form_data);
+
+
+  timerId = setInterval(function(){
+    var form_data = front.getFormValue('{{$domain}}_create');
+    console.log(form_data);
+    util.setLocalData('{{$domain}}_create',form_data);
+  },10000);
+});
+$('button.close').on("click",function(e){
+  clearInterval(timerId);
 });
 
 </script>
