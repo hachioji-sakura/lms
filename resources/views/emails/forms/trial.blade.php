@@ -5,19 +5,28 @@ $item = $item->details();
 @foreach($item["tagdata"]['lesson'] as $label)
 {{$label}}
 @endforeach
+
 ■ご希望の授業時間
 @foreach($item["tagdata"]['course_minutes'] as $label)
 {{$label}}授業
 @endforeach
+
 ■ご希望の教室
 @foreach($item["tagdata"]['lesson_place'] as $label)
 {{$label}}　
 @endforeach
 
-■希望日時
+@if($item->is_trial_lesson_complete()==false || $item->status=='entry_contact')
+■体験希望日時
 第１希望：{{$item["date1"]}}
 第２希望：{{$item["date2"]}}
 第３希望：{{$item["date3"]}}
+@else
+@if(!empty($item["start_hope_date"]))
+■ご希望の授業開始日
+{{$item["start_hope_date"]}}
+@endif
+@endif
 @if(count($item["subject2"])>0)
 
 ■補習希望科目
