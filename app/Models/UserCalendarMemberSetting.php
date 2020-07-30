@@ -358,13 +358,13 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     $t = $this->setting->user->details('teachers');
     $subject = "";
-    if($settings->has_tag('lesson',2)==true && $settings->has_tag('english_talk_lesson','chinese')==true){
+    if($this->setting->has_tag('lesson',2)==true && $settings->has_tag('english_talk_lesson','chinese')==true){
       $subject = "chinese";
     }
-    else if($settings->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','abacus')==true){
+    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','abacus')==true){
       $subject = "abacus";
     }
-    else if($settings->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','dance')==true){
+    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','dance')==true){
       $subject = "dance";
     }
 

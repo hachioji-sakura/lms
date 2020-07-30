@@ -39,7 +39,7 @@ $(function(){
 <script src="{{asset('js/base/dom.js?v=1')}}"></script>
 <script src="{{asset('js/base/service.js?v=7')}}"></script>
 <script src="{{asset('js/base/front.js?v=1')}}"></script>
-<script src="{{asset('js/base/base.js?v=7')}}"></script>
+<script src="{{asset('js/base/base.js?v=8')}}"></script>
 </body>
 <script>
 $(function(){
