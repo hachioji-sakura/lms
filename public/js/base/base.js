@@ -120,9 +120,10 @@
 		$('input[type="checkbox"].icheck, input[type="radio"].icheck').on('ifChanged', function (e) {
 			$(this).trigger("change", e);
 		});
-		/*
 		//郵便番号入力
 		dom.setPostnoForm(form_id);
+
+		/*
 		//数値入力
 		dom.setNumberForm(form_id);
 		*/
