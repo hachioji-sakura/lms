@@ -107,19 +107,36 @@
 </div>
 
 <script>
-
 $(function(){
   var form_data = util.getLocalData('{{$domain}}_create');
-  console.log("input");
-  console.log(form_data);
-  base.pageSettinged("{{$domain}}_create",form_data);
-
+  @if($_reply)
+    delete form_data['title'];
+    delete form_data['target_user_id[]'];
+  @endif
+  if( form_data ){
+    dom.confirmMessage('確認','前回入力された内容が残っています。復元しますか？', function(){
+        base.pageSettinged("{{$domain}}_create",form_data);
+        if($("select[name='target_user_id[]']").length>0){
+          var target_user_id_form = $("select[name='target_user_id[]']");
+          var _width = target_user_id_form.attr("width");
+          target_user_id_form.select2('destroy');
+          target_user_id_form.select2({
+            width: _width,
+            placeholder:' {{__("labels.selectable")}}',
+          });
+        }
+    });
+  }
 
   timerId = setInterval(function(){
     var form_data = front.getFormValue('{{$domain}}_create');
-    console.log(form_data);
+    delete form_data['_token'];
+    @if($_reply)
+      delete form_data['title'];
+      delete form_data['target_user_id[]'];
+    @endif
     util.setLocalData('{{$domain}}_create',form_data);
-  },10000);
+  },600000);//10分おき
 });
 $('button.close').on("click",function(e){
   clearInterval(timerId);
