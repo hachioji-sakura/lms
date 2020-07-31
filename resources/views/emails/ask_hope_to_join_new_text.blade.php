@@ -9,4 +9,10 @@
 {{config('app.url')}}/asks/{{$ask->id}}/hope_to_join?key={{$target_model->parent->user->access_key}}
 …………………………………………………………………………………………
 
+…………………………………………………………………………………………
+体験授業お申込み内容
+@component('emails.forms.trial', ['item' => $target_model,  'login_user' => $login_user]) @endcomponent
+…………………………………………………………………………………………
+
+
 @yield('signature')

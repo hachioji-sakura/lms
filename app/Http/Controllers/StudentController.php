@@ -33,6 +33,9 @@ class StudentController extends UserController
   public function model(){
     return Student::query();
   }
+  public function empty_model(){
+    return new Student;
+  }
 
   /**
    * 一覧表示
@@ -187,14 +190,12 @@ class StudentController extends UserController
    */
   public function create(Request $request)
   {
-    $param = $this->get_param($request);
-    if(!$this->is_parent($param['user']->role)){
-      abort(403);
-    }
+    $param = $this->get_common_param($request);
+    if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
-
+    $param['item'] = $this->empty_model();
     return view($this->domain.'.create',
-      ['error_message' => ''])
+      ['error_message' => '', '_edit' => false, 'item' => null])
       ->with($param);
    }
 
@@ -205,29 +206,26 @@ class StudentController extends UserController
     */
    public function store(Request $request)
    {
-     /*
-     TODO: 申し込みベースで生徒を追加するので、不要
-     $param = $this->get_param($request);
-     if(!$this->is_parent($param['user']->role)){
-       abort(403);
-     }
+     if(!$request->has('student_parent_id')) abort(403);
+     $param = $this->get_common_param($request);
      $form = $request->all();
-     $parent = StudentParent::where('id', $param['user']->id)->first();
-     $form['create_user_id'] = $param['user']->user_id;
-     $student = $parent->brother_add($form);
+     $parent = StudentParent::where('id', $param['student_parent_id'])->first();
+     $res = $this->api_response(200);
+     if(!isset($parent)) abort(403);
+     $student = $parent->get_child($form['name_last'], $form['name_first']);
      if(isset($student)){
-       $form['parent_name_first'] = $param['user']->name_first;
-       $form['parent_name_last'] = $param['user']->name_last;
-       $form['send_to'] = 'parent';
-       $this->send_mail($param['user']->email, '生徒情報登録完了', $form, 'text', 'register');
-       $param['success_message'] = '生徒情報登録完了しました。';
+       $res = $this->error_response('この生徒は登録済みです');
      }
-     else {
-       $param['error_message'] = '生徒登録に失敗しました。';
+     if($this->is_success_response($res)){
+       $form['create_user_id'] = $param['user']->user_id;
+       $res = $this->transaction($request, function() use ($parent, $form){
+         $form["accesskey"] = '';
+         $form["password"] = 'sakusaku';
+         $student = $parent->brother_add($form,1);
+         return $student;
+       }, '生徒登録', __FILE__, __FUNCTION__, __LINE__ );
      }
-     return redirect('/home')
-      ->with($param);
-      */
+     return $this->save_redirect($res, $param, '生徒を登録しました');
    }
    /**
     * データ更新時のパラメータチェック
@@ -1027,8 +1025,23 @@ class StudentController extends UserController
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
     $param['student'] = $param['item'];
-    return view($this->domain.'.edit',$param);
+    return view($this->domain.'.create',$param);
   }
+  /**
+   * Show the form for setting editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function setting_page(Request $request, $id)
+  {
+    $result = '';
+    $param = $this->get_param($request, $id);
+    $param['_edit'] = true;
+    $param['student'] = $param['item'];
+    return view($this->domain.'.setting',$param);
+  }
+
   /**
    * Show the form for editing the specified resource.
    *

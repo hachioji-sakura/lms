@@ -73,9 +73,9 @@
     }
     function week_validate(){
       var _is_scceuss = false;
-      if( $("input.week_time[type='checkbox']", $(".carousel-item.active")).length > 0){
+      if( $("input.week_time[type='checkbox']").length > 0){
         var _week_input = [];
-        $("input.week_time[type='checkbox']", $(".carousel-item.active")).each(function(index, value){
+        $("input.week_time[type='checkbox']").each(function(index, value){
           var val = $(this).val();
           var name = $(this).attr('name');
           var checked = $(this).prop('checked');

@@ -8,6 +8,7 @@
     @endif
       <img class="img-circle elevation-2" src="{{$item->icon}}" >
     </a>
+    <a href="/{{$domain}}/{{$item->id}}" >
     <h4 class="widget-user-username">
         <ruby style="ruby-overhang: none">
           <rb>{{$item->name}}</rb>
@@ -15,6 +16,7 @@
           {{$courtesy}}
         </ruby>
     </h4>
+    </a>
     {{$alias}}
   </div>
 </div>

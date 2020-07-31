@@ -8,6 +8,11 @@ SaKuRa One代表の弓削主哉（ゆげかずや）です。
 ご連絡をいたしますので、お待ちください。
 
 どうぞよろしくお願い申し上げます。
+…………………………………………………………………………………………
+ご入会お申込み内容
+@component('emails.forms.trial', ['item' => $target_model,  'login_user' => $login_user]) @endcomponent
+…………………………………………………………………………………………
+
 
 SaKuRa One代表
 弓削 主哉
