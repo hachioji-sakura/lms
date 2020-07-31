@@ -54,6 +54,7 @@ function getLocaleUrl(url, locale){
 }
 $(function(){
   $("a[href]").each(function(){
+    if($(this).attr('href').indexOf('void(0)')>0) return ;
     var url = getLocaleUrl($(this).attr('href'), "");
     $(this).attr("href", url);
   });
