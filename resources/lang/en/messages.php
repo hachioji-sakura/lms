@@ -142,4 +142,5 @@ return [
  'task_status_done' => 'A status of this task is updated to [done]',
  'task_reviewed' => 'Reviewed',
  'warning_schedule_add' => 'This additional class requires an additional tuition fee and must be approved by the parent.',
+ 'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
  ];
