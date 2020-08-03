@@ -108,13 +108,15 @@
 
 <script>
 $(function(){
-  var form_data = util.getLocalData('{{$domain}}_create');
+
   @if($_reply)
-    delete form_data['title'];
-    delete form_data['target_user_id[]'];
+    var dataId = '{{$domain}}_create_{{$item->id}}';
+  @else
+    var dataId = '{{$domain}}_create';
   @endif
+  var form_data = util.getLocalData(dataId);
   if( form_data ){
-    dom.confirmMessage('確認','前回入力された内容が残っています。復元しますか？', function(){
+    dom.confirmMessage('{{__('labels.confirm')}}','{{__('messages.message_restore_contents')}}', function(){
         base.pageSettinged("{{$domain}}_create",form_data);
         if($("select[name='target_user_id[]']").length>0){
           var target_user_id_form = $("select[name='target_user_id[]']");
@@ -127,19 +129,19 @@ $(function(){
         }
     });
   }
+  save_input_form(dataId,form_data);
+});
 
-  timerId = setInterval(function(){
+function save_input_form(dataId, form_data){
+  timerId = setTimeout(function(){
     var form_data = front.getFormValue('{{$domain}}_create');
     delete form_data['_token'];
-    @if($_reply)
-      delete form_data['title'];
-      delete form_data['target_user_id[]'];
-    @endif
-    util.setLocalData('{{$domain}}_create',form_data);
+    util.setLocalData(dataId,form_data);
+    if($('#subDialog').is(':visible')){
+      save_input_form(dataId, form_data);
+    }
   },600000);//10分おき
-});
-$('button.close').on("click",function(e){
-  clearInterval(timerId);
-});
+}
+
 
 </script>
