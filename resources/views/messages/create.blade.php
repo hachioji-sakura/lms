@@ -117,16 +117,7 @@ $(function(){
   var form_data = util.getLocalData(dataId);
   if( form_data ){
     dom.confirmMessage('{{__('labels.confirm')}}','{{__('messages.message_restore_contents')}}', function(){
-        base.pageSettinged("{{$domain}}_create",form_data);
-        if($("select[name='target_user_id[]']").length>0){
-          var target_user_id_form = $("select[name='target_user_id[]']");
-          var _width = target_user_id_form.attr("width");
-          target_user_id_form.select2('destroy');
-          target_user_id_form.select2({
-            width: _width,
-            placeholder:' {{__("labels.selectable")}}',
-          });
-        }
+      base.pageSettinged("{{$domain}}_create",form_data);
     });
   }
   save_input_form(dataId,form_data);
@@ -140,7 +131,7 @@ function save_input_form(dataId, form_data){
     if($('#subDialog').is(':visible')){
       save_input_form(dataId, form_data);
     }
-  },600000);//10分おき
+  },60000);//1分おき
 }
 
 

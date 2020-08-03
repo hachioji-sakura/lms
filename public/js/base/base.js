@@ -101,14 +101,19 @@
 			var _parent_id = $(this).attr("parent_id");
 			var _width = $(this).attr("width");
 			var _parent = $("body");
+			var _name = $(this).attr('name');
+
 			if(!util.isEmpty(_parent_id)){
 				_parent = $("#"+_parent_id);
+			}
+			if(formData!=null && formData[_name] && !util.isEmpty(formData[_name])){
+				$(this).select2('destroy');
+				$(this).val(formData[_name]);
 			}
 			$(this).select2({
 				width: _width,
 				placeholder: _placeholder,
 			});
-
 		});
 		var colors = ['green', 'aero', 'red', 'blue', 'grey'];
 		$.each(colors, function(i,color){
