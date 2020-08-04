@@ -71,7 +71,7 @@ class Student extends Model
   /**
    *　プロパティ：性別名称
    */
-  public function gender()
+  public function label_gender()
   {
     if(isset($this->gender)){
       if($this->gender===1) return __('labels.man');
@@ -83,7 +83,7 @@ class Student extends Model
   /**
    *　プロパティ：birth_day
    */
-  public function birth_day($format='Y年m月d日')
+  public function label_birth_day($format='Y年m月d日')
   {
     if (App::isLocale('en')) {
       $format = 'Y-m-d';
@@ -186,6 +186,7 @@ class Student extends Model
    */
   public function get_tag($key)
   {
+    if(!isset($this->user)) return null;
     $tag = $this->user->get_tag($key);
     if(isset($tag)){
       return ["name" => $tag->name(), "key" => $tag->keyname(), "value" => $tag->tag_value];
@@ -197,6 +198,7 @@ class Student extends Model
    */
   public function get_tags($key)
   {
+    if(!isset($this->user)) return null;
     $tags = $this->user->get_tags($key);
     $ret = null;
     if(isset($tags)){
@@ -233,6 +235,14 @@ class Student extends Model
   public function relations(){
     return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
+  /**
+   * 体験申し込み
+  */
+  public function trials()
+  {
+    return $this->hasMany('App\Models\Trial', 'student_id')->where('status', '!=', 'cancel');
+  }
+
   /**
    *　スコープ：ユーザーステータス
    */
@@ -1085,4 +1095,13 @@ EOT;
     return $status_count;
   }
 
+  public function is_hachiojisakura(){
+    //TODO 八王子さくらの生徒の場合True
+    //カレンダーがある
+    if($this->status=='trial') return false;
+    if(count($this->user->calendar_members) > 0) return true;
+    //カレンダー設定がある
+    if(count($this->user->calendar_member_settings) > 0) return true;
+    return false;
+  }
 }
