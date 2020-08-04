@@ -20,10 +20,6 @@ class StudentParentController extends TeacherController
   public function model(){
     return StudentParent::query();
   }
-  public function empty_model(){
-    return new StudentParent;
-  }
-
   /**
    * 共通パラメータ取得
    *
