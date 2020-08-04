@@ -55,10 +55,11 @@ return [
         ],
 
         'daily' => [
-            'driver' => 'single',
+            'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => 'info',
             'days' => 7,
+            'permission' => 0666,
         ],
 
         'slack' => [
