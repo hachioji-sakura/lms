@@ -169,6 +169,7 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
+  //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
     $where_raw = <<<EOT

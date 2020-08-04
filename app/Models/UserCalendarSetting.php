@@ -38,6 +38,7 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
     $where_raw = <<<EOT
