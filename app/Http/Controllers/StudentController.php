@@ -33,9 +33,6 @@ class StudentController extends UserController
   public function model(){
     return Student::query();
   }
-  public function empty_model(){
-    return new Student;
-  }
 
   /**
    * 一覧表示
@@ -193,7 +190,7 @@ class StudentController extends UserController
     $param = $this->get_common_param($request);
     if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
-    $param['item'] = $this->empty_model();
+    $param['item'] = $this->model();
     return view($this->domain.'.create',
       ['error_message' => '', '_edit' => false, 'item' => null])
       ->with($param);

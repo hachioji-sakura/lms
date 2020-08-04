@@ -14,9 +14,6 @@ class ManagerController extends TeacherController
     public function model(){
       return Manager::query();
     }
-    public function empty_model(){
-      return new Manager;
-    }
     /**
      * 共通パラメータ取得
      *
