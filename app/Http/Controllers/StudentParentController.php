@@ -233,13 +233,6 @@ class StudentParentController extends TeacherController
 
         $user->set_password($form['password']);
         $user->update(['status' => 0]);
-/*
-        $trial = Trial::where('id', $form['trial_id'])->first();
-        //体験申し込みの生徒を本登録
-        foreach($trial->trial_students as $trial_student){
-          $trial_student->student->regular();
-        }
-*/
         return $this->api_response(200, "", "", $user);
       }, '契約者登録', __FILE__, __FUNCTION__, __LINE__ );
     }

@@ -1,29 +1,27 @@
 @section('page_sidemenu')
 
-@foreach($item->trial_students as $trial_student)
 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
   <div class="image mt-1">
-    <img src="{{$trial_student->student->user->icon()}}" class="img-circle elevation-2" alt="User Image">
+    <img src="{{$item->student->user->icon()}}" class="img-circle elevation-2" alt="User Image">
   </div>
   <div class="info">
     <a href="/{{$domain}}/{{$item->id}}/" class="d-block text-light">
       <ruby style="ruby-overhang: none">
-        <rb>{{$trial_student->student->name()}}</rb>
-        <rt>{{$trial_student->student->kana()}}</rt>
+        <rb>{{$item->student->name()}}</rb>
+        <rt>{{$item->student->kana()}}</rt>
       </ruby>
     </a>
     <small class="badge badge-info mx-2">
-      {{$trial_student->student->gender()}}
+      {{$item->student->gender()}}
     </small>
     <small class="badge badge-info mx-2">
-      {{$trial_student->student->grade()}}
+      {{$item->student->grade()}}
     </small><br>
     <small class="badge badge-info mx-2">
-      {{$trial_student->student->school_name()}}
+      {{$item->student->school_name()}}
     </small>
   </div>
 </div>
-@endforeach
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
