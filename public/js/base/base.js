@@ -463,8 +463,8 @@
 	}
 	//ダイアログ表示
 	function showPage(type, form_id, page_title, page_url, callback){
-		$("#"+form_id+" .page_title").html(page_title);
     $("#"+form_id+" .page_contents").load(page_url, function(response, status, xhr){
+			$("#"+form_id+" .page_title").html(page_title);
 			if(status !== "success"){
 				service.alert("E_ERROR", {});
 				return;

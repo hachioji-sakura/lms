@@ -6,7 +6,9 @@
     </label>
     @foreach($attributes['howto'] as $index => $name)
     <label class="mx-2">
-      <input type="checkbox" value="{{ $index }}" name="howto[]" class="icheck flat-green"  onChange="howto_checkbox_change(this)">{{$name}}
+      <input type="checkbox" value="{{ $index }}" name="howto[]" class="icheck flat-green"  onChange="howto_checkbox_change(this)"
+      @if($_edit==true && $item->has_tag('howto', $index)==true) checked @endif
+      >{{$name}}
     </label>
     @endforeach
   </div>

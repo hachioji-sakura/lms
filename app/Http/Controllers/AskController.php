@@ -115,7 +115,7 @@ class AskController extends MilestoneController
       }
       $ret['item'] = $item->details();
       if($ret['item']->is_access($user->user_id)==false){
-          abort(403, "hogehoge");
+          abort(403);
       }
     }
     return $ret;
@@ -183,7 +183,6 @@ class AskController extends MilestoneController
    */
   public function status_update(Request $request, $id, $status)
   {
-    \Log::warning("status_update1");
 
     $param = $this->get_param($request, $id);
     $res = $this->api_response();
@@ -194,7 +193,6 @@ class AskController extends MilestoneController
       $status = $request->get('status');
     }
 
-    \Log::warning("status_update2");
     if($status!="remind"){
       //remind以外はステータスの更新
       if($ask->status != $status){
@@ -249,7 +247,7 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+    $res = $this->transaction($request, function() use ($request, $param, $id, $status){
       $form = $request->all();
       $form['status'] = $status;
       $form['login_user_id'] = $param['user']->user_id;
