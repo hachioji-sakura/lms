@@ -72,8 +72,8 @@
   </div>
   @empty($is_trial)
   <div class="col-6 p-3 font-weight-bold" >授業開始希望日</div>
-  @endempty
   <div class="col-6 p-3"><span id="schedule_start_hope_date"></span></div>
+  @endempty
   <div class="col-6 p-3 font-weight-bold" >ご希望の授業回数</div>
   <div class="col-6 p-3">週<span id="lesson_week_count_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
