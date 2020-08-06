@@ -51,13 +51,14 @@
 <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
 <!-- Theme style -->
-<link rel="stylesheet" href="{{asset('dist/css/adminlte.css?v=2')}}">
+<link rel="stylesheet" href="{{asset('dist/css/adminlte.css?v=4')}}">
 
 
 <!-- jQuery -->
 <script src="{{asset('js/plugins/jquery/jquery.min.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-
+<!-- Push.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="{{asset('js/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- Select2 -->

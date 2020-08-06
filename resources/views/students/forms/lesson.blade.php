@@ -9,7 +9,7 @@
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['lesson'] as $index => $name)
-    <label class="mx-2">
+    <label class="mx-1">
       <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" required="true"
       @if($_edit===true && isset($item) && $item->has_tag('lesson', $index)===true)
       checked

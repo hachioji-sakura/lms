@@ -28,15 +28,15 @@ class Trial extends Model
   public function user_calendar_settings(){
     return $this->hasMany('App\Models\UserCalendarSetting', 'trial_id');
   }
-  public function trial_students(){
-    return $this->hasMany('App\Models\TrialStudent', 'trial_id');
-  }
   public function calendars(){
     //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
     return $this->hasMany('App\Models\UserCalendar');
   }
   public function parent(){
     return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
+  }
+  public function student(){
+    return $this->belongsTo('App\Models\Student', 'student_id');
   }
   /**
    *　スコープ：ステータス
@@ -262,114 +262,72 @@ class Trial extends Model
    * 体験授業申し込み登録
    */
   static public function entry($form){
-    $form["accesskey"] = '';
-    //TODO デフォルトパスワード
-    $form["password"] = 'sakusaku';
-    $form["name_last"] = "";
-    $form["name_first"] = "";
-    $form["kana_last"] = "";
-    $form["kana_first"] = "";
     //１．保護者情報登録：無名のアカウント＋電話番号、メールアドレスを保存
     //同じ送信内容の場合は登録しない
-    $parent = StudentParent::entry($form);
-
+    $parent = null;
+    if(!empty($form['student_parent_id'])){
+      $parent = StudentParent::where('id', $form['student_parent_id'])->first();
+      $form["create_user_id"] = $parent->user_id;
+    }
+    if($parent==null){
+      $form["accesskey"] = '';
+      //TODO デフォルトパスワード
+      $form["password"] = 'sakusaku';
+      $form["kana_last"] = $form["parent_kana_last"];
+      $form["kana_first"] = $form["parent_kana_first"];
+      $form["name_last"] = $form["parent_name_last"];
+      $form["name_first"] = $form["parent_name_first"];
+      $parent = StudentParent::entry($form);
+      $form["create_user_id"] = $parent->user_id;
+      $parent->profile_update($form);
+    }
     if($parent==null) return null;
 
-    $form["create_user_id"] = $parent->user_id;
-    $parent->profile_update($form);
-    $form["kana_last"] = $form["student_kana_last"];
-    $form["kana_first"] = $form["student_kana_first"];
-    $form["name_last"] = $form["student_name_last"];
-    $form["name_first"] = $form["student_name_first"];
-    //２．生徒情報登録：氏名・カナ・学年・学校名
-    //同じ送信内容の場合は登録しない
-    \Log::warning("parent->brother_add1");
-    $student = $parent->brother_add($form, 1);
-    $comment = [
-      'title' => '-',
-      'body' => $form["remark"],
-      'type' => 'trial',
-      'create_user_id' => $parent->user_id,
-      'target_user_id' => $student->user_id,
-      'publiced_at' => date('Y-m-d'),
-    ];
+    $student = null;
+    if(!empty($form['student_id'])){
+      $student = Student::where('id', $form['student_id'])->first();
+    }
+    if($student==null) {
+      $form["kana_last"] = $form["student_kana_last"];
+      $form["kana_first"] = $form["student_kana_first"];
+      $form["name_last"] = $form["student_name_last"];
+      $form["name_first"] = $form["student_name_first"];
+      //２．生徒情報登録：氏名・カナ・学年・学校名
+      $student = $parent->brother_add($form, 1);
+    }
+
     if(!empty($form["remark"])){
+      //体験申し込み時のご要望を初期コメントに登録
+      $comment = [
+        'title' => '体験申し込み時のご要望',
+        'body' => $form["remark"],
+        'type' => 'trial',
+        'create_user_id' => $parent->user_id,
+        'target_user_id' => $student->user_id,
+        'publiced_at' => date('Y-m-d'),
+        'importance' => 10,
+      ];
       Comment::create($comment);
     }
     $ret = [];
 
-    if(!empty($form['student2_name_last'])){
-      //兄弟2人目
-      $form["kana_last"] = $form["student2_kana_last"];
-      $form["kana_first"] = $form["student2_kana_first"];
-      $form["name_last"] = $form["student2_name_last"];
-      $form["name_first"] = $form["student2_name_first"];
-      $form["birth_day"] = $form["student2_birth_day"];
-      $form["gender"] = $form["student2_gender"];
-      $form["grade"] = $form["student2_grade"];
-      $form["school_name"] = $form["student2_school_name"];
-      \Log::warning("parent->brother_add2");
-      $student2 = $parent->brother_add($form, 1);
-      if(!empty($form["remark"])){
-        $comment['target_user_id'] = $student2->user_id;
-        Comment::create($comment);
-      }
-    }
-    if(!empty($form['student3_name_last'])){
-      //兄弟３人目
-      $form["kana_last"] = $form["student3_kana_last"];
-      $form["kana_first"] = $form["student3_kana_first"];
-      $form["name_last"] = $form["student3_name_last"];
-      $form["name_first"] = $form["student3_name_first"];
-      $form["birth_day"] = $form["student3_birth_day"];
-      $form["gender"] = $form["student3_gender"];
-      $form["grade"] = $form["student3_grade"];
-      $form["school_name"] = $form["student3_school_name"];
-      \Log::warning("parent->brother_add3");
-      $student3 = $parent->brother_add($form, 1);
-      if(!empty($form["remark"])){
-        $comment['target_user_id'] = $student3->user_id;
-        Comment::create($comment);
-      }
-    }
-
-    //申し込み情報登録
+    //登録申し込み情報
     $trial = Trial::where('student_parent_id', $parent->id)
+    ->where('student_id', $student->id)
     ->where('status', '!=' ,'cancel')
-    ->where('status', '!=' ,'rest')
     ->first();
 
-    //同じ人からの内容の場合は(cancel以外)登録しない
     if(!isset($trial)){
+      //同じ対象生徒の内容の場合は(cancel以外)登録しない
+      $trial = Trial::create([
+        'student_parent_id' => $parent->id,
+        'student_id' => $student->id,
+        'create_user_id' => $form['create_user_id'],
+      ]);
     }
-    else {
-      //同じ人からの申し込み
-    }
-    $trial = Trial::create([
-      'student_parent_id' => $parent->id,
-      'create_user_id' => $form['create_user_id'],
-    ]);
 
-    $trial_student = TrialStudent::create([
-      'trial_id' => $trial->id,
-      'student_id' => $student->id,
-    ]);
-    if(isset($student2)){
-      $trial_student2 = TrialStudent::create([
-        'trial_id' => $trial->id,
-        'student_id' => $student2->id,
-      ]);
-    }
-    if(isset($student3)){
-      $trial_student3 = TrialStudent::create([
-        'trial_id' => $trial->id,
-        'student_id' => $student3->id,
-      ]);
-    }
     //申し込み情報更新
     //同じ送信内容の場合は、申し込み情報のみ更新する
-
-
     unset($form['name_last']);
     unset($form['name_first']);
     unset($form['kana_last']);
@@ -380,11 +338,30 @@ class Trial extends Model
     unset($form['school_name']);
 
     $trial->trial_update($form);
-
     return $trial;
   }
   public function trial_update($form){
-    if(!isset($form['remark']) || empty($form['remark'])) $form['remark'] = '';
+    if(!isset($form['remark']) || empty($form['remark'])){
+       $form['remark'] = '';
+    }
+    else {
+      $comment = Comment::where('target_user_id', $this->student->user_id)
+                        ->where('type', 'trial')->first();
+      if(isset($comment)){
+        $comment->update(['body' => $form['remark']]);
+      }
+      else {
+        Comment::create([
+          'title' => '体験申し込み時のご要望',
+          'body' => $form["remark"],
+          'type' => 'trial',
+          'create_user_id' => $this->create_user_id,
+          'target_user_id' => $this->student->user_id,
+          'publiced_at' => date('Y-m-d'),
+          'importance' => 10,
+        ]);
+      }
+    }
     $fields = ['trial_start_time1', 'trial_end_time1', 'trial_start_time2', 'trial_end_time2', 'trial_start_time3', 'trial_end_time3', 'trial_start_time4', 'trial_end_time4', 'trial_start_time5', 'trial_end_time5', 'remark'];
     $data = [];
     foreach($fields as $field){
@@ -417,17 +394,15 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    foreach($this->trial_students as $trial_student){
-      $trial_student->student->profile_update($form);
-    }
+    $this->student->profile_update($form);
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
-    $calendar = UserCalendar::findTrialStudent($this->id)->get();
+    $calendar = UserCalendar::findUser($this->student->user_id)->get();
     return $calendar;
   }
   public function get_calendar_settings(){
-    $user_calendar_settings = UserCalendarSetting::findTrialStudent($this->id)->orderByWeek()->get();
+    $user_calendar_settings = UserCalendarSetting::findUser($this->student->user_id)->orderByWeek()->get();
     return $user_calendar_settings;
   }
   public function trial_to_calendar($form){
@@ -477,11 +452,10 @@ class Trial extends Model
     }
     if($calendar!=null){
       //体験同時申し込み生徒数だけ追加
-      foreach($this->trial_students as $trial_student){
-        $calendar->memberAdd($trial_student->student->user_id, $form['create_user_id']);
-        $charge_student_form['student_id'] = $trial_student->student->id;
-        ChargeStudent::add($charge_student_form);
-      }
+      $calendar->memberAdd($this->student->user_id, $form['create_user_id']);
+      $charge_student_form['student_id'] = $this->student->id;
+      ChargeStudent::add($charge_student_form);
+
       if(isset($form['send_mail']) && $form['send_mail']=='teacher')  $calendar->register_mail([], $form['create_user_id']);
     }
     return $this->api_response(200,"","",$calendar);
@@ -493,7 +467,7 @@ class Trial extends Model
     $ret = [];
     $lessons = $this->tags->where('tag_key', 'lesson');
     foreach($lessons as $lesson){
-      $_candidate_teachers = $this->_candidate_teachers($teacher_id, $lesson->tag_value);
+      $_candidate_teachers = $this->_candidate_teachers($teacher_id, intval($lesson->tag_value));
       if(isset($_candidate_teachers) && count($_candidate_teachers) > 0){
         $ret[$lesson->tag_value] = $_candidate_teachers;
       }
@@ -508,6 +482,7 @@ class Trial extends Model
     $kids_lesson = [];
     $english_talk_lesson = [];
     $course_minutes = 0;
+
     foreach($this->tags as $tag){
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
@@ -529,6 +504,7 @@ class Trial extends Model
     $teachers = Teacher::findStatuses(["regular"]);
     if($lesson > 0){
       $teachers = $teachers->hasTag('lesson', $lesson);
+
       if($lesson===1){
         //塾の場合、担当可能な科目がある講師
         $teachers = $teachers->chargeSubject($trial_subjects);
@@ -763,10 +739,7 @@ class Trial extends Model
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
     }
     if(isset($setting)){
-      foreach($this->trial_students as $trial_student){
-        $student = Student::where('id', $trial_student->student_id)->first();
-        $setting->memberAdd($student->user_id, $form['create_user_id']);
-      }
+      $setting->memberAdd($this->student->user_id, $form['create_user_id']);
     }
     return $this->api_response(200, '', '', $setting);
   }
@@ -782,7 +755,6 @@ class Trial extends Model
     //体験授業は、30分、60分の2択
     $course_minutes = 30;
     if($lesson==1) $course_minutes = 60;
-
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
@@ -1069,11 +1041,11 @@ class Trial extends Model
     //１．この体験対象の生徒の希望スケジュールと希望授業時間を取得
     if(empty($this->student_schedule)){
       //兄弟登録された場合は一人目と同一のため、一人目のスケジュールを利用する
-      $student = $this->trial_students->first()->student;
+      $student = $this->student;
       $this->student_schedule = $student->user->get_lesson_times(10);
     }
     if($this->couser_minutes==0){
-      if(!isset($student)) $student = $this->trial_students->first()->student;
+      if(!isset($student)) $student = $this->student;
       $this->course_minutes = intval($this->get_tag('course_minutes')['tag_value']);
     }
 
@@ -1354,15 +1326,74 @@ class Trial extends Model
     Trial::where('id', $this->id)->update(['status' => 'entry_contact']);
     return $ask;
   }
-  public function hope_to_join($is_commit=false, $schedule_start_hope_date){
+  public function hope_to_join($is_commit=false, $form){
+    \Log::warning("Trial::hope_to_join start");
     if($is_commit==false){
       //ステータス：入会希望なし
-      Trial::where('id', $this->id)->update(['status' => 'entry_cancel']);
+      $update_data = [
+        'status' => 'entry_cancel'
+      ];
     }
     else {
       //ステータス：入会希望あり
-      Trial::where('id', $this->id)->update(['status' => 'entry_hope', 'schedule_start_hope_date' => $schedule_start_hope_date]);
+      $update_data = [
+        'status' => 'entry_hope',
+        'schedule_start_hope_date' => $form['schedule_start_hope_date']
+      ];
+
+      if(!isset($form['remark']) || empty($form['remark'])){
+         $form['remark'] = '';
+      }
+      else {
+        $update_data['remark'] = $form['remark'];
+        $comment = Comment::where('target_user_id', $this->student->user_id)
+                          ->where('type', 'entry')->first();
+        if(isset($comment)){
+          $comment->update(['body' => $form['remark']]);
+        }
+        else {
+          Comment::create([
+            'title' => '入会希望時のご要望',
+            'body' => $form["remark"],
+            'type' => 'entry',
+            'create_user_id' => $this->create_user_id,
+            'target_user_id' => $this->student->user_id,
+            'publiced_at' => date('Y-m-d'),
+            'importance' => 10,
+          ]);
+        }
+      }
+
+      //通塾可能曜日・時間帯タグ
+      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
+      $lesson_weeks = config('attribute.lesson_week');
+      foreach($lesson_weeks as $lesson_week=>$name){
+        $tag_names[] = 'lesson_'.$lesson_week.'_time';
+      }
+      foreach($tag_names as $tag_name){
+        if(isset($form[$tag_name]) && count($form[$tag_name])>0){
+          TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        }
+        else {
+          TrialTag::clearTags($this->id, $tag_name);
+        }
+      }
+      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type'];
+      foreach($tag_names as $tag_name){
+        if(empty($form[$tag_name])) $form[$tag_name] = '';
+        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+      //科目タグ
+      $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
+      foreach($charge_subject_level_items as $charge_subject_level_item){
+        $tag_names[] = $charge_subject_level_item['attribute_value'];
+      }
+      foreach($tag_names as $tag_name){
+        if(empty($form[$tag_name])) $form[$tag_name] = '';
+        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
     }
+    Trial::where('id', $this->id)->update($update_data);
     return true;
   }
 
@@ -1393,9 +1424,7 @@ class Trial extends Model
     }
     else {
       $this->parent->regular();
-      foreach($this->trial_students as $trial_student){
-        $trial_student->student->regular();
-      }
+      $this->student->regular();
     }
     return true;
   }

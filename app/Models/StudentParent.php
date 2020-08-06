@@ -54,6 +54,7 @@ class StudentParent extends Teacher
   }
   static public function entry($form){
     $ret = [];
+
     $parent_user = User::where('email', $form['email'])->first();
     $parent = null;
     if(isset($parent_user)){
@@ -73,6 +74,8 @@ class StudentParent extends Teacher
         'name_last' => $form['name_last'],
         'name_first' => $form['name_first'],
         'phone_no' => $form['phone_no'],
+        'post_no' => $form['post_no'],
+        'address' => $form['address'],
         'kana_last' => '',
         'kana_first' => '',
         'user_id' => $parent_user->id,
@@ -85,14 +88,7 @@ class StudentParent extends Teacher
 
   public function brother_add($form, $status=0){
     $ret = [];
-    $student = null;
-    foreach($this->relation() as $relation){
-      if($relation->student->name_last ==$form['name_last'] &&
-        $relation->student->name_first == $form['name_first'] ){
-          $student = $relation->student;
-          break;
-      }
-    }
+    $student = $this->get_child($form['name_last'], $form['name_first']);
     if(isset($student)){
       //すでに同姓同名の子供を登録済み
       return $student;
@@ -107,6 +103,15 @@ class StudentParent extends Teacher
     ]);
     $student->profile_update($form);
     return $student;
+  }
+  public function get_child($name_last, $name_first){
+    foreach($this->relation() as $relation){
+      if($relation->student->name_last ==$name_last &&
+        $relation->student->name_first == $name_first ){
+          return $relation->student;
+      }
+    }
+    return null;
   }
   public function profile_update($form){
     $update_fields = [

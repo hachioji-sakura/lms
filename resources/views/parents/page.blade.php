@@ -3,9 +3,6 @@
 @endsection
 @extends('dashboard.common')
 @include($domain.'.menu')
-
-
-
 @section('contents')
 {{--
 <section class="content-header">
@@ -53,6 +50,18 @@
               <i class="fa fa-users mr-1"></i>
               登録生徒
             </h3>
+            <div class="card-title text-sm">
+              {{-- TODO : 実用化されるまでコメントアウト
+              <ul class="pagination pagination-sm m-0 float-left text-sm">
+                <li class="page-item">
+                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create?student_parent_id={{$item->id}}" page_title="生徒追加">
+                  <i class="fa fa-plus"></i>
+                  <span class="btn-label">生徒登録</span>
+                  </a>
+                </li>
+              </ul>
+              --}}
+            </div>
           </div>
           <!-- /.card-header -->
           <div class="card-body table-responsive p-0">
@@ -121,6 +130,7 @@
 
                 <div calss="row text-sm">
                   @if($user->role!=="student")
+                  @if($charge_student->student->is_hachiojisakura()==true)
                   <div class="col-6 float-left mt-1">
                     <a href="/students/{{$charge_student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-calendar-check mr-1"></i>{{__('labels.month_schedule_list')}}
@@ -141,6 +151,29 @@
                       <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.exchange_schedule_list')}}
                     </a>
                   </div>
+                  @else
+                  {{-- TODO : 実用化されるまでコメントアウト
+                  <div class="col-6 float-left mt-1">
+                    @if(count($charge_student->student->trials)>0 && $charge_student->student->trials[0]!=null)
+                    <a href="javascript:void(0);"
+                    page_title="体験申込状況" page_form="dialog"
+                    page_url="/trials/{{$charge_student->student->trials[0]->id}}/dialog?student_parent_id={{$item->id}}"
+                    role="button" class="btn btn-danger btn-sm btn-flat btn-block">
+                      <i class="fa fa-check-circle mr-1"></i>
+                      体験申込状況
+                    </a>
+                    @else
+                    <a href="javascript:void(0);"
+                    page_title="体験授業申し込み" page_form="dialog"
+                    page_url="/parents/{{$item->id}}/trial_request?student_id={{$charge_student->id}}"
+                    role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                      <i class="fa fa-hand-point-right mr-1"></i>
+                      体験授業申し込み
+                    </a>
+                    @endif
+                  </div>
+                  --}}
+                  @endif
                   <div class="col-6 float-left mt-1">
                     <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                       <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}

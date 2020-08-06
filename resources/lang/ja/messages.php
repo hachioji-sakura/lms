@@ -145,5 +145,8 @@ return [
   'task_status_done' => 'タスクを完了しました。',
   'task_reviewed' => 'レビューしました。',
   'warning_schedule_add' => 'この授業追加は、受講料の追加を伴うため、親御様の承認を得る必要があります。',
+  "copyright" => "Copyright © 国立・八王子・日野の個別指導塾 さくら One All Rights Reserved.",
   'message_restore_contents' => '前回入力された内容が残っています。復元しますか？',
+  "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
+  "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
 ];

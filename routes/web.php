@@ -101,6 +101,7 @@ Route::get('api_english_group_calendars','UserCalendarController@api_english_gro
 Route::resource('calendars','UserCalendarController');
 
 
+Route::get('trials/{id}/dialog','TrialController@show_dialog');
 Route::get('trials/{id}/to_calendar','TrialController@to_calendar');
 Route::post('trials/{id}/to_calendar','TrialController@to_calendar_confirm');
 Route::get('trials/{id}/to_calendar_setting','TrialController@to_calendar_setting');
@@ -111,14 +112,17 @@ Route::post('trials/{id}/admission','TrialController@admission_mail_send');
 Route::get('trials/{id}/cancel','TrialController@show_cancel_page');
 Route::put('trials/{id}/cancel','TrialController@cancel');
 
+Route::get('trials/{id}/cancel','TrialController@show_cancel_page');
+Route::put('trials/{id}/cancel','TrialController@cancel');
+
 Route::get('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join');
 Route::post('trials/{id}/ask_hope_to_join','TrialController@ask_hope_to_join_mail_send');
 
 
 Route::get('trials/{id}/ask_candidate','TrialController@ask_candidate');
 Route::post('trials/{id}/ask_candidate','TrialController@ask_candidate_mail_send');
-Route::get('trials/{id}/add_candidate_date','TrialController@add_candidate_date');
-Route::post('trials/{id}/add_candidate_date','TrialController@add_candidat_send');
+Route::get('trials/{id}/candidate_date','TrialController@candidate_date_edit');
+Route::put('trials/{id}/candidate_date','TrialController@candidate_date_update');
 
 Route::get('trials/{id}/commit','TrialController@admission');
 
@@ -129,6 +133,9 @@ Route::put('trials/{id}/{status}','TrialController@status_update');
 Route::resource('trials','TrialController');
 Route::get('entry','TrialController@trial');
 Route::post('entry','TrialController@trial_store');
+
+Route::get('parents/{id}/trial_request','StudentParentController@trial_request_page');
+Route::post('parents/{id}/trial_request','StudentParentController@trial_request');
 
 
 Route::get('api_lectures','LectureController@api_index');
@@ -160,6 +167,15 @@ Route::get('managers/register','ManagerController@register');
 Route::post('managers/register','ManagerController@register_update');
 Route::get('managers/{id}/month_work/{target_moth?}','ManagerController@month_work');
 Route::post('managers/{id}/month_work','ManagerController@month_work_confirm');
+
+Route::get('signup','StudentParentController@entry');
+Route::post('signup','StudentParentController@entry_store');
+Route::get('parents/register','StudentParentController@register');
+Route::post('parents/register','StudentParentController@register_update');
+
+
+Route::get('students/{id}/setting','StudentController@setting_page');
+
 
 Route::get('students/{id}/email_edit','StudentController@email_edit_page');
 Route::get('managers/{id}/email_edit','ManagerController@email_edit_page');

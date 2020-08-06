@@ -67,6 +67,7 @@ class UserController extends Controller
        'teacher_id' => $request->teacher_id,
        'manager_id' => $request->manager_id,
        'student_id' => $request->student_id,
+       'student_parent_id' => $request->student_parent_id,
        'access_key' => $request->key,
        'origin' => $request->origin,
        'item_id' => $request->item_id,
