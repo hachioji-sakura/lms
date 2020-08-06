@@ -269,7 +269,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if(!isset($tuition)) return null;
     return $tuition;
   }
-  static public function get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $is_juken=false, $teacher_id){
+  static public function get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $is_juken=false, $teacher_id, $subject){
     $replace_course = config('replace.course');
     if(!isset($replace_course[$course])){
       return null;
@@ -282,18 +282,34 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     $replace_grade = $replace_grade[$grade];
 
+
     $jukensei_flag = 0;
     if($is_juken==true){
       $jukensei_flag = 1;
     }
-
     $_url = config('app.management_url').'/sakura-api/api_get_lesson_fee.php';
     $_url .='?lesson='.$lesson;
     $_url .='&course_type='.$replace_course;
     $_url .='&course_minutes='.$course_minutes;
     $_url .='&grade='.$replace_grade;
     $_url .='&jukensei_flag='.$jukensei_flag;
-    $_url .='&lesson_week_count='.$lesson_week_count;
+    if($subject!='dance'){
+      $_url .='&lesson_week_count='.$lesson_week_count;
+    }
+    switch($subject){
+      case "abacus":
+      case "dance":
+      case "chinese":
+        $replace_subject = [
+          "abacus" => 5,
+          "dance" => 49,
+          "chinese" => 43,
+        ];
+        $_url .='&subject='.$replace_subject[$subject];
+        break;
+    }
+    \Log::warning("get_api_lesson_fee(".$_url.")");
+
     $controller = new Controller;
     $request = new Request;
     $res = $controller->call_api($request, $_url, 'GET', null);
@@ -304,13 +320,13 @@ class UserCalendarMemberSetting extends UserCalendarMember
       $message .= "\n事務システムAPIエラー:".$_url."\nresponseなし";
       \Log::Error($message);
       @$controller->send_slack($message, 'error', "事務システムAPI");
-      return null;
+      return $controller->error_response();
     }
     else if($res["status"] != 'success'){
       $message .= "\n事務システムAPIエラー:".$_url."\nstatus=".$res["status"];
       \Log::Error($message);
       @$controller->send_slack($message, 'error', "事務システムAPI");
-      return null;
+      return $controller->error_response($res["message"], $res["description"] , $res["data"]);
     }
     //TODO 弓削さんの場合＋1000円 期間講習の対応なので関係ない？
     if($teacher_id == 1){
@@ -341,7 +357,18 @@ class UserCalendarMemberSetting extends UserCalendarMember
       }
     }
     $t = $this->setting->user->details('teachers');
-    $res = UserCalendarMemberSetting::get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $user->is_juken(), $t->id);
+    $subject = "";
+    if($this->setting->has_tag('lesson',2)==true && $settings->has_tag('english_talk_lesson','chinese')==true){
+      $subject = "chinese";
+    }
+    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','abacus')==true){
+      $subject = "abacus";
+    }
+    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','dance')==true){
+      $subject = "dance";
+    }
+
+    $res = UserCalendarMemberSetting::get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $user->is_juken(), $t->id, $subject);
 
     return $res;
   }

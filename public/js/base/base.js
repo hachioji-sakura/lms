@@ -101,14 +101,19 @@
 			var _parent_id = $(this).attr("parent_id");
 			var _width = $(this).attr("width");
 			var _parent = $("body");
+			var _name = $(this).attr('name');
+
 			if(!util.isEmpty(_parent_id)){
 				_parent = $("#"+_parent_id);
+			}
+			if(formData!=null && formData[_name] && !util.isEmpty(formData[_name])){
+				$(this).select2('destroy');
+				$(this).val(formData[_name]);
 			}
 			$(this).select2({
 				width: _width,
 				placeholder: _placeholder,
 			});
-
 		});
 		var colors = ['green', 'aero', 'red', 'blue', 'grey'];
 		$.each(colors, function(i,color){
@@ -120,9 +125,10 @@
 		$('input[type="checkbox"].icheck, input[type="radio"].icheck').on('ifChanged', function (e) {
 			$(this).trigger("change", e);
 		});
-		/*
 		//郵便番号入力
 		dom.setPostnoForm(form_id);
+
+		/*
 		//数値入力
 		dom.setNumberForm(form_id);
 		*/
@@ -498,6 +504,14 @@
 			  document.body.style.position = 'absolute';
 			  document.body.style.top = `-${window.scrollY}px`;
 				*/
+				$("#"+form_id).unbind("hide.bs.modal");
+				$("#"+form_id).unbind("hidden.bs.modal");
+				$("#"+form_id).on('hide.bs.modal', function () {
+					console.log('modal close');
+					if(front.isInput(form_id)==true){
+						return confirm("このフォームを閉じますか？\n入力したデータは残りません。");
+					}
+				});
 				$("#"+form_id).on('hidden.bs.modal', function () {
 					console.log('modal close');
 					// モーダルが閉じられ時

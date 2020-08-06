@@ -145,4 +145,5 @@ return [
   'task_status_done' => 'タスクを完了しました。',
   'task_reviewed' => 'レビューしました。',
   'warning_schedule_add' => 'この授業追加は、受講料の追加を伴うため、親御様の承認を得る必要があります。',
+  'message_restore_contents' => '前回入力された内容が残っています。復元しますか？',
 ];

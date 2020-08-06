@@ -10,7 +10,7 @@
     @if(isset($is_label) && $is_label===true)
     <span>{{$item['post_no']}}</span>
     @else
-    <input type="text" name="post_no" class="form-control" placeholder="例：1112222" inputtype="number" maxlength=7 required="true"
+    <input type="text" name="post_no" class="form-control" placeholder="例：1112222" inputtype="number" maxlength=7 uitype="jpostal"  required="true"
     value="@if(isset($item) && isset($item['post_no'])){{$item['post_no']}}@endif"
     >
     @endif
@@ -27,7 +27,7 @@
     @if(isset($is_label) && $is_label===true)
     <span>{{$item['address']}}</span>
     @else
-    <input type="text" name="address" class="form-control" placeholder="例：東京都八王子市〇〇１－２－３" inputtype="zenkaku" required="true"
+    <input type="text" name="address" class="form-control" placeholder="例：東京都八王子市〇〇１－２－３" inputtype="zenkaku" required="true" accesskey="post_no" alt="%3%4%5"
     value="@if(isset($item) && isset($item['address'])){{$item['address']}}@endif"
     >
     @endif
