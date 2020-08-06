@@ -107,9 +107,32 @@
 </div>
 
 <script>
-
 $(function(){
-  base.pageSettinged("message_create",null);
+
+  @if($_reply)
+    var dataId = '{{$domain}}_create_{{$item->id}}';
+  @else
+    var dataId = '{{$domain}}_create';
+  @endif
+  var form_data = util.getLocalData(dataId);
+  if( form_data ){
+    dom.confirmMessage('{{__('labels.confirm')}}','{{__('messages.message_restore_contents')}}', function(){
+      base.pageSettinged("{{$domain}}_create",form_data);
+    });
+  }
+  save_input_form(dataId,form_data);
 });
+
+function save_input_form(dataId, form_data){
+  timerId = setTimeout(function(){
+    var form_data = front.getFormValue('{{$domain}}_create');
+    delete form_data['_token'];
+    util.setLocalData(dataId,form_data);
+    if($('#subDialog').is(':visible')){
+      save_input_form(dataId, form_data);
+    }
+  },60000);//1分おき
+}
+
 
 </script>
