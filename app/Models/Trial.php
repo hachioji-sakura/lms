@@ -273,10 +273,10 @@ class Trial extends Model
       $form["accesskey"] = '';
       //TODO デフォルトパスワード
       $form["password"] = 'sakusaku';
-      $form["name_last"] = "";
-      $form["name_first"] = "";
-      $form["kana_last"] = "";
-      $form["kana_first"] = "";
+      $form["kana_last"] = $form["parent_kana_last"];
+      $form["kana_first"] = $form["parent_kana_first"];
+      $form["name_last"] = $form["parent_name_last"];
+      $form["name_first"] = $form["parent_name_first"];
       $parent = StudentParent::entry($form);
       $form["create_user_id"] = $parent->user_id;
       $parent->profile_update($form);

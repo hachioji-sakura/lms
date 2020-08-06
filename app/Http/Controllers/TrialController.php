@@ -383,7 +383,7 @@ class TrialController extends UserCalendarController
        $u = $res['data']->parent->user;
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [
-         'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
+         'user_name' => $form['parent_name_last'].' '.$form['parent_name_first'],
          'access_key' => $access_key,
          'item' => $res['data'],
          'send_to' => 'parent',

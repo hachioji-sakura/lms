@@ -22,7 +22,7 @@ $item = $item->details();
 第２希望：{{$item["date2"]}}
 第３希望：{{$item["date3"]}}
 @else
-@if(!empty($item["start_hope_date"]))
+@if($item->is_trial_lesson_complete()==false && !empty($item["start_hope_date"]))
 ■ご希望の授業開始日
 {{$item["start_hope_date"]}}
 @endif
@@ -89,6 +89,15 @@ $item = $item->details();
 @endforeach
 @endisset
 @endisset
+
+■通塾可能時間帯/曜日
+@foreach(config('attribute.lesson_week') as $week_code => $week_name)
+@foreach(config('attribute.lesson_time') as $index => $timezone)
+@if(isset($item) && $item->has_tag('lesson_'.$week_code.'_time', $index)===true)
+{{$week_name}} {{$timezone}}
+@endif
+@endforeach
+@endforeach
 
 ■ご要望
 @if(!empty($item["remark"]))

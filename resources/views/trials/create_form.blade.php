@@ -54,6 +54,8 @@
       $parent = $item->parent->details();
     }
   ?>
+  @component('students.forms.name', [ 'prefix' => 'parent_', 'is_label' => $_edit, 'item' => $parent]) @endcomponent
+  @component('students.forms.kana', [ 'prefix' => 'parent_', 'is_label' => $_edit, 'item' => $parent]) @endcomponent
   @component('students.forms.email', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
   @component('students.forms.phoneno', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent
   @component('students.forms.address', ['is_label'=>$_edit, 'item'=>$parent]) @endcomponent

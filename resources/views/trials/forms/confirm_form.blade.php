@@ -48,6 +48,13 @@
     <i class="fa fa-phone-square mr-1"></i>
     ご連絡先
   </div>
+  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+  <div class="col-6 p-3">
+    <ruby style="ruby-overhang: none">
+      <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
+      <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
+    </ruby>
+  </div>
   <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
   <div class="col-6 p-3"><span id="email"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご連絡先</div>
@@ -63,7 +70,9 @@
     <i class="fa fa-calendar-alt mr-1"></i>
     通塾スケジュールにつきまして
   </div>
+  @empty($is_trial)
   <div class="col-6 p-3 font-weight-bold" >授業開始希望日</div>
+  @endempty
   <div class="col-6 p-3"><span id="schedule_start_hope_date"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望の授業回数</div>
   <div class="col-6 p-3">週<span id="lesson_week_count_name"></span></div>
