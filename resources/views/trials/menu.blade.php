@@ -12,7 +12,7 @@
       </ruby>
     </a>
     <small class="badge badge-info mx-2">
-      {{$item->student->label_gender()}}
+      {{$item->student->gender()}}
     </small>
     <small class="badge badge-info mx-2">
       {{$item->student->grade()}}

@@ -756,18 +756,14 @@ class Trial extends Model
     $course_minutes = 30;
     if($lesson==1) $course_minutes = 60;
     //１０分ずらしで、授業時間分の範囲を配列に設定する
-    $calendars = $this->get_calendar();
-
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
         break;
       }
-      \Log::warning($_end.":".$trial_end_time);
-
       $_duration = date('H:i', strtotime($_start)).'～'.date('H:i', strtotime($_end));
       $status = "free";
-      foreach($calendars as $calendar){
+      foreach($this->get_calendar() as $calendar){
         if($calendar->is_enable_status($calendar->status)==false) continue;
         //この時間範囲にて体験授業がすでに登録されている場合は、無効
         if($calendar->is_conflict($_start, $_end)){

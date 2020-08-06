@@ -27,7 +27,6 @@ class TeacherController extends StudentController
   public function model(){
    return Teacher::query();
   }
-
   /**
    * 共通パラメータ取得
    *

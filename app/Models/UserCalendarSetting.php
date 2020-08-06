@@ -38,6 +38,21 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  //TODO 以下、不要となるロジック
+  public function scopeFindTrialStudent($query, $trial_id)
+  {
+    $where_raw = <<<EOT
+      lms.user_calendar_settings.id in (
+        select user_calendar_setting_id from
+        lms.user_calendar_member_settings ums
+        inner join common.students s on s.user_id = ums.user_id
+        inner join lms.trial_students ts on s.id = ts.student_id
+        where ts.trial_id=?)
+EOT;
+
+    return $query->whereRaw($where_raw,[$trial_id]);
+  }
+
   public function members(){
     return $this->hasMany('App\Models\UserCalendarMemberSetting', 'user_calendar_setting_id');
   }
@@ -492,8 +507,8 @@ EOT;
           $is_add = false;
           //第何週か指定がある場合
           $c = $this->get_week_count($target_date);
+
           if($c == $this->lesson_week_count){
-            //echo $c.' '.$target_date."\n";
             $is_add = true;
           }
         }
@@ -530,12 +545,16 @@ EOT;
   /* https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155
   */
   private function get_week_count($target_date){
-      $saturday = 6;
-      $week_day = 7;
-      $w = intval(date('w', strtotime($target_date)));
-      $d = intval(date('d', strtotime($target_date)));
-      $w = ($saturday - $w) + $d;
-      return ceil($w/$week_day);
+    $saturday = 6;
+    $week_day = 7;
+    $c = 0;
+    $w1 = intval(date('w', strtotime(date('Y-m-1', strtotime($target_date)))));
+    $w = intval(date('w', strtotime($target_date)));
+    if($w1 > $w) $c--;
+    $d = intval(date('d', strtotime($target_date)));
+    $w = ($saturday - $w) + $d;
+    $c += ceil($w/$week_day);
+    return $c;
   }
   public function is_enable($date=""){
     $strtotime = -1;

@@ -8,7 +8,7 @@
       @slot('alias')
         <h6 class="widget-user-desc">
           <small class="badge badge-primary mt-1 mr-1">
-            {{$item->student->label_gender()}}
+            {{$item->student->gender()}}
           </small>
           <small class="badge badge-primary mt-1 mr-1">
             {{$item->student->grade()}}
