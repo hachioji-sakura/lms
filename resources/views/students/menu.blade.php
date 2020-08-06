@@ -121,7 +121,7 @@
       @if($item->is_hachiojisakura()==true)
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/setting" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
-          <i class="fa fa-business-time nav-icon"></i>{{__('labels.school_lesson')}}{{__('labels.setting')}}
+          <i class="fa fa-business-time nav-icon"></i>通塾設定
         </a>
       </li>
       @endif
