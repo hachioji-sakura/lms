@@ -69,7 +69,7 @@
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
-          @component('trials.forms.confirm_form', ['_edit'=>$_edit, 'attributes' => $attributes]) @endcomponent
+          @component('trials.forms.confirm_form', ['_edit'=>$_edit, 'attributes' => $attributes, 'is_trial' => true]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

@@ -14,16 +14,16 @@
           <div class="col-12">
             {!!nl2br(__('messages.message_trial_candidate_date2'))!!}
             <br>
-            <a target="__blank" href="{{config('app.url')}}/trials/{{$item->id}}/add_candidate_date" >
-              {{config('app.url')}}/trials/{{$item->id}}/add_candidate_date?key=xxxxxxxxxxxxxxxx
+            <a target="__blank" href="{{config('app.url')}}/trials/{{$item->id}}/candidate_date" >
+              {{config('app.url')}}/trials/{{$item->id}}/candidate_date?key=xxxxxxxxxxxxxxxx
             </a>
           </div>
         </div>
     		<div class="row">
     			<div class="col-12 col-md-6 mb-1">
-    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="体験授業の候補日を訊く連絡メールを送信しますか？">
+    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="体験授業希望日変更のお願い連絡を送信しますか？">
     					<i class="fa fa-envelope mr-1"></i>
-    					体験授業の候補日を訊く連絡メールを送信する
+    					体験授業希望日変更のお願い連絡を送信する
     				</button>
     			</div>
           <div class="col-12 col-md-6 mb-1">

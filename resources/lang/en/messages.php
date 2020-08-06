@@ -141,8 +141,8 @@ return [
  'task_status_done' => 'A status of this task is updated to [done]',
  'task_reviewed' => 'Reviewed',
  'warning_schedule_add' => 'This additional class requires an additional tuition fee and must be approved by the parent.',
- 'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
  "copyright" => "Copyright © Kunitachi, Hachioji, and Hino's private instruction schools SaKuRa One All Rights Reserved.",
+ 'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
  "info_signup" => "The URL for main registration will be sent to the email address you entered.",
  "already_signup" => "If you have already registered, please log in here to use", 
  ];

@@ -1,18 +1,5 @@
 @section('end')
 <!-- layouts.end start-->
-<script src="{{asset('js/lib/utf.js')}}"></script>
-<script src="{{asset('js/lib/base64.js')}}"></script>
-<script src="{{asset('js/lib/inflate.js')}}"></script>
-<script src="{{asset('js/lib/deflate.js')}}"></script>
-<script src="{{asset('js/lib/timsort.js')}}"></script>
-<script src="{{asset('js/base/util.js?v=4')}}"></script>
-<script src="{{asset('js/base/fileUI.js')}}"></script>
-<script src="{{asset('js/base/dom.js?v=1')}}"></script>
-<script src="{{asset('js/base/service.js?v=7')}}"></script>
-<script src="{{asset('js/base/front.js?v=1')}}"></script>
-<script src="{{asset('js/base/base.js?v=9')}}"></script>
-<script src="{{asset('js/common.js')}}"></script>
-</body>
 <script>
 function status_style(status){
   var status_style = {
@@ -66,8 +53,20 @@ function status_style(status){
   if(status_style[status]) return status_style[status];
   return status_style['trial'];
 }
-
 </script>
+<script src="{{asset('js/lib/utf.js')}}"></script>
+<script src="{{asset('js/lib/base64.js')}}"></script>
+<script src="{{asset('js/lib/inflate.js')}}"></script>
+<script src="{{asset('js/lib/deflate.js')}}"></script>
+<script src="{{asset('js/lib/timsort.js')}}"></script>
+<script src="{{asset('js/base/util.js?v=3')}}"></script>
+<script src="{{asset('js/base/fileUI.js')}}"></script>
+<script src="{{asset('js/base/dom.js?v=1')}}"></script>
+<script src="{{asset('js/base/service.js?v=5')}}"></script>
+<script src="{{asset('js/base/front.js')}}"></script>
+<script src="{{asset('js/base/base.js?v=9')}}"></script>
+<script src="{{asset('js/common.js?v=1')}}"></script>
+</body>
 
 </html>
 <!-- layouts.end end-->
