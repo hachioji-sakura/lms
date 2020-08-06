@@ -32,10 +32,10 @@
 							@endif
 	          </div>
 	          <div class="col-6 p-2 font-weight-bold" >性別</div>
-	          <div class="col-6 p-2">{{$item->label_gender()}}</div>
+	          <div class="col-6 p-2">{{$item->gender()}}</div>
 						{{--
 	          <div class="col-6 p-2 font-weight-bold" >生年月日</div>
-	          <div class="col-6 p-2">{{$item->label_birth_day()}}</div>
+	          <div class="col-6 p-2">{{$item->birth_day()}}</div>
 						--}}
 	          <div class="col-6 p-2 font-weight-bold" >学年</div>
 	          <div class="col-6 p-2">{{$item->grade()}}</div>

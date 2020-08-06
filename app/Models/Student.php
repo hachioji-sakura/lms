@@ -71,7 +71,7 @@ class Student extends Model
   /**
    *　プロパティ：性別名称
    */
-  public function label_gender()
+  public function gender()
   {
     if(isset($this->gender)){
       if($this->gender===1) return __('labels.man');
@@ -83,7 +83,7 @@ class Student extends Model
   /**
    *　プロパティ：birth_day
    */
-  public function label_birth_day($format='Y年m月d日')
+  public function birth_day($format='Y年m月d日')
   {
     if (App::isLocale('en')) {
       $format = 'Y-m-d';
