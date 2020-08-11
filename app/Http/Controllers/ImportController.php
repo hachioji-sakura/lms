@@ -1344,6 +1344,7 @@ class ImportController extends UserController
         $season_lessons = UserCalendar::where('work' , 10)
                     ->where('start_time', '>', $item['ymd'].' 00:00:00')
                     ->where('start_time', '<', $item['ymd'].' 23:59:59')
+                    ->where('place_floor_id', $item['place_id'])
                     ->findStatuses(['new','confirm'], true)
                     ->get();
 
