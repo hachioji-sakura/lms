@@ -146,4 +146,7 @@ trait Common
     }
     return false;
   }
+  public function get_course_minutes($from_time, $to_time){
+    return $course_minutes = intval(strtotime($to_time) - strtotime($from_time))/60;
+  }
 }

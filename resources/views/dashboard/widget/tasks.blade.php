@@ -61,9 +61,18 @@
           <li class="item">
             <div class="row">
               <div class="col-md-1 col-2">
-                <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
-                  <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
-                </small>
+                <div class="col-12">
+                  <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
+                    <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
+                  </small>
+                </div>
+                @if($item->curriculums->count() > 0)
+                <div class="col-12">
+                  <small class="badge badge-primary">
+                    {{$item->curriculums->first()->subjects->first()->name}}
+                  </small>
+                </div>
+                @endif
               </div>
               <div class="col-md-11 col-10">
                 <div class="row">
