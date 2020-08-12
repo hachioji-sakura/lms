@@ -412,8 +412,7 @@ class TaskController extends MilestoneController
             //生徒は自分宛てのもののみ
             abort(404);
         }
-        $item = $item->details();
-        $ret['item'] = $item->details();
+        $ret['item'] = $item;
       }
       return $ret;
     }
