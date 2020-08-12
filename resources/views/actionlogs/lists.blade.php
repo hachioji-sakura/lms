@@ -73,13 +73,11 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach(config('attribute.mail_status') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
-           <i class="fa fa-envelope nav-icon"></i>{{$name}}
+         <a href="/{{$domain}}" class="nav-link ">
+           <i class="fa fa-list-alt nav-icon"></i>すべて
          </a>
        </li>
-       @endforeach
     </ul>
   </li>
 </ul>

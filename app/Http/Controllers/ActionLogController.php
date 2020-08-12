@@ -22,7 +22,6 @@ class ActionLogController extends MailLogController
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
-      $item = $item->details();
       $ret['item'] = $item;
     }
     $ret['filter']['session_id'] = $request->session_id;
@@ -37,15 +36,11 @@ class ActionLogController extends MailLogController
    */
   public function search(Request $request)
   {
+    $param = $this->get_param($request);
+
     $items = $this->model();
-    $user = $this->login_details($request);
-    if($this->is_manager_or_teacher($user->role)!==true){
-      //生徒の場合は自分自身を対象とする
-      $items = $items->mydata($user->user_id);
-    }
     $items = $this->_search_scope($request, $items);
-    $count = $items->count();
-    $items = $this->_search_pagenation($request, $items);
+    $items = $items->paginate($param['_line']);
 
     $request->merge([
       '_sort_order' => 'desc',
@@ -57,11 +52,6 @@ class ActionLogController extends MailLogController
       ]);
     }
 
-    $items = $this->_search_sort($request, $items);
-    $items = $items->get();
-    foreach($items as $item){
-      $item = $item->details();
-    }
     $fields = [
       'id' => [
         'label' => 'ID',
@@ -75,6 +65,9 @@ class ActionLogController extends MailLogController
       ],
       "session_id" => [
         "label" => "session_id",
+        "link" => function($row){
+          return "/actionlogs?session_id=".$row->session_id;
+        },
       ],
       "login_user_name" => [
         "label" => "ログイン",
@@ -87,7 +80,7 @@ class ActionLogController extends MailLogController
       ],
     ];
 
-    return ['items' => $items, 'fields' => $fields, 'count' => $count];
+    return ['items' => $items, 'fields' => $fields];
   }
   /**
    * フィルタリングロジック

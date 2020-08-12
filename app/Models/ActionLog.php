@@ -14,6 +14,7 @@ class ActionLog extends Model
   protected $connection = 'mysql_common';
   protected $table = 'common.action_logs';
   protected $guarded = array('id');
+  protected $appends = ['login_user_name', 'created_date', 'updated_date'];
   /**
    * 入力ルール
    */
@@ -40,9 +41,16 @@ class ActionLog extends Model
     });
     return $query;
   }
-  public function login_user(){
-    return $this->belongsTo('App\User', 'login_user_id');
+  public function getLoginUserNameAttribute(){
+    if(isset($this->login_user)){
+      return $this->login_user->details()->name();
+    }
+    return "";
   }
+  public function getStatusNameAttribute(){
+    return $this->config_attribute_name('mail_status', $this->status);
+  }
+
   static protected function add($login_user_id=null){
     $data = [];
     try {
@@ -66,14 +74,5 @@ class ActionLog extends Model
     }
     catch(\Exception $e){
     }
-  }
-  public function details(){
-    $item = $this;
-    $item["created_date"] = $this->created_at_label();
-    $item["updated_date"] = $this->updated_at_label();
-    if(isset($this->login_user)){
-      $item["login_user_name"] = $this->login_user->details()->name();
-    }
-    return $item;
   }
 }

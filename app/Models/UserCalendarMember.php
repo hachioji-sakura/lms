@@ -22,6 +22,7 @@ class UserCalendarMember extends Model
   use Common;
   protected $table = 'lms.user_calendar_members';
   protected $guarded = array('id');
+  protected $appends = ['status_name', 'created_date', 'updated_date'];
   public $api_domain = '/sakura-api';
   public $api_endpoint = [
     "GET" =>  "api_get_onetime_schedule.php",
@@ -225,6 +226,9 @@ class UserCalendarMember extends Model
       if($this->work==9) return "出勤";
     }
     return $status_name;
+  }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
   }
   public function is_active(){
     if($this->status=='cancel') return false;
