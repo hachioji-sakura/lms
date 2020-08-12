@@ -40,7 +40,7 @@ class ActionLogController extends MailLogController
 
     $items = $this->model();
     $items = $this->_search_scope($request, $items);
-    $items = $items->paginate($param['_line']);
+    $items = $items->orderBy('id', 'desc')->paginate($param['_line']);
 
     $request->merge([
       '_sort_order' => 'desc',
