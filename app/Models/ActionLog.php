@@ -23,6 +23,10 @@ class ActionLog extends Model
     'server_ip' => 'required',
     'method' => 'required',
   );
+  public function login_user(){
+    return $this->belongsTo('App\User', 'login_user_id');
+  }
+
   public function scopeFindMethods($query, $vals, $is_not=false)
   {
     return $this->scopeFieldWhereIn($query, 'method', $vals, $is_not);
