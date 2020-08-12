@@ -39,7 +39,7 @@
   <div class="card-header">
     <h3 class="card-title">@yield('title')</h3>
     <div class="card-tools pt-2">
-      @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count]) @endcomponent
+      {{$items->appends(Request::query())->links('components.paginate')}}
     </div>
   </div>
   <div class="card-body table-responsive p-0">

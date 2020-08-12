@@ -564,7 +564,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function details($user_id=0){
-
+    $this->set_endtime_for_singile_group();
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
@@ -588,9 +588,6 @@ EOT;
     $item['course_minutes'] = $this->course_minutes;
     $item['timezone'] = $this->timezone();
     $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
-    if($this->lecture_id > 0){
-      $lecture = $this->lecture->details();
-    }
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();
@@ -690,7 +687,7 @@ EOT;
     }
     */
 
-    $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
+    $course_minutes = $this->get_course_minutes($form['start_time'], $form['end_time']);
 
     $status = 'new';
     if(isset($form['work']) && $form['work']==9) $status = 'fix';
@@ -793,15 +790,13 @@ EOT;
     }
     if(isset($data['start_time']) && isset($data['end_time'])){
       //course_minutesは、start_time・end_timeから補完
-      $data['course_minutes'] = intval(strtotime($data['end_time']) - strtotime($data['start_time']))/60;
+      $data['course_minutes'] = $this->get_course_minutes($form['start_time'], $form['end_time']);
     }
-
     if(isset($data['status_name']))  unset($data['status_name']);
     \Log::warning("-------change----------");
     UserCalendar::where('id', $this->id)->update($data);
     if(empty($this->teaching_type)){
       $type = $this->get_teaching_type();
-
       UserCalendar::where('id', $this->id)->update(['teaching_type' => $type]);
     }
 
@@ -1264,5 +1259,35 @@ EOT;
     if($this->status != $status){
       UserCalendar::where('id', $this->id)->update(['status' => $status]);
     }
+    $this->set_endtime_for_singile_group();
+  }
+  public function set_endtime_for_singile_group($end_time=""){
+    if($this->is_group()==false) return false;
+    $students = $this->get_students();
+    $active_students = [];
+    foreach($students as $member){
+      if($member->status=='fix' || $member->status=='presence'){
+        $m = $member->user->details();
+        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+      }
+    }
+    if(empty($end_time)) $end_time = $this->end_time;
+    if($this->is_last_status()==true || $this->status=='fix'){
+      $course_minutes = $this->get_course_minutes($this->start_time, $end_time);
+      //グループ授業かつ、最終ステータスおよびfix の場合
+      if(count($active_students)==1 && $course_minutes==60){
+        //生徒一人グループ、かつ、60分授業の場合、40分に変更する
+        $end_time_40 = date('Y/m/d H:i:s', strtotime($this->start_time.' +40 minutes'));
+        $this->update(['end_time' => $end_time_40]);
+        return true;
+      }
+      if(count($active_students)>1 && $course_minutes==40){
+        //生徒複数グループ、かつ、40分授業の場合、60分に変更する
+        $end_time_60 = date('Y/m/d H:i:s', strtotime($this->start_time.' +60 minutes'));
+        $this->update(['end_time' => $end_time_60]);
+        return true;
+      }
+    }
+    return false;
   }
 }

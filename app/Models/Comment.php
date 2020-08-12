@@ -15,6 +15,16 @@ class Comment extends Milestone
       'body' => 'required',
       'type' => 'required'
   );
+  protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'publiced_date', 'created_date', 'updated_date'];
+
+  public function getTypeNameAttribute(){
+    $ret = $this->attribute_name('comment_type', $this->type);
+    if(!empty($ret)) return $ret;
+    $ret =  __('labels.'.$this->type.'_comment');
+    if(!empty($ret)) return $ret;
+    return "";
+  }
+
   public function type_name()
   {
     $ret = $this->attribute_name('comment_type', $this->type);
@@ -26,11 +36,10 @@ class Comment extends Milestone
   public function publiced_date(){
     return $this->_date_label($this->publiced_at, 'Y年m月d日');
   }
-  public function details(){
-    $item =  parent::details();
-    $item["publiced_date"] = $this->publiced_date();
-    return $item;
+  public function getPublicedDateAttribute(){
+    return $this->_date_label($this->publiced_at);
   }
+
   public function scopeFindDefaultTypes($query, $domain)
   {
     $_types = config('attribute.comment_type');

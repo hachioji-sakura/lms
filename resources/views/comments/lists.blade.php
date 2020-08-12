@@ -32,7 +32,6 @@
         <?php $is_exist=false; ?>
         @foreach($items as $comment)
         <?php
-          $comment = $comment->details();
           $is_exist = true;
         ?>
 

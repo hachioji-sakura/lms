@@ -109,7 +109,6 @@
           <?php $is_exist=false; ?>
           @foreach($ask->comments->sortByDesc('created_at') as $comment)
           <?php
-            $comment = $comment->details();
             $is_exist = true;
           ?>
             <div class="direct-chat-msg

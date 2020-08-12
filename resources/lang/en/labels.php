@@ -378,4 +378,5 @@ return [
   'task_understanding' => 'Understanding',
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
+  'actionlogs' => 'System Logs',
 ];

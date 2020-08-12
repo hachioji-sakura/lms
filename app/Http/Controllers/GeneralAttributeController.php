@@ -9,6 +9,9 @@ class GeneralAttributeController extends UserController
 {
     public $domain = "attributes";
     public $table = "general_attributes";
+    public function model(){
+      return GeneralAttribute::query();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -33,14 +36,35 @@ class GeneralAttributeController extends UserController
       }
 
       $param = $this->get_param($request);
-      $_table = $this->search($request, $param['select_key']);
-
-      $page_data = $this->get_pagedata($_table['count'] , $param['_line'], $param['_page']);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
-
-      return view($this->domain.'.lists', $_table)
+      $items = $this->model();
+      $items = $this->_search_scope($request, $items);
+      $items = $items->paginate($param['_line']);
+      $param['items'] = $items;
+      $fields = [
+        "attribute_value" => [
+          "label" => "値",
+        ],
+        "attribute_name" => [
+          "label" => "名称",
+          "link" => "show",
+        ],
+        "sort_no" => [
+          "label" => "並順",
+        ],
+        "created_at" => [
+          "label" => __('labels.add_datetime'),
+        ],
+        "updated_at" => [
+          "label" => __('labels.upd_datetime'),
+        ],
+        "buttons" => [
+          "label" => __('labels.control'),
+          "button" => ["edit", "delete"]
+        ]
+      ];
+      $param['items'] = $items;
+      $param['fields'] = $fields;
+      return view($this->domain.'.lists')
         ->with($param);
     }
     /**

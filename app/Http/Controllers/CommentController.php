@@ -23,6 +23,8 @@ class CommentController extends MilestoneController
      */
     public function search(Request $request)
     {
+      $param = $this->get_param($request);
+
       $items = $this->model();
       $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
@@ -31,13 +33,8 @@ class CommentController extends MilestoneController
       }
       $items = $this->_search_scope($request, $items);
       $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
+      $items = $items->paginate($param['_line']);
 
-      $items = $this->_search_sort($request, $items);
-      $items = $items->get();
-      foreach($items as $item){
-        $item = $item->details();
-      }
       $fields = [
         'id' => [
           'label' => 'ID',

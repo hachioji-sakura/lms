@@ -9,9 +9,11 @@ use App\Models\GeneralAttribute;
 use App\Models\Place;
 use App\Models\PlaceFloor;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 class UserController extends Controller
 {
   public $domain = "users";

@@ -22,7 +22,6 @@ class CalendarRecoverySeeder extends Seeder
       foreach($res["data"] as $data){
         $d[intval($data["id"])] = $data;
       }
-
       $this->delete_calendar_sync($d);
       $this->post_calendar_sync();
       $this->put_calendar_sync();
@@ -112,6 +111,10 @@ EOT;
         $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9)";
         $d = DB::select($_sql);
         $this->subject_expr_sync($d);
+        //季節講習演習の担当講師は、同日・同場所の講師
+        $_sql = $sql." where u.work=11";
+        $d = DB::select($_sql);
+        $this->lesson_place_setup($d);
     }
     public function update_schedule_ontime($confirm, $cancel, $d){
       $id = [];
@@ -132,15 +135,22 @@ EOT;
                                               'exchange_limit_date' => '2020-12-31'
                                             ]);
     }
-    public function exchanged_calendar_id_clear($d){
-      $id = [];
+    public function lesson_place_setup($d){
       foreach($d as $row){
-        $id[] = $row->schedule_onetime_id;
+        $season_training = UserCalendar::where('id', $row->calendar_id)->first();
+        $from = date('Y-m-d 00:00:00', strtotime($season_training->start_time));
+        $to = date('Y-m-d 23:59:59', strtotime($season_training->start_time));
+        foreach($season_training->members as $member){
+          //演習の予定と同日・同場所の講習の予定を取得
+          $season_lesson = UserCalendar::where('user_id', $member->user_id)
+                            ->rangeDate($from,$to)->where('work', 10)
+                            ->where('place_floor_id', $season_training->place_floor_id)->first();
+          if(!isset($season_lesson)){
+            //予定がない場合は、担当ではない
+            $member->delete();
+          }
+        }
       }
-      if(count($id)==0) return;
-      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $id)->update([
-        'altsched_id' => 0
-      ]);
     }
     public function exchanged_calendar_id_set($d){
       $id = [];

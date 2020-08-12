@@ -1,15 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\MailLog;
+use App\Models\ActionLog;
 use Illuminate\Http\Request;
 
-class MailLogController extends MilestoneController
+class ActionLogController extends MailLogController
 {
-  public $domain = "maillogs";
-  public $table = "mails";
+  public $domain = "actionlogs";
+  public $table = "action_logs";
   public function model(){
-    return MailLog::query();
+    return ActionLog::query();
   }
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
@@ -22,12 +22,12 @@ class MailLogController extends MilestoneController
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
-      $item = $item->details();
       $ret['item'] = $item;
     }
-
+    $ret['filter']['session_id'] = $request->session_id;
     return $ret;
   }
+
   /**
    * 検索～一覧
    *
@@ -39,11 +39,6 @@ class MailLogController extends MilestoneController
     $param = $this->get_param($request);
 
     $items = $this->model();
-    $user = $this->login_details($request);
-    if($this->is_manager_or_teacher($user->role)!==true){
-      //生徒の場合は自分自身を対象とする
-      $items = $items->mydata($user->user_id);
-    }
     $items = $this->_search_scope($request, $items);
     $items = $items->paginate($param['_line']);
 
@@ -61,15 +56,24 @@ class MailLogController extends MilestoneController
       'id' => [
         'label' => 'ID',
       ],
-      "subject" => [
-        "label" => "タイトル",
+      "url" => [
+        "label" => "url",
         "link" => "show",
       ],
-      "to_address" => [
-        "label" => "宛先",
+      "method" => [
+        "label" => "method",
       ],
-      "status_name" => [
-        "label" => "ステータス",
+      "session_id" => [
+        "label" => "session_id",
+        "link" => function($row){
+          return "/actionlogs?session_id=".$row->session_id;
+        },
+      ],
+      "login_user_name" => [
+        "label" => "ログイン",
+      ],
+      "client_ip" => [
+        "label" => "client_ip",
       ],
       "created_date" => [
         "label" => __('labels.add_datetime'),
@@ -91,13 +95,13 @@ class MailLogController extends MilestoneController
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
     }
-    //ステータス 検索
-    if(isset($request->search_status)){
-      $items = $items->fieldWhereIn($request->search_status);
+    //session id 検索
+    if(isset($request->session_id)){
+      $items = $items->where('session_id',$request->session_id);
     }
     //種別 検索
     if(isset($request->search_type)){
-      $items = $items->findTemplates($request->search_type);
+      $items = $items->findMethods($request->search_type);
     }
     //検索ワード
     if(isset($request->search_word)){
@@ -114,18 +118,11 @@ class MailLogController extends MilestoneController
   public function save_validate(Request $request)
   {
     $form = $request->all();
-    //保存時にパラメータをチェック
-    if(empty($form['subject']) || empty($form['body']) || empty($form['type'])){
-      return $this->bad_request('リクエストエラー', '種別='.$form['type'].'/タイトル='.$form['title'].'/内容='.$form['body']);
-    }
     return $this->api_response(200, '', '');
   }
 
   public function update_form(Request $request){
     $form = [];
-    $form['status'] = $request->get('status');
-    $form['subject'] = $request->get('subject');
-    $form['body'] = $request->get('body');
     return $form;
   }
 
@@ -140,36 +137,49 @@ class MailLogController extends MilestoneController
     $param = $this->get_param($request, $id);
 
     $fields = [
-      'to_address' => [
-        'label' => '宛先',
+      'server_name' => [
+        'label' => 'server_name',
+        'size' => 6
+      ],
+      'server_ip' => [
+        'label' => 'server_ip',
+        'size' => 6
+      ],
+      'session_id' => [
+        'label' => 'session_id',
+        'size' => 6
+      ],
+      'client_ip' => [
+        'label' => 'client_ip',
+        'size' => 6
+      ],
+      'user_agent' => [
+        'label' => 'user_agent',
+        'size' => 6
+      ],
+      'language' => [
+        'label' => 'language',
+        'size' => 6
+      ],
+      'url' => [
+        'label' => 'url',
         'size' => 8
       ],
-      'status_name' => [
-        'label' => 'ステータス',
+      'method' => [
+        'label' => 'method',
         'size' => 4
       ],
-      'subject' => [
-        'label' => '件名',
+      'referer' => [
+        'label' => 'referer',
+        'size' => 8
+      ],
+      'login_user_name' => [
+        'label' => 'login_user_name',
+        'size' => 4
+      ],
+      'post_param' => [
+        'label' => 'post_param',
         'size' => 12
-      ],
-      'body' => [
-        'label' => '内容',
-      ],
-      'send_schedule' => [
-        'label' => '送信予定',
-        'size' => 6
-      ],
-      'locale_name' => [
-        'label' => '言語',
-        'size' => 6
-      ],
-      'template' => [
-        'label' => 'テンプレート',
-        'size' => 6
-      ],
-      'type' => [
-        'label' => 'タイプ',
-        'size' => 6
       ],
     ];
     $fields['created_date'] = [
@@ -186,5 +196,4 @@ class MailLogController extends MilestoneController
       'fields'=>$fields])
       ->with($param);
   }
-
 }
