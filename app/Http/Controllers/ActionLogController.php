@@ -11,6 +11,24 @@ class ActionLogController extends MailLogController
   public function model(){
     return ActionLog::query();
   }
+  public function get_param(Request $request, $id=null){
+    $user = $this->login_details($request);
+    if(!isset($user)) {
+      abort(403);
+    }
+    if($this->is_manager_or_teacher($user->role)!==true){
+      abort(403);
+    }
+    $ret = $this->get_common_param($request);
+    if(is_numeric($id) && $id > 0){
+      $item = $this->model()->where('id','=',$id)->first();
+      $item = $item->details();
+      $ret['item'] = $item;
+    }
+    $ret['filter']['session_id'] = $request->session_id;
+    return $ret;
+  }
+
   /**
    * 検索～一覧
    *
@@ -58,8 +76,8 @@ class ActionLogController extends MailLogController
       "session_id" => [
         "label" => "session_id",
       ],
-      "login_user_id" => [
-        "label" => "login_user_id",
+      "login_user_name" => [
+        "label" => "ログイン",
       ],
       "client_ip" => [
         "label" => "client_ip",
@@ -84,13 +102,17 @@ class ActionLogController extends MailLogController
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
     }
+    //session id 検索
+    if(isset($request->session_id)){
+      $items = $items->where('session_id',$request->session_id);
+    }
     //種別 検索
     if(isset($request->search_type)){
-      //$items = $items->findTemplates($request->search_type);
+      $items = $items->findMethods($request->search_type);
     }
     //検索ワード
     if(isset($request->search_word)){
-      //$items = $items->searchWord($request->search_word);
+      $items = $items->searchWord($request->search_word);
     }
 
     return $items;
@@ -158,8 +180,8 @@ class ActionLogController extends MailLogController
         'label' => 'referer',
         'size' => 8
       ],
-      'login_user_id' => [
-        'label' => 'login_user_id',
+      'login_user_name' => [
+        'label' => 'login_user_name',
         'size' => 4
       ],
       'post_param' => [

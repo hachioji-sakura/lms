@@ -22,6 +22,27 @@ class ActionLog extends Model
     'server_ip' => 'required',
     'method' => 'required',
   );
+  public function scopeFindMethods($query, $vals, $is_not=false)
+  {
+    return $this->scopeFieldWhereIn($query, 'method', $vals, $is_not);
+  }
+  public function scopeSearchWord($query, $word){
+    $search_words = explode(' ', $word);
+    $query = $query->where(function($query)use($search_words){
+      foreach($search_words as $_search_word){
+        $_like = '%'.$_search_word.'%';
+        $query = $query->orWhere('session_id','like',$_like)
+              ->orWhere('client_ip','like',$_like)
+              ->orWhere('url','like',$_like)
+              ->orWhere('referer','like',$_like)
+              ->orWhere('post_param','like',$_like);
+      }
+    });
+    return $query;
+  }
+  public function login_user(){
+    return $this->belongsTo('App\User', 'login_user_id');
+  }
   static protected function add($login_user_id=null){
     $data = [];
     try {
@@ -50,6 +71,9 @@ class ActionLog extends Model
     $item = $this;
     $item["created_date"] = $this->created_at_label();
     $item["updated_date"] = $this->updated_at_label();
+    if(isset($this->login_user)){
+      $item["login_user_name"] = $this->login_user->details()->name();
+    }
     return $item;
   }
 }

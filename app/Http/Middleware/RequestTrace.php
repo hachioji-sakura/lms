@@ -18,7 +18,9 @@ class RequestTrace
     public function handle($request, Closure $next)
     {
       $user = Auth::user();
-      ActionLog::add($user->id);
+      $user_id = 0;
+      if(isset($user)) $user_id = $user->id;
+      ActionLog::add($user_id);
       return $next($request);
     }
 }
