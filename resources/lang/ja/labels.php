@@ -385,4 +385,5 @@ return [
   'task_understanding' => '理解度',
   'created_date' => '起票日',
   'learning_record' => '学習記録',
+  'actionlogs' => '操作ログ',
 ];

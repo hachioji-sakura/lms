@@ -1,8 +1,8 @@
 @section('title')
-{{__('labels.maillogs')}}
+{{__('labels.actionlogs')}}
 @endsection
 @section('title_header')
-{{__('labels.maillogs')}}
+{{__('labels.actionlogs')}}
 @endsection
 
 @section('list_filter')
@@ -21,6 +21,32 @@
         >{{__('labels.date')}} {{__('labels.asc')}}
         </label>
       </div>
+    </div>
+    <div class="col-12 mb-2">
+      <label for="search_type" class="w-100">
+        HTTP METHOD
+      </label>
+      <div class="w-100">
+        @foreach(config('attribute.http_method') as $index=>$name)
+          <label class="mx-2">
+          <input type="checkbox" value="{{$index}}" name="search_type[]" class="icheck flat-green"
+            @if(isset($filter['calendar_filter']['search_type']) && in_array($index, $filter['calendar_filter']['search_type'])==true)
+            checked
+            @endif
+            >{{$name}}
+          </label>
+        @endforeach
+      </div>
+    </div>
+    <div class="col-12 mb-2">
+        <label for="session_id" class="w-100">
+          SESSION ID
+        </label>
+        <input type="text" name="session_id" class="form-control" placeholder="" inputtype=""
+        @isset($filter['session_id'])
+        value = "{{$filter['session_id']}}"
+        @endisset
+        >
     </div>
     <div class="col-12 mb-2">
         <label for="search_word" class="w-100">
@@ -47,13 +73,11 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach(config('attribute.mail_status') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
-           <i class="fa fa-envelope nav-icon"></i>{{$name}}
+         <a href="/{{$domain}}" class="nav-link ">
+           <i class="fa fa-list-alt nav-icon"></i>すべて
          </a>
        </li>
-       @endforeach
     </ul>
   </li>
 </ul>

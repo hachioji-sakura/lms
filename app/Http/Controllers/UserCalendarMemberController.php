@@ -91,20 +91,50 @@ class UserCalendarMemberController extends UserCalendarController
     }, 'カレンダーメンバー削除', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
+
+  /**
+   * 一覧表示
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return view / domain.lists
+   */
+  public function index(Request $request)
+  {
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+
+    $param = $this->get_param($request);
+    $user = $param['user'];
+    if(!$this->is_manager($user->role)){
+      //事務以外 一覧表示は不可能
+      abort(403);
+    }
+    $_table = $this->search($request);
+    return view($this->domain.'.lists', $_table)
+      ->with($param);
+  }
   public function search(Request $request)
   {
-    $user = $this->login_details($request);
-    if(!isset($user)) return $this->forbidden();
-    if($this->is_manager($user->role)!=true) return $this->forbidden();
+    $param = $this->get_param($request);
+    if(!isset($param['user'])) return $this->forbidden();
+    if($this->is_manager($param['user']->role)!=true) return $this->forbidden();
     $items = $this->model();
     $items = $this->_search_scope($request, $items);
-    $count = $items->count();
-    $items = $this->_search_pagenation($request, $items);
-    $items = $this->_search_sort($request, $items);
-    $items = $items->get();
-    foreach($items as $item){
-      $item = $item->details(1);
-    }
+    $items = $items->paginate($param['_line']);
+
     $fields = [
       "calendar_id" => [
         "label" => __('labels.calendars'),
@@ -134,7 +164,7 @@ class UserCalendarMemberController extends UserCalendarController
           "delete"]
       ]
     ];
-    return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
+    return ["items" => $items, "fields" => $fields];
   }
 
   /**

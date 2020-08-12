@@ -588,9 +588,6 @@ EOT;
     $item['course_minutes'] = $this->course_minutes;
     $item['timezone'] = $this->timezone();
     $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
-    if($this->lecture_id > 0){
-      $lecture = $this->lecture->details();
-    }
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();
