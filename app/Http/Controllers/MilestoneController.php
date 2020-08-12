@@ -145,8 +145,7 @@ class MilestoneController extends UserController
             //生徒は自分の起票したものしか編集できない
             abort(404);
         }
-        $item = $item->details();
-        $ret['item'] = $item->details();
+        $ret['item'] = $item;
       }
       return $ret;
     }

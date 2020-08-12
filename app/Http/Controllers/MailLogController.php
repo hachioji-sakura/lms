@@ -21,9 +21,7 @@ class MailLogController extends MilestoneController
     }
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
-      $item = $item->details();
-      $ret['item'] = $item;
+      $ret['item'] = $this->model()->where('id','=',$id)->first();
     }
 
     return $ret;

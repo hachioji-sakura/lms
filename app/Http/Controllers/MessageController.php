@@ -168,7 +168,7 @@ class MessageController extends CommentController
 
         if($this->is_success_response($res)){
           //メールを送信する
-          $item = $res['data']->details();
+          $item = $res['data'];
           $template = 'message';
           $type = 'text';
           $param = ['item' => $item ];
@@ -247,8 +247,7 @@ class MessageController extends CommentController
           }
         }
 
-        $item = $item->details();
-        $ret['item'] = $item->details();
+        $ret['item'] = $item;
       }
       return $ret;
     }
