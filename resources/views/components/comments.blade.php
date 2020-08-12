@@ -5,7 +5,6 @@
     <div class="card-body">
       <div class="dirct-chat-messages">
         @foreach($comments as $comment)
-          <?php $comment = $comment->details(); ?>
           @if($comment_type==='all' || $comment->type===$comment_type)
             <?php $__c++; ?>
             <div class="direct-chat-msg p-1 {{$comment->target_user_id == $comment->create_user_id ? 'right' : ''}}">
