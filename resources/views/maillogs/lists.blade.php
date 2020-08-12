@@ -61,9 +61,11 @@
 
 @section('page_footer')
   <dt>
+    {{--
     <a class="btn btn-app"  href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="{{$domain}}/create">
       <i class="fa fa-plus"></i>{{$domain_name}}登録
     </a>
+    --}}
   </dt>
 @endsection
 
