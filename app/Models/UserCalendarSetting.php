@@ -271,7 +271,7 @@ EOT;
     */
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
 
-    $course_minutes = $this->get_course_minutes('2000-01-01 '.$form['from_time_slot'], '2000-01-01 '.$form['to_time_slot']);
+    $course_minutes = intval(strtotime('2000-01-01 '.$form['to_time_slot']) - strtotime('2000-01-01 '.$form['from_time_slot']))/60;
     $status = 'new';
     if(isset($form['work']) && $form['work']==9) $status = 'fix';
     $target_user = null;
