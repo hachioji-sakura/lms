@@ -1266,7 +1266,8 @@ EOT;
     $students = $this->get_students();
     $active_students = [];
     foreach($students as $member){
-      if($member->status=='fix' || $member->status=='presence'){
+      if($member->status=='cancel') continue;
+      if($member->status=='fix' || $this->is_last_status($member->status)==true){
         $m = $member->user->details();
         if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
       }

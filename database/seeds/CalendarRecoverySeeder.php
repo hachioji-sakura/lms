@@ -152,6 +152,16 @@ EOT;
         }
       }
     }
+    public function exchanged_calendar_id_clear($d){
+      $id = [];
+      foreach($d as $row){
+        $id[] = $row->schedule_onetime_id;
+      }
+      if(count($id)==0) return;
+      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $id)->update([
+        'altsched_id' => 0
+      ]);
+    }
     public function exchanged_calendar_id_set($d){
       $id = [];
       foreach($d as $row){
