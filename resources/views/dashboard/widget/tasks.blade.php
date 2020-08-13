@@ -60,10 +60,15 @@
           @foreach($tasks as $item)
           <li class="item">
             <div class="row">
-              <div class="col-md-1 col-2">
-                <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
-                  <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
-                </small>
+              <div class="col-md-1 col-2 text-sm">
+                  <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
+                    <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
+                  </small>
+                @if($item->curriculums->count() > 0)
+                  <small class="badge badge-primary">
+                    {{$item->curriculums->first()->subjects->first()->name}}
+                  </small>
+                @endif
               </div>
               <div class="col-md-11 col-10">
                 <div class="row">
@@ -89,12 +94,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-6">
-                    <div class="row">
+                  <div class="col-12">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
-                      <div class="col-12">
-                        <div class="float-left">
+                        <div class="float-left mr-2">
                           @for($i=1;$i<=$review->evaluation;$i++)
                           <span class="fa fa-star fa-xs" title="{{$review->evaluation}}" style="color:{{$review->create_user->details()->role == 'student' ? 'green' : 'orange'}};"></span>
                           @endfor
@@ -105,10 +108,8 @@
                             /{{$review->create_user->details()->name()}}
                           </small>
                         </div>
-                      </div>
                       @endforeach
                     @endif
-                    </div>
                   </div>
 
                   @if(!empty($item->s3_url))
