@@ -377,7 +377,9 @@
 				}
 			}
 
-			$(this).datepicker(option);
+			$(this).datepicker(option).on('hide',function(e){
+				e.stopPropagation();
+			});
 			if(!util.isEmpty(min)){
 				if(util.isDate(min)) {
 					//$(this).datepicker("setDate", min);
