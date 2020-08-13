@@ -54,7 +54,19 @@
       @endif
     </div>
     <div class="row">
-      <div class="col-12">
+      <div class="col-6">
+        <label>{{__('labels.subjects')}}</label>
+        <div class="form-group">
+          @foreach($item->curriculums as $curriculum)
+            @foreach($curriculum->subjects as $subject)
+            <small class="badge badge-primary">
+              {{$subject->name}}
+            </small>
+            @endforeach
+          @endforeach
+        </div>
+      </div>
+      <div class="col-6">
         <label>{{__('labels.curriculums')}}</label>
         <div class="form-group">
           @foreach($item->curriculums as $curriculum)
