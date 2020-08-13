@@ -64,11 +64,7 @@
                   <small class="badge badge-{{$item->type == "homework" ? 'danger': 'primary'}}">
                     <i class="fa fa-{{$item->type == 'homework' ? 'book-reader' : 'chalkboard-teacher'}} fa-2x"></i>
                   </small>
-                @if($item->curriculums->count() > 0)
-                  <small class="badge badge-primary">
-                    {{$item->curriculums->first()->subjects->first()->name}}
-                  </small>
-                @endif
+
               </div>
               <div class="col-md-11 col-10">
                 <div class="row">
@@ -86,14 +82,17 @@
                   </div>
 
                   <div class="col-12 col-md-9">
-                    <div class="row">
-                      <div class="col-12">
-                        <small class="text-muted">
-                          {{$item->body}}
-                        </small>
-                      </div>
-                    </div>
+                    <small class="text-muted">
+                      {{$item->body}}
+                    </small>
                   </div>
+                  @if($item->curriculums->count() > 0)
+                  <div class="col-12">
+                    <small class="badge badge-primary">
+                      {{$item->curriculums->first()->subjects->first()->name}}
+                    </small>
+                  </div>
+                  @endif
                   <div class="col-12">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
