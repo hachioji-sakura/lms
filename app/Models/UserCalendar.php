@@ -687,7 +687,7 @@ EOT;
     }
     */
 
-    $course_minutes = intval(strtotime($data['end_time']) - strtotime($data['start_time']))/60;
+    $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
 
     $status = 'new';
     if(isset($form['work']) && $form['work']==9) $status = 'fix';

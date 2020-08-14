@@ -197,6 +197,7 @@ EOT;
     return $this->config_attribute_name('ask_status', $this->status);
   }
   public function details(){
+    $item = $this;
     $item["type_name"] = $this->type_name();
     $item["status_name"] = $this->status_name();
     $item["label_start_date"] = $this->dateweek_format($this->start_date, "Y年n月j日");

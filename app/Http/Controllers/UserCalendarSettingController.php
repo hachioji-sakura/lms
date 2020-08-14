@@ -647,6 +647,7 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function _store(Request $request)
     {
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         $res = UserCalendarSetting::add($form);
         if($this->is_success_response($res)==true){
@@ -670,7 +671,6 @@ class UserCalendarSettingController extends UserCalendarController
           $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
         return $res;
-        $res = $this->transaction($request, function() use ($request){
 
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
 
@@ -929,14 +929,12 @@ class UserCalendarSettingController extends UserCalendarController
 
         if($param['item']->work!=9){
           foreach($members as $member){
-            \Log::warning("d1");
             //メンバーステータスの個別指定がある場合
             if(isset($form['is_all_student']) && $form['is_all_student']==1){
               //全生徒指定がある場合
               $member->status_update($status, $_remark, $param['user']->user_id);
             }
             else if(!empty($form[$member->id.'_status'])){
-              \Log::warning("d2");
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
           }

@@ -109,12 +109,12 @@ class AskController extends MilestoneController
     }
 
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
+      $item = $this->model()->where('id', $id)->first();
       if(!isset($item)){
         abort(404);
       }
       $ret['item'] = $item->details();
-      if($ret['item']->is_access($user->user_id)==false){
+      if($item->is_access($user->user_id)==false){
           abort(403);
       }
     }
@@ -347,7 +347,6 @@ class AskController extends MilestoneController
      $param = $this->get_param($request, $id);
 
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['trial'] = $param['item']->get_target_model_data();
      $param['access_key'] = $param['trial']->parent->user->access_key;

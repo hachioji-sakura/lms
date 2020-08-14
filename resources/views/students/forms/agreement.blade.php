@@ -44,7 +44,7 @@
 	          <div class="col-6 p-2 font-weight-bold" >レッスン</div>
 	          <div class="col-6 p-2">{{$item->tags_name('lesson')}}</div>
 	          <div class="col-6 p-2 font-weight-bold" >通塾回数/週</div>
-	          <div class="col-6 p-2">週{{$item->tag_value('lesson_week_count')}}回</div>
+	          <div class="col-6 p-2">週{{count($item->user->calendar_setting())}}回</div>
 	          <div class="col-6 p-2 font-weight-bold" >授業時間</div>
 	          <div class="col-6 p-2">{{$item->tag_name('course_minutes')}}</div>
 	          @if($item->user->has_tag('lesson',2)==true)
@@ -173,7 +173,7 @@
 						                  teacher_id="{{$setting->user->details('teachers')->id}}"
 															student_id="{{$item->id}}"
 															grade="{{$item->tag_value('grade')}}"
-															lesson_week_count="{{$item->tag_value('lesson_week_count')}}"
+															lesson_week_count="{{count($item->user->calendar_setting())}}"
 															@if($item->is_juken()==true)
 												        is_juken="1"
 												      @else
