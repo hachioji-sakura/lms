@@ -647,6 +647,7 @@ class UserCalendarSettingController extends UserCalendarController
      */
     public function _store(Request $request)
     {
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         $res = UserCalendarSetting::add($form);
         if($this->is_success_response($res)==true){
@@ -670,7 +671,6 @@ class UserCalendarSettingController extends UserCalendarController
           $this->send_slack('追加/ id['.$setting['id'].']生徒['.$setting['student_name'].']講師['.$setting['teacher_name'].']', 'info', '追加');
         }
         return $res;
-        $res = $this->transaction($request, function() use ($request){
 
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
 
