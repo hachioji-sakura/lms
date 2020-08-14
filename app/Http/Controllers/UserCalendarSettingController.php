@@ -929,14 +929,12 @@ class UserCalendarSettingController extends UserCalendarController
 
         if($param['item']->work!=9){
           foreach($members as $member){
-            \Log::warning("d1");
             //メンバーステータスの個別指定がある場合
             if(isset($form['is_all_student']) && $form['is_all_student']==1){
               //全生徒指定がある場合
               $member->status_update($status, $_remark, $param['user']->user_id);
             }
             else if(!empty($form[$member->id.'_status'])){
-              \Log::warning("d2");
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
           }

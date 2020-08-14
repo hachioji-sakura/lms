@@ -78,6 +78,13 @@
            <i class="fa fa-list-alt nav-icon"></i>すべて
          </a>
        </li>
+       @foreach(config('attribute.http_method') as $index => $name)
+       <li class="nav-item">
+          <a href="/{{$domain}}?search_type={{$index}}" class="nav-link ">
+            <i class="fa fa-rss nav-icon"></i>{{$name}}
+          </a>
+        </li>
+         @endforeach
     </ul>
   </li>
 </ul>
