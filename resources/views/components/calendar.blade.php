@@ -83,7 +83,13 @@
       _status_style = status_style(events.status);
     }
     else {
-      _status_style = status_style(events.total_status);
+      console.log(events.teaching_type);
+      if(events.teaching_type=='season_training' || events.teaching_type=='training'){
+        _status_style = status_style('training');
+      }
+      else {
+        _status_style = status_style(events.total_status);
+      }
     }
     if(events.total_status=="rest" || events.total_status=="lecture_cancel" ||
       //全体ステータス側が優先
