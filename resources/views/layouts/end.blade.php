@@ -35,6 +35,10 @@ function status_style(status){
       "color" : "#e83e8c",
       "icon" : "<i class='fa fa-exclamation-circle mr-1'></i>",
     },
+    "training" : {
+      "color" : "#884898",
+      "icon" : "<i class='fa fa-dumbbell mr-1'></i>",
+    },
     "new" : {
       "color" : "#ffc107",
       "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
