@@ -173,9 +173,18 @@ class ImportController extends UserController
         if(!array_key_exists($object, $this->api_endpoint)){
           return $this->bad_request();
         }
+        $_request = new Request;
+        if($request->has('is_delete_data') && $request->is_delete_data == 1){
+          $del_flg = true;
+          $_request->merge($request->except('is_delete_data'));
+        }else{
+          $del_flg = false;
+          $_request = $request;
+        }
+        \Log::warning($request);
         $url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$object].'.php';
         @$this->remind('import call_api['.$url.']', 'info', $this->logic_name);
-        $res = $this->call_api($request, $url);
+        $res = $this->call_api($_request, $url);
         if(!$this->is_success_response($res)){
           return $this->error_response('api error', $url);
         }
@@ -223,7 +232,7 @@ class ImportController extends UserController
             break;
           case 'schedules':
             $this->logic_name = "カレンダーデータ取り込み";
-            $res = $this->schedules_import($items);
+            $res = $this->schedules_import($items, $del_flg);
             break;
         }
         if(!$this->is_success_response($res)){
@@ -328,9 +337,12 @@ class ImportController extends UserController
      * @param array $items
      * @return boolean
      */
-    private function schedules_import($items){
+    private function schedules_import($items, $del_flg = 0){
         $c = 0;
         foreach($items as $item){
+          if($del_flg == 1){
+            $item['delflag'] = 1;
+          }
           if($this->store_schedule($item)) $c++;
         }
         return $this->api_response(200, '', '', 'count['.$c.']');
