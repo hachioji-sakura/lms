@@ -50,7 +50,7 @@
           </div>
           <div class="card-footer">
             @component('trials.forms.user_calendar_setting',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent
-            @if($item->is_regular_schedule_fix()==true)
+            @if($item->status=='entry_hope' || $item->status=='entry_guidanced')
             <div class="row mt-2">
               <div class="col-12">
                 <a href="javascript:void(0);" page_title="入会案内を連絡メール" page_form="dialog" page_url="/trials/{{$item->id}}/admission" role="button" class="btn btn-sm btn-success float-right mx-1 text-center">

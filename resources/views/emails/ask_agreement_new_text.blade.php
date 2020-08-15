@@ -11,7 +11,8 @@
 ご契約内容
 ■基本契約内容
 ・レッスン : {{$target_model->student->tags_name('lesson')}}
-・通塾回数/週 : 週{{$target_model->student->tag_value('lesson_week_count')}}回
+{{-- TODO 修正lesson_week_count --}}
+・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count()}}回
 ・授業時間 : {{$target_model->student->tag_name('course_minutes')}}
 @if($target_model->student->user->has_tag('lesson',2)==true)
 ・英会話コース : {{$target_model->student->tag_name('english_talk_course_type')}}
@@ -26,7 +27,7 @@
 $tuition_form = [];
 $is_exist = false;
 ?>
-@foreach($target_model->student->user->calendar_setting() as $schedule_method => $d1)
+@foreach($target_model->student->user->get_enable_calendar_settings() as $schedule_method => $d1)
 	@foreach($d1 as $lesson_week => $settings)
 		@foreach($settings as $setting)
 <?php

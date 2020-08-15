@@ -450,6 +450,7 @@ EOT;
           'remark' => $remark,
           'create_user_id' => $create_user_id,
       ]);
+
       $member->set_api_lesson_fee();
       if($is_api===true){
         //事務システムにも登録
@@ -795,5 +796,11 @@ EOT;
       }
     }
     return false;
+  }
+  public function get_tuition($user_id){
+    $member = $this->members->where('user_id', $user_id)->first();
+    $tuition = $member->get_tuition();
+    if(isset($tuition)) return $tuition->tuition;
+    return null;
   }
 }
