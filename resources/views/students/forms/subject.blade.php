@@ -110,10 +110,12 @@
       @endforeach
     @endforeach
     </table>
+    @if($_teacher == false)
     <script>
     $(function(){
       subject_onload();
     });
     </script>
+    @endif
   </div>
 </div>
