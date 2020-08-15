@@ -313,7 +313,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $controller = new Controller;
     $request = new Request;
     $res = $controller->call_api($request, $_url, 'GET', null);
-
     $message = "";
     $message = "事務システムAPI \nRequest:".$_url."\n".$message;
     if(empty($res)){
@@ -322,12 +321,18 @@ class UserCalendarMemberSetting extends UserCalendarMember
       @$controller->send_slack($message, 'error', "事務システムAPI");
       return $controller->error_response();
     }
-    else if($res["status"] != 'success'){
+    if(!isset($res["status"]) || $res["status"] != "success"){
       $message .= "\n事務システムAPIエラー:".$_url."\nstatus=".$res["status"];
       \Log::Error($message);
       @$controller->send_slack($message, 'error', "事務システムAPI");
       return $controller->error_response($res["message"], $res["description"] , $res["data"]);
     }
+    if(!isset($res["data"]["lesson_fee"])){
+      $message .= "\n事務システムAPIエラー:".$_url."\nstatus=".$res["status"];
+      @$controller->send_slack($message, 'error', "事務システムAPI");
+      return $controller->error_response($res["message"], $res["description"] , $res["data"]);
+    }
+
     //TODO 弓削さんの場合＋1000円 期間講習の対応なので関係ない？
     if($teacher_id == 1){
       $res["data"]['lesson_fee'] = intval($res["data"]['lesson_fee'])+1000;
@@ -358,13 +363,13 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     $t = $this->setting->user->details('teachers');
     $subject = "";
-    if($this->setting->has_tag('lesson',2)==true && $settings->has_tag('english_talk_lesson','chinese')==true){
+    if($this->setting->has_tag('lesson',2)==true && $this->setting->has_tag('english_talk_lesson','chinese')==true){
       $subject = "chinese";
     }
-    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','abacus')==true){
+    else if($this->setting->has_tag('lesson',4)==true && $this->setting->has_tag('kids_lesson','abacus')==true){
       $subject = "abacus";
     }
-    else if($this->setting->has_tag('lesson',4)==true && $settings->has_tag('kids_lesson','dance')==true){
+    else if($this->setting->has_tag('lesson',4)==true && $this->setting->has_tag('kids_lesson','dance')==true){
       $subject = "dance";
     }
 
@@ -374,12 +379,15 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
   public function set_api_lesson_fee($lesson_fee=null){
     if($this->setting->is_teaching()!=true){
+
       return null;
     }
     $user = $this->user->details();
     if($user->role!='student'){
+      \Log::warning("d1-2 user_role=".$user->role);
       return null;
     }
+
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
     $grade = $user->tag_value('grade');
@@ -400,10 +408,12 @@ class UserCalendarMemberSetting extends UserCalendarMember
 
     $setting_details = $this->setting->details(1);
     $teacher = $this->setting->user->details('teachers');
-
     if($lesson_fee==null){
       $res = $this->get_lesson_fee();
       if($res==null){
+        return $this->error_response("get_api_lesson_fee is null");
+      }
+      if(!isset($res["status"]) || intval($res["status"]) != 200){
         return $this->error_response("get_api_lesson_fee error");
       }
       $lesson_fee = $res['data']['lesson_fee'];
@@ -416,7 +426,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
       $subject= $this->setting->get_tag_value('kids_lesson');
     }
     $tuition = $this->get_tuition();
+
     if($tuition == null){
+      \Log::warning("d3");
       Tuition::add([
         'student_id' => $user->id,
         'teacher_id' => $teacher->id,
