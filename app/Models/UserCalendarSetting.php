@@ -513,7 +513,7 @@ EOT;
             $is_add = true;
           }
         }
-        if($is_add===true && $c > 0){
+        if($is_add===true && $c > 0 && strtotime($end_date) >= strtotime($target_date)){
           $add_calendar_date[] = $target_date;
           $c--;
         }
