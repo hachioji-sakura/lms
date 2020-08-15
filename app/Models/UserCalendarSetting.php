@@ -796,4 +796,9 @@ EOT;
     }
     return false;
   }
+  public function get_tuition($user_id){
+    $member = $this->members->where('user_id', $user_id)->first();
+    $tuition = $member->get_tuition();
+    return $tuition->tuition;
+  }
 }

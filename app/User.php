@@ -226,7 +226,7 @@ EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
     }
-    public function calendar_setting(){
+    public function get_enable_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -238,6 +238,14 @@ EOT;
         $ret[$item->schedule_method][$item->lesson_week][] = $item;
       }
       return $ret;
+    }
+    public function get_enable_calendar_setting_count(){
+      $items = UserCalendarSetting::findUser($this->id)
+      ->where('schedule_method', 'week')
+      ->enable()
+      ->orderBy('from_time_slot', 'asc')
+      ->get();
+      return count($items);
     }
     /**
      * user_tagsから、work_mon_time、work_the_timeなどを取得し、
