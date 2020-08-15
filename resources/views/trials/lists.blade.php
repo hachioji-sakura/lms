@@ -173,7 +173,6 @@
       </li>
       {{-- TODO : 実用化されるまでコメントアウト
       <li class="nav-item">
-        {{-- TODO 後程使えるようにする
         <a href="/{{$domain}}?list=reapply" class="nav-link @if($list=="reapply") active @endif">
           <i class="fa fa-reply nav-icon"></i>
           <p>
@@ -183,7 +182,6 @@
             @endif
           </p>
         </a>
-        --}}
       </li>
       --}}
       <li class="nav-item">

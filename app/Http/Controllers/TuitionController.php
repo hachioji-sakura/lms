@@ -107,13 +107,13 @@ class TuitionController extends MilestoneController
       $ret['item'] = $item->details();
       $ret['student_id'] = $item->student_id;
       $student = $ret['item']->student;
-      $calendar_settings = $student->user->calendar_setting();
+      $calendar_settings = $student->user->get_enable_calendar_settings();
       $ret['student'] = $student;
       $ret['calendar_settings'] = $calendar_settings;
     }
     else if($request->has('student_id')){
       $student = Student::where('id', $request->get('student_id'))->first();
-      $calendar_settings = $student->user->calendar_setting();
+      $calendar_settings = $student->user->get_enable_calendar_settings();
       $ret['student'] = $student;
       $ret['calendar_settings'] = $calendar_settings;
     }

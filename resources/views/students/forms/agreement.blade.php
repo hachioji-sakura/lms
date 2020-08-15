@@ -44,7 +44,7 @@
 	          <div class="col-6 p-2 font-weight-bold" >レッスン</div>
 	          <div class="col-6 p-2">{{$item->tags_name('lesson')}}</div>
 	          <div class="col-6 p-2 font-weight-bold" >通塾回数/週</div>
-	          <div class="col-6 p-2">週{{count($item->user->calendar_setting())}}回</div>
+	          <div class="col-6 p-2">週{{$item->user->get_enable_calendar_setting_count()}}回</div>
 	          <div class="col-6 p-2 font-weight-bold" >授業時間</div>
 	          <div class="col-6 p-2">{{$item->tag_name('course_minutes')}}</div>
 	          @if($item->user->has_tag('lesson',2)==true)
@@ -93,7 +93,7 @@
 							$tuition_form = [];
 							$is_exist = false;
 						?>
-	          @foreach($item->user->calendar_setting() as $schedule_method => $d1)
+	          @foreach($item->user->get_enable_calendar_settings() as $schedule_method => $d1)
 	            @foreach($d1 as $lesson_week => $settings)
 	              @foreach($settings as $setting)
 	              <?php
@@ -161,10 +161,13 @@
 														<input type="text" id="{{$setting->id}}_tuition" name="{{$tuition_form[$setting_key]}}_tuition" class="form-control w-50 float-left tuition" required="true" maxlength=5 inputtype="numeric"
 														 minvalue="1000"
 														@if(isset($_edit) && $_edit==true)
-														 value="{{$item['tuition']}}" placeholder="(変更前) {{$item['tuition']}}"
+ 															value="{{$setting->get_tuition($item->user_id)}}" placeholder="(変更前) {{$setting->get_tuition($item->user_id)}}"
+														@else
+															value="{{$setting->get_tuition($item->user_id)}}" placeholder="(変更前) {{$setting->get_tuition($item->user_id)}}"
 														@endif
 														>
 														<span class="ml-2 float-left mt-2">円 / 時間</span>
+														{{-- TODO 修正lesson_week_count --}}
 														<a href="javascript:void(0);" role="button" class="btn btn-sm btn-secondary float-left ml-2 tuition_calc"
 															setting_id="{{$setting->id}}"
 															lesson="{{$setting->get_tag_value('lesson')}}"
@@ -173,7 +176,7 @@
 						                  teacher_id="{{$setting->user->details('teachers')->id}}"
 															student_id="{{$item->id}}"
 															grade="{{$item->tag_value('grade')}}"
-															lesson_week_count="{{count($item->user->calendar_setting())}}"
+															lesson_week_count="{{$item->user->get_enable_calendar_setting_count()}}"
 															@if($item->is_juken()==true)
 												        is_juken="1"
 												      @else
@@ -233,7 +236,7 @@ $(function(){
       data[fields[i]] = $(element).attr(fields[i]);
     }
 	  var r = get_tuition(data["lesson"]|0, data["course_type"], data["grade"], data["is_juken"]|0, data["lesson_week_count"]|0, data["subject"], data["course_minutes"]|0, data["teacher_id"]);
-		$('input[name='+data['setting_id']+'_tuition]').val(r);
+		if($('input[name='+data['setting_id']+'_tuition]').val()==0 || util.isEmpty($('input[name='+data['setting_id']+'_tuition]').val()))	$('input[name='+data['setting_id']+'_tuition]').val(r);
 		$('span[alt='+data['setting_id']+'_tuition]').html(r);
 	}
 });

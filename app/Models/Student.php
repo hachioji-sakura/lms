@@ -1057,6 +1057,7 @@ EOT;
     $tuitions = $this->tuitions->where('lesson', $setting->get_tag_value('lesson'))
     ->where('course_type', $setting->get_tag_value('course_type'))
     ->where('course_minutes', $setting->course_minutes)
+    ->where('lesson_week_count', $this->user->get_enable_calendar_setting_count())
     ->where('teacher_id', $setting->user->details()->id);
     if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
       $tuitions =  $tuitions->where('subject', $setting->get_tag_value('subject'));
@@ -1070,6 +1071,7 @@ EOT;
       if($is_enable_only==true && $tuition->is_enable()==false) continue;
       return $tuition->tuition;
     }
+    //受講料設定なし
     return null;
   }
 

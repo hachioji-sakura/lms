@@ -43,8 +43,9 @@
       @foreach($attributes['lesson_week'] as $week_day => $week_name)
         {{-- 必要な曜日の予定のみ表示 --}}
         @if(count($teacher->match_schedule['result'][$week_day]) > 0)
-          @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
-            @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
+        <?php $settings = $teacher->user->get_enable_calendar_settings(); ?>
+          @if(isset($settings['week'][$week_day]))
+            @foreach($settings['week'][$week_day] as $setting)
             @if($setting->is_enable()==false) @continue @endif
             <tr id="{{$week_day}}_{{$setting["from_time_slot"]}}_{{$setting["to_time_slot"]}}" class="calendar_setting_row {{$week_day}}">
               <td class="action_form action_add">
