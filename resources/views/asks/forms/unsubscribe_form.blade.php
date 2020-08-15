@@ -47,7 +47,7 @@
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <input type="text" id="start_date" name="start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d', strtotime('+1 month'))}}"
-          minvalue="{{date('Y/m/d', strtotime('+1 month'))}}"
+          minvalue="{{date('Y/m/d', strtotime('+1 day'))}}"
         >
       </div>
     </div>

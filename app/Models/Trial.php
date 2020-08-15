@@ -52,7 +52,6 @@ class Trial extends Model
    */
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', urlencode($word));
     $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';

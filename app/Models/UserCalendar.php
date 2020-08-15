@@ -120,7 +120,7 @@ EOT;
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', urlencode($word));
+    $search_words = explode(' ', ($word));
     $where_raw = <<<EOT
       user_calendars.remark like ?
       OR user_calendars.id in (
