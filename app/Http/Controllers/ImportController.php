@@ -175,10 +175,10 @@ class ImportController extends UserController
         }
         $_request = new Request;
         if($request->has('is_delete_data') && $request->is_delete_data == 1){
-          $del_flg = true;
+          $del_flg = 1;
           $_request->merge($request->except('is_delete_data'));
         }else{
-          $del_flg = false;
+          $del_flg = 0;
           $_request = $request;
         }
         \Log::warning($request);
