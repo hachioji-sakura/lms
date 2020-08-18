@@ -85,6 +85,7 @@ $(function(){
       if(!util.isEmpty(_confirm)){
         if(!confirm(_confirm)) return false;
       }
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

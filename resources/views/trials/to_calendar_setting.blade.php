@@ -121,6 +121,7 @@ $(function(){
           return;
         }
       }
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

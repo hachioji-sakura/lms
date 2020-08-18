@@ -88,6 +88,7 @@ $(function(){
     e.preventDefault();
     util.removeLocalData('students_add_form');
     if(front.validateFormValue('students_add_form .carousel-item.active')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });
