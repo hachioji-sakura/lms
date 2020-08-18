@@ -34,7 +34,7 @@ class CalendarRecoverySeeder extends Seeder
       //schedule_idを持つ、memberがない　→　onetime側も削除
       foreach($d as $data){
         $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
-        if(!isset($member)){
+        if(!isset($member) && $member->calendar->work!=10 && $member->calendar->work!=11){
           $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
         }
       }
@@ -95,12 +95,12 @@ EOT;
         $this->update_schedule_ontime('', 'a', $d);
 
         //振替idを取った場合の同期
-        $_sql = $sql." where u.exchanged_calendar_id=0 and o.altsched_id>0";
+        $_sql = $sql." where u.exchanged_calendar_id=0 and o.altsched_id>0 and u.work = 6";
         $d = DB::select($_sql);
         $this->exchanged_calendar_id_clear($d);
 
         //振替idをつけた場合の同期
-        $_sql = $sql." where u.exchanged_calendar_id>0 and o.altsched_id=0";
+        $_sql = $sql." where u.exchanged_calendar_id>0 and o.altsched_id=0 and u.work = 6";
         $d = DB::select($_sql);
         $this->exchanged_calendar_id_set($d);
 
@@ -108,7 +108,7 @@ EOT;
         $this->update_exchange_limit_date_20201231();
 
         //schedule_onetime.subject_exprの補完 work=3（面談）,4（試験監督）,9（事務作業）以外
-        $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9)";
+        $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9,10,11)";
         $d = DB::select($_sql);
         $this->subject_expr_sync($d);
         //季節講習演習の担当講師は、同日・同場所の講師
@@ -173,7 +173,7 @@ EOT;
     public function post_calendar_sync(){
       $controller = new Controller;
       $message = "";
-      $members = UserCalendarMember::with('calendar')->where('schedule_id', '<', 1)->whereRaw('calendar_id in (select id from lms.user_calendars where work not in (11,12))',[])->get();
+      $members = UserCalendarMember::with('calendar')->where('schedule_id', '<', 1)->whereRaw('calendar_id in (select id from lms.user_calendars where work not in (10, 11))',[])->get();
       foreach($members as $member){
         switch($member->calendar->work){
           case 3:
