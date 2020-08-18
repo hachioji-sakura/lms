@@ -14,6 +14,7 @@ class CalendarRecoverySeeder extends Seeder
      */
     public function run()
     {
+      set_time_limit(3600);
       $controller = new Controller;
       $request = new Illuminate\Http\Request;
       $url = config('app.management_url').'/sakura-api/api_get_onetime_schedule.php';
@@ -27,6 +28,7 @@ class CalendarRecoverySeeder extends Seeder
       $this->put_calendar_sync();
     }
     public function delete_calendar_sync($d){
+
       $controller = new Controller;
       $request = new Illuminate\Http\Request;
 
@@ -34,10 +36,22 @@ class CalendarRecoverySeeder extends Seeder
       //schedule_idを持つ、memberがない　→　onetime側も削除
       foreach($d as $data){
         $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
-        if(!isset($member) && $member->calendar->work!=10 && $member->calendar->work!=11){
-          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
+        if(!isset($member)){
+          if($member->calendar->work!=10 && $member->calendar->work!=11){
+            //季節講習以外は、SONが正として、同期をとる（この場合、連携元がなくなったので削除
+            $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
+          }
         }
       }
+      //季節講習の取り込みのため一度、すべて削除
+      $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
+      foreach($season_calendars in $season_calendar){
+        $season_calendar->dispose();
+      }
+      $url = config('app.url').'/import/calendars?work=10';
+      $res = $controller->call_api($request, $url, 'POST');
+      $url = config('app.url').'/import/calendars?work=11';
+      $res = $controller->call_api($request, $url, 'POST');
     }
     public function put_calendar_sync(){
       $sql = <<<EOT
