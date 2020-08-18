@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
+use App\Models\UserCalendarTag;
 use App\Http\Controllers\Controller;
 class CalendarRecoverySeeder extends Seeder
 {
@@ -37,16 +38,15 @@ class CalendarRecoverySeeder extends Seeder
       foreach($d as $data){
         $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
         if(!isset($member)){
-          if($member->calendar->work!=10 && $member->calendar->work!=11){
-            //季節講習以外は、SONが正として、同期をとる（この場合、連携元がなくなったので削除
-            $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
-          }
+          //季節講習以外は、SONが正として、同期をとる（この場合、連携元がなくなったので削除
+          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
         }
       }
       //季節講習の取り込みのため一度、すべて削除
       $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
-      foreach($season_calendars in $season_calendar){
-        $season_calendar->dispose();
+      foreach($season_calendars as $season_calendar){
+        UserCalendarMember::where('calendar_id', $season_calendar->id)->delete();
+        UserCalendarTag::where('calendar_id', $season_calendar->id)->delete();
       }
       $url = config('app.url').'/import/calendars?work=10';
       $res = $controller->call_api($request, $url, 'POST');
