@@ -44,10 +44,14 @@ class CalendarRecoverySeeder extends Seeder
       }
       //季節講習の取り込みのため一度、すべて削除
       $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
+      $ids = [];
       foreach($season_calendars as $season_calendar){
-        UserCalendarMember::where('calendar_id', $season_calendar->id)->delete();
-        UserCalendarTag::where('calendar_id', $season_calendar->id)->delete();
+        $ids[] = $season_calendar->id;
       }
+      UserCalendarMember::whereIn('calendar_id', $ids)->delete();
+      UserCalendarTag::whereIn('calendar_id', $ids)->delete();
+      UserCalendar::whereIn('id', $ids)->delete();
+
       $url = config('app.url').'/import/calendars?work=10';
       $res = $controller->call_api($request, $url, 'POST');
       $url = config('app.url').'/import/calendars?work=11';
