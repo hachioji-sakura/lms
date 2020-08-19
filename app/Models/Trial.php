@@ -102,7 +102,7 @@ class Trial extends Model
         }
         break;
     }
-    if($this->parent->status=='regular'){
+    if($this->student->status=='regular'){
       $status = 'complete';
     }
     if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
