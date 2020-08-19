@@ -33,15 +33,7 @@ class CalendarRecoverySeeder extends Seeder
       $controller = new Controller;
       $request = new Illuminate\Http\Request;
 
-      $del_url = config('app.management_url').'/sakura-api/api_delete_onetime_schedule.php';
-      //schedule_idを持つ、memberがない　→　onetime側も削除
-      foreach($d as $data){
-        $member = UserCalendarMember::where('schedule_id' , $data["id"])->first();
-        if(!isset($member)){
-          //季節講習以外は、SONが正として、同期をとる（この場合、連携元がなくなったので削除
-          $res = $controller->call_api($request, $del_url, "POST", ["id" => $data["id"], "updateuser" => "1"]);
-        }
-      }
+      $this->no_relate_onetime_schedule_delete();
       //季節講習の取り込みのため一度、すべて削除
       $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
       $ids = [];
@@ -56,6 +48,29 @@ class CalendarRecoverySeeder extends Seeder
       $res = $controller->call_api($request, $url, 'POST');
       $url = config('app.url').'/import/schedules?work_id=11';
       $res = $controller->call_api($request, $url, 'POST');
+    }
+    public function no_relate_onetime_schedule_delete(){
+      //work_id = 10 , 11以外の、user_calendar_membersに紐づいていない、onetime_scheduleを削除
+      $sql = <<<EOT
+        select
+         o.id
+        from
+        hachiojisakura_calendar.tbl_schedule_onetime o
+        left outer join user_calendar_members m on m.schedule_id = o.id
+        left outer join user_calendars u on u.id = m.calendar_id
+        where o.delflag=0 and m.schedule_id is null
+        and o.work_id not in(10, 11)
+EOT;
+        //出席ステータスの同期
+        $_sql = $sql."";
+        $d = DB::select($_sql);
+        $delete_ids = [];
+        foreach($d as $row){
+          $delete_ids[] = $row->id;
+        }
+        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $delete_ids)->update([
+          'delflag' => '1'
+        ]);
     }
     public function put_calendar_sync(){
       $sql = <<<EOT
