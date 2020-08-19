@@ -32,6 +32,7 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('calendar_settings_to_calendar')){
+      $(this).prop("disabled",true);
       $('form').submit();
     }
   });

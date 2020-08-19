@@ -29,6 +29,7 @@
       $("input[name=_page]").val(page);
       //subDialog側にformが残っているとsubmitされる対策
       $("#subDialog .modal-dialog").remove();
+      $(this).prop("disabled",true);
       $("#filter_form form.filter").submit();
     });
     $("button[accesskey='filter_search'][type=button]").on('click', function(e){

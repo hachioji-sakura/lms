@@ -236,6 +236,7 @@
         console.log('submit');
         e.preventDefault();
         if(front.validateFormValue('month_work_confirm')){
+          $(this).prop("disabled",true);
           $("#month_work_post").submit();
         }
       });

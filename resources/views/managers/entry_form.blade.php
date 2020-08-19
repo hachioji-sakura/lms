@@ -36,6 +36,7 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('teachers_entry')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

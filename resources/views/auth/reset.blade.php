@@ -43,6 +43,7 @@ $(function(){
     console.log("reset_form");
     e.preventDefault();
     if(front.validateFormValue('reset_form')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

@@ -90,6 +90,7 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('email_edit .carousel-item.active')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

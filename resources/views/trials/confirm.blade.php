@@ -85,6 +85,7 @@ $(function(){
     e.preventDefault();
     if(front.validateFormValue('trials_confirm .carousel-item.active')){
       util.removeLocalData('trials_confirm');
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });
