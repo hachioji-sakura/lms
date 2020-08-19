@@ -1,4 +1,4 @@
-@component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
+@component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => '', 'user'=>$user])
   @slot('page_message')
   {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
   @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
@@ -14,15 +14,15 @@
     {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
     @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
       {{-- 講師の場合 --}}
-      <div class="col-12 p-0 mb-1">
+      <div class="col-12 p-0 mb-1" id="{{$domain}}_confirm">
         <form method="POST" action="/calendar_settings/{{$item['id']}}">
           @csrf
           <input type="text" name="dummy" style="display:none;" / >
           @method('PUT')
         @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
-          <div class="col-12 mb-1" id="{{$domain}}_confirm">
+          <div class="col-12 mb-1" >
             <input type="hidden" name="is_all_student" value="1" />
-            <button type="submit" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
+            <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
                 <i class="fa fa-envelope mr-1"></i>
                 {{__('labels.schedule_remind')}}
             </button>
