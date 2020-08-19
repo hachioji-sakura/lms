@@ -81,7 +81,7 @@
                 <div class="form-group">
                   <label for="publiced_at" class="w-100">
                     {{__('labels.sort_no')}}
-                    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+                    <span class="right badge badge-primary ml-1">{{__('labels.required')}}</span>
                   </label>
                   <div class="input-group">
                     <div class="input-group-prepend">
@@ -94,7 +94,7 @@
                     @if(!(isset($_edit) && $_edit==true))
                     minvalue="1"
                     @endif
-                    >
+                    required="true" >
                   </div>
                 </div>
               </div>
