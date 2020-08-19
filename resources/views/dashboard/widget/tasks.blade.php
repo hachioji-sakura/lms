@@ -87,11 +87,18 @@
                     </small>
                   </div>
                   @if($item->curriculums->count() > 0)
-                  <div class="col-12">
-                    <small class="badge badge-primary">
-                      {{$item->curriculums->first()->subjects->first()->name}}
-                    </small>
-                  </div>
+                    <div class="col-12">
+                      <small class="badge badge-primary">
+                        {{$item->curriculums->first()->subjects->first()->name}}
+                      </small>
+                    </div>
+                    <div class="col-12">
+                      @foreach($item->curriculums as $curriculum)
+                      <small class="badge badge-primary">
+                        {{$curriculum->name}}
+                      </small>
+                      @endforeach
+                    </div>
                   @endif
                   <div class="col-12">
                     @if( $item->task_reviews->count() > 0)
