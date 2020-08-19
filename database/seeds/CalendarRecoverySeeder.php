@@ -52,9 +52,9 @@ class CalendarRecoverySeeder extends Seeder
       UserCalendarTag::whereIn('calendar_id', $ids)->delete();
       UserCalendar::whereIn('id', $ids)->delete();
 
-      $url = config('app.url').'/import/calendars?work=10';
+      $url = config('app.url').'/import/schedules?work_id=10';
       $res = $controller->call_api($request, $url, 'POST');
-      $url = config('app.url').'/import/calendars?work=11';
+      $url = config('app.url').'/import/schedules?work_id=11';
       $res = $controller->call_api($request, $url, 'POST');
     }
     public function put_calendar_sync(){
