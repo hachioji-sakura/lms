@@ -1,26 +1,21 @@
-<?php
-if(empty($item["lesson"]) || empty($item["work_name"])){
-  $item = $item->details(1);
-}
- ?>
 @if($item->is_teaching()==true)
 ■{{$item->teaching_type_name()}}
 @else
-■{{$item['work_name']}}
+■{{$item->work()}}
 @endif
-{{__('labels.datetime')}}：{{$item['datetime']}}
-{{__('labels.place')}}：{{$item['place_floor_name']}}@if($item->is_online()==true)/{{__('labels.online')}}@endif
+{{__('labels.datetime')}}：{{$item->datetime()}}
+{{__('labels.place')}}：{{$item->place_floor_name()}}@if($item->is_online()==true)/{{__('labels.online')}}@endif
 
 @if($send_to!=='student')
 ({{__('labels.status')}}：{{$item->status_name()}})
 @endif
 --------------------------------------------
 （{{__('labels.details')}}）
-{{__('labels.teachers')}}：{{$item['teacher_name']}}
 @if($item->is_teaching()==true)
-{{__('labels.lesson')}}：{{$item['lesson']}}
-{{__('labels.lesson_type')}}：{{$item['course']}}
-{{__('labels.subject')}}：{{implode(',', $item['subject'])}}
+{{__('labels.teachers')}}：{{$item->user->details('teachers')->name()}}
+{{__('labels.lesson')}}：{{$item->lesson()}}
+{{__('labels.lesson_type')}}：{{$item->course()}}
+{{__('labels.subject')}}：{{implode(',', $item->subject())}}
 @endif
 @if($send_to!=='student')
 {{__('labels.students')}}：
@@ -33,7 +28,7 @@ if(empty($item["lesson"]) || empty($item["work_name"])){
 
 --------------------------------------------
 @isset($item['comment'])
-{{__('labels.notice')}}{{$item['comment']}}
+{{__('labels.notice')}}{{$item->comment}}
 @endisset
 @if(isset($item['cancel_reason']) && !empty($item['cancel_reason']))
 {{__('labels.cencel_reason')}}:{{$item['cancel_reason']}}
