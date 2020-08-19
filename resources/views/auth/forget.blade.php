@@ -49,6 +49,7 @@ $(function(){
     console.log("login");
     e.preventDefault();
     if(front.validateFormValue('forget_form')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

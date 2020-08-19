@@ -117,6 +117,7 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('ask_entry .carousel-item.active')){
+      $(this).prop("disabled",true);
       $("#edit").submit();
     }
   });

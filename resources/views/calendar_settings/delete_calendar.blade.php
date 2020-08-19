@@ -31,6 +31,7 @@ $(function(){
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
     if(front.validateFormValue('calendar_settings_delete_calendar') && select_ids_check_validate()){
+      $(this).prop("disabled",true);
       $('form').submit();
     }
   });

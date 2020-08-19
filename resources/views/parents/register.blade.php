@@ -94,6 +94,7 @@ $(function(){
     e.preventDefault();
     if(front.validateFormValue('parents_register .carousel-item.active')){
       util.removeLocalData('parents_register');
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });
