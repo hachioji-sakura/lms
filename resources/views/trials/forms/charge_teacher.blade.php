@@ -151,8 +151,9 @@
           </th>
         </tr>
         @foreach($attributes['lesson_week'] as $week_day => $week_name)
-            @if(isset($teacher->user->calendar_setting()['week'][$week_day]))
-              @foreach($teacher->user->calendar_setting()['week'][$week_day] as $setting)
+        <?php $settings = $teacher->user->get_enable_calendar_settings(); ?>
+            @if(isset($settings['week'][$week_day]))
+              @foreach($settings['week'][$week_day] as $setting)
               <tr>
                 <td>
                   {{$week_name}}

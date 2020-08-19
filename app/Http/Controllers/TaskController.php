@@ -392,7 +392,6 @@ class TaskController extends MilestoneController
             $this->s3_delete($item['s3_url']);
           }
           */
-          dd($item);
           $item->dispose();
           return $this->api_response(200, '', '', $item);
         }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -412,8 +411,7 @@ class TaskController extends MilestoneController
             //生徒は自分宛てのもののみ
             abort(404);
         }
-        $item = $item->details();
-        $ret['item'] = $item->details();
+        $ret['item'] = $item;
       }
       return $ret;
     }

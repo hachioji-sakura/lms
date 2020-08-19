@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Models\Trial;
 use App\Models\Tuition;
+use App\Models\StudentParent;
 use App\Models\UserCalendar;
+use App\Models\UserCalendarSetting;
+use App\Models\UserCalendarMemberSetting;
+
 use DB;
 use View;
 class TrialController extends UserCalendarController
@@ -179,20 +183,25 @@ class TrialController extends UserCalendarController
     if(!isset($user)) {
       abort(403);
     }
-
-    if($this->is_manager($user->role)!=true){
-      abort(403);
-    }
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       if(!isset($item)){
         abort(404);
       }
+      if($this->is_manager($user->role)!=true){
+        if($this->is_parent($user->role)==true && $user->id != $item->student_parent_id){
+          abort(403);
+        }
+      }
       $ret['item'] = $item->details();
     }
     else {
-      $lists = ['cancel', 'new', 'fix', 'confirm', 'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
+
+      if($this->is_manager($user->role)!=true){
+        abort(403);
+      }
+      $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
         $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
@@ -301,6 +310,16 @@ class TrialController extends UserCalendarController
       'fields'=>$fields])
       ->with($param);
   }
+  public function show_dialog(Request $request, $id)
+  {
+    if(!$request->has('student_parent_id')) abort(403);
+    $param = $this->get_common_param($request);
+    $item = Trial::where('id', $id)->first();
+    if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id'))abort(403);
+    $param['item'] = $item->details();
+    return view('trials.dialog', [])
+      ->with($param);
+  }
   /**
    * Show the form for editing the specified resource.
    *
@@ -364,11 +383,14 @@ class TrialController extends UserCalendarController
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
      if($this->is_success_response($res)){
+       $u = $res['data']->parent->user;
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [
-         'user_name' => $form['student_name_last'].' '.$form['student_name_first'],
+         'user_name' => $form['parent_name_last'].' '.$form['parent_name_first'],
          'access_key' => $access_key,
+         'item' => $res['data'],
          'send_to' => 'parent',
+         'login_user' => $u->details(),
        ], 'text', 'trial');
        return view($this->domain.'.entry',
          ['result' => "success"]);
@@ -585,55 +607,97 @@ class TrialController extends UserCalendarController
        ->with($param);
 
    }
-   public function ask_candidate_mail(Request $request, $id){
+   public function ask_candidate_mail_send (Request $request, $id){
      $access_key = $this->create_token(2678400);
      $param = $this->get_param($request, $id);
-     $access_key = $this->create_token();
+     $param['access_key'] = $access_key;
 
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-
+       Trial::where('id', $id)->update(['status' => 'reapply']);
+       $p = StudentParent::where('id', $param['item']->student_parent_id)->first();
+       $p->user->update(['access_key' => $access_key]);
        return $this->api_response(200, '', '', []);
-     }, '体験授業候補日連絡メール送信', __FILE__, __FUNCTION__, __LINE__ );
-     return $this->save_redirect($res, [], '体験授業候補日連絡メールを送信しました。');
+     }, '体験授業希望日変更願い', __FILE__, __FUNCTION__, __LINE__ );
+     if($this->is_success_response($res)){
+       $template = 'trial_candidate_date';
+       $type = 'text';
+       $param['user_name'] = $param['item']->parent->name();
+       if($request->has('add_message')) $param['add_message'] = $request->get('add_message');
+       $param['item']->parent->user->send_mail('体験授業希望日時について変更をお願いいたします', $param, $type ,$template);
+     }
+     return $this->save_redirect($res, [], '体験授業希望日変更願いメールを送信しました。');
    }
 
-   public function add_candidate_date(Request $request, $id){
+   public function candidate_date_edit(Request $request, $id){
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
-
+     if(!$request->has('key')) abort(404);
+     $access_key = $request->key;
+     if(!$this->is_enable_token($access_key)){
+       abort(403);
+     }
+     $user = User::where('access_key',$access_key)->first();
+     if(!isset($user)){
+       abort(403);
+     }
      $param = [
+       'user' => $user,
        'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
      ];
-     return view($this->domain.'.add_candidate_date',
+     return view($this->domain.'.candidate_date',
        ['sended' => '',
+        'access_key' => $access_key,
         '_edit' => false])
        ->with($param);
 
    }
-   public function add_candidate_date_send(Request $request, $id){
+   public function candidate_date_update(Request $request, $id){
+
      $access_key = $this->create_token(2678400);
-     $param = $this->get_param($request, $id);
-     $access_key = $this->create_token();
-
+     $param = $this->get_common_param($request, false);
+     $param['item'] = Trial::where('id', $id)->first();
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-
+       $form = $this->create_form($request);
+       $param['item']->update([
+         'status' => 'new',
+         'trial_start_time1' => $form['trial_start_time1'],
+         'trial_end_time1' => $form['trial_end_time1'],
+         'trial_start_time2' => $form['trial_start_time2'],
+         'trial_end_time2' => $form['trial_end_time2'],
+         'trial_start_time3' => $form['trial_start_time3'],
+         'trial_end_time3' => $form['trial_end_time3'],
+       ]);
+       $p = StudentParent::where('id', $param['item']->student_parent_id)->first();
+       //ログインしない場合、更新後表示できなくなる
+       //$p->user->update(['access_key' => '']);
        return $this->api_response(200, '', '', []);
      }, '体験授業候補日連絡メール送信', __FILE__, __FUNCTION__, __LINE__ );
-     return $this->save_redirect($res, [], '体験授業候補日連絡メールを送信しました。');
+
+     if($this->is_success_response($res)){
+       $template = 'candidate_date_update';
+       $type = 'text';
+       $param['user_name'] = $param['item']->parent->name();
+       $param['item']->parent->user->send_mail('体験授業希望日を変更しました', $param, $type ,$template);
+     }
+
+     return $this->save_redirect($res, [], '体験授業希望日を変更しました');
    }
 
    public function _update(Request $request, $id)
    {
+     $res =  $this->transaction($request, function() use ($request, $id){
        $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
        $item = Trial::where('id', $id)->first();
        $item->trial_update($form);
+       if($item->status=='reapply'){
+         $item->update(['status' => 'confirm']);
+       }
        return $this->api_response(200, '', '', $item);
-       $res =  $this->transaction($request, function() use ($request, $id){
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
@@ -656,12 +720,24 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
-    $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+    $res = $this->transaction($request, function() use ($request, $id){
       $trial = Trial::where('id', $id)->first();
-      $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
       //受講料初期設定
-      return $this->api_response(200, '', '', $ask);
+      foreach($trial->user_calendar_settings as $setting){
+        if($request->has($setting->id.'_tuition')){
+          $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->where('user_id', $trial->student->user_id)->first();
+          $member->set_api_lesson_fee(intval($request->get($setting->id.'_tuition')));
+        }
+      }
+      return $this->api_response(200, '', '', $trial);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+    if($this->is_success_response($res)){
+      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+        $trial = Trial::where('id', $id)->first();
+        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+        return $this->api_response(200, '', '', $ask);
+      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+    }
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
   public function show_cancel_page(Request $request, $id){

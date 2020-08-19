@@ -45,7 +45,7 @@
                     </small>
                     @endif
                     <small class="badge badge-primary mt-1 mr-1">
-                      {{$item->gender()}}
+	                {{$item->gender()}}
                     </small>
                     <small class="badge badge-primary mt-1 mr-1">
                       {{$item->grade()}}

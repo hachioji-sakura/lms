@@ -5081,6 +5081,7 @@ button.close, button.mailbox-attachment-close {
 	z-index: 1100;
 
 	 */
+	 height: 100vh;
   z-index: 1102;
 	display: none;
 	overflow: hidden;
@@ -7023,6 +7024,9 @@ button.bg-dark:focus {
 }
 .mw-64px {
 	max-width: 64px !important;
+}
+.mw-80px {
+	max-width: 128px !important;
 }
 .mw-128px {
 	max-width: 128px !important;

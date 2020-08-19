@@ -17,6 +17,8 @@ class MailLog extends Model
   protected $connection = 'mysql_common';
   protected $table = 'common.mails';
   protected $guarded = array('id');
+  protected $appends = ['status_name', 'locale_name', 'created_date', 'updated_date'];
+
   /**
    * 入力ルール
    */
@@ -34,8 +36,9 @@ class MailLog extends Model
   {
     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
   }
+
   public function scopeSearchWord($query, $word){
-    $search_words = explode(' ', $word);
+    $search_words = explode(' ', rawurldecode(urlencode($word)));
     $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
@@ -46,15 +49,15 @@ class MailLog extends Model
     });
     return $query;
   }
-
-  public function status_name(){
+  public function getStatusNameAttribute(){
     return $this->config_attribute_name('mail_status', $this->status);
   }
-  public function locale_name(){
+  public function getLocaleNameAttribute(){
     $_temp = ['ja' => '日本語', 'en' => '英語'];
     if(isset($_temp[$this->locale])) return $_temp[$this->locale];
     return $this->locale;
   }
+
   static protected function add($from, $to, $title, $param, $type, $template, $locale, $status='new', $send_schedule=''){
     $body = View::make('emails.'.$template.'_'.$type)->with($param)->render();
     if(empty($send_schedule)) $send_schedule = date('Y-m-d H:i:s');
@@ -94,14 +97,6 @@ class MailLog extends Model
     }
     $this->update($update_form);
     return $this;
-  }
-  public function details(){
-    $item = $this;
-    $item["status_name"] = $this->status_name();
-    $item["locale_name"] = $this->locale_name();
-    $item["created_date"] = $this->created_at_label();
-    $item["updated_date"] = $this->updated_at_label();
-    return $item;
   }
   public function send(){
     if($this->status != 'new') return false;

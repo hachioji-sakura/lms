@@ -21,7 +21,6 @@
       <?php $is_exist=false; ?>
       @foreach($star_comments["data"] as $comment)
       <?php
-        $comment = $comment->details();
         $is_exist = true;
       ?>
 
@@ -101,7 +100,6 @@
         <?php $is_exist=false; ?>
         @foreach($comments["data"] as $comment)
         <?php
-          $comment = $comment->details();
           $is_exist = true;
         ?>
         <div class="direct-chat-msg

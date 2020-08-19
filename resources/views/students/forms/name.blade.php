@@ -18,7 +18,7 @@
   <div class="form-group">
     @if(isset($is_label) && $is_label===true)
     <label for="student_name_first" class="w-100">
-      {{__('labels.name_last')}}
+      {{__('labels.name_first')}}
     </label>
     <span id="student_name_first">{{$item['name_first']}}</span>
     @else

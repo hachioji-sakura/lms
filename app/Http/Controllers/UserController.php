@@ -9,9 +9,11 @@ use App\Models\GeneralAttribute;
 use App\Models\Place;
 use App\Models\PlaceFloor;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 class UserController extends Controller
 {
   public $domain = "users";
@@ -67,6 +69,7 @@ class UserController extends Controller
        'teacher_id' => $request->teacher_id,
        'manager_id' => $request->manager_id,
        'student_id' => $request->student_id,
+       'student_parent_id' => $request->student_parent_id,
        'access_key' => $request->key,
        'origin' => $request->origin,
        'item_id' => $request->item_id,

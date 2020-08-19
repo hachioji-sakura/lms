@@ -43,16 +43,11 @@
                     </span>
                     <span class="text-sm time">申込日:{{$item->dateweek_format($item->created_at)}}</span>
                     <br>
-                    @foreach($item->trial_students as $trial_student)
-                    @if(!isset($trial_student->student))
-                      @continue
-                    @endif
                     <span class="text-xs ml-1">
-                        <i class="fa fa-user mr-1"></i>
-                        {{$trial_student->student->name()}} 様
-                        （{{$trial_student->student->grade()}}）<br>
-                      </small>
-                    @endforeach
+                      <i class="fa fa-user mr-1"></i>
+                      {{$item->student->name()}} 様
+                      （{{$item->student->grade()}}）<br>
+                    </small>
                     </a>
                     @isset($tagdata["lesson"])
                     @foreach($tagdata["lesson"] as $label)
@@ -176,6 +171,19 @@
           </p>
         </a>
       </li>
+      {{-- TODO : 実用化されるまでコメントアウト
+      <li class="nav-item">
+        <a href="/{{$domain}}?list=reapply" class="nav-link @if($list=="reapply") active @endif">
+          <i class="fa fa-reply nav-icon"></i>
+          <p>
+            希望日変更依頼中
+            @if($reapply_count > 0)
+            <span class="badge badge-secondary right">{{$reapply_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      --}}
       <li class="nav-item">
         <a href="/{{$domain}}?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>

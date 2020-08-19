@@ -21,9 +21,7 @@ class MailLogController extends MilestoneController
     }
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
-      $item = $item->details();
-      $ret['item'] = $item;
+      $ret['item'] = $this->model()->where('id','=',$id)->first();
     }
 
     return $ret;
@@ -36,6 +34,8 @@ class MailLogController extends MilestoneController
    */
   public function search(Request $request)
   {
+    $param = $this->get_param($request);
+
     $items = $this->model();
     $user = $this->login_details($request);
     if($this->is_manager_or_teacher($user->role)!==true){
@@ -43,8 +43,7 @@ class MailLogController extends MilestoneController
       $items = $items->mydata($user->user_id);
     }
     $items = $this->_search_scope($request, $items);
-    $count = $items->count();
-    $items = $this->_search_pagenation($request, $items);
+    $items = $items->orderBy('id', 'desc')->paginate($param['_line']);
 
     $request->merge([
       '_sort_order' => 'desc',
@@ -56,11 +55,6 @@ class MailLogController extends MilestoneController
       ]);
     }
 
-    $items = $this->_search_sort($request, $items);
-    $items = $items->get();
-    foreach($items as $item){
-      $item = $item->details();
-    }
     $fields = [
       'id' => [
         'label' => 'ID',
@@ -80,7 +74,7 @@ class MailLogController extends MilestoneController
       ],
     ];
 
-    return ['items' => $items, 'fields' => $fields, 'count' => $count];
+    return ['items' => $items, 'fields' => $fields];
   }
   /**
    * フィルタリングロジック

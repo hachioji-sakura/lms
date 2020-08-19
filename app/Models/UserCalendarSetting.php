@@ -38,6 +38,7 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
     $where_raw = <<<EOT
@@ -75,7 +76,7 @@ EOT;
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', $word);
+    $search_words = explode(' ', rawurldecode(urlencode($word)));
     $where_raw = <<<EOT
       user_calendar_settings.remark like ?
       OR user_calendar_settings.id in (
@@ -173,6 +174,7 @@ EOT;
   }
 
   public function details($user_id=0){
+    $this->set_endtime_for_singile_group();
     $item = $this;
     $base_date = '2000-01-01 ';
 
@@ -371,7 +373,7 @@ EOT;
     }
     if(isset($data['from_time_slot']) && isset($data['to_time_slot'])){
       //course_minutesは、time_slotから補完
-      $data['course_minutes'] = intval(strtotime('2000-01-01 '.$data['to_time_slot']) - strtotime('2000-01-01 '.$data['from_time_slot']))/60;
+      $data['course_minutes'] = $this->get_course_minutes('2000-01-01 '.$data['from_time_slot'], '2000-01-01 '.$data['to_time_slot']);
 
       $lesson_week = $this->lesson_week;
       if(isset($data['lesson_week'])){
@@ -448,6 +450,7 @@ EOT;
           'remark' => $remark,
           'create_user_id' => $create_user_id,
       ]);
+
       $member->set_api_lesson_fee();
       if($is_api===true){
         //事務システムにも登録
@@ -511,7 +514,7 @@ EOT;
             $is_add = true;
           }
         }
-        if($is_add===true && $c > 0){
+        if($is_add===true && $c > 0 && strtotime($end_date) >= strtotime($target_date)){
           $add_calendar_date[] = $target_date;
           $c--;
         }
@@ -762,9 +765,42 @@ EOT;
         //設定がないなら来月末
         $end_date = date('Y-m-t', strtotime('+1 month'));
       }
-      \Log::warning("mogumogu(".$start_date.":".$end_date.")");
       $this->setting_to_calendar($start_date, $end_date, 1, 5);
     }
   }
-
+  public function set_endtime_for_singile_group($to_time_slot=""){
+    if($this->is_group()==false) return false;
+    $students = $this->get_students();
+    $active_students = [];
+    foreach($students as $member){
+      if($member->status=='fix'){
+        $m = $member->user->details();
+        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+      }
+    }
+    if(empty($to_time_slot)) $to_time_slot = $this->to_time_slot;
+    if($this->is_last_status()==true || $this->status=='fix'){
+      $course_minutes = $this->get_course_minutes('2000-01-01 '.$this->from_time_slot, '2000-01-01 '.$this->to_time_slot);
+      //グループ授業かつ、最終ステータスおよびfix の場合
+      if(count($active_students)==1 && $course_minutes==60){
+        //生徒一人グループ、かつ、60分授業の場合、40分に変更する
+        $end_time_40 = date('H:i:s', strtotime('2000-01-01 '.$this->from_time_slot.' +40 minutes'));
+        $this->update(['to_time_slot' => $end_time_40]);
+        return true;
+      }
+      if(count($active_students)>1 && $course_minutes==40){
+        //生徒複数グループ、かつ、40分授業の場合、60分に変更する
+        $end_time_60 = date('H:i:s', strtotime('2000-01-01 '.$this->from_time_slot.' +60 minutes'));
+        $this->update(['to_time_slot' => $end_time_60]);
+        return true;
+      }
+    }
+    return false;
+  }
+  public function get_tuition($user_id){
+    $member = $this->members->where('user_id', $user_id)->first();
+    $tuition = $member->get_tuition();
+    if(isset($tuition)) return $tuition->tuition;
+    return null;
+  }
 }

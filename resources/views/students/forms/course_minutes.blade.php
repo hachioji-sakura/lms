@@ -18,10 +18,12 @@
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
       @foreach($attributes['course_minutes'] as $index => $name)
+        @if($index==40) @continue @endif
+        @if(isset($is_trial) && $is_trial==true && $index>60) @continue @endif
+        @if(isset($item["exchanged_calendar_id"]) && $item["exchanged_calendar_id"] > 0 && $item->get_exchange_remaining_time() < intval($index))
+          @continue
+        @endif
         <label class="mx-2 course_minutes" for="course_minutes_{{$index}}">
-          @if(isset($item["exchanged_calendar_id"]) && $item["exchanged_calendar_id"] > 0 && $item->get_exchange_remaining_time() < intval($index))
-            @continue
-          @endif
           <input type="radio" value="{{ $index }}" name="course_minutes" class="icheck flat-green"
           @if(isset($item) && isset($item->id) && $item->has_tag("course_minutes", $index))
           checked
@@ -38,8 +40,12 @@
   @else
   <div class="col-12">
     <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
+      @if(isset($is_trial) && $is_trial==true)
+      ※体験授業の授業時間は60分までとなります。
+      @else
       ※塾の授業時間は60分～となります<br>
       英会話・ピアノ・習い事につきまして、授業時間は30分、もしくは60分となります。
+      @endif
     </h6>
   </div>
   @endif

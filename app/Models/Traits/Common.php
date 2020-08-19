@@ -102,6 +102,12 @@ trait Common
   protected function _date_label($date, $format='Y年m月d日 H:i'){
     return date($format, strtotime($date));
   }
+  public function getCreatedDateAttribute(){
+    return $this->_date_label($this->created_at);
+  }
+  public function getUpdatedDateAttribute(){
+    return $this->_date_label($this->updated_at);
+  }
   public function created_at_label($format='Y年m月d日 H:i'){
     return $this->_date_label($this->created_at, $format);
   }
@@ -145,5 +151,8 @@ trait Common
       return true;
     }
     return false;
+  }
+  public function get_course_minutes($from_time, $to_time){
+    return $course_minutes = intval(strtotime($to_time) - strtotime($from_time))/60;
   }
 }

@@ -9,13 +9,14 @@
 	<div class="container-fluid" id="trial_to_register">
     @if($select_calendar_id > 0)
       {{-- ２．体験授業を選択し、予定設定のテンプレートとして利用 --}}
+      {{-- TODO 修正lesson_week_count --}}
       <form method="POST"  action="/{{$domain}}/{{$item->id}}/to_calendar_setting">
         @csrf
         <input type="text" name="dummy" style="display:none;" / >
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
         <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
-        <input type="hidden" name="lesson_week_count" value="{{$item->get_tag('lesson_week_count')->tag_value}}">
+        <input type="hidden" name="lesson_week_count" value="{{$item->student->user->get_enable_calendar_setting_count()}}">
         <div class="row mb-1">
           <div class="col-md-12">
             <div class="card card-widget mb-2">

@@ -14,6 +14,7 @@
   </div>
 </div>
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  @if($item->is_hachiojisakura()==true)
   <li class="nav-item">
     <a href="/{{$domain}}/{{$item->id}}/calendar" class="nav-link @if($view=="calendar" && $list=="") active @endif">
       <i class="fa fa-calendar-alt nav-icon"></i>{{__('labels.calendar_page')}}
@@ -81,22 +82,16 @@
       @endif
     </ul>
   </li>
+  @endif
   <li class="nav-item has-treeview menu-open">
     <a href="#" class="nav-link">
-    <i class="nav-icon fa fa-cogs"></i>
+    <i class="nav-icon fa fa-pen-nib"></i>
     <p>
-      {{__('labels.other')}}
+      {{__('labels.study_record')}}
       <i class="right fa fa-angle-left"></i>
     </p>
     </a>
     <ul class="nav nav-treeview pl-2">
-      @if($user->role!='student')
-      <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
-          <i class="fa fa-user-edit nav-icon"></i>{{__('labels.students')}}{{__('labels.setting')}}
-        </a>
-      </li>
-      @endif
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/milestones/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.milestones')}}{{__('labels.add')}}">
           <i class="fa fa-flag nav-icon"></i>{{__('labels.milestones')}}{{__('labels.add')}}
@@ -107,6 +102,29 @@
           <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
         </a>
       </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-cogs"></i>
+    <p>
+      {{__('labels.other')}}
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
+          <i class="fa fa-user-edit nav-icon"></i>{{__('labels.students')}}{{__('labels.setting')}}
+        </a>
+      </li>
+      @if($item->is_hachiojisakura()==true)
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/setting" page_title="{{__('labels.students')}}{{__('labels.setting')}}">
+          <i class="fa fa-business-time nav-icon"></i>通塾設定
+        </a>
+      </li>
+      @endif
       @if($user->role==="manager")
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">

@@ -108,11 +108,6 @@ class MilestoneController extends UserController
         abort(403);
       }
       $_table = $this->search($request);
-
-      $page_data = $this->get_pagedata($_table['count'] , $param['_line'], $param['_page']);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -150,8 +145,7 @@ class MilestoneController extends UserController
             //生徒は自分の起票したものしか編集できない
             abort(404);
         }
-        $item = $item->details();
-        $ret['item'] = $item->details();
+        $ret['item'] = $item;
       }
       return $ret;
     }
@@ -163,14 +157,16 @@ class MilestoneController extends UserController
      */
     public function search(Request $request)
     {
+      $param = $this->get_param($request);
+
       $items = $this->model();
       $user = $this->login_details($request);
       if($this->is_manager_or_teacher($user->role)!==true){
         $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
-      $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
+      $items = $items->paginate($param['_line']);
+
       $request->merge([
         '_sort_order' => 'desc',
         '_sort' => 'created_at',
@@ -179,11 +175,6 @@ class MilestoneController extends UserController
         $request->merge([
           '_sort_order' => 'asc',
         ]);
-      }
-      $items = $this->_search_sort($request, $items);
-      $items = $items->get();
-      foreach($items as $key => $item){
-        $items[$key] = $item->details();
       }
       $fields = [
         'id' => [
@@ -210,7 +201,7 @@ class MilestoneController extends UserController
         'label' => '操作',
         'button' => ['edit', 'delete']
       ];
-      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
+      return ["items" => $items, "fields" => $fields];
     }
     /**
      * フィルタリングロジック

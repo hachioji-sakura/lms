@@ -9,7 +9,9 @@
       @foreach($teacher->get_tags('lesson') as $lesson)
         <div class="form-check">
             <input class="form-check-input icheck flat-green" type="radio" name="lesson" id="lesson_{{$lesson["value"]}}" value="{{$lesson["value"]}}" alt="{{$lesson["name"]}}" required="true" onChange="lesson_change()"
-            @if($loop->index===0)
+            @if($item["exchanged_calendar_id"]>0 && $lesson['value']==$item->lesson(true))
+             checked
+            @elseif($loop->index===0)
              checked
             @endif
             ><label class="form-check-label" for="lesson_{{$lesson["value"]}}">{{$lesson["name"]}}</label>
@@ -29,7 +31,6 @@
 
 <script>
 $(function(){
-
   lesson_change();
 });
 function lesson_change(){

@@ -109,13 +109,13 @@ class AskController extends MilestoneController
     }
 
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
+      $item = $this->model()->where('id', $id)->first();
       if(!isset($item)){
         abort(404);
       }
       $ret['item'] = $item->details();
-      if($ret['item']->is_access($user->user_id)==false){
-          abort(403, "hogehoge");
+      if($item->is_access($user->user_id)==false){
+          abort(403);
       }
     }
     return $ret;
@@ -145,10 +145,6 @@ class AskController extends MilestoneController
     }
     $param = $this->get_param($request);
     $_table = $this->search($request);
-    $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-    foreach($page_data as $key => $val){
-      $param[$key] = $val;
-    }
     return view($this->domain.'.lists', $_table)
       ->with($param);
   }
@@ -183,7 +179,6 @@ class AskController extends MilestoneController
    */
   public function status_update(Request $request, $id, $status)
   {
-    \Log::warning("status_update1");
 
     $param = $this->get_param($request, $id);
     $res = $this->api_response();
@@ -194,7 +189,6 @@ class AskController extends MilestoneController
       $status = $request->get('status');
     }
 
-    \Log::warning("status_update2");
     if($status!="remind"){
       //remind以外はステータスの更新
       if($ask->status != $status){
@@ -249,7 +243,7 @@ class AskController extends MilestoneController
    * @return \Illuminate\Http\Response
    */
   private function _status_update(Request $request, $param, $id, $status){
-      $res = $this->transaction($request, function() use ($request, $param, $id, $status){
+    $res = $this->transaction($request, function() use ($request, $param, $id, $status){
       $form = $request->all();
       $form['status'] = $status;
       $form['login_user_id'] = $param['user']->user_id;
@@ -353,7 +347,6 @@ class AskController extends MilestoneController
      $param = $this->get_param($request, $id);
 
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
-
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['trial'] = $param['item']->get_target_model_data();
      $param['access_key'] = $param['trial']->parent->user->access_key;

@@ -15,7 +15,6 @@
       <?php $is_exist=false; ?>
       @foreach($milestones as $milestone)
       <?php
-        $milestone = $milestone->details();
         $is_exist = true;
       ?>
       <li class="item">

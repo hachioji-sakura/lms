@@ -197,7 +197,7 @@ EOT;
     return $this->config_attribute_name('ask_status', $this->status);
   }
   public function details(){
-    $item = parent::details();
+    $item = $this;
     $item["type_name"] = $this->type_name();
     $item["status_name"] = $this->status_name();
     $item["label_start_date"] = $this->dateweek_format($this->start_date, "Y年n月j日");
@@ -240,11 +240,11 @@ EOT;
         }
         break;
       case "hope_to_join":
-        if(!isset($form['schedule_start_hope_date'])) $form['schedule_start_hope_date']="";
         $ret = true;
         $is_complete = true;
         //Trial->hope_to_join()を実行
-        $target_model_data->hope_to_join($is_commit, $form['schedule_start_hope_date']);
+        $form['create_user_id'] = $login_user_id;
+        $target_model_data->hope_to_join($is_commit, $form);
         break;
       case "agreement":
         $ret = true;

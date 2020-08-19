@@ -14,6 +14,7 @@ class Milestone extends Model
   protected $connection = 'mysql';
   protected $table = 'lms.milestones';
   protected $guarded = array('id');
+  protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'importance_label', 'created_date', 'updated_date'];
 
   public static $rules = array(
       'title' => 'required',
@@ -58,7 +59,7 @@ class Milestone extends Model
     return $this->scopeFieldWhereIn($query, 'status', $vals, $is_not);
   }
   public function scopeSearchWord($query, $word){
-    $search_words = explode(' ', $word);
+    $search_words = explode(' ', rawurldecode(urlencode($word)));
     $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
@@ -95,16 +96,22 @@ class Milestone extends Model
     $res = $this->attribute_name('importance', $this->importance);
     return $res;
   }
-  public function details(){
-    $item = $this;
-    $item["type_name"] = $this->type_name();
-    $item["created_date"] = $this->created_at_label();
-    $item["updated_date"] = $this->updated_at_label();
-    $item["create_user_name"] = $this->create_user->details()->name();
-    $item["target_user_name"] = $this->target_user->details()->name();
-    $item["importance_label"] = $this->importance_name();
-    return $item;
+  public function getTypeNameAttribute(){
+    return $this->attribute_name('milestone_type', $this->type);
   }
+  public function getImpotanceLabelAttribute(){
+    $res = $this->attribute_name('importance', $this->importance);
+    return $res;
+  }
+  public function getCreateUserNameAttribute(){
+    if(!isset($this->create_user)) return "";
+    return $this->create_user->details()->name();
+  }
+  public function getTargetUserNameAttribute(){
+    if(!isset($this->target_user)) return "";
+    return $this->target_user->details()->name();
+  }
+
   public function send_mail($user_id, $title, $param, $type, $template){
     $u = User::where('id', $user_id)->first();
     $mail = $u->get_mail_address();

@@ -27,7 +27,6 @@ class TeacherController extends StudentController
   public function model(){
    return Teacher::query();
   }
-
   /**
    * 共通パラメータ取得
    *
@@ -83,6 +82,20 @@ class TeacherController extends StudentController
     return view($this->domain.'.create',
       ['error_message' => ''])
       ->with($param);
+   }
+   /**
+    * Show the form for editing the specified resource.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
+   public function edit(Request $request, $id)
+   {
+     $result = '';
+     $param = $this->get_param($request, $id);
+     $param['_edit'] = true;
+     $param['teacher'] = $param['item'];
+     return view($this->domain.'.edit',$param);
    }
 
   /**

@@ -1,3 +1,4 @@
+@isset($is_trial)
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-file-invoice mr-1"></i>
@@ -42,52 +43,17 @@
   <div class="col-6 p-3 font-weight-bold grade_school_name_confirm" >学校名</div>
   <div class="col-6 p-3 grade_school_name_confirm"><span id="school_name"></span></div>
 </div>
-<div class="row collapse student2">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-user-graduate mr-1"></i>
-    生徒様情報(2)
-  </div>
-  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
-  <div class="col-6 p-3">
-    <ruby style="ruby-overhang: none">
-      <rb><span id="student2_name_last"></span>&nbsp;<span id="student2_name_first"></span></rb>
-      <rt><span id="student2_kana_last"></span>&nbsp;<span id="student2_kana_first"></span></rt>
-    </ruby>
-  </div>
-  <div class="col-6 p-3 font-weight-bold" >生年月日</div>
-  <div class="col-6 p-3"><span id="student2_birth_day"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >性別</div>
-  <div class="col-6 p-3"><span id="student2_gender_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >学年</div>
-  <div class="col-6 p-3"><span id="student2_grade_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold student2_grade_school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 student2_grade_school_name_confirm"><span id="student2_school_name"></span></div>
-</div>
-<div class="row collapse student3">
-  <div class="col-12 bg-info p-2 pl-4">
-    <i class="fa fa-user-graduate mr-1"></i>
-    生徒様情報(3)
-  </div>
-  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
-  <div class="col-6 p-3">
-    <ruby style="ruby-overhang: none">
-      <rb><span id="student3_name_last"></span>&nbsp;<span id="student3_name_first"></span></rb>
-      <rt><span id="student3_kana_last"></span>&nbsp;<span id="student3_kana_first"></span></rt>
-    </ruby>
-  </div>
-  <div class="col-6 p-3 font-weight-bold" >生年月日</div>
-  <div class="col-6 p-3"><span id="student3_birth_day"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >性別</div>
-  <div class="col-6 p-3"><span id="student3_gender_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold" >学年</div>
-  <div class="col-6 p-3"><span id="student3_grade_name"></span></div>
-  <div class="col-6 p-3 font-weight-bold student3_grade_school_name_confirm" >学校名</div>
-  <div class="col-6 p-3 student3_grade_school_name_confirm"><span id="student3_school_name"></span></div>
-</div>
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-phone-square mr-1"></i>
     ご連絡先
+  </div>
+  <div class="col-6 p-3 font-weight-bold" >氏名・フリガナ</div>
+  <div class="col-6 p-3">
+    <ruby style="ruby-overhang: none">
+      <rb><span id="parent_name_last"></span>&nbsp;<span id="parent_name_first"></span></rb>
+      <rt><span id="parent_kana_last"></span>&nbsp;<span id="parent_kana_first"></span></rt>
+    </ruby>
   </div>
   <div class="col-6 p-3 font-weight-bold" >メールアドレス</div>
   <div class="col-6 p-3"><span id="email"></span></div>
@@ -97,11 +63,17 @@
   <div class="col-6 p-3"><span id="address"></span></div>
 </div>
 @endif
+@endisset
+
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-calendar-alt mr-1"></i>
     通塾スケジュールにつきまして
   </div>
+  @empty($is_trial)
+  <div class="col-6 p-3 font-weight-bold" >授業開始希望日</div>
+  <div class="col-6 p-3"><span id="schedule_start_hope_date"></span></div>
+  @endempty
   <div class="col-6 p-3 font-weight-bold" >ご希望の授業回数</div>
   <div class="col-6 p-3">週<span id="lesson_week_count_name"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご希望の授業時間</div>
@@ -228,9 +200,11 @@
   </div>
   <div class="col-6 p-3 font-weight-bold" >ご要望につきまして</div>
   <div class="col-6 p-3"><span id="remark"></span></div>
+  @isset($is_trial)
   <div class="col-6 p-3 font-weight-bold" >当塾をお知りになった方法は何でしょうか？</div>
   <div class="col-6 p-3"><span id="howto_name"></span></div>
   <div class="col-6 p-3 font-weight-bold howto_word_confirm collapse" >検索ワードをお答えください</div>
   <div class="col-6 p-3 howto_word_confirm collapse"><span id="howto_word"></span></div>
+  @endif
 </div>
-@endif
+@endisset

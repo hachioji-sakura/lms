@@ -37,7 +37,7 @@ class Subject extends Milestone
     }
 
     public function scopeSearchWord($query, $word){
-      $search_words = explode(' ', $word);
+      $search_words = explode(' ', rawurldecode(urlencode($word)));
       $query = $query->where(function($query)use($search_words){
         foreach($search_words as $_search_word){
           $_like = '%'.$_search_word.'%';
