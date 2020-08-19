@@ -484,7 +484,7 @@
 					if(!confirm(_confirm)) return false;
 				}
 				util.clearLocalData();
-				$(this).prop("disabled", true);
+				//$(this).prop("disabled", true);
         $("#"+form).submit();
       });
       //サブページ内のreset
