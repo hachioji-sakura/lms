@@ -264,11 +264,12 @@ class ImportController extends UserController
       $url = config('app.url').'/import/schedules?work_id=10';
       $res = $this->call_api($req, $url, 'POST');
       if($res["status"] == 200){
-        $res["work_10_count"] = $res["data"];
+        $work_10_count = $res["data"];
         $url = config('app.url').'/import/schedules?work_id=11';
         $res = $this->call_api($req, $url, 'POST');
         if($res["status"] == 200){
           $res["work_11_count"] = $res["data"];
+          $res["work_10_count"] = $work_10_count;
         }
       }
       return $res;
