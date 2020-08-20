@@ -4,7 +4,7 @@
     <form method="POST" action="/tasks/{{$item->id}}/progress" class="float-left mr-1">
       @csrf
       @method('PUT')
-      <button type="submit" class="btn btn-sm btn-submit btn-outline-{{config('status_style')['progress']}} rounded-pill mr-1 mb-1" accesskey="task_progress">
+      <button type="button" class="btn btn-sm btn-submit btn-outline-{{config('status_style')['progress']}} rounded-pill mr-1 mb-1" accesskey="task_progress">
         {{__('labels.progress_button')}}
       </button>
     </form>
@@ -26,7 +26,7 @@
     <form method="POST" action="/tasks/{{$item->id}}/done" class="float-left mr-1">
       @csrf
       @method('PUT')
-      <button type="submit" class="btn btn-sm btn-block btn-submit btn-outline-{{config('status_style')['done']}} mr-1 mb-1" accesskey="task_done">
+      <button type="button" class="btn btn-sm btn-block btn-submit btn-outline-{{config('status_style')['done']}} mr-1 mb-1" accesskey="task_done">
         {{__('labels.done_button')}}
       </button>
     </form>
