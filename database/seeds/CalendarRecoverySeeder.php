@@ -16,38 +16,12 @@ class CalendarRecoverySeeder extends Seeder
     public function run()
     {
       set_time_limit(3600);
-      $controller = new Controller;
-      $request = new Illuminate\Http\Request;
-      $url = config('app.management_url').'/sakura-api/api_get_onetime_schedule.php';
-      $res = $controller->call_api($request, $url);
-      $d = [];
-      foreach($res["data"] as $data){
-        $d[intval($data["id"])] = $data;
-      }
-      $this->delete_calendar_sync($d);
+      $this->delete_calendar_sync();
       $this->post_calendar_sync();
       $this->put_calendar_sync();
     }
-    public function delete_calendar_sync($d){
-
-      $controller = new Controller;
-      $request = new Illuminate\Http\Request;
-
+    public function delete_calendar_sync(){
       $this->no_relate_onetime_schedule_delete();
-      //季節講習の取り込みのため一度、すべて削除
-      $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
-      $ids = [];
-      foreach($season_calendars as $season_calendar){
-        $ids[] = $season_calendar->id;
-      }
-      UserCalendarMember::whereIn('calendar_id', $ids)->delete();
-      UserCalendarTag::whereIn('calendar_id', $ids)->delete();
-      UserCalendar::whereIn('id', $ids)->delete();
-
-      $url = config('app.url').'/import/schedules?work_id=10';
-      $res = $controller->call_api($request, $url, 'POST');
-      $url = config('app.url').'/import/schedules?work_id=11';
-      $res = $controller->call_api($request, $url, 'POST');
     }
     public function no_relate_onetime_schedule_delete(){
       //work_id = 10 , 11以外の、user_calendar_membersに紐づいていない、onetime_scheduleを削除
@@ -68,9 +42,11 @@ EOT;
         foreach($d as $row){
           $delete_ids[] = $row->id;
         }
-        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $delete_ids)->update([
-          'delflag' => '1'
-        ]);
+        if(count($delete_ids)>0){
+          DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $delete_ids)->update([
+            'delflag' => '1'
+          ]);
+        }
     }
     public function put_calendar_sync(){
       $sql = <<<EOT
@@ -216,5 +192,4 @@ EOT;
         $updated_id[$row->schedule_onetime_id] = true;
       }
     }
-
 }

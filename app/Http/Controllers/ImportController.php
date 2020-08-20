@@ -32,6 +32,7 @@ use App\Models\UserCalendarTagSetting;
 use App\Models\StudentGroup;
 
 use Illuminate\Http\Request;
+
 use DB;
 class ImportController extends UserController
 {
@@ -52,6 +53,7 @@ class ImportController extends UserController
       'charge_students' =>  'api_get_teacherstudent',
       'repeat_schedules' =>  'api_get_repeat_schedule',
       'schedules' => 'api_get_onetime_schedule',
+      'season_schedules' => '',
     ];
     public $api_update_endpoint = [
       'schedules' => 'api_update_onetime_schedule',
@@ -173,6 +175,11 @@ class ImportController extends UserController
         if(!array_key_exists($object, $this->api_endpoint)){
           return $this->bad_request();
         }
+        if($object == 'season_schedules'){
+          $this->logic_name = "季節講習カレンダーデータ取り込み";
+          $res = $this->season_schedules_import();
+          return $res;
+        }
         $url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$object].'.php';
         @$this->remind('import call_api['.$url.']', 'info', $this->logic_name);
         $res = $this->call_api($request, $url);
@@ -238,7 +245,35 @@ class ImportController extends UserController
 
         return $res;
     }
+    private function season_schedules_import(){
+      set_time_limit(3600);
+      $req = new Request;
 
+      //季節講習の取り込みのため一度、すべて削除
+      $season_calendars = UserCalendar::whereIn('work', [10, 11])->get();
+      $ids = [];
+      foreach($season_calendars as $season_calendar){
+        $ids[] = $season_calendar->id;
+      }
+      if(count($ids) > 0){
+        UserCalendarMember::whereIn('calendar_id', $ids)->delete();
+        UserCalendarTag::whereIn('calendar_id', $ids)->delete();
+        UserCalendar::whereIn('id', $ids)->delete();
+      }
+      //季節講習の取り込み(work_id=10 / 11のものすべて取り込む）
+      $url = config('app.url').'/import/schedules?work_id=10';
+      $res = $this->call_api($req, $url, 'POST');
+      if($res["status"] == 200){
+        $work_10_count = $res["data"];
+        $url = config('app.url').'/import/schedules?work_id=11';
+        $res = $this->call_api($req, $url, 'POST');
+        if($res["status"] == 200){
+          $res["work_11_count"] = $res["data"];
+          $res["work_10_count"] = $work_10_count;
+        }
+      }
+      return $res;
+    }
     /**
      * 事務管理システムから取得したデータを取り込み
      * @param array $items
