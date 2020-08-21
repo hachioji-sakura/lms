@@ -4,7 +4,7 @@
       <form method="POST" action="/{{$domain}}/{{$item->id}}/{{$action}}">
         @csrf
         @method('PUT')
-        <button type="submit" class="btn btn-submit btn-primary w-100">
+        <button type="button" class="btn btn-submit btn-primary w-100" accesskey="{{$action}}_form">
           <i class="fa fa-check"></i>
           OK
         </button>
