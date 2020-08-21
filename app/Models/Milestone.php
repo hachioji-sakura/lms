@@ -99,7 +99,7 @@ class Milestone extends Model
   public function getTypeNameAttribute(){
     return $this->attribute_name('milestone_type', $this->type);
   }
-  public function getImpotanceLabelAttribute(){
+  public function getImportanceLabelAttribute(){
     $res = $this->attribute_name('importance', $this->importance);
     return $res;
   }

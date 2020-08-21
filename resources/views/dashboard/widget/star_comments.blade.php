@@ -50,17 +50,28 @@
           @endif
           <br>
           @if($comment->importance > 1)
-          <span class="ml-1 text-xs float-right">
-            <small class="badge
-            @if($comment->importance > 5)
-            badge-danger
-            @elseif($comment->importance > 1)
-            badge-warning
-            @endif
-             mt-1 mr-1">
-              重要度：{{$comment["importance_label"]}}
-            </small>
-          </span>
+            <span class="ml-1 text-xs float-left">
+              <small class="badge
+              @if($comment->importance > 5)
+              badge-danger
+              @elseif($comment->importance > 1)
+              badge-warning
+              @endif
+               mt-1 mr-1">
+                重要度：{{$comment->importance_label}}
+              </small>
+            </span>
+            <span class="mr-1 float-right">
+              @if($user->role=="manager" || $comment->create_user_id == $user->user_id)
+              {{-- 起票者 or 管理者のみ 操作可能 --}}
+              <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm  mr-1">
+                <i class="fa fa-edit"></i>
+              </a>
+              <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm  mr-1">
+                <i class="fa fa-trash"></i>
+              </a>
+              @endif
+            </span>
           @endif
         </div>
       </div>
