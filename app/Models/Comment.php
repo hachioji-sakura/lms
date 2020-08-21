@@ -15,8 +15,8 @@ class Comment extends Milestone
       'body' => 'required',
       'type' => 'required'
   );
-  protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'publiced_date', 'created_date', 'updated_date'];
-
+  protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'importance_label', 'publiced_date', 'created_date', 'updated_date'];
+  
   public function getTypeNameAttribute(){
     $ret = $this->attribute_name('comment_type', $this->type);
     if(!empty($ret)) return $ret;
