@@ -1,4 +1,4 @@
-<div class="direct-chat-msg">
+<div id="calendars_entry" class="direct-chat-msg">
   @include('calendars.create_form')
   @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
@@ -17,14 +17,14 @@
     @if(isset($manager_id))
       <input type="hidden" value="{{$manager_id}}" name="manager_id" />
     @endif
-    <div id="calendars_entry" class="carousel slide" data-ride="carousel" data-interval="false">
+    <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
             @if($item->work==9)
             <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry">
                   {{__('labels.update_button')}}
                   <i class="fa fa-caret-right ml-1"></i>
               </button>
@@ -68,7 +68,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry"
                   @if(isset($_edit) && $_edit==true)
                   confirm="{{__('messages.confirm_update')}}">
                     {{__('labels.update_button')}}
@@ -92,14 +92,6 @@ $(function(){
   base.pageSettinged("calendars_entry", form_data);
   $('#calendars_entry').carousel({ interval : false});
   $("input[name='lesson[]']").change();
-  //submit
-  $("button.btn-submit").on('click', function(e){
-    e.preventDefault();
-    if(front.validateFormValue('calendars_entry .carousel-item.active')){
-      $(this).prop("disabled",true);
-      $("form").submit();
-    }
-  });
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
