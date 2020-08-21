@@ -4,7 +4,7 @@
       <form method="POST" action="/{{$domain}}/{{$item->id}}">
         @csrf
         @method('DELETE')
-        <button type="submit" class="btn btn-submit btn-primary w-100">
+        <button type="button" class="btn btn-submit btn-primary w-100" accesskey="delete_form">
           <i class="fa fa-trash"></i>
           OK
         </button>
