@@ -147,9 +147,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
   Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
   Route::get('teachers/{id}/students','TeacherController@get_charge_students');
+/* TODO:charge_studentsの追加が必要の場合
   Route::get('teachers/{id}/students/create','TeacherController@add_charge_student_page');
   Route::post('teachers/{id}/students','TeacherController@add_charge_student');
-
+*/
   Route::get('register','StudentParentController@register');
   Route::post('register','StudentParentController@register_update');
   Route::get('teachers/entry','TeacherController@entry');
