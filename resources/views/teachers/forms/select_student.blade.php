@@ -1,3 +1,8 @@
+@if($item->trial_id>0)
+<input type="hidden" name="student_id" value="{{$item->trial->student_id}}"
+ grade="{{$item->trial->student->user->details('students')->tag_value('grade')}}"
+>
+@else
 <div class="col-12">
   <div class="form-group">
     <label for="title" class="w-100">
@@ -14,8 +19,4 @@
     </select>
   </div>
 </div>
-
-<script>
-$(function(){
-});
-</script>
+@endif

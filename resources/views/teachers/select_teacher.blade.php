@@ -11,6 +11,13 @@
       <div class="form-group">
         <label for="title" class="w-100">
           {{__('labels.teachers')}}
+          @if(isset($lesson_id) && $lesson_id>0)
+          <input type="hidden" name="lesson_id" value="{{$lesson_id}}" >
+            （レッスン：{{$attributes["lesson"][$lesson_id]}}）
+          @endif
+          @if(isset($trial_id) && $trial_id>0)
+          <input type="hidden" name="trial_id" value="{{$trial_id}}" >
+          @endif
         </label>
         <select name="teacher_id" class="form-control select2"  width=100% required="true" >
           <option value="">{{__('labels.selectable')}}</option>
@@ -49,7 +56,11 @@ function teacher_selected(){
   if(front.validateFormValue('select_teacher')){
     var _title = $('#subDialog .page_title').text();
     var _url = '/{{$domain}}/create?origin=teachers&teacher_id='+teacher_id;
+    var lesson_id = $('input[name="lesson_id"]').val();
+    var trial_id = $('input[name="trial_id"]').val();
     console.log(_url);
+    if(lesson_id|0>0) _url +='&lesson_id='+lesson_id;
+    if(trial_id|0>0) _url +='&trial_id='+trial_id;
     base.showPage("dialog", "subDialog", _title, _url);
   }
 }

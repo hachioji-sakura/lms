@@ -5,10 +5,14 @@
   @if($is_calendar_setting==false && isset($candidate_teachers) && count($candidate_teachers) > 0 && $select_lesson<1)
     @foreach($candidate_teachers as $lesson => $lesson_teachers)
     <ul class="mailbox-attachments clearfix row">
-      <li class="col-12 bg-light" accesskey="" target="">
+      <li class="col-12 bg-white" accesskey="" target="">
         <div class="row">
           <div class="col-12">
             {{$attributes['lesson'][$lesson]}}担当講師
+            <a href="javascript:void(0);" page_title="日付から体験授業登録する" page_form="dialog" page_url="/calendars/create?trial_id={{$item->id}}&lesson_id={{$lesson}}" role="button" class="btn btn-info btn-sm ml-1 float-right">
+              <i class="fa fa-calendar-plus mr-1"></i>
+              日付から体験授業登録する
+            </a>
           </div>
         </div>
       </li>
@@ -25,6 +29,12 @@
             @else
               <a href="/{{$domain}}/{{$item->id}}/to_calendar?teacher_id={{$teacher->id}}&lesson={{$lesson}}" role="button" class="btn btn-block btn-info">担当講師にする　<i class="fa fa-chevron-right ml-2"></i></a>
             @endif
+          </div>
+          <div class="col-12 mb-2">
+            <a href="javascript:void(0);" page_title="日付から体験授業登録する" page_form="dialog" page_url="/calendars/create?trial_id={{$item->id}}&lesson_id={{$lesson}}&teacher_id={{$teacher->id}}" role="button" class="btn btn-info btn-block btn-sm">
+              <i class="fa fa-calendar-plus mr-1"></i>
+              日付から体験授業登録する
+            </a>
           </div>
           @endslot
         @endcomponent
