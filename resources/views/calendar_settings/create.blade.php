@@ -112,7 +112,7 @@ $(function(){
   var form_data = null;
   base.pageSettinged("calendar_settings_entry", form_data);
   $('#calendar_settings_entry').carousel({ interval : false});
-  $("input[name='lesson[]']").change();
+  lesson_change();
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){

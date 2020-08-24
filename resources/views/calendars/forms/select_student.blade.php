@@ -1,4 +1,18 @@
-@if(isset($_edit) && $_edit==true)
+@if($item->trial_id>0)
+<div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
+  <div class="form-group">
+    <label for="title" class="w-100">
+      {{__('labels.students')}}
+    </label>
+    <span>{{$item->trial->student->name()}}</span>
+      <input type="hidden" name="student_id[]"
+        value="{{$item->trial->student->id}}"
+        grade="{{$item->trial->student->tag_value('grade')}}"
+        >
+  </div>
+  <input type="hidden" name="student_name" value="{{$item->trial->student->name()}}">
+</div>
+@elseif(isset($_edit) && $_edit==true)
 <div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">
@@ -14,8 +28,7 @@
   </div>
   <input type="hidden" name="student_name" value="{{$item['student_name']}}">
 </div>
-@endif
-@if(!(isset($_edit) && $_edit==true))
+@elseif(!(isset($_edit) && $_edit==true))
 <div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">

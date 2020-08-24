@@ -278,15 +278,42 @@ function course_minutes_filter(name){
     //振替の場合は分割振替などがあるので、フィルタはなし
     return ;
   }
-  if(!check_lesson["is_school"]){
-    //塾以外＝90分、120分なし
+  if($('input[name="trial_id"]').val()|0 > 0){
     $("label.course_minutes:contains('９０分')").hide();
     $("label.course_minutes:contains('１２０分')").hide();
   }
-  if(!check_lesson["is_piano"] && !check_lesson["is_english"] && !check_lesson["is_kids_lesson"]){
-    //習い事がない
-    $("label.course_minutes:contains('３０分')").hide();
+  else {
+    if(!check_lesson["is_school"]){
+      //塾以外＝90分、120分なし
+      $("label.course_minutes:contains('９０分')").hide();
+      $("label.course_minutes:contains('１２０分')").hide();
+    }
+    if(!check_lesson["is_piano"] && !check_lesson["is_english"] && !check_lesson["is_kids_lesson"]){
+      //習い事がない
+      $("label.course_minutes:contains('３０分')").hide();
+    }
   }
+}
+function lesson_change(){
+  var lesson = ($('input[name=lesson]:checked').val())|0;
+  if(lesson==0){
+    lesson = ($('input[name=lesson]').val())|0;
+  }
+  $(".charge_subject").hide();
+  $("#course_type_form .form-check").hide();
+  $("#course_type_form_single").show();
+  $("#course_type_form_family").show();
+  $(".charge_subject_"+lesson).show();
+  console.log("lesson_change:"+lesson);
+  switch(lesson){
+    case 2:
+    case 4:
+      $("#course_type_form_group").show();
+      break;
+  }
+  $(".lesson_selected").collapse('show');
+  course_type_change();
+  course_minutes_filter('lesson')
 }
 function get_lesson_check(name){
   var is_school = false;
@@ -312,4 +339,61 @@ function get_lesson_check(name){
     'is_piano' : is_piano,
     'is_kids_lesson' : is_kids_lesson
   };
+}
+
+function select_student_change(){
+  var options = {};
+  console.log("select_student_change");
+  var selecter = "select[name='student_id[]'] option:selected";
+  if($(selecter).length < 1){
+    selecter = "*[name='student_id[]']";
+  }
+  //選択した生徒の学年に応じて、塾の科目を絞り込む
+  var _is_select_student = false;
+  $(selecter).each(function(){
+    var val = $(this).val();
+    var grade = $(this).attr("grade");
+    var grade_code = "";
+    if(!util.isEmpty(grade)){
+      grade_code = grade.substr(0,1);
+      if(grade_code=='u') grade_code='h';
+    }
+    $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
+      options[$(this).val()] = $(this).text();
+    });
+    console.log(val+":"+grade_code);
+    if(val|0 > 0){
+      _is_select_student = true;
+    }
+  });
+  var _options = [];
+  var _option_html = "";
+  $.each(options, function(i, v){
+    _options.push({'id':i, 'text':v});
+    _option_html+='<option value="'+i+'">'+v+'</option>';
+  });
+  if($("select[name='charge_subject[]']").length > 0 && $("select[name='__charge_subject[]']").length > 0){
+    var charge_subject_form = $("select[name='charge_subject[]']");
+    var _width = charge_subject_form.attr("width");
+    charge_subject_form.select2('destroy');
+    var selected =  $("select[name='__charge_subject[]']").val();
+
+    //charge_subject_form.empty();
+    charge_subject_form.html(_option_html);
+    $("select[name='charge_subject[]']").val(selected);
+    charge_subject_form.select2({
+      width: _width,
+      placeholder: '選択',
+    });
+  }
+  if(_is_select_student){
+    var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+    if($('input[name=exchanged_calendar_datetime]').length > 0){
+      if(course_type=="single"){
+        //マンツーの場合振替対象を取得
+        $('input[name=exchanged_calendar_datetime]').val('');
+        $('input[name=exchanged_calendar_id]').val('');
+      }
+    }
+  }
 }

@@ -62,7 +62,7 @@ $(function(){
 
     if($(this).hasClass('btn-confirm')){
       if($("input[name='course_minutes']").length > 0 ){
-        get_exchange_calendar();
+        //get_exchange_calendar();
       }
     }
 

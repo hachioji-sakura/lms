@@ -91,15 +91,17 @@ $(function(){
   var form_data = null;
   base.pageSettinged("calendars_entry", form_data);
   $('#calendars_entry').carousel({ interval : false});
-  $("input[name='lesson[]']").change();
+  lesson_change();
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
 
     if($(this).hasClass('btn-confirm')){
+      @if($item['exchanged_calendar_id'] > 0)
       if($("input[name='course_minutes']").length > 0 ){
         get_exchange_calendar();
       }
+      @endif
     }
 
     var form_data = front.getFormValue('calendars_entry');

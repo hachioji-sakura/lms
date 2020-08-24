@@ -19,4 +19,3 @@
     @endforeach
   </div>
 </div>
-@component('students.forms.select_lesson_script', []) @endcomponent

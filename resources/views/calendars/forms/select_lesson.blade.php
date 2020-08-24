@@ -21,37 +21,9 @@
   </div>
 </div>
 @elseif($_edit==true)
-{{-- レッスンが１つしかない --}}
+{{-- レッスンは編集不可のため、編集時はすでに登録済みのレッスンが１つしかない --}}
 <input type="hidden" name="lesson" value="{{$item->lesson(true)}}" >
-@else
+@elseif(isset($teacher))
 {{-- レッスンが１つしかない --}}
 <input type="hidden" name="lesson" value="{{$teacher->get_tag('lesson')['value']}}" alt="{{$teacher->get_tag('lesson')['name']}}">
 @endif
-@component('students.forms.select_lesson_script', []) @endcomponent
-
-<script>
-$(function(){
-  lesson_change();
-});
-function lesson_change(){
-  var lesson = ($('input[name=lesson]:checked').val())|0;
-  if(lesson==0){
-    lesson = ($('input[name=lesson]').val())|0;
-  }
-  $(".charge_subject").hide();
-  $("#course_type_form .form-check").hide();
-  $("#course_type_form_single").show();
-  $("#course_type_form_family").show();
-  $(".charge_subject_"+lesson).show();
-  console.log("lesson_change:"+lesson);
-  switch(lesson){
-    case 2:
-    case 4:
-      $("#course_type_form_group").show();
-      break;
-  }
-  $(".lesson_selected").collapse('show');
-  course_type_change();
-  course_minutes_filter('lesson')
-}
-</script>
