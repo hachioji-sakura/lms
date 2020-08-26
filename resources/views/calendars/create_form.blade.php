@@ -11,13 +11,13 @@
     @endif
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
     @component('calendars.forms.select_schedule_type', ['user' => $user, '_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
-    @if($item->trial_id>0)
+    @if(isset($item->trial_id) && $item->trial_id>0)
     <input type="hidden" name="trial_id" value="{{$item->trial_id}}" >
     @endif
-    @if($lesson_id==0)
-    @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
-    @else
+    @if(isset($lesson_id) && $lesson_id>0)
     <input type="hidden" name="lesson" value="{{$lesson_id}}" >
+    @else
+    @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @endif
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
