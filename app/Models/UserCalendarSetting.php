@@ -38,6 +38,11 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  public function scopeHiddenFilter($query)
+  {
+    return $query;
+  }
+
   //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
