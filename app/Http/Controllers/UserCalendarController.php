@@ -669,7 +669,7 @@ class UserCalendarController extends MilestoneController
     public function _search_scope(Request $request, $items)
     {
       $form = $request->all();
-
+      $items = $items->hiddenFilter();
       //ID 検索
       if(isset($form['id'])){
         $items = $items->where('id',$form['id']);

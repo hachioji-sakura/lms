@@ -169,13 +169,22 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  //TODO 以下、不要となるロジック
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
+  }
+  public function scopeHiddenFilter($query)
+  {
+    $where_raw = <<<EOT
+      user_calendars.id not in (
+        select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
+        where u2.work in (5,11)
+      )
+EOT;
+    return $query->whereRaw($where_raw);
   }
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
