@@ -39,6 +39,7 @@ $setting = $setting->details();
 ・校舎：{{$setting["place_floor_name"]}}
 ・科目：@foreach($setting->subject() as $subject) {{$subject}} @endforeach
 
+・開始日：{{$setting['schedule_start_date']}}
 ・担当講師：{{$setting["teacher_name"]}}
 <?php
 $is_exist = true;
