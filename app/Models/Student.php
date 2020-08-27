@@ -1069,7 +1069,7 @@ EOT;
     if(!isset($tuitions)) return null;
     foreach($tuitions as $tuition){
       if($is_enable_only==true && $tuition->is_enable()==false) continue;
-      return $tuition->tuition;
+      return number_format($tuition->tuition);
     }
     //受講料設定なし
     return null;

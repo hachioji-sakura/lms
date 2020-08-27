@@ -102,7 +102,7 @@ return [
   'mail_title_calendar_setting_confirm' => '繰り返し予定をご確認ください',
   'mail_title_calendar_setting_fix' => '繰り返し予定が確定しました',
   'mail_title_calendar_setting_cancel' => '繰り返し予定をキャンセルしました',
-  'warning_unsubscribe' => "退会日は1か月以降の日にちを指定してください。\n\n退会すると、システムへのログインができなくなります。\nなお、退会日以降の授業予定はすべて自動的にキャンセルとなります。",
+  'warning_unsubscribe' => "退会日は本日以降を指定してください。\nこちらで確認し、退会承認後、退会となります。\n\n退会後は、当システムへのログインができなくなります。\nなお、退会日以降の授業予定はすべて自動的にキャンセルとなります。",
   'confirm_unsubscribe' => "退会連絡を送信しますか？",
   'confirm_unsubscribe_cancel' => "退会連絡を取り消しますか？",
   'info_unsubscribe_cancel' => "退会連絡を取り消しました。",
