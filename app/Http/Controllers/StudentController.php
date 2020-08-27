@@ -840,6 +840,7 @@ class StudentController extends UserController
    }
 
    $calendars = UserCalendar::findStatuses($statuses);
+   $calendars = $calendars->hiddenFilter();
    if(!empty($to_date) || !empty($from_date)){
      $calendars = $calendars->rangeDate($from_date, $to_date);
    }
