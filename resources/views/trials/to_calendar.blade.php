@@ -87,6 +87,7 @@ $(function(){
     teacher_schedule_change();
     e.preventDefault();
     if(front.validateFormValue('trial_to_calendar')){
+      $(this).prop("disabled",true);
       $("#trial_to_calendar form").submit();
     }
   });

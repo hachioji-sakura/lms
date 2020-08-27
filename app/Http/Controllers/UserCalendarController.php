@@ -14,6 +14,7 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
+use App\Models\Trial;
 use DB;
 use View;
 class UserCalendarController extends MilestoneController
@@ -668,7 +669,7 @@ class UserCalendarController extends MilestoneController
     public function _search_scope(Request $request, $items)
     {
       $form = $request->all();
-
+      $items = $items->hiddenFilter();
       //ID 検索
       if(isset($form['id'])){
         $items = $items->where('id',$form['id']);
@@ -1324,15 +1325,49 @@ class UserCalendarController extends MilestoneController
    public function create(Request $request)
    {
       $param = $this->get_param($request);
+      $param['item'] = new UserCalendar();
+      $param['item']->work = "";
+      $param['item']->place = "";
+      $param['trial_id'] = 0;
+      $param['student_id'] = 0;
+      $param['lesson_id'] = 0;
+      $param['exchanged_calendar_id'] = 0;
+      if($request->has('exchanged_calendar_id')){
+        $param['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
+      }
+      if($request->has('lesson_id')){
+        $param['lesson_id'] = $request->get('lesson_id');
+      }
+      if($request->has('trial_id')){
+        //体験授業申し込みからの指定
+        $trial_id = intval($request->get('trial_id'));
+        $trial = Trial::where('id', $trial_id)->first();
+        $param['trial_id'] = $trial_id;
+        $param['item']->trial_id = $trial_id;
+        $candidate_teachers = $trial->candidate_teachers(0,0);
+        $lesson_id = 0;
+        if($request->has('lesson_id')){
+          $lesson_id = $request->get('lesson_id');
+          $param['teachers'] = $candidate_teachers[$lesson_id];
+        }
+        else {
+          $param['teachers'] = [];
+          foreach($candidate_teachers as $lesson_id => $teachers){
+            $param['teachers'] = array_merge($param['teachers'], $teachers);
+          }
+        }
+        $student = $trial->student;
+        $param['student_id'] = $student->id;
+      }
+
       if($request->has('exchanged_calendar_id')){
         //振替元指定あり
         $param['is_exchange_add'] = true;
-
         $exchanged_calendar_id = intval($request->get('exchanged_calendar_id'));
         $exchanged_calendar = UserCalendar::where('id', $exchanged_calendar_id)->first();
         if(!isset($exchanged_calendar)) abort(404);
         $param['item'] = $exchanged_calendar->details(1);
-        $param['item']['exchanged_calendar_id'] = $exchanged_calendar_id;
+        $param['item']["exchanged_calendar_id"] = $exchanged_calendar_id;
         $teacher = Teacher::where('user_id', $exchanged_calendar->user_id)->first();
         $param['teachers'][] = $teacher;
         $param['teacher_id'] = $teacher->id;
@@ -1342,9 +1377,6 @@ class UserCalendarController extends MilestoneController
       }
       else {
         //新規
-        $param['item'] = new UserCalendar();
-        $param['item']->work = "";
-        $param['item']->place = "";
         $param['teachers'] = [];
         if($param['user']->role==="teacher"){
           $param['teachers'][] = $param['user'];
@@ -1363,13 +1395,16 @@ class UserCalendarController extends MilestoneController
             $param['item']->work = 9;
           }
         }
-        if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-          $param["teachers"] = Teacher::findStatuses(["regular"])->get();
-          return view('teachers.select_teacher',
-            [ 'error_message' => '', '_edit' => false])
-            ->with($param);
-        }
       }
+
+      if($param['item']->work!=9 && !isset($param['teacher_id'])) {
+
+        if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        return view('teachers.select_teacher',
+          [ 'error_message' => '', '_edit' => false])
+          ->with($param);
+      }
+
       $start_date = date('Y/m/d');
       if($request->has('start_date')){
         $start_date = date('Y/m/d', strtotime($request->get('start_date')));

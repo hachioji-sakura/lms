@@ -47,6 +47,7 @@ $(function(){
     save_login_info();
     e.preventDefault();
     if(front.validateFormValue('login_form')){
+      $(this).prop("disabled",true);
       $("form").submit();
     }
   });

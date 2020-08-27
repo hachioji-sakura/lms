@@ -27,6 +27,7 @@
       $("#commit_form button.btn-submit").on('click', function(e){
         e.preventDefault();
         if(front.validateFormValue('commit_form')){
+          $(this).prop("disabled",true);
           $("#commit_form form").submit();
         }
       });

@@ -332,16 +332,22 @@ EOT;
     }
     return $res;
   }
-  public function target_user_mail($param){
-    $template = 'ask_'.$this->type.'_'.$this->status;
-
-    if($this->target_user_id==1) return false;
-//    $title = $this->type_name();//.':'.$this->status_name();
+  public function get_mail_title(){
     if($this->type == "agreement" && $this->status == "commit"){
       $title = " 入会手続き完了のお知らせ及びユーザー登録のお願い";
-    }else{
+    }
+    else if($this->type == "hope_to_join" && $this->status == "commit"){
+      $title = " 入会希望、ありがとうございます";
+    }
+    else{
       $title = $this->type_name();//.':'.$this->status_name();
     }
+    return $title;
+  }
+  public function target_user_mail($param){
+    $template = 'ask_'.$this->type.'_'.$this->status;
+    if($this->target_user_id==1) return false;
+    $title = $this->get_mail_title();
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;
     if($this->target_user->details('students')->role=='student'){
@@ -360,12 +366,7 @@ EOT;
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
 
-    if($this->type == "agreement" && $this->status == "commit"){
-      $title = " 入会手続き完了のお知らせ及びユーザー登録のお願い";
-    }else{
-      $title = $this->type_name();//.':'.$this->status_name();
-    }
-
+    $title = $this->get_mail_title();
     \Log::info("charge_user_mail=".$title);
     $param['send_to'] = 'teacher';
     $param['ask'] = $this;

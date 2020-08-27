@@ -10,8 +10,15 @@
     </div>
     @endif
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
-    @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
+    @component('calendars.forms.select_schedule_type', ['user' => $user, '_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers]); @endcomponent
+    @if(isset($item->trial_id) && $item->trial_id>0)
+    <input type="hidden" name="trial_id" value="{{$item->trial_id}}" >
+    @endif
+    @if(isset($lesson_id) && $lesson_id>0)
+    <input type="hidden" name="lesson" value="{{$lesson_id}}" >
+    @else
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+    @endif
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
@@ -117,7 +124,7 @@
         </span>
       @endif
      </div>
-      @if($key=="start_time" && $_edit == false)
+      @if($key=="start_time" && $_edit == false && $item->trial_id == 0)
         <div class="col-12 add_type add_type_exchange px-3 schedule_type schedule_type_class" >
           <span class="text-xs">
             <small class="badge badge-primary mt-1 mr-1 p-1">

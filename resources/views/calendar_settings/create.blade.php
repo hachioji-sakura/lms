@@ -1,5 +1,5 @@
 @include('calendar_settings.create_form')
-<div class="direct-chat-msg">
+<div id="calendar_settings_entry" class="direct-chat-msg">
   @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
@@ -17,17 +17,19 @@
     @if(isset($manager_id))
       <input type="hidden" value="{{$manager_id}}" name="manager_id" />
     @endif
-    <div id="calendar_settings_entry" class="carousel slide" data-ride="carousel" data-interval="false">
+    <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
             @if($item->work==9)
             <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
                   @if(isset($_edit) && $_edit===true)
+                  confirm="{{__('messages.confirm_update')}}">
                   {{__('labels.update_button')}}
                   @else
+                  confirm="{{__('messages.confirm_add')}}">
                   {{__('labels.add_button')}}
                   @endif
                   <i class="fa fa-caret-right ml-1"></i>
@@ -87,10 +89,12 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create">
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendar_settings_entry"
                   @if(isset($_edit) && $_edit==true)
+                  confirm="{{__('messages.confirm_update')}}">
                   {{__('labels.update_button')}}
                   @else
+                  confirm="{{__('messages.confirm_add')}}">
                   {{__('labels.create_button')}}
                   @endif
                     <i class="fa fa-caret-right ml-1"></i>
@@ -108,14 +112,7 @@ $(function(){
   var form_data = null;
   base.pageSettinged("calendar_settings_entry", form_data);
   $('#calendar_settings_entry').carousel({ interval : false});
-  $("input[name='lesson[]']").change();
-  //submit
-  $("button.btn-submit").on('click', function(e){
-    e.preventDefault();
-    if(front.validateFormValue('calendar_settings_entry .carousel-item.active')){
-      $("form").submit();
-    }
-  });
+  lesson_change();
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){

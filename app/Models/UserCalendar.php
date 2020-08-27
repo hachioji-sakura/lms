@@ -169,13 +169,22 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  //TODO 以下、不要となるロジック
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
+  }
+  public function scopeHiddenFilter($query)
+  {
+    $where_raw = <<<EOT
+      user_calendars.id not in (
+        select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
+        where u2.work in (11)
+      )
+EOT;
+    return $query->whereRaw($where_raw);
   }
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
@@ -384,6 +393,12 @@ EOT;
     }
     return $ret;
   }
+  public function place_floor_name(){
+    if(isset($this->place_floor)){
+      return $this->place_floor->name();
+    }
+    return "";
+  }
   public function course_minutes($is_value=false){
     //return $this->get_attribute('course_minutes', $is_value);
     if($this->is_teaching()==true){
@@ -563,6 +578,9 @@ EOT;
   public function get_member($user_id){
     return $this->members->where('user_id', $user_id)->first();
   }
+  public function datetime(){
+    return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
+  }
   public function details($user_id=0){
     $this->set_endtime_for_singile_group();
     $item = $this;
@@ -570,10 +588,7 @@ EOT;
     $item['status_name'] = $this->status_name();
     $item['schedule_type_code'] = $this->schedule_type_code();
     $item['schedule_type_name'] = $this->schedule_type_name();
-    $item['place_floor_name'] = "";
-    if(isset($this->place_floor)){
-      $item['place_floor_name'] = $this->place_floor->name();
-    }
+    $item['place_floor_name'] = $this->place_floor_name();
     $item['work_name'] = $this->work();
     $item['teaching_name'] = $this->teaching_type_name();
 
@@ -587,7 +602,7 @@ EOT;
     $item['end_hour_minute'] = date('H:i',  strtotime($this->end_time));
     $item['course_minutes'] = $this->course_minutes;
     $item['timezone'] = $this->timezone();
-    $item['datetime'] = $this->dateweek().' '.$item['start_hour_minute'].'～'.$item['end_hour_minute'];
+    $item['datetime'] = $this->datetime();
     $item['lesson'] = $this->lesson();
     $item['course'] = $this->course();
     $item['subject'] = $this->subject();

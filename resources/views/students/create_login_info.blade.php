@@ -57,12 +57,14 @@
     $('button.btn-submit[form="create_login_info"]').on('click', function(e){
       e.preventDefault();
       if(front.validateFormValue('create_login_info')){
+        $(this).prop("disabled",true);
         $("form#create_login_info").submit();
       }
     });
     $('button.btn-submit[form="reset_login_info"]').on('click', function(e){
       e.preventDefault();
       if(front.validateFormValue('reset_login_info')){
+        $(this).prop("disabled",true);
         $("form#reset_login_info").submit();
       }
     });
