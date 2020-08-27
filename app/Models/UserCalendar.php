@@ -181,7 +181,7 @@ EOT;
     $where_raw = <<<EOT
       user_calendars.id not in (
         select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
-        where u2.work in (5,11)
+        where u2.work in (11)
       )
 EOT;
     return $query->whereRaw($where_raw);
