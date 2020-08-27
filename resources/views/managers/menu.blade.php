@@ -81,7 +81,7 @@
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=unsubscribe" class="nav-link @if($view=="ask" && $list=="unsubscribe") active @endif">
-          <i class="fa fa-user-slash nav-icon"></i>
+          <i class="fa fa-times-circle nav-icon"></i>
           <p>
             退会連絡
             @if($unsubscribe_count > 0)
