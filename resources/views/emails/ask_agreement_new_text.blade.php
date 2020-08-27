@@ -56,7 +56,6 @@ $setting_key .= $setting->get_tag_value('kids_lesson');
 }
 ?>
 ・受講料：@if(!empty($target_model->student->get_tuition($setting, false))) &yen;{{$target_model->student->get_tuition($setting, false)}} / 時間 @else 受講料設定がありません @endif
------------------------------
 
 		@endforeach
 	@endforeach
