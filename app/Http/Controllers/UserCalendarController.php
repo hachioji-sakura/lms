@@ -412,14 +412,15 @@ class UserCalendarController extends MilestoneController
           '_page' => 1,
         ]);
       }
-      /*
-      if(!$request->has('_sort')){
-        $request->merge([
-          '_sort' => 'start_time',
-          '_sort_order' => 'desc',
-        ]);
+      $sort = 'asc';
+      if($request->has('is_desc') && $request->get('is_desc')==1){
+        $sort = 'desc';
       }
-      */
+      $request->merge([
+        '_sort' => 'start_time',
+        '_sort_order' => $sort,
+      ]);
+
       $param = $this->get_param($request);
       $_table = $this->search($request);
       $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
@@ -722,9 +723,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-      else {
-
-      }
       if(isset($form['exchange_lesson']) && $form['exchange_lesson']==1){
         $items = $items->where('exchanged_calendar_id','>', 0);
       }
@@ -740,6 +738,15 @@ class UserCalendarController extends MilestoneController
       //日付検索
       $from_date = "";
       $to_date = "";
+      if(isset($request->search_from_date)){
+        $from_date = $request->search_from_date;
+        if(mb_strlen($from_date) < 11) $from_date .=' 00:00:00';
+      }
+      if(isset($request->search_to_date)){
+        $to_date = $request->search_to_date;
+        if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
+      }
+
       if(isset($request->from_date)){
         $from_date = $request->from_date;
         if(mb_strlen($from_date) < 11) $from_date .=' 00:00:00';

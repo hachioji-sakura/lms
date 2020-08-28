@@ -52,6 +52,8 @@ $(function(){
   //キーワード検索
   $("#search_button").on("click", function(e){
     var _search_word = $("input[name=search_word]").val();
+    _search_word = _search_word.replace_all('+', '%2B');
+    _search_word = _search_word.replace_all('　', ' ');
     if(!util.isEmpty(_search_word)){
       location.href = service.setQueryParam({"search_word" : _search_word});
     }
