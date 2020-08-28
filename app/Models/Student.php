@@ -331,7 +331,7 @@ EOT;
    */
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';

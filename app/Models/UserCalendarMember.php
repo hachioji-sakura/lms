@@ -58,7 +58,7 @@ class UserCalendarMember extends Model
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words, $where_raw){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';

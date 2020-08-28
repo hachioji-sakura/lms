@@ -109,6 +109,55 @@ class UserCalendarSettingController extends UserCalendarController
       $ret = array_merge($base_ret, $ret);
       return $ret;
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+      $user = $this->login_details($request);
+      if(!isset($user)) abort(403);
+      if($this->is_manager($user->role)!=true) abort(403);
+
+      if(!$request->has('_origin')){
+        $request->merge([
+          '_origin' => $this->domain,
+        ]);
+      }
+      if(!$request->has('_line')){
+        $request->merge([
+          '_line' => $this->pagenation_line,
+        ]);
+      }
+      if(!$request->has('_page')){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      else if($request->get('_page')==0){
+        $request->merge([
+          '_page' => 1,
+        ]);
+      }
+      $sort = 'asc';
+      if($request->has('is_desc') && $request->get('is_desc')==1){
+        $sort = 'desc';
+      }
+      $request->merge([
+        '_sort' => 'enable_start_date',
+        '_sort_order' => $sort,
+      ]);
+
+      $param = $this->get_param($request);
+      $_table = $this->search($request);
+      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
+      foreach($page_data as $key => $val){
+        $param[$key] = $val;
+      }
+      return view($this->domain.'.lists', $_table)
+        ->with($param);
+    }
     public function create_form(Request $request){
       $user = $this->login_details($request);
       $form = $request->all();
@@ -319,15 +368,15 @@ class UserCalendarSettingController extends UserCalendarController
 
       $items = $items->get();
       $fields = [
-        'title' => [
+        'repeat_setting_name' => [
           'label' => __('labels.title'),
           "link" => "show",
         ],
+        'user_name' => [
+          'label' => __('labels.charge_user'),
+        ],
         "student_name" => [
           "label" => __('labels.students'),
-        ],
-        'repeat_setting_name' => [
-          'label' => __('labels.repeat'),
         ],
         "status_name" => [
           "label" => __('labels.status'),

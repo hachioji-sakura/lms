@@ -94,10 +94,37 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-         <a href="{{request()->fullUrl()}}" class="nav-link">
-           <i class="fa fa-calendar nav-icon"></i>すべて
+       <a href="/{{$domain}}" class="nav-link">
+         <i class="fa fa-calendar nav-icon"></i>すべて
+       </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}?search_status[]=new&search_status[]=confirm" class="nav-link
+        @if(isset($filter['calendar_filter']['search_status']) && in_array('new', $filter['calendar_filter']['search_status'])==true && in_array('confirm', $filter['calendar_filter']['search_status'])==true)
+         active
+        @endif
+        ">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>未確定
+        </a>
+      </li>
+      <li class="nav-item">
+         <a href="/{{$domain}}?search_status[]=fix" class="nav-link
+         @if(isset($filter['calendar_filter']['search_status']) && in_array('fix', $filter['calendar_filter']['search_status'])==true)
+          active
+         @endif
+         ">
+           <i class="fa fa-check-circle nav-icon"></i>確定
          </a>
        </li>
+      <li class="nav-item">
+      <a href="/{{$domain}}?search_status[]=cancel" class="nav-link
+      @if(isset($filter['calendar_filter']['search_status']) && in_array('cancel', $filter['calendar_filter']['search_status'])==true)
+       active
+      @endif
+      ">
+        <i class="fa fa-ban nav-icon"></i>キャンセル
+      </a>
+      </li>
     </ul>
   </li>
 </ul>
