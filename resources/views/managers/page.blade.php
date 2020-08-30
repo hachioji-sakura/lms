@@ -97,6 +97,8 @@
         </div>
         </a>
       </div>
+    </div>
+    <div class="row">
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/trials?list=new">
         <div class="info-box">
@@ -106,6 +108,32 @@
           <div class="info-box-content text-dark">
             <b class="info-box-text text-lg">体験申し込み</b>
             <span class="text-sm">体験申し込みの管理</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/calendars">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-clock"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">予定一覧</b>
+            <span class="text-sm">予定検索、一覧表示</span>
+          </div>
+        </div>
+        </a>
+      </div>
+      <div class="col-12 col-lg-4 col-md-6 mb-1">
+        <a href="/calendar_settings">
+        <div class="info-box">
+          <span class="info-box-icon bg-info">
+            <i class="fa fa-calendar-alt"></i>
+          </span>
+          <div class="info-box-content text-dark">
+            <b class="info-box-text text-lg">繰り返し予定設定一覧</b>
+            <span class="text-sm">繰り返し予定設定の検索、一覧表示</span>
           </div>
         </div>
         </a>
