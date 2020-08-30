@@ -38,6 +38,10 @@ if(empty($item["lesson"]) || empty($item["work_name"])){
 @endif
 @endif
 --------------------------------------------
+@if(!empty($item->remark))
+{{__('labels.remark')}}:
+{{$item->remark}}
+@endif
 @isset($item['comment'])
 {{__('labels.notice')}}{{$item['comment']}}
 @endisset
