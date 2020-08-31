@@ -184,5 +184,25 @@ class MailLogController extends MilestoneController
       'fields'=>$fields])
       ->with($param);
   }
+  /**
+   * info@hachioji-sakura.com
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function info_mail_reply(Request $request)
+  {
+    $form_names = ['from_address'];
+    foreach($form_names as $form_name){
+      if(!$request->has($form_name) || empty($request->get($form_name))){
+        return $this->bad_request();
+      }
+    }
+    $form = $request->all();
+    $res = $this->send_mail($form['from_address'], __('messages.info_mail_reply'), $form, 'text', 'info_mail_reply');
+    if($this->is_success_response($res)){
+      return $res;
+    }
+    return $this->error_response('メール送信失敗');
+  }
 
 }
