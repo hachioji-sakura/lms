@@ -636,7 +636,6 @@ class UserCalendarMember extends Model
       'item'=>$this->calendar,
       'send_to' => 'manager',
       'login_user' => $user->details(),
-      'login_user' => $user->details(),
       'notice' => '',
       ])->render();
 
