@@ -3,7 +3,7 @@
 {{__('messages.info_lecture_cancel_to_cancel')}}
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice' => '']) @endcomponent
 …………………………………………………………………………………………
 
 @yield('signature')

@@ -1,3 +1,8 @@
+@if(isset($notice) && !empty($notice))
+■{{__('labels.notice')}}:
+{{$notice}}
+@endif
+
 @if($item->is_teaching()==true)
 ■{{$item->teaching_type_name()}}
 @else
@@ -27,12 +32,6 @@
 @endif
 
 --------------------------------------------
-@isset($item['comment'])
-{{__('labels.notice')}}{{$item->comment}}
-@endisset
-@if(isset($item['cancel_reason']) && !empty($item['cancel_reason']))
-{{__('labels.cencel_reason')}}:{{$item['cancel_reason']}}
-@endif
 @if($send_to!=='student' && (!isset($is_control) || $is_control==false))
 ({{__('labels.control')}}：{{$login_user["name"]}})
 @endif

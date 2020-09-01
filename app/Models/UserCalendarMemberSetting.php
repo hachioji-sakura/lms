@@ -501,6 +501,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
     $param['user_name'] = $u->name();
+    $param['notice'] = $remark;
     $param['item'] = $this->setting->details($this->user_id);
     $param['send_to'] = $u->role;
 

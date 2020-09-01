@@ -256,6 +256,11 @@ function lesson_place_filter(name){
   var check_lesson = get_lesson_check(name);
   $("label.lesson_place").show();
   $("label.lesson_place:contains('ダットッチ校')").hide();
+  if(!check_lesson["is_school"] && !check_lesson["is_english"] &&
+      !check_lesson["is_piano"] && !check_lesson["is_kids_lesson"]){
+      //lessonを選択していないならば、無処理
+      return ;
+  }
   if(!check_lesson["is_school"] && !check_lesson["is_english"]){
     //ピアノ＝子安、
     $("label.lesson_place:contains('八王子北口校')").hide();

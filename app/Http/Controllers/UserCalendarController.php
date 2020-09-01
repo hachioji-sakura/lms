@@ -1069,10 +1069,10 @@ class UserCalendarController extends MilestoneController
         $members = $param['item']->members;
         $_remark = '';
         $_access_key = '';
-        if($status==='cancel'){
+        if($status==='cancel' && $request->has('cancel_reason')){
           $_remark = $request->get('cancel_reason');
         }
-        else if($status==='rest'){
+        else if($status==='rest' && $request->has('rest_reason')){
           $_remark = $request->get('rest_reason');
         }
 

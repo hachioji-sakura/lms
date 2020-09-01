@@ -11,7 +11,7 @@
 @endif
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar_setting', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
+@component('emails.forms.calendar_setting', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice' => $notice]) @endcomponent
 …………………………………………………………………………………………
 
 @yield('signature')

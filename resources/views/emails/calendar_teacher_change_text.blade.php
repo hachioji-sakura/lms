@@ -9,7 +9,7 @@
 何卒、ご了承ください。
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice' => '']) @endcomponent
 …………………………………………………………………………………………
 
 ご迷惑をおかけ致しまして誠に申し訳ございません。
