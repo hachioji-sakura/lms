@@ -145,4 +145,5 @@ return [
  'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
  "info_signup" => "The URL for main registration will be sent to the email address you entered.",
  "already_signup" => "If you have already registered, please log in here to use",
+ 'info_mail_reply' => 'You cannot reply to this email address',
  ];
