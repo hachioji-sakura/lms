@@ -90,8 +90,8 @@ class MailLogController extends MilestoneController
       $items = $items->where('id',$request->id);
     }
     //ステータス 検索
-    if(isset($request->search_status)){
-      $items = $items->fieldWhereIn($request->search_status);
+    if(isset($request->search_status) && count($request->search_status)>0){
+      $items = $items->fieldWhereIn('status', $request->search_status);
     }
     //種別 検索
     if(isset($request->search_type)){
