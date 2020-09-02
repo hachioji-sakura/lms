@@ -1306,4 +1306,14 @@ EOT;
     }
     return false;
   }
+  public function get_schedule_ids(){
+    $members = $this->members;
+    $schedule_ids = [];
+    foreach($members as $member){
+      if($member->schedule_id != 0){
+        $schedule_ids[] = $member->schedule_id;
+      }
+    }
+    return $schedule_ids;
+  }
 }

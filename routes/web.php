@@ -84,6 +84,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::post('calendars/{id}/members','UserCalendarController@member_create');
   Route::get('calendars/{id}/members/setting','UserCalendarController@member_setting_page');
   Route::put('calendars/{id}/members/setting','UserCalendarController@member_setting');
+  Route::get('calendars/{id}/asks/teacher_change', 'UserCalendarController@teacher_change_page');
 
   Route::get('calendars/check','UserCalendarController@setting_check');
   Route::get('space_calendars','UserCalendarController@space_calendars');

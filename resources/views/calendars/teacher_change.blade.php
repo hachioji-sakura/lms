@@ -6,10 +6,13 @@
   <form method="POST" action="/asks">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
+    {{--注意
     <input type="hidden" name="parent_ask_id" value="{{$ask->id}}">
+    --}}
     <input type="hidden" name="type" value="teacher_change">
-    <input type="hidden" name="target_model" value="{{$ask->target_model}}">
-    <input type="hidden" name="target_model_id" value="{{$ask->target_model_id}}">
+    <input type="hidden" name="target_model" value="user_calendars">
+    <input type="hidden" name="target_model_id" value="{{$item->id}}">
+    <input type="hidden" name="target_user_id" value="{{$item->user_id}}">
     <div class="row">
       <div class="col-12">
         <div class="form-group">

@@ -28,6 +28,12 @@
         @endif
       </a>
     @endif
+    @if(!($calendar->work == 10 || $calendar->work == 11))
+      {{--代講依頼　土日、期間講習は除く--}}
+      <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change" role="button" class="btn btn-danger btn-sm ml-1">
+        <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.ask_teacher_change')}}
+      </a>
+    @endif
   @elseif($calendar["status"]==="new")
   {{-- 講師予定確認済み --}}
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.schedule_fix')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/confirm?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
