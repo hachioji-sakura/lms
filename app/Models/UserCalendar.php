@@ -582,7 +582,7 @@ EOT;
     return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
   public function details($user_id=0){
-    $this->set_endtime_for_singile_group();
+    $this->set_endtime_for_single_group();
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
@@ -1274,9 +1274,9 @@ EOT;
     if($this->status != $status){
       UserCalendar::where('id', $this->id)->update(['status' => $status]);
     }
-    $this->set_endtime_for_singile_group();
+    $this->set_endtime_for_single_group();
   }
-  public function set_endtime_for_singile_group($end_time=""){
+  public function set_endtime_for_single_group($end_time=""){
     if($this->is_group()==false) return false;
     $students = $this->get_students();
     $active_students = [];

@@ -16,7 +16,7 @@
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
         <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
-        <input type="hidden" name="lesson_week_count" value="{{$item->student->user->get_enable_calendar_setting_count()}}">
+        <input type="hidden" name="lesson_week_count" value="{{$item->student->user->get_enable_calendar_setting_count($select_lesson)}}">
         <div class="row mb-1">
           <div class="col-md-12">
             <div class="card card-widget mb-2">

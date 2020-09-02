@@ -12,7 +12,7 @@
 ■基本契約内容
 -----------------------------
 ・レッスン : {{$target_model->student->tags_name('lesson')}}
-・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count()}}回 {{-- TODO 修正lesson_week_count --}}
+・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count(1)}}回 {{-- TODO 修正lesson_week_count --}}
 ・授業時間 : {{$target_model->student->tag_name('course_minutes')}}
 @if($target_model->student->user->has_tag('lesson',2)==true)
 ・英会話コース : {{$target_model->student->tag_name('english_talk_course_type')}}
@@ -28,9 +28,10 @@
 $tuition_form = [];
 $is_exist = false;
 ?>
-@foreach($target_model->student->user->get_enable_calendar_settings() as $schedule_method => $d1)
-	@foreach($d1 as $lesson_week => $settings)
-		@foreach($settings as $setting)
+@foreach($target_model->student->user->get_enable_lesson_calendar_settings() as $lesson => $d0)
+	@foreach($d0 as $schedule_method => $d1)
+		@foreach($d1 as $lesson_week => $settings)
+			@foreach($settings as $setting)
 <?php
 $setting = $setting->details();
 ?>
@@ -56,8 +57,8 @@ else if($setting->get_tag_value('lesson')==4){
 $setting_key .= $setting->get_tag_value('kids_lesson');
 }
 ?>
-・受講料：@if(!empty($target_model->student->get_tuition($setting, false))) &yen;{{$target_model->student->get_tuition($setting, false)}} / 時間 @else 受講料設定がありません @endif
-
+・受講料：@if(!empty($setting->get_tuition($target_model->student->user_id))) &yen;{{$setting->get_tuition($target_model->student->user_id)}} / 時間 @else 受講料設定がありません @endif
+			@endforeach
 		@endforeach
 	@endforeach
 @endforeach

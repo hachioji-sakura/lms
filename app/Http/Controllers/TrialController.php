@@ -546,24 +546,6 @@ class TrialController extends UserCalendarController
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }
 
-   public function admission(Request $request, $id){
-     $access_key = '';
-     $trial = Trial::where('id', $id)->first();
-     if(!isset($trial)) abort(404);
-
-     $param = [
-       'item' => $trial->details(),
-       'domain' => $this->domain,
-       'domain_name' => __('labels.'.$this->domain),
-       'attributes' => $this->attributes(),
-     ];
-     return view($this->domain.'.admission',
-       ['sended' => '',
-        '_edit' => false])
-       ->with($param);
-
-   }
-
    public function ask_hope_to_join(Request $request, $id){
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
