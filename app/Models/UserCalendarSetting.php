@@ -179,7 +179,7 @@ EOT;
   }
 
   public function details($user_id=0){
-    $this->set_endtime_for_singile_group();
+    $this->set_endtime_for_single_group();
     $item = $this;
     $base_date = '2000-01-01 ';
 
@@ -773,7 +773,7 @@ EOT;
       $this->setting_to_calendar($start_date, $end_date, 1, 5);
     }
   }
-  public function set_endtime_for_singile_group($to_time_slot=""){
+  public function set_endtime_for_single_group($to_time_slot=""){
     if($this->is_group()==false) return false;
     $students = $this->get_students();
     $active_students = [];

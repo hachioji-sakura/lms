@@ -2,6 +2,7 @@
   <i class="fa fa-file"></i>
   {{__('labels.details')}}
 </a>
+@if($item->status!='complete')
 <a title="{{$item["id"]}}" href="javascript:void(0);" page_title="体験申し込み編集" page_form="dialog" page_url="/trials/{{$item["id"]}}/edit" role="" class="mr-1 underline">
   <i class="fa fa-edit"></i>
   {{__('labels.edit')}}
@@ -30,4 +31,5 @@
 <a class="btn btn-sm btn-flat btn-success mt-1" role="button"  href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
   <i class="fa fa-envelope mr-1"></i>入塾案内連絡
 </a>
+@endif
 @endif

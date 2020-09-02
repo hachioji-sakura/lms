@@ -8,6 +8,40 @@
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
+    <div class="col-6 col-md-4">
+      <div class="form-group">
+        <label for="search_from_date" class="w-100">
+          {{__('labels.date')}}(FROM)
+        </label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+          </div>
+          <input type="text" id="search_from_date" name="search_from_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+          @if(isset($filter['calendar_filter']['search_from_date']))
+            value="{{$filter['calendar_filter']['search_from_date']}}"
+          @endif
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="form-group">
+        <label for="search_to_date" class="w-100">
+          {{__('labels.date')}}(TO)
+        </label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+          </div>
+          <input type="text" id="search_to_date" name="search_to_date" class="form-control float-left" uitype="datepicker" placeholder="2000/01/01"
+          @if(isset($filter['calendar_filter']['search_to_date']))
+            value="{{$filter['calendar_filter']['search_to_date']}}"
+          @endif
+          >
+        </div>
+      </div>
+    </div>
     <div class="col-12 col-md-4">
       <div class="form-group">
         <label for="is_asc_1" class="w-100">

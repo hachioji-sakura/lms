@@ -322,6 +322,37 @@ function lesson_change(){
   course_type_change();
   course_minutes_filter('lesson')
 }
+function course_type_change(){
+  var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+  if(!course_type){
+    course_type = $('input[type="hidden"][name="course_type"]').val();
+  }
+  if(!course_type){
+    return false;
+  }
+  console.log('course_type_change:'+course_type);
+  if($("select[name='student_id[]']").length>0){
+    var student_id_form = $("select[name='student_id[]']");
+    var _width = student_id_form.attr("width");
+    student_id_form.select2('destroy');
+    student_id_form.removeAttr("multiple");
+    if(course_type!=="single" && student_id_form.attr('multiple')!='multiple'){
+      //グループ or ファミリーの場合
+      get_student_group();
+      student_id_form.attr("multiple", "multiple");
+      console.log('course_type_change:'+course_type);
+      $(".course_type_selected").collapse('show');
+    }
+    else {
+      $(".course_type_selected").collapse('hide');
+    }
+    student_id_form.select2({
+      width: _width,
+      placeholder: '選択してください',
+    });
+    student_id_form.val(-1).trigger('change');
+  }
+}
 function get_lesson_check(name){
   var is_school = false;
   var is_english = false;

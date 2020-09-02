@@ -41,20 +41,12 @@
 	          <div class="col-6 p-2">{{$item->grade()}}</div>
 	          <div class="col-6 p-2 font-weight-bold school_name_confirm" >学校名</div>
 	          <div class="col-6 p-2">{{$item->school_name()}}</div>
-	          <div class="col-6 p-2 font-weight-bold" >レッスン</div>
-	          <div class="col-6 p-2">{{$item->tags_name('lesson')}}</div>
-	          <div class="col-6 p-2 font-weight-bold" >通塾回数/週</div>
-	          <div class="col-6 p-2">週{{$item->user->get_enable_calendar_setting_count()}}回</div>
-	          <div class="col-6 p-2 font-weight-bold" >授業時間</div>
-	          <div class="col-6 p-2">{{$item->tag_name('course_minutes')}}</div>
-	          @if($item->user->has_tag('lesson',2)==true)
-	          <div class="col-6 p-2 font-weight-bold" >英会話コース</div>
-	          <div class="col-6 p-2">{{$item->tag_name('english_talk_course_type')}}</div>
-	          @endif
-	          @if($item->user->has_tag('lesson',4)==true)
-	          <div class="col-6 p-2 font-weight-bold" >習い事コース</div>
-	          <div class="col-6 p-2">{{$item->tag_name('kids_lesson_course_type')}}</div>
-	          @endif
+						@for($i=1;$i<5;$i++)
+						@if($item->user->has_tag('lesson',$i)==false) @continue @endif
+						@if($item->user->get_enable_calendar_setting_count($i)==0) @continue @endif
+		          <div class="col-6 p-2 font-weight-bold" >({{config('attribute.lesson')[$i]}})通塾回数/週</div>
+		          <div class="col-6 p-2">週{{$item->user->get_enable_calendar_setting_count($i)}}回</div>
+						@endfor
 						<div class="col-12 bd-b bd-gray"></div>
 						<div class="col-6 p-2 font-weight-bold" >入会金</div>
 	          <div class="col-6 p-2">
@@ -93,9 +85,10 @@
 							$tuition_form = [];
 							$is_exist = false;
 						?>
-	          @foreach($item->user->get_enable_calendar_settings() as $schedule_method => $d1)
-	            @foreach($d1 as $lesson_week => $settings)
-	              @foreach($settings as $setting)
+						@foreach($item->user->get_enable_lesson_calendar_settings() as $lesson => $d0)
+	          	@foreach($d0 as $schedule_method => $d1)
+	            	@foreach($d1 as $lesson_week => $settings)
+	              	@foreach($settings as $setting)
 	              <?php
 	              $setting = $setting->details();
 	              ?>
@@ -176,7 +169,7 @@
 						                  teacher_id="{{$setting->user->details('teachers')->id}}"
 															student_id="{{$item->id}}"
 															grade="{{$item->tag_value('grade')}}"
-															lesson_week_count="{{$item->user->get_enable_calendar_setting_count()}}"
+															lesson_week_count="{{$item->user->get_enable_calendar_setting_count($setting->get_tag_value('lesson'))}}"
 															@if($item->is_juken()==true)
 												        is_juken="1"
 												      @else
@@ -195,8 +188,8 @@
 												</div>
 											@else
 											・受講料：
-												@if(!empty($item->get_tuition($setting, false)))
-													&yen;{{$item->get_tuition($setting, false)}} / 時間
+												@if(!empty($setting->get_tuition($item->user_id)))
+													&yen;{{number_format($setting->get_tuition($item->user_id))}} / 時間
 												@else
 													<i class="fa fa-exclamation-triangle mr-1"></i>受講料設定がありません
 												@endif
@@ -204,9 +197,10 @@
 										</div>
 									</div>
 								</div>
-	              @endforeach
-	            @endforeach
-	          @endforeach
+	              	@endforeach
+	            	@endforeach
+							@endforeach
+						@endforeach
 						@if($is_exist==false)
 						<div class="alert">
 						  <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>

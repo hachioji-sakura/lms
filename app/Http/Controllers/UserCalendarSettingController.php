@@ -830,12 +830,42 @@ class UserCalendarSettingController extends UserCalendarController
       $param['item']->work = "";
       $param['item']->place = "";
       $param['teachers'] = [];
+      $param['lesson_id'] = 0;
+      $param['student_id'] = 0;
+
+      if($request->has('lesson_id')){
+        $param['lesson_id'] = $request->get('lesson_id');
+      }
+
+      if($request->has('trial_id')){
+        //体験授業申し込みからの指定
+        $trial_id = intval($request->get('trial_id'));
+        $trial = Trial::where('id', $trial_id)->first();
+        $param['trial_id'] = $trial_id;
+        $param['item']->trial_id = $trial_id;
+        $candidate_teachers = $trial->candidate_teachers(0,0);
+        $lesson_id = 0;
+        if($request->has('lesson_id')){
+          $lesson_id = $request->get('lesson_id');
+          $param['teachers'] = $candidate_teachers[$lesson_id];
+        }
+        else {
+          $param['teachers'] = [];
+          foreach($candidate_teachers as $lesson_id => $teachers){
+            $param['teachers'] = array_merge($param['teachers'], $teachers);
+          }
+        }
+        $student = $trial->student;
+        $param['student_id'] = $student->id;
+      }
+
       if($param['user']->role==="teacher"){
         $param['teachers'][] = $param['user'];
         $param['teacher_id'] = $param['user']->id;
       }
       else if($param['user']->role==="manager"){
         if($request->has('teacher_id')){
+          $param['teachers'] = [];
           $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
           $param['teacher_id'] = $request->get('teacher_id');
         }
@@ -843,9 +873,10 @@ class UserCalendarSettingController extends UserCalendarController
           //事務からの登録の場合、作業内容＝9 (事務作業）
           $param['item']->work = 9;
         }
+
       }
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-        $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])
           ->with($param);

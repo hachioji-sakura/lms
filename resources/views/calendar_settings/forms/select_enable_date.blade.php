@@ -7,6 +7,8 @@
     <input type="text" name="enable_start_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01" required="true"
     @if(isset($item) && isset($item['enable_start_date']) && $item['enable_start_date']!='9999-12-31')
     value = "{{date('Y/m/d', strtotime($item['enable_start_date']))}}"
+    @elseif(isset($item) && isset($item->schedule_start_hope_date))
+    value = "{{date('Y/m/d', strtotime($item->schedule_start_hope_date))}}"
     @endif
     >
   </div>
