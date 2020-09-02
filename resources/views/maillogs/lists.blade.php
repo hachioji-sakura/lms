@@ -83,7 +83,11 @@
     <ul class="nav nav-treeview">
       @foreach(config('attribute.mail_status') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
+         <a href="/{{$domain}}?search_status[]={{$index}}" class="nav-link
+         @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
+          active
+         @endif
+         ">
            <i class="fa fa-envelope nav-icon"></i>{{$name}}
          </a>
        </li>
