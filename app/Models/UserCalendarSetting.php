@@ -430,12 +430,10 @@ EOT;
         $is_teacher_mail = true;
       }
       if($is_teacher_mail==true){
-        //TODO メール送信しない
-        //$this->teacher_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+        $this->teacher_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
       }
       if($is_student_mail==true){
-        //TODO メール送信しない
-        //$this->student_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
+        $this->student_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
       }
     }
 
