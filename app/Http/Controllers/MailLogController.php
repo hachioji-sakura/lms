@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\MailLog;
+
 use Illuminate\Http\Request;
 
 class MailLogController extends MilestoneController
@@ -208,14 +209,26 @@ class MailLogController extends MilestoneController
    */
   public function info_mail_reply(Request $request)
   {
-    $form_names = ['from_address'];
+    $form_names = ['from_address', 'body', 'subject', 'gmail_id'];
     foreach($form_names as $form_name){
       if(!$request->has($form_name) || empty($request->get($form_name))){
-        return $this->bad_request();
+        return $this->bad_request($form_name.'パラメータが存在しない');
       }
     }
     $form = $request->all();
-    $res = $this->send_mail($form['from_address'], __('messages.info_mail_reply'), $form, 'text', 'info_mail_reply');
+    $title = __('messages.info_mail_reply');
+    $title .= '[gmail_id='.$request->get('gmail_id').']';
+    //2重送信チェック(1分前に登録済みかどうか）
+    $already_mail_log = Maillog::where('to_address', $form['from_address'])
+                          ->where('template', 'info_mail_reply')
+                          ->where('subject', $title)
+                          ->where('type', 'text')
+                          ->first();
+    if(isset($already_mail_log)){
+      return $this->error_response('2重送信エラー[gmail_id.id='.$request->get('gmail_id').']');
+    }
+
+    $res = $this->send_mail($form['from_address'], $title, $form, 'text', 'info_mail_reply');
     if($this->is_success_response($res)){
       return $res;
     }
