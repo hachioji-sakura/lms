@@ -11,15 +11,11 @@
 ご契約内容
 ■基本契約内容
 -----------------------------
-・レッスン : {{$target_model->student->tags_name('lesson')}}
-・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count(1)}}回 {{-- TODO 修正lesson_week_count --}}
-・授業時間 : {{$target_model->student->tag_name('course_minutes')}}
-@if($target_model->student->user->has_tag('lesson',2)==true)
-・英会話コース : {{$target_model->student->tag_name('english_talk_course_type')}}
-@endif
-@if($target_model->student->user->has_tag('lesson',4)==true)
-・習い事コース : {{$target_model->student->tag_name('kids_lesson_course_type')}}
-@endif
+@for($i=1;$i<5;$i++)
+@if($target_model->student->user->has_tag('lesson',$i)==false) @continue @endif
+@if($target_model->student->user->get_enable_calendar_setting_count($i)==0) @continue @endif
+・({{config('attribute.lesson')[$i]}})通塾回数/週　: 週{{$target_model->student->user->get_enable_calendar_setting_count($i)}}回
+@endfor
 ・入会金 : @if($target_model->student->is_first_brother()==true) @component('trials.forms.entry_fee', ['user'=>$target_model->student->user]) @endcomponent @else 0円 @endif
 ・月会費 : @component('trials.forms.monthly_fee', ['user'=>$target_model->student->user, 'is_text' => true]) @endcomponent
 
@@ -57,11 +53,14 @@ else if($setting->get_tag_value('lesson')==4){
 $setting_key .= $setting->get_tag_value('kids_lesson');
 }
 ?>
-・受講料：@if(!empty($setting->get_tuition($target_model->student->user_id))) &yen;{{$setting->get_tuition($target_model->student->user_id)}} / 時間 @else 受講料設定がありません @endif
+・受講料：@if(!empty($setting->get_tuition($target_model->student->user_id))) &yen;{{number_format($setting->get_tuition($target_model->student->user_id))}} / 時間 @else 受講料設定がありません
+@endif
+
 			@endforeach
 		@endforeach
 	@endforeach
 @endforeach
+
 …………………………………………………………………………………………
 
 どうぞよろしくお願い申し上げます。

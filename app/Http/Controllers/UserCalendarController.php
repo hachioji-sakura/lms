@@ -1366,7 +1366,6 @@ class UserCalendarController extends MilestoneController
         $student = $trial->student;
         $param['student_id'] = $student->id;
       }
-
       if($request->has('exchanged_calendar_id')){
         //振替元指定あり
         $param['is_exchange_add'] = true;
@@ -1384,7 +1383,6 @@ class UserCalendarController extends MilestoneController
       }
       else {
         //新規
-        $param['teachers'] = [];
         if($param['user']->role==="teacher"){
           $param['teachers'][] = $param['user'];
           $param['teacher_id'] = $param['user']->id;
@@ -1394,6 +1392,7 @@ class UserCalendarController extends MilestoneController
         }
         else if($param['user']->role==="manager"){
           if($request->has('teacher_id')){
+            $param['teachers'] = [];
             $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
             $param['teacher_id'] = $request->get('teacher_id');
           }
@@ -1405,7 +1404,6 @@ class UserCalendarController extends MilestoneController
       }
 
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-
         if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])

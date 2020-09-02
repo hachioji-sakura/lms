@@ -15,6 +15,9 @@
           <input type="hidden" name="lesson_id" value="{{$lesson_id}}" >
             （レッスン：{{$attributes["lesson"][$lesson_id]}}）
           @endif
+          @if(isset($student_id) && $student_id>0)
+          <input type="hidden" name="student_id" value="{{$student_id}}" >
+          @endif
           @if(isset($trial_id) && $trial_id>0)
           <input type="hidden" name="trial_id" value="{{$trial_id}}" >
           @endif
@@ -55,7 +58,7 @@ function teacher_selected(){
   var teacher_id = $("select[name='teacher_id'] option:selected").val();
   if(front.validateFormValue('select_teacher')){
     var _title = $('#subDialog .page_title').text();
-    var _url = '/{{$domain}}/create?origin=teachers&teacher_id='+teacher_id;
+    var _url = '/{{$domain}}/create?teacher_id='+teacher_id;
     var lesson_id = $('input[name="lesson_id"]').val();
     var trial_id = $('input[name="trial_id"]').val();
     console.log(_url);

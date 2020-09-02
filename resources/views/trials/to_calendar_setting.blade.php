@@ -93,6 +93,10 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>{{__('labels.regular_schedule_setting')}}
+            <a href="javascript:void(0);" page_title="日付から通常授業登録する" page_form="dialog" page_url="/calendar_settings/create?trial_id={{$item->id}}" role="button" class="btn btn-info btn-sm ml-1 float-right">
+              <i class="fa fa-calendar-plus mr-1"></i>
+              日付から通常授業登録する
+            </a>
           </div>
           <div class="card-footer">
             @component('trials.forms.user_calendar_setting',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent

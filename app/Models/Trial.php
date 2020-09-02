@@ -28,6 +28,19 @@ class Trial extends Model
   public function user_calendar_settings(){
     return $this->hasMany('App\Models\UserCalendarSetting', 'trial_id');
   }
+  public function is_exist_calendar_settings(){
+    $calendar_settings = $this->student->user->get_enable_lesson_calendar_settings();
+    foreach($calendar_settings as $lesson => $d0){
+      foreach($d0 as $schedule_method => $d1){
+        foreach($d1 as $lesson_week => $settings){
+          foreach($settings as $setting){
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
   public function calendars(){
     //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
     return $this->hasMany('App\Models\UserCalendar');
