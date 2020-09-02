@@ -721,9 +721,10 @@ class TrialController extends UserCalendarController
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
     $res = $this->transaction($request, function() use ($request, $id){
+
       $trial = Trial::where('id', $id)->first();
       //受講料初期設定
-      foreach($trial->user_calendar_settings as $setting){
+      foreach($trial->get_calendar_settings() as $setting){
         if($request->has($setting->id.'_tuition')){
           $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->where('user_id', $trial->student->user_id)->first();
           $member->set_api_lesson_fee(intval($request->get($setting->id.'_tuition')));

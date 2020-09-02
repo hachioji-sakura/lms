@@ -10,9 +10,9 @@
 …………………………………………………………………………………………
 ご契約内容
 ■基本契約内容
+-----------------------------
 ・レッスン : {{$target_model->student->tags_name('lesson')}}
-{{-- TODO 修正lesson_week_count --}}
-・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count()}}回
+・通塾回数/週 : 週{{$target_model->student->user->get_enable_calendar_setting_count()}}回 {{-- TODO 修正lesson_week_count --}}
 ・授業時間 : {{$target_model->student->tag_name('course_minutes')}}
 @if($target_model->student->user->has_tag('lesson',2)==true)
 ・英会話コース : {{$target_model->student->tag_name('english_talk_course_type')}}
@@ -22,6 +22,7 @@
 @endif
 ・入会金 : @if($target_model->student->is_first_brother()==true) @component('trials.forms.entry_fee', ['user'=>$target_model->student->user]) @endcomponent @else 0円 @endif
 ・月会費 : @component('trials.forms.monthly_fee', ['user'=>$target_model->student->user, 'is_text' => true]) @endcomponent
+
 ■通塾内容
 <?php
 $tuition_form = [];
@@ -33,6 +34,7 @@ $is_exist = false;
 <?php
 $setting = $setting->details();
 ?>
+-----------------------------
 ・概要：{{$setting->lesson()}} / {{$setting->course()}}
 ・{{$setting->schedule_method()}}{{$setting["week_setting"]}}/{{$setting["timezone"]}}
 ・授業時間：{{$setting["course_minutes_name"]}}

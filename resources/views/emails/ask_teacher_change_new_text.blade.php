@@ -7,7 +7,7 @@
 {{config('app.url')}}/asks/{{$ask['id']}}/commit?user={{$ask['charge_user_id']}}
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
+@component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice' => '']) @endcomponent
 …………………………………………………………………………………………
 
 @yield('signature')

@@ -14,7 +14,7 @@
 {{__('messages.info_calendar_remind1')}}
 
 …………………………………………………………………………………………
-@component('emails.forms.calendar_setting', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user]) @endcomponent
+@component('emails.forms.calendar_setting', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice' => '']) @endcomponent
 …………………………………………………………………………………………
 
 {{__('messages.info_calendar_remind2')}}

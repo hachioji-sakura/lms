@@ -38,6 +38,11 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  public function scopeHiddenFilter($query)
+  {
+    return $query;
+  }
+
   //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
@@ -76,7 +81,7 @@ EOT;
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $where_raw = <<<EOT
       user_calendar_settings.remark like ?
       OR user_calendar_settings.id in (

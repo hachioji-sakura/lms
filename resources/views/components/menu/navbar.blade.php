@@ -15,6 +15,7 @@
     </a>
   </li>
   @yield('user_nav')
+  @yield('calendar_nav')
 </ul>
 
 <!-- Right navbar links -->

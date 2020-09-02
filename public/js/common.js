@@ -52,6 +52,8 @@ $(function(){
   //キーワード検索
   $("#search_button").on("click", function(e){
     var _search_word = $("input[name=search_word]").val();
+    _search_word = _search_word.replace_all('+', '%2B');
+    _search_word = _search_word.replace_all('　', ' ');
     if(!util.isEmpty(_search_word)){
       location.href = service.setQueryParam({"search_word" : _search_word});
     }
@@ -254,6 +256,11 @@ function lesson_place_filter(name){
   var check_lesson = get_lesson_check(name);
   $("label.lesson_place").show();
   $("label.lesson_place:contains('ダットッチ校')").hide();
+  if(!check_lesson["is_school"] && !check_lesson["is_english"] &&
+      !check_lesson["is_piano"] && !check_lesson["is_kids_lesson"]){
+      //lessonを選択していないならば、無処理
+      return ;
+  }
   if(!check_lesson["is_school"] && !check_lesson["is_english"]){
     //ピアノ＝子安、
     $("label.lesson_place:contains('八王子北口校')").hide();
