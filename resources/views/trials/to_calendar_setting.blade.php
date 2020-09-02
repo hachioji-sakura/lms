@@ -36,6 +36,19 @@
                     </div>
                   </div>
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  <div class="col-12 col-md-6 mt-2">
+                    <label for="start_date" class="w-100">
+                      {{__('labels.schedule_start_date')}}
+                      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+                    </label>
+                    <div class="input-group">
+                      <input type="text" name="enable_start_date" class="form-control float-left w-30" uitype="datepicker" required="true"
+                      @if(isset($item) && isset($item->schedule_start_hope_date))
+                      placeholder = "授業開始希望日：{{date('Y/m/d', strtotime($item->schedule_start_hope_date))}}"
+                      @endif
+                      >
+                    </div>
+                  </div>
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent

@@ -55,6 +55,8 @@ class Controller extends BaseController
     public function send_mail($to, $title, $param, $type, $template, $locale="ja")
     {
       App::setLocale($locale);
+      //TODO メール送信しない
+      if($template=='calendar_setting_update') return null;
       //TODO いったんすべてサポートに送信
       $is_send_support_mail = false;
       /*
