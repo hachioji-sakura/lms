@@ -63,12 +63,21 @@ class ActionLog extends Model
       $data['url'] = url()->full();
       $data['method'] = $_SERVER['REQUEST_METHOD'];
       $data['referer'] = url()->previous();
-      $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
-      $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-      $data['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+      $data['client_ip'] = '-';
+      if(isset($_SERVER['REMOTE_ADDR'])){
+        $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
+      }
+      $data['user_agent'] = '-';
+      if(isset($_SERVER['HTTP_USER_AGENT'])){
+        $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+      }
+      $data['language'] = '-';
+      if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
+        $data['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+      }
       $p = [];
       $data['session_id'] = Session::getId();
-      $data['login_user_id'] = $login_user_id;
+      if($login_user_id!=null)  $data['login_user_id'] = $login_user_id;
       foreach($_POST as $key => $val){
         if($key=='password' || $key=='password_confirm') continue;
         $p[$key] = $val;
