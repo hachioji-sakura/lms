@@ -55,21 +55,33 @@ class ActionLog extends Model
     return $this->config_attribute_name('mail_status', $this->status);
   }
 
-  static protected function add($login_user_id=null){
+  static protected function add(Request $request, $login_user_id=null){
     $data = [];
     try {
+
       $data['server_name'] = $_SERVER['SERVER_NAME'];
       $data['server_ip'] = $_SERVER['SERVER_ADDR'];
       $data['url'] = url()->full();
       $data['method'] = $_SERVER['REQUEST_METHOD'];
       $data['referer'] = url()->previous();
-      $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
-      $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-      $data['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+      $data['client_ip'] = '-';
+      if(isset($_SERVER['REMOTE_ADDR'])){
+        $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
+      }
+      $data['user_agent'] = '-';
+      if(isset($_SERVER['HTTP_USER_AGENT'])){
+        $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+      }
+      $data['language'] = '-';
+      if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
+        $data['language'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+      }
       $p = [];
       $data['session_id'] = Session::getId();
-      $data['login_user_id'] = $login_user_id;
-      foreach($_POST as $key => $val){
+      $data['login_user_id'] = 0;
+      if($login_user_id!=null)  $data['login_user_id'] = $login_user_id;
+
+      foreach($request->all() as $key => $val){
         if($key=='password' || $key=='password_confirm') continue;
         $p[$key] = $val;
       }
@@ -77,6 +89,7 @@ class ActionLog extends Model
       ActionLog::create($data);
     }
     catch(\Exception $e){
+      \Log::warning("ActionLog::add Exception Error (".$e->getMessage().")");
     }
   }
 }
