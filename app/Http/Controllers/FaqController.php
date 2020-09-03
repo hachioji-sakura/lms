@@ -20,6 +20,7 @@ class FaqController extends MilestoneController
       ]);
     }
     $param = $this->get_param($request);
+    if(!isset($param['user'])) abort(403);
     $_table = $this->search($request);
     return view($this->domain.'.lists', $_table)
       ->with($param);
