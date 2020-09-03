@@ -21,7 +21,7 @@ class RequestTrace
       $user_id = 0;
       \Log::warning("----RequestTrace start----");
       if(isset($user)) $user_id = $user->id;
-      ActionLog::add($user_id);
+      ActionLog::add($request, $user_id);
       \Log::warning("----RequestTrace end----");
       return $next($request);
     }

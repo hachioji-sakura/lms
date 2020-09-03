@@ -55,9 +55,10 @@ class ActionLog extends Model
     return $this->config_attribute_name('mail_status', $this->status);
   }
 
-  static protected function add($login_user_id=null){
+  static protected function add(Request $request, $login_user_id=null){
     $data = [];
     try {
+
       $data['server_name'] = $_SERVER['SERVER_NAME'];
       $data['server_ip'] = $_SERVER['SERVER_ADDR'];
       $data['url'] = url()->full();
@@ -79,7 +80,8 @@ class ActionLog extends Model
       $data['session_id'] = Session::getId();
       $data['login_user_id'] = 0;
       if($login_user_id!=null)  $data['login_user_id'] = $login_user_id;
-      foreach($_REQUEST as $key => $val){
+
+      foreach($request->all() as $key => $val){
         if($key=='password' || $key=='password_confirm') continue;
         $p[$key] = $val;
       }
