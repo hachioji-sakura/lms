@@ -77,6 +77,7 @@ class ActionLog extends Model
       ActionLog::create($data);
     }
     catch(\Exception $e){
+      \Log::warning("ActionLog::add Exception Error (".$e->getMessage().")");
     }
   }
 }
