@@ -77,6 +77,7 @@ class ActionLog extends Model
       }
       $p = [];
       $data['session_id'] = Session::getId();
+      $data['login_user_id'] = 0;
       if($login_user_id!=null)  $data['login_user_id'] = $login_user_id;
       foreach($_POST as $key => $val){
         if($key=='password' || $key=='password_confirm') continue;
