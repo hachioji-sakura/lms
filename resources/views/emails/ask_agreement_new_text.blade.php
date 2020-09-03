@@ -53,7 +53,7 @@ else if($setting->get_tag_value('lesson')==4){
 $setting_key .= $setting->get_tag_value('kids_lesson');
 }
 ?>
-・受講料：@if(!empty($setting->get_tuition($target_model->student->user_id))) &yen;{{number_format($setting->get_tuition($target_model->student->user_id))}} / 時間 @else 受講料設定がありません
+・受講料：@if(!empty($setting->get_tuition($target_model->student->user_id))) ￥{{number_format($setting->get_tuition($target_model->student->user_id))}} / 時間 @else 受講料設定がありません
 @endif
 
 			@endforeach
