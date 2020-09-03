@@ -73,7 +73,7 @@ return [
   "info_calendar_add" => ":trial授業予定を追加いたしました。",
   "info_calendar_update" => ":trial授業の予定を変更いたしました。",
   "info_calendar_setting_delete" => "繰り返し予定が削除されました。",
-  "info_calendar_setting_add" => "繰り返し予定を追加いたしました。",
+  "info_calendar_setting_add" => "繰り返し通常授業予定の承認をお願いします。",
   "info_calendar_setting_update" => "繰り返し予定が変更されました。",
   "info_regular_lesson_setting_update" => "通塾スケジュールが変更されました。",
   "info_login_confirm" => "マイページにログインし、ご確認ください。",
