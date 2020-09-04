@@ -51,19 +51,19 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}" >
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}" >
             <i class="fa fa-file nav-icon"></i>
             {{__('labels.details')}}
           </a>
         </li>
-        @if($charge_student->is_hachiojisakura())
+        @if($charge_student->student->is_hachiojisakura())
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}/recess" >
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}/unsubscribe" >
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
           </a>
         </li>
