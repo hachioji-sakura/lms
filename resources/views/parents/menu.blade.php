@@ -56,6 +56,7 @@
             {{__('labels.details')}}
           </a>
         </li>
+        @if($charge_student->is_hachiojisakura())
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
@@ -66,6 +67,7 @@
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
           </a>
         </li>
+        @endif
       </ul>
       <ul class="nav nav-treeview">
         {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。

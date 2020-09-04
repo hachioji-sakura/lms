@@ -51,16 +51,6 @@
               登録生徒
             </h3>
             <div class="card-title text-sm">
-              {{-- TODO : 実用化されるまでコメントアウト
-              <ul class="pagination pagination-sm m-0 float-left text-sm">
-                <li class="page-item">
-                  <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/students/create?student_parent_id={{$item->id}}" page_title="生徒追加">
-                  <i class="fa fa-plus"></i>
-                  <span class="btn-label">生徒登録</span>
-                  </a>
-                </li>
-              </ul>
-              --}}
             </div>
           </div>
           <!-- /.card-header -->
@@ -212,10 +202,23 @@
               @endforeach
             </ul>
             @else
-            <div class="alert">
-              <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+            <div class="row p-2">
+              <div class="col-12">
+                <div class="callout callout-info mb-2">
+                  <h5><i class="fa fa-exclamation-triangle mr-1"></i>まだ生徒が登録されていません</h5>
+                  <p>学習管理する生徒の情報を登録してください</p>
+                </div>
+              </div>
             </div>
             @endif
+            <div class="row p-2">
+              <div class="col-12">
+                <a class="btn btn-info btn-block" href="javascript:void(0);" page_form="dialog" page_url="/students/create?student_parent_id={{$item->id}}" page_title="生徒追加">
+                  <i class="fa fa-plus"></i>
+                  <span class="btn-label">生徒登録</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
         <!-- /.card -->
