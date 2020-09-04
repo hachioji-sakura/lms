@@ -1,5 +1,5 @@
 <div class="direct-chat-msg">
-  <div class="container">
+  <div class="container"  id="create_login_info">
     <div class="row">
       <div class="col-12">
         <h5 class="bg-info p-1 pl-2 mb-4">
@@ -8,7 +8,7 @@
         </h5>
       </div>
     </div>
-    <form method="POST" id="create_login_info" action="/{{$domain}}/{{$item->id}}/create_login_info">
+    <form method="POST" action="/{{$domain}}/{{$item->id}}/create_login_info">
       @csrf
       @method('PUT')
       <div class="row">
@@ -37,9 +37,9 @@
     </form>
 
     @if($item->user->status == 0)
-    <div class="row">
+    <div class="row" id="reset_login_info">
       <div class="col-12">
-        <form method="POST" id="reset_login_info" action="/{{$domain}}/{{$item->id}}/create_login_info">
+        <form method="POST" action="/{{$domain}}/{{$item->id}}/create_login_info">
           @csrf
           @method('PUT')
           <input type="hidden" name="reset" value="true">
@@ -50,24 +50,3 @@
     @endif
   </div>
 </div>
-
-<script>
-
-  $(function(){
-    $('button.btn-submit[form="create_login_info"]').on('click', function(e){
-      e.preventDefault();
-      if(front.validateFormValue('create_login_info')){
-        $(this).prop("disabled",true);
-        $("form#create_login_info").submit();
-      }
-    });
-    $('button.btn-submit[form="reset_login_info"]').on('click', function(e){
-      e.preventDefault();
-      if(front.validateFormValue('reset_login_info')){
-        $(this).prop("disabled",true);
-        $("form#reset_login_info").submit();
-      }
-    });
-  })
-
-</script>

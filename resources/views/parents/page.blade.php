@@ -132,22 +132,22 @@
                   @if($user->role!=="student")
                   @if($charge_student->student->is_hachiojisakura()==true)
                   <div class="col-6 float-left mt-1">
-                    <a href="/students/{{$charge_student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                    <a href="/students/{{$charge_student->student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-calendar-check mr-1"></i>{{__('labels.month_schedule_list')}}
                     </a>
                   </div>
                   <div class="col-6 float-left mt-1">
-                    <a href="/students/{{$charge_student->id}}/schedule?list=confirm" role="button" class="btn btn-warning btn-sm btn-flat btn-block">
+                    <a href="/students/{{$charge_student->student->id}}/schedule?list=confirm" role="button" class="btn btn-warning btn-sm btn-flat btn-block">
                       <i class="fa fa-hourglass mr-1"></i>{{__('labels.adjust_schedule_list')}}
                     </a>
                   </div>
                   <div class="col-6 float-left mt-1">
-                    <a href="/students/{{$charge_student->id}}/schedule?list=rest_contact" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
+                    <a href="/students/{{$charge_student->student->id}}/schedule?list=rest_contact" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
                       <i class="fa fa-calendar-times mr-1"></i>{{__('labels.rest_contact')}}
                     </a>
                   </div>
                   <div class="col-6 float-left mt-1">
-                    <a href="/students/{{$charge_student->id}}/schedule?list=exchange" role="button" class="btn btn-success btn-sm btn-flat btn-block">
+                    <a href="/students/{{$charge_student->student->id}}/schedule?list=exchange" role="button" class="btn btn-success btn-sm btn-flat btn-block">
                       <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.exchange_schedule_list')}}
                     </a>
                   </div>
@@ -165,7 +165,7 @@
                     @else
                     <a href="javascript:void(0);"
                     page_title="体験授業申し込み" page_form="dialog"
-                    page_url="/parents/{{$item->id}}/trial_request?student_id={{$charge_student->id}}"
+                    page_url="/parents/{{$item->id}}/trial_request?student_id={{$charge_student->student->id}}"
                     role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                       <i class="fa fa-hand-point-right mr-1"></i>
                       体験授業申し込み
@@ -175,12 +175,12 @@
                   --}}
                   @endif
                   <div class="col-6 float-left mt-1">
-                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->student->id}}/edit" page_title="{{__('labels.students')}}{{__('labels.setting')}}" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                       <i class="fa fa-user-edit mr-1"></i>{{__('labels.students')}}{{__('labels.setting')}}
                     </a>
                   </div>
                   <div class="col-6 float-left mt-1">
-                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/create_login_info" page_title="{{__('labels.login_setting')}}" role="button" class="btn  btn-sm btn-flat btn-block
+                    <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->student->id}}/create_login_info" page_title="{{__('labels.login_setting')}}" role="button" class="btn  btn-sm btn-flat btn-block
                     @if($charge_student->student->status == 'unsubscribe')
                      btn-secondary
                      disabled
@@ -195,12 +195,12 @@
                   </div>
                   {{--
                   <div class="col-6 float-left mt-1">
-                    <a title="{{__('labels.late_arrival_description')}}" href="javascript:void(0);" page_title="{{__('labels.late_arrival')}}" page_form="dialog" page_url="/students/{{$charge_student->id}}/late_arrival" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
+                    <a title="{{__('labels.late_arrival_description')}}" href="javascript:void(0);" page_title="{{__('labels.late_arrival')}}" page_form="dialog" page_url="/students/{{$charge_student->student->id}}/late_arrival" role="button" class="btn btn-danger btn-sm btn-flat btn-block">
                       <i class="fa fa-exclamation-triangle mr-1"></i>{{__('labels.late_arrival')}}
                     </a>
                   </div>
                   <div class="col-6 float-left mt-1">
-                    <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                    <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                       <i class="fa fa-address-card mr-1"></i>ご契約内容
                     </a>
                   </div>
