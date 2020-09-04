@@ -275,18 +275,6 @@ EOT;
         $ret = true;
         //代講承認された
         $target_model_data->members->where('user_id',$this->target_user_id)->first()->teacher_change($is_commit, $this->charge_user_id,$target_model_data);
-        //親の依頼をcancel
-        if($is_commit==true){
-          $is_complete = true;
-          if(isset($this->parent_ask)){
-            $this->parent_ask->update(['status' => 'commit']);
-          }
-          $brother_asks = Ask::where('parent_ask_id', $this->parent_ask_id)->where('id', '!=', $this->id)->get();
-          //同じ親の依頼
-          foreach($brother_asks as $brother_ask){
-            $brother_ask->update(['status' => 'cancel']);
-          }
-        }
         break;
     }
     if($is_complete==true){
@@ -484,4 +472,9 @@ EOT;
     }
     return false;
   }
+
+  public function scopeFindTargetModel($query, $target_model, $target_model_id){
+    return $query->where('target_model', $target_model)->where('target_model_id', $target_model_id);
+  }
+
 }

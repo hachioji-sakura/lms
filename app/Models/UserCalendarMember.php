@@ -17,6 +17,7 @@ use App\Models\UserCalendarTag;
 use App\User;
 use App\Models\Traits\Common;
 use View;
+use DB;
 class UserCalendarMember extends Model
 {
   use Common;
@@ -683,34 +684,31 @@ class UserCalendarMember extends Model
   }
   public function teacher_change($is_exec=true, $change_user_id){
     if($is_exec==true){
-      $method = 'PUT';
-      $_url = config('app.management_url').$this->api_domain.'/'.$this->api_endpoint[$method];
-      //休講に更新
+      $new_member = DB::transaction(function() use($change_user_id) {
+        //事務システムのonetimeのteacherを更新
+        $teacher_id_onetime = User::find($change_user_id)->get_tag('teacher_no')->tag_value;
+        $schedule_ids = $this->calendar->get_schedule_ids();
+        $this->unk_schedule_update($schedule_ids, $teacher_id_onetime);
 
-      //代講した証拠が必要なので元のレコードをcancelで残す
-      $new_member = $this->replicate();
-      $new_member->user_id = $change_user_id;
-      $new_member->save();
-      $this->update(['status' => 'cancel']);
-      //UserCalendarの主催者も更新
-      $this->calendar->update(['user_id' => $change_user_id]);
-      //事務システムのonetimeのteacherを更新
-      $teacher_id_onetime = User::find($change_user_id)->get_tag('teacher_no')->tag_value;
-      $schedule_ids = $this->calendar->get_schedule_ids();
-      foreach($schedule_ids as $schedule_id){
-        $postdata = [
-          'id' => $schedule_id,
-          'updateuser' => $teacher_id_onetime,
-          'teacher_id' => $teacher_id_onetime,
-        ];
-        $res = $this->call_api($_url,'POST',$postdata);
-        if(empty($res)){
-          $message = "事務システムAPIエラー".$_url."\nresponseなし";
-          return null;
-        }
-      }
+        //代講した証拠が必要なので元のレコードをcancelで残す
+        $new_member = $this->replicate();
+        $new_member->user_id = $change_user_id;
+        $new_member->exchanged_member_id = $this->id;
+        $new_member->save();
+        $this->update(['status' => 'invalid']);
+        
+        //UserCalendarの主催者も更新
+        $this->calendar->update(['user_id' => $change_user_id]);
+        return $new_member;
+      });
     }
     return $new_member;
+  }
+
+  public function unk_schedule_update($schedule_ids, $teacher_id){
+    DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+      'teacher_id' => $teacher_id,
+    ]);
   }
 
   public function already_ask_data($data){

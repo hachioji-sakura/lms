@@ -13,6 +13,7 @@
     <input type="hidden" name="target_model" value="user_calendars">
     <input type="hidden" name="target_model_id" value="{{$item->id}}">
     <input type="hidden" name="target_user_id" value="{{$item->user_id}}">
+    @if(!$item->is_teacher_changing())
     <div class="row">
       <div class="col-12">
         <div class="form-group">
@@ -30,11 +31,17 @@
         </div>
       </div>
     </div>
+    @endif
     <div class="row">
       <div class="col-12 mb-1">
-          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_teacher_change')}}">
+          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_teacher_change')}}" {{$item->is_teacher_changing() ? 'disabled' : ''}}>
+            @if($item->is_teacher_changing())
+            <i class="fa fa-sync mr-1"></i>
+            {{__('labels.adjust_schedule_list')}}
+            @else
             <i class="fa fa-envelope mr-1"></i>
             {{__('labels.send_button')}}
+            @endif
           </button>
       </div>
       <div class="col-12 mb-1">

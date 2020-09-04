@@ -120,6 +120,7 @@ EOT;
         $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9,10,11)";
         $d = DB::select($_sql);
         $this->subject_expr_sync($d);
+
     }
     public function update_schedule_ontime($confirm, $cancel, $d){
       $id = [];

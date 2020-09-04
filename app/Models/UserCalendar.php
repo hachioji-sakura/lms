@@ -172,9 +172,9 @@ EOT;
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
+      user_calendars.id in (select calendar_id from user_calendar_members where user_id=? and status != ?)
 EOT;
-    return $query->whereRaw($where_raw,[$user_id]);
+    return $query->whereRaw($where_raw,[$user_id,'invalid']);
   }
   public function scopeHiddenFilter($query)
   {
@@ -616,7 +616,7 @@ EOT;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
-      if($_member->role === 'teacher'){
+      if($_member->role === 'teacher' && $member->status != 'invalid'){
         $teacher_name.=$_member['name'].',';
         $teachers[] = $member;
       }
@@ -1305,6 +1305,14 @@ EOT;
       }
     }
     return false;
+  }
+  public function is_teacher_changing(){
+    $asks = Ask::findTargetModel('user_calendars',$this->id)->findStatuses(['new'])->get();
+    if($asks->count() > 0){
+      return true;
+    }else{
+      return false;
+    }
   }
   public function get_schedule_ids(){
     $members = $this->members;
