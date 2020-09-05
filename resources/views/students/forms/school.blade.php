@@ -25,7 +25,7 @@ col-md-3
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
-        @if($_edit==true && isset($item) && !empty($item) && $index==$item->tag_value('grade')) selected @endif
+        @if(isset($_edit) && $_edit==true && isset($item) && !empty($item) && $index==$item->tag_value('grade')) selected @endif
         >{{$name}}</option>
       @endforeach
     </select>
@@ -54,7 +54,7 @@ col-md-9
       @endif
     @else
     <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" required="true" placeholder="例：八王子市立サクラ中学校"
-      @if($_edit==true && isset($item) && !empty($item->tag_value('school_name'))) value="{{$item->tag_value('school_name')}}" @endif
+      @if(isset($_edit) && $_edit==true && isset($item) && !empty($item->tag_value('school_name'))) value="{{$item->tag_value('school_name')}}" @endif
       >
     @endif
   </div>

@@ -56,7 +56,7 @@
             {{__('labels.details')}}
           </a>
         </li>
-        @if($charge_student->student->is_hachiojisakura())
+        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial')
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
