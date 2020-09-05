@@ -51,7 +51,7 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student->id}}" >
+          <a class="nav-link" href="/students/{{$charge_student->student_id}}" >
             <i class="fa fa-file nav-icon"></i>
             {{__('labels.details')}}
           </a>
