@@ -967,8 +967,10 @@ class UserCalendarController extends MilestoneController
       $res = $this->transaction($request, function() use ($request, $param, $id){
         if($param['item']->status=='new' || $param['item']->status=='confirm'){
           $remark = $param['item']->remark;
+          $param['notice'] = '';
           if(!empty($request->get('cancel_reason'))){
             $remark.="\nキャンセル理由[".$request->get('cancel_reason')."]";
+            $param['notice'] = "キャンセル理由[".$request->get('cancel_reason')."]";
           }
           UserCalendar::where('id', $id)->update(['status' => 'cancel', 'remark' => $remark]);
           UserCalendarMember::where('calendar_id', $id)->update(['status' => 'cancel']);
