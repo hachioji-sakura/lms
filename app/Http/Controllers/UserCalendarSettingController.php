@@ -407,6 +407,7 @@ class UserCalendarSettingController extends UserCalendarController
             "delete"]
         ]
       ];
+      /*
       foreach($items as $item){
         $item = $item->details($user_id);
         /*
@@ -415,6 +416,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
         */
       }
+      */
       return ["items" => $items, "fields" => $fields, "count" => $count];
     }
     /**
