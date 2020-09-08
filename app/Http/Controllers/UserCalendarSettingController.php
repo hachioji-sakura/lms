@@ -407,16 +407,6 @@ class UserCalendarSettingController extends UserCalendarController
             "delete"]
         ]
       ];
-      /*
-      foreach($items as $item){
-        $item = $item->details($user_id);
-        /*
-        if($user_id > 0) {
-          $item->own_member = $item->get_member($user_id);
-        }
-        */
-      }
-      */
       return ["items" => $items, "fields" => $fields, "count" => $count];
     }
     /**
