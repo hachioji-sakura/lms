@@ -448,20 +448,15 @@ class Trial extends Model
         $charge_student_form[$field] = $form[$field];
       }
     }
+
     if(isset($form['calendar_id']) && $form['calendar_id']>0){
-      $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
-      if(!isset($calendar)){
-        \Log::error("存在しないカレンダーへの参加者追加");
-        return $this->error_response("存在しないカレンダーへの参加者追加(id=".$this->id.")", "Trial::trial_to_calendar");
-      }
+      //$calendar = UserCalendar::where('id', $form['calendar_id'])->first();
     }
-    else {
-      $res = UserCalendar::add($calendar_form);
-      if(!$this->is_success_response($res)){
-        return $res;
-      }
-      $calendar = $res['data'];
+    $res = UserCalendar::add($calendar_form);
+    if(!$this->is_success_response($res)){
+      return $res;
     }
+    $calendar = $res['data'];
     if($calendar!=null){
       //体験同時申し込み生徒数だけ追加
       $calendar->memberAdd($this->student->user_id, $form['create_user_id']);

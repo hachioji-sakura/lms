@@ -280,6 +280,10 @@ class UserCalendarController extends MilestoneController
       $form['course_type'] = $request->get('course_type');
       unset($form['work']);
     }
+    $form['trial_id'] = 0;
+    if($request->has('trial_id') && !empty($request->get('trial_id'))) {
+      $form['trial_id'] = $request->get('trial_id');
+    }
 
     if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
       $form['rest_reason'] = $request->get('rest_reason');
