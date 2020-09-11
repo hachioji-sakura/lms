@@ -450,13 +450,19 @@ class Trial extends Model
     }
 
     if(isset($form['calendar_id']) && $form['calendar_id']>0){
-      //$calendar = UserCalendar::where('id', $form['calendar_id'])->first();
+      $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
+      if(!isset($calendar)){
+        \Log::error("存在しないカレンダーへの参加者追加");
+        return $this->error_response("存在しないカレンダーへの参加者追加(id=".$this->id.")", "Trial::trial_to_calendar");
+      }
     }
-    $res = UserCalendar::add($calendar_form);
-    if(!$this->is_success_response($res)){
-      return $res;
+    else {
+      $res = UserCalendar::add($calendar_form);
+      if(!$this->is_success_response($res)){
+        return $res;
+      }
+      $calendar = $res['data'];
     }
-    $calendar = $res['data'];
     if($calendar!=null){
       //体験同時申し込み生徒数だけ追加
       $calendar->memberAdd($this->student->user_id, $form['create_user_id']);
@@ -743,7 +749,9 @@ class Trial extends Model
     }
     else {
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
+      //↑の設定を終了し、次の設定を作る（この体験生徒は、newで登録、残りの生徒は、fixで作る）
     }
+
     if(isset($setting)){
       $setting->memberAdd($this->student->user_id, $form['create_user_id']);
     }
