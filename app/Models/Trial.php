@@ -448,7 +448,6 @@ class Trial extends Model
         $charge_student_form[$field] = $form[$field];
       }
     }
-
     if(isset($form['calendar_id']) && $form['calendar_id']>0){
       $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
       if(!isset($calendar)){
@@ -749,9 +748,7 @@ class Trial extends Model
     }
     else {
       $setting = UserCalendarSetting::where('id', $form['calendar_setting_id'])->first();
-      //↑の設定を終了し、次の設定を作る（この体験生徒は、newで登録、残りの生徒は、fixで作る）
     }
-
     if(isset($setting)){
       $setting->memberAdd($this->student->user_id, $form['create_user_id']);
     }
