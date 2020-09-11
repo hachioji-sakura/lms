@@ -581,19 +581,58 @@ EOT;
   public function datetime(){
     return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
+  }
+  public function getPlaceFloorNameAttribute(){
+    return $this->place_floor_name();
+  }
+  public function getUserNameAttribute(){
+    return $this->user->details()->name();
+  }
+  public function getDatetimeAttribute($user_id){
+    return $this->datetime();
+  }
+  public function getDateweekAttribute($user_id){
+    return $this->dateweek();
+  }
+  public function getDateAttribute($user_id){
+    return date('Y/m/d',  strtotime($this->start_time));
+  }
+  public function getSubjectAttribute($user_id){
+    return $this->subject();
+  }
+  public function getCourseAttribute($user_id){
+    return $this->course();
+  }
+  public function getLessonAttribute($user_id){
+    return $this->lesson();
+  }
+  public function getWorkNameAttribute(){
+    return $this->work();
+  }
+  public function getTeachingTypeNameAttribute(){
+    return $this->teaching_type_name();
+  }
+  public function getScheduleTypeNameAttribute(){
+    return $this->schedule_type_name();
+  }
+  public function student_name($user_id=0){
+    $student_name = "";
+    foreach($this->get_access_member($user_id) as $member){
+      if(!isset($member->user)) continue;
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+      }
+    }
+    return $student_name;
+  }
   public function details($user_id=0){
     $this->set_endtime_for_single_group();
     $item = $this;
-    $item['teaching_name'] = $this->teaching_type_name();
-    $item['status_name'] = $this->status_name();
     $item['schedule_type_code'] = $this->schedule_type_code();
-    $item['schedule_type_name'] = $this->schedule_type_name();
-    $item['place_floor_name'] = $this->place_floor_name();
-    $item['work_name'] = $this->work();
     $item['teaching_name'] = $this->teaching_type_name();
-
-    $item['date'] = date('Y/m/d',  strtotime($this->start_time));
-    $item['dateweek'] = $this->dateweek();
 
     //過ぎた予定かどうか
     $item['is_passed'] = $this->is_passed();

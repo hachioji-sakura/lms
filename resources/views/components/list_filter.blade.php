@@ -8,9 +8,7 @@
         <h4 class="modal-title content-sub-title">{{__('labels.filter')}}</h4>
       </div>
       <div class="modal-body content-sub-body">
-        <form class="filter" method="POST" action="{{request()->fullUrl()}}">
-          @method('GET')
-          @csrf
+        <form class="filter" method="GET" action="{{request()->fullUrl()}}">
           <input type="text" name="dummy" style="display:none;" / >
           <input name="_domain" type="hidden" value="{{$domain}}">
           <input name="_page" type="hidden" value="{{$_page}}">
