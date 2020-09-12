@@ -37,8 +37,6 @@
       @endif
       @if($key==="status_name")
         <small class="badge badge-{{config('status_style')[$row['status']]}} mt-1 mr-1">{{$row[$key]}}</small>
-      @elseif($key==="student_name")
-        {{$row->student_name(1)}}
       @elseif(isset($row[$key]) && gettype($row[$key])=='array')
         @foreach($row[$key] as $_item)
         <span class="text-xs mx-2">

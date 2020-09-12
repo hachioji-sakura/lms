@@ -608,7 +608,7 @@ EOT;
   public function getScheduleTypeNameAttribute(){
     return $this->schedule_type_name();
   }
-  public function student_name(){
+  public function getStudentNameAttribute(){
     $student_name = "";
     foreach($this->get_access_member() as $member){
       if(!isset($member->user)) continue;
@@ -671,7 +671,6 @@ EOT;
     $item['teachers'] = $teachers;
     $item['students'] = $students;
     $item['managers'] = $managers;
-    $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($manager_name,',');
     $item['user_name'] = "";
