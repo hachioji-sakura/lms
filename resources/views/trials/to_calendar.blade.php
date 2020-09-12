@@ -33,10 +33,7 @@
               @endcomponent
               <div class="row">
                 @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent
-                {{-- TODO 体験授業登録時に既存の予定に追加すると体験授業かどうか不明となる
                 @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
-                --}}
-                
                 @component('trials.forms.select_trial_date', ['item'=>$item, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes, 'domain' => $domain, 'domain_name' => $domain_name, 'user' => $user]) @endcomponent
                 @if(count($candidate_teachers[0]->trial) < 1)
                 <div class="col-6 mb-1">

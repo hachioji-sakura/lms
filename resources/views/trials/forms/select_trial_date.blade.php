@@ -72,10 +72,33 @@
   <div class="col-md-6" id="trial_select">
     <span class="description-text" >
       <?php $is_first=false; $c=0; ?>
+      @foreach($candidate_teacher->calendars as $remark=>$_lists)
+        @foreach($_lists as $i => $_list)
+        <?php $_list=$_list->details(1); ?>
+          <div class="form-check ml-2 teacher_schedule action_form action_add" remark="{{$remark}}">
+            <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="calendar_{{$c}}"
+             value="{{$_list->start_time}}_{{$_list->end_time}}"
+             start_time="{{$_list->start_time}}"
+             end_time="{{$_list->end_time}}"
+             lesson_place_floor="{{$_list->place_floor_id}}"
+             remark="{{$remark}}"
+             onChange="teacher_schedule_change()"
+             validate="teacher_schedule_validate('#trial_select')"
+             calendar_id = "{{$_list->id}}"
+             @if($is_first==false) checked @endif
+             >
+            <label class="form-check-label" for="calendar_{{$c}}" >
+              {{$_list['timezone']}}
+            </label>
+          </div>
+          <?php $is_first=true; $c++; ?>
+        @endforeach
+      @endforeach
+      <?php $is_first=false; $c=0; ?>
         @foreach($candidate_teacher->trial as $remark=>$_lists)
           @foreach($_lists as $i => $_list)
             @if($_list['status']==='free')
-            <div class="form-check ml-2 teacher_schedule" remark="{{$_list['remark']}}">
+            <div class="form-check ml-2 teacher_schedule action_form action_new" remark="{{$_list['remark']}}">
               <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$c}}"
                value="{{$_list['start_time']}}_{{$_list['end_time']}}"
                duration="{{$_list['duration']}}"
@@ -117,12 +140,10 @@
           @endforeach
         @endforeach
     </span>
-    @if($is_first==false)
     <h6 class="text-sm p-1 pl-2 mt-2 bg-danger hide" id="no_data_message">
       <i class="fa fa-exclamation-triangle mr-1"></i>
       予定が空いていません
     </h6>
-    @endif
   </div>
 </div>
 
