@@ -397,7 +397,7 @@
         <input name="to_date" type="hidden" value="">
         <input name="user_id" type="hidden" value="{{$item->user_id}}">
         <div class="row p-2" id="filter_form_item">
-          @component('calendars.filter', ['domain' => $domain, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter' => $filter])
+          @component('calendars.filter', ['domain' => $domain, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter' => $filter, 'is_list' => false])
           @endcomponent
 
           <div class="col-12 col-md-6 mb-2">

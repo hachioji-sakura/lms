@@ -5,70 +5,9 @@
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
-    <div class="col-4">
-      <label for="search_week" class="w-100">
-        曜日
-      </label>
-      <div class="w-100">
-        <select name="search_week[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
-          @foreach($attributes['lesson_week'] as $index=>$name)
-            <option value="{{$index}}"
-            @if(isset($filter['calendar_filter']['search_week']) && in_array($index, $filter['calendar_filter']['search_week'])==true)
-            selected
-            @endif
-            >{{$name}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-4">
-      <label for="search_work" class="w-100">
-        {{__('labels.work')}}
-      </label>
-      <div class="w-100">
-        <select name="search_work[]" class="form-control select2" width=100%  multiple="multiple" >
-          @foreach($attributes['work'] as $index=>$name)
-            <option value="{{$index}}"
-            @if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
-            selected
-            @endif
-            >{{$name}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-4">
-      <label for="search_place" class="w-100">
-        {{__('labels.place')}}
-      </label>
-      <div class="w-100">
-        <select name="search_place[]" class="form-control select2" width=100%  multiple="multiple" >
-          @foreach($attributes['places'] as $place)
-            <option value="{{$place->id}}"
-            @if(isset($filter['calendar_filter']['search_place']) && in_array($place->id, $filter['calendar_filter']['search_place'])==true)
-            selected
-            @endif
-            >{{$place->name()}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-4">
-      <label for="search_status" class="w-100">
-        ステータス
-      </label>
-      <div class="w-100">
-        <select name="search_status[]" class="form-control select2" width=100% placeholder="検索曜日" multiple="multiple" >
-          @foreach(config('attribute.setting_status') as $index=>$name)
-            <option value="{{$index}}"
-            @if(isset($filter['calendar_filter']['search_status']) && in_array($index, $filter['calendar_filter']['search_status'])==true)
-            selected
-            @endif
-            >{{$name}}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
+    @component('calendar_settings.filter', ['domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'user'=>$user, 'filter'=>$filter])
+    @endcomponent
+
     @endslot
   @endcomponent
 @endsection
@@ -143,10 +82,9 @@
 @endsection
 
 @section('list_pager')
-@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-  @slot("addon_button")
-  @endslot
-@endcomponent
+<div class="card-title text-sm">
+  {{$items->appends(Request::query())->links('components.paginate')}}
+</div>
 @endsection
 
 
