@@ -151,10 +151,6 @@ class UserCalendarSettingController extends UserCalendarController
 
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -349,6 +345,7 @@ class UserCalendarSettingController extends UserCalendarController
 
     public function search(Request $request, $user_id=0)
     {
+      $param = $this->get_param($request);
       $items = $this->model();
 
       //曜日検索
@@ -360,13 +357,8 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       $items = $this->_search_scope($request, $items);
-      $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
+      $items = $items->orderByWeek()->orderBy($request->_sort, $request->_sort_order)->paginate($param['_line']);
 
-      $items = $items->orderByWeek();
-      $items = $this->_search_sort($request, $items);
-
-      $items = $items->get();
       $fields = [
         'repeat_setting_name' => [
           'label' => __('labels.title'),
@@ -407,7 +399,7 @@ class UserCalendarSettingController extends UserCalendarController
             "delete"]
         ]
       ];
-      return ["items" => $items, "fields" => $fields, "count" => $count];
+      return ["items" => $items, "fields" => $fields];
     }
     /**
      * データ更新時のパラメータチェック

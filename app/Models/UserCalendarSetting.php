@@ -177,7 +177,12 @@ EOT;
     if(empty($start_date) && empty($end_date)) return '-';
     return $start_date.'～'.$end_date;
   }
-
+  public function getRepeatSettingNameAttribute(){
+    return $this->schedule_method().$this->week_setting().'/'.$this->timezone();
+  }
+  public function getCalendarCountAttribute(){
+    return count($this->calendars);
+  }
   public function details($user_id=0){
     $this->set_endtime_for_single_group();
     $item = $this;
@@ -549,7 +554,8 @@ EOT;
     }
     return $ret;
   }
-  /* https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155
+  /*
+  https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155
   */
   private function get_week_count($target_date){
     $saturday = 6;
@@ -732,12 +738,6 @@ EOT;
         $form[$tag->tag_key][] = $tag->tag_value;
       }
     }
-
-/*
-    foreach($form as $key => $v){
-      \Log::warning("param[".$key."] =".$v);
-    }
-*/
     $res = UserCalendar::add($form);
     if(!$this->is_success_response($res)){
       return $res;

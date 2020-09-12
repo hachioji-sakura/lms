@@ -280,6 +280,10 @@ class UserCalendarController extends MilestoneController
       $form['course_type'] = $request->get('course_type');
       unset($form['work']);
     }
+    $form['trial_id'] = 0;
+    if($request->has('trial_id') && !empty($request->get('trial_id'))) {
+      $form['trial_id'] = $request->get('trial_id');
+    }
 
     if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
       $form['rest_reason'] = $request->get('rest_reason');
@@ -423,54 +427,7 @@ class UserCalendarController extends MilestoneController
 
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
       return view($this->domain.'.lists', $_table)
-        ->with($param);
-    }
-    public function space_calendars(Request $request)
-    {
-      $user = $this->login_details($request);
-      if(!isset($user)) abort(403);
-      if($this->is_manager($user->role)!=true) abort(403);
-
-      if(!$request->has('_origin')){
-        $request->merge([
-          '_origin' => $this->domain,
-        ]);
-      }
-      if(!$request->has('_line')){
-        $request->merge([
-          '_line' => $this->pagenation_line,
-        ]);
-      }
-      if(!$request->has('_page')){
-        $request->merge([
-          '_page' => 1,
-        ]);
-      }
-      else if($request->get('_page')==0){
-        $request->merge([
-          '_page' => 1,
-        ]);
-      }
-      /*
-      if(!$request->has('_sort')){
-        $request->merge([
-          '_sort' => 'start_time',
-          '_sort_order' => 'desc',
-        ]);
-      }
-      */
-      $param = $this->get_param($request);
-      $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
-      return view($this->domain.'.space_lists', $_table)
         ->with($param);
     }
 
@@ -572,61 +529,16 @@ class UserCalendarController extends MilestoneController
 
       return $this->api_response(200, "", "", $items->toArray());
     }
-    public function api_english_group(Request $request){
-      if(!$request->has('from_date')){
-        $request->merge([
-          'from_date' => date('Y-m-d', strtotime("+1 day")),
-        ]);
-      }
-      if(!$request->has('to_date')){
-        $request->merge([
-          'to_date' => date('Y-m-t', strtotime("+1 month")),
-        ]);
-      }
-
-      $param = $this->get_param($request);
-
-      $items = $this->model();
-      $items = $items->where('status', 'fix');
-      $items = $this->_search_scope($request, $items);
-      $items = $this->_search_pagenation($request, $items);
-      $items = $this->_search_sort($request, $items);
-      $items = $items->orderBy('start_time')->get();
-
-      $ret = [];
-      foreach($items as $item){
-        if($item->is_group()==false) continue;
-        if(!$item->is_english_talk_lesson()) continue;
-        if($request->has('english_teacher')){
-          if($item->user->has_tag('english_teacher', $request->get('english_teacher'))==false){
-            continue;
-          }
-        }
-        if($request->has('english_talk_lesson')){
-          if($item->user->has_tag('english_talk_lesson', $request->get('english_talk_lesson'))==false){
-            continue;
-          }
-        }
-        $item = $item->details(0);
-        $ret[] = $item;
-      }
-      return "";
-      return $this->api_response(200, "", "", $ret);
-    }
     public function search(Request $request)
     {
+      $param = $this->get_param($request);
       $user = $this->login_details($request);
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
       $items = $this->_search_scope($request, $items);
-      $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
-      $items = $this->_search_sort($request, $items);
-      $items = $items->get();
-      foreach($items as $item){
-        $item = $item->details(1);
-      }
+      $items = $items->orderBy($request->_sort, $request->_sort_order)->paginate($param['_line']);
+
       $fields = [
         "datetime" => [
           "label" => __('labels.datetime'),
@@ -657,7 +569,7 @@ class UserCalendarController extends MilestoneController
             "delete"]
         ]
       ];
-      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
+      return ["items" => $items, "fields" => $fields];
     }
 
     /**
@@ -905,7 +817,7 @@ class UserCalendarController extends MilestoneController
       if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
         $is_find = false;
-        foreach($calendar->get_access_member($request->get('user')) as $member){
+        foreach($calendar->get_access_member() as $member){
           if($member->user_id == $request->get('user')){
             //指定したuserがcalendar.memberに存在する
             $is_find = true;
