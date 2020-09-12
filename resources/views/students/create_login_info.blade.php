@@ -1,5 +1,5 @@
 <div class="direct-chat-msg">
-  <div class="container"  id="create_login_info">
+  <div class="container" >
     <div class="row">
       <div class="col-12">
         <h5 class="bg-info p-1 pl-2 mb-4">
@@ -8,34 +8,35 @@
         </h5>
       </div>
     </div>
-    <form method="POST" action="/{{$domain}}/{{$item->id}}/create_login_info">
-      @csrf
-      @method('PUT')
-      <div class="row">
-        @if($item->user->status == 1)
-          @include($domain.'.forms.student_id')
-          @include($domain.'.forms.password')
-        @elseif($item->user->status == 0)
-          @include($domain.'.forms.student_id', ['_edit' => true])
-        @else
-          {{__('labels.no_data')}}
-        @endif
-      </div>
-      <div class="row">
-        <div class="col-12">
-          <button type="button" form="create_login_info" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
-            @if($item->user->status == 1)
-            ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}
-            @elseif($item->user->status == 0)
-            ><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
-            @else
-            disabled><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
-            @endif
-          </button>
+    <div id="create_login_info">
+      <form method="POST" action="/{{$domain}}/{{$item->id}}/create_login_info">
+        @csrf
+        @method('PUT')
+        <div class="row">
+          @if($item->user->status == 1)
+            @include($domain.'.forms.student_id')
+            @include($domain.'.forms.password')
+          @elseif($item->user->status == 0)
+            @include($domain.'.forms.student_id', ['_edit' => true])
+          @else
+            {{__('labels.no_data')}}
+          @endif
         </div>
-      </div>
-    </form>
-
+        <div class="row">
+          <div class="col-12">
+            <button type="button" form="create_login_info" class="btn btn-submit btn-primary btn-block" accesskey="create_login_info"
+              @if($item->user->status == 1)
+              ><i class="fa fa-key mr-1"></i>{{__('labels.add_button')}}
+              @elseif($item->user->status == 0)
+              ><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
+              @else
+              disabled><i class="fa fa-key mr-1"></i>{{__('labels.edit')}}
+              @endif
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
     @if($item->user->status == 0)
     <div class="row" id="reset_login_info">
       <div class="col-12">

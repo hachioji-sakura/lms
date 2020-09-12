@@ -1244,7 +1244,6 @@ class StudentController extends UserController
     if(!$this->is_success_response($req)){
       return $req;
     }
-
     $res =  $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();
