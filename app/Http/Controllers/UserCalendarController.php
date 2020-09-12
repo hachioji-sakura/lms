@@ -817,7 +817,7 @@ class UserCalendarController extends MilestoneController
       if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
         $is_find = false;
-        foreach($calendar->get_access_member($request->get('user')) as $member){
+        foreach($calendar->get_access_member() as $member){
           if($member->user_id == $request->get('user')){
             //指定したuserがcalendar.memberに存在する
             $is_find = true;

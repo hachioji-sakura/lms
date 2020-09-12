@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\StudentParent;
 use App\Models\UserCalendarMember;
@@ -13,6 +14,7 @@ use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
+
 use App\Models\Traits\Common;
 
 class UserCalendar extends Model
@@ -233,20 +235,9 @@ EOT;
     //$query = $this->scopeSearchDate($query, $from, $to);
     return $query;
   }
-  public function get_access_member($user_id){
+  public function get_access_member(){
     $ret = [];
-    if($user_id < 2){
-      //user_id 指定なし＝root扱い
-      $user = User::where('id', 1)->first();
-      $user = $user->details("managers");
-    }
-    else {
-      $user = User::where('id', $user_id)->first();
-      $user = $user->details("teachers");
-      if(empty($user->role)){
-        $user = $user->details();
-      }
-    }
+    $user = Auth::user()->details();
 
     if(!isset($user)) {
       return $ret;
@@ -270,7 +261,7 @@ EOT;
     }
     else {
       //生徒＝自分のみ
-      $member = $this->get_member($user_id);
+      $member = $this->get_member($user->user_id);
       if(!empty($member)){
         $ret[] = $member;
       }
@@ -617,9 +608,9 @@ EOT;
   public function getScheduleTypeNameAttribute(){
     return $this->schedule_type_name();
   }
-  public function student_name($user_id=0){
+  public function student_name(){
     $student_name = "";
-    foreach($this->get_access_member($user_id) as $member){
+    foreach($this->get_access_member() as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
       if($_member->role === 'student'){
@@ -1065,7 +1056,6 @@ EOT;
   }
   public function get_students(){
     $students = [];
-    //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
@@ -1077,7 +1067,6 @@ EOT;
   }
   public function get_teachers(){
     $teachers = [];
-    //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
