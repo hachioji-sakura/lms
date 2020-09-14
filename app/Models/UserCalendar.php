@@ -617,13 +617,22 @@ EOT;
         $student_name.=$_member['name'].',';
       }
     }
-    return $student_name;
+    return trim($student_name, ',');
   }
   public function details($user_id=0){
+	//TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
     $this->set_endtime_for_single_group();
     $item = $this;
-    $item['schedule_type_code'] = $this->schedule_type_code();
     $item['teaching_name'] = $this->teaching_type_name();
+    $item['status_name'] = $this->status_name();
+    $item['schedule_type_code'] = $this->schedule_type_code();
+    $item['schedule_type_name'] = $this->schedule_type_name();
+    $item['place_floor_name'] = $this->place_floor_name();
+    $item['work_name'] = $this->work();
+    $item['teaching_name'] = $this->teaching_type_name();
+
+    $item['date'] = date('Y/m/d',  strtotime($this->start_time));
+    $item['dateweek'] = $this->dateweek();
 
     //過ぎた予定かどうか
     $item['is_passed'] = $this->is_passed();
@@ -671,6 +680,7 @@ EOT;
     $item['teachers'] = $teachers;
     $item['students'] = $students;
     $item['managers'] = $managers;
+    $item['student_name'] = trim($student_name,',');
     $item['teacher_name'] = trim($teacher_name,',');
     $item['manager_name'] = trim($manager_name,',');
     $item['user_name'] = "";
