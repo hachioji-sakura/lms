@@ -28,6 +28,9 @@ class StudentParent extends Teacher
   public function relations(){
     return $this->hasMany('App\Models\StudentRelation', 'student_parent_id');
   }
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement','student_parent_id');
+  }
   public function status_name(){
     $status_name = "";
     if(app()->getLocale()=='en') return $this->status;

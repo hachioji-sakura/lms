@@ -5,7 +5,7 @@
 @endsection
 
 @section('title_header')
-{{__('labels.agreements')}}
+{{__('labels.agreement_statements')}}
 @endsection
 
 @section('page_sidemenu')
@@ -20,8 +20,8 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/agreements/create" page_title="{{__('labels.new').__('labels.agreements')}}" class="nav-link">
-            <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.agreements')}}
+          <a href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/create" page_title="{{__('labels.new').__('labels.agreement_statements')}}" class="nav-link">
+            <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.agreement_statements')}}
           </a>
         </li>
       </ul>

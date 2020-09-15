@@ -383,6 +383,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::resource('agreements', 'AgreementController');
   Route::get('agreements/{id}/delete', 'AgreementController@delete');
+  Route::resource('agreement_statements', 'AgreementStatementController');
+  Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

@@ -1405,7 +1405,7 @@ class Trial extends Model
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
-
+//askのtarget_modelはagreementsに変更
     $ask = Ask::add([
       "type" => "agreement",
       "end_date" => date("Y-m-d", strtotime("30 day")),
@@ -1434,4 +1434,6 @@ class Trial extends Model
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
   }
+
+
 }

@@ -47,7 +47,7 @@
 	          <div class="col-6 p-2">週{{$item->user->get_enable_calendar_setting_count()}}回</div>
 	          <div class="col-6 p-2 font-weight-bold" >授業時間</div>
 	          <div class="col-6 p-2">{{$item->tag_name('course_minutes')}}</div>
-	          @if($item->user->has_tag('lesson',2)==true)
+					  @if($item->user->has_tag('lesson',2)==true)
 	          <div class="col-6 p-2 font-weight-bold" >英会話コース</div>
 	          <div class="col-6 p-2">{{$item->tag_name('english_talk_course_type')}}</div>
 	          @endif
@@ -58,15 +58,13 @@
 						<div class="col-12 bd-b bd-gray"></div>
 						<div class="col-6 p-2 font-weight-bold" >入会金</div>
 	          <div class="col-6 p-2">
-							@if($item->is_first_brother()==true)
-								@component('trials.forms.entry_fee', ['user'=>$item->user]) @endcomponent
-							@else
-								0円
-							@endif
+							{{number_format($item->get_entry_fee())}}円(税込み)
+							<input type="hidden" name="agreements[entry_fee]" value="{{$item->get_entry_fee()}}">
 	          </div>
 						<div class="col-6 p-2 font-weight-bold" >月会費</div>
 	          <div class="col-6 p-2">
-							@component('trials.forms.monthly_fee', ['user'=>$item->user]) @endcomponent
+							{{number_format($item->get_monthly_fee())}}円(税込み)
+							<input type="hidden" name="agreements[monthly_fee]" value="{{$item->get_monthly_fee()}}">
 	          </div>
 	        </div>
 			</div>
@@ -122,7 +120,7 @@
 			              <div class="col-12 p-2 pl-4" >
 			                ・担当講師：{{$setting["teacher_name"]}}
 			              </div>
-			              <div class="col-12 p-2 pl-4" >
+		              <div class="col-12 p-2 pl-4" >
 											<?php
 											$is_exist = true;
 											$setting_key = $setting->get_tag_value('lesson').'_';
@@ -136,6 +134,19 @@
 												$setting_key .= $setting->get_tag_value('kids_lesson');
 											}
 											?>
+
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][student_id]" value="{{$item->id}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][teacher_id]" value="{{$setting->user->details('teachers')->id}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson]" value="{{$item->tags_name('lesson')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_type]" value="{{$setting->get_tag_value('course_type')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_minutes]" value="{{$item->tag_name('course_minutes')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][grade]" value="{{$item->grade()}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_week_count]" value="{{$item->user->get_enable_calendar_setting_count()}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][is_exam]" value="false">
+											@if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true)
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][subject]" value="{{$setting->get_tag_value('subject')}}">
+											@endif
+
 											@if(isset($input) && $input==true)
 												@if(!isset($tuition_form[$setting_key]))
 													<?php $tuition_form[$setting_key] = $setting->id; ?>
@@ -158,7 +169,7 @@
 														<span alt="{{$tuition_form[$setting_key]}}_tuition" class="ml-2 float-left mt-2">円 / 時間</span>
 														<span class="ml-2 float-left mt-2">円 / 時間</span>
 													@else
-														<input type="text" id="{{$setting->id}}_tuition" name="{{$tuition_form[$setting_key]}}_tuition" class="form-control w-50 float-left tuition" required="true" maxlength=5 inputtype="numeric"
+														<input type="text" id="{{$setting->id}}_tuition" name="agreement_statements[{{$setting_key}}][tuition]" class="form-control w-50 float-left tuition" required="true" maxlength=5 inputtype="numeric"
 														 minvalue="1000"
 														@if(isset($_edit) && $_edit==true)
  															value="{{$setting->get_tuition($item->user_id)}}" placeholder="(変更前) {{$setting->get_tuition($item->user_id)}}"
@@ -236,7 +247,7 @@ $(function(){
       data[fields[i]] = $(element).attr(fields[i]);
     }
 	  var r = get_tuition(data["lesson"]|0, data["course_type"], data["grade"], data["is_juken"]|0, data["lesson_week_count"]|0, data["subject"], data["course_minutes"]|0, data["teacher_id"]);
-		if($('input[name='+data['setting_id']+'_tuition]').val()==0 || util.isEmpty($('input[name='+data['setting_id']+'_tuition]').val()))	$('input[name='+data['setting_id']+'_tuition]').val(r);
+		if($('input[name='+data['setting_id']+'_tuition]').val()==0 || util.isEmpty($('input[id='+data['setting_id']+'_tuition]').val()))$('input[id='+data['setting_id']+'_tuition]').val(r);
 		$('span[alt='+data['setting_id']+'_tuition]').html(r);
 	}
 });

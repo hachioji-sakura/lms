@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Models\Trial;
 use App\Models\Tuition;
@@ -10,6 +11,8 @@ use App\Models\StudentParent;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
+use App\Models\AgreementStatement;
 
 use DB;
 use View;
@@ -720,6 +723,7 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
+    /*
     $res = $this->transaction($request, function() use ($request, $id){
       $trial = Trial::where('id', $id)->first();
       //受講料初期設定
@@ -731,13 +735,23 @@ class TrialController extends UserCalendarController
       }
       return $this->api_response(200, '', '', $trial);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-    if($this->is_success_response($res)){
-      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-        $trial = Trial::where('id', $id)->first();
-        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
-        return $this->api_response(200, '', '', $ask);
-      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-    }
+    */
+    $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+      //ここで契約レコード追加
+      dd($request->get('agreements'),$request->get('agreement_statements'));
+      $agreement = new Agreement;
+      $agreement->fill($request->get('agreements'));
+      $agreement->status =  'new';
+      $agreement->create_user_id = Auth::user()->id;
+      $agreement->save();
+      foreach($request->get('agreement_statements') as $form){
+        $statement_form[] = new AgreementStatement($form);
+      }
+      $agreement->agreement_statements()->saveMany($statement_form);
+      $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
+      $trial->update(['status' => 'entry_guidanced']);
+      return $this->api_response(200, '', '', $ask);
+    }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
   public function show_cancel_page(Request $request, $id){

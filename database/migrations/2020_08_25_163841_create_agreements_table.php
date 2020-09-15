@@ -15,16 +15,12 @@ class CreateAgreementsTable extends Migration
     {
         Schema::connection('mysql_common')->create('agreements', function (Blueprint $table) {
           $table->increments('id');
+          $table->string('title')->nullable(true)->comment('概要');
           $table->integer('entry_fee')->nullable(true)->comment('入会金');
-          $table->integer('membership_fee')->nullable(true)->comment('会費');
+          $table->integer('monthly_fee')->nullable(true)->comment('会費');
           $table->datetime('entry_date')->nullable(true)->comment('入会日');
           $table->string('status')->comment('ステータス')->index('index_status');
-          $table->integer('student_id')->comment('生徒ID')->index('index_student_id');
-          $table->integer('lesson_week_count')->comment('週コマ数');
-          $table->integer('lesson_time')->comment('受講時間(分)');
-          $table->string('course_type')->comment('授業形態');
-          $table->string('grade')->comment('学年');
-          $table->string('lesson_type')->comment('部門');
+          $table->integer('student_parent_id')->comment('契約者ID');
           $table->integer('create_user_id')->comment('起票者');
           $table->timestamps();
         });

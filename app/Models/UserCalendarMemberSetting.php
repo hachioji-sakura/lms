@@ -12,6 +12,7 @@ use App\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Tuition;
+use App\Models\AgreementStatement;
 
 class UserCalendarMemberSetting extends UserCalendarMember
 {

@@ -1106,4 +1106,67 @@ EOT;
     if(count($this->user->calendar_member_settings) > 0) return true;
     return false;
   }
+  public function get_monthly_fee(){
+    //契約時の自動計算用
+    //契約後は契約参照
+    $user = $this->user;
+    if($user->has_tag('lesson',1)==true){
+      //塾
+      $monthly_fee = 2000;
+    }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+      //英会話(中国語以外）
+      $monthly_fee = 2000;
+    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+      //幼児教室
+      $monthly_fee = 2000;
+    }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
+      //中国語
+      $monthly_fee = 1500;
+    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+      //そろばん
+      $monthly_fee = 1500;
+    }elseif($user->has_tag('lesson',3)==true){
+      //ピアノ
+      $monthly_fee = 1500;
+    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+      // ダンス
+      $monthly_fee = 500;
+    }
+    return $monthly_fee;
+  }
+  public function get_entry_fee(){
+    //契約時の自動計算用
+    //契約後は契約参照
+      $user = $this->user;
+      if($this->is_first_brother() == false){
+        return 0;
+      }
+      if($user->has_tag('lesson',1) == true ){
+        // 塾
+        $entry_fee = 20000;
+      }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+        // 英会話(中国語以外）
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        // 中国語
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        // 幼児教室
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+        // そろばん
+        $entry_fee = 10000;
+      }elseif($user->has_tag('lesson',3)==true){
+        // ピアノ
+        $entry_fee = 10000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+        // ダンス
+        $entry_fee = 5000;
+      }else{
+        //該当しない場合0円
+        $entry_fee = 0;
+      }
+      return $entry_fee;
+  }
+
 }

@@ -20,7 +20,7 @@ function calc_tuition(){
   var is_juken = $("input[name=is_juken]").val();
   var lesson_week_count = $("input[name=lesson_week_count]").val();
   var r = get_tuition(data["lesson"]|0, data["course_type"], grade, is_juken|0, lesson_week_count|0, data["subject"], data["course_minutes"]|0, data["tacher_id"]);
-  $("input[name=tuition]").val(r);
+  $("input[id=tuition]").val(r);
 }
 function get_tuition(lesson, course, grade, is_juken, lesson_week_count, subject, course_minutes, teacher_id){
   var url = '/api_tuition';
