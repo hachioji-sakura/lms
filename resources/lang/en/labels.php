@@ -77,6 +77,7 @@ return [
   'schedule_rest_cancel' => 'Schedule Rest Cancel',
   'schedule_fix' => 'Fix',
   'schedule_edit' => 'Edit',
+  'monthly_confirmed' => 'Monthly Confirmed',
   'schedule_presence' => 'Schedule Presence',
   'today_schedule_list' => 'Today Schedule',
   'month_schedule_list' => 'Month Schedule',
