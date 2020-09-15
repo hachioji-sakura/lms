@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -17,6 +18,7 @@ use App\Models\Ask;
 use App\Models\Trial;
 use DB;
 use View;
+
 class UserCalendarController extends MilestoneController
 {
   public $domain = 'calendars';
@@ -717,6 +719,9 @@ class UserCalendarController extends MilestoneController
         if (!View::exists($this->domain.'.'.$status)) {
           abort(404, 'ページがみつかりません(100)');
         }
+      }
+      else {
+        Auth::loginUsingId($request->get('user'));
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
