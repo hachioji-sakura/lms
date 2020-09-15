@@ -163,10 +163,6 @@ class TrialController extends UserCalendarController
     }
     $_table = $this->search($request);
 
-    $page_data = $this->get_pagedata($_table['count'], $param['_line'], $param['_page']);
-    foreach($page_data as $key => $val){
-      $param[$key] = $val;
-    }
 
     return view($this->domain.'.lists', $_table)
       ->with($param);
@@ -234,13 +230,7 @@ class TrialController extends UserCalendarController
       ]);
     }
     $items = $this->_search_sort($request, $items);
-    $items = $this->_search_pagenation($request, $items);
-    $items = $items->get();
-    /*
-    foreach($items as $item){
-      $item = $item->details();
-    }
-    */
+    $items = $items->paginate($request->get('_line'));
     \Log::warning("TrailController::search");
     return ['items' => $items, 'count' => $count];
   }
