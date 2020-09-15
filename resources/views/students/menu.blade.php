@@ -57,6 +57,9 @@
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
             {{__('labels.rest_contact')}}
+            @if($rest_contact_count > 0)
+            <span class="badge badge-danger right">{{$rest_contact_count}}</span>
+            @endif
           </p>
         </a>
       </li>

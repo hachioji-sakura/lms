@@ -572,6 +572,9 @@ EOT;
   public function datetime(){
     return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
+  public function getTimezoneAttribute(){
+    return $this->timezone();
+  }
   public function getStatusNameAttribute(){
     return $this->status_name();
   }
