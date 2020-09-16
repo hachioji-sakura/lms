@@ -28,5 +28,6 @@ class VerifyCsrfToken extends Middleware
       '*/email_edit',
       'api_setting_to_calendar*',
       'upload_images',
+      'api/info_mail_reply',
     ];
 }

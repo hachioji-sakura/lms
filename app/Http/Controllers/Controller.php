@@ -88,8 +88,10 @@ class Controller extends BaseController
       if($this->is_success_response($mail_log_res)){
         if(isset($mail_log_res['data'])){
           $mail_log_res['data']->send();
+          return $mail_log_res;
         }
       }
+      return null;
     }
     public function send_slack($message, $msg_type, $username=null, $channel=null) {
       if(empty($message)) return false;

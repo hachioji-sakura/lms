@@ -51,18 +51,18 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}" >
+          <a class="nav-link" href="/students/{{$charge_student->student_id}}" >
             <i class="fa fa-file nav-icon"></i>
             {{__('labels.details')}}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}/recess" >
+          <a class="nav-link" href="/students/{{$charge_student->student_id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->id}}/unsubscribe" >
+          <a class="nav-link" href="/students/{{$charge_student->student_id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
           </a>
         </li>

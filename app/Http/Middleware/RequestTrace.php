@@ -20,7 +20,7 @@ class RequestTrace
       $user = Auth::user();
       $user_id = 0;
       if(isset($user)) $user_id = $user->id;
-      ActionLog::add($user_id);
+      ActionLog::add($request, $user_id);
       return $next($request);
     }
 }

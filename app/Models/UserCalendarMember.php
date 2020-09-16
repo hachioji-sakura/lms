@@ -59,7 +59,7 @@ class UserCalendarMember extends Model
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words, $where_raw){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
@@ -162,7 +162,7 @@ class UserCalendarMember extends Model
       $res = $m->_office_system_api('PUT');
       $this->calendar->set_status();
     }
-    $this->calendar->set_endtime_for_singile_group();
+    $this->calendar->set_endtime_for_single_group();
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';
@@ -173,6 +173,7 @@ class UserCalendarMember extends Model
     $param['user'] = $u;
     $param['user_name'] = $u->name();
     $param['item'] = $this->calendar->details($this->user_id);
+    $param['notice'] = $remark;
     $param['send_to'] = $u->role;
     $param['is_proxy'] = false;
     if(($param['login_user']->role=='teacher' || $param['login_user']->role=='manager') && $u->role == 'student'){
@@ -558,11 +559,13 @@ class UserCalendarMember extends Model
 
         $update = [];
         $is_update = false;
+        /* remarkは更新しない
         if($this->remark != $comment){
           //comment -> remark
           $update['remark'] = $comment;
           $is_update = true;
         }
+        */
         if($this->exchange_limit_date != $exchange_limit_date){
           $update['exchange_limit_date'] = $exchange_limit_date;
           $is_update = true;
@@ -597,6 +600,7 @@ class UserCalendarMember extends Model
       'item'=>$this->calendar,
       'send_to' => 'teacher',
       'login_user' => $user->details(),
+      'notice' => '',
       ])->render();
 
     //期限＝予定前日まで
@@ -633,6 +637,7 @@ class UserCalendarMember extends Model
       'item'=>$this->calendar,
       'send_to' => 'manager',
       'login_user' => $user->details(),
+      'notice' => '',
       ])->render();
 
     $ask = Ask::add([
@@ -668,6 +673,8 @@ class UserCalendarMember extends Model
       'item'=>$this->calendar,
       'send_to' => 'manager',
       'login_user' => $user->details(),
+      'login_user' => $user->details(),
+      'notice' => '',
       ])->render();
 
     $ask = Ask::add([

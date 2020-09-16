@@ -97,6 +97,8 @@
         </div>
         </a>
       </div>
+    </div>
+    <div class="row">
       <div class="col-12 col-lg-4 col-md-6 mb-1">
         <a href="/trials?list=new">
         <div class="info-box">
@@ -110,56 +112,28 @@
         </div>
         </a>
       </div>
-      {{--
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/comments">
+        <a href="/calendars">
         <div class="info-box">
           <span class="info-box-icon bg-info">
-            <i class="fa fa-comments"></i>
+            <i class="fa fa-clock"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">コメント一覧</b>
-            <span class="text-sm">コメントの管理</span>
+            <b class="info-box-text text-lg">予定一覧</b>
+            <span class="text-sm">予定検索</span>
           </div>
         </div>
         </a>
       </div>
       <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/milestones">
+        <a href="/calendar_settings">
         <div class="info-box">
           <span class="info-box-icon bg-info">
-            <i class="fa fa-flag"></i>
+            <i class="fa fa-calendar-alt"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">目標一覧</b>
-            <span class="text-sm">生徒目標の管理</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/events">
-        <div class="info-box">
-          <span class="info-box-icon bg-info">
-            <i class="fa fa-calendar-check"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">イベント一覧</b>
-            <span class="text-sm">イベントの管理</span>
-          </div>
-        </div>
-        </a>
-      </div>
-      --}}
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/attributes">
-        <div class="info-box">
-          <span class="info-box-icon bg-warning">
-            <i class="fa fa-tags"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">属性一覧</b>
-            <span class="text-sm">定義項目の追加・編集</span>
+            <b class="info-box-text text-lg">繰り返し予定設定一覧</b>
+            <span class="text-sm">繰返予定の検索</span>
           </div>
         </div>
         </a>

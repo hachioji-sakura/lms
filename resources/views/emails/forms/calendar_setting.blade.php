@@ -3,6 +3,11 @@ if(empty($item["lesson"]) || empty($item["work_name"])){
   $item = $item->details(1);
 }
  ?>
+ @if(isset($notice) && !empty($notice))
+ ■{{__('labels.notice')}}:
+ {{$notice}}
+ @endif
+
 @if($item->is_teaching()==true)
 ■{{__('labels.regular_schedule_setting')}}
 @else
@@ -38,6 +43,10 @@ if(empty($item["lesson"]) || empty($item["work_name"])){
 @endif
 @endif
 --------------------------------------------
+@if(!empty($item->remark))
+{{__('labels.remark')}}:
+{{$item->remark}}
+@endif
 @isset($item['comment'])
 {{__('labels.notice')}}{{$item['comment']}}
 @endisset

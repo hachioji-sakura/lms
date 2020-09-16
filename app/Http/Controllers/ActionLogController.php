@@ -103,11 +103,26 @@ class ActionLogController extends MailLogController
     if(isset($request->search_type)){
       $items = $items->findMethods($request->search_type);
     }
+    //日付検索
+    $from_date = "";
+    $to_date = "";
+    if(isset($request->search_from_date)){
+      $from_date = $request->search_from_date;
+      if(mb_strlen($from_date) < 11) $from_date .=' 00:00:00';
+    }
+    if(isset($request->search_to_date)){
+      $to_date = $request->search_to_date;
+      if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
+    }
+    if(!empty($from_date) || !empty($to_date)){
+      if(empty($from_date)) $from_date = '2000-01-01 00:00:00';
+      if(empty($to_date)) $to_date = '9999-12-31 23:59:59';
+      $items = $items->whereBetween('created_at', [$from_date, $to_date]);
+    }
     //検索ワード
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
     }
-
     return $items;
   }
   /**

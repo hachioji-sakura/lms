@@ -331,7 +331,7 @@ EOT;
    */
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         $_like = '%'.$_search_word.'%';
@@ -1054,10 +1054,13 @@ EOT;
     return '';
   }
   public function get_tuition($setting, $is_enable_only=true){
+    \Log::warning("------get_tuition start------");
+    $lesson = $setting->get_tag_value('lesson');
+
     $tuitions = $this->tuitions->where('lesson', $setting->get_tag_value('lesson'))
     ->where('course_type', $setting->get_tag_value('course_type'))
     ->where('course_minutes', $setting->course_minutes)
-    ->where('lesson_week_count', $this->user->get_enable_calendar_setting_count())
+    ->where('lesson_week_count', $this->user->get_enable_calendar_setting_count($lesson))
     ->where('teacher_id', $setting->user->details()->id);
     if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
       $tuitions =  $tuitions->where('subject', $setting->get_tag_value('subject'));
@@ -1066,10 +1069,15 @@ EOT;
       $tuitions =  $tuitions->where('subject', $setting->get_tag_value('kids_lesson'));
     }
     $tuitions = $tuitions->sortByDesc('id');
-    if(!isset($tuitions)) return null;
+    \Log::warning("------get_tuition end------");
+    if(!isset($tuitions)){
+      return null;
+    }
+
     foreach($tuitions as $tuition){
       if($is_enable_only==true && $tuition->is_enable()==false) continue;
-      return $tuition->tuition;
+      \Log::warning("------get_tuition end------");
+      return number_format($tuition->tuition);
     }
     //受講料設定なし
     return null;

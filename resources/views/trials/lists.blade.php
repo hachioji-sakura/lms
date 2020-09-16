@@ -4,10 +4,9 @@
 @extends('dashboard.common')
 
 @section('list_pager')
-@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-  @slot("addon_button")
-  @endslot
-@endcomponent
+  @if(count($items) > 0)
+  {{$items->appends(Request::query())->links('components.paginate')}}
+  @endif
 @endsection
 
 @section('contents')
