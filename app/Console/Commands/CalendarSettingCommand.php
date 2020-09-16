@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarSettingCommand extends Command
 {
@@ -41,6 +42,8 @@ class CalendarSettingCommand extends Command
      */
     public function handle()
     {
+      Auth::loginUsingId(1);
+
       $view_mode = false;
       if(!empty($this->option("view_mode"))){
         $view_mode = true;

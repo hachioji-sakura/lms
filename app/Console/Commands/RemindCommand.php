@@ -43,6 +43,7 @@ class RemindCommand extends Command
      */
     public function handle()
     {
+      /*
       $type = $this->argument("type");
       $this->teacher1 = Teacher::where('id', 1)->first();
       switch($type){
@@ -55,6 +56,7 @@ class RemindCommand extends Command
         default:
           $this->info("command not found");
       }
+      */
     }
 
     public function remind_trial_calendar($type){
