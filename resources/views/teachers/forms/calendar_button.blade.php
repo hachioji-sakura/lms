@@ -28,7 +28,7 @@
         @endif
       </a>
     @endif
-    @if(!($calendar->work == 10 || $calendar->work == 11))
+    @if(!($calendar->work == 10 || $calendar->work == 11 || $calendar->work == 9))
       {{--代講依頼　土日、期間講習は除く--}}
       <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change" role="button" class="btn btn-danger btn-sm ml-1">
         <i class="fa fa-exchange-alt mr-1"></i>{{__('labels.ask_teacher_change')}}

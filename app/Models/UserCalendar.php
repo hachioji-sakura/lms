@@ -169,13 +169,14 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  public function scopeFindUser($query, $user_id)
+  public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id from user_calendar_members where user_id=? and status != ?)
 EOT;
-    return $query->whereRaw($where_raw,[$user_id,'invalid']);
+    return $query->whereRaw($where_raw,[$user_id, $deactive_status]);
   }
+
   public function scopeHiddenFilter($query)
   {
     $where_raw = <<<EOT
@@ -1314,6 +1315,8 @@ EOT;
       return false;
     }
   }
+
+  //TODO 事務システムリプレース後は不要
   public function get_schedule_ids(){
     $members = $this->members;
     $schedule_ids = [];
@@ -1324,4 +1327,33 @@ EOT;
     }
     return $schedule_ids;
   }
+  public function teacher_change($is_exec = true, $change_user_id, $target_user_id){
+    if($is_exec==true){
+      //事務システムの更新
+      $teacher_id_onetime = User::find($change_user_id)->get_tag('teacher_no')->tag_value;
+      $schedule_ids = $this->get_schedule_ids();
+      $this->unk_schedule_update($schedule_ids, $teacher_id_onetime);
+
+      //UserCalendarの主催者更新
+      $this->update(['user_id' => $change_user_id]);
+
+      //代講データを登録
+      $member = $this->members->where('user_id',$target_user_id)->first();
+      $new_member = $member->replicate();
+      $new_member->user_id = $change_user_id;
+      $new_member->exchanged_member_id = $member->id;
+      $new_member->save();
+
+      //代講した証拠が必要なので元のレコードをinvalidで残す
+      $member->status = 'invalid';
+      $member->save();
+    }
+  }
+
+  //TODO 事務システムリプレース後は不要
+    public function unk_schedule_update($schedule_ids, $teacher_id){
+      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+        'teacher_id' => $teacher_id,
+      ]);
+    }
 }

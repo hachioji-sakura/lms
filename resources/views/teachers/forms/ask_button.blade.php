@@ -23,12 +23,6 @@
   </a>
   --}}
   @endif
-  @if($user->role==="manager" && $domain=="managers" && $ask["type"] == "lecture_cancel")
-    {{-- 代講 --}}
-    <a href="javascript:void(0);" title="{{$ask["id"]}}" page_title="代講" page_form="dialog" page_url="/asks/{{$ask["id"]}}/teacher_change" role="button" class="btn btn-primary btn-sm mr-1">
-      <i class="fa fa-exchange-alt mr-1"></i>代講依頼
-    </a>
-  @endif
 @endif
 @if($user->id == $ask->create_user_id)
 <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼内容編集" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/ask/{{$ask->id}}/edit" role="button" class="btn btn-success btn-sm">

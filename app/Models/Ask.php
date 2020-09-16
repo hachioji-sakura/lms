@@ -274,7 +274,7 @@ EOT;
       case "teacher_change":
         $ret = true;
         //代講承認された
-        $target_model_data->members->where('user_id',$this->target_user_id)->first()->teacher_change($is_commit, $this->charge_user_id,$target_model_data);
+        $target_model_data->teacher_change($is_commit, $this->charge_user_id,$this->target_user_id);
         break;
     }
     if($is_complete==true){
@@ -345,6 +345,9 @@ EOT;
   }
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
+    if (!View::exists('emails.'.$template.'_text')) {
+      return false;
+    }
     if($this->target_user_id==1) return false;
     $title = $this->get_mail_title();
     $param['send_to'] = 'teacher';
@@ -434,6 +437,7 @@ EOT;
     return $ret;
   }
   public function get_target_model_data(){
+    //TODO Laravelのリレーションでいずれ対処する
     $ret = null;
     switch($this->target_model){
       case 'trials':

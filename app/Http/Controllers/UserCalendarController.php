@@ -861,10 +861,10 @@ class UserCalendarController extends MilestoneController
       unset($param['fields']['place_floor_name']);
       return view($this->domain.'.rest_change', [])->with($param);
     }
-    public function teacher_change_page(Request $request, $calendar_id)
+    public function teacher_change_page(Request $request, $id)
     {
 
-      $param = $this->get_param($request, $calendar_id);
+      $param = $this->get_param($request, $id);
       if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
 
       $_teachers = Teacher::findStatuses(["regular"])->get();
