@@ -260,8 +260,13 @@ class MilestoneController extends UserController
     {
       $param = $this->get_param($request);
       $res = $this->_store($request);
+      if(empty($res['message'])){
+        $message = '登録しました。';
+      }else{
+        $message = $res['message'];
+      }
       //生徒詳細からもCALLされる
-      return $this->save_redirect($res, $param, '登録しました。');
+      return $this->save_redirect($res, $param, $message);
     }
     /**
      * 新規登録ロジック

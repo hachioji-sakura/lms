@@ -124,6 +124,10 @@ EOT;
       $form['body'] = '';
     }
     if( $form['type'] == "teacher_change"){
+      $emp_ask = new Ask;
+      $emp_ask->target_user_id = $form['target_user_id'];
+      $emp_ask->charge_user_id = $form['charge_user_id'];
+      $form['title'] = __('labels.ask_teacher_change'). ' : ' . $emp_ask->target_user->details()->name() .' → '. $emp_ask->charge_user->details()->name();
       $form['body'] = View::make('emails.forms.calendar')->with([
         'item' => UserCalendar::where('id' ,$form['target_model_id'])->first(),
         'login_user' => Auth::user()->details(),
@@ -357,6 +361,7 @@ EOT;
     }
     $param["user_name"] = $this->target_user->details()["name"];
     $param["access_key"] = $this->target_user->access_key;
+    $param['is_send_to_target_user'] = true;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
   public function charge_user_mail($param){
@@ -377,6 +382,7 @@ EOT;
     }
     $param["user_name"] = $this->charge_user->details()["name"];
     $param["access_key"] = $this->charge_user->access_key;
+    $param['is_send_to_target_user'] = false; 
 
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
   }
