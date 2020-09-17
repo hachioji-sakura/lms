@@ -105,6 +105,7 @@ class Student extends Model
     if($grade != $default_grade){
       UserTag::setTag($this->user_id,'grade',$default_grade,1);
     }
+
     return $this->tag_name('grade');
   }
   /**
@@ -1012,7 +1013,9 @@ EOT;
    * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
    */
   public function default_grade(){
+    if(empty($this->birth_day)) return "";
     $birth = date('Ymd', strtotime($this->birth_day));
+
     //今日の日付を取得
     $now = date('Ymd');
 
@@ -1021,34 +1024,35 @@ EOT;
     $b_m = substr($birth, 4, 4);
     $n_y = substr($now, 0, 4);
     $n_m = substr($now, 4, 4);
+    $m = 0;
     if ($n_m < 400) { //前学期
-      $m = 6;
-    } else { //新学期
-      $m = 5;
+      $m = 1;
     }
-
     if($b_m < 402) { //早生まれ
       $n_y++;
     }
     //学年の計算
     $grade = $n_y - $b_y - $m;
     //結果を返す
-    if($grade < 2){
-      return 'toddler';
+    if($grade < 4){
+      return 'k1';
     }
-    else if($grade>=2 && $grade<=7){
-      return 'e'.($grade-1);
+    else if($grade < 7){
+      return 'k'.($grade-3);
     }
-    else if($grade>=8 && $grade<=10){
-      return 'j'.($grade-7);
+    else if($grade>=7 && $grade<=12){
+      return 'e'.($grade-6);
     }
-    else if($grade>=11 && $grade<=13){
-      return 'h'.($grade-10);
+    else if($grade>=13 && $grade<=15){
+      return 'j'.($grade-12);
     }
-    else if($grade>=14 && $grade<=16){
+    else if($grade>=16 && $grade<=18){
+      return 'h'.($grade-15);
+    }
+    else if($grade>=19 && $grade<=22){
       return 'university';
     }
-    else if($grade>17){
+    else if($grade>22){
       return 'adult';
     }
     return '';
