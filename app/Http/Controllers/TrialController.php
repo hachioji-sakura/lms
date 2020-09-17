@@ -163,10 +163,6 @@ class TrialController extends UserCalendarController
     }
     $_table = $this->search($request);
 
-    $page_data = $this->get_pagedata($_table['count'], $param['_line'], $param['_page']);
-    foreach($page_data as $key => $val){
-      $param[$key] = $val;
-    }
 
     return view($this->domain.'.lists', $_table)
       ->with($param);
@@ -234,13 +230,7 @@ class TrialController extends UserCalendarController
       ]);
     }
     $items = $this->_search_sort($request, $items);
-    $items = $this->_search_pagenation($request, $items);
-    $items = $items->get();
-    /*
-    foreach($items as $item){
-      $item = $item->details();
-    }
-    */
+    $items = $items->paginate($request->get('_line'));
     \Log::warning("TrailController::search");
     return ['items' => $items, 'count' => $count];
   }
@@ -545,24 +535,6 @@ class TrialController extends UserCalendarController
     }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }
-
-   public function admission(Request $request, $id){
-     $access_key = '';
-     $trial = Trial::where('id', $id)->first();
-     if(!isset($trial)) abort(404);
-
-     $param = [
-       'item' => $trial->details(),
-       'domain' => $this->domain,
-       'domain_name' => __('labels.'.$this->domain),
-       'attributes' => $this->attributes(),
-     ];
-     return view($this->domain.'.admission',
-       ['sended' => '',
-        '_edit' => false])
-       ->with($param);
-
-   }
 
    public function ask_hope_to_join(Request $request, $id){
      $trial = Trial::where('id', $id)->first();

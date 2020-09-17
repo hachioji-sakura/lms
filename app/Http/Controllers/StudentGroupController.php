@@ -139,10 +139,6 @@ class StudentGroupController  extends MilestoneController
     if(!isset($user)) abort(403);
 
     $_table = $this->search($request);
-    $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-    foreach($page_data as $key => $val){
-      $param[$key] = $val;
-    }
     return view($this->domain.'.lists', $_table)
       ->with($param);
   }
@@ -159,7 +155,7 @@ class StudentGroupController  extends MilestoneController
     $items = $items->where('teacher_id', $teacher_id);
     $items = $this->_search_scope($request, $items);
     $items = $this->_search_sort($request, $items);
-    $items = $items->get();
+    $items = $items->paginate($param['_line']);
     foreach($items as $item){
       $item = $item->details();
     }
@@ -212,9 +208,8 @@ class StudentGroupController  extends MilestoneController
     $items = $this->model();
     $items = $this->_search_scope($request, $items);
     $count = $items->count();
-    $items = $this->_search_pagenation($request, $items);
     $items = $this->_search_sort($request, $items);
-    $items = $items->get();
+    $items = $items->paginate($request->get('_line'));
     foreach($items as $item){
       $item = $item->details();
     }
@@ -242,7 +237,7 @@ class StudentGroupController  extends MilestoneController
           "delete"]
       ]
     ];
-    return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
+    return ["items" => $items, "fields" => $fields, "count" => $count];
   }
 
   /**

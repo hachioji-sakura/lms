@@ -130,65 +130,6 @@
     </div>
   </div>
   @else
-  {{--
-  <div class="col-12 mb-2">
-    <div class="description-block">
-      <h5 class="description-header">
-          <i class="fa fa-calendar-times mr-1"></i>
-          定期スケジュール
-      </h5>
-      <span class="description-text">
-        <table class="table border-bottom">
-        <tr class="bg-secondary header">
-          <th class="p-1 text-center border-right ">
-            曜日/時間
-          </th>
-          <th class="p-1 text-center border-right ">
-            生徒
-          </th>
-          <th class="p-1 text-center border-right ">
-            内容
-          </th>
-        </tr>
-        @foreach($attributes['lesson_week'] as $week_day => $week_name)
-        <?php $settings = $teacher->user->get_enable_calendar_settings(); ?>
-            @if(isset($settings['week'][$week_day]))
-              @foreach($settings['week'][$week_day] as $setting)
-              <tr>
-                <td>
-                  {{$week_name}}
-                  {{$setting->timezone()}}
-                </td>
-                <td>
-                  @foreach($setting->details()['students'] as $member)
-                  <a class="text-xs mx-2" alt="student_name" href="/students/{{$member->user->student->id}}" target="_blank">
-                      {{$member->user->student->name()}}
-                  </a>
-                  @endforeach
-                </td>
-                <td>
-                  <span class="text-xs mx-2">
-                    <small class="badge badge-success mt-1 mr-1">
-                      {{$setting->place()}}
-                    </small>
-                  </span>
-                  @foreach($setting->subject() as $index => $name)
-                  <span class="text-xs mx-2">
-                    <small class="badge badge-primary mt-1 mr-1">
-                      {{$name}}
-                    </small>
-                  </span>
-                  @endforeach
-                </td>
-              </tr>
-              @endforeach
-            @endif
-        @endforeach
-        </table>
-      </span>
-    </div>
-  </div>
-  --}}
   @endif
   {{$addon}}
 </div>

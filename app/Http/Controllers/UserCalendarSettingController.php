@@ -151,10 +151,6 @@ class UserCalendarSettingController extends UserCalendarController
 
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -349,6 +345,7 @@ class UserCalendarSettingController extends UserCalendarController
 
     public function search(Request $request, $user_id=0)
     {
+      $param = $this->get_param($request);
       $items = $this->model();
 
       //曜日検索
@@ -360,13 +357,8 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       $items = $this->_search_scope($request, $items);
-      $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
+      $items = $items->orderByWeek()->orderBy($request->_sort, $request->_sort_order)->paginate($param['_line']);
 
-      $items = $items->orderByWeek();
-      $items = $this->_search_sort($request, $items);
-
-      $items = $items->get();
       $fields = [
         'repeat_setting_name' => [
           'label' => __('labels.title'),
@@ -407,15 +399,7 @@ class UserCalendarSettingController extends UserCalendarController
             "delete"]
         ]
       ];
-      foreach($items as $item){
-        $item = $item->details($user_id);
-        /*
-        if($user_id > 0) {
-          $item->own_member = $item->get_member($user_id);
-        }
-        */
-      }
-      return ["items" => $items, "fields" => $fields, "count" => $count];
+      return ["items" => $items, "fields" => $fields];
     }
     /**
      * データ更新時のパラメータチェック
@@ -830,12 +814,42 @@ class UserCalendarSettingController extends UserCalendarController
       $param['item']->work = "";
       $param['item']->place = "";
       $param['teachers'] = [];
+      $param['lesson_id'] = 0;
+      $param['student_id'] = 0;
+
+      if($request->has('lesson_id')){
+        $param['lesson_id'] = $request->get('lesson_id');
+      }
+
+      if($request->has('trial_id')){
+        //体験授業申し込みからの指定
+        $trial_id = intval($request->get('trial_id'));
+        $trial = Trial::where('id', $trial_id)->first();
+        $param['trial_id'] = $trial_id;
+        $param['item']->trial_id = $trial_id;
+        $candidate_teachers = $trial->candidate_teachers(0,0);
+        $lesson_id = 0;
+        if($request->has('lesson_id')){
+          $lesson_id = $request->get('lesson_id');
+          $param['teachers'] = $candidate_teachers[$lesson_id];
+        }
+        else {
+          $param['teachers'] = [];
+          foreach($candidate_teachers as $lesson_id => $teachers){
+            $param['teachers'] = array_merge($param['teachers'], $teachers);
+          }
+        }
+        $student = $trial->student;
+        $param['student_id'] = $student->id;
+      }
+
       if($param['user']->role==="teacher"){
         $param['teachers'][] = $param['user'];
         $param['teacher_id'] = $param['user']->id;
       }
       else if($param['user']->role==="manager"){
         if($request->has('teacher_id')){
+          $param['teachers'] = [];
           $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
           $param['teacher_id'] = $request->get('teacher_id');
         }
@@ -843,9 +857,10 @@ class UserCalendarSettingController extends UserCalendarController
           //事務からの登録の場合、作業内容＝9 (事務作業）
           $param['item']->work = 9;
         }
+
       }
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-        $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])
           ->with($param);

@@ -161,7 +161,7 @@ class UserCalendarMember extends Model
       $res = $m->_office_system_api('PUT');
       $this->calendar->set_status();
     }
-    $this->calendar->set_endtime_for_singile_group();
+    $this->calendar->set_endtime_for_single_group();
     //ステータス別のメッセージ文言取得
     $title = __('messages.mail_title_calendar_'.$status);
     $type = 'text';

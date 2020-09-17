@@ -86,8 +86,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::put('calendars/{id}/members/setting','UserCalendarController@member_setting');
 
   Route::get('calendars/check','UserCalendarController@setting_check');
-  Route::get('space_calendars','UserCalendarController@space_calendars');
-
 
 
   /*
@@ -122,7 +120,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('trials/{id}/candidate_date','TrialController@candidate_date_edit');
   Route::put('trials/{id}/candidate_date','TrialController@candidate_date_update');
 
-  Route::get('trials/{id}/commit','TrialController@admission');
 
   /*
   Route::get('trials/{id}/{status}','TrialController@status_update_page');
@@ -242,6 +239,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/late_arrival','StudentController@late_arrival');
   Route::get('students/{id}/resume','StudentController@resume');
   Route::get('students/{id}/tuition','StudentController@tuition');
+  Route::get('students/{id}/tuitions','StudentController@tuitions');
   Route::get('students/{id}/announcements','StudentController@show');
   Route::get('students/{id}/comments','StudentController@show_comment_page');
   Route::get('students/{id}/milestones','StudentController@show_milestone_page');

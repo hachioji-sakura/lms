@@ -35,8 +35,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('dailyproc:ask')->dailyAt('18:00');
 
-        //$schedule->command('calendarsetting:make')->dailyAt('18:00');
-
+        $schedule->command('calendarsetting:make')->monthlyOn(1, '00:00');
     }
 
     /**

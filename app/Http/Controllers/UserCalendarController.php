@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -17,6 +18,7 @@ use App\Models\Ask;
 use App\Models\Trial;
 use DB;
 use View;
+
 class UserCalendarController extends MilestoneController
 {
   public $domain = 'calendars';
@@ -252,7 +254,7 @@ class UserCalendarController extends MilestoneController
     }
 
     //生徒の指定
-    if($request->has('student_id')){
+    if($request->has('student_id') && $request->get('student_id') > 0){
       $form['student_id'] = $request->get('student_id');
       $form['students'] = [];
       foreach($form['student_id'] as $student_id){
@@ -279,6 +281,10 @@ class UserCalendarController extends MilestoneController
     else {
       $form['course_type'] = $request->get('course_type');
       unset($form['work']);
+    }
+    $form['trial_id'] = 0;
+    if($request->has('trial_id') && !empty($request->get('trial_id'))) {
+      $form['trial_id'] = $request->get('trial_id');
     }
 
     if($request->has('rest_reason') && !empty($request->get('rest_reason'))) {
@@ -423,54 +429,7 @@ class UserCalendarController extends MilestoneController
 
       $param = $this->get_param($request);
       $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
       return view($this->domain.'.lists', $_table)
-        ->with($param);
-    }
-    public function space_calendars(Request $request)
-    {
-      $user = $this->login_details($request);
-      if(!isset($user)) abort(403);
-      if($this->is_manager($user->role)!=true) abort(403);
-
-      if(!$request->has('_origin')){
-        $request->merge([
-          '_origin' => $this->domain,
-        ]);
-      }
-      if(!$request->has('_line')){
-        $request->merge([
-          '_line' => $this->pagenation_line,
-        ]);
-      }
-      if(!$request->has('_page')){
-        $request->merge([
-          '_page' => 1,
-        ]);
-      }
-      else if($request->get('_page')==0){
-        $request->merge([
-          '_page' => 1,
-        ]);
-      }
-      /*
-      if(!$request->has('_sort')){
-        $request->merge([
-          '_sort' => 'start_time',
-          '_sort_order' => 'desc',
-        ]);
-      }
-      */
-      $param = $this->get_param($request);
-      $_table = $this->search($request);
-      $page_data = $this->get_pagedata($_table["count"] , $param['_line'], $param["_page"]);
-      foreach($page_data as $key => $val){
-        $param[$key] = $val;
-      }
-      return view($this->domain.'.space_lists', $_table)
         ->with($param);
     }
 
@@ -572,61 +531,16 @@ class UserCalendarController extends MilestoneController
 
       return $this->api_response(200, "", "", $items->toArray());
     }
-    public function api_english_group(Request $request){
-      if(!$request->has('from_date')){
-        $request->merge([
-          'from_date' => date('Y-m-d', strtotime("+1 day")),
-        ]);
-      }
-      if(!$request->has('to_date')){
-        $request->merge([
-          'to_date' => date('Y-m-t', strtotime("+1 month")),
-        ]);
-      }
-
-      $param = $this->get_param($request);
-
-      $items = $this->model();
-      $items = $items->where('status', 'fix');
-      $items = $this->_search_scope($request, $items);
-      $items = $this->_search_pagenation($request, $items);
-      $items = $this->_search_sort($request, $items);
-      $items = $items->orderBy('start_time')->get();
-
-      $ret = [];
-      foreach($items as $item){
-        if($item->is_group()==false) continue;
-        if(!$item->is_english_talk_lesson()) continue;
-        if($request->has('english_teacher')){
-          if($item->user->has_tag('english_teacher', $request->get('english_teacher'))==false){
-            continue;
-          }
-        }
-        if($request->has('english_talk_lesson')){
-          if($item->user->has_tag('english_talk_lesson', $request->get('english_talk_lesson'))==false){
-            continue;
-          }
-        }
-        $item = $item->details(0);
-        $ret[] = $item;
-      }
-      return "";
-      return $this->api_response(200, "", "", $ret);
-    }
     public function search(Request $request)
     {
+      $param = $this->get_param($request);
       $user = $this->login_details($request);
       if(!isset($user)) return $this->forbidden();
       if($this->is_manager($user->role)!=true) return $this->forbidden();
       $items = $this->model();
       $items = $this->_search_scope($request, $items);
-      $count = $items->count();
-      $items = $this->_search_pagenation($request, $items);
-      $items = $this->_search_sort($request, $items);
-      $items = $items->get();
-      foreach($items as $item){
-        $item = $item->details(1);
-      }
+      $items = $items->orderBy($request->_sort, $request->_sort_order)->paginate($param['_line']);
+
       $fields = [
         "datetime" => [
           "label" => __('labels.datetime'),
@@ -657,7 +571,7 @@ class UserCalendarController extends MilestoneController
             "delete"]
         ]
       ];
-      return ["items" => $items->toArray(), "fields" => $fields, "count" => $count];
+      return ["items" => $items, "fields" => $fields];
     }
 
     /**
@@ -806,6 +720,9 @@ class UserCalendarController extends MilestoneController
           abort(404, 'ページがみつかりません(100)');
         }
       }
+      else {
+        Auth::loginUsingId($request->get('user'));
+      }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
 
@@ -905,7 +822,7 @@ class UserCalendarController extends MilestoneController
       if(!isset($calendar)) abort(404, 'ページがみつかりません(102)');
       if($request->has('user') && $request->has('key')){
         $is_find = false;
-        foreach($calendar->get_access_member($request->get('user')) as $member){
+        foreach($calendar->get_access_member() as $member){
           if($member->user_id == $request->get('user')){
             //指定したuserがcalendar.memberに存在する
             $is_find = true;
@@ -967,8 +884,10 @@ class UserCalendarController extends MilestoneController
       $res = $this->transaction($request, function() use ($request, $param, $id){
         if($param['item']->status=='new' || $param['item']->status=='confirm'){
           $remark = $param['item']->remark;
+          $param['notice'] = '';
           if(!empty($request->get('cancel_reason'))){
             $remark.="\nキャンセル理由[".$request->get('cancel_reason')."]";
+            $param['notice'] = "キャンセル理由[".$request->get('cancel_reason')."]";
           }
           UserCalendar::where('id', $id)->update(['status' => 'cancel', 'remark' => $remark]);
           UserCalendarMember::where('calendar_id', $id)->update(['status' => 'cancel']);
@@ -1366,7 +1285,6 @@ class UserCalendarController extends MilestoneController
         $student = $trial->student;
         $param['student_id'] = $student->id;
       }
-
       if($request->has('exchanged_calendar_id')){
         //振替元指定あり
         $param['is_exchange_add'] = true;
@@ -1384,7 +1302,6 @@ class UserCalendarController extends MilestoneController
       }
       else {
         //新規
-        $param['teachers'] = [];
         if($param['user']->role==="teacher"){
           $param['teachers'][] = $param['user'];
           $param['teacher_id'] = $param['user']->id;
@@ -1394,6 +1311,7 @@ class UserCalendarController extends MilestoneController
         }
         else if($param['user']->role==="manager"){
           if($request->has('teacher_id')){
+            $param['teachers'] = [];
             $param['teachers'][] = Teacher::where('id', $request->get('teacher_id'))->first();
             $param['teacher_id'] = $request->get('teacher_id');
           }
@@ -1405,7 +1323,6 @@ class UserCalendarController extends MilestoneController
       }
 
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-
         if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])
@@ -1483,7 +1400,6 @@ class UserCalendarController extends MilestoneController
       if($holiday!=null && $holiday->is_private_holiday() == true){
         return $this->error_response('休校日のため予定は登録できません');
       }
-      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {
           abort(400, "日時パラメータ不正");
@@ -1513,6 +1429,7 @@ class UserCalendarController extends MilestoneController
 
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         return $this->api_response(200, '', '', $calendar);
+        $res = $this->transaction($request, function() use ($request){
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
