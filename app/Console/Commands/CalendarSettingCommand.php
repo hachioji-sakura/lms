@@ -57,7 +57,7 @@ class CalendarSettingCommand extends Command
 
       //パラメータ指定がない場合
       //登録範囲　3か月分, 5週目の授業あり、開始日＝今日
-      if(empty($range_month)) $range_month=3;
+      if(empty($range_month)) $range_month=1;
       if(empty($week_count)) $week_count=5;
       if(empty($start_date)) $start_date=date('Y-m-d');
 
