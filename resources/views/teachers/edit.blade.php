@@ -14,7 +14,7 @@
     @yield('bank_form')
     <div class="row">
       <div class="col-12 mb-1">
-        <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_edit">
+        <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_edit">
           <i class="fa fa-edit mr-1"></i>
           {{__('labels.update_button')}}
         </button>
