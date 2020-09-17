@@ -363,6 +363,9 @@ class AskController extends MilestoneController
      $param['trial'] = $param['item']->get_target_model_data();
      $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
+     $param['fields'] = [];
+     $param['student'] = $param['trial']->student;
+
      return view('asks.agreement', [])->with($param);
    }
 

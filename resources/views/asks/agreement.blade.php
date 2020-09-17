@@ -86,20 +86,40 @@ $(function(){
 });
 </script>
 @elseif($item->status=='commit')
-<h4 class="bg-success p-3 text-sm">
-  ご入会のご連絡を頂き、大変感謝致します。<br>
-  <br>
-  大変お手数ですが、システムへのユーザー登録をしていただけますと幸いです。  <br>
-  <br>
-</h4>
-  <div class="col-12 mb-1" id="commit_form">
-    <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$access_key}}">
-      <i class="fa fa-sign-in-alt mr-1"></i>
-      ユーザー登録画面
-    </a>
+  @if($trial->parent->user->status==0)
+  <h4 class="bg-success p-3 text-sm">
+    ご入会のご連絡を頂き、大変感謝致します。<br>
+  </h4>
+  @else
+  <h4 class="bg-success p-3 text-sm">
+    ご入会のご連絡を頂き、大変感謝致します。<br>
+    <br>
+    大変お手数ですが、システムへのユーザー登録をしていただけますと幸いです。  <br>
+    <br>
+  </h4>
+    <div class="col-12 mb-1" id="commit_form">
+      <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$access_key}}">
+        <i class="fa fa-sign-in-alt mr-1"></i>
+        ユーザー登録画面
+      </a>
+    </div>
+  @endif
+  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user]) @endcomponent
+  <div class="row">
+    <div class="col-12 mb-1">
+      @if(isset($user) && $user->id == $trial->student_parent_id)
+      <a class="btn btn-block btn-secondary" href="/" >
+        <i class="fa fa-arrow-right mr-1"></i>
+        {{__('labels.top')}}へ
+      </a>
+      @else
+      <a href="/login" class="btn btn-secondary btn-block">
+        <i class="fa fa-sign-in-alt mr-1"></i>
+        {{__('labels.to_login')}}
+      </a>
+      @endif
+    </div>
   </div>
-
-
 @elseif($item->status=='cancel')
 <h4 class="bg-success p-3 text-sm">
   この度はご連絡いただき、誠にありがとうございました。

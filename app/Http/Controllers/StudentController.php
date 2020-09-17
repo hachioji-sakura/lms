@@ -190,9 +190,9 @@ class StudentController extends UserController
     $param = $this->get_common_param($request);
     if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
-    $param['item'] = $this->model();
+    $param['item'] = null;
     return view($this->domain.'.create',
-      ['error_message' => '', '_edit' => false, 'item' => null])
+      ['error_message' => '', '_edit' => false])
       ->with($param);
    }
 

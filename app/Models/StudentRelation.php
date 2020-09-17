@@ -52,7 +52,7 @@ class StudentRelation extends Model
   {
     $student = Student::where('id', $this->student_id)->first();
     $calendar = UserCalendar::findUser($student->user_id)
-      ->rangeDate(date('Y-m-d 00:00:00'), date('Y-m-d 23:59:59'))
+      ->rangeDate(date('Y-m-d 00:00:00'))
       ->orderBy('start_time')->first();
     return $calendar;
   }
