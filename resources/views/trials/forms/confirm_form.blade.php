@@ -21,7 +21,7 @@
   <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
   <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
 </div>
-@if(!isset($_edit) || $_edit!=true)
+@if((!isset($_edit) || $_edit!=true) && !(isset($is_already_registered_student) && $is_already_registered_student==true))
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4">
     <i class="fa fa-user-graduate mr-1"></i>

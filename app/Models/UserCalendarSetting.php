@@ -38,6 +38,11 @@ EOT;
 
     return $query->whereRaw($where_raw,[]);
   }
+  public function scopeHiddenFilter($query)
+  {
+    return $query;
+  }
+
   //TODO 以下、不要となるロジック
   public function scopeFindTrialStudent($query, $trial_id)
   {
@@ -76,7 +81,7 @@ EOT;
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $where_raw = <<<EOT
       user_calendar_settings.remark like ?
       OR user_calendar_settings.id in (
@@ -172,9 +177,14 @@ EOT;
     if(empty($start_date) && empty($end_date)) return '-';
     return $start_date.'～'.$end_date;
   }
-
+  public function getRepeatSettingNameAttribute(){
+    return $this->schedule_method().$this->week_setting().'/'.$this->timezone();
+  }
+  public function getCalendarCountAttribute(){
+    return count($this->calendars);
+  }
   public function details($user_id=0){
-    $this->set_endtime_for_singile_group();
+    $this->set_endtime_for_single_group();
     $item = $this;
     $base_date = '2000-01-01 ';
 
@@ -544,7 +554,8 @@ EOT;
     }
     return $ret;
   }
-  /* https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155
+  /*
+  https://generation1986.g.hatena.ne.jp/primunu/20080317/1205767155
   */
   private function get_week_count($target_date){
     $saturday = 6;
@@ -727,12 +738,6 @@ EOT;
         $form[$tag->tag_key][] = $tag->tag_value;
       }
     }
-
-/*
-    foreach($form as $key => $v){
-      \Log::warning("param[".$key."] =".$v);
-    }
-*/
     $res = UserCalendar::add($form);
     if(!$this->is_success_response($res)){
       return $res;
@@ -768,7 +773,7 @@ EOT;
       $this->setting_to_calendar($start_date, $end_date, 1, 5);
     }
   }
-  public function set_endtime_for_singile_group($to_time_slot=""){
+  public function set_endtime_for_single_group($to_time_slot=""){
     if($this->is_group()==false) return false;
     $students = $this->get_students();
     $active_students = [];

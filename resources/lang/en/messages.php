@@ -99,7 +99,7 @@ return [
  'mail_title_calendar_rest' => 'rest of the class schedule',
  'mail_title_calendar_absence' => 'schedule absent',
  'mail_title_calendar_delete' => 'schedule delete',
- 'warning_unsubscribe' => "If you unsubscribe, you will not be able to log in to the system. \nIn addition, all class schedules after the unsubscribed date will be canceled automatically.",
+ 'warning_unsubscribe' => "Please specify the cancellation date after today. \nPlease confirm here, and you will be withdrawn after approval of withdrawal. \n\nYou will not be able to log in to this system after withdrawing. \nAll classes scheduled after the day of withdrawal will be canceled automatically.",
  'confirm_unsubscribe' => "Do you want to send a unsubscribed request?",
  'confirm_unsubscribe_cancel' => "Do you want to cancel the unsubscribed request?",
  'confirm_recess' => "Do you want to send a recess request?",
@@ -144,6 +144,6 @@ return [
  "copyright" => "Copyright © Kunitachi, Hachioji, and Hino's private instruction schools SaKuRa One All Rights Reserved.",
  'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
  "info_signup" => "The URL for main registration will be sent to the email address you entered.",
- "already_signup" => "If you have already registered, please log in here to use", 
+ "already_signup" => "If you have already registered, please log in here to use",
+ 'info_mail_reply' => 'You cannot reply to this email address',
  ];
-

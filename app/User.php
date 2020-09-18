@@ -228,6 +228,7 @@ EOT;
     }
     public function get_enable_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
+      ->whereNotIn('status', ['cancel'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -239,13 +240,38 @@ EOT;
       }
       return $ret;
     }
-    public function get_enable_calendar_setting_count(){
+    public function get_enable_lesson_calendar_settings(){
+      $items = UserCalendarSetting::findUser($this->id)
+      ->whereNotIn('status', ['cancel'])
+      ->enable()
+      ->orderByWeek('lesson_week', 'asc')
+      ->orderBy('from_time_slot', 'asc')
+      ->get();
+      $ret = [];
+      foreach(config('attribute.lesson') as $key => $name){
+        if(isset($ret[$key])) $ret[$key] = [];
+        foreach($items as $item){
+          $lesson = $item->get_tag_value('lesson');
+          if($lesson!=$key) continue;
+          if(!isset($ret[$lesson][$item->schedule_method])) $ret[$item->schedule_method] = [];
+          if(!isset($ret[$lesson][$item->schedule_method][$item->lesson_week])) $ret[$item->schedule_method][$item->lesson_week] = [];
+          $ret[$lesson][$item->schedule_method][$item->lesson_week][] = $item;
+        }
+      }
+      return $ret;
+    }
+    public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
+      ->whereNotIn('status', ['cancel'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();
-      return count($items);
+      $c = 0;
+      foreach($items as $item){
+        if($item->has_tag('lesson', $lesson)) $c++;
+      }
+      return $c;
     }
     /**
      * user_tagsから、work_mon_time、work_the_timeなどを取得し、

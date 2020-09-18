@@ -1,10 +1,5 @@
 @include('emails.common')
 {{$user_name}} 様
-この度は入会を希望して頂き、誠に感謝しております。
-
-この度は入会を希望して頂き、誠に感謝しております。
-以下の４点をご承諾いただけますと、御入会になります。
-
 @component('asks.forms.agreement_policy', []) @endcomponent
 
 1, 2, 3, 4, 5をご了承していただけますならば、

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\StudentParent;
 use App\Models\UserCalendarMember;
@@ -13,6 +14,7 @@ use App\Models\PlaceFloor;
 use App\Models\Trial;
 use App\User;
 use DB;
+
 use App\Models\Traits\Common;
 
 class UserCalendar extends Model
@@ -120,7 +122,7 @@ EOT;
   }
   public function scopeSearchWord($query, $word)
   {
-    $search_words = explode(' ', rawurldecode(urlencode($word)));
+    $search_words = $this->get_search_word_array($word);
     $where_raw = <<<EOT
       user_calendars.remark like ?
       OR user_calendars.id in (
@@ -169,13 +171,22 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  //TODO 以下、不要となるロジック
   public function scopeFindUser($query, $user_id)
   {
     $where_raw = <<<EOT
       user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
+  }
+  public function scopeHiddenFilter($query)
+  {
+    $where_raw = <<<EOT
+      user_calendars.id not in (
+        select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
+        where u2.work in (11)
+      )
+EOT;
+    return $query->whereRaw($where_raw);
   }
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
@@ -224,20 +235,9 @@ EOT;
     //$query = $this->scopeSearchDate($query, $from, $to);
     return $query;
   }
-  public function get_access_member($user_id){
+  public function get_access_member(){
     $ret = [];
-    if($user_id < 2){
-      //user_id 指定なし＝root扱い
-      $user = User::where('id', 1)->first();
-      $user = $user->details("managers");
-    }
-    else {
-      $user = User::where('id', $user_id)->first();
-      $user = $user->details("teachers");
-      if(empty($user->role)){
-        $user = $user->details();
-      }
-    }
+    $user = Auth::user()->details();
 
     if(!isset($user)) {
       return $ret;
@@ -261,7 +261,7 @@ EOT;
     }
     else {
       //生徒＝自分のみ
-      $member = $this->get_member($user_id);
+      $member = $this->get_member($user->user_id);
       if(!empty($member)){
         $ret[] = $member;
       }
@@ -572,8 +572,59 @@ EOT;
   public function datetime(){
     return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
+  public function getTimezoneAttribute(){
+    return $this->timezone();
+  }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
+  }
+  public function getPlaceFloorNameAttribute(){
+    return $this->place_floor_name();
+  }
+  public function getUserNameAttribute(){
+    return $this->user->details()->name();
+  }
+  public function getDatetimeAttribute($user_id){
+    return $this->datetime();
+  }
+  public function getDateweekAttribute($user_id){
+    return $this->dateweek();
+  }
+  public function getDateAttribute($user_id){
+    return date('Y/m/d',  strtotime($this->start_time));
+  }
+  public function getSubjectAttribute($user_id){
+    return $this->subject();
+  }
+  public function getCourseAttribute($user_id){
+    return $this->course();
+  }
+  public function getLessonAttribute($user_id){
+    return $this->lesson();
+  }
+  public function getWorkNameAttribute(){
+    return $this->work();
+  }
+  public function getTeachingTypeNameAttribute(){
+    return $this->teaching_type_name();
+  }
+  public function getScheduleTypeNameAttribute(){
+    return $this->schedule_type_name();
+  }
+  public function getStudentNameAttribute(){
+    $student_name = "";
+    foreach($this->get_access_member() as $member){
+      if(!isset($member->user)) continue;
+      $_member = $member->user->details('students');
+      if($_member->role === 'student'){
+        $student_name.=$_member['name'].',';
+      }
+    }
+    return trim($student_name, ',');
+  }
   public function details($user_id=0){
-    $this->set_endtime_for_singile_group();
+	//TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
+    $this->set_endtime_for_single_group();
     $item = $this;
     $item['teaching_name'] = $this->teaching_type_name();
     $item['status_name'] = $this->status_name();
@@ -1017,7 +1068,6 @@ EOT;
   }
   public function get_students(){
     $students = [];
-    //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('students');
@@ -1029,7 +1079,6 @@ EOT;
   }
   public function get_teachers(){
     $teachers = [];
-    //foreach($this->get_access_member($user_id) as $member){
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
@@ -1265,9 +1314,9 @@ EOT;
     if($this->status != $status){
       UserCalendar::where('id', $this->id)->update(['status' => $status]);
     }
-    $this->set_endtime_for_singile_group();
+    $this->set_endtime_for_single_group();
   }
-  public function set_endtime_for_singile_group($end_time=""){
+  public function set_endtime_for_single_group($end_time=""){
     if($this->is_group()==false) return false;
     $students = $this->get_students();
     $active_students = [];

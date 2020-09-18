@@ -53,6 +53,7 @@
     </li>
     @foreach($item->calendars as $calendar)
       <?php
+        $lesson = $calendar->get_tag_value('lesson');
         $teacher = $calendar->user->details('teachers');
         if(isset($find_teachers[$teacher->id])) continue;
         $ct = $item->_candidate_teachers($teacher->id, $calendar->lesson(true));
@@ -76,6 +77,12 @@
               <i class="fa fa-exclamation-triangle mr-1"></i>予定が空いていません
             </h6>
             @endif
+          </div>
+          <div class="col-12 mb-2">
+            <a href="javascript:void(0);" page_title="日付から通常授業登録する" page_form="dialog" page_url="/calendar_settings/create?trial_id={{$item->id}}&lesson_id={{$lesson}}&teacher_id={{$teacher->id}}" role="button" class="btn btn-info btn-block btn-sm">
+              <i class="fa fa-calendar-plus mr-1"></i>
+              日付から通常授業登録する
+            </a>
           </div>
           @endslot
         @endcomponent

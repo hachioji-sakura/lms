@@ -73,7 +73,7 @@ return [
   "info_calendar_add" => ":trial授業予定を追加いたしました。",
   "info_calendar_update" => ":trial授業の予定を変更いたしました。",
   "info_calendar_setting_delete" => "繰り返し予定が削除されました。",
-  "info_calendar_setting_add" => "繰り返し予定を追加いたしました。",
+  "info_calendar_setting_add" => "繰り返し通常授業予定の承認をお願いします。",
   "info_calendar_setting_update" => "繰り返し予定が変更されました。",
   "info_regular_lesson_setting_update" => "通塾スケジュールが変更されました。",
   "info_login_confirm" => "マイページにログインし、ご確認ください。",
@@ -102,7 +102,7 @@ return [
   'mail_title_calendar_setting_confirm' => '繰り返し予定をご確認ください',
   'mail_title_calendar_setting_fix' => '繰り返し予定が確定しました',
   'mail_title_calendar_setting_cancel' => '繰り返し予定をキャンセルしました',
-  'warning_unsubscribe' => "退会日は1か月以降の日にちを指定してください。\n\n退会すると、システムへのログインができなくなります。\nなお、退会日以降の授業予定はすべて自動的にキャンセルとなります。",
+  'warning_unsubscribe' => "退会日は本日以降を指定してください。\nこちらで確認し、退会承認後、退会となります。\n\n退会後は、当システムへのログインができなくなります。\nなお、退会日以降の授業予定はすべて自動的にキャンセルとなります。",
   'confirm_unsubscribe' => "退会連絡を送信しますか？",
   'confirm_unsubscribe_cancel' => "退会連絡を取り消しますか？",
   'info_unsubscribe_cancel' => "退会連絡を取り消しました。",
@@ -149,4 +149,5 @@ return [
   'message_restore_contents' => '前回入力された内容が残っています。復元しますか？',
   "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
   "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
+  'info_mail_reply' => 'このメールアドレスへの返信はできません',
 ];

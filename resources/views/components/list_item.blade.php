@@ -35,7 +35,6 @@
         @endif
         >
       @endif
-
       @if($key==="status_name")
         <small class="badge badge-{{config('status_style')[$row['status']]}} mt-1 mr-1">{{$row[$key]}}</small>
       @elseif(isset($row[$key]) && gettype($row[$key])=='array')

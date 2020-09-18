@@ -190,9 +190,9 @@ class StudentController extends UserController
     $param = $this->get_common_param($request);
     if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
-    $param['item'] = $this->model();
+    $param['item'] = null;
     return view($this->domain.'.create',
-      ['error_message' => '', '_edit' => false, 'item' => null])
+      ['error_message' => '', '_edit' => false])
       ->with($param);
    }
 
@@ -574,15 +574,8 @@ class StudentController extends UserController
 
    $view = "schedule";
    $calendars = $this->get_schedule($request->all(), $item->user_id);
-   $page_data = $this->get_pagedata($calendars['count'] , $param['_line'], $param['_page']);
-   foreach($page_data as $key => $val){
-     $param[$key] = $val;
-   }
    $calendars = $calendars["data"];
-   foreach($calendars as $calendar){
-     $calendar = $calendar->details();
-   }
-   $param["calendars"] = $calendars;
+   $param['calendars'] = $calendars;
    $param['view'] = $view;
    return view($this->domain.'.'.$view, [
      'item' => $item,
@@ -840,6 +833,7 @@ class StudentController extends UserController
    }
 
    $calendars = UserCalendar::findStatuses($statuses);
+   $calendars = $calendars->hiddenFilter();
    if(!empty($to_date) || !empty($from_date)){
      $calendars = $calendars->rangeDate($from_date, $to_date);
    }
@@ -863,10 +857,12 @@ class StudentController extends UserController
    $calendars = $calendars->sortStarttime($sort);
 
    if(isset($form['_page']) && isset($form['_line'])){
-     $calendars = $calendars->pagenation(intval($form['_page'])-1, $form['_line']);
+     $calendars = $calendars->paginate($form['_line']);
+   }
+   else {
+     $calendars = $calendars->get();
    }
    //echo $calendars->toSql()."<br>";
-   $calendars = $calendars->get();
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
        $calendars[$i] = $calendar->details($user_id);
@@ -1243,7 +1239,6 @@ class StudentController extends UserController
     if(!$this->is_success_response($req)){
       return $req;
     }
-
     $res =  $this->transaction($request, function() use ($request, $id){
        $user = $this->login_details($request);
        $form = $request->all();

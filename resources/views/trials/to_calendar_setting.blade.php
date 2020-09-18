@@ -16,7 +16,7 @@
         <input type="hidden" name="calendar_id" value="{{$select_calendar_id}}">
         <input type="hidden" name="teacher_id" value="{{$candidate_teacher->id}}">
         <input type="hidden" name="course_minutes" value="{{$item->get_tag('course_minutes')->tag_value}}">
-        <input type="hidden" name="lesson_week_count" value="{{$item->student->user->get_enable_calendar_setting_count()}}">
+        <input type="hidden" name="lesson_week_count" value="{{$item->student->user->get_enable_calendar_setting_count($select_lesson)}}">
         <div class="row mb-1">
           <div class="col-md-12">
             <div class="card card-widget mb-2">
@@ -36,6 +36,19 @@
                     </div>
                   </div>
                   @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teacher, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  <div class="col-12 col-md-6 mt-2">
+                    <label for="start_date" class="w-100">
+                      {{__('labels.schedule_start_date')}}
+                      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+                    </label>
+                    <div class="input-group">
+                      <input type="text" name="enable_start_date" class="form-control float-left w-30" uitype="datepicker" required="true"
+                      @if(isset($item) && isset($item->schedule_start_hope_date))
+                      placeholder = "授業開始希望日：{{date('Y/m/d', strtotime($item->schedule_start_hope_date))}}"
+                      @endif
+                      >
+                    </div>
+                  </div>
                   @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
@@ -80,6 +93,10 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>{{__('labels.regular_schedule_setting')}}
+            <a href="javascript:void(0);" page_title="日付から通常授業登録する" page_form="dialog" page_url="/calendar_settings/create?trial_id={{$item->id}}" role="button" class="btn btn-info btn-sm ml-1 float-right">
+              <i class="fa fa-calendar-plus mr-1"></i>
+              日付から通常授業登録する
+            </a>
           </div>
           <div class="card-footer">
             @component('trials.forms.user_calendar_setting',['item'=>$item, 'attributes' => $attributes, 'user' => $user, 'domain' => $domain, 'domain_name' => $domain_name]) @endcomponent

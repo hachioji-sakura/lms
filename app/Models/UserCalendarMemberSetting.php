@@ -379,13 +379,12 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $res;
   }
   public function set_api_lesson_fee($lesson_fee=null){
-    if($this->setting->is_teaching()!=true){
 
+    if($this->setting->is_teaching()!=true){
       return null;
     }
     $user = $this->user->details();
     if($user->role!='student'){
-      \Log::warning("d1-2 user_role=".$user->role);
       return null;
     }
 
@@ -429,7 +428,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $tuition = $this->get_tuition();
 
     if($tuition == null){
-      \Log::warning("d3");
+
       Tuition::add([
         'student_id' => $user->id,
         'teacher_id' => $teacher->id,
@@ -448,11 +447,14 @@ class UserCalendarMemberSetting extends UserCalendarMember
       ]);
     }
     else {
+
       $tuition->update([
         'title' => $setting_details['title'],
         'tuition' => $lesson_fee,
       ]);
     }
+
+
     return $this->api_response(200, '', '');
   }
   //TODO : status_updateをcalendar_setting向けに最適帰化
@@ -500,6 +502,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     $param['login_user'] = $login_user->details();
     $param['user'] = $u;
     $param['user_name'] = $u->name();
+    $param['notice'] = $remark;
     $param['item'] = $this->setting->details($this->user_id);
     $param['send_to'] = $u->role;
 

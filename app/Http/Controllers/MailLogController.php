@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\MailLog;
+
 use Illuminate\Http\Request;
 
 class MailLogController extends MilestoneController
@@ -90,13 +91,30 @@ class MailLogController extends MilestoneController
       $items = $items->where('id',$request->id);
     }
     //ステータス 検索
-    if(isset($request->search_status)){
-      $items = $items->fieldWhereIn($request->search_status);
+    if(isset($request->search_status) && count($request->search_status)>0){
+      $items = $items->fieldWhereIn('status', $request->search_status);
     }
     //種別 検索
     if(isset($request->search_type)){
       $items = $items->findTemplates($request->search_type);
     }
+    //日付検索
+    $from_date = "";
+    $to_date = "";
+    if(isset($request->search_from_date)){
+      $from_date = $request->search_from_date;
+      if(mb_strlen($from_date) < 11) $from_date .=' 00:00:00';
+    }
+    if(isset($request->search_to_date)){
+      $to_date = $request->search_to_date;
+      if(mb_strlen($to_date) < 11) $to_date .=' 23:59:59';
+    }
+    if(!empty($from_date) || !empty($to_date)){
+      if(empty($from_date)) $from_date = '2000-01-01 00:00:00';
+      if(empty($to_date)) $to_date = '9999-12-31 23:59:59';
+      $items = $items->whereBetween('created_at', [$from_date, $to_date]);
+    }
+
     //検索ワード
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
@@ -183,6 +201,38 @@ class MailLogController extends MilestoneController
       'action' => $request->get('action'),
       'fields'=>$fields])
       ->with($param);
+  }
+  /**
+   * info@hachioji-sakura.com
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function info_mail_reply(Request $request)
+  {
+    $form_names = ['from_address', 'body', 'subject', 'gmail_id'];
+    foreach($form_names as $form_name){
+      if(!$request->has($form_name) || empty($request->get($form_name))){
+        return $this->bad_request($form_name.'パラメータが存在しない');
+      }
+    }
+    $form = $request->all();
+    $title = __('messages.info_mail_reply');
+    $title .= '[gmail_id='.$request->get('gmail_id').']';
+    //2重送信チェック(1分前に登録済みかどうか）
+    $already_mail_log = Maillog::where('to_address', $form['from_address'])
+                          ->where('template', 'info_mail_reply')
+                          ->where('subject', $title)
+                          ->where('type', 'text')
+                          ->first();
+    if(isset($already_mail_log)){
+      return $this->error_response('2重送信エラー[gmail_id.id='.$request->get('gmail_id').']');
+    }
+
+    $res = $this->send_mail($form['from_address'], $title, $form, 'text', 'info_mail_reply');
+    if($this->is_success_response($res)){
+      return $res;
+    }
+    return $this->error_response('メール送信失敗');
   }
 
 }

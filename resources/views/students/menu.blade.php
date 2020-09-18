@@ -57,10 +57,14 @@
           <i class="fa fa-calendar-times nav-icon"></i>
           <p>
             {{__('labels.rest_contact')}}
+            @if($rest_contact_count > 0)
+            <span class="badge badge-danger right">{{$rest_contact_count}}</span>
+            @endif
           </p>
         </a>
       </li>
       @endif
+      @if($user->role!='student')
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=exchange" class="nav-link @if($view=="schedule" && $list=="exchange") active @endif">
           <i class="fa fa-exchange-alt nav-icon"></i>
@@ -72,7 +76,6 @@
           </p>
         </a>
       </li>
-      @if($user->role!='student')
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
           <i class="fa fa-history nav-icon "></i>

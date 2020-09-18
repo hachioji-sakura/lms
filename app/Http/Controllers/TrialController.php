@@ -166,10 +166,6 @@ class TrialController extends UserCalendarController
     }
     $_table = $this->search($request);
 
-    $page_data = $this->get_pagedata($_table['count'], $param['_line'], $param['_page']);
-    foreach($page_data as $key => $val){
-      $param[$key] = $val;
-    }
 
     return view($this->domain.'.lists', $_table)
       ->with($param);
@@ -237,13 +233,7 @@ class TrialController extends UserCalendarController
       ]);
     }
     $items = $this->_search_sort($request, $items);
-    $items = $this->_search_pagenation($request, $items);
-    $items = $items->get();
-    /*
-    foreach($items as $item){
-      $item = $item->details();
-    }
-    */
+    $items = $items->paginate($request->get('_line'));
     \Log::warning("TrailController::search");
     return ['items' => $items, 'count' => $count];
   }
@@ -549,24 +539,6 @@ class TrialController extends UserCalendarController
     return $this->save_redirect($res, [], '通常授業予定を設定しました。', '/trials/'.$id.'');
   }
 
-   public function admission(Request $request, $id){
-     $access_key = '';
-     $trial = Trial::where('id', $id)->first();
-     if(!isset($trial)) abort(404);
-
-     $param = [
-       'item' => $trial->details(),
-       'domain' => $this->domain,
-       'domain_name' => __('labels.'.$this->domain),
-       'attributes' => $this->attributes(),
-     ];
-     return view($this->domain.'.admission',
-       ['sended' => '',
-        '_edit' => false])
-       ->with($param);
-
-   }
-
    public function ask_hope_to_join(Request $request, $id){
      $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
@@ -725,9 +697,10 @@ class TrialController extends UserCalendarController
     $access_key = $this->create_token(2678400);
     /*
     $res = $this->transaction($request, function() use ($request, $id){
+
       $trial = Trial::where('id', $id)->first();
       //受講料初期設定
-      foreach($trial->user_calendar_settings as $setting){
+      foreach($trial->get_calendar_settings() as $setting){
         if($request->has($setting->id.'_tuition')){
           $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->where('user_id', $trial->student->user_id)->first();
           $member->set_api_lesson_fee(intval($request->get($setting->id.'_tuition')));

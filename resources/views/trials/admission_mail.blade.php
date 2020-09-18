@@ -21,7 +21,11 @@
         --}}
     		<div class="row">
     			<div class="col-12 col-md-6 mb-1">
-    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="入会案内メールを送信しますか？">
+    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="入会案内メールを送信しますか？"
+            @if($item->is_exist_calendar_settings()!=true)
+              disabled
+            @endif
+            >
     					<i class="fa fa-envelope mr-1"></i>
     					入会案内メールを送信する
     				</button>

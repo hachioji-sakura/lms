@@ -63,6 +63,16 @@
   </li>
   <li class="nav-item dropdown">
     <a class="nav-link" data-toggle="dropdown" href="#">
+      <i class="fa fa-calendar"></i>
+      <span class="d-none d-sm-inline-block">{{__('labels.calendar_page')}}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg">
+      <a href="/calendars" class="dropdown-item">{{__('labels.schedule_list')}}</a>
+      <a href="/calendar_settings" class="dropdown-item">{{__('labels.regular_schedule_list')}}</a>
+    </div>
+  </li>
+  <li class="nav-item dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
       <i class="fa fa-database"></i>
       <span class="d-none d-sm-inline-block">{{__('labels.other')}}</span>
     </a>
@@ -73,7 +83,7 @@
       <a href="/milestones" class="dropdown-item">{{__('labels.milestones_list')}}</a>
       <a href="/events" class="dropdown-item">{{__('labels.events_list')}}</a>
       --}}
-      <a href="/maillogs" class="dropdown-item">{{__('labels.maillogs')}}</a>
+      <a href="/maillogs?search_status[]=sended" class="dropdown-item">{{__('labels.maillogs')}}</a>
       <a href="/actionlogs" class="dropdown-item">{{__('labels.actionlogs')}}</a>
       <a href="/attributes?select_key=keys" class="dropdown-item">{{__('labels.attributes_list')}}</a>
     </div>

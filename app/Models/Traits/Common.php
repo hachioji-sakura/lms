@@ -155,4 +155,9 @@ trait Common
   public function get_course_minutes($from_time, $to_time){
     return $course_minutes = intval(strtotime($to_time) - strtotime($from_time))/60;
   }
+  public function get_search_word_array($str_search_word){
+    //$search_words = explode(' ', rawurldecode(urlencode($str_search_word)));
+    $search_words = explode(' ', (($str_search_word)));
+    return $search_words;
+  }
 }

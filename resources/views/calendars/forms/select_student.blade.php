@@ -12,7 +12,7 @@
   </div>
   <input type="hidden" name="student_name" value="{{$item->trial->student->name()}}">
 </div>
-@elseif(isset($_edit) && $_edit==true)
+@elseif((isset($item["exchanged_calendar_id"]) && $item["exchanged_calendar_id"]) > 0 || (isset($_edit) && $_edit==true))
 <div class="col-12 lesson_selected collapse schedule_type schedule_type_other schedule_type_class">
   <div class="form-group">
     <label for="title" class="w-100">

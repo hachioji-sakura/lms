@@ -52,6 +52,8 @@ $(function(){
   //キーワード検索
   $("#search_button").on("click", function(e){
     var _search_word = $("input[name=search_word]").val();
+    _search_word = _search_word.replace_all('+', '%2B');
+    _search_word = _search_word.replace_all('　', ' ');
     if(!util.isEmpty(_search_word)){
       location.href = service.setQueryParam({"search_word" : _search_word});
     }
@@ -254,6 +256,11 @@ function lesson_place_filter(name){
   var check_lesson = get_lesson_check(name);
   $("label.lesson_place").show();
   $("label.lesson_place:contains('ダットッチ校')").hide();
+  if(!check_lesson["is_school"] && !check_lesson["is_english"] &&
+      !check_lesson["is_piano"] && !check_lesson["is_kids_lesson"]){
+      //lessonを選択していないならば、無処理
+      return ;
+  }
   if(!check_lesson["is_school"] && !check_lesson["is_english"]){
     //ピアノ＝子安、
     $("label.lesson_place:contains('八王子北口校')").hide();
@@ -314,6 +321,37 @@ function lesson_change(){
   $(".lesson_selected").collapse('show');
   course_type_change();
   course_minutes_filter('lesson')
+}
+function course_type_change(){
+  var course_type = $('input[type="radio"][name="course_type"]:checked').val();
+  if(!course_type){
+    course_type = $('input[type="hidden"][name="course_type"]').val();
+  }
+  if(!course_type){
+    return false;
+  }
+  console.log('course_type_change:'+course_type);
+  if($("select[name='student_id[]']").length>0){
+    var student_id_form = $("select[name='student_id[]']");
+    var _width = student_id_form.attr("width");
+    student_id_form.select2('destroy');
+    student_id_form.removeAttr("multiple");
+    if(course_type!=="single" && student_id_form.attr('multiple')!='multiple'){
+      //グループ or ファミリーの場合
+      get_student_group();
+      student_id_form.attr("multiple", "multiple");
+      console.log('course_type_change:'+course_type);
+      $(".course_type_selected").collapse('show');
+    }
+    else {
+      $(".course_type_selected").collapse('hide');
+    }
+    student_id_form.select2({
+      width: _width,
+      placeholder: '選択してください',
+    });
+    student_id_form.val(-1).trigger('change');
+  }
 }
 function get_lesson_check(name){
   var is_school = false;

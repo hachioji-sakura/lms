@@ -5,8 +5,7 @@
 @include($domain.'.menu')
 
 @section('schedule_list_pager')
-@component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
-  @slot("addon_button")
+{{$calendars->appends(Request::query())->links('components.paginate')}}
   @if($list=="month")
   <ul class="pagination pagination-sm m-0 float-left text-sm">
     <li class="page-item float-left">
@@ -23,8 +22,6 @@
     </li>
   </ul>
   @endif
-  @endslot
-@endcomponent
 @endsection
 
 @section('contents')

@@ -19,7 +19,6 @@
       </label>
       @foreach($attributes['course_minutes'] as $index => $name)
         @if($index==40) @continue @endif
-        @if(isset($is_trial) && $is_trial==true && $index>60) @continue @endif
         @if(isset($item["exchanged_calendar_id"]) && $item["exchanged_calendar_id"] > 0 && $item->get_exchange_remaining_time() < intval($index))
           @continue
         @endif

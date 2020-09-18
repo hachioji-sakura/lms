@@ -85,6 +85,8 @@ class FaqController extends MilestoneController
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request, false);
+    if(!isset($ret['user'])) abort(403);
+
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $create_user = $item->create_user->details();

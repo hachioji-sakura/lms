@@ -37,31 +37,37 @@
         --}}
       </ul>
     </li>
+    @foreach($charge_students as $charge_student)
     <li class="nav-item has-treeview menu-open">
       <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-users"></i>
+        <i class="fa fa-user-graduate nav-icon"></i>
       <p>
-        登録生徒
+        <ruby style="ruby-overhang: none">
+          <rb>{{$charge_student->student->name()}}</rb>
+          <rt>{{$charge_student->student->kana()}}</rt>
+        </ruby>
         <i class="right fa fa-angle-left"></i>
       </p>
       </a>
       <ul class="nav nav-treeview">
-        @foreach($charge_students as $charge_student)
         <li class="nav-item">
-        <a class="nav-link" href="/students/{{$charge_student->id}}" >
-          <i class="fa fa-user-graduate nav-icon"></i>
-          <p>
-            <ruby style="ruby-overhang: none">
-              <rb>{{$charge_student->student->name()}}</rb>
-              <rt>{{$charge_student->student->kana()}}</rt>
-            </ruby>
-            <span class="badge badge-{{config('status_style')[$charge_student->student->status]}} right">
-              {{$charge_student->student->status_name()}}
-            </span>
-          </p>
-        </a>
+          <a class="nav-link" href="/students/{{$charge_student->student_id}}" >
+            <i class="fa fa-file nav-icon"></i>
+            {{__('labels.details')}}
+          </a>
         </li>
-        @endforeach
+        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial')
+        <li class="nav-item">
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
+            <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
+            <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
+          </a>
+        </li>
+        @endif
       </ul>
       <ul class="nav nav-treeview">
         {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。
@@ -78,6 +84,7 @@
         --}}
       </ul>
     </li>
+    @endforeach
 </ul>
 @endsection
 @section('page_footer')
