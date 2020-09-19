@@ -35,7 +35,7 @@ class Student extends Model
    *　プロパティ：年齢
    */
   public function age(){
-    if($this->birth_day=='9999-12-31') return '-';
+    if($this->birth_day=='9999-12-31') return '';
     return floor((date("Ymd") - str_replace("-", "", $this->birth_day))/10000);
   }
 
