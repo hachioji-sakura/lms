@@ -100,13 +100,9 @@ class Student extends Model
    */
   public function grade()
   {
-    $grade = $this->tag_value('grade');
-    $default_grade = $this->default_grade();
-    if($grade != $default_grade){
-      UserTag::setTag($this->user_id,'grade',$default_grade,1);
-    }
-
-    return $this->tag_name('grade');
+    $grade_name = $this->tag_name('grade');
+    if(empty($grade_name)) return "-";
+    return $grade_name;
   }
   /**
    *　プロパティ：学校名
@@ -1012,7 +1008,39 @@ EOT;
    *　プロパティ：標準学年（年齢から算出）
    * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
    */
-  public function default_grade(){
+  public function default_grade($grade_code=null){
+    if(empty($this->birth_day)) return "";
+    if(empty($grade_code)) $grade_code = $this->default_grade_code();
+    if(empty($grade_code)) return "";
+
+    //結果を返す
+    if($grade_code>3){
+      $grade_index = $grade_code-4;
+      if($grade_index > count(config('grade'))) return 'adult';
+      $i=0;
+      foreach(config('grade') as $index=>$name){
+        if($i==$grade_index) return $index;
+        $i++;
+      }
+    }
+    return '';
+  }
+  public function gradeUp(){
+    $current_grade = $this->tag_value('grade');
+    $current_grade_code = $this->grade_to_code($current_grade);
+    $current_grade_code++;
+    $new_grade = $this->default_grade($current_grade_code);
+    UserTag::setTag($this->user_id,'grade',$new_grade,1);
+  }
+  private function grade_to_code($grade){
+    $i = 4;
+    foreach(config('grade') as $index=>$name){
+      if($grade==$index) return $i;
+      $i++;
+    }
+    return -1;
+  }
+  private function default_grade_code(){
     if(empty($this->birth_day)) return "";
     $birth = date('Ymd', strtotime($this->birth_day));
 
@@ -1032,30 +1060,8 @@ EOT;
       $n_y++;
     }
     //学年の計算
-    $grade = $n_y - $b_y - $m;
-    //結果を返す
-    if($grade < 4){
-      return 'k1';
-    }
-    else if($grade < 7){
-      return 'k'.($grade-3);
-    }
-    else if($grade>=7 && $grade<=12){
-      return 'e'.($grade-6);
-    }
-    else if($grade>=13 && $grade<=15){
-      return 'j'.($grade-12);
-    }
-    else if($grade>=16 && $grade<=18){
-      return 'h'.($grade-15);
-    }
-    else if($grade>=19 && $grade<=22){
-      return 'university';
-    }
-    else if($grade>22){
-      return 'adult';
-    }
-    return '';
+    $grade_code = $n_y - $b_y - $m;
+    return $grade_code;
   }
   public function get_tuition($setting, $is_enable_only=true){
     \Log::warning("------get_tuition start------");

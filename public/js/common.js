@@ -133,28 +133,16 @@ function get_grade(year, month, day){
       n_y++;
   }
   //学年の計算
-  var grade = n_y - b_y - m;
+  var grade_code = n_y - b_y - m;
   //結果を返す
-  if(grade < 4){
+  if(grade_code < 4){
     return 'k1';
   }
-  else if(grade < 7){
-    return 'k'+(grade-3);
-  }
-  else if(grade>=7 && grade<=12){
-    return 'e'+(grade-6);
-  }
-  else if(grade>=13 && grade<=15){
-    return 'j'+(grade-12);
-  }
-  else if(grade>=16 && grade<=18){
-    return 'h'+(grade-15);
-  }
-  else if(grade>=19 && grade<=22){
-    return 'university';
-  }
-  else if(grade>22){
-    return 'adult';
+  var grade_index = grade_code-4;
+  var i = 0;
+  for(var key in config_grade){
+    if(i==grade_index) return key;
+    i++;
   }
   return '';
 }
