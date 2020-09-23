@@ -10,8 +10,11 @@ use App\Models\Teachers;
 use App\Models\Students;
 use App\Models\UserCalendarMember;
 use View;
+use App\Models\Traits\WebCache;
+
 class Ask extends Milestone
 {
+  use WebCache;
   protected $table = 'lms.asks';
   protected $guarded = array('id');
 
@@ -155,6 +158,7 @@ EOT;
       'target_user_id' => $form['target_user_id'],
       'create_user_id' => $form['create_user_id'],
     ]);
+    $ask->cache_delete();
     if($ask->is_auto_commit()==true){
       //自動承認対象
       \Log::warning("自動承実行");
@@ -175,6 +179,7 @@ EOT;
     if(isset($form["status"]) && isset($form["login_user_id"])){
       $this->_change($form);
       $this->update(['status'=>$form['status']]);
+      $this->cache_delete();
     }
     return $this;
   }
@@ -182,6 +187,7 @@ EOT;
     $target_model = null;
     AskComment::where('ask_id', $this->id)->delete();
     $this->delete();
+    $this->cache_delete();
   }
   public function end_dateweek(){
     $d = date('n月j日',  strtotime($this->end_date));
@@ -468,5 +474,9 @@ EOT;
       if(isset($s) && $s->is_parent($u->id)==true) return true;
     }
     return false;
+  }
+  public function cache_delete(){
+    $this->delete_user_cache($this->charge_user_id);
+    $this->delete_user_cache($this->target_user_id);
   }
 }
