@@ -359,10 +359,6 @@ EOT;
   }
   public function charge_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
-    if (!View::exists($template)) {
-      return false;
-    }
-
     if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
 
@@ -450,6 +446,9 @@ EOT;
         break;
       case 'user_calendar_members':
         $ret = UserCalendarMember::where('id', $this->target_model_id)->first();
+        break;
+      case 'agreements':
+        $ret = Agreement::where('id', $this->target_model_id)->first();
         break;
     }
     return $ret;

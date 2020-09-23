@@ -711,16 +711,19 @@ class TrialController extends UserCalendarController
     */
     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
       //ここで契約レコード追加
-      dd($request->get('agreements'),$request->get('agreement_statements'));
+      $trial = Trial::find($id);
       $agreement = new Agreement;
       $agreement->fill($request->get('agreements'));
-      $agreement->status =  'new';
-      $agreement->create_user_id = Auth::user()->id;
       $agreement->save();
       foreach($request->get('agreement_statements') as $form){
-        $statement_form[] = new AgreementStatement($form);
+        $new_agreement_statement = new AgreementStatement($form);
+        $statement_form[$form['setting_key']] = $new_agreement_statement;
       }
       $agreement->agreement_statements()->saveMany($statement_form);
+      foreach($statement_form as $key => $statement){
+        $ids = $request->get('agreement_statements')[$key]['user_calendar_member_setting_ids'];
+        $statement->user_calendar_member_settings()->sync($ids);
+      }
       $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
       $trial->update(['status' => 'entry_guidanced']);
       return $this->api_response(200, '', '', $ask);

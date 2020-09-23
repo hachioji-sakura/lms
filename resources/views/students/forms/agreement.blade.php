@@ -126,15 +126,22 @@
 												$setting_key .= $setting->get_tag_value('kids_lesson');
 											}
 											?>
-
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][setting_key]" value="{{$setting_key}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][student_id]" value="{{$item->id}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][teacher_id]" value="{{$setting->user->details('teachers')->id}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson]" value="{{$item->tags_name('lesson')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_id]" value="{{$item->tags_value('lesson')}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_type]" value="{{$setting->get_tag_value('course_type')}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_minutes]" value="{{$item->tag_name('course_minutes')}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][grade]" value="{{$item->grade()}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_week_count]" value="{{$item->user->get_enable_calendar_setting_count()}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][is_exam]" value="false">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_minutes]" value="{{$item->tag_value('course_minutes')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][grade]" value="{{$item->tag_value('grade')}}">
+											@foreach($setting->members->pluck('id') as $id)
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][user_calendar_member_setting_ids][]" value="{{$id}}">
+											@endforeach
+											@for($i=1;$i<5;$i++)
+											@if($item->user->has_tag('lesson',$i)==false) @continue @endif
+											@if($item->user->get_enable_calendar_setting_count($i)==0) @continue @endif
+							         	<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_week_count]" value="{{$item->user->get_enable_calendar_setting_count($i)}}">
+											@endfor
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][is_exam]" value="0">
 											@if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true)
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][subject]" value="{{$setting->get_tag_value('subject')}}">
 											@endif

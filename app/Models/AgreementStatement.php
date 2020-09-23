@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Common;
 
 class AgreementStatement extends Model
 {
     //
+    use Common;
     protected $connection = 'mysql_common';
     protected $table = 'common.agreement_statements';
     protected $guarded = array('id');
@@ -17,7 +19,7 @@ class AgreementStatement extends Model
       'agreement_id',
       'tuition',
       'title',
-      'lesson',
+      'lesson_id',
       'course_type',
       'course_minutes',
       'subject',
@@ -27,12 +29,26 @@ class AgreementStatement extends Model
       'remark',
     ];
 
+
+
     public function agreement(){
-      return $this->belongsTo('App\Models\Agreement','agreement');
+      return $this->belongsTo('App\Models\Agreement','agreement_id');
     }
 
-    static protected function add($form){
+    public function teacher(){
+      return $this->belongsTo('App\Models\Teacher','teacher_id');
+    }
 
+    public function user_calendar_member_settings(){
+      return $this->belongsToMany('App\Models\UserCalendarMemberSetting','user_calendar_member_setting_agreement_statement','agreement_statement_id','user_calendar_member_setting_id');
+    }
+
+    public function getCourseTypeNameAttribute(){
+      return $this->attribute_name('course_type',$this->course_type);
+    }
+
+    public function getCourseMinutesNameAttribute(){
+      return $this->attribute_name('course_minutes',$this->course_minutes);
     }
 
     public function is_already_registered($form){

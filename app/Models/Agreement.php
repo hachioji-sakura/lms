@@ -13,17 +13,22 @@ class Agreement extends Model
     protected $fillable = [
       'title',
       'entry_fee',
-      'membership_fee',
+      'monthly_fee',
       'entry_date',
       'status',
       'student_parent_id',
       'create_user_id',
     ];
 
+    protected $attributes = [
+      'status' => 'new',
+      'create_user_id' =>'1',
+    ];
+
     public static  $rules = Array(
         'title' => 'string',
         'entry_fee' => 'integer',
-        'membership_fee' => 'integer',
+        'monthly_fee' => 'integer',
         'entry_date' => 'datetime',
         'student_parent_id' => 'integer|required',
       );
@@ -55,7 +60,7 @@ class Agreement extends Model
         "target_model" => "agreements",
         "target_model_id" => $this->id,
         "create_user_id" => $create_user_id,
-        "student_parent_id" => $this->student_parent->id,
+        "target_user_id" => $this->student_parent->user_id,
         "charge_user_id" => 1,
       ]);
       return $ask;

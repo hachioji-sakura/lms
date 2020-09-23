@@ -20,14 +20,14 @@ class CreateAgreementStatementsTable extends Migration
             $table->integer('agreement_id')->comment('契約ID');
             $table->integer('tuition')->comment('料金');
             $table->string('title')->nullable(true)->comment('概要');
-            $table->integer('lesson')->comment('レッスンID');
-            $table->integer('course_type')->comment('コースタイプ');
+            $table->integer('lesson_id')->comment('レッスンID');
+            $table->string('course_type')->comment('コースタイプ');
             $table->integer('course_minutes')->comment('コマ時間');
-            $table->integer('subject')->nullable(true)->comment('科目');
-            $table->integer('grade')->comment('学年');
+            $table->string('subject')->nullable(true)->comment('科目');
+            $table->string('grade')->comment('学年');
             $table->integer('lesson_week_count')->comment('週当たりのコマ数');
-            $table->integer('is_exam')->comment('受験フラグ');
-            $table->integer('remark')->nullable(true)->comment('備考');
+            $table->boolean('is_exam')->comment('受験フラグ');
+            $table->string('remark')->nullable(true)->comment('備考');
             $table->timestamps();
         });
     }
