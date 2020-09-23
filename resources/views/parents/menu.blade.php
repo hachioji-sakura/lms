@@ -56,16 +56,18 @@
             {{__('labels.details')}}
           </a>
         </li>
+        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial')
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student_id}}/recess" >
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student_id}}/unsubscribe" >
+          <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
           </a>
         </li>
+        @endif
       </ul>
       <ul class="nav nav-treeview">
         {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。

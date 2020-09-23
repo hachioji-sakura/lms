@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarSettingCommand extends Command
 {
@@ -41,6 +42,8 @@ class CalendarSettingCommand extends Command
      */
     public function handle()
     {
+      Auth::loginUsingId(1);
+
       $view_mode = false;
       if(!empty($this->option("view_mode"))){
         $view_mode = true;
@@ -49,14 +52,13 @@ class CalendarSettingCommand extends Command
     }
     public function to_calendar($start_date='', $end_date='', $range_month=1, $week_count=5, $id=0, $view_mode=false)
     {
-      $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
-      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
 
       //パラメータ指定がない場合
-      //登録範囲　3か月分, 5週目の授業あり、開始日＝今日
-      if(empty($range_month)) $range_month=3;
-      if(empty($week_count)) $week_count=5;
-      if(empty($start_date)) $start_date=date('Y-m-d');
+      if(empty($start_date)) $start_date=date('Y-m-1', strtotime('+1 month'));
+      if(empty($end_date)) $end_date=date('Y-m-t', strtotime('+1 month'));
+
+      $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
+      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
 
       $settings = UserCalendarSetting::where('status', 'fix');
       if(!empty($id)){

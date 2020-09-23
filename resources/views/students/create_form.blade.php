@@ -23,8 +23,9 @@
 
 @section('lesson_week_form')
 <div class="row">
-  @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
+  @isset($item->user)
+    @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
+    @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
   <div class="col-12">
     <div class="form-group">
       <label for="schedule_remark" class="w-100">
@@ -34,15 +35,18 @@
       <textarea type="text" name="schedule_remark" class="form-control" placeholder="{{__('labels.schedule_remark_placeholder')}}" maxlength=200>{{$item->tag_value('schedule_remark')}}</textarea>
     </div>
   </div>
+  @endisset
 </div>
 @endsection
 
 @section('subject_form')
 <div class="row">
-  @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item->user, '_teacher' => false, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
-  @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
-  @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
-  @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
-  @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
+  @isset($item->user)
+    @component('students.forms.subject', ['_edit'=>$_edit, 'item'=>$item->user, '_teacher' => false, 'attributes' => $attributes, 'category_display' => false, 'grade_display' => false]) @endcomponent
+    @component('students.forms.english_teacher', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
+    @component('students.forms.english_talk_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
+    @component('students.forms.piano_level', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
+    @component('students.forms.kids_lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, '_teacher' => false,]) @endcomponent
+  @endisset
 </div>
 @endsection
