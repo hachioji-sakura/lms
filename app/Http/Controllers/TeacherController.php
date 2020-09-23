@@ -46,19 +46,19 @@ class TeacherController extends StudentController
       $ret['item'] = $this->model()->where('id',$id)->first()->user->details($this->domain);
       $lists = ['cancel', 'confirm', 'exchange', 'today', 'rest_contact'];
       foreach($lists as $list){
-        $count = $this->get_schedule(["list" => $list], $ret['item']->user_id, '', '', true);
+        $count = $this->get_schedule(["list" => $list, 'user_id'=>$ret['item']->user_id] , true);
         $ret[$list.'_count'] = $count;
       }
-      $asks = $this->get_ask([], $ret['item']->user_id, true);
+      $asks = $this->get_ask(['user_id' => $ret['item']->user_id], true);
       $ret['ask_count'] = $count;
       $lists = ['lecture_cancel', 'rest_cancel'];
       foreach($lists as $list){
-        $count = $this->get_ask(["list" => $list], $ret['item']->user_id, true);
+        $count = $this->get_ask(["list" => $list, 'user_id'=>$ret['item']->user_id], true);
         $ret[$list.'_count'] = $count;
       }
       $lists = ['confirm_list', 'fix_list'];
       foreach($lists as $list){
-        $count = $this->get_calendar_settings(["list" => $list], $ret['item']->user_id, true);
+        $count = $this->get_user_calendar_settings(["list" => $list, 'user_id'=>$ret['item']->user_id], true);
         $ret[$list.'_setting_count'] = $count;
       }
 
@@ -437,8 +437,12 @@ class TeacherController extends StudentController
       ]);
       $from_date = $target_month.'-01';
       $to_date = date("Y-m-d", strtotime("+1 month ".$from_date));
-
-      $calendars = $this->get_schedule([], $item->user_id, $from_date, $to_date);
+      $calendars = $this->get_schedule([
+        'list' => 'month_work',
+        'user_id'=>$item->user_id,
+        'search_from_date' => $from_date,
+        'search_to_date' => $to_date
+      ]);
       $param["_maxpage"] = floor($calendars["count"] / $param['_line']);
       $calendars = $calendars["data"];
 
