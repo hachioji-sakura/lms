@@ -56,8 +56,10 @@ class CalendarSettingCommand extends Command
       //パラメータ指定がない場合
       if(empty($start_date)) $start_date=date('Y-m-1', strtotime('+1 month'));
       if(empty($end_date)) $end_date=date('Y-m-t', strtotime('+1 month'));
+      if(empty($week_count)) $week_count=5;
+      if(empty($range_month)) $range_month=1;
 
-      $this->info('to_calendar('.$start_date.','.$range_month.','.$week_count.','.$id.')');
+      $this->info('to_calendar('.$start_date.','.$end_date.','.$range_month.','.$week_count.','.$id.')');
       @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
 
       $settings = UserCalendarSetting::where('status', 'fix');
@@ -73,13 +75,19 @@ class CalendarSettingCommand extends Command
       $request = new Request();
       $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
-          if($setting->user->details()->status=='unsubscribe') continue;
-          if($setting->has_enable_member()==false) continue;
-
+          if($setting->user->details()->status=='unsubscribe'){
+            $this->info("setting->user is unsubscribe");
+            continue;
+          }
+          if($setting->has_enable_member()==false){
+            $this->info("setting->has_enable_member = false");
+            continue;
+          }
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
+          $this->info($setting->id.':count='.count($dates));
           $s = null;
           $e = null;
-          if(!empty($settng->enable_start_date)) $s = strtotime($settng->enable_start_date);
+          if(!empty($settng->enable_start_date))$s = strtotime($settng->enable_start_date);
           if(!empty($settng->enable_end_date)) $e = strtotime($settng->enable_end_date);
           foreach($dates as $date => $val){
             $d = strtotime($date);
