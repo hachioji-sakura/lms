@@ -886,7 +886,7 @@ class StudentController extends UserController
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
        $calendars[$i] = $calendar->details();
-       $calendars[$i]->own_member = $calendars[$i]->get_member();
+       $calendars[$i]->own_member = $calendars[$i]->get_member($form['user_id']);
        $calendars[$i]->status = $calendars[$i]->own_member->status;
      }
    }
