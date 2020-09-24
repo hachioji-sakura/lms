@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
-use App\Models\Maillog;
 use App\Http\Controllers\Controller;
 
 class RemindCommand extends Command
@@ -53,7 +52,7 @@ class RemindCommand extends Command
     private function remind_calendar($calendar, $title, $send_schedule){
       $teacher1 = Teacher::where('id', 1)->first();
 
-      $res = $teacher1->user->remind_mail($title.'確認', [
+      $res = $teacher1->user->remind_mail($title, [
         'calendar' => $calendar,
         'login_user' => $teacher1->user->details(),
       ], 'text', 'trial_calendar_remind', $send_schedule);
@@ -79,19 +78,19 @@ class RemindCommand extends Command
       @$this->send_slack("remind_trial_calendar::count=".count($calendars), 'warning', "remind_trial_calendar");
 
       foreach($calendars as $calendar){
-        $title = '【体験授業予定リマインド】';
+        $title1 = '【体験授業リマインド】';
         $calendar = $calendar->details();
-        $title .= $calendar['datetime'].'/'.$calendar['lesson'].'/'.$calendar['course'];
-        $title .= $calendar['teacher_name'].'/'.$calendar['student_name'];
+        $title2 = $calendar['datetime'].'/'.$calendar['lesson'].'/'.$calendar['course'];
+        $title2 .= $calendar['teacher_name'].'/'.$calendar['student_name'];
         $hour0 = strtotime($calendar->start_time);
         $hour1 = strtotime('-1 hour '.$calendar->start_time);
         $hour3 = strtotime('-3 hour '.$calendar->start_time);
         $hour9 = strtotime('-9 hour '.$calendar->start_time);
         $hour24 = strtotime('-1 day '.$calendar->start_time);
-        $this->remind_calendar($calendar, $title.'（1時間前）', date('Y-m-d H:i:s', $hour1));
-        $this->remind_calendar($calendar, $title.'（3時間前）', date('Y-m-d H:i:s', $hour3));
-        $this->remind_calendar($calendar, $title.'（9時間前）', date('Y-m-d H:i:s', $hour9));
-        $this->remind_calendar($calendar, $title.'（明日）', date('Y-m-d 00:00:00', $hour24));
+        $this->remind_calendar($calendar, $title1.'（1時間前）'.$title2, date('Y-m-d H:i:s', $hour1));
+        $this->remind_calendar($calendar, $title1.'（3時間前）'.$title2, date('Y-m-d H:i:s', $hour3));
+        $this->remind_calendar($calendar, $title1.'（9時間前）'.$title2, date('Y-m-d H:i:s', $hour9));
+        $this->remind_calendar($calendar, $title1.'（明日）'.$title2, date('Y-m-d 00:00:00', $hour24));
       }
       $this->info("remind_trial_calendar end");
     }
