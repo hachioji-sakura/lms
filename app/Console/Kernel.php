@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        $schedule->command('remind:trial today')->hourly();
+        $schedule->command('remind:trial')->hourly();
 
         $schedule->command('remind:trial tomorrow')->dailyAt('18:00');
 

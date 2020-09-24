@@ -1245,5 +1245,4 @@ EOT;
       $this->delete_user_cache($member->user_id);
     }
   }
-
 }
