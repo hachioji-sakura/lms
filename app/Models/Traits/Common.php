@@ -3,7 +3,7 @@ namespace App\Models\Traits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
-use App\Models\Maillog;
+use App\Models\MailLog;
 
 trait Common
 {
