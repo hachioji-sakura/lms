@@ -63,13 +63,13 @@ function status_style(status){
 <script src="{{asset('js/lib/inflate.js')}}"></script>
 <script src="{{asset('js/lib/deflate.js')}}"></script>
 <script src="{{asset('js/lib/timsort.js')}}"></script>
-<script src="{{asset('js/base/util.js?v=3')}}"></script>
+<script src="{{asset('js/base/util.js?v=4')}}"></script>
 <script src="{{asset('js/base/fileUI.js')}}"></script>
 <script src="{{asset('js/base/dom.js?v=2')}}"></script>
 <script src="{{asset('js/base/service.js?v=5')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
 <script src="{{asset('js/base/base.js?v=10')}}"></script>
-<script src="{{asset('js/common.js?v=3')}}"></script>
+<script src="{{asset('js/common.js?v=4')}}"></script>
 </body>
 
 </html>
