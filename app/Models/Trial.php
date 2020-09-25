@@ -186,7 +186,7 @@ class Trial extends Model
   }
   public function get_ask_created_date($type){
     $a = Ask::where('type', $type)
-      ->where('target_model', 'trials')
+      ->where('target_model', 'agreements')
       ->where('target_model_id', $this->id)
       ->first();
       if(!isset($a)) return "-";

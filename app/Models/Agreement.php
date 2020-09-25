@@ -12,6 +12,7 @@ class Agreement extends Model
     protected $guarded = array('id');
     protected $fillable = [
       'title',
+      'trial_id',
       'entry_fee',
       'monthly_fee',
       'entry_date',
@@ -45,7 +46,6 @@ class Agreement extends Model
       return $this->student_parent->details()->name();
     }
 
-
     public function agreement_ask($create_user_id, $access_key){
       //保護者にアクセスキーを設定
       $this->student_parent->user->update(['access_key' => $access_key]);
@@ -65,6 +65,5 @@ class Agreement extends Model
       ]);
       return $ask;
     }
-
 
 }

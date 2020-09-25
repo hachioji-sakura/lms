@@ -40,7 +40,7 @@ class AgreementStatement extends Model
     }
 
     public function user_calendar_member_settings(){
-      return $this->belongsToMany('App\Models\UserCalendarMemberSetting','user_calendar_member_setting_agreement_statement','agreement_statement_id','user_calendar_member_setting_id');
+      return $this->belongsToMany('App\Models\UserCalendarMemberSetting','user_calendar_member_setting_agreement_statement','agreement_statement_id','user_calendar_member_setting_id')->withTimestamps();
     }
 
     public function getCourseTypeNameAttribute(){

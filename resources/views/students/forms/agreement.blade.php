@@ -133,8 +133,10 @@
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_type]" value="{{$setting->get_tag_value('course_type')}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_minutes]" value="{{$item->tag_value('course_minutes')}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][grade]" value="{{$item->tag_value('grade')}}">
-											@foreach($setting->members->pluck('id') as $id)
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][user_calendar_member_setting_ids][]" value="{{$id}}">
+											@foreach($setting->members as $member)
+											 	@if($member->user_id == $item->user_id)
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][user_calendar_member_setting_id]" value="{{$member->id}}">
+												@endif
 											@endforeach
 											@for($i=1;$i<5;$i++)
 											@if($item->user->has_tag('lesson',$i)==false) @continue @endif

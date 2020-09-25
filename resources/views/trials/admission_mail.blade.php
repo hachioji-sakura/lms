@@ -1,6 +1,7 @@
 <div id="admission_mail">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/admission">
     <input type="hidden" name="agreements[student_parent_id]" value="{{$item->parent->id}}">
+    <input type="hidden" name="agreements[trial_id]" value="{{$item->id}}">
     @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true, 'active_tab' => 2]) @endcomponent
     @csrf
     <input type="text" name="dummy" style="display:none;" / >

@@ -31,6 +31,10 @@ class StudentParent extends Teacher
   public function agreements(){
     return $this->hasMany('App\Models\Agreement','student_parent_id');
   }
+  public function get_agreements_by_status($status){
+    return $this->hasMany('App\Models\Agreement','student_parent_id')->where('status',$status);
+  }
+
   public function status_name(){
     $status_name = "";
     if(app()->getLocale()=='en') return $this->status;
@@ -176,5 +180,4 @@ class StudentParent extends Teacher
 
     return $item;
   }
-
 }

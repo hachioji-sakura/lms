@@ -39,7 +39,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function agreement_statements(){
-    return $this->belongsToMany('App\Models\AgreementStatement','user_calendar_member_setting_id','agreement_statement_id');
+    return $this->belongsToMany('App\Models\AgreementStatement','user_calendar_member_settings_agreement_statements','user_calendar_member_setting_id','agreement_statement_id')->withTimestamps();
   }
   public function dispose($login_user_id){
     $login_user = User::where('id', $login_user_id)->first();
