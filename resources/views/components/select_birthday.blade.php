@@ -55,16 +55,3 @@
   <input id="{{$prefix}}birth_day" type="hidden" class="form-control birth_day" name="{{$prefix}}birth_day"  inputtype="date" placeholder="例：2000/01/01" required="true"
     value="@isset($item->birth_day){{$item->birth_day}}@endisset">
 </div>
-<script>
-function birth_day_form_change(){
-  $("input.birth_day[type=hidden]").each(function(index,element){
-    var _name = $(this).attr("name");
-    var year = $('select[name="'+_name+'_year"]').val();
-    var month = $('select[name="'+_name+'_month"]').val();
-    var day = $('select[name="'+_name+'_day"]').val();
-    var date = year+'/'+month+'/'+day;
-    console.log(date);
-    $(this).val(date);
-  });
-}
-</script>

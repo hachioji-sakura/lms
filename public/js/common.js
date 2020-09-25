@@ -101,6 +101,51 @@ $(function(){
   //1時間経過したら再読み込み
   setTimeout('window.location.reload();', 3600000);
 });
+function birth_day_form_change(){
+  $("input.birth_day[type=hidden]").each(function(index,element){
+    var _name = $(this).attr("name");
+    var year = $('select[name="'+_name+'_year"]').val();
+    var month = $('select[name="'+_name+'_month"]').val();
+    var day = $('select[name="'+_name+'_day"]').val();
+    var date = year+'/'+month+'/'+day;
+    $(this).val(date);
+    if($('*[name="grade"]').length > 0){
+      var grade = get_grade(year,month,day);
+      $('*[name="grade"]').val(grade);
+    }
+  });
+}
+//Models/Student::default_grade
+function get_grade(year, month, day){
+  var age = util.getAge(year, month, day);
+  var now = util.nowDate().replace_all('/', '');
+  var strdate = ( year+ '' + util.leftPadZero(month, 2) + '' + util.leftPadZero(day, 2));
+  //各月日を求める
+  var b_y = (strdate.substr(0,4))|0;
+  var b_m = (strdate.substr(4,8))|0;
+  var n_y = (now.substr(0,4))|0;
+  var n_m = (now.substr(4,8))|0;
+  var m= 0;
+  if (n_m < 400) { //前学期
+      m = 1;
+  }
+  if(b_m < 402) { //早生まれ
+      n_y++;
+  }
+  //学年の計算
+  var grade_code = n_y - b_y - m;
+  //結果を返す
+  if(grade_code < 4){
+    return 'k1';
+  }
+  var grade_index = grade_code-4;
+  var i = 0;
+  for(var key in config_grade){
+    if(i==grade_index) return key;
+    i++;
+  }
+  return 'adult';
+}
 function is_school(grade_name){
   var ret = false;
   if(grade_name.substring(0,1)=="幼"){
