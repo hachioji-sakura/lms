@@ -100,6 +100,7 @@ class MailLog extends Model
   }
   public function send(){
     if($this->status != 'new') return false;
+    if(strtotime($this->send_schedule) > strtotime('now')) return false;
     //TODO いったんすべてサポートに送信
     $is_send_support_mail = true;
     /*
@@ -142,7 +143,7 @@ class MailLog extends Model
   }
 
   static protected function all_send(){
-    $maillogs = Maillog::where('status' , 'new')->get();
+    $maillogs = Maillog::where('status' , 'new')->where('send_schedule', '<', date('Y-m-d H:i:s'))->get();
     foreach($maillogs as $maillog){
       $maillog->send();
     }

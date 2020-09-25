@@ -35,9 +35,11 @@
           <a href="javascript:void(0)" page_form="dialog" page_title="{{!empty(request()->get('search_type')) ? __('labels.'.request()->get('search_type')).__('labels.add') : __('labels.learning_record').__('labels.add')}}" page_url="/tasks/create?student_id={{$item->id}}&task_type={{request()->get('search_type')}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-pen nav-icon"></i>
           </a>
+          @if($user['role'] == "teacher" || $user['role'] == "manager")
           <a href="javascript:void(0)" page_form="dialog" page_title="{{__('labels.curriculums').__('labels.add')}}" page_url="/curriculums/create" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
             <i class="fa fa-sitemap nav-icon"></i>
           </a>
+          @endif
           @if(!empty(request()->get('search_type')) && request()->get('search_type') != 'class_record')
           <a href="/students/{{$item->id}}/tasks?search_status[]=done&search_type={{request()->get('search_type')}}" class="btn btn-tool" title="{{__('labels.complete').__('labels.tasks')}}">
             <i class="fa fa-check"></i>
