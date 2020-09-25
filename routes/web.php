@@ -171,6 +171,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
 
   Route::get('students/{id}/setting','StudentController@setting_page');
+  Route::get('teachers/{id}/setting','TeacherController@setting_page');
 
 
   Route::get('students/{id}/email_edit','StudentController@email_edit_page');
