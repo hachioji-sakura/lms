@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MailLog;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
 use App\Http\Controllers\Controller;
@@ -46,7 +47,7 @@ class RemindCommand extends Command
     {
       Auth::loginUsingId(1);
       $this->remind_trial_calendar();
-      Maillog::all_send();
+      MailLog::all_send();
     }
 
     private function remind_calendar($calendar, $title, $send_schedule){

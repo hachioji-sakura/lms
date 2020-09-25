@@ -3,6 +3,7 @@ namespace App\Models\Traits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
+use App\Models\MailLog;
 
 trait Common
 {
@@ -41,9 +42,18 @@ trait Common
   }
   public function _remind_mail($to, $title, $param, $type, $template, $locale, $send_schedule=''){
     if(empty($send_schedule)) $send_schedule=date('Y-m-d H:i:s');
-    $controller = new Controller;
-    $res = $controller->remind_mail($to, $title, $param, $type, $template, $locale, $send_schedule);
-    return $res;
+    //同じリマインドは登録しない
+    $already_mail_log = Maillog::where('to_address', $to)
+                          ->where('template', $template)
+                          ->where('subject', $title)
+                          ->where('send_schedule', $send_schedule)
+                          ->first();
+    if(isset($already_mail_log)){
+      return $this->error_response("すでに登録済み", "");
+    }
+
+    $mail_log_res = MailLog::add(config('mail.from')['address'], $to, $title, $param, $type, $template, $locale, 'new', $send_schedule);
+    return $mail_log_res;
   }
   public function send_slack($message, $msg_type, $username=null, $channel=null) {
     $controller = new Controller;
