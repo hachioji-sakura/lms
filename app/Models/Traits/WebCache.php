@@ -10,6 +10,7 @@ trait WebCache
       return $this->get_cache($cache_key, 'user_id='.$save_id);
     }
     catch(\Exception $e){
+      \Log::error('get_user_cache error:'.$e->getMessage());
       Cache::flush();
     }
   }
@@ -18,6 +19,7 @@ trait WebCache
       return $this->put_cache($cache_key, 'user_id='.$save_id, $data);
     }
     catch(\Exception $e){
+      \Log::error('put_user_cache error:'.$e->getMessage());
       Cache::flush();
     }
   }
@@ -26,6 +28,7 @@ trait WebCache
       return $this->delete_cache('user_id='.$save_id);
     }
     catch(\Exception $e){
+      \Log::error('delete_user_cache error:'.$e->getMessage());
       Cache::flush();
     }
   }
@@ -37,6 +40,7 @@ trait WebCache
      3. 保存期限＝デフォルト　1時間
   */
   private function get_cache($cache_key, $save_id){
+    \Log::warning("get_cache:$cache_key, $save_id");
     if(Cache::has($save_id)){
       $_cache = Cache::get($save_id);
       if(!isset($_cache['expired'])) {
@@ -51,12 +55,14 @@ trait WebCache
       }
       if(!isset($_cache[$this->table])) return null;
       if(!isset($_cache[$this->table][$cache_key])) return null;
+      \Log::warning("get_cache: OK");
       return $_cache[$this->table][$cache_key];
     }
     return null;
   }
   private function put_cache($cache_key, $save_id, $data){
     $_cache = [];
+    \Log::warning("put_cache:$cache_key, $save_id");
     if(Cache::has($save_id)){
       $_cache = Cache::get($save_id);
       //期限切れ　Cacheデータを持ち越さずに作る

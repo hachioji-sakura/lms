@@ -1056,7 +1056,6 @@ class StudentController extends UserController
     $result = '';
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    $param['student'] = $param['item'];
     return view($this->domain.'.setting',$param);
   }
 
@@ -1071,7 +1070,6 @@ class StudentController extends UserController
     $result = '';
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    $param['student'] = $param['item'];
     return view($this->domain.'.tag',$param);
 
   }
@@ -1254,7 +1252,6 @@ class StudentController extends UserController
   public function create_login_info_page(Request $request, $id = null){
     $param = $this->get_param($request, $id);
     $param['_edit'] = false;
-    $param['student'] = $param['item'];
     return view($this->domain.'.create_login_info', $param);
   }
 
