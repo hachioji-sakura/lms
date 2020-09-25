@@ -4,7 +4,6 @@
     @method('PUT')
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    <input type="hidden" name="student_parent_id" value="{{$student_parent_id}}">
     @yield('item_form')
     @if($user->role=="manager")
     @component('students.forms.editable_email', ['item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
