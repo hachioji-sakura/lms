@@ -144,7 +144,7 @@ function get_grade(year, month, day){
     if(i==grade_index) return key;
     i++;
   }
-  return '';
+  return 'adult';
 }
 function is_school(grade_name){
   var ret = false;
