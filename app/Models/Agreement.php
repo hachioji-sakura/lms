@@ -46,6 +46,10 @@ class Agreement extends Model
       return $this->student_parent->details()->name();
     }
 
+    public function trial(){
+      return $this->belongsTo('App\Models\Trial');
+    }
+
     public function agreement_ask($create_user_id, $access_key){
       //保護者にアクセスキーを設定
       $this->student_parent->user->update(['access_key' => $access_key]);

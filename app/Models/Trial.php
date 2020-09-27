@@ -51,6 +51,10 @@ class Trial extends Model
   public function student(){
     return $this->belongsTo('App\Models\Student', 'student_id');
   }
+
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement', 'trial_id');
+  }
   /**
    *　スコープ：ステータス
    */
@@ -179,14 +183,14 @@ class Trial extends Model
     return $ret;
   }
   public function entry_contact_send_date(){
-      return $this->get_ask_created_date('hope_to_join');
+      return $this->get_ask_created_date('hope_to_join','trials');
   }
   public function entry_guidanced_send_date(){
-      return $this->get_ask_created_date('agreement');
+      return $this->get_ask_created_date('agreement','agreements');
   }
-  public function get_ask_created_date($type){
+  public function get_ask_created_date($type,$target_model){
     $a = Ask::where('type', $type)
-      ->where('target_model', 'agreements')
+      ->where('target_model', $target_model)
       ->where('target_model_id', $this->id)
       ->first();
       if(!isset($a)) return "-";

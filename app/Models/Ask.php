@@ -249,8 +249,10 @@ EOT;
       case "agreement":
         $ret = true;
         $is_complete = true;
-        //Trial->agreement()を実行
-        $target_model_data->agreement($is_commit);
+        //agreementを更新
+        $agreement = $this->get_target_model_data();
+        $agreement->status = 'commit';
+        $agreement->save();
         break;
       case "rest_cancel":
         $ret = true;

@@ -360,7 +360,8 @@ class AskController extends MilestoneController
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
 
      $param['fields'] = $this->show_fields($param['item']->type);
-     $param['trial'] = $param['item']->get_target_model_data();
+     $param['agreement'] = $param['item']->get_target_model_data();
+     $param['trial'] = $param['agreement']->trial;
      $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
      $param['fields'] = [];

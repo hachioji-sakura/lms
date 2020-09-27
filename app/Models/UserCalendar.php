@@ -237,8 +237,9 @@ EOT;
   }
   public function get_access_member(){
     $ret = [];
-    $user = Auth::user()->details();
-
+    if(Auth::check()){
+      $user = Auth::user()->details();
+    }
     if(!isset($user)) {
       return $ret;
     }
