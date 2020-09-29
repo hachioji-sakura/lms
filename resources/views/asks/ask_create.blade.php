@@ -8,9 +8,11 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="charge_user_id" value="1" / >
+    <input type="hidden" name="type" value="{{$ask_type}}">
     <div id="ask_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
+          {{---
           <div class="col-12">
             <div class="form-group">
               <label class="w-100">
@@ -31,6 +33,7 @@
               @endif
             </div>
           </div>
+          ---}}
           @if(isset($_edit) && $_edit==true)
           <div class="col-12">
             <div class="form-group">

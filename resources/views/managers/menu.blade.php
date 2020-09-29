@@ -55,6 +55,19 @@
           </p>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=agreement_update" class="nav-link @if($view=="ask" && $list=="agreement_update") active @endif">
+          <i class="fa fa-hands-helping nav-icon"></i>
+          <p>
+            契約変更依頼
+            {{--
+            @if($teacher_change_count > 0)
+            <span class="badge badge-danger right">{{$teacher_change_count}}</span>
+            @endif
+            --}}
+          </p>
+        </a>
+      </li>
       {{-- TODO お問い合わせ実装後に有効にする
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=phone" class="nav-link @if($view=="ask" && $list=="phone") active @endif">

@@ -239,6 +239,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($user->role!='student'){
       return null;
     }
+    if($this->agreement_statements->count() > 0){
+      return $this->agreement_statements->first()->tuition;
+    }
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
     $grade = $user->tag_value('grade');
@@ -271,7 +274,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
                 ->where('lesson_week_count', $lesson_week_count)
                 ->where('subject', $subject)->first();
     if(!isset($tuition)) return null;
-    return $tuition;
+    return $tuition->tuition;
   }
   static public function get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $is_juken=false, $teacher_id, $subject){
     $replace_course = config('replace.course');

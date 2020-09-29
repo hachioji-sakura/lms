@@ -28,6 +28,11 @@
             <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/parents/{{$item->id}}/ask/create" page_title="{{__('labels.agreements')}}{{__('labels.edit')}}{{__('labels.asks')}}">
+            <i class="fa fa-hands-helping nav-icon"></i>{{__('labels.agreements')}}{{__('labels.edit')}}{{__('labels.asks')}}
+          </a>
+        </li>
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >
@@ -51,7 +56,7 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student_id}}" >
+          <a class="nav-link" href="/parents/{{$item->id}}" >
             <i class="fa fa-file nav-icon"></i>
             {{__('labels.details')}}
           </a>
@@ -62,6 +67,7 @@
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
+
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}

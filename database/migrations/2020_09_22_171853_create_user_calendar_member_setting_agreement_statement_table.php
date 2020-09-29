@@ -28,6 +28,6 @@ class CreateUserCalendarMemberSettingAgreementStatementTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_calendar_member_setting_agreement_statement');
+        Schema::connection('mysql_common')->dropIfExists('user_calendar_member_setting_agreement_statement');
     }
 }

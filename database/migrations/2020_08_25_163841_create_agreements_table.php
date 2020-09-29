@@ -17,11 +17,12 @@ class CreateAgreementsTable extends Migration
           $table->increments('id');
           $table->string('title')->nullable(true)->comment('概要');
           $table->integer('trial_id')->nullable(true)->comment('体験ID');
+          $table->integer('parent_agreement_id')->nullable(true)->comment('変更元ID');
           $table->integer('entry_fee')->nullable(true)->comment('入会金');
           $table->integer('monthly_fee')->nullable(true)->comment('会費');
           $table->datetime('entry_date')->nullable(true)->comment('入会日');
-          $table->string('status')->comment('ステータス')->index('index_status');
-          $table->integer('student_parent_id')->comment('契約者ID');
+          $table->string('status')->comment('ステータス');
+          $table->integer('student_parent_id')->comment('契約者ID')->index('student_parent_id_status');
           $table->integer('create_user_id')->comment('起票者');
           $table->timestamps();
         });

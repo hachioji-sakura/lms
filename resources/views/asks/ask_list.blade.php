@@ -24,6 +24,9 @@
             @elseif($list=="recess")
               <i class="fa fa-pause-circle mr-1"></i>
               {{__('labels.ask_recess')}}
+            @elseif($list=="agreement_update")
+              <i class="fa fa-hands-helping mr-1"></i>
+              {{__('labels.agreements')}}{{__('labels.edit')}}{{__('labels.asks')}}
             @else
               <i class="fa fa-phone mr-1"></i>
               {{__('labels.ask_list')}}

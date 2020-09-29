@@ -13,6 +13,7 @@ class Agreement extends Model
     protected $fillable = [
       'title',
       'trial_id',
+      'parent_agreement_id',
       'entry_fee',
       'monthly_fee',
       'entry_date',

@@ -804,7 +804,7 @@ EOT;
   }
   public function get_tuition($user_id){
     $member = $this->members->where('user_id', $user_id)->first();
-    $tuition = $member->agreement_statements->first()->tuition;
+    $tuition = $member->get_tuition();
     if(isset($tuition)) return $tuition;
     return null;
   }
