@@ -699,9 +699,9 @@ class Trial extends Model
 */
           ];
 
-          $teacher->trial = $this->get_time_list_free($time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
+          $teacher->trial = $this->get_time_list_free($lesson, $time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($lesson, $time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
+          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($lesson, $time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
 /*TODO 後まわし
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list4, $teacher->user_id, $detail['trial_date4'], $calendars3, "trial_date4"));
           $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list5, $teacher->user_id, $detail['trial_date5'], $calendars3, "trial_date5"));
@@ -795,7 +795,7 @@ class Trial extends Model
     }
     return $time_list;
   }
-  private function get_time_list_free($time_list, $teacher_user_id, $trial_date, $now_calendars, $remark=""){
+  private function get_time_list_free($lesson, $time_list, $teacher_user_id, $trial_date, $now_calendars, $remark=""){
     /*
     if(strtotime("now") > strtotime($trial_date)){
       return [];
@@ -813,6 +813,8 @@ class Trial extends Model
     $_time_list = $time_list;
     $course_minutes = intval($this->course_minutes);
     if($course_minutes > 60) $course_minutes = 60;
+    //塾以外の体験授業は、すべて30分
+    if($lesson != 1 && $course_minutes > 30) $course_minutes=30;
     $minute_count = intval($course_minutes / 10);
     foreach($_time_list as $i => $_time){
       $_time_list[$i]["conflict_calendar"] = null;

@@ -1,7 +1,11 @@
 @section('end')
 <!-- layouts.end start-->
 <script>
+const config_grade = @json(config('grade'));
+
 function status_style(status){
+  const _status_style = @json(config('status_style'));
+  const _calendar_status = @json(config('attribute.calendar_status'));
   var status_style = {
     "rest" : {
       "color" : "#dc3545",
@@ -48,14 +52,10 @@ function status_style(status){
       "icon" : "<i class='fa fa-ban mr-1'></i>",
     },
   };
-  @foreach(config('attribute.calendar_status') as $id => $name)
-  if(status_style["{{$id}}"]) status_style["{{$id}}"]["name"] = "{{$name}}";
-  @endforeach
-  @foreach(config('status_style') as $id => $name)
-  if(status_style["{{$id}}"]) status_style["{{$id}}"]["style"] = "{{$name}}";
-  @endforeach
-  if(status_style[status]) return status_style[status];
-  return status_style['trial'];
+  if(!status_style[status]) status='trial';
+  if(_calendar_status[status]) status_style[status]["name"] = _calendar_status[status];
+  if(_status_style[status]) status_style[status]["style"] = _status_style[status];
+  return status_style[status];
 }
 </script>
 <script src="{{asset('js/lib/utf.js')}}"></script>
@@ -63,13 +63,13 @@ function status_style(status){
 <script src="{{asset('js/lib/inflate.js')}}"></script>
 <script src="{{asset('js/lib/deflate.js')}}"></script>
 <script src="{{asset('js/lib/timsort.js')}}"></script>
-<script src="{{asset('js/base/util.js?v=3')}}"></script>
+<script src="{{asset('js/base/util.js?v=4')}}"></script>
 <script src="{{asset('js/base/fileUI.js')}}"></script>
 <script src="{{asset('js/base/dom.js?v=2')}}"></script>
 <script src="{{asset('js/base/service.js?v=5')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
 <script src="{{asset('js/base/base.js?v=10')}}"></script>
-<script src="{{asset('js/common.js?v=3')}}"></script>
+<script src="{{asset('js/common.js?v=4')}}"></script>
 </body>
 
 </html>

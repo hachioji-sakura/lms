@@ -410,5 +410,19 @@ class UserController extends Controller
   public function user_login($user_id){
     Auth::loginUsingId($user_id);
   }
-
+  public function create_cache_key($prefix, $param){
+    $cache_key = $prefix.'_';
+    foreach($param as $key=>$val){
+      switch(gettype($val)){
+        case "string":
+        case "integer":
+          $cache_key .= '['.$key.'='.$val.']';
+          break;
+        case "array":
+          $cache_key .= '['.$key.'='.implode(',', $val).']';
+          break;
+      }
+    }
+    return $cache_key;
+  }
 }
