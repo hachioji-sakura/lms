@@ -38,6 +38,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::resource('places','PlaceController');
+  Route::resource('place_floors','PlaceFloorController');
+
+
   Route::post('upload_images','ImageController@upload_images');
   Route::resource('images','ImageController');
   Route::get('import/{object?}','ImportController@index');

@@ -1,7 +1,5 @@
-@section('title')
-  {{__('labels.asks')}}{{__('labels.list')}}
-@endsection
-@extends('dashboard.common')
+@section('title'){{__('labels.'.$domain)}}@endsection
+@section('title_header'){{__('labels.'.$domain)}}@endsection
 
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
