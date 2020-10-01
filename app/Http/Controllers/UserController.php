@@ -96,6 +96,8 @@ class UserController extends Controller
       'user_filter' => [
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
+        'post_no' => $request->post_no,
+        'place_id' => $request->place_id,
       ],
       'calendar_filter' => [
         'search_from_date'=>$request->search_from_date,
@@ -263,7 +265,10 @@ class UserController extends Controller
     if(!isset($user)){
       return null;
     }
-    return $user->details();
+
+    $item = $user->details();
+
+    return $item;
   }
 
   /**

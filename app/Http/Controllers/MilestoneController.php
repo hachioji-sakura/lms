@@ -140,7 +140,7 @@ class MilestoneController extends UserController
       $ret = $this->get_common_param($request);
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
-        if($this->is_student($user->role) &&
+        if(isset($item['create_user_id']) && $this->is_student($user->role) &&
           $item['create_user_id'] !== $user->user_id){
             //生徒は自分の起票したものしか編集できない
             abort(404);
@@ -270,7 +270,7 @@ class MilestoneController extends UserController
      */
     public function _store(Request $request)
     {
-    $form = $this->create_form($request);
+      $form = $this->create_form($request);
       $res = $this->save_validate($request);
       if(!$this->is_success_response($res)){
         return $res;
@@ -283,7 +283,6 @@ class MilestoneController extends UserController
       if(isset($item)){
         return $this->error_response('すでに登録済みです');
       }
-
       $res = $this->transaction($request, function() use ($request, $form){
         $item = $this->model()->create($form);
         if($request->hasFile('upload_file')){
@@ -323,26 +322,12 @@ class MilestoneController extends UserController
       $fields = $this->show_fields($param['item']->type);
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
-        $fields['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
+        if(isset($param['item']['target_user_name'])){
+          $fields['target_user_name'] = [
+            'label' => 'ユーザー',
+          ];
+        }
       }
-      /*
-      if($this->is_manager_or_teacher($param['user']->role)===true){
-        //生徒以外の場合は、対象者も表示する
-        $fields['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
-      }
-      */
-      /*
-      $fields['created_date'] = [
-        'label' => __('labels.add_datetime'),
-      ];
-      $fields['updated_date'] = [
-        'label' => __('labels.upd_datetime'),
-      ];
-      */
       $form = $request->all();
       $form['fields'] = $fields;
       return view('components.page', $form)
@@ -387,7 +372,7 @@ class MilestoneController extends UserController
         $form = $this->update_form($request);
         $item = $this->model()->where('id', $id)->first();
         $is_file_delete = false;
-        if($request->get('upload_file_delete')==1){
+        if($request->has('upload_file_delete') && $request->get('upload_file_delete')==1){
           $is_file_delete = true;
         }
         $file = null;
