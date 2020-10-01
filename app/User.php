@@ -126,8 +126,6 @@ class User extends Authenticatable
       ]);
     }
     public function details($domain = ""){
-      $item = (new User())->get_user_cache('User::details', $this->id);
-      if($item != null) return $item;
 
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = $this->image;
@@ -215,7 +213,6 @@ class User extends Authenticatable
         $item['email'] = $this->email;
         $item['locale'] = $this->locale;
         if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
-        (new User())->put_user_cache('User::details', $this->id, $item);
         return $item;
       }
       return $this;
