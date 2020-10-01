@@ -1442,7 +1442,6 @@ class UserCalendarController extends MilestoneController
 
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         return $this->api_response(200, '', '', $calendar);
-
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;
