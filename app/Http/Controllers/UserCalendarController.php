@@ -474,9 +474,6 @@ class UserCalendarController extends MilestoneController
           'to_date' => $to_date,
         ]);
       }
-      $cache_key = $this->create_cache_key(__FUNCTION__.'_'.$user_id, $request->all());
-      $items = (new UserCalendar())->get_user_cache($cache_key, $user_id);
-      if($items != null) return $this->api_response(200, "", "", $items->toArray());
 
       $user = $this->login_details($request);
       if(!isset($user)){
@@ -533,7 +530,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-      (new UserCalendar())->put_user_cache($cache_key, $user_id, $items);
 
       return $this->api_response(200, "", "", $items->toArray());
     }
