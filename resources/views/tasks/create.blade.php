@@ -59,7 +59,7 @@
           <label>{{__('labels.title')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}">
+            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}" maxlength=255>
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="title_set">
                 <i class="fa fa-copy"></i>
