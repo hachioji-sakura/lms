@@ -15,7 +15,6 @@ class CreateAgreementStatementsTable extends Migration
     {
         Schema::connection('mysql_common')->create('agreement_statements', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('student_id')->comment('生徒ID');
             $table->integer('teacher_id')->comment('先生ID');
             $table->integer('agreement_id')->comment('契約ID');
             $table->integer('tuition')->comment('料金');

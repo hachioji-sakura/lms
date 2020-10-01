@@ -13,6 +13,7 @@ class Agreement extends Model
     protected $fillable = [
       'title',
       'trial_id',
+      'student_id',
       'parent_agreement_id',
       'entry_fee',
       'monthly_fee',
@@ -37,6 +38,10 @@ class Agreement extends Model
 
     public function student_parent(){
       return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
+    }
+
+    public function student(){
+      return $this->belongsTo('App\Models\Student', 'student_id');
     }
 
     public function agreement_statements(){

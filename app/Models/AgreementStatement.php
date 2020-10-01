@@ -14,7 +14,6 @@ class AgreementStatement extends Model
     protected $guarded = array('id');
     protected $fillable = [
       'title',
-      'student_id',
       'teacher_id',
       'agreement_id',
       'tuition',
