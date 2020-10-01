@@ -380,4 +380,5 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
+  'ask_teacher_change_description' => 'About teacher change you should check',
 ];

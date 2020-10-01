@@ -161,10 +161,10 @@
       </li>
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=teacher_change" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
-          <i class="fa fa-exchange-alt nav-icon"></i>
+          <i class="fa fa-sync nav-icon"></i>
           <p>
             {{__('labels.ask_teacher_change')}}
-            @if($lecture_cancel_count > 0)
+            @if($teacher_change_count > 0)
             <span class="badge badge-danger right">{{$teacher_change_count}}</span>
             @endif
           </p>

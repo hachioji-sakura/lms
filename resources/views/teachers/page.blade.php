@@ -142,6 +142,25 @@
       </div>
       </a>
     </div>
+    <div class="col-12 col-lg-4 col-md-6 mb-1">
+      <a class="" href="/{{$domain}}/{{$item->id}}/ask?list=teacher_change">
+      <div class="info-box">
+        <span class="info-box-icon bg-info">
+          <i class="fa fa-sync"></i>
+        </span>
+        <div class="info-box-content text-dark">
+          <b class="info-box-text text-lg">
+            {{__('labels.ask_teacher_change')}}
+            @if($teacher_change_count > 0)
+            <span class="badge badge-danger float-right">{{$teacher_change_count}}</span>
+            @endif
+          </b>
+          <span class="text-sm">{{__('labels.ask_teacher_change_description')}}</span>
+        </div>
+
+      </div>
+      </a>
+    </div>
     {{--
     <div class="col-12 col-lg-4 col-md-6 mb-1">
       <a class="" href="javascript:void(0);"  page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
