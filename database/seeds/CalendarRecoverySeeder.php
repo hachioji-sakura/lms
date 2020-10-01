@@ -59,6 +59,7 @@ EOT;
         , u.status
         , u.work
         , u.exchanged_calendar_id
+        , u.trial_id as u_trial_id
         , (select schedule_id from user_calendar_members a where a.calendar_id = u.exchanged_calendar_id limit 1) as exchanged_schedule_id
         , m.id as member_id
         , m.user_id
@@ -69,6 +70,7 @@ EOT;
         , o.id as schedule_onetime_id
         , o.confirm
         , o.cancel
+        , o.trial_id as o_trial_id
         , o.cancel_reason
         from user_calendars u
         inner join user_calendar_members m  on u.id = m.calendar_id
@@ -113,6 +115,11 @@ EOT;
         $d = DB::select($_sql);
         $this->exchanged_calendar_id_set($d);
 
+        //trial_idの同期
+        $_sql = $sql." where u.trial_id > 0 and o.trial_id!=u.trial_id ";
+        $d = DB::select($_sql);
+        $this->trial_id_sync($d);
+
         //2020.4-2020.5の振替期限は、2020-12-31
         $this->update_exchange_limit_date_20201231();
 
@@ -156,6 +163,14 @@ EOT;
       foreach($d as $row){
         DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $row->schedule_onetime_id)->update([
           'altsched_id' => $row->exchanged_schedule_id
+        ]);
+      }
+    }
+    public function trial_id_sync($d){
+      $id = [];
+      foreach($d as $row){
+        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $row->schedule_onetime_id)->update([
+          'trial_id' => $row->u_trial_id
         ]);
       }
     }

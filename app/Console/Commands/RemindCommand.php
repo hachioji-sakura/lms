@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
+use App\Models\MailLog;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
 use App\Http\Controllers\Controller;
@@ -16,7 +18,7 @@ class RemindCommand extends Command
      */
     //protected $signature = 'command:name';
     //protected $signature = 'name';
-    protected $signature = 'remind:trial {type}';
+    protected $signature = 'remind:trial';
     //protected $signature = 'sample:sample {name} {age}';
     public $teacher1 = null;
     /**
@@ -43,82 +45,54 @@ class RemindCommand extends Command
      */
     public function handle()
     {
-      $type = $this->argument("type");
-      $this->teacher1 = Teacher::where('id', 1)->first();
-      switch($type){
-        case "today":
-          $this->remind_trial_calendar('today');
-          break;
-        case "tomorrow":
-          $this->remind_trial_calendar('tomorrow');
-          break;
-        default:
-          $this->info("command not found");
-      }
+      Auth::loginUsingId(1);
+      $this->remind_trial_calendar();
+      MailLog::all_send();
     }
 
-    public function remind_trial_calendar($type){
-      $from = date('Y-m-d 00:00:00');
-      $to = date('Y-m-d 23:59:59');
-      if($type=='tomorrow'){
-        $from = date('Y-m-d 00:00:00', strtotime('+1 day'));
-        $to = date('Y-m-d 00:00:00', strtotime('+1 day'));
-      }
-      //本日の予定を取得
-      $calendars = UserCalendar::rangeDate($from, $to)
-      ->findStatuses(['fix'])->get();
+    private function remind_calendar($calendar, $title, $send_schedule){
+      $teacher1 = Teacher::where('id', 1)->first();
 
-      \Log::warning("remind_trial_calendar:type=".$type.":count=".count($calendars));
-      $this->info("remind_trial_calendar:type=".$type.":count=".count($calendars));
-      @$this->send_slack("remind_trial_calendar:type=".$type.":count=".count($calendars), 'warning', "remind_trial_calendar");
-
-      $now = strtotime('now');
-      foreach($calendars as $calendar){
-        $title = '体験授業予定';
-        if($calendar->is_trial()==false) continue;
-        if($type!='tomorrow'){
-          $hour0 = strtotime($calendar->start_time);
-          $hour1 = strtotime('-1 hour '.$calendar->start_time);
-          $hour2 = strtotime('-2 hour '.$calendar->start_time);
-          $hour3 = strtotime('-3 hour '.$calendar->start_time);
-          $hour8 = strtotime('-8 hour '.$calendar->start_time);
-          $hour9 = strtotime('-9 hour '.$calendar->start_time);
-          if($now > $hour1 && $now < $hour0){
-            //1時間前リマインド
-            $is_remind = true;
-            $title.= '（1時間前）';
-          }
-          else if($now > strtotime($hour3) && $now < $hour2){
-            //３時間前リマインド
-            $is_remind = true;
-            $title.= '（3時間前）';
-          }
-          else if($now > strtotime($hour9) && $now < $hour8){
-            //９時間前リマインド
-            $is_remind = true;
-            $title.= '（9時間前）';
-          }
-        }
-        else {
-          $is_remind = true;
-          $title.= '（明日）';
-        }
-        if($is_remind==false) continue;
-        $this->remind_calendar($calendar, $title);
-      }
-      $this->info("remind_trial_calendar end");
-    }
-    private function remind_calendar($calendar, $title){
-      $this->info("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."]--");
-      @$this->send_slack("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."]--", 'warning', "remind_trial_calendar");
-      $this->teacher1->user->send_mail($title.'確認', [
+      $res = $teacher1->user->remind_mail($title, [
         'calendar' => $calendar,
-        'login_user' => $this->teacher1->user->details(),
-      ], 'text', 'trial_calendar_remind');
+        'login_user' => $teacher1->user->details(),
+      ], 'text', 'trial_calendar_remind', $send_schedule);
+      if($res['status'] == 200){
+        $this->info("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."][".$send_schedule."]--");
+        @$this->send_slack("--remind[id=".$calendar->id."][".$calendar->start_time."][".$title."][".$send_schedule."]--", 'warning', "remind_trial_calendar");
+      }
+      else {
+        $this->info("--remind[status=".$res['message']."]");
+      }
     }
     protected function send_slack($message, $msg_type, $username=null, $channel=null) {
       $controller = new Controller;
       $res = $controller->send_slack($message, $msg_type, $username, $channel);
       return $res;
+    }
+    public function remind_trial_calendar(){
+      $from = date('Y-m-d 00:00:00');
+      //本日の予定以降の体験授業を取得
+      $calendars = UserCalendar::rangeDate($from)->where('trial_id' , '>', 0)->findStatuses(['fix'])->get();
+      \Log::warning("remind_trial_calendar::count=".count($calendars));
+      $this->info("remind_trial_calendar::count=".count($calendars));
+      @$this->send_slack("remind_trial_calendar::count=".count($calendars), 'warning', "remind_trial_calendar");
+
+      foreach($calendars as $calendar){
+        $title1 = '【体験授業リマインド】';
+        $calendar = $calendar->details();
+        $title2 = $calendar['datetime'].'/'.$calendar['lesson'].'/'.$calendar['course'];
+        $title2 .= $calendar['teacher_name'].'/'.$calendar['student_name'];
+        $hour0 = strtotime($calendar->start_time);
+        $hour1 = strtotime('-1 hour '.$calendar->start_time);
+        $hour3 = strtotime('-3 hour '.$calendar->start_time);
+        $hour9 = strtotime('-9 hour '.$calendar->start_time);
+        $hour24 = strtotime('-1 day '.$calendar->start_time);
+        $this->remind_calendar($calendar, $title1.'（1時間前）'.$title2, date('Y-m-d H:i:s', $hour1));
+        $this->remind_calendar($calendar, $title1.'（3時間前）'.$title2, date('Y-m-d H:i:s', $hour3));
+        $this->remind_calendar($calendar, $title1.'（9時間前）'.$title2, date('Y-m-d H:i:s', $hour9));
+        $this->remind_calendar($calendar, $title1.'（明日）'.$title2, date('Y-m-d 00:00:00', $hour24));
+      }
+      $this->info("remind_trial_calendar end");
     }
 }

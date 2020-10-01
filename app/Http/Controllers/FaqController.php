@@ -20,7 +20,6 @@ class FaqController extends MilestoneController
       ]);
     }
     $param = $this->get_param($request);
-    if(!isset($param['user'])) abort(403);
     $_table = $this->search($request);
     return view($this->domain.'.lists', $_table)
       ->with($param);
@@ -86,6 +85,8 @@ class FaqController extends MilestoneController
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request, false);
+    if(!isset($ret['user'])) abort(403);
+
     if(is_numeric($id) && $id > 0){
       $item = $this->model()->where('id','=',$id)->first();
       $create_user = $item->create_user->details();

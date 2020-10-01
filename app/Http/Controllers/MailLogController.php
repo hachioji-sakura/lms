@@ -70,8 +70,14 @@ class MailLogController extends MilestoneController
       "status_name" => [
         "label" => "ステータス",
       ],
+      "send_schedule" => [
+        "label" => __('labels.send_time'),
+      ],
       "created_date" => [
         "label" => __('labels.add_datetime'),
+      ],
+      "updated_date" => [
+        "label" => __('labels.upd_datetime'),
       ],
     ];
 

@@ -16,10 +16,12 @@ use App\User;
 use DB;
 
 use App\Models\Traits\Common;
+use App\Models\Traits\WebCache;
 
 class UserCalendar extends Model
 {
   use Common;
+  use WebCache;
   protected $pagenation_line = 20;
   protected $table = 'lms.user_calendars';
   protected $guarded = array('id');
@@ -805,6 +807,7 @@ EOT;
       $this->delete_mail([], $login_user_id);
     }
     //事務システム側を先に削除
+    $this->cache_delete();
     $this->office_system_api("DELETE");
     UserCalendarMember::where('calendar_id', $this->id)->delete();
     UserCalendarTag::where('calendar_id', $this->id)->delete();
@@ -876,6 +879,7 @@ EOT;
       }
     }
     //事務システムも更新
+    $this->cache_delete();
     $this->office_system_api("PUT");
 
     if(isset($form['send_mail'])){
@@ -1101,118 +1105,6 @@ EOT;
   public function is_kids_lesson(){
     return $this->has_tag('lesson', 4);
   }
-  /*
-  public function status_to_confirm($remark, $login_user_id){
-    if($this->status!='new') return false;
-    $status = 'confirm';
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      if($_member->role != 'student') continue;
-    }
-    $this->update(['status' => $status]);
-
-  }
-
-  public function status_to_fix($remark, $login_user_id){
-    if($this->status!='new' && $this->status!='confirm' && $this->status!='cancel') return false;
-    $is_update = true;
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      if($_member->role != 'student') continue;
-      if($member->status!='fix' && $member->status!='cancel'){
-        //fix or cancel以外があれば全体更新なし
-        $is_update = false;
-      }
-    }
-    if($is_update){
-      //全員キャンセル or 一人以上出席
-      $this->update(['status' => 'fix']);
-    }
-  }
-  public function status_to_cancel($remark, $login_user_id){
-    if($this->status!='confirm' && $this->status!='fix') return false;
-    $status = 'cancel';
-    $is_update = true;
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      if($_member->role != 'student') continue;
-      if($member->status!='fix' && $member->status!='cancel'){
-        //fix or cancel以外があれば全体更新なし
-        $is_update = false;
-      }
-      if($member->status=='fix'){
-        //fix が1つ以上あれば fix
-        $status='fix';
-      }
-    }
-    if($is_update){
-      //全員キャンセル or 一人以上出席
-      $this->update(['status' => $status]);
-    }
-  }
-  public function status_to_rest($remark, $login_user_id){
-    if($this->status != 'fix') return false;
-    $status = 'rest';
-    $is_update = true;
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      if($_member->role != 'student') continue;
-      if($member->status!='rest'){
-        //fix or cancel以外があれば全体更新なし
-        $is_update = false;
-      }
-    }
-    if($is_update){
-      //全員休んだらカレンダー休み
-      $this->update(['status' => $status]);
-    }
-  }
-  public function status_to_absence($remark, $login_user_id){
-    //授業予定→出席、　出席（間違えた場合）→欠席
-    if($this->status!='fix' && $this->status!="presence") return false;
-    $status = 'absence';
-    //カレンダー：欠席
-    $is_update = true;
-    \Log::warning("-------status_to_absence----------");
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      \Log::warning("status:".$member->status);
-      if($_member->role == 'student' && $member->is_rest_status($member->status)!=true){
-        $is_update = false;
-      }
-    }
-    if($is_update == true){
-      \Log::warning("-------is_update----------");
-      $this->update(['status' => $status]);
-    }
-  }
-  public function status_to_presence(){
-    //授業予定→出席、　欠席（間違えた場合）→出席
-    if($this->status!='fix' && $this->status!="absence") return false;
-    $status = 'presence';
-    $is_update = false;
-    \Log::warning("-------status_to_presence----------");
-    //カレンダー：出席
-    foreach($this->members as $member){
-      if(!isset($member->user)) continue;
-      $_member = $member->user->details('students');
-      \Log::warning("status:".$member->status);
-      if($_member->role == 'student' && $member->status=='presence'){
-        $is_update = true;
-      }
-    }
-    //出席者が一人でもいたら、出席
-    if($is_update == true){
-      \Log::warning("-------is_update----------");
-      $this->update(['status' => $status]);
-    }
-  }
-  */
   public function exist_rest_student(){
     //欠席 or 休み or　休講
     foreach($this->members as $member){
@@ -1313,6 +1205,7 @@ EOT;
       }
     }
     if($this->status != $status){
+      $this->cache_delete();
       UserCalendar::where('id', $this->id)->update(['status' => $status]);
     }
     $this->set_endtime_for_single_group();
@@ -1347,6 +1240,7 @@ EOT;
     }
     return false;
   }
+
   public function is_teacher_changing(){
     $asks = Ask::findTargetModel('user_calendars',$this->id)->findStatuses(['new'])->get();
     if($asks->count() > 0){
@@ -1396,4 +1290,11 @@ EOT;
         'teacher_id' => $teacher_id,
       ]);
     }
+
+  public function cache_delete(){
+    $this->delete_user_cache($this->user_id);
+    foreach($this->members as $member){
+      $this->delete_user_cache($member->user_id);
+    }
+  }
 }

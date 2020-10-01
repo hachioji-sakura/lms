@@ -32,8 +32,8 @@
           <div class="card-title text-sm">
             @component('components.list_pager', ['_page' => $_page, '_maxpage' => $_maxpage, '_list_start' => $_list_start, '_list_end'=>$_list_end, '_list_count'=>$_list_count])
               @slot("addon_button")
-              @if( ($user->role=='parent' || $user->role=="manager") && $list != 'teacher_change' )
-              <ul class="pagination pagination-sm m-0 float-left text-sm">
+              {{--
+              @if($user->role=='parent' || $user->role=="manager")              <ul class="pagination pagination-sm m-0 float-left text-sm">
                 <li class="page-item">
                   <a class="btn btn-info btn-sm" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/ask/create" page_title="お問い合わせ登録">
                     <i class="fa fa-plus"></i>
@@ -44,6 +44,7 @@
                 </li>
               </ul>
               @endif
+              --}}
               @endslot
             @endcomponent
           </div>

@@ -58,10 +58,17 @@
   @else
   {{-- 参照のみ --}}
   <a href="javascript:void(0);" title="{{$calendar->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm ml-1">
-    <i class="fa fa-file-alt"></i>
-    <span class="ml-1 btn-label">
-      {{__('labels.details')}}
-    </span>
+      @if($calendar->is_checked()==true)
+        <i class="fa fa-lock"></i>
+        <span class="ml-1 btn-label">
+          {{__('labels.monthly_confirmed')}}
+        </span>
+      @else
+      <i class="fa fa-file-alt"></i>
+      <span class="ml-1 btn-label">
+        {{__('labels.details')}}
+      </span>
+      @endif
   </a>
   @endif
 @endif
@@ -76,7 +83,7 @@
 </a>
 @endif
 
-@if(($calendar->status==="presence" || $calendar->status==="absence") && ($user->role==="manager" || $user->role==="teacher"))
+@if(($calendar->status==="presence" || $calendar->status==="absence") && ($user->role==="manager" || ($user->role==="teacher" && $calendar->is_checked()==false)))
 {{-- 出欠変更 --}}
 <a title="{{$calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
   <i class="fa fa-wrench" title="{{$calendar->status}}"></i>
@@ -87,9 +94,11 @@
 @endif
 @if($calendar->work!=10 && $calendar->schedule_type_code()!="training")
   {{-- 季節講習の予定は事務システム側の再編成で行うので、変更・削除はできない --}}
+  @if(!($user->role==="teacher" && $calendar->is_checked()==true))
   <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}/edit" role="button" class="btn btn-default btn-sm ml-1">
     <i class="fa fa-edit"></i>
   </a>
+  @endif
   @if($user->role==="manager")
   <a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}?action=delete" role="button" class="btn btn-default btn-sm ml-1">
     <i class="fa fa-trash"></i>

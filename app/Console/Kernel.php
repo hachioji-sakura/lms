@@ -29,14 +29,13 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        $schedule->command('remind:trial today')->hourly();
+        $schedule->command('remind:trial')->hourly();
 
         $schedule->command('remind:trial tomorrow')->dailyAt('18:00');
 
         $schedule->command('dailyproc:ask')->dailyAt('18:00');
 
-        //$schedule->command('calendarsetting:make')->dailyAt('18:00');
-
+        $schedule->command('calendarsetting:make')->monthlyOn(1, '00:00');
     }
 
     /**

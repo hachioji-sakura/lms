@@ -6,6 +6,7 @@ use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
 use App\Models\UserCalendar;
+use App\Models\UserCalendarSetting;
 use App\Models\StudentRelation;
 use App\Models\GeneralAttribute;
 use App\Models\Ask;
@@ -85,10 +86,10 @@ class StudentController extends UserController
       }
       $lists = ['cancel', 'confirm', 'exchange', 'month', 'rest_contact'];
       foreach($lists as $list){
-        $count = $this->get_schedule(["list" => $list], $ret['item']->user_id, '', '', true);
+        $count = $this->get_schedule(["list" => $list, 'user_id' => $ret['item']->user_id],true);
         $ret[$list.'_count'] = $count;
       }
-      $count = $this->get_ask([], $ret['item']->user_id, true);
+      $count = $this->get_ask(['user_id'=>$ret['item']->user_id], true);
       $ret['ask_count'] = $count;
     }
     else {
@@ -190,9 +191,9 @@ class StudentController extends UserController
     $param = $this->get_common_param($request);
     if(!$request->has('student_parent_id')) abort(403);
     $param['student'] = null;
-    $param['item'] = $this->model();
+    $param['item'] = null;
     return view($this->domain.'.create',
-      ['error_message' => '', '_edit' => false, 'item' => null])
+      ['error_message' => '', '_edit' => false])
       ->with($param);
    }
 
@@ -408,7 +409,8 @@ class StudentController extends UserController
          'search_from_date' =>  $from_date,
          'search_to_date' =>  $to_date,
          'search_status' => ['fix'],
-       ], $param['item']->user_id);
+         'user_id' => $param['item']->user_id,
+       ]);
      $param['calendars'] = $calendars['data'];
      $view = 'asks.emergency_lecture_cancel';
      return view($view, [
@@ -474,7 +476,8 @@ class StudentController extends UserController
        'search_from_date' =>  $from_date,
        'search_to_date' =>  $to_date,
        'search_status' => ['fix'],
-     ], $param['item']->user_id);
+       'user_id' => $param['item']->user_id,
+     ]);
 
    $param['calendars'] = $calendars['data'];
    return view('asks.late_arrival', [])->with($param);
@@ -573,7 +576,9 @@ class StudentController extends UserController
 
 
    $view = "schedule";
-   $calendars = $this->get_schedule($request->all(), $item->user_id);
+   $form = $request->all();
+   $form['user_id'] = $item->user_id;
+   $calendars = $this->get_schedule($form);
    $calendars = $calendars["data"];
    $param['calendars'] = $calendars;
    $param['view'] = $view;
@@ -605,8 +610,9 @@ class StudentController extends UserController
    $item = $model->details();
    $item['tags'] = $model->tags();
    $user = $param['user'];
-
-   $asks = $this->get_ask($request->all(), $item->user_id);
+   $form = $request->all();
+   $form['user_id'] = $item->user_id;
+   $asks = $this->get_ask($form);
    $page_data = $this->get_pagedata($asks['count'] , $param['_line'], $param['_page']);
    foreach($page_data as $key => $val){
      $param[$key] = $val;
@@ -679,13 +685,18 @@ class StudentController extends UserController
    if($request->has('list')){
      $filter['list'] = $request->get('list');
    }
-   $calendar_settings = $this->get_calendar_settings($filter, $item->user_id);
+   $filter['user_id'] = $item->user_id;
+   $calendar_settings = $this->get_user_calendar_settings($filter);
    return view($this->domain.'.'.$view, [
      'calendar_settings' => $calendar_settings['data'],
    ])->with($param);
  }
- public function get_calendar_settings($form, $user_id, $is_count_only = false){
-   $user = User::where('id', $user_id)->first()->details();
+ public function get_user_calendar_settings($form, $is_count_only = false){
+   if(!isset($form['user_id'])) abort(403);
+   $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+   $count = (new UserCalendarSetting())->get_user_cache($cache_key, $form['user_id']);
+   if($count != null && $is_count_only==true) return $count;
+   $user = User::where('id', $form['user_id'])->first()->details();
    if(!isset($form['list'])) $form['list'] = '';
    switch($form['list']){
      case "confirm_list":
@@ -704,6 +715,7 @@ class StudentController extends UserController
 
    $calendar_settings = $user->get_calendar_settings($form);
    $count = count($calendar_settings);
+   (new UserCalendarSetting())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only == true) return $count;
    if(isset($form['_page']) && isset($form['_line'])){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
@@ -711,16 +723,23 @@ class StudentController extends UserController
    //echo $calendars->toSql()."<br>";
    if($this->domain=='students'){
      foreach($calendar_settings as $i=>$setting){
-       $calendar_settings[$i] = $setting->details($user_id);
-       $calendar_settings[$i]->own_member = $setting[$i]->get_member($user_id);
+       $calendar_settings[$i] = $setting->details();
+       $calendar_settings[$i]->own_member = $setting[$i]->get_member($form['user_id']);
        $calendar_settings[$i]->status = $setting[$i]->own_member->status;
      }
    }
    return ["data" => $calendar_settings, 'count' => $count];
  }
 
- public function get_schedule($form, $user_id, $from_date = '', $to_date = '', $is_count_only = false){
-   $user = User::where('id', $user_id)->first()->details();
+ public function get_schedule($form, $is_count_only = false){
+   if(!isset($form['user_id'])) abort(403);
+   $from_date = '';
+   $to_date = '';
+   $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+   $count = (new UserCalendar())->get_user_cache($cache_key, $form['user_id']);
+   if($count != null && $is_count_only==true) return $count;
+
+   $user = User::where('id', $form['user_id'])->first()->details();
    $form['_sort'] ='start_time';
    $statuses = [];
    if(!isset($form['list'])) $form['list'] = '';
@@ -844,7 +863,7 @@ class StudentController extends UserController
    $calendars = $calendars->findWorks($works);
    $calendars = $calendars->findPlaces($places);
    $calendars = $calendars->findTeachingType($teaching_types);
-   $calendars = $calendars->findUser($user_id);
+   $calendars = $calendars->findUser($form['user_id']);
    if($is_exchange==true){
      \Log::warning("----------exchange-------------");
      $calendars = $calendars->findExchangeTarget();
@@ -853,6 +872,7 @@ class StudentController extends UserController
      $calendars = $calendars->searchWord($form['search_keyword']);
    }
    $count = $calendars->count();
+   (new UserCalendar())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only==true) return $count;
    $calendars = $calendars->sortStarttime($sort);
 
@@ -865,16 +885,20 @@ class StudentController extends UserController
    //echo $calendars->toSql()."<br>";
    if($this->domain=='students'){
      foreach($calendars as $i=>$calendar){
-       $calendars[$i] = $calendar->details($user_id);
-       $calendars[$i]->own_member = $calendars[$i]->get_member($user_id);
+       $calendars[$i] = $calendar->details();
+       $calendars[$i]->own_member = $calendars[$i]->get_member($form['user_id']);
        $calendars[$i]->status = $calendars[$i]->own_member->status;
      }
    }
 
-
    return ["data" => $calendars, 'count' => $count];
  }
- public function get_ask($form, $user_id, $is_count_only = false){
+ public function get_ask($form, $is_count_only = false){
+   if(!isset($form['user_id'])) abort(403);
+   $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+   $count = (new Ask())->get_user_cache($cache_key, $form['user_id']);
+   if($count != null && $is_count_only==true) return $count;
+
    if(!isset($form['list'])) $form['list'] = '';
    $default_status = 'new';
    switch($form['list']){
@@ -938,11 +962,12 @@ class StudentController extends UserController
    }
    $asks = Ask::findStatuses($statuses);
    $asks = $asks->findTypes($types);
-   $u = User::where('id', $user_id)->first()->details('managers');
+   $u = User::where('id', $form['user_id'])->first()->details('managers');
    if($this->domain!="managers" || !$this->is_manager($u->role)){
-     $asks = $asks->findUser($user_id);
+     $asks = $asks->findUser($form['user_id']);
    }
    $count = $asks->count();
+   (new Ask())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only==true) return $count;
    $asks = $asks->sortEnddate($sort);
 

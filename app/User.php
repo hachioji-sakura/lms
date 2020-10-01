@@ -340,6 +340,18 @@ EOT;
       $res = $this->_send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->locale);
       return $res;
     }
+    public function remind_mail($title, $param, $type, $template, $send_schedule){
+      $param['user'] = $this->details();
+      if(!isset($param['login_user'])){
+        $u = Auth::user();
+        if(isset($u)){
+          $param['login_user'] = $u->details();
+        }
+      }
+      $res = $this->_remind_mail($this->get_mail_address(), $title, $param, $type, $template, $this->locale, $send_schedule);
+      return $res;
+    }
+
     public function get_mail_address(){
       \Log::info("-----------------get_mail_address------------------");
       $u = $this->details();

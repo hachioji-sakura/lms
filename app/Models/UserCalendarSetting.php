@@ -8,10 +8,12 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
 use DB;
 use App\Models\Traits\Common;
+use App\Models\Traits\WebCache;
 
 class UserCalendarSetting extends UserCalendar
 {
   use Common;
+  use WebCache;
   protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
   public $register_mail_template = 'calendar_setting_new';
@@ -332,6 +334,7 @@ EOT;
     }
 
     //事務システム側を先に削除
+    $this->cache_delete();
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
     UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
@@ -406,6 +409,7 @@ EOT;
       }
       */
     }
+    $this->cache_delete();
     UserCalendarSetting::where('id', $this->id)->update($data);
     $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){

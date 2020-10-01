@@ -77,6 +77,7 @@ return [
   'schedule_rest_cancel' => '休み取消連絡',
   'schedule_fix' => '予定を確定する',
   'schedule_edit' => '予定を変更する',
+  'monthly_confirmed' => '月次確定済み',
   'schedule_presence' => '出欠をつける',
   'today_schedule_list' => '本日予定',
   'month_schedule_list' => '今月予定',
