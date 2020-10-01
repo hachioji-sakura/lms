@@ -46,6 +46,11 @@
             {{$field['label']}}
           </label>
           @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
+        @elseif($key==='teacher_name' && $user->role=='manager')
+        <label for="{{$key}}" class="w-100">
+          {{$field['label']}}
+        </label>
+        <a href="/teachers/{{$item->user->teacher->id}}" target="_blank">{{$item[$key]}}</a>
         @elseif($key==='teaching_name' || $key==='course')
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
@@ -172,13 +177,32 @@
       <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
             <i class="fa fa-trash mr-1"></i>
-              削除する
+              {{__('labels.delete_button')}}
           </button>
       </div>
       <div class="col-12 col-md-6 mb-1">
         <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
           <i class="fa fa-times-circle mr-1"></i>
-          キャンセル
+          {{__('labels.cancel_button')}}
+        </a>
+      </div>
+    </div>
+    @elseif($action=='dummy_release')
+    <form method="POST" action="/{{$domain}}/{{$item['id']}}/status_update/new">
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
+    <div class="row">
+      @method('PUT')
+      <div class="col-12 col-md-6 mb-1">
+          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="ダミー解除し、講師に予定の連絡をしますか？">
+            <i class="fa fa-trash mr-1"></i>
+              ダミー解除する
+          </button>
+      </div>
+      <div class="col-12 col-md-6 mb-1">
+        <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          <i class="fa fa-times-circle mr-1"></i>
+          {{__('labels.cancel_button')}}
         </a>
       </div>
     </div>

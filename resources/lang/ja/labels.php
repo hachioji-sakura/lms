@@ -196,6 +196,7 @@ return [
   'setting_enable_day' => '設定有効日',
   'update_button' => '更新する',
   'add_button' => '登録する',
+  'delete_button' => '削除する',
   'create_button' => 'この内容で登録する',
   'cancel_button' => 'キャンセル',
   'next_button' => '次へ',

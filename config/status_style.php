@@ -33,5 +33,6 @@ return array(
   'done' => 'success',
   'progress' => 'primary',
   'reapply' => 'secondary',
+  'dummy' => 'secondary',
   );
 ?>

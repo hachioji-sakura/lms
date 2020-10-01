@@ -146,4 +146,5 @@ return [
  "info_signup" => "The URL for main registration will be sent to the email address you entered.",
  "already_signup" => "If you have already registered, please log in here to use",
  'info_mail_reply' => 'You cannot reply to this email address',
+ 'confirm_dummy_release' => 'Do you want to release the dummy status?',
  ];

@@ -213,6 +213,7 @@ class UserCalendarMember extends Model
     if($this->is_recess_or_unsubscribe()==true){
       //生徒が退会日以降、休会日範囲の場合、cancel表記
       $status = 'cancel';
+      $this->update(['status' => 'cancel']);
     }
     if(app()->getLocale()=='en') return $status;
     $status_name = "";

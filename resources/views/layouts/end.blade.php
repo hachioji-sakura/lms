@@ -9,47 +9,63 @@ function status_style(status){
   var status_style = {
     "rest" : {
       "color" : "#dc3545",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-calendar-times mr-1'></i>",
     },
     "rest_cancel" : {
       "color" : "#ffc107",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-hourglass-half mr-1'></i>",
     },
     "lecture_cancel" : {
       "color" : "#6c757d",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-ban mr-1'></i>",
     },
     "absence" : {
       "color" : "#dc3545",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-user-times mr-1'></i>",
     },
     "confirm" : {
       "color" : "#fd7e14",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-question-circle mr-1'></i>",
     },
     "fix" : {
       "color" : "#17a2b8",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-clock mr-1'></i>",
     },
     "presence" : {
       "color" : "#28a745",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-check-circle mr-1'></i>",
     },
     "trial" : {
       "color" : "#e83e8c",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-exclamation-circle mr-1'></i>",
     },
     "training" : {
       "color" : "#884898",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-dumbbell mr-1'></i>",
     },
     "new" : {
       "color" : "#ffc107",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-calendar-plus mr-1'></i>",
     },
     "cancel" : {
       "color" : "#6c757d",
+      "textcolor" : "#FFFFFF",
       "icon" : "<i class='fa fa-ban mr-1'></i>",
+    },
+    "dummy" : {
+      "color" : "#FDD",
+      "textcolor" : "#F00",
+      "icon" : "<i class='fa fa-lock mr-1'></i>",
     },
   };
   if(!status_style[status]) status='trial';
