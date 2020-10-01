@@ -119,7 +119,7 @@
             <i class="fa fa-clock"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">予定一覧</b>
+            <b class="info-box-text text-lg">{{__('labels.schedule_list')}}</b>
             <span class="text-sm">予定検索</span>
           </div>
         </div>
@@ -132,7 +132,7 @@
             <i class="fa fa-calendar-alt"></i>
           </span>
           <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">繰り返し予定設定一覧</b>
+            <b class="info-box-text text-lg">{{__('labels.repeat_schedule_settings_list')}}</b>
             <span class="text-sm">繰返予定の検索</span>
           </div>
         </div>
