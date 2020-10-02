@@ -194,9 +194,9 @@
     <div class="row">
       @method('PUT')
       <div class="col-12 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="ダミー解除し、講師に予定の連絡をしますか？">
-            <i class="fa fa-trash mr-1"></i>
-              ダミー解除する
+          <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="ダミー解除し、講師に予定の連絡をしますか？">
+            <i class="fa fa-unlock-alt mr-1"></i>
+              {{__('labels.dummy_release')}}
           </button>
       </div>
       <div class="col-12 col-md-6 mb-1">

@@ -57,8 +57,12 @@
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/remind" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
           <i class="fa fa-envelope"></i>
         </a>
+        @elseif($setting->status=='dummy')
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" page_title="ダミー解除" role="button" class="btn btn-sm btn-danger ml-1">
+          <i class="fa fa-envelope"></i>
+        </a>
         @endif
-        @if($setting->status=='new')
+        @if($setting->status=='new' || $setting->status=='dummy')
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
           <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>

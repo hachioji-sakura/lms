@@ -701,7 +701,7 @@ class StudentController extends UserController
    switch($form['list']){
      case "confirm_list":
        if(empty($form['search_status'])){
-         $form['search_status'] = ['new', 'confirm'];
+         $form['search_status'] = ['new', 'confirm', 'dummy'];
        }
        break;
      case "fix_list":

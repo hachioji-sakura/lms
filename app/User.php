@@ -246,7 +246,7 @@ EOT;
     }
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -267,7 +267,7 @@ EOT;
     public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();

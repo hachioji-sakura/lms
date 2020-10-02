@@ -161,8 +161,7 @@
     @if(isset($teachers) && $user->role=='manager')
     <div class="col-12">
       <div class="alert alert-danger text-sm">
-        <h5><i class="icon fa fa-exclamation-triangle"></i> {{__('labels.important')}}</h5>
-        この予定はダミーで登録します
+        <i class="icon fa fa-exclamation-triangle"></i>この予定はダミーで登録します
       </div>
     </div>
     @else

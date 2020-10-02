@@ -390,4 +390,5 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
+  'dummy_release' => 'Dummy Release',
 ];

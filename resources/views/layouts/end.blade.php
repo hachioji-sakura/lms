@@ -65,7 +65,7 @@ function status_style(status){
     "dummy" : {
       "color" : "#FDD",
       "textcolor" : "#F00",
-      "icon" : "<i class='fa fa-lock mr-1'></i>",
+      "icon" : "<i class='fa fa-key mr-1'></i>",
     },
   };
   if(!status_style[status]) status='trial';

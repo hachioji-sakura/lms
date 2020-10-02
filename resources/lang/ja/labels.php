@@ -390,4 +390,5 @@ return [
   'created_date' => '起票日',
   'learning_record' => '学習記録',
   'actionlogs' => '操作ログ',
+  'dummy_release' => 'ダミーを解除する',
 ];

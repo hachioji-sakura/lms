@@ -700,16 +700,16 @@ class UserCalendarController extends MilestoneController
       $form = $request->all();
       if(!isset($form['action'])){
         $form['action'] = '';
+        if($param['user']->role=='manager' && $param['item']->status=='dummy'){
+          //事務がダミーステータスの詳細を開いた場合
+          $param['action'] = 'dummy_release';
+        }
       }
       $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
-      if($param['user']->role=='manager' && $param['item']->status=='dummy'){
-        //事務がダミーステータスの詳細を開いた場合
-        $param['action'] = 'dummy_release';
-        $param['page_message'] = __('messages.confirm_dummy_release');
-      }
+
       return view($this->domain.'.page', $form)->with($param);
     }
     /**
@@ -997,6 +997,7 @@ class UserCalendarController extends MilestoneController
         //dummy からnewへの更新（ダミー解除）
         if($status=='new' && $param['item']->status=='dummy'){
           $param['item']->update(['status' => 'new']);
+          $param['item']->register_mail([], $param['user']->user_id);
           return $this->api_response(200, '', '', $param['item']);
         }
 

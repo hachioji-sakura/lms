@@ -590,7 +590,8 @@ EOT;
     return false;
   }
   public function get_calendar_settings($filter){
-    $items = UserCalendarSetting::findUser($this->user_id);
+    $items = UserCalendarSetting::hiddenFilter();
+    $items = $items->findUser($this->user_id);
     if(isset($filter["search_status"])){
       $_param = "";
       if(gettype($filter["search_status"]) == "array") $_param  = $filter["search_status"];

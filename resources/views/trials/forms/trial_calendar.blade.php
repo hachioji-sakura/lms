@@ -35,12 +35,14 @@
         </span>
         @endforeach
       </div>
-      @if($calendar->status=='new' || $calendar->status=='confirm' || $calendar->status=='cancel')
+      @if($calendar->status=='dummy' || $calendar->status=='new' || $calendar->status=='confirm' || $calendar->status=='cancel')
       <div class="col-12 col-md-3 my-1">
         @if($calendar->status!='cancel')
+        {{--
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/cancel?trial_id={{$item->id}}" page_title="{{__('labels.cancel')}}" class="mr-1 underline text-sm">
           <i class="fa fa-ban"></i>{{__('labels.cancel')}}
         </a>
+        --}}
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/edit?trial_id={{$item->id}}" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
           <i class="fa fa-edit"></i>{{__('labels.edit')}}
         </a>
@@ -51,6 +53,10 @@
         @if($calendar->status=='new')
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/remind?trial_id={{$item->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 underline text-sm">
           <i class="fa fa-envelope"></i>{{__('labels.schedule_remind')}}
+        </a>
+        @elseif($calendar->status=='dummy')
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-unlock-alt"></i>{{__('labels.dummy_release')}}
         </a>
         @endif
       </div>
