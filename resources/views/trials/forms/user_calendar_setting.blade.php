@@ -70,7 +70,7 @@
         @elseif($setting->status=='dummy')
         <br>
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" page_title="{{__('labels.dummy_release')}}" role="button" class="btn btn-sm btn-primary ml-1">
-          <i class="fa fa-unlock-alt"></i>
+          <i class="fa fa-unlock-alt"></i>{{__('labels.dummy_release')}}
         </a>
         @endif
       </div>
