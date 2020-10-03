@@ -64,8 +64,8 @@
         </a>
         @elseif($setting->status=='new')
         <br>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/remind" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
-          <i class="fa fa-envelope"></i>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/remind" page_title="{{__('labels.schedule_remind')}}" role="button" class="btn btn-sm btn-warning ml-1">
+          <i class="fa fa-envelope"></i>{{__('labels.schedule_remind')}}
         </a>
         @elseif($setting->status=='dummy')
         <br>

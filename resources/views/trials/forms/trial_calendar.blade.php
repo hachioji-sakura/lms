@@ -51,12 +51,13 @@
           <i class="fa fa-trash"></i>{{__('labels.delete')}}
         </a>
         @if($calendar->status=='new')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/remind?trial_id={{$item->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 underline text-sm">
+        <br>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/remind?trial_id={{$item->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 btn btn-sm btn-warning">
           <i class="fa fa-envelope"></i>{{__('labels.schedule_remind')}}
         </a>
         @elseif($calendar->status=='dummy')
         <br>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 btn-sm btn-primary text-sm">
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 btn btn-sm btn-primary">
           <i class="fa fa-unlock-alt"></i>{{__('labels.dummy_release')}}
         </a>
         @endif
