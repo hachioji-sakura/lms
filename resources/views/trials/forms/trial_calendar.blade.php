@@ -55,7 +55,8 @@
           <i class="fa fa-envelope"></i>{{__('labels.schedule_remind')}}
         </a>
         @elseif($calendar->status=='dummy')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 underline text-sm">
+        <br>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendars/{{$calendar->id}}" page_title="{{__('labels.schedule_remind')}}" class="mr-1 btn-sm btn-primary text-sm">
           <i class="fa fa-unlock-alt"></i>{{__('labels.dummy_release')}}
         </a>
         @endif

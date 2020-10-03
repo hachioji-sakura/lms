@@ -781,7 +781,7 @@ class StudentController extends UserController
            $statuses = ['confirm'];
          }
          else {
-           $statuses = ['new', 'confirm'];
+           $statuses = ['new', 'confirm', 'dummy'];
          }
        }
        break;

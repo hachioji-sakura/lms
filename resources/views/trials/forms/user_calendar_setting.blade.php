@@ -46,6 +46,15 @@
         </a>
       </div>
       <div class="col-12 col-md-3 my-1">
+
+        @if($setting->status=='new' || $setting->status=='dummy')
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
+          <i class="fa fa-edit"></i>{{__('labels.edit')}}
+        </a>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}"  class="mr-1 underline text-sm">
+          <i class="fa fa-trash"></i>{{__('labels.delete')}}
+        </a>
+        @endif
         @if($setting->status=='fix')
         <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-success btn-sm ml-1">
           <i class="fa fa-calendar-plus"></i>
@@ -54,20 +63,14 @@
           <i class="fa fa-calendar-minus"></i>
         </a>
         @elseif($setting->status=='new')
+        <br>
         <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/status_update/remind" page_title="確認連絡" role="button" class="btn btn-sm btn-warning ml-1">
           <i class="fa fa-envelope"></i>
         </a>
         @elseif($setting->status=='dummy')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" page_title="ダミー解除" role="button" class="btn btn-sm btn-danger ml-1">
-          <i class="fa fa-envelope"></i>
-        </a>
-        @endif
-        @if($setting->status=='new' || $setting->status=='dummy')
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/edit" page_title="{{__('labels.edit')}}" class="mr-1 underline text-sm">
-          <i class="fa fa-edit"></i>{{__('labels.edit')}}
-        </a>
-        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}?action=delete&trial_id={{$item->id}}" page_title="{{__('labels.delete')}}"  class="mr-1 underline text-sm">
-          <i class="fa fa-trash"></i>{{__('labels.delete')}}
+        <br>
+        <a href="javascript:void(0);" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}" page_title="{{__('labels.dummy_release')}}" role="button" class="btn btn-sm btn-primary ml-1">
+          <i class="fa fa-unlock-alt"></i>
         </a>
         @endif
       </div>
