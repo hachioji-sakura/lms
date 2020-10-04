@@ -211,7 +211,7 @@ class UserCalendarSettingController extends UserCalendarController
 
       //生徒と講師の情報が予定追加時には必須としている
       //講師の指定
-      if($request->has('teacher_id')){
+      if($request->has('teacher_id') && $request->get('teacher_id') > 0){
         $form['teacher_id'] = $request->get('teacher_id');
         $teacher = Teacher::where('id', $form['teacher_id'])->first();
         if(!isset($teacher)){
@@ -222,7 +222,7 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       //生徒の指定
-      if($request->has('student_id')){
+      if($request->has('student_id') && $request->get('student_id') > 0){
         $form['student_id'] = $request->get('student_id');
         $form['students'] = [];
         foreach($form['student_id'] as $student_id){
@@ -235,7 +235,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
       }
 
-      if($request->has('manager_id')){
+      if($request->has('manager_id') && $request->get('manager_id') > 0){
         $form['manager_id'] = $request->get('manager_id');
         $manager = Manager::where('id', $form['manager_id'])->first();
         if(!isset($manager)){
