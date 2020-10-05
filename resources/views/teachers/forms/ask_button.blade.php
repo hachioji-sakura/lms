@@ -24,7 +24,7 @@
   --}}
   @endif
 @endif
-@if($user->id == $ask->create_user_id)
+@if($user->id == $ask->create_user_id && $ask['type'] != 'teacher_change')
 <a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="依頼内容編集" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/ask/{{$ask->id}}/edit" role="button" class="btn btn-success btn-sm">
   <i class="fa fa-edit mr-1"></i>
   編集
