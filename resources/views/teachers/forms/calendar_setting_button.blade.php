@@ -19,6 +19,13 @@
     <span class="ml-1 btn-label">
     {{__('labels.schedule_remind')}}
   </a>
+  @elseif($setting->status=="dummy" && $user->role==="manager")
+  {{-- ダミー解除 --}}
+  <a title="{{$setting["id"]}}" href="javascript:void(0);" page_title="{{__('labels.dummy_release')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}" role="button" class="btn btn-primary btn-sm ml-1">
+    <i class="fa fa-unlock-alt mr-1"></i>
+    <span class="ml-1 btn-label">
+    {{__('labels.dummy_release')}}
+  </a>
   @endif
 
   <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.edit')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/edit" role="button" class="btn btn-success btn-sm mr-1 mt-1">

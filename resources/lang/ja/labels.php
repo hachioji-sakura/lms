@@ -194,6 +194,7 @@ return [
   'setting_enable_day' => '設定有効日',
   'update_button' => '更新する',
   'add_button' => '登録する',
+  'delete_button' => '削除する',
   'create_button' => 'この内容で登録する',
   'cancel_button' => 'キャンセル',
   'next_button' => '次へ',
@@ -389,4 +390,5 @@ return [
   'created_date' => '起票日',
   'learning_record' => '学習記録',
   'actionlogs' => '操作ログ',
+  'dummy_release' => 'ダミーを解除する',
 ];

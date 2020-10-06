@@ -194,6 +194,7 @@ return [
   'setting_enable_day' => 'Setting Enable Day',
   'update_button' => 'Update',
   'add_button' => 'Add',
+  'delete_button' => 'Delete',
   'create_button' => 'Create',
   'cancel_button' => 'Cancel',
   'next_button' => 'Next',
@@ -389,4 +390,5 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
+  'dummy_release' => 'Dummy Release',
 ];

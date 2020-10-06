@@ -1,5 +1,6 @@
 <?php
 return array(
+  'dummy' => 'ダミー',
   'new' => '予定(下書き)',
   'confirm' => '予定確認中',
   'fix' => '授業予定',
