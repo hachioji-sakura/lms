@@ -35,7 +35,7 @@ class Student extends Model
    *　プロパティ：年齢
    */
   public function age(){
-    if($this->birth_day=='9999-12-31') return '-';
+    if($this->birth_day=='9999-12-31') return '';
     return floor((date("Ymd") - str_replace("-", "", $this->birth_day))/10000);
   }
 
@@ -100,12 +100,9 @@ class Student extends Model
    */
   public function grade()
   {
-    $grade = $this->tag_value('grade');
-    $default_grade = $this->default_grade();
-    if($grade != $default_grade){
-      UserTag::setTag($this->user_id,'grade',$default_grade,1);
-    }
-    return $this->tag_name('grade');
+    $grade_name = $this->tag_name('grade');
+    if(empty($grade_name)) return "-";
+    return $grade_name;
   }
   /**
    *　プロパティ：学校名
@@ -546,6 +543,7 @@ EOT;
     return $ret;
   }
   public function recess_duration(){
+    if(strtotime($this->recess_end_date) < strtotime('now')) return "";
     if(empty($this->recess_start_date)) return "";
     $ret = date('Y年m月d日',  strtotime($this->recess_start_date));
     $ret .=  '～'.date('Y年m月d日',  strtotime($this->recess_end_date));
@@ -593,7 +591,8 @@ EOT;
     return false;
   }
   public function get_calendar_settings($filter){
-    $items = UserCalendarSetting::findUser($this->user_id);
+    $items = UserCalendarSetting::hiddenFilter();
+    $items = $items->findUser($this->user_id);
     if(isset($filter["search_status"])){
       $_param = "";
       if(gettype($filter["search_status"]) == "array") $_param  = $filter["search_status"];
@@ -1011,8 +1010,42 @@ EOT;
    *　プロパティ：標準学年（年齢から算出）
    * TODO:学年自動設定で使う予定(今は自動設定自体を導入していない）
    */
-  public function default_grade(){
+  public function default_grade($grade_code=null){
+    if(empty($this->birth_day)) return "";
+    if(empty($grade_code)) $grade_code = $this->default_grade_code();
+    if(empty($grade_code)) return "";
+
+    //結果を返す
+    if($grade_code>3){
+      $grade_index = $grade_code-4;
+      if($grade_index > count(config('grade'))) return 'adult';
+      $i=0;
+      foreach(config('grade') as $index=>$name){
+        if($i==$grade_index) return $index;
+        $i++;
+      }
+    }
+    return '';
+  }
+  public function gradeUp(){
+    $current_grade = $this->tag_value('grade');
+    $current_grade_code = $this->grade_to_code($current_grade);
+    $current_grade_code++;
+    $new_grade = $this->default_grade($current_grade_code);
+    UserTag::setTag($this->user_id,'grade',$new_grade,1);
+  }
+  private function grade_to_code($grade){
+    $i = 4;
+    foreach(config('grade') as $index=>$name){
+      if($grade==$index) return $i;
+      $i++;
+    }
+    return -1;
+  }
+  private function default_grade_code(){
+    if(empty($this->birth_day)) return "";
     $birth = date('Ymd', strtotime($this->birth_day));
+
     //今日の日付を取得
     $now = date('Ymd');
 
@@ -1021,37 +1054,16 @@ EOT;
     $b_m = substr($birth, 4, 4);
     $n_y = substr($now, 0, 4);
     $n_m = substr($now, 4, 4);
+    $m = 0;
     if ($n_m < 400) { //前学期
-      $m = 6;
-    } else { //新学期
-      $m = 5;
+      $m = 1;
     }
-
     if($b_m < 402) { //早生まれ
       $n_y++;
     }
     //学年の計算
-    $grade = $n_y - $b_y - $m;
-    //結果を返す
-    if($grade < 2){
-      return 'toddler';
-    }
-    else if($grade>=2 && $grade<=7){
-      return 'e'.($grade-1);
-    }
-    else if($grade>=8 && $grade<=10){
-      return 'j'.($grade-7);
-    }
-    else if($grade>=11 && $grade<=13){
-      return 'h'.($grade-10);
-    }
-    else if($grade>=14 && $grade<=16){
-      return 'university';
-    }
-    else if($grade>17){
-      return 'adult';
-    }
-    return '';
+    $grade_code = $n_y - $b_y - $m;
+    return $grade_code;
   }
   public function get_tuition($setting, $is_enable_only=true){
     \Log::warning("------get_tuition start------");

@@ -701,7 +701,7 @@ class StudentController extends UserController
    switch($form['list']){
      case "confirm_list":
        if(empty($form['search_status'])){
-         $form['search_status'] = ['new', 'confirm'];
+         $form['search_status'] = ['new', 'confirm', 'dummy'];
        }
        break;
      case "fix_list":
@@ -781,7 +781,7 @@ class StudentController extends UserController
            $statuses = ['confirm'];
          }
          else {
-           $statuses = ['new', 'confirm'];
+           $statuses = ['new', 'confirm', 'dummy'];
          }
        }
        break;
@@ -1042,8 +1042,11 @@ class StudentController extends UserController
     $result = '';
     $param = $this->get_param($request, $id);
     $param['_edit'] = true;
-    $param['student'] = $param['item'];
-    return view($this->domain.'.create',$param);
+    $view = 'edit';
+    if($this->domain=='students'){
+      $view = 'create';
+    }
+    return view($this->domain.'.'.$view,$param);
   }
   /**
    * Show the form for setting editing the specified resource.

@@ -940,6 +940,12 @@
 				ret[q[0]]=q[1];
 			}
 			return ret;
+		},
+		getAge : function(year, month, day){
+			var birthdayStr = ( year+ '' + this.leftPadZero(month, 2) + '' + this.leftPadZero(day, 2));
+		  var d = new Date();
+		  var dStr = ''+d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);
+		  return Math.floor((parseInt(dStr)-parseInt(birthdayStr))/10000);
 		}
 	}
 
