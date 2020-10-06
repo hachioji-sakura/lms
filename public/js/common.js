@@ -112,6 +112,7 @@ function birth_day_form_change(){
     if($('*[name="grade"]').length > 0){
       var grade = get_grade(year,month,day);
       $('*[name="grade"]').val(grade);
+      $('*[name="grade"]').change();
     }
   });
 }
