@@ -142,43 +142,25 @@
         </a>
       </div>
     </div>
-    @elseif(isset($action) && !empty($action))
-      @if($action!='delete')
-        <form method="POST" action="/{{$domain}}/{{$item['id']}}/{{$action}}">
-      @else
-        <form method="POST" action="/{{$domain}}/{{$item['id']}}">
-      @endif
-        @csrf
-        <input type="text" name="dummy" style="display:none;" / >
-        <div class="row">
-          {{-- 共通form用のボタン --}}
-          @if(isset($action) && $action=='delete')
-            @isset($trial_id)
-            <input type="hidden" name="trial_id" value="{{$trial_id}}">
-            @endisset
-            @method('DELETE')
-            <div class="col-12 col-md-6 mb-1">
-                <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
-                  <i class="fa fa-trash mr-1"></i>
-                    削除する
-                </button>
-            </div>
-            <div class="col-12 col-md-6 mb-1">
-              <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                キャンセル
-              </a>
-            </div>
-          @else
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                {{__('labels.close_button')}}
-              </a>
-            </div>
-          @endif
-        </div>
-        </form>
+    @elseif($action=='dummy_release')
+    <form method="POST" action="/{{$domain}}/{{$item['id']}}/status_update/new">
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
+    <div class="row">
+      @method('PUT')
+      <div class="col-12 col-md-6 mb-1">
+          <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="ダミー解除し、講師に予定の連絡をしますか？">
+            <i class="fa fa-unlock-alt mr-1"></i>
+              {{__('labels.dummy_release')}}
+          </button>
+      </div>
+      <div class="col-12 col-md-6 mb-1">
+        <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
+          <i class="fa fa-times-circle mr-1"></i>
+          {{__('labels.cancel_button')}}
+        </a>
+      </div>
+    </div>
     @elseif(isset($forms) && !empty(trim($forms)))
       {{$forms}}
     @endif

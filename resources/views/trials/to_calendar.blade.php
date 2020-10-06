@@ -52,17 +52,19 @@
                 @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
                 @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
                 @component('trials.forms.matching_decide', ['attributes' => $attributes]) @endcomponent
+                {{-- TODO dummyを中継するので、通知を登録時にしなくてよい
                 @component('calendars.forms.mail_send_confirm', ['default_send_teacher' => true]); @endcomponent
+                --}}
                 <div class="col-6 mb-1">
                   <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
                     <i class="fa fa-arrow-circle-left mr-1"></i>
-                    キャンセル
+                    {{__('labels.cancel_button')}}
                   </a>
                 </div>
                 <div class="col-6 mb-1">
                     <button type="button" class="btn btn-submit btn-primary btn-block">
                       <i class="fa fa-check mr-1"></i>
-                      体験授業予定を連絡する
+                      {{__('labels.add_button')}}
                     </button>
                 </div>
                 @endif

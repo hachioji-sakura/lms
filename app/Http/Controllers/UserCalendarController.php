@@ -25,6 +25,7 @@ class UserCalendarController extends MilestoneController
   public $table = 'user_calendars';
 
   public $status_update_message = [
+          'new' => 'ダミーを解除しました',
           'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
@@ -474,7 +475,6 @@ class UserCalendarController extends MilestoneController
           'to_date' => $to_date,
         ]);
       }
-
       $user = $this->login_details($request);
       if(!isset($user)){
         return $this->forbidden();
@@ -530,7 +530,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-
       return $this->api_response(200, "", "", $items->toArray());
     }
     public function search(Request $request)
@@ -701,11 +700,16 @@ class UserCalendarController extends MilestoneController
       $form = $request->all();
       if(!isset($form['action'])){
         $form['action'] = '';
+        if($param['user']->role=='manager' && $param['item']->status=='dummy'){
+          //事務がダミーステータスの詳細を開いた場合
+          $param['action'] = 'dummy_release';
+        }
       }
       $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
+
       return view($this->domain.'.page', $form)->with($param);
     }
     /**
@@ -990,6 +994,13 @@ class UserCalendarController extends MilestoneController
         $members = $param['item']->members;
         $_remark = '';
         $_access_key = '';
+        //dummy からnewへの更新（ダミー解除）
+        if($status=='new' && $param['item']->status=='dummy'){
+          $param['item']->update(['status' => 'new']);
+          $param['item']->register_mail([], $param['user']->user_id);
+          return $this->api_response(200, '', '', $param['item']);
+        }
+
         if($status==='cancel' && $request->has('cancel_reason')){
           $_remark = $request->get('cancel_reason');
         }

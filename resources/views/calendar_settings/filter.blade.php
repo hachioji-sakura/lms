@@ -66,7 +66,7 @@
   </label>
   <div class="w-100">
     <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
-      @foreach(config('attribute.setting_status') as $index => $name)
+      @foreach($attributes['setting_status'] as $index => $name)
         <option value="{{$index}}"
         @if(isset($filter['search_status']) && in_array($index, $filter['search_status'])==true)
         selected

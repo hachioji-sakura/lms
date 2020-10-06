@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
 use App\User;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
@@ -42,6 +44,10 @@ EOT;
   }
   public function scopeHiddenFilter($query)
   {
+    $user = Auth::user()->details();
+    if($user->role!='manager'){
+      $query = $query->where('status', '!=', 'dummy');
+    }
     return $query;
   }
 
@@ -298,6 +304,12 @@ EOT;
         $controller = new Controller;
         return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
+    }
+
+    $user = Auth::user()->details();
+    if($user->role=='manager' && $form['user_id'] != $user->id && $status=='new'){
+      //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+      $status = 'dummy';
     }
 
     //TODO Workの補間どうにかしたい

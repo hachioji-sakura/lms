@@ -76,6 +76,14 @@
     <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
     <div class="col-6 p-3"><span id="{{$key}}"></span></div>
     @endforeach
+    @if(isset($teachers) && $user->role=='manager')
+    <div class="col-12">
+      <div class="alert alert-danger text-sm">
+        <i class="icon fa fa-exclamation-triangle"></i>この予定はダミーで登録します
+      </div>
+    </div>
+    @else
     @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+    @endif
 </div>
 @endsection
