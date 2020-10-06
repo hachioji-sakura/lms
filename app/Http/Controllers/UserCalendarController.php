@@ -803,7 +803,19 @@ class UserCalendarController extends MilestoneController
       $param['action'] = '';
       $param['_edit'] = false;
       $param['teachers'] = $teachers;
+      $param['maintenance'] = $request->get('maintenance');
       return view($this->domain.'.teacher_change', [])->with($param);
+    }
+    public function teacher_change(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['item'] = UserCalendar::find($id);//detailsが載っちゃうから再取得
+      $target_user_id = $request->get('target_user_id');
+      $change_user_id  = $request->get('charge_user_id');
+      $res = $this->transaction($request, function() use ($param, $target_user_id, $change_user_id){
+        $param['item']->teacher_change(true, $change_user_id, $target_user_id);
+        return $this->api_response(200, '', '', $param['item']);
+      },__('messages.info_updated'),__FILE__, __FUNCTION__, __LINE__);
+      return $this->save_redirect($res, $param, __('messages.info_updated'));
     }
     public function page_access_check(Request $request, $id){
       $this->user_key_check($request);

@@ -3,7 +3,12 @@
   @endslot
   @slot('forms')
   <div id="_form">
+  @if($maintenance)
+  <form method="POST" action="/calendars/{{$item->id}}/teacher_change">
+    @method('PUT')
+  @else
   <form method="POST" action="/asks">
+  @endif
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     {{--注意
@@ -34,15 +39,22 @@
     @endif
     <div class="row">
       <div class="col-12 mb-1">
-          <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_teacher_change')}}" {{$item->is_teacher_changing() ? 'disabled' : ''}}>
-            @if($item->is_teacher_changing())
-            <i class="fa fa-sync mr-1"></i>
-            {{__('labels.adjust_schedule_list')}}
-            @else
-            <i class="fa fa-envelope mr-1"></i>
-            {{__('labels.send_button')}}
-            @endif
-          </button>
+        @if($maintenance)
+        <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_update')}}" {{$item->is_teacher_changing() ? 'disabled' : ''}}>
+          <i class="fa fa-sync mr-1"></i>
+          {{__('labels.update_button')}}
+        </button>
+        @else
+        <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_teacher_change')}}" {{$item->is_teacher_changing() ? 'disabled' : ''}}>
+          @if($item->is_teacher_changing())
+          <i class="fa fa-sync mr-1"></i>
+          {{__('labels.adjust_schedule_list')}}
+          @else
+          <i class="fa fa-envelope mr-1"></i>
+          {{__('labels.send_button')}}
+          @endif
+        </button>
+        @endif
       </div>
       <div class="col-12 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
