@@ -21,10 +21,13 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
+use App\Models\Traits\WebCache;
+
 use Hash;
 class User extends Authenticatable
 {
     use Common;
+    use WebCache;
     use Notifiable;
     protected $connection = 'mysql_common';
     /**
@@ -123,6 +126,7 @@ class User extends Authenticatable
       ]);
     }
     public function details($domain = ""){
+
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = $this->image;
       $s3_url = '';
@@ -242,7 +246,7 @@ EOT;
     }
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -263,7 +267,7 @@ EOT;
     public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();

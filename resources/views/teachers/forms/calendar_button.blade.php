@@ -49,6 +49,13 @@
       休み取消
     </span>
   </a>
+  @elseif($calendar->status=="dummy" && $user->role==="manager")
+  {{-- ダミー解除 --}}
+  <a title="{{$calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.dummy_release')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="btn btn-primary btn-sm ml-1">
+    <i class="fa fa-unlock-alt mr-1"></i>
+    <span class="ml-1 btn-label">
+    {{__('labels.dummy_release')}}
+  </a>
   @else
   {{-- 参照のみ --}}
   <a href="javascript:void(0);" title="{{$calendar->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="btn btn-outline-{{config('status_style')[$calendar->status]}} btn-sm ml-1">

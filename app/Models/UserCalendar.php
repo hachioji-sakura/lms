@@ -183,13 +183,21 @@ EOT;
 
   public function scopeHiddenFilter($query)
   {
+    $user = Auth::user()->details();
+    if($user->role!='manager'){
+      $query = $query->where('status', '!=', 'dummy');
+    }
+
+    //work=11の先生の予定はカレンダーに表示しない
     $where_raw = <<<EOT
       user_calendars.id not in (
         select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
         where u2.work in (11)
       )
 EOT;
-    return $query->whereRaw($where_raw);
+
+    $query =  $query->whereRaw($where_raw);
+    return $query;
   }
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
@@ -764,6 +772,11 @@ EOT;
         return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
     }
+    $user = Auth::user()->details();
+    if($user->role=='manager' && $form['target_user_id'] != $user->id && $status=='new'){
+      //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+      $status = 'dummy';
+    }
 
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && empty($form['work'])){
@@ -798,7 +811,6 @@ EOT;
       unset($form['send_mail']);
     }
     $calendar->change($form);
-
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う

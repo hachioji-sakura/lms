@@ -68,7 +68,7 @@
     </a>
     <div class="dropdown-menu dropdown-menu-lg">
       <a href="/calendars" class="dropdown-item">{{__('labels.schedule_list')}}</a>
-      <a href="/calendar_settings" class="dropdown-item">{{__('labels.regular_schedule_list')}}</a>
+      <a href="/calendar_settings" class="dropdown-item">{{__('labels.repeat_schedule_settings_list')}}</a>
     </div>
   </li>
   <li class="nav-item dropdown">

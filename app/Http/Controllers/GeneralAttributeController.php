@@ -37,33 +37,11 @@ class GeneralAttributeController extends UserController
 
       $param = $this->get_param($request);
       $items = $this->model();
-      $items = $this->_search_scope($request, $items);
-      $items = $items->paginate($param['_line']);
-      $param['items'] = $items;
-      $fields = [
-        "attribute_value" => [
-          "label" => "値",
-        ],
-        "attribute_name" => [
-          "label" => "名称",
-          "link" => "show",
-        ],
-        "sort_no" => [
-          "label" => "並順",
-        ],
-        "created_at" => [
-          "label" => __('labels.add_datetime'),
-        ],
-        "updated_at" => [
-          "label" => __('labels.upd_datetime'),
-        ],
-        "buttons" => [
-          "label" => __('labels.control'),
-          "button" => ["edit", "delete"]
-        ]
-      ];
-      $param['items'] = $items;
-      $param['fields'] = $fields;
+      $items = $this->search($request, $request->get('select_key'));
+
+      $param['items'] = $items['items'] ;
+      $param['fields'] = $items['fields'] ;
+
       return view($this->domain.'.lists')
         ->with($param);
     }
@@ -111,6 +89,8 @@ class GeneralAttributeController extends UserController
     }
     private function search(Request $request, $attribute_key)
     {
+      $param = $this->get_param($request);
+
       if(empty($attribute_key)){
         $items = GeneralAttribute::query();
       }
@@ -118,12 +98,9 @@ class GeneralAttributeController extends UserController
         $items = GeneralAttribute::findKey($attribute_key);
       }
       $items = $this->_search_scope($request, $items);
-
       $items = $this->_search_pagenation($request, $items);
-
       $items = $this->_search_sort($request, $items);
-      $count = $items->count();
-      $items = $items->get();
+      $items = $items->paginate($param['_line']);
       $fields = [
         "attribute_value" => [
           "label" => "値",
@@ -146,7 +123,7 @@ class GeneralAttributeController extends UserController
           "button" => ["edit", "delete"]
         ]
       ];
-      return ["items" => $items->toArray(), "fields" => $fields, 'count' => $count];
+      return ["items" => $items, "fields" => $fields];
     }
     private function _search_scope(Request $request, $items)
     {

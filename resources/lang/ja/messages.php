@@ -152,4 +152,5 @@ return [
   "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
   "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
+  'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
 ];
