@@ -543,6 +543,7 @@ EOT;
     return $ret;
   }
   public function recess_duration(){
+    if(strtotime($this->recess_end_date) < strtotime('now')) return "";
     if(empty($this->recess_start_date)) return "";
     $ret = date('Y年m月d日',  strtotime($this->recess_start_date));
     $ret .=  '～'.date('Y年m月d日',  strtotime($this->recess_end_date));
