@@ -17,7 +17,7 @@ class Curriculum extends Milestone
     }
 
     public function tasks(){
-      return $this->belongsToMany('App\Models\Subject','task_curriculum','task_id','curriculum_id')->withTimestamps();
+      return $this->belongsToMany('App\Models\Task','task_curriculum','curriculum_id','task_id')->withTimestamps();
     }
 
 
@@ -37,6 +37,7 @@ class Curriculum extends Milestone
 
     public function dispose(){
       $this->subjects()->detach();
+      $this->tasks()->detach();
       $this->delete();
       return $this;
     }
