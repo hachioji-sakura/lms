@@ -29,9 +29,9 @@ class StudentParentTest extends TestCase
       $c = new StudentParentController;
       $request = new Request();
       $random_string = substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyz'), 0, 32);
-      $email1 = 'yasui.hideo+m29@gmail.com';
-      $email2 = 'yasui.hideo+'.$random_string.'@gmail.com';
-
+      $u = Teacher::find(1)->first()->user;
+      $email1 = $u->email;
+      $email2 = 'test.hachiojisakura+'.$random_string.'@gmail.com';
       $this->assertDatabaseHas('common.users',  ['email'=>$email1]);
       $this->assertDatabaseMissing('common.users',  ['email'=>$email2]);
 
