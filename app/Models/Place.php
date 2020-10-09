@@ -8,7 +8,6 @@ use App\Models\Traits\Common;
 class Place extends Model
 {
   use Common;
-  protected $connection = 'mysql_common';
   protected $table = 'common.places';
   protected $guarded = array('id');
   public static $rules = array(
