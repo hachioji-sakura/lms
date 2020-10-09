@@ -12,7 +12,7 @@
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
     <input type="hidden" name="key" value="{{$access_key}}" />
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $trial, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
@@ -86,7 +86,7 @@ $(function(){
 });
 </script>
 @elseif($item->status=='commit')
-  @if($trial->parent->user->status==0)
+  @if($agreement->student_parent->user->status==0)
   <h4 class="bg-success p-3 text-sm">
     ご入会のご連絡を頂き、大変感謝致します。<br>
   </h4>
@@ -107,7 +107,7 @@ $(function(){
   @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
-      @if(isset($user) && $user->id == $trial->student_parent_id)
+      @if(isset($user) && $user->id == $agreement->student_parent_id)
       <a class="btn btn-block btn-secondary" href="/" >
         <i class="fa fa-arrow-right mr-1"></i>
         {{__('labels.top')}}へ

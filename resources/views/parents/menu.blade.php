@@ -28,11 +28,6 @@
             <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/parents/{{$item->id}}/ask/create" page_title="{{__('labels.agreements')}}{{__('labels.edit')}}{{__('labels.asks')}}">
-            <i class="fa fa-hands-helping nav-icon"></i>{{__('labels.agreements')}}{{__('labels.edit')}}{{__('labels.asks')}}
-          </a>
-        </li>
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >

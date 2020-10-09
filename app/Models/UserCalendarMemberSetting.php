@@ -39,7 +39,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function agreement_statements(){
-    return $this->belongsToMany('App\Models\AgreementStatement','user_calendar_member_setting_agreement_statement','user_calendar_member_setting_id','agreement_statement_id')->withTimestamps();
+    return $this->belongsToMany('App\Models\AgreementStatement','common.user_calendar_member_setting_agreement_statement','user_calendar_member_setting_id','agreement_statement_id')->withTimestamps();
+  }
+
+  public function enable_agreement_statements(){
+    return $this->agreement_statements()->enable();
   }
   public function dispose($login_user_id){
     $login_user = User::where('id', $login_user_id)->first();
@@ -231,6 +235,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return false;
   }
 
+  public function get_(){
+
+  }
   public function get_tuition(){
     if($this->setting->is_teaching()!=true){
       return null;

@@ -8,6 +8,7 @@ use App\User;
 use App\Models\Trial;
 use App\Models\Tuition;
 use App\Models\StudentParent;
+use App\Models\Student;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
@@ -713,15 +714,21 @@ class TrialController extends UserCalendarController
       $trial = Trial::find($id);
       $agreement = new Agreement;
       $agreement->fill($request->get('agreements'));
+      $req = $request->get('agreements');
+      $agreement->entry_date = date('Y/m/d H:i:s');
+      $student = new Student;
+      $student_name = $student->find($req['student_id'])->name();
+      $agreement->title = $student_name . ' : ' . date('Y/m/d');
       $agreement->save();
+
       foreach($request->get('agreement_statements') as $form){
         $new_agreement_statement = new AgreementStatement($form);
         $statement_form[$form['setting_key']] = $new_agreement_statement;
       }
       $agreement->agreement_statements()->saveMany($statement_form);
       foreach($statement_form as $key => $statement){
-        $id = $request->get('agreement_statements')[$key]['user_calendar_member_setting_id'];
-        $statement->user_calendar_member_settings()->sync($id);
+        $ids = $request->get('agreement_statements')[$key]['user_calendar_member_setting_id'];
+        $statement->user_calendar_member_settings()->attach($ids);
       }
       $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
 

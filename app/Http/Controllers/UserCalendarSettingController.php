@@ -15,6 +15,8 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
+use App\Models\AgreementStatement;
 use DB;
 use View;
 
@@ -647,6 +649,8 @@ class UserCalendarSettingController extends UserCalendarController
             foreach($form['students'] as $student){
               if($member->user_id == $student->user_id){
                 $is_delete = false;
+                //設定変更と同時に契約も更新
+                $this->agreement_add($member);
                 break;
               }
             }
@@ -661,6 +665,55 @@ class UserCalendarSettingController extends UserCalendarController
         return $this->api_response(200, '', '', $setting);
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
+
+    public function agreement_add($member){
+      //基本契約の追加
+      $statement = $member->enable_agreement_statements->first();
+      $setting = $member->setting->details();
+      $agreement_form = [
+        'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
+        'entry_date' =>  date('Y/m/d H:i:s'),
+        'student_id' => $member->user->details()->id,
+        'student_parent_id' => $member->user->details()->relations->first()->student_parent_id,
+        'status' => 'commit',
+      ];
+      $new_agreement = new Agreement($agreement_form);
+      if($member->enable_agreement_statements->count() > 0){
+        //既存の契約idを取得してparent_idへセットして無効化
+        $new_agreement->parent_agreement_id = $statement->agreement->id;
+        $statement->agreement->status = 'cancel';
+        $statement->agreement->save();
+      }
+      $new_agreement->save();
+      //契約明細の追加
+      $settings = $member->user->enable_calendar_settings;
+      $members = $member->user->calendar_member_settings;
+      $settings = $members->map(function($item,$key){
+        return $item->setting;
+      });
+      foreach($settings as $st){
+        $setting_key = $st->lesson(true).'_'.$st['work'].'_'.$st['course_minutes'].'_'.$new_agreement->student->user->get_enable_calendar_setting_count($st['lesson']);
+        $mb = $setting->members->where('user_id',$member->user_id)->first();
+        $form = [
+          'teacher_id' => $st->user->details()->id,
+          'lesson_id' => $st->lesson(true),
+          'grade' => $mb->user->details()->tag_value('grade'),
+          'course_type' => $st->get_tag_value('course_type'),
+          'course_minutes' =>  $st['course_minutes'],
+          'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
+          'tuition' => $mb->get_lesson_fee()['data']['lesson_fee'],
+          'is_exam' => 0,
+        ];
+        $statement_form[$setting_key] = new AgreementStatement($form);
+        $member_ids[$setting_key][] = $mb->id;
+      }
+      $new_agreement->agreement_statements()->saveMany($statement_form);
+      foreach($statement_form as $key => $statement){
+        $ids = $member_ids[$setting_key];
+        $statement->user_calendar_member_settings()->attach($ids);
+      }
+    }
+
     /**
      * 新規登録
      *

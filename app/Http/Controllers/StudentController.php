@@ -902,14 +902,6 @@ class StudentController extends UserController
    if(!isset($form['list'])) $form['list'] = '';
    $default_status = 'new';
    switch($form['list']){
-     case "agreement_update":
-       if(!isset($form['search_type'])){
-         $form['search_type'] = ['agreement_update'];
-       }
-       if(!isset($form['search_status'])){
-         $form['search_status'] = ['new'];
-       }
-       break;
      case "teacher_change":
        if(!isset($form['search_type'])){
          $form['search_type'] = ['teacher_change'];

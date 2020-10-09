@@ -363,12 +363,11 @@ class AskController extends MilestoneController
 
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['agreement'] = $param['item']->get_target_model_data();
-     $param['trial'] = $param['agreement']->trial;
-     $param['access_key'] = $param['trial']->parent->user->access_key;
+     $param['access_key'] = $param['agreement']->student_parent->user->access_key;
      $param['action'] = '';
      $param['fields'] = [];
-     $param['student'] = $param['trial']->student;
-     Auth::loginUsingId($param['trial']->parent->user->id);
+     $param['student'] = $param['agreement']->student;
+     Auth::loginUsingId($param['agreement']->student_parent->user->id);
 
      return view('asks.agreement', [])->with($param);
    }

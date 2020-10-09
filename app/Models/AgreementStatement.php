@@ -9,7 +9,6 @@ class AgreementStatement extends Model
 {
     //
     use Common;
-    protected $connection = 'mysql_common';
     protected $table = 'common.agreement_statements';
     protected $guarded = array('id');
     protected $fillable = [
@@ -28,8 +27,6 @@ class AgreementStatement extends Model
       'remark',
     ];
 
-
-
     public function agreement(){
       return $this->belongsTo('App\Models\Agreement','agreement_id');
     }
@@ -38,8 +35,13 @@ class AgreementStatement extends Model
       return $this->belongsTo('App\Models\Teacher','teacher_id');
     }
 
+    public function scopeEnable($query){
+      return $query->whereHas('agreement',function($query){
+        $query->where('status','commit');
+      });
+    }
     public function user_calendar_member_settings(){
-      return $this->belongsToMany('App\Models\UserCalendarMemberSetting','user_calendar_member_setting_agreement_statement','agreement_statement_id','user_calendar_member_setting_id')->withTimestamps();
+      return $this->belongsToMany('App\Models\UserCalendarMemberSetting','common.user_calendar_member_setting_agreement_statement','agreement_statement_id','user_calendar_member_setting_id')->withTimestamps();
     }
 
     public function getCourseTypeNameAttribute(){
@@ -65,5 +67,4 @@ class AgreementStatement extends Model
         return null;
       }
     }
-
 }

@@ -106,6 +106,7 @@ class User extends Authenticatable
     public function calendar_settings(){
       return $this->hasMany('App\Models\UserCalendarSetting');
     }
+
     public function calendar_members(){
       return $this->hasMany('App\Models\UserCalendarMember');
     }
