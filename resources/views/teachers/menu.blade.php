@@ -175,6 +175,11 @@
           <i class="fa fa-user-cog nav-icon"></i>{{__('labels.teacher_setting')}}
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/setting" page_title="{{__('labels.teacher_setting')}}">
+          <i class="fa fa-business-time nav-icon"></i>{{__('labels.working')}}{{__('labels.setting')}}
+        </a>
+      </li>
       @if($user->role==="manager")
       <li class="nav-item">
         <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/tag" page_title="{{__('labels.tags')}}{{__('labels.setting')}}">

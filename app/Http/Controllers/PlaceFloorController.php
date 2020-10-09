@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Place;
+use App\Models\PlaceFloor;
+use App\Models\PlaceFloorSheat;
 
-class PlaceController extends MilestoneController
+class PlaceFloorController extends PlaceController
 {
-  public $domain = "places";
+  public $domain = "place_floors";
   public function model(){
-    return Place::query();
+    return PlaceFloor::query();
   }
   public function show_fields($type){
     $fields = [
@@ -29,17 +30,12 @@ class PlaceController extends MilestoneController
         "label" => "データ利用",
         'size' => 2
       ],
-      "post_no" => [
-        "label" => "郵便番号",
-        'size' => 4
+
+      "sheat_count" => [
+        "label" => "席数",
+        'size' => 12
       ],
-      "address" => [
-        "label" => '所在地',
-        'size' => 8
-      ],
-      "phone_no" => [
-        "label" => '連絡先',
-      ],
+
     ];
     $fields['created_date'] = [
       'label' => __('labels.add_datetime'),
@@ -59,24 +55,15 @@ class PlaceController extends MilestoneController
       ],
       "name" => [
         "label" => "名称",
-        "link" =>  function($row){
-          return "/place_floors?place_id=".$row->id;
-        },
       ],
       "name_en" => [
         "label" => "英語名",
       ],
+      "sheat_count" => [
+        "label" => "席数",
+      ],
       "sort_no" => [
         "label" => "表示順",
-      ],
-      "post_no" => [
-        "label" => "郵便番号",
-      ],
-      "address" => [
-        "label" => '所在地',
-      ],
-      "phone_no" => [
-        "label" => '連絡先',
       ],
       "updated_date" => [
         "label" => __('labels.upd_datetime'),
@@ -90,13 +77,10 @@ class PlaceController extends MilestoneController
     ];
     return $fields;
   }
-
   public function create_form(Request $request){
     $user = $this->login_details($request);
     $form = [];
-    $form['address'] = $request->get('address');
-    $form['phone_no'] = $request->get('phone_no');
-    $form['post_no'] = $request->get('post_no');
+    $form['place_id'] = $request->get('place_id');
     $form['sort_no'] = $request->get('sort_no');
     $form['name'] = $request->get('name');
     $form['name_en'] = $request->get('name_en');
@@ -111,55 +95,17 @@ class PlaceController extends MilestoneController
   {
     $form = $request->all();
     //保存時にパラメータをチェック
-    if(empty($form['name']) || empty($form['name_en'])){
-      return $this->bad_request('リクエストエラー', 'name='.$form['name'].'/name_en='.$form['name_en']);
+    if(empty($form['name']) || empty($form['name_en'])  || empty($form['place_id']) || empty($form['sheat_count'])){
+      return $this->bad_request('リクエストエラー', 'name='.$form['name'].'/name_en='.$form['name_en'].'/place_id='.$form['place_id'].'/sheat_count='.$form['sheat_count']);
     }
     return $this->api_response(200, '', '');
   }
   public function update_form(Request $request){
     $form = [];
-    $form['address'] = $request->get('address');
-    $form['phone_no'] = $request->get('phone_no');
-    $form['post_no'] = $request->get('post_no');
     $form['sort_no'] = $request->get('sort_no');
     $form['name'] = $request->get('name');
     $form['name_en'] = $request->get('name_en');
     return $form;
-  }
-  public function get_param(Request $request, $id=null){
-    $ret = parent::get_param($request, $id);
-    if($this->is_manager($ret['user']->role)!==true){
-      abort(403);
-    }
-    if($request->has('place_id')){
-      $ret['place_id'] = $request->get('place_id');
-    }
-    return $ret;
-  }
-  /**
-   * 検索～一覧
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return [Collection, field]
-   */
-  public function search(Request $request)
-  {
-    $param = $this->get_param($request);
-    $request->merge([
-      '_sort_order' => 'asc',
-      '_sort' => 'sort_no',
-    ]);
-    if($request->has('is_desc') && $request->get('is_desc')==1){
-      $request->merge([
-        '_sort_order' => 'asc',
-      ]);
-    }
-    $items = $this->model();
-    $user = $this->login_details($request);
-    $items = $this->_search_scope($request, $items);
-    $items = $this->_search_sort($request, $items)->paginate($param['_line']);
-
-    return ['items' => $items, 'fields' => $this->list_fields()];
   }
   /**
    * フィルタリングロジック
@@ -174,18 +120,47 @@ class PlaceController extends MilestoneController
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
     }
-    if(isset($request->post_no)){
-      $items = $items->where('post_no', 'like', $request->post_no.'%');
+    //ID 検索
+    if(isset($request->place_id)){
+      $items = $items->where('place_id',$request->place_id);
     }
-
     //検索ワード
     if(isset($request->search_word)){
       $items = $items->searchWord($request->search_word);
     }
-
     return $items;
   }
+  public function _store(Request $request)
+  {
+    $form = $this->create_form($request);
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $item = $this->model();
+    foreach($form as $key=>$val){
+      $item = $item->where($key, $val);
+    }
+    $item = $item->first();
+    if(isset($item)){
+      return $this->error_response('すでに登録済みです');
+    }
 
+    $res = $this->transaction($request, function() use ($request, $form){
+      $item = $this->model()->create($form);
+      if($item->sheat_count < $request->get('sheat_count')){
+        for($i=0;$i<intval($request->get('sheat_count')) - $item->sheat_count ;$i++){
+          PlaceFloorSheat::create([
+            'place_floor_id' => $item->id,
+            'name' => ($i+1),
+            'sort_no' => ($i+1)
+          ]);
+        }
+      }
+      return $this->api_response(200, '', '', $item);
+    }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+   }
    public function _update(Request $request, $id)
    {
      $res = $this->save_validate($request);
@@ -195,20 +170,43 @@ class PlaceController extends MilestoneController
      $res =  $this->transaction($request, function() use ($request, $id){
        $form = $this->update_form($request);
        $item = $this->model()->where('id', $id)->first();
+       $delete_count = $item->sheat_count - $request->get('sheat_count');
+       if($delete_count > 0){
+         foreach($item->sheats as $sheat){
+           //未使用のデータならば削除可能
+           if($sheat->is_use() == false) {
+             echo '[id='.$sheat->id.':削除]';
+             $delete_count--;
+           }
+         }
+         if($delete_count > 0){
+           return $this->error_response('使用中のデータがあるため、席数を減らすことはできません');
+         }
+       }
        $item->update($form);
+       if($item->sheat_count < $request->get('sheat_count')){
+         for($i=0;$i<intval($request->get('sheat_count')) - $item->sheat_count ;$i++){
+           PlaceFloorSheat::create([
+             'place_floor_id' => $item->id,
+             'name' => ($i+1),
+             'sort_no' => ($i+1)
+           ]);
+         }
+       }
+       else if($item->sheat_count > $request->get('sheat_count')){
+         $delete_count = $item->sheat_count - $request->get('sheat_count');
+         foreach($item->sheats as $sheat){
+           //未使用のデータならば削除可能
+           if($sheat->is_use() == false){
+             $sheat->delete();
+             $delete_count--;
+           }
+           if($delete_count < 1) break;
+         }
+       }
        return $this->api_response(200, '', '', $item);
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
-   public function _delete(Request $request, $id)
-   {
-     $form = $request->all();
-       $item = $this->model()->where('id', $id)->first();
-       $ret = $item->dispose();
-       if(!$this->is_success_response($ret)) return $ret;
-       return $this->api_response(200, '', '', $item);
-     $res = $this->transaction($request, function() use ($request, $form, $id){
-     }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
-     return $res;
-   }
+
 }

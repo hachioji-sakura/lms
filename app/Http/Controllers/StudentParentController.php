@@ -322,7 +322,7 @@ class StudentParentController extends TeacherController
       $edit = false;
       $param = $this->get_common_param($request, false);
       //登録申し込み情報
-      if(count($student->trials)>0 && $trial!=null){
+      if(count($student->trials)>0){
         $param['item'] = $student->trials[0];
         $edit = true;
       }

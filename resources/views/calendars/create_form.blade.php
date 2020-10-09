@@ -22,7 +22,19 @@
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-    @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+    @if(isset($lesson_id) && $lesson_id>1 && isset($item->trial_id) && $item->trial_id>0)
+    {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
+    <div class="col-12 schedule_type schedule_type_class mb-2">
+        <label for="course_minutes" class="w-100">
+          {{__('labels.lesson_time')}}
+        </label>
+        <input type="hidden" name="course_minutes" value="30">
+        <input type="hidden" name="course_minutes_name" value="{{$attributes['course_minutes'][30]}}">
+        <span>{{$attributes['course_minutes'][30]}} ({{__('labels.trial_lesson')}})</span>
+    </div>
+    @else
+      @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+    @endif
   @else
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
@@ -146,6 +158,14 @@
     @endforeach
     <div class="col-6 p-2 font-weight-bold">{{__('labels.remark')}}</div>
     <div class="col-6 p-2"><span id="remark"></span></div>
+    @if(isset($teachers) && $user->role=='manager')
+    <div class="col-12">
+      <div class="alert alert-danger text-sm">
+        <i class="icon fa fa-exclamation-triangle"></i>この予定はダミーで登録します
+      </div>
+    </div>
+    @else
     @component('calendars.forms.mail_send_confirm', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+    @endif
 </div>
 @endsection

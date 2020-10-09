@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
 use App\User;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
 use DB;
 use App\Models\Traits\Common;
+use App\Models\Traits\WebCache;
 
 class UserCalendarSetting extends UserCalendar
 {
   use Common;
+  use WebCache;
   protected $table = 'lms.user_calendar_settings';
   protected $guarded = array('id');
   public $register_mail_template = 'calendar_setting_new';
@@ -40,6 +44,10 @@ EOT;
   }
   public function scopeHiddenFilter($query)
   {
+    $user = Auth::user()->details();
+    if($user->role!='manager'){
+      $query = $query->where('status', '!=', 'dummy');
+    }
     return $query;
   }
 
@@ -298,6 +306,12 @@ EOT;
       }
     }
 
+    $user = Auth::user()->details();
+    if($user->role=='manager' && $form['user_id'] != $user->id && $status=='new'){
+      //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+      $status = 'dummy';
+    }
+
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -332,6 +346,7 @@ EOT;
     }
 
     //事務システム側を先に削除
+    $this->cache_delete();
     $this->office_system_api("DELETE");
     UserCalendarTagsetting::where('user_calendar_setting_id', $this->id)->delete();
     UserCalendarMemberSetting::where('user_calendar_setting_id', $this->id)->delete();
@@ -406,6 +421,7 @@ EOT;
       }
       */
     }
+    $this->cache_delete();
     UserCalendarSetting::where('id', $this->id)->update($data);
     $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){

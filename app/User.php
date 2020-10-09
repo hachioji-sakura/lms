@@ -21,10 +21,13 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
+use App\Models\Traits\WebCache;
+
 use Hash;
 class User extends Authenticatable
 {
     use Common;
+    use WebCache;
     use Notifiable;
     protected $connection = 'mysql_common';
     /**
@@ -123,6 +126,7 @@ class User extends Authenticatable
       ]);
     }
     public function details($domain = ""){
+
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = $this->image;
       $s3_url = '';
@@ -242,7 +246,7 @@ EOT;
     }
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -263,7 +267,7 @@ EOT;
     public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -340,6 +344,18 @@ EOT;
       $res = $this->_send_mail($this->get_mail_address(), $title, $param, $type, $template, $this->locale);
       return $res;
     }
+    public function remind_mail($title, $param, $type, $template, $send_schedule){
+      $param['user'] = $this->details();
+      if(!isset($param['login_user'])){
+        $u = Auth::user();
+        if(isset($u)){
+          $param['login_user'] = $u->details();
+        }
+      }
+      $res = $this->_remind_mail($this->get_mail_address(), $title, $param, $type, $template, $this->locale, $send_schedule);
+      return $res;
+    }
+
     public function get_mail_address(){
       \Log::info("-----------------get_mail_address------------------");
       $u = $this->details();

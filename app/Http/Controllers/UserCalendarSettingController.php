@@ -211,7 +211,7 @@ class UserCalendarSettingController extends UserCalendarController
 
       //生徒と講師の情報が予定追加時には必須としている
       //講師の指定
-      if($request->has('teacher_id')){
+      if($request->has('teacher_id') && $request->get('teacher_id') > 0){
         $form['teacher_id'] = $request->get('teacher_id');
         $teacher = Teacher::where('id', $form['teacher_id'])->first();
         if(!isset($teacher)){
@@ -222,7 +222,7 @@ class UserCalendarSettingController extends UserCalendarController
       }
 
       //生徒の指定
-      if($request->has('student_id')){
+      if($request->has('student_id') && $request->get('student_id') > 0){
         $form['student_id'] = $request->get('student_id');
         $form['students'] = [];
         foreach($form['student_id'] as $student_id){
@@ -235,7 +235,7 @@ class UserCalendarSettingController extends UserCalendarController
         }
       }
 
-      if($request->has('manager_id')){
+      if($request->has('manager_id') && $request->get('manager_id') > 0){
         $form['manager_id'] = $request->get('manager_id');
         $manager = Manager::where('id', $form['manager_id'])->first();
         if(!isset($manager)){
@@ -499,11 +499,16 @@ class UserCalendarSettingController extends UserCalendarController
       }
       if(!isset($form['action'])){
         $form['action'] = '';
+        if($param['user']->role=='manager' && $param['item']->status=='dummy'){
+          //事務がダミーステータスの詳細を開いた場合
+          $param['action'] = 'dummy_release';
+        }
       }
       $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
+
       return view($this->domain.'.page', [
         'action' => $request->get('action')
       ])->with($param);
@@ -984,6 +989,12 @@ class UserCalendarSettingController extends UserCalendarController
         $members = $param['item']->members;
         $_remark = '';
         $_access_key = '';
+        if($status=='new' && $param['item']->status=='dummy'){
+          $param['item']->update(['status' => 'new']);
+          $param['item']->register_mail([], $param['user']->user_id);
+          return $this->api_response(200, '', '', $param['item']);
+        }
+
         if($status==='cancel'){
           $_remark = $request->get('cancel_reason');
         }

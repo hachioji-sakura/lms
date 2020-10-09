@@ -34,5 +34,7 @@ return array(
   'manager_type' => '事務種別',
   'faq_type' => 'FAQ種類',
   'bank_account_type' => '口座種類',
+  'calendar_status' => 'calendar_status',
+  'setting_status' => 'setting_status',
 );
 ?>

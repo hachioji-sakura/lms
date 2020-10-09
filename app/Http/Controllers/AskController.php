@@ -6,6 +6,8 @@ use App\User;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Ask;
+use Illuminate\Support\Facades\Auth;
+
 use DB;
 use View;
 class AskController extends MilestoneController
@@ -363,6 +365,10 @@ class AskController extends MilestoneController
      $param['trial'] = $param['item']->get_target_model_data();
      $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
+     $param['fields'] = [];
+     $param['student'] = $param['trial']->student;
+     Auth::loginUsingId($param['trial']->parent->user->id);
+
      return view('asks.agreement', [])->with($param);
    }
 

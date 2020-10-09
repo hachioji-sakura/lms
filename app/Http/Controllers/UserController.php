@@ -29,10 +29,13 @@ class UserController extends Controller
     ->orderBy('attribute_key', 'asc')
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
-      if(!isset($attributes[$_attribute['attribute_key']])){
-        $attributes[$_attribute['attribute_key']] = [];
+      //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
+      if($_attribute->attribute_value=='dummy') continue;
+
+      if(!isset($attributes[$_attribute->attribute_key])){
+        $attributes[$_attribute->attribute_key] = [];
       }
-      $attributes[$_attribute['attribute_key']][$_attribute['attribute_value']] = $_attribute['attribute_name'];
+      $attributes[$_attribute->attribute_key][$_attribute->attribute_value] = $_attribute->attribute_name;
     }
     $places = Place::orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
@@ -96,6 +99,8 @@ class UserController extends Controller
       'user_filter' => [
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
+        'post_no' => $request->post_no,
+        'place_id' => $request->place_id,
       ],
       'calendar_filter' => [
         'search_from_date'=>$request->search_from_date,
@@ -263,7 +268,10 @@ class UserController extends Controller
     if(!isset($user)){
       return null;
     }
-    return $user->details();
+
+    $item = $user->details();
+
+    return $item;
   }
 
   /**
@@ -410,5 +418,20 @@ class UserController extends Controller
   public function user_login($user_id){
     Auth::loginUsingId($user_id);
   }
-
+  public function create_cache_key($prefix, $param){
+    $user = Auth::user()->details();
+    $cache_key = $prefix.'_'.$user->role.'_';
+    foreach($param as $key=>$val){
+      switch(gettype($val)){
+        case "string":
+        case "integer":
+          $cache_key .= '['.$key.'='.$val.']';
+          break;
+        case "array":
+          $cache_key .= '['.$key.'='.implode(',', $val).']';
+          break;
+      }
+    }
+    return $cache_key;
+  }
 }

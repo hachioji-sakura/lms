@@ -104,7 +104,7 @@ class TaskController extends MilestoneController
 
      public function sendmail($res){
        //メールを送信する
-       $item = $res['data']->details();
+       $item = $res['data'];
        $template = 'task';
        $type = 'text';
        $param = ['item' => $item ];
