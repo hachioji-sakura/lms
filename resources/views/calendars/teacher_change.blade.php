@@ -3,7 +3,8 @@
   @endslot
   @slot('forms')
   <div id="_form">
-  @if($maintenance)
+  @if(isset($mantenance) && $maintenance == true)
+  {{__('messages.info_teacher_change_maintenance')}}
   <form method="POST" action="/calendars/{{$item->id}}/teacher_change">
     @method('PUT')
   @else
@@ -23,7 +24,11 @@
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
+            @if(isset($maintenance) && $maintenance == true)
+            {{__('labels.teachers')}}{{__('labels.select')}}
+            @else
             {!!nl2br(__('messages.warning_teacher_change'))!!}
+            @endif
           </label>
           <select name="charge_user_id" class="form-control select2"  width=100% required="true" >
             <option value="">{{__('labels.selectable')}}</option>
@@ -39,7 +44,7 @@
     @endif
     <div class="row">
       <div class="col-12 mb-1">
-        @if($maintenance)
+        @if(isset($maintenance) && $maintenance == true)
         <button type="button" class="btn btn-submit btn-info btn-block"  accesskey="_form" confirm="{{__('messages.confirm_update')}}" {{$item->is_teacher_changing() ? 'disabled' : ''}}>
           <i class="fa fa-sync mr-1"></i>
           {{__('labels.update_button')}}
