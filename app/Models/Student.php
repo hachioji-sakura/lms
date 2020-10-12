@@ -31,6 +31,13 @@ class Student extends Model
       'kana_first' => 'required',
       'gender' => 'required',
   );
+
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement','student_id');
+  }
+  public function enable_agreements(){
+    return $this->agreements()->where('status','commit');
+  }
   /**
    *　プロパティ：年齢
    */

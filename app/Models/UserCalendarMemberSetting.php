@@ -438,6 +438,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     elseif($this->setting->get_tag_value('lesson')==4){
       $subject= $this->setting->get_tag_value('kids_lesson');
     }
+    /*
     $tuition = $this->get_tuition();
 
     if($tuition == null){
@@ -465,7 +466,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
         'title' => $setting_details['title'],
         'tuition' => $lesson_fee,
       ]);
+
     }
+    */
 
 
     return $this->api_response(200, '', '');

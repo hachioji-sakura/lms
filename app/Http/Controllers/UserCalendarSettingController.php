@@ -668,7 +668,7 @@ class UserCalendarSettingController extends UserCalendarController
 
     public function agreement_add($member){
       //基本契約の追加
-      $statement = $member->enable_agreement_statements->first();
+      $agreement = $member->user->details()->enable_agreements->first();
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
@@ -678,22 +678,21 @@ class UserCalendarSettingController extends UserCalendarController
         'status' => 'commit',
       ];
       $new_agreement = new Agreement($agreement_form);
-      if($member->enable_agreement_statements->count() > 0){
+      if($member->user->details()->enable_agreements->count() > 0){
         //既存の契約idを取得してparent_idへセットして無効化
-        $new_agreement->parent_agreement_id = $statement->agreement->id;
-        $statement->agreement->status = 'cancel';
-        $statement->agreement->save();
+        $new_agreement->parent_agreement_id = $agreement->id;
+        $agreement->status = 'cancel';
+        $agreement->save();
       }
       $new_agreement->save();
       //契約明細の追加
-      $settings = $member->user->enable_calendar_settings;
       $members = $member->user->calendar_member_settings;
       $settings = $members->map(function($item,$key){
         return $item->setting;
-      });
+      })->whereNotIn('status',['cancel']);
       foreach($settings as $st){
-        $setting_key = $st->lesson(true).'_'.$st['work'].'_'.$st['course_minutes'].'_'.$new_agreement->student->user->get_enable_calendar_setting_count($st['lesson']);
-        $mb = $setting->members->where('user_id',$member->user_id)->first();
+        $setting_key = $st->lesson(true).'_'.$st['work'].'_'.$st['course_minutes'].'_'.$new_agreement->student->user->get_enable_calendar_setting_count($st['lesson']).'_'.$st->user->details()->id;
+        $mb = $st->members->where('user_id',$member->user_id)->first();
         $form = [
           'teacher_id' => $st->user->details()->id,
           'lesson_id' => $st->lesson(true),
@@ -709,7 +708,7 @@ class UserCalendarSettingController extends UserCalendarController
       }
       $new_agreement->agreement_statements()->saveMany($statement_form);
       foreach($statement_form as $key => $statement){
-        $ids = $member_ids[$setting_key];
+        $ids = $member_ids[$key];
         $statement->user_calendar_member_settings()->attach($ids);
       }
     }
@@ -741,7 +740,7 @@ class UserCalendarSettingController extends UserCalendarController
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
             foreach($form['students'] as $student){
-              $setting->memberAdd($student->user_id, $form['create_user_id']);
+              $member = $setting->memberAdd($student->user_id, $form['create_user_id']);
             }
           }
           $setting = $res["data"]->details();
@@ -771,13 +770,30 @@ class UserCalendarSettingController extends UserCalendarController
           $form = $request->all();
           foreach($setting->members as $member){
             if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
+              $agreement_member = UserCalendarMemberSetting::where('user_id',$member->user_id)->first();
               $member->dispose($param['user']->user_id);
+              $this->agreement_add($agreement_member);
             }
           }
         }
         else {
+          foreach($setting->members as $member){
+            if($member->user->details()->role == 'student'){
+              $user_id = $member->user_id;
+            }
+          }
           $setting->dispose($param['user']->user_id);
+          $agreement_member = UserCalendarMemberSetting::where('user_id',$user_id)->get();
+          if($agreement_member->count() > 0 ){
+            //設定が残るなら契約更新
+            $this->agreement_add($agreement_member->first());
+          }else{
+            //有効な設定がなければ契約無効化
+            $student_id = User::find($user_id)->student->id;
+            Agreement::where('student_id',$student_id)->update(['status' => 'cancel']);
+          }
         }
+
         return $this->api_response(200, '', '', $setting);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
@@ -1055,10 +1071,12 @@ class UserCalendarSettingController extends UserCalendarController
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
           }
+          $this->agreement_add($member);
         }
         else {
           foreach($members as $member){
             $member->status_update($status, $_remark, $param['user']->user_id);
+            $this->agreement_add($member);
             break;
           }
         }
