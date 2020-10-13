@@ -222,7 +222,7 @@
           <p>
             入会希望連絡待ち
             @if($entry_contact_count > 0)
-            <span class="badge badge-secondary right">{{$entry_contact_count}}</span>
+            <span class="badge badge-success right">{{$entry_contact_count}}</span>
             @endif
           </p>
         </a>
