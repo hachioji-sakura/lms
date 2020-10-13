@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Manager extends Teacher
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.managers';
   public function scopeFindChargeStudent($query, $id)
   {

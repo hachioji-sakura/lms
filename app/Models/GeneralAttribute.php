@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class GeneralAttribute  extends Model
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.general_attributes';
   protected $guarded = array('id');
 
