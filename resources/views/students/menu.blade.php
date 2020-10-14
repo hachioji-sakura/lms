@@ -135,6 +135,11 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/agreement" page_title="{{__('labels.agreements')}}{{__('labels.edit')}}">
+          <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreements')}}{{__('labels.edit')}}
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" href="javascript:window.open('/{{$domain}}/{{$item->id}}/tuition', null, 'width=1024,height=640,toolbar=no,menubar=no,scrollbars=no');">
           <i class="fa fa-file-invoice-dollar nav-icon"></i>受講料設定
         </a>

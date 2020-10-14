@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Agreement;
+use App\Models\Student;
 use App\Models\StudentParent;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,23 +15,6 @@ class AgreementController extends MilestoneController
     public function model(){
       return Agreement::query();
     }
-    public $fields = [
-              'id' => [
-                'label' => 'ID',
-              ],
-              'title' => [
-                'label' => '概要',
-              ],
-              'student_parent_name' => [
-                'label' => '契約者',
-              ],
-              'entry_fee' => [
-                'label' => '入会金',
-              ],
-              'membership_fee'=> [
-                'label' => '月会費'
-              ]
-            ];
     /**
      * Display a listing of the resource.
      *
@@ -39,12 +23,32 @@ class AgreementController extends MilestoneController
     public function index(Request $request)
     {
         //
+        $fields = [
+                  'id' => [
+                    'label' => 'ID',
+                  ],
+                  'title' => [
+                    'label' => '概要',
+                    "link" => function($row){
+                      return "/agreement_statements?agreement_id=".$row->id;
+                    },
+                  ],
+                  'student_parent_name' => [
+                    'label' => '契約者',
+                  ],
+                  'entry_fee' => [
+                    'label' => '入会金',
+                  ],
+                  'membership_fee'=> [
+                    'label' => '月会費'
+                  ]
+                ];
         $param = [
-          'items' => $this->model()->paginate(),
+          'items' => $this->model()->enable()->search($request)->paginate(),
           'search_word' => '',
-          'fields' => $this->fields,
+          'fields' => $fields,
           'domain' => $this->domain,
-          'domain_name' => $this->domain,
+          'domain_name' => "契約管理",
           'user' => Auth::user()->details(),
         ];
         return view($this->domain.'.list')->with($param);
@@ -73,21 +77,20 @@ class AgreementController extends MilestoneController
      */
     public function _store(Request $request)
     {
-        $item = new Agreement;
-        $item->fill($request->all());
-        $item->status = 'new';
-        $item->create_user_id = Auth::user()->id;
-        $res = $this->transaction($request, function() use($item, $request){
-          $request->validate([
-            'title' => 'string',
-            'entry_fee' => 'integer',
-            'membership_fee' => 'integer',
-            'entry_date' => 'datetime',
-            'student_parent_id' => 'integer|required',
-          ]);
-          $item->save();
+       return $res = $this->transaction($request, function() use($request){
+          $student = Student::find($request->get('agreements')['student_id']);
+          if($student->enable_agreements->count() > 0){
+            $parent_agreement = $student->enable_agreements->first();
+            $parent_agreement->status = 'cancel';
+            $parent_agreement->save();
+            $parent_agreement_id = $parent_agreement->id;
+          }else{
+            $parent_agreement_id = null;
+          }
+          $item = new Agreement;
+          $item->add($request,'commit',$parent_agreement_id);
+          return $this->api_response(200, '', '', $item);
         },__('labels.registered'), __FILE__, __FUNCTION__, __LINE__);
-        return $res;
     }
 
     /**
@@ -99,6 +102,7 @@ class AgreementController extends MilestoneController
     public function show(Request $request, $id)
     {
         //
+        return view('agreement_statements.list');
     }
 
 }

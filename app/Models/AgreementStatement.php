@@ -52,6 +52,36 @@ class AgreementStatement extends Model
       return $this->attribute_name('course_minutes',$this->course_minutes);
     }
 
+    public function getTeacherNameAttribute(){
+      return $this->teacher->name();
+    }
+
+    public function getLessonNameAttribute(){
+      return config('attribute.lesson')[$this->lesson_id];
+    }
+
+    public function scopeSearch($query, $request){
+      if( $request->has('search_word')){
+        $query = $query->searchWord($request->get('search_word'));
+      }
+      if( $request->has('agreement_id')){
+        $query = $query->where('agreement_id', $request->get('agreement_id'));
+      }
+      return $query;
+    }
+
+    public function scopeSearchWord($query, $word){
+      $search_words = $this->get_search_word_array($word);
+      $query = $query->where(function($query)use($search_words){
+        foreach($search_words as $_search_word){
+          $_like = '%'.$_search_word.'%';
+          $query = $query->orWhere('remarks','like', $_like)
+            ->orWhere('title','like', $_like);
+        }
+      });
+      return $query;
+    }
+
     public function is_already_registered($form){
       $already_data = AgreementStatement::where('student_id' , $form['student_id'])
       ->where('teacher_id' , $form['teacher_id'])

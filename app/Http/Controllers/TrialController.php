@@ -713,25 +713,8 @@ class TrialController extends UserCalendarController
       //契約追加
       $trial = Trial::find($id);
       $agreement = new Agreement;
-      $agreement->fill($request->get('agreements'));
-      $req = $request->get('agreements');
-      $agreement->entry_date = date('Y/m/d H:i:s');
-      $student = new Student;
-      $student_name = $student->find($req['student_id'])->name();
-      $agreement->title = $student_name . ' : ' . date('Y/m/d');
-      $agreement->save();
-
-      foreach($request->get('agreement_statements') as $form){
-        $new_agreement_statement = new AgreementStatement($form);
-        $statement_form[$form['setting_key']] = $new_agreement_statement;
-      }
-      $agreement->agreement_statements()->saveMany($statement_form);
-      foreach($statement_form as $key => $statement){
-        $ids = $request->get('agreement_statements')[$key]['user_calendar_member_setting_id'];
-        $statement->user_calendar_member_settings()->attach($ids);
-      }
+      $agreement->add($request,'commit');
       $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
-
       $trial->update(['status' => 'entry_guidanced']);
       return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );

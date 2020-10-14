@@ -675,6 +675,7 @@ class UserCalendarSettingController extends UserCalendarController
         'entry_date' =>  date('Y/m/d H:i:s'),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations->first()->student_parent_id,
+        'monthly_fee' => $member->user->details()->get_monthly_fee(),
         'status' => 'commit',
       ];
       $new_agreement = new Agreement($agreement_form);
