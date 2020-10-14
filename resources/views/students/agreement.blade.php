@@ -17,7 +17,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-6 p-2 font-weight-bold" >学年</div>
-          <div class="col-6 p-2">{{$agreement->grade}}</div>
+          <div class="col-6 p-2">{{$item->grade()}}</div>
           <div class="col-6 p-2 font-weight-bold" >入会金</div>
           <div class="col-6 p-2">
             {{number_format($agreement->entry_fee)}}円(税込み)
@@ -26,6 +26,7 @@
           <div class="col-6 p-2 font-weight-bold" >月会費</div>
           <div class="col-6 p-2">
             <input type="text" class="form-control w-50 float-left" name="agreements[monthly_fee]" value="{{$agreement->monthly_fee}}">
+            <span class="ml-2 float-left mt-2">円</span>
           </div>
         </div>
       </div>
@@ -55,54 +56,28 @@
           @endforeach
           <div class="col-12 pl-2 bd-b bd-gray">
             <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                レッスン
+              <div class="col-12 p-2 font-weight-bold" >
+                {{$statement->lesson_name}}/{{$statement->course_type_name}}
               </div>
-              <div class="col-6 p-2 pl-4" >
-                {{$statement->lesson_name}}
+              <div class="col-12 p-2 pl-4" >
+                ・担当講師：{{$statement->teacher_name}}
               </div>
-            </div>
-            <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                講師
+              <div class="col-12 p-2 pl-4" >
+                ・授業時間：{{$statement->course_minutes_name}}
               </div>
-              <div class="col-6 p-2 pl-4" >
-                {{$statement->teacher_name}}
+              <div class="col-12 p-2 pl-4" >
+                ・コマ数：{{$statement->lesson_week_count}}コマ/週
               </div>
-            </div>
-            <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                コース
-              </div>
-              <div class="col-6 p-2 pl-4" >
-                {{$statement->course_type_name}}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                時間
-              </div>
-              <div class="col-6 p-2 pl-4" >
-                {{$statement->course_minutes_name}}
+              <div class="col-12 p-2 pl-4" >
+                <div class="form-group">
+                  <label for="tuition" class="w-100">
+                    受講料
+                    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+                  </label>
+                  <input type="text" name="agreement_statements[{{$statement->id}}][tuition]" class="form-control w-50 float-left" value="{{$statement->tuition}}"><span class="ml-2 float-left mt-2">円 / 時間</span>
+                </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                週コマ数
-              </div>
-              <div class="col-6 p-2 pl-4" >
-                {{$statement->lesson_week_count}}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-6 p-2 font-weight-bold" >
-                受講料
-              </div>
-              <div class="col-6 p-2 pl-4" >
-                <input type="text" name="agreement_statements[{{$statement->id}}][tuition]" class="form-control w-50 float-left" value="{{$statement->tuition}}">
-              </div>
-            </div>
-
           </div>
           @endforeach
         </div>

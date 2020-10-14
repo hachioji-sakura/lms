@@ -676,6 +676,7 @@ class UserCalendarSettingController extends UserCalendarController
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),
+        'entry_fee' => $member->user->details()->get_entry_fee(),
         'status' => 'commit',
       ];
       $new_agreement = new Agreement($agreement_form);
@@ -1072,12 +1073,16 @@ class UserCalendarSettingController extends UserCalendarController
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
           }
-          $this->agreement_add($member);
+          if($status == 'commit'){
+            $this->agreement_add($member);
+          }
         }
         else {
           foreach($members as $member){
             $member->status_update($status, $_remark, $param['user']->user_id);
-            $this->agreement_add($member);
+            if($status == 'commit'){
+              $this->agreement_add($member);
+            }
             break;
           }
         }

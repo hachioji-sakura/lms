@@ -8,7 +8,7 @@ return [
   'woman' => 'Woman',
   'other' => 'Other',
   'online' => 'Online',
-  'working' => 'Working'
+  'working' => 'Working',
   'study_record' => 'Study Record',
   'search_keyword' => 'Search Word',
   'signup' =>     'Sign Up',
@@ -383,5 +383,5 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
-  'agreements' => 'Agreements'
+  'agreements' => 'Agreements',
 ];

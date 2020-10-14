@@ -699,21 +699,23 @@ class TrialController extends UserCalendarController
 
 
     $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-      //未締結の契約はすべてキャンセルにする
-      $student_parent =  StudentParent::find($request['agreements']['student_parent_id']);
-      $new_agreements = $student_parent->get_agreements_by_status('new');
-      if($new_agreements->count() > 0){
-        foreach($new_agreements->get() as $n_a){
+      //他に契約があればすべてキャンセルにする
+      $student =  Student::find($request['agreements']['student_id']);
+      $old_agreements = $student->agreements;
+      if($old_agreements->count() > 0){
+        foreach($old_agreements as $n_a){
           foreach($n_a->agreement_statements as $a_s){
             $a_s->user_calendar_member_settings()->detach();
           }
         }
-        $new_agreements->update(['status' => 'cancel']);
+        $old_agreements->map(function($item,$key){
+          $item->update(['status' => 'cancel']);
+        });
       }
       //契約追加
       $trial = Trial::find($id);
       $agreement = new Agreement;
-      $agreement->add($request,'commit');
+      $agreement->add($request,'new');
       $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
       $trial->update(['status' => 'entry_guidanced']);
       return $this->api_response(200, '', '', $ask);

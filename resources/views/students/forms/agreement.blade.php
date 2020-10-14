@@ -128,7 +128,7 @@
 											?>
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][setting_key]" value="{{$setting_key}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][teacher_id]" value="{{$setting->user->details('teachers')->id}}">
-											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_id]" value="{{$item->tags_value('lesson')}}">
+											<input type="hidden" name="agreement_statements[{{$setting_key}}][lesson_id]" value="{{$lesson}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_type]" value="{{$setting->get_tag_value('course_type')}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][course_minutes]" value="{{$item->tag_value('course_minutes')}}">
 											<input type="hidden" name="agreement_statements[{{$setting_key}}][grade]" value="{{$item->tag_value('grade')}}">
