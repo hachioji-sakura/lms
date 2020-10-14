@@ -99,7 +99,7 @@
     }
     var bgcolor = _status_style["color"];
     var icon = _status_style["icon"];
-    var textColor  = "#FFF";
+    var textColor  = _status_style["textcolor"];
     var length = 5;
     //一文字分表示する
     /*

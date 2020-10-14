@@ -29,10 +29,13 @@ class UserController extends Controller
     ->orderBy('attribute_key', 'asc')
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
-      if(!isset($attributes[$_attribute['attribute_key']])){
-        $attributes[$_attribute['attribute_key']] = [];
+      //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
+      if($_attribute->attribute_value=='dummy') continue;
+
+      if(!isset($attributes[$_attribute->attribute_key])){
+        $attributes[$_attribute->attribute_key] = [];
       }
-      $attributes[$_attribute['attribute_key']][$_attribute['attribute_value']] = $_attribute['attribute_name'];
+      $attributes[$_attribute->attribute_key][$_attribute->attribute_value] = $_attribute->attribute_name;
     }
     $places = Place::orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
@@ -416,7 +419,8 @@ class UserController extends Controller
     Auth::loginUsingId($user_id);
   }
   public function create_cache_key($prefix, $param){
-    $cache_key = $prefix.'_';
+    $user = Auth::user()->details();
+    $cache_key = $prefix.'_'.$user->role.'_';
     foreach($param as $key=>$val){
       switch(gettype($val)){
         case "string":

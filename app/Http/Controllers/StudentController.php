@@ -189,7 +189,9 @@ class StudentController extends UserController
   public function create(Request $request)
   {
     $param = $this->get_common_param($request);
-    if(!$request->has('student_parent_id')) abort(403);
+    if(!$request->has('student_parent_id')) abort(404);
+    if($param['user']->role=='student') abort(403);
+    if($param['user']->role=='parent' && $param['user']->id!=$param['student_parent_id']) abort(403);
     $param['student'] = null;
     $param['item'] = null;
     return view($this->domain.'.create',
@@ -220,7 +222,7 @@ class StudentController extends UserController
          $form["accesskey"] = '';
          $form["password"] = 'sakusaku';
          $student = $parent->brother_add($form,1);
-         return $student;
+         return $this->api_response(200, "", $student);
        }, '生徒登録', __FILE__, __FUNCTION__, __LINE__ );
      }
      return $this->save_redirect($res, $param, '生徒を登録しました');
@@ -701,7 +703,7 @@ class StudentController extends UserController
    switch($form['list']){
      case "confirm_list":
        if(empty($form['search_status'])){
-         $form['search_status'] = ['new', 'confirm'];
+         $form['search_status'] = ['new', 'confirm', 'dummy'];
        }
        break;
      case "fix_list":
@@ -781,7 +783,7 @@ class StudentController extends UserController
            $statuses = ['confirm'];
          }
          else {
-           $statuses = ['new', 'confirm'];
+           $statuses = ['new', 'confirm', 'dummy'];
          }
        }
        break;

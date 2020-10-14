@@ -12,7 +12,6 @@ use App\Models\StudentRelation;
 use Illuminate\Database\Eloquent\Model;
 class StudentParent extends Teacher
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.student_parents';
   protected $guarded = array('id');
 

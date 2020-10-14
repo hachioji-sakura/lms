@@ -93,7 +93,7 @@
   </label>
   <div class="w-100">
     <select name="search_status[]" class="form-control select2" width=100% placeholder="検索ステータス" multiple="multiple" >
-      @foreach(config('attribute.calendar_status') as $index => $name)
+      @foreach($attributes['calendar_status'] as $index => $name)
         @if($index=='lecture_cancel') @continue @endif
         @if($index=='rest') $index='rest,lecture_cancel' @endif
         <option value="{{$index}}"

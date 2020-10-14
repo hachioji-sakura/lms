@@ -55,7 +55,14 @@
           </p>
         </a>
       </li>
-
+      <li class="nav-item">
+        <a href="/curriculums" class="nav-link">
+          <i class="fa fa-sitemap nav-icon"></i>
+          <p>
+            単元管理
+          </p>
+        </a>
+      </li>
       {{-- TODO お問い合わせ実装後に有効にする
       <li class="nav-item">
         <a href="/{{$domain}}/{{$item->id}}/ask?list=phone" class="nav-link @if($view=="ask" && $list=="phone") active @endif">

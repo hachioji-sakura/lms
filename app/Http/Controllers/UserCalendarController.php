@@ -25,6 +25,7 @@ class UserCalendarController extends MilestoneController
   public $table = 'user_calendars';
 
   public $status_update_message = [
+          'new' => 'ダミーを解除しました',
           'fix' => '授業予定を確認しました。',
           'confirm' => '授業予定の確認連絡をしました。',
           'cancel' => '授業予定をキャンセルしました。',
@@ -231,7 +232,7 @@ class UserCalendarController extends MilestoneController
     $form['is_exchange'] = false;
     if($request->has('is_online')) $form['is_online'] = $request->get('is_online');
     //事務の指定
-    if($request->has('manager_id')){
+    if($request->has('manager_id') && $request->get('manager_id') > 0){
       $form['manager_id'] = $request->get('manager_id');
       $manager = Manager::where('id', $form['manager_id'])->first();
       if(!isset($manager)){
@@ -243,7 +244,7 @@ class UserCalendarController extends MilestoneController
     }
 
     //講師の指定
-    if($request->has('teacher_id')){
+    if($request->has('teacher_id') && $request->get('teacher_id') > 0){
       $form['teacher_id'] = $request->get('teacher_id');
       $teacher = Teacher::where('id', $form['teacher_id'])->first();
       if(!isset($teacher)){
@@ -474,10 +475,6 @@ class UserCalendarController extends MilestoneController
           'to_date' => $to_date,
         ]);
       }
-      $cache_key = $this->create_cache_key(__FUNCTION__.'_'.$user_id, $request->all());
-      $items = (new UserCalendar())->get_user_cache($cache_key, $user_id);
-      if($items != null) return $this->api_response(200, "", "", $items->toArray());
-
       $user = $this->login_details($request);
       if(!isset($user)){
         return $this->forbidden();
@@ -533,8 +530,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-      (new UserCalendar())->put_user_cache($cache_key, $user_id, $items);
-
       return $this->api_response(200, "", "", $items->toArray());
     }
     public function search(Request $request)
@@ -705,11 +700,16 @@ class UserCalendarController extends MilestoneController
       $form = $request->all();
       if(!isset($form['action'])){
         $form['action'] = '';
+        if($param['user']->role=='manager' && $param['item']->status=='dummy'){
+          //事務がダミーステータスの詳細を開いた場合
+          $param['action'] = 'dummy_release';
+        }
       }
       $page_title = $this->page_title($param['item'], "");
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
+
       return view($this->domain.'.page', $form)->with($param);
     }
     /**
@@ -994,6 +994,13 @@ class UserCalendarController extends MilestoneController
         $members = $param['item']->members;
         $_remark = '';
         $_access_key = '';
+        //dummy からnewへの更新（ダミー解除）
+        if($status=='new' && $param['item']->status=='dummy'){
+          $param['item']->update(['status' => 'new']);
+          $param['item']->register_mail([], $param['user']->user_id);
+          return $this->api_response(200, '', '', $param['item']);
+        }
+
         if($status==='cancel' && $request->has('cancel_reason')){
           $_remark = $request->get('cancel_reason');
         }
@@ -1182,8 +1189,6 @@ class UserCalendarController extends MilestoneController
             //TODO 先にとれたユーザーを操作する親にする（修正したい）
             $user_id = $relation->parent->user->id;
             $email = $relation->parent->user->email;
-            //TODO 安全策をとるテスト用メールにする
-            //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
           }
         }
         \Log::info("[".$user_name."][".$send_from."][".$send_to."][".$is_own."][".$is_child_member."][".$student_id."]");
@@ -1406,6 +1411,7 @@ class UserCalendarController extends MilestoneController
       if($holiday!=null && $holiday->is_private_holiday() == true){
         return $this->error_response('休校日のため予定は登録できません');
       }
+      $res = $this->transaction($request, function() use ($request){
         $form = $this->create_form($request);
         if(empty($form['start_time']) || empty($form['end_time'])) {
           abort(400, "日時パラメータ不正");
@@ -1435,7 +1441,6 @@ class UserCalendarController extends MilestoneController
 
         $this->send_slack('カレンダー追加/ id['.$calendar['id'].'] status['.$calendar['status'].'] 開始日時['.$calendar['start_time'].']終了日時['.$calendar['end_time'].']生徒['.$calendar['student_name'].']講師['.$calendar['teacher_name'].']', 'info', 'カレンダー追加');
         return $this->api_response(200, '', '', $calendar);
-        $res = $this->transaction($request, function() use ($request){
       }, '授業予定作成', __FILE__, __FUNCTION__, __LINE__ );
 
       return $res;

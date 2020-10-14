@@ -112,6 +112,7 @@ function birth_day_form_change(){
     if($('*[name="grade"]').length > 0){
       var grade = get_grade(year,month,day);
       $('*[name="grade"]').val(grade);
+      $('*[name="grade"]').change();
     }
   });
 }
@@ -308,6 +309,7 @@ function lesson_place_filter(name){
   }
   if(!check_lesson["is_school"] && !check_lesson["is_english"]){
     //ピアノ＝子安、
+    $("label.lesson_place:contains('三鷹校')").hide();
     $("label.lesson_place:contains('八王子北口校')").hide();
     $("label.lesson_place:contains('国立校')").hide();
     $("label.lesson_place:contains('日野市豊田校')").hide();

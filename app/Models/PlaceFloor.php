@@ -9,7 +9,6 @@ use App\Models\Traits\Common;
 class PlaceFloor extends Model
 {
   use common;
-  protected $connection = 'mysql_common';
   protected $table = 'common.place_floors';
   protected $guarded = array('id');
 

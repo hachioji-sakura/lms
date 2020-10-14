@@ -29,7 +29,7 @@ class User extends Authenticatable
     use Common;
     use WebCache;
     use Notifiable;
-    protected $connection = 'mysql_common';
+    protected $table = 'common.users';
     /**
      * The attributes that are mass assignable.
      *
@@ -130,8 +130,6 @@ class User extends Authenticatable
       ]);
     }
     public function details($domain = ""){
-      $item = (new User())->get_user_cache('User::details', $this->id);
-      if($item != null) return $item;
 
       //Manager | Teacher | Studentのいずれかで認証し情報を取り出す
       $image = $this->image;
@@ -219,7 +217,6 @@ class User extends Authenticatable
         $item['email'] = $this->email;
         $item['locale'] = $this->locale;
         if(isset($item->birth_day) && $item->birth_day == '9999-12-31') $item->birth_day = '';
-        (new User())->put_user_cache('User::details', $this->id, $item);
         return $item;
       }
       return $this;
@@ -253,7 +250,7 @@ EOT;
     }
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -274,7 +271,7 @@ EOT;
     public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();
