@@ -1190,8 +1190,6 @@ class UserCalendarController extends MilestoneController
             //TODO 先にとれたユーザーを操作する親にする（修正したい）
             $user_id = $relation->parent->user->id;
             $email = $relation->parent->user->email;
-            //TODO 安全策をとるテスト用メールにする
-            //$email = 'yasui.hideo+u'.$user_id.'@gmail.com';
           }
         }
         \Log::info("[".$user_name."][".$send_from."][".$send_to."][".$is_own."][".$is_child_member."][".$student_id."]");

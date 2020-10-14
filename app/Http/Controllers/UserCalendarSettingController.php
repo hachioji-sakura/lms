@@ -497,6 +497,7 @@ class UserCalendarSettingController extends UserCalendarController
           'size' => 12,
         ];
       }
+      $form = $request->all();
       if(!isset($form['action'])){
         $form['action'] = '';
         if($param['user']->role=='manager' && $param['item']->status=='dummy'){
@@ -508,10 +509,7 @@ class UserCalendarSettingController extends UserCalendarController
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
-
-      return view($this->domain.'.page', [
-        'action' => $request->get('action')
-      ])->with($param);
+      return view($this->domain.'.page', $form)->with($param);
     }
     /**
      * カレンダー登録画面表示

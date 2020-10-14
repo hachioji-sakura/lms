@@ -18,7 +18,6 @@ use DB;
 class Student extends Model
 {
   use Common;
-  protected $connection = 'mysql_common';
   protected $table = 'common.students';
   protected $guarded = array('id');
   /**

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class PlaceFloorSheat extends Model
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.place_floor_sheats';
   protected $guarded = array('id');
 

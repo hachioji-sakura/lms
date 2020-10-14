@@ -29,7 +29,7 @@ class User extends Authenticatable
     use Common;
     use WebCache;
     use Notifiable;
-    protected $connection = 'mysql_common';
+    protected $table = 'common.users';
     /**
      * The attributes that are mass assignable.
      *
