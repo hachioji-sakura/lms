@@ -17,6 +17,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //indexページをログインにする
   Route::redirect('/', '/login', 301);
   Route::get('send_access_key','AuthController@send_access_key');
+  Route::get('season_school_lesson','UserCalendarController@season_school_lesson_page');
 
   Route::get('managers/login','ManagerController@login');
   Route::get('auth','AuthController@auth');
