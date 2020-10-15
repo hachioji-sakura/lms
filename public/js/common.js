@@ -186,6 +186,9 @@ function get_subject_grade(grade_name){
   else if(grade_name.substring(0,1)=="幼"){
     _grade_name = "小学";
   }
+  else if(grade_name.substring(0,1)=="年"){
+    _grade_name = "小学";
+  }
   return _grade_name;
 }
 function subject_onload(){
