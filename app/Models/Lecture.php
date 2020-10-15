@@ -18,7 +18,7 @@ class Lecture extends Model
   public function scopeFindChargeLesson($query, $teacher_id)
   {
     $where_raw = <<<EOT
-      $this->table.lesson in (select tag_value from user_tags where user_id=(select user_id from teachers where id=? limit 1) and tag_key='lesson')
+      $this->table.lesson in (select tag_value from common.user_tags where user_id=(select user_id from teachers where id=? limit 1) and tag_key='lesson')
 EOT;
     return $query->whereRaw($where_raw,[$teacher_id]);
   }
