@@ -391,4 +391,5 @@ return [
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
   'dummy_release' => 'Dummy Release',
+  'entry_milestone' => 'Special Importance',
 ];

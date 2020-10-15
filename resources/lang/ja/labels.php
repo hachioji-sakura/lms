@@ -391,4 +391,5 @@ return [
   'learning_record' => '学習記録',
   'actionlogs' => '操作ログ',
   'dummy_release' => 'ダミーを解除する',
+  'entry_milestone' => '特に重視してやってほしいこと',
 ];
