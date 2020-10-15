@@ -381,6 +381,7 @@ class Trial extends Model
     }
     $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
+    $tag_names[] ='entry_milestone'; //体験のみのタグ
     $tag_names[] ='howto'; //体験のみのタグ
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
@@ -396,7 +397,7 @@ class Trial extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'howto_word', 'course_type'];
+      ,'entry_milestone_word','howto_word', 'course_type'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -407,6 +408,33 @@ class Trial extends Model
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
     $this->student->profile_update($form);
+  }
+  public function remark_full(){
+    $tagdata = $this->get_tagdata()['tagdata'];
+    $ret = "";
+    $is_other = false;
+    if(isset($tagdata['entry_milestone'])){
+      $ret .= "■".__('labels.entry_milestone')."\n";
+      foreach($tagdata['entry_milestone'] as $index => $label){
+        if($index=='other'){
+          $is_other = true;
+          continue;
+        }
+        $ret .= "・".$label."\n";
+      }
+      if(isset($tagdata['entry_milestone_word'])){
+        if($is_other){
+          foreach($tagdata['entry_milestone_word'] as $index => $label){
+            $ret .= "・".$label."\n";
+          }
+        }
+      }
+    }
+    if(!empty($this->remark)){
+      $ret .= "■".__('labels.other')."\n";
+      $ret .= $this->remark;
+    }
+    return $ret;
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
@@ -432,7 +460,7 @@ class Trial extends Model
       'lesson' => $form['lesson'],
       'course_type' => $form['course_type'],
       'course_minutes' => $course_minutes,
-      'remark' => $this->remark,
+      'remark' => $this->remark_full(),
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,

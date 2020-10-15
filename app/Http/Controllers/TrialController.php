@@ -285,6 +285,14 @@ class TrialController extends UserCalendarController
         'size' => 3,
       ],
       */
+      'entry_milestone' => [
+        'label' => __('labels.entry_milestone'),
+        'size' => 6
+      ],
+      'entry_milestone_word' => [
+        'label' => 'やって欲しいこと（その他）',
+        'size' => 6
+      ],
       'howto' => [
         'label' => '当塾をお知りになった方法は何でしょうか？',
         'size' => 6
