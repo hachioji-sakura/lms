@@ -225,7 +225,7 @@ class User extends Authenticatable
     public function scopeTag($query, $tagkey, $tagvalue)
     {
       $where_raw = <<<EOT
-        id in (select user_id from user_tags where tag_key=? and tag_value=?)
+        id in (select user_id from common.user_tags where tag_key=? and tag_value=?)
 EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
