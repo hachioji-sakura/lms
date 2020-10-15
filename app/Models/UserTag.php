@@ -65,7 +65,7 @@ class UserTag extends Model
       //希望科目の場合
       //受験希望、補習希望　生徒向けの定義
       $key = 'lesson_subject_level';
-      if($this->table === 'user_tags'){
+      if($this->table === 'common.user_tags'){
         //ユーザータグ＝人につくので、charge_subject_level
         //受験可、補習可　講師向けの定義
         $key = 'charge_subject_level';
