@@ -57,7 +57,7 @@ EOT;
       $key = $subject->tag_key;
       $value = intval($subject->tag_value);
       $_where_raw = <<<EOT
-        $this->table.user_id in (select user_id from user_tags where tag_key='$key' and tag_value >= $value)
+        $this->table.user_id in (select user_id from common.user_tags where tag_key='$key' and tag_value >= $value)
 EOT;
       $where_raw .= 'OR ('.$_where_raw.')';
     }
