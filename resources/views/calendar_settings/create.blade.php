@@ -140,7 +140,7 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
+    var _names = ["lesson", "lesson_place", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){
