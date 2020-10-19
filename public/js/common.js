@@ -444,7 +444,8 @@ function select_student_change(){
     var grade_code = "";
     if(!util.isEmpty(grade)){
       grade_code = grade.substr(0,1);
-      if(grade_code=='u') grade_code='h';
+      if(grade=='university') grade_code='h';
+      if(grade=='adult') grade_code='h';
     }
     $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
       options[$(this).val()] = $(this).text();
