@@ -1,3 +1,8 @@
+@section('second_form')
+<div class="row">
+  @component('event_types.forms.subject', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
+</div>
+@endsection
 @section('first_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
@@ -5,8 +10,8 @@
     #event_title#
   </div>
   <input type="hidden" name="lesson[]" value="1" />
-  <input type="hidden" class="grade" name="grade" value="e1" />
-  <input type="hidden" name="grade_name" value="小1" />
+  <input type="hidden" class="grade" name="grade" value="h1" />
+  <input type="hidden" name="grade_name" value="高1" />
   <script>
   $(function(){
     lesson_checkbox_change($('input[name="lesson[]"]'));
@@ -87,10 +92,7 @@
   </div>
 
 </div>
-<div class="row">
 
-  @component('event_types.forms.subject', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
-</div>
 @endsection
 
 @section('hope_datetime')

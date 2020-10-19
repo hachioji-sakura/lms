@@ -1,4 +1,25 @@
-<div class="col-12 subject_form">
+<div class="col-12 col-md-5">
+  <label for="subject_level" class="w-100">
+    <?php $__attribute_name = 'lesson_subject_level'; ?>
+    ご希望の授業数
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+  </label>
+  <table class="table">
+  <tr>
+    <th class="bg-gray">ご希望の授業数</th>
+    <td class="w-40 text-right">
+      <span id="day_count" >0</span>
+    </td>
+  </tr>
+  <tr>
+    <th class="bg-gray">科目授業数計</th>
+    <td class="w-40 text-right">
+      <span id="subject_day_count_sum" >0</span>
+    </td>
+  </tr>
+  </table>
+</div>
+<div class="col-12 col-md-7 subject_form">
   <div class="form-group">
     <label for="subject_level" class="w-100">
       <?php $__attribute_name = 'lesson_subject_level'; ?>
@@ -35,7 +56,7 @@
             @endif
             <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
             <td class="p-1 text-center">
-              <input type="text" name="{{$subject}}_day_count" class="form-control" value="0" inuttype="number" minlength="1" maxlength="2" minvalue="0">
+              <input type="text" name="{{$subject}}_day_count" class="form-control subject_day_count" value="0" inputtype="number" minlength="1" maxlength="2" minvalue="0" onChange='subject_day_count_onload()' validate="day_count_check()">
             </td>
           </tr>
           @endforeach
@@ -50,7 +71,7 @@
           @endif
           <th class="p-1 text-center bg-gray subject_name">{{$subject_data['name']}}</th>
           <td class="p-1 text-center">
-            <input type="text" name="{{$subject}}_day_count" class="form-control" value="0" inuttype="number" minlength="1" maxlength="2" minvalue="0">
+            <input type="text" name="{{$subject}}_day_count" class="form-control subject_day_count" value="0" inputtype="number" minlength="1" maxlength="2" minvalue="0" onChange='subject_day_count_onload()' validate="day_count_check()">
           </td>
           </tr>
         @endisset
@@ -61,7 +82,28 @@
     <script>
     $(function(){
       subject_onload();
+      $('input.subject_day_count').on('change', function(e){
+        subject_day_count_onload();
+      });
     });
+    function day_count_check(){
+      subject_day_count_onload();
+      s1 = $('#day_count').html()|0;
+      s2 = $('#subject_day_count_sum').html()|0;
+      if(s1!=s2){
+        front.showValidateError('#subject_table', '希望授業数と、科目授業数が一致しません');
+        return false;
+      }
+      return true;
+    }
+    function subject_day_count_onload(){
+      var s = 0;
+      $('input.subject_day_count').each(function(){
+        v = $(this).val();
+        if(v) s+=v|0;
+      });
+      $('#subject_day_count_sum').html(s);
+    }
     </script>
     @endif
   </div>

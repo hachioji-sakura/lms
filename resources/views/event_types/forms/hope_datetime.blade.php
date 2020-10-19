@@ -14,7 +14,7 @@ $d = $start_date;
   <div class="row mb-2" id="{{strtotime($d)}}">
     <div class="col-12">
       <div class="form-check p-0">
-        <input class="form-check-input icheck flat-green" type="checkbox" name="hope_{{strtotime($d)}}" id="hope_{{strtotime($d)}}" value="true"
+        <input class="form-check-input icheck flat-green day_check" type="checkbox" name="hope_{{strtotime($d)}}" id="hope_{{strtotime($d)}}" value="true"
         onChange="hope_date_change('{{strtotime($d)}}')"
         />
         <label class="form-check-label" for="hope_{{strtotime($d)}}">
@@ -89,11 +89,15 @@ $d = $start_date;
     </div>
   </div>
 </div>
+<input type="hidden" name="day_count" value=0" />
   <?php
   $d = date('Y/m/d', strtotime('+1 day '.$d));
   ?>
 @endwhile
 <script>
+$(function(){
+  day_count_check_onload();
+});
 function hope_date_change(id){
   var date_checked = $("input[name='hope_"+id+"']").prop('checked');
   if(date_checked==true){
@@ -102,6 +106,17 @@ function hope_date_change(id){
   else {
     $("#"+id+" .date-selected-open").collapse('hide');
   }
+  day_count_check_onload();
+}
+function day_count_check_onload(){
+  c = 0;
+  $("input.day_check").each(function(){
+    if($(this).prop('checked')){
+      c++;
+    }
+  });
+  $('input[name="day_count"]').val(c);
+  $('#day_count').html(c);
 }
 function hope_timezone_change(id){
   var timezone = $("input[name='hope_"+id+"_timezone']:checked").val();
