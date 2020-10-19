@@ -211,7 +211,7 @@
                 </script>
                 <div class="col-12 collapse" id="cancel_reason">
                   <div class="form-group">
-                    <label for="howto" class="w-100">
+                    <label for="remark" class="w-100">
                       訂正内容をご連絡ください
                       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                     </label>
