@@ -48,6 +48,7 @@ return [
  "info_teacher_change_commit" => "Your request has committed as follow. Please check it.",
  "info_teacher_change_cancel" => "This substitute request has been canceled.",
  "info_teacher_change_maintenance" => "This action won't be noticed anyone.",
+ "info_teacher_change_warning" => 'Email will be send to Teacher you selected when you submit.',
  "about_student_group" => "(Such as a description of this group)",
  "info_forget_password" => "A password reset notification will be sent to the registered e-mail address.",
  "info_work_record_all_check" => "This time is all confirmed",

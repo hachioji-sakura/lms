@@ -1,10 +1,18 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => $action, 'user'=>$user])
   @slot('page_message')
+
+    <div class="col-12 bg-{{(isset($maintenance) && $maintenance == true) ? 'warning' : 'danger'}} p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>
+      @if(isset($maintenance) && $maintenance == true)
+       {{__('messages.info_teacher_change_maintenance')}}
+      @else
+        {{__('messages.info_teacher_change_warning')}}
+      @endif
+    </div>
   @endslot
   @slot('forms')
   <div id="_form">
-  @if(isset($mantenance) && $maintenance == true)
-  {{__('messages.info_teacher_change_maintenance')}}
+  @if(isset($maintenance) && $maintenance == true)
   <form method="POST" action="/calendars/{{$item->id}}/teacher_change">
     @method('PUT')
   @else

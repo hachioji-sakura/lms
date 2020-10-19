@@ -48,6 +48,7 @@ return [
   "info_teacher_change_commit" => "下記の代講依頼が承認されましたので、ご確認下さい。",
   "info_teacher_change_cancel" => "この代講依頼はキャンセルされました。",
   "info_teacher_change_maintenance" => '過去の予定のため、講師と生徒に通知されません。',
+  "info_teacher_change_warning" => '代講依頼先の講師にメールが送信されます。',
   "about_student_group" => "（このグループに関する説明など）",
   "info_forget_password" => "ご登録されたメールアドレスにパスワード再設定のご案内が送信されます。",
   "info_work_record_all_check" => "この勤怠はすべて確認済みです",
