@@ -390,5 +390,6 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
-  'dummy_release' => 'Dummy Release',
-];
+  'ask_teacher_change_description' => 'About teacher change you should check',
+  'teacher_change' => 'Change assigned teacher',
+  'dummy_release' => 'Dummy Release',];

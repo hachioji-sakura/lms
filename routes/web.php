@@ -88,6 +88,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::post('calendars/{id}/members','UserCalendarController@member_create');
   Route::get('calendars/{id}/members/setting','UserCalendarController@member_setting_page');
   Route::put('calendars/{id}/members/setting','UserCalendarController@member_setting');
+  Route::get('calendars/{id}/asks/teacher_change', 'UserCalendarController@teacher_change_page');
+  Route::put('calendars/{id}/teacher_change', 'UserCalendarController@teacher_change');
 
   Route::get('calendars/check','UserCalendarController@setting_check');
 
@@ -320,7 +322,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('ask_daily_proc/{d?}','AskController@daily_proc');
   Route::get('asks/{id}/status_update/{status}','AskController@status_update_page');
   Route::put('asks/{id}/status_update/{status}','AskController@status_update');
-  Route::get('asks/{ask_id}/teacher_change','UserCalendarController@teacher_change_page');
   Route::get('asks/{ask_id}/hope_to_join','AskController@hope_to_join_page');
   Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
 

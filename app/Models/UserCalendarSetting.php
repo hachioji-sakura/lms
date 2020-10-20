@@ -34,7 +34,7 @@ class UserCalendarSetting extends UserCalendar
     return __('messages.info_calendar_setting_delete');
   }
 
-  public function scopeFindUser($query, $user_id)
+  public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
     $where_raw = <<<EOT
       lms.user_calendar_settings.id in (select user_calendar_setting_id from lms.user_calendar_member_settings where user_id=$user_id)

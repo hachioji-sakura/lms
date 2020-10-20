@@ -41,10 +41,14 @@ return [
   "error_calendar_presence_not_exec" => "授業を実施していない場合、生徒に出席とつけれません",
   "confirm_teacher_change" => "代講依頼を連絡しますか？",
   "warning_teacher_change" => "代講を依頼する講師を選択してください",
+  "info_teacher_change_send" => "代講依頼を連絡しました。",
   "info_teacher_change1" => "以下の授業予定の代講依頼をご連絡いたしました。",
-  "info_teacher_change2" => "URLより、代講依頼を承認or差戻し操作をしてください。",
+  "info_teacher_change2" => "システムにログインして、代講依頼を承認or差戻し操作をしてください。",
   "info_teacher_change_thanks" => "代講依頼を受けていただき、ありがとうございます。",
+  "info_teacher_change_commit" => "下記の代講依頼が承認されましたので、ご確認下さい。",
   "info_teacher_change_cancel" => "この代講依頼はキャンセルされました。",
+  "info_teacher_change_maintenance" => '過去の予定のため、講師と生徒に通知されません。',
+  "info_teacher_change_warning" => '代講依頼先の講師にメールが送信されます。',
   "about_student_group" => "（このグループに関する説明など）",
   "info_forget_password" => "ご登録されたメールアドレスにパスワード再設定のご案内が送信されます。",
   "info_work_record_all_check" => "この勤怠はすべて確認済みです",
@@ -151,4 +155,5 @@ return [
   "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
+
 ];
