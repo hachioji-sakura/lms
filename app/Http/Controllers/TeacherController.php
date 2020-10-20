@@ -51,7 +51,7 @@ class TeacherController extends StudentController
       }
       $asks = $this->get_ask(['user_id' => $ret['item']->user_id], true);
       $ret['ask_count'] = $count;
-      $lists = ['lecture_cancel', 'rest_cancel'];
+      $lists = ['lecture_cancel', 'rest_cancel', 'teacher_change'];
       foreach($lists as $list){
         $count = $this->get_ask(["list" => $list, 'user_id'=>$ret['item']->user_id], true);
         $ret[$list.'_count'] = $count;

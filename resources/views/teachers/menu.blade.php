@@ -159,6 +159,17 @@
           </p>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/ask?list=teacher_change" class="nav-link @if($view=="ask" && $list=="lecture_cancel") active @endif">
+          <i class="fa fa-sync nav-icon"></i>
+          <p>
+            {{__('labels.ask_teacher_change')}}
+            @if($teacher_change_count > 0)
+            <span class="badge badge-danger right">{{$teacher_change_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
     </ul>
   </li>
   <li class="nav-item has-treeview menu-open">

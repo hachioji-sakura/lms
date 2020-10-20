@@ -73,6 +73,18 @@
   </a>
   @endif
 @endif
+@if(!($calendar->work == 10 || $calendar->work == 11 || $calendar->work == 9) )
+  {{--代講依頼　土日、期間講習は除く--}}
+  @if( $calendar->is_passed()==false )
+  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change" role="button" class="btn btn-danger btn-sm ml-1">
+    <i class="fa fa-sync mr-1"></i>{{__('labels.ask_teacher_change')}}
+  </a>
+  @else
+  <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change?maintenance=true" role="button" class="btn btn-info btn-sm ml-1">
+    <i class="fa fa-sync mr-1"></i>{{__('labels.teacher_change')}}
+  </a>
+  @endif
+@endif
 
 @if($calendar->exist_rest_student()==true && $user->role==="manager")
 {{-- TODO 休み種別変更 --}}

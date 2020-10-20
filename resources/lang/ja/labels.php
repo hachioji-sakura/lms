@@ -390,5 +390,7 @@ return [
   'created_date' => '起票日',
   'learning_record' => '学習記録',
   'actionlogs' => '操作ログ',
+  'ask_teacher_change_description' => '承認が必要な代講依頼',
+  'teacher_change' => '講師変更',
   'dummy_release' => 'ダミーを解除する',
 ];
