@@ -393,4 +393,5 @@ return [
   'ask_teacher_change_description' => '承認が必要な代講依頼',
   'teacher_change' => '講師変更',
   'dummy_release' => 'ダミーを解除する',
+  'text_materials' => '教材・資料',
 ];
