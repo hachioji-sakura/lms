@@ -1,9 +1,9 @@
 <div id="{{$domain}}_create">
   @if(isset($_edit) && $_edit==true)
-  <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
+  <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}" enctype="multipart/form-data">
     @method('PUT')
   @else
-  <form id="edit" method="POST" action="/{{$domain}}">
+  <form id="edit" method="POST" action="/{{$domain}}" enctype="multipart/form-data">
   @endif
   @csrf
   <input type="text" name="dummy" style="display:none;" / >
@@ -16,7 +16,7 @@
           </label>
           @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))
           <label for="upload_file" class="w-100 upload_file">
-            <a id="upload_file_link" href="{{$item['s3_url']}}" target="_blank" class="">{{$item['s3_alias']}}</a>
+            <a id="upload_file_link" href="{{$item['s3_url']}}" target="_blank" class="">{{$item['name']}}</a>
             <a href="javascript:void(0);" onClick="upload_file_clear();"class="btn btn-default btn-sm ml-1">
               <i class="fa fa-times"></i>
             </a>
@@ -28,11 +28,16 @@
             console.log("update_file_clear");
             $(".upload_file").hide();
             $("input[name='upload_file_delete']").val(1);
+            $("input[name='upload_file']").collapse('show');
           }
           </script>
           @endif
-          <input type="file" name="upload_file" class="form-control" placeholder="ファイル" required="true" maxlength=200>
-          @if($errors->has('upload_file'))
+          <input type="file" name="upload_file" class="form-control
+          @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))
+           collapse
+          @endif
+          " placeholder="ファイル" required="true" maxlength=200>
+          @if ($errors->has('upload_file'))
           <span class="invalid-feedback">
           <strong>{{ $errors->first('upload_file') }}</strong>
           </span>
@@ -87,7 +92,7 @@
             @if(isset($_edit) && $_edit==true)
               {{__('labels.update_button')}}
             @else
-              登録する
+              {{__('labels.add_button')}}
             @endif
           </button>
           @if(isset($error_message))
@@ -98,14 +103,9 @@
       </div>
       <div class="col-12 col-md-6 mb-1">
           <button type="reset" class="btn btn-secondary btn-block">
-              キャンセル
+            {{__('labels.cancel_button')}}
           </button>
       </div>
     </div>
   </form>
 </div>
-<script>
-$(function(){
-  base.pageSettinged('{{$domain}}_create', null);
-});
-</script>

@@ -16,7 +16,7 @@ class CreateTextMaterialsTable extends Migration
         Schema::create('text_materials', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable(false)->comment('保存ファイル名');
-            $table->string('description',10000)->nullable(false)->comment('説明');
+            $table->string('description',10000)->nullable(true)->comment('説明');
             $table->string('type')->nullable(false)->comment('mimetype');
             $table->integer('size')->nullable(false)->comment('ファイルサイズ');
             $table->string('s3_url')->nullable(false)->comment('S3ダウンロードURL');
