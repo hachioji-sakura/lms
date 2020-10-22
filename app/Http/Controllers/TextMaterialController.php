@@ -26,11 +26,8 @@ class TextMaterialController extends MilestoneController
         'name' => [
           'label' => '保存ファイル名',
         ],
-        'body' => [
-          'label' => '説明',
-        ],
         'description' => [
-          'label' => '内容',
+          'label' => '説明',
         ],
         'type' => [
           'label' => 'mimetype',
@@ -99,6 +96,40 @@ class TextMaterialController extends MilestoneController
       return ["items" => $items, "fields" => $fields];
     }
     /**
+     * フィルタリングロジック
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Collection $items
+     * @return Collection
+     */
+    public function _search_scope(Request $request, $items)
+    {
+      //ID 検索
+      if(isset($request->id)){
+        $items = $items->where('id',$request->id);
+      }
+      //検索ワード
+      if(isset($request->search_word)){
+        $search_words = explode(' ', $request->search_word);
+        $items = $items->where(function($items)use($search_words){
+          foreach($search_words as $_search_word){
+            if(empty($_search_word)) continue;
+            $_like = '%'.$_search_word.'%';
+            $items->orWhere('name','like',$_like)->orWhere('description','like',$_like);
+          }
+        });
+      }
+      //登録日付でソート
+      if(isset($request->is_asc) && $request->get('is_asc')==1){
+        $items = $items->orderBY('created_at', 'asc');
+      }
+      else {
+        $items = $items->orderBY('created_at', 'desc');
+      }
+
+      return $items;
+    }
+    /**
      * 新規登録用フォーム
      *
      * @param  \Illuminate\Http\Request  $request
@@ -154,7 +185,6 @@ class TextMaterialController extends MilestoneController
        $user = $this->login_details($request);
        $text_material = new TextMaterial;
        $s3 = $this->s3_upload($request_file, config('aws_s3.text_material_folder'));
-       $name = $request_file->getClientOriginalName();
        $form['name'] = $request_file->getClientOriginalName();
        $form['s3_url'] = $s3['url'];
        $form['type'] = $request_file->guessClientExtension();
@@ -165,5 +195,29 @@ class TextMaterialController extends MilestoneController
      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
     }
-
+    public function _update(Request $request, $id)
+    {
+      $res = $this->save_validate($request);
+      if(!$this->is_success_response($res)){
+        return $res;
+      }
+      $res =  $this->transaction($request, function() use ($request, $id){
+        $form = $this->create_form($request);
+        $user = $this->login_details($request);
+        $text_material = TextMaterial::find($id)->first();
+        if($request->hasFile('upload_file')){
+          $this->s3_delete($text_material->s3_url);
+          $request_file = $request->file('upload_file');
+          $s3 = $this->s3_upload($request_file, config('aws_s3.text_material_folder'));
+          $form['name'] = $request_file->getClientOriginalName();
+          $form['s3_url'] = $s3['url'];
+          $form['type'] = $request_file->guessClientExtension();
+          $form['size'] = $request_file->getClientSize();
+        }
+        $form['create_user_id'] = $user->user_id;
+        $text_material->fill($form)->save();
+        return $this->api_response(200, '', '', $text_material);
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+    }
 }

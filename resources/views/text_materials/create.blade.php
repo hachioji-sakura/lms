@@ -33,7 +33,7 @@
           </script>
           @endif
           <input type="file" name="upload_file" class="form-control
-          @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))
+          @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))]
            collapse
           @endif
           " placeholder="ファイル" required="true" maxlength=200>
