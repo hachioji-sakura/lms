@@ -8,7 +8,9 @@ use App\Models\Trial;
 use App\Models\Managers;
 use App\Models\Teachers;
 use App\Models\Students;
+use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
+use Illuminate\Support\Facades\Auth;
 use View;
 use App\Models\Traits\WebCache;
 
@@ -123,6 +125,17 @@ EOT;
     }
     if(!isset($form['body'])){
       $form['body'] = '';
+    }
+    if( $form['type'] == "teacher_change"){
+      $emp_ask = new Ask;
+      $emp_ask->target_user_id = $form['target_user_id'];
+      $emp_ask->charge_user_id = $form['charge_user_id'];
+      $form['title'] = __('labels.ask_teacher_change'). ' : ' . $emp_ask->target_user->details()->name() .' → '. $emp_ask->charge_user->details()->name();
+      $form['body'] = View::make('emails.forms.calendar')->with([
+        'item' => UserCalendar::where('id' ,$form['target_model_id'])->first(),
+        'login_user' => Auth::user()->details(),
+        'send_to' => 'teacher',
+        ])->render();
     }
     if(!isset($form['target_model'])){
       $form['target_model'] = '';
@@ -273,19 +286,7 @@ EOT;
       case "teacher_change":
         $ret = true;
         //代講承認された
-        $target_model_data->teacher_change($is_commit, $this->target_user_id);
-        //親の依頼をcancel
-        if($is_commit==true){
-          $is_complete = true;
-          if(isset($this->parent_ask)){
-            $this->parent_ask->update(['status' => 'commit']);
-          }
-          $brother_asks = Ask::where('parent_ask_id', $this->parent_ask_id)->where('id', '!=', $this->id)->get();
-          //同じ親の依頼
-          foreach($brother_asks as $brother_ask){
-            $brother_ask->update(['status' => 'cancel']);
-          }
-        }
+        $target_model_data->teacher_change($is_commit, $this->charge_user_id,$this->target_user_id);
         break;
     }
     if($is_complete==true){
@@ -313,6 +314,8 @@ EOT;
         $param['target_model'] = $target_model_data;
         break;
       case "teacher_change":
+        $param["item"] = $target_model_data->details($this->target_user_id);
+        break;
       case "rest_cancel":
       case "lecture_cancel":
       case "emergency_lecture_cancel":
@@ -321,9 +324,10 @@ EOT;
         break;
     }
     //依頼対象者にメール通知
-    $res = $this->target_user_mail($param);
     $res = $this->charge_user_mail($param);
+
     if($this->type=='lecture_cancel' && $this->status=='commit'){
+      $res = $this->target_user_mail($param);
       //生徒あてに休講連絡
       \Log::warning("休講更新[".$this->type."][".$this->status."]");
       $param['send_to'] = 'student';
@@ -333,10 +337,14 @@ EOT;
       //生徒あてに先生が変わったあとの連絡
       \Log::warning("代講更新[".$this->type."][".$this->status."]");
       $param['send_to'] = 'student';
-      $param['prev_teacher_name'] = $this->parent_ask->target_user->details()["name"];
-      $param['next_teacher_name'] = $this->target_user->details()["name"];
+      $param['prev_teacher_name'] = $this->target_user->details()["name"];
+      $param['next_teacher_name'] = $param["item"]->user->details()->name();
 
       $param["item"]->student_mail('講師変更のお知らせ', $param, 'text', 'calendar_teacher_change');
+      $res = $this->target_user_mail($param);
+    }
+    else {
+      $res = $this->target_user_mail($param);
     }
     return $res;
   }
@@ -354,6 +362,9 @@ EOT;
   }
   public function target_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
+    if (!View::exists('emails.'.$template.'_text')) {
+      return false;
+    }
     if($this->target_user_id==1) return false;
     $title = $this->get_mail_title();
     $param['send_to'] = 'teacher';
@@ -363,11 +374,14 @@ EOT;
     }
     $param["user_name"] = $this->target_user->details()["name"];
     $param["access_key"] = $this->target_user->access_key;
+    $param['is_send_to_target_user'] = true;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
   public function charge_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
-    if($this->charge_user_id==1) return false;
+	if (!View::exists('emails.'.$template.'_text')) {
+      return false;
+    }    if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
 
     $title = $this->get_mail_title();
@@ -379,6 +393,8 @@ EOT;
     }
     $param["user_name"] = $this->charge_user->details()["name"];
     $param["access_key"] = $this->charge_user->access_key;
+    $param['is_send_to_target_user'] = false;
+
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
   }
   public function is_auto_commit(){
@@ -438,6 +454,7 @@ EOT;
     return $ret;
   }
   public function get_target_model_data(){
+    //TODO Laravelのリレーションでいずれ対処する
     $ret = null;
     switch($this->target_model){
       case 'trials':
@@ -455,10 +472,11 @@ EOT;
       case 'user_calendar_members':
         $ret = UserCalendarMember::where('id', $this->target_model_id)->first();
         break;
-      case 'agreements':
+      case 'user_calendars':
+        $ret = UserCalendar::where('id', $this->target_model_id)->first();
+        break;      case 'agreements':
         $ret = Agreement::where('id', $this->target_model_id)->first();
-        break;
-    }
+        break;    }
     return $ret;
   }
   public function is_access($user_id){
@@ -476,8 +494,15 @@ EOT;
     }
     return false;
   }
+
+  public function scopeFindTargetModel($query, $target_model, $target_model_id){
+    return $query->where('target_model', $target_model)->where('target_model_id', $target_model_id);
+  }
+
+
   public function cache_delete(){
     $this->delete_user_cache($this->charge_user_id);
     $this->delete_user_cache($this->target_user_id);
   }
+
 }

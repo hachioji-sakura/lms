@@ -278,7 +278,7 @@ EOT;
     if(gettype($tag_values) == "string" || gettype($tag_values) == "integer") $tag_values = explode(',', $tag_values.',');
     return $query->whereIn('user_id' , function ($query) use($tag_key, $tag_values){
           $query->select('user_id')
-                  ->from('user_tags')
+                  ->from('common.user_tags')
                   ->where('tag_key', $tag_key)
                   ->whereIn('tag_value', $tag_values);
     });
