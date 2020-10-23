@@ -181,13 +181,13 @@
                         @endif
                         </a>
                       </div>
-                      {{-- TODO　既存生徒の表示が不安定なので、まだコメントアウト
-                      <div class="col-6 float-left mt-1">
-                        <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                      @if($charge_student->student->enable_normal_agreements->count() > 0)
+                      <div class="col-12 float-left mt-1">
+                        <a title="契約情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                           <i class="fa fa-address-card mr-1"></i>ご契約内容
                         </a>
                       </div>
-                      --}}
+                      @endif
                       {{--
                       <div class="col-6 float-left mt-1">
                         <a title="{{__('labels.late_arrival_description')}}" href="javascript:void(0);" page_title="{{__('labels.late_arrival')}}" page_form="dialog" page_url="/students/{{$charge_student->id}}/late_arrival" role="button" class="btn btn-danger btn-sm btn-flat btn-block">

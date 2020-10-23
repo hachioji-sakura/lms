@@ -1027,7 +1027,7 @@ class StudentController extends UserController
    $result = '';
    $param = $this->get_param($request, $id);
    $param['fields'] = [];
-   $param['_edit'] = true;
+   $param['_edit'] = false;
    $param['student'] = $param['item'];
    $param['agreement'] =$param['item']->enable_normal_agreements->first();
    return view($this->domain.'.agreement',$param);

@@ -26,7 +26,7 @@
             @endif
             >
     					<i class="fa fa-envelope mr-1"></i>
-    					契約承認メールを送信する
+    					契約更新メールを送信する
     				</button>
     			</div>
     			<div class="col-12 col-md-6 mb-1">
