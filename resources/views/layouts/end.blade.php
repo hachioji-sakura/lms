@@ -85,7 +85,7 @@ function status_style(status){
 <script src="{{asset('js/base/service.js?v=5')}}"></script>
 <script src="{{asset('js/base/front.js')}}"></script>
 <script src="{{asset('js/base/base.js?v=10')}}"></script>
-<script src="{{asset('js/common.js?v=6')}}"></script>
+<script src="{{asset('js/common.js?v=7')}}"></script>
 </body>
 
 </html>

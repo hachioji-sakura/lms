@@ -17,6 +17,7 @@ use App\Models\UserCalendarTag;
 use App\User;
 use App\Models\Traits\Common;
 use View;
+use DB;
 class UserCalendarMember extends Model
 {
   use Common;
@@ -688,13 +689,8 @@ class UserCalendarMember extends Model
     ]);
     return $ask;
   }
-  public function teacher_change($is_exec=true, $change_user_id){
-    if($is_exec==true){
-      //休講に更新
-      $this->update(['user_id' => $change_user_id]);
-      $this->calendar->update(['user_id' => $change_user_id]);
-    }
-  }
+
+
   public function already_ask_data($data){
     //休み取り消し依頼
     $form = [

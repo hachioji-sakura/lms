@@ -1433,6 +1433,7 @@ class Trial extends Model
         if(empty($form[$tag_name])) $form[$tag_name] = '';
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
+      $this->student->profile_update($form);
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
