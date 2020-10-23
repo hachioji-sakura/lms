@@ -131,7 +131,31 @@ class AskController extends MilestoneController
     $param = $this->get_param($request);
     $_table = $this->search($request);
     $param['items'] = $_table['items'];
-    $param['fields'] = $_table['fields'];
+    $param['fields'] = [
+      'title' => [
+        'label' => '概要',
+        'link' => 'show',
+      ],
+      'target_user_name' => [
+        'label' => '対象者',
+      ],
+      'create_user_name' => [
+        'label' => '起票者',
+      ],
+      'body' => [
+        'label' => '内容'
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'commit' => [
+            'label' => '完了にする',
+            'style' => 'danger',
+            'method' => 'status_update/commit',
+          ],
+        ],
+      ],
+    ];
     return view($this->domain.'.lists')->with($param);
   }
   /**

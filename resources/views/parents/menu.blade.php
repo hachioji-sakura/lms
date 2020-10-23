@@ -62,7 +62,13 @@
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
-
+        @if(!empty($charge_student->student->enable_normal_agreements))
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_normal_agreements->first()->id}}&target_user_id={{$charge_student->student->user_id}}" >
+            <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
+          </a>
+        </li>
+        @endif
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}

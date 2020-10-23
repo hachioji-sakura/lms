@@ -43,8 +43,7 @@ class UserController extends Controller
     $attributes['ask_type'] = [
       'new_schedule' => '通塾スケジュールの追加',
       'change_schedule' => '通塾スケジュールの変更',
-      'study_request' => '授業に関するご要望',
-      'other_request' => 'その他',
+      'delete_schedule' => '通塾スケジュールの削除',
     ];
 
     return $attributes;

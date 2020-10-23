@@ -8,13 +8,25 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="charge_user_id" value="1" / >
+    @if(!empty($ask_type))
+    <input type="hidden" name="type" value="{{$ask_type}}">
+    @endif
+    @if(!empty($target_model))
+    <input type="hidden" name="target_model" value="{{$target_model}}">
+    @endif
+    @if(!empty($target_model_id))
+    <input type="hidden" name="target_model_id" value="{{$target_model_id}}">
+    @endif
+    @if(!empty($target_user_id))
+    <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+    @endif
     <div id="ask_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           <div class="col-12">
             <div class="form-group">
               <label class="w-100">
-                依頼種別
+                依頼概要
                 @if(!isset($_edit) || $_edit==false)
                 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                 @endif
@@ -24,7 +36,7 @@
               @else
                 @foreach($attributes['ask_type'] as $index => $name)
                 <label class="mx-2" for="rest_type_1">
-                  <input type="radio" value="{{$index}}" name="type" class="icheck flat-green" required="true">
+                  <input type="checkbox" value="{{$name}}" name="title[]" class="icheck flat-green" required="true">
                   {{$name}}
                 </label>
                 @endforeach
@@ -71,12 +83,12 @@
         </div>
         <div class="carousel-item" id="confirm_form">
           <div class="row">
-            <div class="col-12 font-weight-bold" >依頼種別</div>
+            <div class="col-12 font-weight-bold" >依頼概要</div>
             <div class="col-12 p-3">
               @if(isset($_edit) && $_edit==true)
                 {{$ask->type_name()}}
               @else
-              <span id="type_name"></span>
+              <span id="title[]_name"></span>
               @endif
             </div>
             <div class="col-12 font-weight-bold" >内容</div>
@@ -149,7 +161,7 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     console.log(form_data);
-    var _names = ["type"];
+    var _names = ["title[]"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'']){

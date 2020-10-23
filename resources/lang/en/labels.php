@@ -390,7 +390,10 @@ return [
   'created_date' => 'Created Date',
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
-  'ask_teacher_change_description' => 'About teacher change you should check',
   'teacher_change' => 'Change assigned teacher',
   'agreements' => 'Agreements',
-
+  'agreement_update' => 'Agreements update',
+  'ask_teacher_change_description' => 'About teacher change you should check',
+  'dummy_release' => 'Release dummy',
+  'enable' => 'Enable',
+];

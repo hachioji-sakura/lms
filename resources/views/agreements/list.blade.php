@@ -12,16 +12,34 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-item has-treeview menu-open mt-2">
       <a href="#" class="nav-link">
-        <i class="nav-icon fa fa-shake_hands"></i>
+        <i class="nav-icon fa fa-filter"></i>
         <p>
-          {{__('labels.agreements')}}
+          {{__('labels.filter')}}
           <i class="right fa fa-angle-left"></i>
         </p>
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a href="javascript:void(0);" page_form="dialog" page_url="/agreements/create" page_title="{{__('labels.new').__('labels.agreements')}}" class="nav-link">
-            <i class="fa fa-plus nav-icon"></i>{{__('labels.new').__('labels.agreements')}}
+          <a href="/agreements" class="nav-link {{!request()->has('status') ? 'active': ''}}">
+            {{__('labels.all')}}
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
+            {{__('labels.new')}}
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="/agreements?status=commit" class="nav-link {{request()->status == 'commit' ? 'active' : ''}}">
+            {{__('labels.enable')}}
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="/agreements?status=cancel" class="nav-link {{request()->status == 'cancel' ? 'active' : ''}}">
+            {{__('labels.cancel')}}
           </a>
         </li>
       </ul>

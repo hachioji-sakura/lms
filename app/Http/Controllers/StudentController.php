@@ -1180,7 +1180,19 @@ class StudentController extends UserController
 
   public function ask_create_page(Request $request, $id){
     $param = $this->get_param($request, $id);
-    $param['ask_type'] = 'agreement';
+
+    if($request->has('target_model')){
+      $param['target_model'] = $request->get('target_model');
+    }
+    if($request->has('target_model_id')){
+      $param['target_model_id'] = $request->get('target_model_id');
+    }
+    if($request->has('type')){
+      $param['ask_type'] = $request->get('type');
+    }
+    if($request->has('target_user_id')){
+      $param['target_user_id'] = $request->get('target_user_id');
+    }
     return view('asks.ask_create',['_edit' => false])
       ->with($param);
   }
@@ -1189,7 +1201,14 @@ class StudentController extends UserController
     $form = $request->all();
     $res = $this->transaction($request, function() use ($request, $param){
       $form = $request->all();
-      $form["target_user_id"] = $param["item"]->user_id;
+      $_t = '';
+      foreach($request->get('title') as $title){
+         $_t .= $title .' / ';
+      }
+      $form['title'] = $_t;
+      if( !$request->has('target_user_id')){
+        $form["target_user_id"] = $param["item"]->user_id;
+      }
       $form["create_user_id"] = $param["user"]->user_id;
       $item = Ask::add($form);
       return $this->api_response(200, '', '', $item);
