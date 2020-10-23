@@ -1,6 +1,6 @@
 @section('title'){{__('labels.'.$domain)}}@endsection
 @section('title_header'){{__('labels.'.$domain)}}@endsection
-
+@extends('dashboard.common')
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">

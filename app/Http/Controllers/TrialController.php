@@ -680,12 +680,14 @@ class TrialController extends UserCalendarController
    public function admission_mail(Request $request, $id){
      $access_key = '';
      $trial = Trial::where('id', $id)->first();
+     $agreement = $trial->student->agreementsByStatus('new')->first();
      if(!isset($trial)) abort(404);
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
+       'agreement' => $agreement,
      ];
 
      return view($this->domain.'.admission_mail',
@@ -696,27 +698,18 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
-
-
-    $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-      //他に契約があればすべてキャンセルにする
-      $student =  Student::find($request['agreements']['student_id']);
-      $old_agreements = $student->agreements;
-      if($old_agreements->count() > 0){
-        foreach($old_agreements as $n_a){
-          foreach($n_a->agreement_statements as $a_s){
-            $a_s->user_calendar_member_settings()->detach();
-          }
+    $res = $this->transaction($request, function() use ($request, $id,$param, $access_key){
+      //料金が変更されていたら更新
+      foreach($request->get('agreement_statements') as $statement_id => $value){
+        $statement = AgreementStatement::find($statement_id);
+        if($statement->tuition != $value['tuition']){
+          $statement->tuition = $value['tuition'];
+          $statement->save();
         }
-        $old_agreements->map(function($item,$key){
-          $item->update(['status' => 'cancel']);
-        });
       }
-      //契約追加
-      $trial = Trial::find($id);
-      $agreement = new Agreement;
-      $agreement->add($request,'new');
-      $ask = $agreement->agreement_ask($param['user']->user_id, $access_key);
+      $trial = Trial::find($id);//details()後だとupdate通らない
+      $agreement = Agreement::find($request->get('agreements')['id']);
+      $ask = $agreement->agreement_ask($param['user']->user_id, $access_key, 'agreement');
       $trial->update(['status' => 'entry_guidanced']);
       return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );

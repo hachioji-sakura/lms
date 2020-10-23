@@ -2,7 +2,7 @@
 {{--
 @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'input' => true,  'user'=>$user]) @endcomponent
 --}}
-<section id="agreement_update" class="content-header">
+<section id="agreement_confirm" class="content-header">
   <form method="POST" action="/agreements">
     @csrf
     <input type="hidden" name="agreements[student_id]" value="{{$item->id}}">
@@ -86,7 +86,7 @@
 
     <div class="row">
       <div class="col-6 mb-1">
-        <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="agreement_update">
+        <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="agreement_confirm">
           <i class="fa fa-sync mr-1"></i>
           {{__('labels.update_button')}}
         </a>

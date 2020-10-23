@@ -266,10 +266,16 @@ EOT;
         $target_model_data->hope_to_join($is_commit, $form);
         break;
       case "agreement":
+      case "agreement_confirm":
         $ret = true;
         $is_complete = true;
         //agreementを更新
         $agreement = $this->get_target_model_data();
+        $old_agreements = $agreement->student->enable_normal_agreements();
+        if($old_agreements->count() > 0){
+          $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
+        }
+        $agreement->entry_date =  date('Y/m/d H:i:s');
         $agreement->status = 'commit';
         $agreement->save();
         break;
@@ -309,6 +315,7 @@ EOT;
     switch($this->type){
       case "hope_to_join":
       case "agreement":
+      case "agreement_confirm":
       case "recess":
       case "unsubscribe":
         $param['target_model'] = $target_model_data;
@@ -474,7 +481,9 @@ EOT;
         break;
       case 'user_calendars':
         $ret = UserCalendar::where('id', $this->target_model_id)->first();
-        break;      case 'agreements':
+        break;
+      case 'agreements':
+      case 'agreement_confirm':
         $ret = Agreement::where('id', $this->target_model_id)->first();
         break;    }
     return $ret;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Agreement;
+use App\Models\AgreementStatement;
 use App\Models\Student;
 use App\Models\StudentParent;
 use Illuminate\Support\Facades\Auth;
@@ -24,27 +25,28 @@ class AgreementController extends MilestoneController
     {
         //
         $fields = [
-                  'id' => [
-                    'label' => 'ID',
-                  ],
-                  'title' => [
-                    'label' => '概要',
-                    "link" => function($row){
-                      return "/agreement_statements?agreement_id=".$row->id;
-                    },
-                  ],
-                  'student_parent_name' => [
-                    'label' => '契約者',
-                  ],
-                  'entry_fee' => [
-                    'label' => '入会金',
-                  ],
-                  'membership_fee'=> [
-                    'label' => '月会費'
-                  ]
-                ];
+          'title' => [
+            'label' => '概要',
+            "link" => function($row){
+              return "/agreement_statements?agreement_id=".$row->id;
+            },
+          ],
+          'statement_summary' =>[
+            'label' => '明細概要',
+          ],
+          'buttons' => [
+            'label' => '操作',
+            'button' => [
+              'confirm' => [
+                'method' => 'ask/confirm',
+                'label' => '承認依頼',
+                'style' => 'primary',
+              ],
+            ],
+          ],
+        ];
         $param = [
-          'items' => $this->model()->enable()->search($request)->paginate(),
+          'items' => $this->model()->search($request)->paginate(),
           'search_word' => '',
           'fields' => $fields,
           'domain' => $this->domain,
@@ -103,6 +105,30 @@ class AgreementController extends MilestoneController
     {
         //
         return view('agreement_statements.list');
+    }
+
+    public function ask_page(Request $request, $id, $method){
+      $param = $this->get_param($request,$id);
+      return view('agreements.agreement_confirm')->with($param);
+    }
+
+    public function admission_mail_send(Request $request, $id){
+      $param = $this->get_param($request, $id);
+      $access_key = $this->create_token(2678400);
+      $res = $this->transaction($request, function() use ($request,$param, $access_key){
+        //料金が変更されていたら更新
+        foreach($request->get('agreement_statements') as $statement_id => $value){
+          $statement = AgreementStatement::find($statement_id);
+          if($statement->tuition != $value['tuition']){
+            $statement->tuition = $value['tuition'];
+            $statement->save();
+          }
+        }
+        $agreement = $param['item'];
+        $ask = $agreement->agreement_ask($param['user']->user_id, $access_key, 'agreement_confirm');
+        return $this->api_response(200, '', '', $ask);
+      }, '契約更新連絡', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, [], '契約更新の承認依頼を送信しました。');
     }
 
 }

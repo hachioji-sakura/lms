@@ -1,6 +1,10 @@
 @extends('layouts.simplepage')
 @section('title')
+  @if($item->type == 'agreement')
   入会のご案内
+  @elseif($item->type == 'agreement_confirm')
+  契約変更のご案内
+  @endif
 @endsection
 @section('title_header')
 <ol class="step">
@@ -8,15 +12,16 @@
 </ol>
 @endsection
 @section('content')
-@if($item->status=='new')
+@if($item->status=='new' )
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
     <input type="hidden" name="key" value="{{$access_key}}" />
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'agreement' => $agreement, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
     	<div class="container-fluid">
+        @if($item->type == 'agreement')
         <div class="row">
           <div class="col-12 mt-2 mb-1">
             <div class="form-group">
@@ -40,6 +45,7 @@
               </label>
             </div>
           </div>
+          @endif
           <div class="col-12 mb-1" id="commit_form">
             <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
               @csrf
@@ -88,7 +94,11 @@ $(function(){
 @elseif($item->status=='commit')
   @if($agreement->student_parent->user->status==0)
   <h4 class="bg-success p-3 text-sm">
+    @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
+    @elseif($item->type == 'agreement_confirm')
+    ご契約内容のご承認、大変感謝いたします。<br>
+    @endif
   </h4>
   @else
   <h4 class="bg-success p-3 text-sm">
@@ -104,7 +114,7 @@ $(function(){
       </a>
     </div>
   @endif
-  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user]) @endcomponent
+  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_normal_agreements->first()]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
       @if(isset($user) && $user->id == $agreement->student_parent_id)

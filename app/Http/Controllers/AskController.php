@@ -128,30 +128,11 @@ class AskController extends MilestoneController
 
   public function index(Request $request)
   {
-    if(!$request->has('_origin')){
-      $request->merge([
-        '_origin' => $this->domain,
-      ]);
-    }
-    if(!$request->has('_line')){
-      $request->merge([
-        '_line' => $this->pagenation_line,
-      ]);
-    }
-    if(!$request->has('_page')){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-    else if($request->get('_page')==0){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
     $param = $this->get_param($request);
     $_table = $this->search($request);
-    return view($this->domain.'.lists', $_table)
-      ->with($param);
+    $param['items'] = $_table['items'];
+    $param['fields'] = $_table['fields'];
+    return view($this->domain.'.lists')->with($param);
   }
   /**
    * ステータス更新ページ
@@ -234,6 +215,7 @@ class AskController extends MilestoneController
     switch($param['item']->type){
       case "hope_to_join":
       case "agreement":
+      case "agreement_confirm":
         $message = "";
         break;
     }

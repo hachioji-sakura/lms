@@ -34,8 +34,12 @@ class Student extends Model
   public function agreements(){
     return $this->hasMany('App\Models\Agreement','student_id');
   }
-  public function enable_agreements(){
-    return $this->agreements()->where('status','commit');
+  public function agreementsByStatus($status){
+    return $this->agreements()->where('status',$status);
+  }
+
+  public function enable_normal_agreements(){
+    return $this->agreements()->enableNormal();
   }
   /**
    *　プロパティ：年齢

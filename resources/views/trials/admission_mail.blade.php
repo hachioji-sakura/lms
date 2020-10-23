@@ -1,8 +1,6 @@
 <div id="admission_mail">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/admission">
-    <input type="hidden" name="agreements[student_parent_id]" value="{{$item->parent->id}}">
-    <input type="hidden" name="agreements[student_id]" value="{{$item->student->id}}">
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true, 'active_tab' => 2]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true, 'agreement' => $agreement, 'active_tab' => 2]) @endcomponent
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
@@ -23,7 +21,7 @@
     		<div class="row">
     			<div class="col-12 col-md-6 mb-1">
     				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="入会案内メールを送信しますか？"
-            @if($item->is_exist_calendar_settings()!=true)
+            @if($item->student->agreementsByStatus('new')->count() == 0 )
               disabled
             @endif
             >

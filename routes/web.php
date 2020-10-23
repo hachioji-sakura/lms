@@ -385,8 +385,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('subjects','SubjectController');
   Route::get('subjects/{id}/delete', 'SubjectController@delete');
 
+  Route::post('agreements/{id}/admission','AgreementController@admission_mail_send');
   Route::resource('agreements', 'AgreementController');
   Route::get('agreements/{id}/delete', 'AgreementController@delete');
+  Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
   Route::resource('agreement_statements', 'AgreementStatementController');
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
 });

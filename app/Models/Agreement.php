@@ -14,6 +14,7 @@ class Agreement extends Model
     protected $fillable = [
       'title',
       'student_id',
+      'type',
       'parent_agreement_id',
       'entry_fee',
       'monthly_fee',
@@ -52,18 +53,38 @@ class Agreement extends Model
       return $this->student_parent->details()->name();
     }
 
+    public function getStatementSummaryAttribute(){
+      $statements = $this->agreement_statements;
+      $ret = [];
+      foreach($statements as $statement){
+        $ret[]= $statement->teacher_name. ' : ' . $statement->course_type_name  . ' : '.$statement->course_minutes_name.' : ' .$statement->tuition.PHP_EOL;
+      }
+      return $ret;
+    }
+
     public function scopeSearch($query, $request){
       if( $request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));
       }
-      if( $request->has('agreement_id')){
-        $query = $query->where('agreement_id', $request->get('agreement_id'));
+      if( $request->has('id')){
+        $query = $query->where('id', $request->get('id'));
+      }
+      if( $request->has('status')){
+        $query = $query->findStatus($request->get('status'));
       }
       return $query;
     }
 
+    public function scopeFindStatus($query,$status){
+      return $query->where('status',$status);
+    }
+
     public function scopeEnable($query){
       return $query->where('status','commit');
+    }
+
+    public function scopeEnableNormal($query){
+      return $query->enable()->where('type','normal');
     }
 
     public function scopeSearchWord($query, $word){
@@ -78,7 +99,7 @@ class Agreement extends Model
       return $query;
     }
 
-    public function agreement_ask($create_user_id, $access_key){
+    public function agreement_ask($create_user_id, $access_key,$ask_type){
       //保護者にアクセスキーを設定
       $this->student_parent->user->update(['access_key' => $access_key]);
       //同じ問い合わせがあったら消去
@@ -86,7 +107,7 @@ class Agreement extends Model
           ->where('status', 'new')->where('type', 'agreement')->delete();
 
       $ask = Ask::add([
-        "type" => "agreement",
+        "type" => $ask_type,
         "end_date" => date("Y-m-d", strtotime("30 day")),
         "body" => "",
         "target_model" => "agreements",
@@ -98,13 +119,14 @@ class Agreement extends Model
       return $ask;
     }
 
-    public function add($request,$status,$parent_agreement_id = null){
+    public function add($request,$status,$parent_agreement_id = null,$type = 'normal'){
       $this->fill($request->get('agreements'));
       $req = $request->get('agreements');
       $this->entry_date = date('Y/m/d H:i:s');
       $student_name = Student::find($req['student_id'])->name();
       $this->title = $student_name . ' : ' . date('Y/m/d');
       $this->status = $status;
+      $this->type = $type;
       $this->parent_agreement_id = $parent_agreement_id;
       $this->create_user_id = Auth::user()->id;
       $this->save();
