@@ -78,13 +78,13 @@ class TextMaterialController extends MilestoneController
           'label' => '資料名',
           'link' => 'show',
         ],
+        'publiced_date' => [
+          'label' => '公開日',
+        ],
         'create_user_name' => [
           'label' => '登録者',
         ],
-        'publiced_at' => [
-          'label' => '公開日',
-        ],
-        'created_at' => [
+        'created_date' => [
           'label' => '登録日',
         ],
         'buttons' => [
@@ -104,6 +104,7 @@ class TextMaterialController extends MilestoneController
      */
     public function _search_scope(Request $request, $items)
     {
+      $user = $this->login_details($request);
       //ID 検索
       if(isset($request->id)){
         $items = $items->where('id',$request->id);

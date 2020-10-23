@@ -95,7 +95,8 @@ return [
   'regular_schedule_confirm' => '通常授業設定（確認）',
   'regular_schedule_list_description' => '定期的な予定',
   'teacher_setting' => '講師設定',
-  'teacher_setting_description' => '担当科目、授業可能曜日の設定',
+  'teacher_setting_description' => '講師の基本情報の設定',
+  'working_setting_description' => '担当科目、授業可能曜日の設定',
   'charge_student' => '担当科目、授業可能曜日の設定',
   'emergency_lecture_cancel_description' => '当日、緊急で休講とする場合',
   'emergency_lecture_cancel_schedule' => '休講連絡する授業',
@@ -394,4 +395,5 @@ return [
   'teacher_change' => '講師変更',
   'dummy_release' => 'ダミーを解除する',
   'text_materials' => '教材・資料',
+  'menu' => 'メニュー',
 ];

@@ -21,7 +21,7 @@ class TextMaterial extends Milestone
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function getPublicedDateAttribute(){
-    return $this->_date_label($this->publiced_at);
+    return $this->_date_label($this->publiced_at, 'Y年m月d日');
   }
 
 }
