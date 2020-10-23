@@ -2279,43 +2279,6 @@
 			"sort_no" => "2",
 		],
 	],
-	"season_school_lesson_milestone" => [
-		"entrance_examination" => [
-			"attribute_value" => "entrance_examination",
-			"attribute_name" => "受験対策",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "1",
-		],
-		"promotion" => [
-			"attribute_value" => "promotion",
-			"attribute_name" => "内部進学対策",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "2",
-		],
-		"qualification" => [
-			"attribute_value" => "qualification",
-			"attribute_name" => "資格試験対策",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "3",
-		],
-		"training" => [
-			"attribute_value" => "training",
-			"attribute_name" => "補習",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "4",
-		],
-		"other" => [
-			"attribute_value" => "other",
-			"attribute_name" => "その他",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "5",
-		],
-	],
 	"setting_status" => [
 		"dummy" => [
 			"attribute_value" => "dummy",
