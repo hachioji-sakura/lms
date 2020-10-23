@@ -59,13 +59,20 @@
           <label>{{__('labels.title')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.title')}}" required="true" value="{{$_edit ? $item->title : ''}}" maxlength=255>
+            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.task_title')}}" required="true" value="{{$_edit ? $item->title : ''}}" maxlength=255>
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="title_set">
                 <i class="fa fa-copy"></i>
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <label>{{__('labels.tasks_remarks')}}</label>
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <textarea name="body" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" >{{$_edit ? $item->body : ''}}</textarea>
         </div>
       </div>
       <div class="row mt-2">
@@ -103,13 +110,6 @@
           @endif
         </div>
 
-        <div class="row mt-2">
-          <div class="col-12">
-            <label>{{__('labels.tasks_remarks')}}</label>
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <textarea name="body" class="form-control" placeholder="{{__('labels.tasks_remarks')}}" >{{$_edit ? $item->body : ''}}</textarea>
-          </div>
-        </div>
         <div class="row mt-2">
           <div class="col-6">
             <label>{{__('labels.start_schedule')}}</label>
@@ -204,9 +204,14 @@
   $("#select_subject").on('change', function(e){
     $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
       base.pageSettinged('create_tasks');
+      set_title();
     });
   });
   $("#title_set").on('click', function(e){
+    set_title();
+  });
+
+  function set_title(){
     var curriculums = "";
     $("#select_curriculum option:selected").each(function(){
       curriculums += "_" + $(this).text();
@@ -216,7 +221,7 @@
     });
     var title = $("#select_subject option:selected" ).text().trim() +  curriculums;
     $("#title").val(title);
-  });
+  }
 
 
   </script>
