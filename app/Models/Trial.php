@@ -308,19 +308,6 @@ class Trial extends Model
       $student = $parent->brother_add($form, 1);
     }
 
-    if(!empty($form["remark"])){
-      //体験申し込み時のご要望を初期コメントに登録
-      $comment = [
-        'title' => '体験申し込み時のご要望',
-        'body' => $form["remark"],
-        'type' => 'trial',
-        'create_user_id' => $parent->user_id,
-        'target_user_id' => $student->user_id,
-        'publiced_at' => date('Y-m-d'),
-        'importance' => 10,
-      ];
-      Comment::create($comment);
-    }
     $ret = [];
 
     //登録申し込み情報
@@ -353,27 +340,6 @@ class Trial extends Model
     return $trial;
   }
   public function trial_update($form){
-    if(!isset($form['remark']) || empty($form['remark'])){
-       $form['remark'] = '';
-    }
-    else {
-      $comment = Comment::where('target_user_id', $this->student->user_id)
-                        ->where('type', 'trial')->first();
-      if(isset($comment)){
-        $comment->update(['body' => $form['remark']]);
-      }
-      else {
-        Comment::create([
-          'title' => '体験申し込み時のご要望',
-          'body' => $form["remark"],
-          'type' => 'trial',
-          'create_user_id' => $this->create_user_id,
-          'target_user_id' => $this->student->user_id,
-          'publiced_at' => date('Y-m-d'),
-          'importance' => 10,
-        ]);
-      }
-    }
     $fields = ['trial_start_time1', 'trial_end_time1', 'trial_start_time2', 'trial_end_time2', 'trial_start_time3', 'trial_end_time3', 'trial_start_time4', 'trial_end_time4', 'trial_start_time5', 'trial_end_time5', 'remark'];
     $data = [];
     foreach($fields as $field){
@@ -407,6 +373,7 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
+    $this->write_trial_comment();
     $this->student->profile_update($form);
   }
   public function remark_full(){
@@ -1476,5 +1443,26 @@ class Trial extends Model
     $seconddiff = abs($timestamp2 - $timestamp1);
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
+  }
+  public function write_trial_comment(){
+    $remark = $this->remark_full();
+    if(!empty($remark)){
+      $comment = Comment::where('target_user_id', $this->student->user_id)
+                        ->where('type', 'trial')->first();
+      if(isset($comment)){
+        $comment->update(['body' => $remark]);
+      }
+      else {
+        Comment::create([
+          'title' => '体験申し込み時のご要望',
+          'body' => $remark,
+          'type' => 'trial',
+          'create_user_id' => $this->create_user_id,
+          'target_user_id' => $this->student->user_id,
+          'publiced_at' => date('Y-m-d'),
+          'importance' => 10,
+        ]);
+      }
+    }
   }
 }
