@@ -146,6 +146,13 @@ class TextMaterialController extends MilestoneController
       $form['create_user_id'] = $user->user_id;
       $form['publiced_at'] = $request->get('publiced_at');
       $form['description'] = $request->get('description');
+      $form['create_user_id'] = $user->user_id;
+      if($request->hasFile('upload_file')){
+        $request_file = $request->file('upload_file');
+        $form['name'] = $request_file->getClientOriginalName();
+        $form['type'] = $request_file->guessClientExtension();
+        $form['size'] = $request_file->getClientSize();
+      }
       return $form;
     }
     /**
@@ -181,20 +188,15 @@ class TextMaterialController extends MilestoneController
      if(!$this->is_success_response($res)){
        return $res;
      }
+     //新規の場合は、ファイルは必須
      if(!$request->hasFile('upload_file')){
        return $this->bad_request('ファイルがありません');
      }
      $res = $this->transaction($request, function() use ($request){
        $form = $this->create_form($request);
-       $request_file = $request->file('upload_file');
-       $user = $this->login_details($request);
        $text_material = new TextMaterial;
-       $s3 = $this->s3_upload($request_file, config('aws_s3.text_material_folder'));
-       $form['name'] = $request_file->getClientOriginalName();
+       $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.text_material_folder'));
        $form['s3_url'] = $s3['url'];
-       $form['type'] = $request_file->guessClientExtension();
-       $form['size'] = $request_file->getClientSize();
-       $form['create_user_id'] = $user->user_id;
        $text_material->fill($form)->save();
        return $this->api_response(200, '', '', $text_material);
      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
@@ -208,18 +210,12 @@ class TextMaterialController extends MilestoneController
       }
       $res =  $this->transaction($request, function() use ($request, $id){
         $form = $this->create_form($request);
-        $user = $this->login_details($request);
         $text_material = TextMaterial::find($id)->first();
         if($request->hasFile('upload_file')){
           $this->s3_delete($text_material->s3_url);
-          $request_file = $request->file('upload_file');
-          $s3 = $this->s3_upload($request_file, config('aws_s3.text_material_folder'));
-          $form['name'] = $request_file->getClientOriginalName();
+          $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.text_material_folder'));
           $form['s3_url'] = $s3['url'];
-          $form['type'] = $request_file->guessClientExtension();
-          $form['size'] = $request_file->getClientSize();
         }
-        $form['create_user_id'] = $user->user_id;
         $text_material->fill($form)->save();
         return $this->api_response(200, '', '', $text_material);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
