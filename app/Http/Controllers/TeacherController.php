@@ -101,6 +101,9 @@ class TeacherController extends StudentController
     }
     $user = $param['user'];
     $view = "home";
+    if($this->domain=='managers' && $this->is_manager($user->role)!=true){
+      $view = 'setting_menu';
+    }
     if($request->has('view')){
       switch ($request->get('view')){
         case "setting_menu":

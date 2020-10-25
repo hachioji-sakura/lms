@@ -1,7 +1,7 @@
 @section('title')
   {{$domain_name}}ダッシュボード
 @endsection
-@extends('teachers.page')
+@extends($domain.'.page')
 @include($domain.'.menu')
 
 @section('sub_contents')
