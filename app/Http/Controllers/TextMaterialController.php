@@ -73,10 +73,14 @@ class TextMaterialController extends MilestoneController
       $fields = [
         'id' => [
           'label' => 'ID',
+          'link' => 'show',
         ],
         'name' => [
           'label' => '資料名',
-          'link' => 'show',
+          'link' => function($row){
+            return $row->s3_url;
+          },
+          'target' => '__blank',
         ],
         'publiced_date' => [
           'label' => '公開日',
