@@ -173,29 +173,6 @@
           習い事の授業内容につきまして
         </div>
         @component('students.forms.kids_lesson', ['_edit'=>true, 'item'=>$trial, 'attributes' => $attributes]) @endcomponent
-      </div>
-      <div class="row">
-        <div class="col-12 mb-1">
-          <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-            <i class="fa fa-arrow-circle-left mr-1"></i>
-            戻る
-          </a>
-        </div>
-        <div class="col-12 mb-1">
-          <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-            次へ
-            <i class="fa fa-arrow-circle-right ml-1"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="carousel-item">
-      <div class="row">
-        <div class="col-12 bg-info p-2 pl-4 mb-4">
-          <i class="fa fa-question-circle mr-1"></i>
-          ご入会にあたり、ご要望がありましたらご記入ください
-        </div>
-        @component('students.forms.entry_milestone', ['_edit'=>true, 'item'=>$trial, 'attributes' => $attributes]) @endcomponent
         @component('students.forms.remark', ['_edit'=>true, 'item'=>$trial, 'attributes' => $attributes]) @endcomponent
       </div>
       <div class="row">
