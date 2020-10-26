@@ -60,11 +60,18 @@
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
             <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.task_title')}}" required="true" value="{{$_edit ? $item->title : ''}}" maxlength=255>
+            {{--タイトル変更系のボタンは封印
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="title_set">
                 <i class="fa fa-copy"></i>
               </button>
             </div>
+            <div class="input-group-append">
+              <button class="btn btn-danger" type="button" id="clear_title">
+                <i class="fa fa-times-circle"></i>
+              </button>
+            </div>
+            --}}
           </div>
         </div>
       </div>
@@ -202,13 +209,22 @@
   });
 
   $("#select_subject").on('change', function(e){
-    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
-      base.pageSettinged('create_tasks');
-      set_title();
-    });
+    if(this.value == ' '){
+      console.log(this.value);
+      $("#curriculums").empty();
+    }else{
+      $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
+        base.pageSettinged('create_tasks');
+        set_title();
+      });
+    }
   });
   $("#title_set").on('click', function(e){
     set_title();
+  });
+
+  $('#clear_title').on('click',function(e){
+    $('#title').val("");
   });
 
   function set_title(){
