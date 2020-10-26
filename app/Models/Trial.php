@@ -373,7 +373,7 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->write_trial_comment();
+    $this->write_comment('trial');
     $this->student->profile_update($form);
   }
   public function remark_full(){
@@ -387,11 +387,13 @@ class Trial extends Model
           $is_other = true;
           continue;
         }
+        if(empty($label)) continue;
         $ret .= "・".$label."\n";
       }
       if(isset($tagdata['entry_milestone_word'])){
         if($is_other){
           foreach($tagdata['entry_milestone_word'] as $index => $label){
+            if(empty($label)) continue;
             $ret .= "・".$label."\n";
           }
         }
@@ -1349,31 +1351,8 @@ class Trial extends Model
         'schedule_start_hope_date' => $form['schedule_start_hope_date']
       ];
 
-      if(!isset($form['remark']) || empty($form['remark'])){
-         $form['remark'] = '';
-      }
-      else {
-        $update_data['remark'] = $form['remark'];
-        $comment = Comment::where('target_user_id', $this->student->user_id)
-                          ->where('type', 'entry')->first();
-        if(isset($comment)){
-          $comment->update(['body' => $form['remark']]);
-        }
-        else {
-          Comment::create([
-            'title' => '入会希望時のご要望',
-            'body' => $form["remark"],
-            'type' => 'entry',
-            'create_user_id' => $this->create_user_id,
-            'target_user_id' => $this->student->user_id,
-            'publiced_at' => date('Y-m-d'),
-            'importance' => 10,
-          ]);
-        }
-      }
-
       //通塾可能曜日・時間帯タグ
-      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
+      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'entry_milestone']; //生徒のuser_tagと共通
       $lesson_weeks = config('attribute.lesson_week');
       foreach($lesson_weeks as $lesson_week=>$name){
         $tag_names[] = 'lesson_'.$lesson_week.'_time';
@@ -1386,7 +1365,7 @@ class Trial extends Model
           TrialTag::clearTags($this->id, $tag_name);
         }
       }
-      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type'];
+      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type', 'entry_milestone_word'];
       foreach($tag_names as $tag_name){
         if(empty($form[$tag_name])) $form[$tag_name] = '';
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -1401,6 +1380,7 @@ class Trial extends Model
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       $this->student->profile_update($form);
+      $this->write_comment('entry');
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
@@ -1444,19 +1424,24 @@ class Trial extends Model
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
   }
-  public function write_trial_comment(){
+  public function write_comment($type){
     $remark = $this->remark_full();
+
+    $type_title = [
+      "trial" => "体験申し込み時のご要望",
+      "entry" => "入会希望時のご要望",
+    ];
     if(!empty($remark)){
       $comment = Comment::where('target_user_id', $this->student->user_id)
-                        ->where('type', 'trial')->first();
+                        ->where('type', $type)->first();
       if(isset($comment)){
         $comment->update(['body' => $remark]);
       }
       else {
         Comment::create([
-          'title' => '体験申し込み時のご要望',
+          'title' => $type_title[$type],
           'body' => $remark,
-          'type' => 'trial',
+          'type' => $type,
           'create_user_id' => $this->create_user_id,
           'target_user_id' => $this->student->user_id,
           'publiced_at' => date('Y-m-d'),
