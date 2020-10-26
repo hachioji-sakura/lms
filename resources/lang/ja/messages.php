@@ -156,5 +156,6 @@ return [
   "already_signup" => "すでに本登録済みの方は、\n<a href='/login'>こちら</a>からログインしてご利用ください",
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
+  'mail_reply_recomend' => '※ご返信は、SaKuRa One Netのメッセージ一覧をご利用ください。',
 
 ];
