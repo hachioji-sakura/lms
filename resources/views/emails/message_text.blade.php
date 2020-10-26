@@ -10,10 +10,10 @@
 @endif
 
 {{__('messages.message_first_sentence')}}
-【{{__('labels.important')}}】
 {{__('messages.mail_auto_send_message')}}
 {{__('messages.mail_reply_recomend')}}
 {{config('app.url')}}/login
+
 --------------------------------------
 {{__('labels.message_title')}}:
 {{$item->title}}
