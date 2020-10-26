@@ -392,4 +392,6 @@ return [
   'actionlogs' => 'System Logs',
   'ask_teacher_change_description' => 'About teacher change you should check',
   'teacher_change' => 'Change assigned teacher',
-  'dummy_release' => 'Dummy Release',];
+  'dummy_release' => 'Dummy Release',
+  'task_title' => 'ex: English_selfIntroduction',
+];

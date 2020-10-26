@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Message;
 use App\Models\Teacher;
 use App\Models\StudentParent;
 use App\Models\Manager;
-
 
 class MessageController extends CommentController
 {
@@ -179,8 +179,10 @@ class MessageController extends CommentController
           }else{
             $title_of_honor = "さん";
           }
-
+          App::setLocale($item->target_user->locale);
           $item->target_user->send_mail(__('messages.message_title',['user_name' => $item->create_user->details()->name(),'title_of_honor' => $title_of_honor]), $param, $type ,$template);
+          $u = Auth::user();
+          if(isset($u)) App::setLocale($u->locale);
         }
       }
       return $res;
