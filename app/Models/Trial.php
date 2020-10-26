@@ -308,6 +308,19 @@ class Trial extends Model
       $student = $parent->brother_add($form, 1);
     }
 
+    if(!empty($form["remark"])){
+      //体験申し込み時のご要望を初期コメントに登録
+      $comment = [
+        'title' => '体験申し込み時のご要望',
+        'body' => $form["remark"],
+        'type' => 'trial',
+        'create_user_id' => $parent->user_id,
+        'target_user_id' => $student->user_id,
+        'publiced_at' => date('Y-m-d'),
+        'importance' => 10,
+      ];
+      Comment::create($comment);
+    }
     $ret = [];
 
     //登録申し込み情報
@@ -340,6 +353,27 @@ class Trial extends Model
     return $trial;
   }
   public function trial_update($form){
+    if(!isset($form['remark']) || empty($form['remark'])){
+       $form['remark'] = '';
+    }
+    else {
+      $comment = Comment::where('target_user_id', $this->student->user_id)
+                        ->where('type', 'trial')->first();
+      if(isset($comment)){
+        $comment->update(['body' => $form['remark']]);
+      }
+      else {
+        Comment::create([
+          'title' => '体験申し込み時のご要望',
+          'body' => $form["remark"],
+          'type' => 'trial',
+          'create_user_id' => $this->create_user_id,
+          'target_user_id' => $this->student->user_id,
+          'publiced_at' => date('Y-m-d'),
+          'importance' => 10,
+        ]);
+      }
+    }
     $fields = ['trial_start_time1', 'trial_end_time1', 'trial_start_time2', 'trial_end_time2', 'trial_start_time3', 'trial_end_time3', 'trial_start_time4', 'trial_end_time4', 'trial_start_time5', 'trial_end_time5', 'remark'];
     $data = [];
     foreach($fields as $field){
@@ -347,7 +381,6 @@ class Trial extends Model
     }
     $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
-    $tag_names[] ='entry_milestone'; //体験のみのタグ
     $tag_names[] ='howto'; //体験のみのタグ
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
@@ -363,7 +396,7 @@ class Trial extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'entry_milestone_word','howto_word', 'course_type'];
+      ,'howto_word', 'course_type'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -373,37 +406,7 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->write_comment('trial');
     $this->student->profile_update($form);
-  }
-  public function remark_full(){
-    $tagdata = $this->get_tagdata()['tagdata'];
-    $ret = "";
-    $is_other = false;
-    if(isset($tagdata['entry_milestone'])){
-      $ret .= "■".__('labels.entry_milestone')."\n";
-      foreach($tagdata['entry_milestone'] as $index => $label){
-        if($index=='other'){
-          $is_other = true;
-          continue;
-        }
-        if(empty($label)) continue;
-        $ret .= "・".$label."\n";
-      }
-      if(isset($tagdata['entry_milestone_word'])){
-        if($is_other){
-          foreach($tagdata['entry_milestone_word'] as $index => $label){
-            if(empty($label)) continue;
-            $ret .= "・".$label."\n";
-          }
-        }
-      }
-    }
-    if(!empty($this->remark)){
-      $ret .= "■".__('labels.other')."\n";
-      $ret .= $this->remark;
-    }
-    return $ret;
   }
   public function get_calendar(){
     //キャンセルではない、この体験授業生徒の予定
@@ -429,7 +432,7 @@ class Trial extends Model
       'lesson' => $form['lesson'],
       'course_type' => $form['course_type'],
       'course_minutes' => $course_minutes,
-      'remark' => $this->remark_full(),
+      'remark' => $this->remark,
       'matching_decide_word' => $form['matching_decide_word'],
       'matching_decide' => $form['matching_decide'],
       'exchanged_calendar_id' => 0,
@@ -1351,8 +1354,31 @@ class Trial extends Model
         'schedule_start_hope_date' => $form['schedule_start_hope_date']
       ];
 
+      if(!isset($form['remark']) || empty($form['remark'])){
+         $form['remark'] = '';
+      }
+      else {
+        $update_data['remark'] = $form['remark'];
+        $comment = Comment::where('target_user_id', $this->student->user_id)
+                          ->where('type', 'entry')->first();
+        if(isset($comment)){
+          $comment->update(['body' => $form['remark']]);
+        }
+        else {
+          Comment::create([
+            'title' => '入会希望時のご要望',
+            'body' => $form["remark"],
+            'type' => 'entry',
+            'create_user_id' => $this->create_user_id,
+            'target_user_id' => $this->student->user_id,
+            'publiced_at' => date('Y-m-d'),
+            'importance' => 10,
+          ]);
+        }
+      }
+
       //通塾可能曜日・時間帯タグ
-      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'entry_milestone']; //生徒のuser_tagと共通
+      $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
       $lesson_weeks = config('attribute.lesson_week');
       foreach($lesson_weeks as $lesson_week=>$name){
         $tag_names[] = 'lesson_'.$lesson_week.'_time';
@@ -1365,7 +1391,7 @@ class Trial extends Model
           TrialTag::clearTags($this->id, $tag_name);
         }
       }
-      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type', 'entry_milestone_word'];
+      $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type'];
       foreach($tag_names as $tag_name){
         if(empty($form[$tag_name])) $form[$tag_name] = '';
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -1380,7 +1406,6 @@ class Trial extends Model
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       $this->student->profile_update($form);
-      $this->write_comment('entry');
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
@@ -1423,31 +1448,5 @@ class Trial extends Model
     $seconddiff = abs($timestamp2 - $timestamp1);
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
-  }
-  public function write_comment($type){
-    $remark = $this->remark_full();
-
-    $type_title = [
-      "trial" => "体験申し込み時のご要望",
-      "entry" => "入会希望時のご要望",
-    ];
-    if(!empty($remark)){
-      $comment = Comment::where('target_user_id', $this->student->user_id)
-                        ->where('type', $type)->first();
-      if(isset($comment)){
-        $comment->update(['body' => $remark]);
-      }
-      else {
-        Comment::create([
-          'title' => $type_title[$type],
-          'body' => $remark,
-          'type' => $type,
-          'create_user_id' => $this->create_user_id,
-          'target_user_id' => $this->student->user_id,
-          'publiced_at' => date('Y-m-d'),
-          'importance' => 10,
-        ]);
-      }
-    }
   }
 }
