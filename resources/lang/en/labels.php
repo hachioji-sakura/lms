@@ -395,6 +395,7 @@ return [
   'teacher_change' => 'Change assigned teacher',
   'dummy_release' => 'Dummy Release',
   'task_title' => 'ex: English_selfIntroduction',
+  'entry_milestone' => 'Special Importance',
   'text_materials' => 'Text Material',
   'menu' => 'Menu',
 ];

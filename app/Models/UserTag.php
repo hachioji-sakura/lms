@@ -22,6 +22,7 @@ class UserTag extends Model
     $key = $this->tag_key;
     if($key==="teacher_no") return "No";
     if($key==="student_no") return "No";
+    if($key==="entry_milestone_word") return "やって欲しいこと（その他）";
     if($key==="howto_word") return "検索時のキーワード";
 
     if($key==="lesson_time_holiday") $key = "lesson_time";

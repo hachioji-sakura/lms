@@ -101,7 +101,7 @@ $item = $item->details();
 
 ■ご要望
 @if(!empty($item["remark"]))
-{{$item["remark"]}}
+{{$item->remark_full()}}
 @else
 -
 @endif

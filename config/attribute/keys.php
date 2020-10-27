@@ -36,5 +36,6 @@ return array(
   'bank_account_type' => '口座種類',
   'calendar_status' => 'calendar_status',
   'setting_status' => 'setting_status',
+  'entry_milestone' => '特に重視してやって欲しいことをお知らせください',
 );
 ?>

@@ -395,6 +395,7 @@ return [
   'teacher_change' => '講師変更',
   'dummy_release' => 'ダミーを解除する',
   'text_materials' => '教材・資料',
+  'entry_milestone' => '特に重視してやってほしいこと',
   'menu' => 'メニュー',
   'task_title' => '例：算数_分数の足し算',
 ];
