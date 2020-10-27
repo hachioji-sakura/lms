@@ -265,7 +265,8 @@
         @endisset
       @endisset
     </div>
-    <div class="row">      <div class="col-sm-12">
+    <div class="row">
+      <div class="col-sm-12">
         <div class="description-block">
           <h5 class="description-header">ご要望</h5>
           <span class="description-text">
