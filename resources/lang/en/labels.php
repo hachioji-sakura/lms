@@ -365,7 +365,7 @@ return [
   'messages_description' => 'Important contacts to parents',
   'tasks' => 'Task',
   'add_tasks' => 'Add Task',
-  'tasks_remarks' => 'Task Remarks',
+  'tasks_remarks' => 'Remarks',
   'setting_details' => 'Setting Details',
   'evaluation' => 'Evaluation',
   'start_schedule' => 'Start Schedule',
