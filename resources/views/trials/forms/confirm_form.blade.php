@@ -198,6 +198,10 @@
     <i class="fa fa-question-circle mr-1"></i>
     アンケート
   </div>
+  <div class="col-6 p-3 font-weight-bold" >特に重視してやって欲しいこと</div>
+  <div class="col-6 p-3"><span id="entry_milestone_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold entry_milestone_word_confirm collapse" >特に重視してやって欲しいこと（その他）</div>
+  <div class="col-6 p-3 entry_milestone_word_confirm collapse"><span id="entry_milestone_word"></span></div>
   <div class="col-6 p-3 font-weight-bold" >ご要望につきまして</div>
   <div class="col-6 p-3"><span id="remark"></span></div>
   @isset($is_trial)

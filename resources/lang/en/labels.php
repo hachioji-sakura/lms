@@ -95,7 +95,8 @@ return [
   'regular_schedule_confirm' => 'Regular Schedule(Confirm)',
   'regular_schedule_list_description' => 'Weekly Schedule Management',
   'teacher_setting' => 'Teacher Setting',
-  'teacher_setting_description' => 'Setting schedule for this teacher',
+  'teacher_setting_description' => 'Acctount setting for this teacher',
+  'working_setting_description' => 'Setting schedule and charge subjects for this teacher',
   'charge_student' => 'Charge Student',
   'emergency_lecture_cancel_description' => 'In case of emergency rest on the day',
   'emergency_lecture_cancel_schedule' => 'Class to be canceled on the day',
@@ -392,4 +393,9 @@ return [
   'actionlogs' => 'System Logs',
   'ask_teacher_change_description' => 'About teacher change you should check',
   'teacher_change' => 'Change assigned teacher',
-  'dummy_release' => 'Dummy Release',];
+  'dummy_release' => 'Dummy Release',
+  'task_title' => 'ex: English_selfIntroduction',
+  'entry_milestone' => 'Special Importance',
+  'text_materials' => 'Text Material',
+  'menu' => 'Menu',
+];
