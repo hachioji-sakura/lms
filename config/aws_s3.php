@@ -5,5 +5,6 @@ return [
   'region' => env('AWS_S3_REGION', 'ap-northeast-1'),
   'icon_folder' => env('AWS_S3_ICON_FOLDER', 'user_icon'),
   'upload_folder' => env('AWS_S3_UPLOAD_FOLDER', 'uploads'),
+  'text_material_folder' => env('AWS_S3_TEXT_MATERIAL_FOLDER', 'text_materials'),
   'bucket' => env('AWS_S3_BUCKET', 'lms-file'),
 ];

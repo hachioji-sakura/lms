@@ -187,7 +187,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/setting" page_title="{{__('labels.teacher_setting')}}">
+        <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/setting" page_title="{{__('labels.working')}}{{__('labels.setting')}}">
           <i class="fa fa-business-time nav-icon"></i>{{__('labels.working')}}{{__('labels.setting')}}
         </a>
       </li>
