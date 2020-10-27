@@ -33,6 +33,10 @@
         @else
           href="{{$field['link']($row)}}"
         @endif
+
+        @if(isset($field['target']))
+          target = "{{$field['target']}}"
+        @endif
         >
       @endif
       @if($key==="status_name")

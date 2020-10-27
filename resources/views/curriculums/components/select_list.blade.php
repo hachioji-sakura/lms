@@ -1,5 +1,5 @@
     <label>{{__('labels.curriculums_name')}}</label>
-    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     {{--新規カリキュラム追加は別画面でやる。要望に備えてコメントアウト
     <a href="javascript:void(0);" id="add_curriculum" class="btn btn-default btn-sm ml-1" title="{{__('labels.curriculums').__('labels.add_button')}}">
       <i class="fa fa-plus"></i>
@@ -8,7 +8,7 @@
       <i class="fa fa-trash"></i>
     </a>
     --}}
-    <select name="curriculum_ids[]" class="form-control select2" id="select_curriculum" width=100%  multiple="multiple">
+    <select name="curriculum_ids[]" class="form-control select2" id="select_curriculum" width=100%  multiple="multiple" required="true">
       @foreach($curriculums as $curriculum)
       <option value="{{$curriculum->id}}"
       @if(!empty($item) && $_edit)
@@ -24,5 +24,8 @@
       $("#clear_curriculum").on('click', function(e){
         console.log('hoge');
         $('#new_curriculums').empty();
+      });
+      $("#select_curriculum").on('change', function(e){
+        set_title();
       });
     </script>

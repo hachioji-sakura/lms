@@ -144,6 +144,7 @@ return [
  'task_status_progress' => 'A status of this task is updated to [progress]',
  'task_status_done' => 'A status of this task is updated to [done]',
  'task_reviewed' => 'Reviewed',
+ 'task_body_placeholder' => 'ex. We tried new idiom. So, I think go ahead to next curriculum. ',
  'warning_schedule_add' => 'This additional class requires an additional tuition fee and must be approved by the parent.',
  "copyright" => "Copyright © Kunitachi, Hachioji, and Hino's private instruction schools SaKuRa One All Rights Reserved.",
  'message_restore_contents' => 'Previeous contents has been saved on systems. Can I restore now?',
@@ -151,4 +152,5 @@ return [
  "already_signup" => "If you have already registered, please log in here to use",
  'info_mail_reply' => 'You cannot reply to this email address',
  'confirm_dummy_release' => 'Do you want to release the dummy status?',
+ 'mail_reply_recomend' => "＊This e-mail is for sending only, so we cannot reply to you. \n＊If you want to reply, you should use SaKuRa One Net.",
  ];
