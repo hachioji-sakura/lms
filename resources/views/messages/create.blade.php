@@ -12,21 +12,23 @@
         <label>To</label>
         @if($_reply == false)
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <select name="target_user_id[]" class="form-control select2" width="100%" multiple="multiple">
-          <option value=" "></option>
-          @foreach($charge_users as $target_user)
-            <option value="{{$target_user->user_id}}">{{$target_user->name_last}} {{$target_user->name_first}}</option>
-          @endforeach
-        </select>
-        @else
-          @if($item->create_user_id == $user->user_id)
-          {{$item->target_user->details()->name()}}
-          <input type="hidden" name="target_user_id[]" value="{{$item->target_user_id}}">
+        <div class="form-group w-100">
+          <select name="target_user_id[]" class="form-control select2" width="100%" multiple="multiple" required="true">
+            <option value=" "></option>
+            @foreach($charge_users as $target_user)
+              <option value="{{$target_user->user_id}}">{{$target_user->name_last}} {{$target_user->name_first}}</option>
+            @endforeach
+          </select>
           @else
-          {{$item->create_user->details()->name()}}
-          <input type="hidden" name="target_user_id[]" value="{{$item->create_user_id}}">
+            @if($item->create_user_id == $user->user_id)
+            {{$item->target_user->details()->name()}}
+            <input type="hidden" name="target_user_id[]" value="{{$item->target_user_id}}">
+            @else
+            {{$item->create_user->details()->name()}}
+            <input type="hidden" name="target_user_id[]" value="{{$item->create_user_id}}">
+            @endif
           @endif
-        @endif
+        </div>
       </div>
       <div class="col-12 mt-2">
          <div class="form-group">
