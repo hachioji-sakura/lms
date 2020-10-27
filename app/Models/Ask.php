@@ -323,7 +323,9 @@ EOT;
     }
     //依頼対象者にメール通知
     $res = $this->charge_user_mail($param);
+
     if($this->type=='lecture_cancel' && $this->status=='commit'){
+      $res = $this->target_user_mail($param);
       //生徒あてに休講連絡
       \Log::warning("休講更新[".$this->type."][".$this->status."]");
       $param['send_to'] = 'student';
@@ -337,6 +339,9 @@ EOT;
       $param['next_teacher_name'] = $param["item"]->user->details()->name();
 
       $param["item"]->student_mail('講師変更のお知らせ', $param, 'text', 'calendar_teacher_change');
+      $res = $this->target_user_mail($param);
+    }
+    else {
       $res = $this->target_user_mail($param);
     }
     return $res;
@@ -388,7 +393,7 @@ EOT;
     }
     $param["user_name"] = $this->charge_user->details()["name"];
     $param["access_key"] = $this->charge_user->access_key;
-    $param['is_send_to_target_user'] = false; 
+    $param['is_send_to_target_user'] = false;
 
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
   }
