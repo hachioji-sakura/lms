@@ -1412,7 +1412,6 @@ class Trial extends Model
     if($is_commit==false){
     }
     else {
-      $this->parent->regular();
       $this->student->regular();
     }
     return true;
