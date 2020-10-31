@@ -63,7 +63,7 @@ $(function(){
         form_data["trial_date_time"+i] = util.dateformat(form_data["trial_date"+i], '%m月%d日(%w)')+'<br>'+trial_start+"時 ～ "+trial_end+"時";
       }
     }
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
+    var _names = ["lesson", "lesson_place", "entry_milestone", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){

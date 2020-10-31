@@ -51,7 +51,7 @@ class TeacherController extends StudentController
       }
       $asks = $this->get_ask(['user_id' => $ret['item']->user_id], true);
       $ret['ask_count'] = $count;
-      $lists = ['lecture_cancel', 'rest_cancel'];
+      $lists = ['lecture_cancel', 'rest_cancel', 'teacher_change'];
       foreach($lists as $list){
         $count = $this->get_ask(["list" => $list, 'user_id'=>$ret['item']->user_id], true);
         $ret[$list.'_count'] = $count;
@@ -100,20 +100,19 @@ class TeacherController extends StudentController
       return $this->api_response(200, '','', $model);
     }
     $user = $param['user'];
-    //コメントデータ取得
-    $comments = $param['item']->user->target_comments;
-    $comments = $comments->sortByDesc('created_at');
-
-    foreach($comments as $comment){
-      $create_user = $comment->create_user->details();
-      $comment->create_user_name = $create_user->name;
-      $comment->create_user_icon = $create_user->icon;
+    $view = "home";
+    if($this->domain=='managers' && $this->is_manager($user->role)!=true){
+      $view = 'setting_menu';
     }
-    $view = "page";
-
+    if($request->has('view')){
+      switch ($request->get('view')){
+        case "setting_menu":
+          $view = $request->get('view');
+          break;
+      }
+    }
     $param['view'] = $view;
-    return view($this->domain.'.'.$view, [
-      'comments'=>$comments,
+    return view($this->domain.'.page.'.$view, [
       'charge_students'=>$this->get_students($request, $id),
     ])->with($param);
   }

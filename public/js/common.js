@@ -186,6 +186,9 @@ function get_subject_grade(grade_name){
   else if(grade_name.substring(0,1)=="幼"){
     _grade_name = "小学";
   }
+  else if(grade_name.substring(0,1)=="年"){
+    _grade_name = "小学";
+  }
   return _grade_name;
 }
 function subject_onload(){
@@ -441,7 +444,8 @@ function select_student_change(){
     var grade_code = "";
     if(!util.isEmpty(grade)){
       grade_code = grade.substr(0,1);
-      if(grade_code=='u') grade_code='h';
+      if(grade=='university') grade_code='h';
+      if(grade=='adult') grade_code='h';
     }
     $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
       options[$(this).val()] = $(this).text();

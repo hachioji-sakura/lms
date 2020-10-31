@@ -1,6 +1,6 @@
 <div class="col-12 kids_lesson_form">
   <div class="form-group">
-    <label for="howto" class="w-100">
+    <label for="kids_lesson" class="w-100">
       @if(isset($_teacher) && $_teacher===true)
       担当可能な習い事につきまして
       @else
