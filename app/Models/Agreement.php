@@ -28,15 +28,7 @@ class Agreement extends Model
       'status' => 'new',
       'create_user_id' =>'1',
     ];
-/*
-    public static  $rules = Array(
-        'title' => 'string',
-        'entry_fee' => 'integer',
-        'monthly_fee' => 'integer',
-        'entry_date' => 'datetime',
-        'student_parent_id' => 'integer|required',
-      );
-*/
+
     public function student_parent(){
       return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
     }
@@ -49,15 +41,27 @@ class Agreement extends Model
       return $this->hasMany('App\Models\AgreementStatement','agreement_id');
     }
 
+    public function getStatusNameAttribute(){
+      return config('attribute.agreement_status')[$this->status];
+    }
+
     public function getStudentParentNameAttribute(){
       return $this->student_parent->details()->name();
+    }
+
+    public function getTypeNameAttribute(){
+      return config('attribute.agreement_type')[$this->type];
     }
 
     public function getStatementSummaryAttribute(){
       $statements = $this->agreement_statements;
       $ret = [];
       foreach($statements as $statement){
-        $ret[]= $statement->teacher_name. ' : ' . $statement->course_type_name  . ' : '.$statement->course_minutes_name.' : ' .$statement->tuition.PHP_EOL;
+        $grade = $statement->grade_name;
+        if($statement->is_exam == 1){
+          $grade .='受験';
+        }
+        $ret[]= $statement->lesson_name. ' / 週' . $statement->lesson_week_count  . '回 / '.$grade.' / '. $statement->tuition .'円'.PHP_EOL;
       }
       return $ret;
     }

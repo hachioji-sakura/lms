@@ -139,8 +139,11 @@ class AskController extends MilestoneController
       'target_user_name' => [
         'label' => '対象者',
       ],
-      'create_user_name' => [
-        'label' => '起票者',
+      'status_name' => [
+        'label' => 'ステータス',
+      ],
+      'type_name' =>[
+        'label' => '依頼種別',
       ],
       'body' => [
         'label' => '内容'

@@ -29,6 +29,15 @@ class Ask extends Milestone
   public function comments(){
     return $this->hasMany('App\Models\AskComment');
   }
+
+  public function getTypeNameAttribute(){
+    return config('attribute.ask_type')[$this->type];
+  }
+
+  public function getStatusNameAttribute(){
+    return config('attribute.ask_status')[$this->status];
+  }
+
   public function scopeRangeDate($query, $from_date, $to_date=null, $field='start_time')
   {
     //日付検索

@@ -60,6 +60,35 @@ class AgreementStatement extends Model
       return config('attribute.lesson')[$this->lesson_id];
     }
 
+    public function getGradeNameAttribute(){
+      return config('grade')[$this->grade];
+    }
+
+    public function getIsExamNameAttribute(){
+      if($this->is_exam == 0 ){
+        $ret = '無';
+      }else{
+        $ret = '有';
+      }
+      return $ret;
+    }
+
+    public function getSettingSummaryAttribute(){
+      $members = $this->user_calendar_member_settings;
+      $settings = $members->map(function($item,$key){
+        return $item->setting;
+      });
+      $ret =  [];
+      foreach($settings as $setting){
+        $subject = '';
+        foreach($setting->subject() as $sub){
+          $subject .= $sub;
+        }
+        $ret[] = $subject .' / '.config('attribute.lesson_week')[$setting->lesson_week]. ' / '.$setting->timezone();
+      }
+      return $ret;
+    }
+
     public function scopeSearch($query, $request){
       if( $request->has('search_word')){
         $query = $query->searchWord($request->get('search_word'));

@@ -46,25 +46,20 @@ class AgreementStatementController extends AgreementController
 
      public function index(Request $request){
        $fields = [
-           'lesson_name' => [
-             'label' => 'レッスン',
-           ],
-           'course_type_name' => [
-             'label' => 'コース',
-           ],
-           'course_minutes_name' =>[
-             'label' => '時間',
-           ],
-           'lesson_week_count' =>[
-             'label' => '週コマ数',
-           ],
-           'teacher_name' => [
-             'label' => '対象講師',
-           ],
-           'tuition' => [
-             'label' => '料金',
-           ],
-         ];
+         'teacher_name' => [
+           'label' => '対象講師',
+           'link' => 'show',
+         ],
+         'lesson_name' => [
+           'label' => 'レッスン',
+         ],
+         'setting_summary' => [
+           'label' => '設定概要',
+         ],
+         'tuition' => [
+           'label' => '料金',
+         ],
+       ];
        $param = [
          'items' => $this->model()->search($request)->paginate(),
          'search_word' => '',
@@ -72,20 +67,44 @@ class AgreementStatementController extends AgreementController
          'domain' => $this->domain,
          'domain_name' => "契約明細管理",
          'user' => Auth::user()->details(),
+         'agreements' => Agreement::enable()->get(),
        ];
        return view($this->domain.'.list')->with($param);
      }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+     public function show(Request $request, $id){
+       $param = $this->get_param($request,$id);
+       $fields = [
+         'teacher_name' =>[
+           'label' => '講師名',
+           'size' => '6',
+         ],
+         'lesson_name' =>[
+           'label' => 'レッスン',
+           'size' => '6',
+         ],
+         'course_type_name' =>[
+           'label' => 'コース',
+           'size' => '6',
+         ],
+         'course_minutes_name' =>[
+           'label' => '時間',
+           'size' => '6',
+         ],
+         'grade_name' =>[
+           'label' => '学年',
+           'size' => '6',
+         ],
+         'is_exam_name' =>[
+           'label' => '受験',
+           'size' => 6,
+         ]
+       ];
+       return view('components.page',[
+         'action' => 'show',
+         'fields' => $fields,
+         ])->with($param);
+     }
 
 
 

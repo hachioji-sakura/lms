@@ -396,4 +396,5 @@ return [
   'ask_teacher_change_description' => 'About teacher change you should check',
   'dummy_release' => 'Release dummy',
   'enable' => 'Enable',
+  'agreement_statements' => 'Agreement Statements',
 ];

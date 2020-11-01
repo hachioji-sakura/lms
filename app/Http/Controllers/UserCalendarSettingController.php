@@ -701,7 +701,7 @@ class UserCalendarSettingController extends UserCalendarController
           'course_minutes' =>  $st['course_minutes'],
           'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
           'tuition' => $mb->get_lesson_fee()['data']['lesson_fee'],
-          'is_exam' => 0,
+          'is_exam' => $mb->user->details()->is_juken(),
         ];
         $statement_form[$setting_key] = new AgreementStatement($form);
         $member_ids[$setting_key][] = $mb->id;
@@ -710,7 +710,7 @@ class UserCalendarSettingController extends UserCalendarController
       //契約変更の判定
       if(!empty($agreement)){
         $counter = 0;
-        $update_flg = false;
+        $is_update = false;
         //元の契約から見て新しい契約に漏れがないか
         foreach ($agreement->agreement_statements as $statement){
           foreach($statement_form as $key => $value){
@@ -730,22 +730,20 @@ class UserCalendarSettingController extends UserCalendarController
             }
           }
           if($counter != count($statement_form)){
-            $update_flg = true;
-            $new_agreement->status = 'new';
+            $is_update = true;
           }
         }else{
           //最初の判定でずれがあったら更新する
-          $update_flg = true;
-          $new_agreement->status = 'new';
+          $is_update = true;
         }
       }else{
         //契約を持っていないなら新規
-        $update_flg = true;
-        $new_agreement->status = 'new';
+        $is_update = true;
       }
 
 
-      if($update_flg == true){
+      if($is_update == true){
+        $new_agreement->status = 'new';
         if(!empty($agreement)){
           //既存の契約idを取得してparent_idへセット
           $new_agreement->parent_agreement_id = $agreement->id;

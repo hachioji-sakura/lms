@@ -8,16 +8,16 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="charge_user_id" value="1" / >
-    @if(!empty($ask_type))
+    @if(isset($ask_type))
     <input type="hidden" name="type" value="{{$ask_type}}">
     @endif
-    @if(!empty($target_model))
+    @if(isset($target_model))
     <input type="hidden" name="target_model" value="{{$target_model}}">
     @endif
-    @if(!empty($target_model_id))
+    @if(isset($target_model_id))
     <input type="hidden" name="target_model_id" value="{{$target_model_id}}">
     @endif
-    @if(!empty($target_user_id))
+    @if(isset($target_user_id))
     <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
     @endif
     <div id="ask_entry" class="carousel slide" data-ride="carousel" data-interval="false">

@@ -97,7 +97,7 @@ $(function(){
     @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
     @elseif($item->type == 'agreement_confirm')
-    ご契約内容のご承認、大変感謝いたします。<br>
+    ご契約内容は下記の通りとなります。<br>
     @endif
   </h4>
   @else

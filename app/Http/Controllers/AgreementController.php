@@ -31,6 +31,18 @@ class AgreementController extends MilestoneController
               return "/agreement_statements?agreement_id=".$row->id;
             },
           ],
+          'status_name' =>[
+            'label' =>  'ステータス',
+          ],
+          'student_parent_name' => [
+            'label' => '契約者氏名'
+          ],
+          'entry_date' => [
+            'label' => '登録日',
+          ],
+          'start_date' => [
+            'label' => '承認日',
+          ],
           'statement_summary' =>[
             'label' => '明細概要',
           ],
@@ -39,7 +51,7 @@ class AgreementController extends MilestoneController
             'button' => [
               'confirm' => [
                 'method' => 'ask/confirm',
-                'label' => '承認依頼',
+                'label' => '承認依頼を送信',
                 'style' => 'primary',
               ],
             ],

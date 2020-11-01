@@ -396,4 +396,5 @@ return [
   'ask_teacher_change_description' => '承認が必要な代講依頼',
   'dummy_release' => 'ダミーを解除する',
   'enable' => '有効',
+  'agreement_statements' => '契約明細',
 ];

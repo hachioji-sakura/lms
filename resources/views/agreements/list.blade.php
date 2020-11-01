@@ -21,24 +21,28 @@
       <ul class="nav nav-treeview">
         <li class="nav-item">
           <a href="/agreements" class="nav-link {{!request()->has('status') ? 'active': ''}}">
+            <i class="fa fa-list-alt nav-icon"></i>
             {{__('labels.all')}}
           </a>
         </li>
 
         <li class="nav-item">
           <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
+            <i class="fa fa-file nav-icon"></i>
             {{__('labels.new')}}
           </a>
         </li>
 
         <li class="nav-item">
           <a href="/agreements?status=commit" class="nav-link {{request()->status == 'commit' ? 'active' : ''}}">
+            <i class="fa fa-handshake nav-icon"></i>
             {{__('labels.enable')}}
           </a>
         </li>
 
         <li class="nav-item">
           <a href="/agreements?status=cancel" class="nav-link {{request()->status == 'cancel' ? 'active' : ''}}">
+            <i class="fa fa-times-circle nav-icon"></i>
             {{__('labels.cancel')}}
           </a>
         </li>
