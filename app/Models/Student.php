@@ -1159,7 +1159,10 @@ EOT;
     }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
       // ダンス
       $monthly_fee = 500;
+    }else{
+      $monthly_fee = 0;
     }
+
     return $monthly_fee;
   }
   public function get_entry_fee(){

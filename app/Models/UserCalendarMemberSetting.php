@@ -12,6 +12,7 @@ use App\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Tuition;
+use App\Models\Agreement;
 use App\Models\AgreementStatement;
 
 class UserCalendarMemberSetting extends UserCalendarMember
@@ -48,7 +49,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
   public function dispose($login_user_id){
     $login_user = User::where('id', $login_user_id)->first();
     if(!isset($login_user)) return false;
-
+    $user_id = $this->user_id;
     $c = 0;
     foreach($this->setting->members as $member){
       if($member->id == $this->id) continue;
@@ -64,6 +65,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
     else {
       $this->delete();
     }
+    //契約処理
+    $this->agreement_update($this->user_id);
   }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;
@@ -501,6 +504,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
         break;
       case "confirm":
           $is_send_teacher_mail = false;
+        break;
+      case "fix":
+        if($this->user->details()->role == 'student'){
+          $agreement = Agreement::add_from_member_setting($this);
+        }
         break;
       }
     $this->update($update_form);

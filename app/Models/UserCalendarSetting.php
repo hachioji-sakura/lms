@@ -344,7 +344,11 @@ EOT;
     if($this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
-
+    foreach($this->members as $member){
+      if($member->user->details()->role == 'student'){
+        $user_id = $member->user_id;
+      }
+    }
     //事務システム側を先に削除
     $this->cache_delete();
     $this->office_system_api("DELETE");
@@ -356,7 +360,10 @@ EOT;
       $calendar->dispose();
     }
     */
+    //契約処理
+    $this->agreement_update($user_id);
     $this->delete();
+
   }
   public function change($form){
     $old_item = $this->replicate();

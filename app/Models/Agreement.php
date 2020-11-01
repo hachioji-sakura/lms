@@ -145,4 +145,107 @@ class Agreement extends Model
       }
       return $this;
     }
+
+    public static function add_from_member_setting($member){
+      //基本契約の追加
+      $agreement = $member->user->details()->enable_normal_agreements->first();
+      $setting = $member->setting->details();
+      //dd($member->user->details()->get_monthly_fee(),$member->user->details()->get_entry_fee());
+      $agreement_form = [
+        'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
+        'type' => 'normal',
+        'entry_date' =>  date('Y/m/d H:i:s'),
+        'student_id' => $member->user->details()->id,
+        'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
+        'monthly_fee' => $member->user->details()->get_monthly_fee(),
+        'entry_fee' => $member->user->details()->get_entry_fee(),
+        'status' => 'commit',
+      ];
+      $new_agreement = new Agreement($agreement_form);
+      //契約明細の追加
+      $members = $member->user->calendar_member_settings;
+      $settings = $members->map(function($item,$key){
+        return $item->setting;
+      })->whereNotIn('status',['cancel']);
+      foreach($settings as $st){
+        $mb = $st->members->where('user_id',$member->user_id)->first();
+        $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
+        $form = [
+          'title' => $setting_key,
+          'teacher_id' => $st->user->details()->id,
+          'lesson_id' => $st->lesson(true),
+          'grade' => $mb->user->details()->tag_value('grade'),
+          'course_type' => $st->get_tag_value('course_type'),
+          'course_minutes' =>  $st['course_minutes'],
+          'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
+          'tuition' => $mb->get_lesson_fee()['data']['lesson_fee'],
+          'is_exam' => $mb->user->details()->is_juken(),
+        ];
+        $statement_form[$setting_key] = new AgreementStatement($form);
+        $member_ids[$setting_key][] = $mb->id;
+      }
+
+      //契約変更の判定
+      if(!empty($agreement)){
+        $is_update = $agreement->is_same($statement_form);
+      }else{
+        $is_update = true;
+      }
+
+
+      if($is_update == true){
+        $new_agreement->status = 'new';
+        if(!empty($agreement)){
+          //既存の契約idを取得してparent_idへセット
+          $new_agreement->parent_agreement_id = $agreement->id;
+        }
+        $invalid_agreements = $member->user->details()->agreementsByStatus('new');
+        if($invalid_agreements->count()){
+          //newのままの契約はキャンセルに
+          $invalid_agreements->update(['status' => 'cancel']);
+        }
+        $new_agreement->save();
+        $new_agreement->agreement_statements()->saveMany($statement_form);
+        foreach($statement_form as $key => $statement){
+          $ids = $member_ids[$key];
+          $statement->user_calendar_member_settings()->attach($ids);
+        }
+      }
+      return $new_agreement;
+    }
+
+    public function get_setting_key($setting,$lesson_week_count){
+      return $setting->lesson(true).'_'.$setting['work'].'_'.$setting['course_minutes'].'_'.$lesson_week_count.'_'.$setting->user->details()->id;
+    }
+
+    public function is_same($statement_form){
+      $counter = 0;
+      $is_update = false;
+      //元の契約から見て新しい契約に漏れがないか
+      foreach ($this->agreement_statements as $statement){
+        foreach($statement_form as $key => $value){
+          if($statement->title == $key){
+            $counter++;
+          }
+        }
+      }
+      if($counter == $this->agreement_statements->count()){
+        $counter = 0;
+        //新しい契約から見て元の契約にも取れがないか
+        foreach($statement_form as $key => $value){
+          foreach($this->agreement_statements as $statement){
+            if($key == $statement->title){
+              $counter++;
+            }
+          }
+        }
+        if($counter != count($statement_form)){
+          $is_update = true;
+        }
+      }else{
+        //最初の判定でずれがあったら更新する
+        $is_update = true;
+      }
+      return $is_update;
+    }
 }

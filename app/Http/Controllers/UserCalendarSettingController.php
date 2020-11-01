@@ -653,7 +653,7 @@ class UserCalendarSettingController extends UserCalendarController
               if($member->user_id == $student->user_id){
                 $is_delete = false;
                 //設定変更と同時に契約も更新
-                $this->agreement_add($member);
+                Agreement::add_from_member_setting($member);
                 break;
               }
             }
@@ -669,98 +669,7 @@ class UserCalendarSettingController extends UserCalendarController
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
 
-    public function agreement_add($member){
-      //基本契約の追加
-      $agreement = $member->user->details()->enable_normal_agreements->first();
-      $setting = $member->setting->details();
-      $agreement_form = [
-        'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
-        'type' => 'normal',
-        'entry_date' =>  date('Y/m/d H:i:s'),
-        'student_id' => $member->user->details()->id,
-        'student_parent_id' => $member->user->details()->relations->first()->student_parent_id,
-        'monthly_fee' => $member->user->details()->get_monthly_fee(),
-        'entry_fee' => $member->user->details()->get_entry_fee(),
-        'status' => 'commit',
-      ];
-      $new_agreement = new Agreement($agreement_form);
-      //契約明細の追加
-      $members = $member->user->calendar_member_settings;
-      $settings = $members->map(function($item,$key){
-        return $item->setting;
-      })->whereNotIn('status',['cancel']);
-      foreach($settings as $st){
-        $setting_key = $st->lesson(true).'_'.$st['work'].'_'.$st['course_minutes'].'_'.$new_agreement->student->user->get_enable_calendar_setting_count($st['lesson']).'_'.$st->user->details()->id;
-        $mb = $st->members->where('user_id',$member->user_id)->first();
-        $form = [
-          'title' => $setting_key,
-          'teacher_id' => $st->user->details()->id,
-          'lesson_id' => $st->lesson(true),
-          'grade' => $mb->user->details()->tag_value('grade'),
-          'course_type' => $st->get_tag_value('course_type'),
-          'course_minutes' =>  $st['course_minutes'],
-          'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
-          'tuition' => $mb->get_lesson_fee()['data']['lesson_fee'],
-          'is_exam' => $mb->user->details()->is_juken(),
-        ];
-        $statement_form[$setting_key] = new AgreementStatement($form);
-        $member_ids[$setting_key][] = $mb->id;
-      }
 
-      //契約変更の判定
-      if(!empty($agreement)){
-        $counter = 0;
-        $is_update = false;
-        //元の契約から見て新しい契約に漏れがないか
-        foreach ($agreement->agreement_statements as $statement){
-          foreach($statement_form as $key => $value){
-            if($statement->title == $key){
-              $counter++;
-            }
-          }
-        }
-        if($counter == $agreement->agreement_statements->count()){
-          $counter = 0;
-          //新しい契約から見て元の契約にも取れがないか
-          foreach($statement_form as $key => $value){
-            foreach($agreement->agreement_statements as $statement){
-              if($key == $statement->title){
-                $counter++;
-              }
-            }
-          }
-          if($counter != count($statement_form)){
-            $is_update = true;
-          }
-        }else{
-          //最初の判定でずれがあったら更新する
-          $is_update = true;
-        }
-      }else{
-        //契約を持っていないなら新規
-        $is_update = true;
-      }
-
-
-      if($is_update == true){
-        $new_agreement->status = 'new';
-        if(!empty($agreement)){
-          //既存の契約idを取得してparent_idへセット
-          $new_agreement->parent_agreement_id = $agreement->id;
-        }
-        $invalid_agreements = $member->user->details()->agreementsByStatus('new');
-        if($invalid_agreements->count()){
-          //newのままの契約はキャンセルに
-          $invalid_agreements->update(['status' => 'cancel']);
-        }
-        $new_agreement->save();
-        $new_agreement->agreement_statements()->saveMany($statement_form);
-        foreach($statement_form as $key => $statement){
-          $ids = $member_ids[$key];
-          $statement->user_calendar_member_settings()->attach($ids);
-        }
-      }
-    }
 
     /**
      * 新規登録
@@ -819,30 +728,13 @@ class UserCalendarSettingController extends UserCalendarController
           $form = $request->all();
           foreach($setting->members as $member){
             if(isset($form[$member->id.'_delete']) && $form[$member->id.'_delete']=='delete'){
-              $agreement_member = UserCalendarMemberSetting::where('user_id',$member->user_id)->first();
               $member->dispose($param['user']->user_id);
-              $this->agreement_add($agreement_member);
             }
           }
         }
         else {
-          foreach($setting->members as $member){
-            if($member->user->details()->role == 'student'){
-              $user_id = $member->user_id;
-            }
-          }
           $setting->dispose($param['user']->user_id);
-          $agreement_member = UserCalendarMemberSetting::where('user_id',$user_id)->get();
-          if($agreement_member->count() > 0 ){
-            //設定が残るなら契約更新
-            $this->agreement_add($agreement_member->first());
-          }else{
-            //有効な設定がなければ契約無効化
-            $student_id = User::find($user_id)->student->id;
-            Agreement::where('student_id',$student_id)->update(['status' => 'cancel']);
-          }
         }
-
         return $this->api_response(200, '', '', $setting);
       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
     }
@@ -1126,16 +1018,10 @@ class UserCalendarSettingController extends UserCalendarController
               $member->status_update($form[$member->id.'_status'], $_remark, $param['user']->user_id);
             }
           }
-          if($status == 'fix'){
-            $this->agreement_add($member);
-          }
         }
         else {
           foreach($members as $member){
             $member->status_update($status, $_remark, $param['user']->user_id);
-            if($status == 'fix'){
-              $this->agreement_add($member);
-            }
             break;
           }
         }
