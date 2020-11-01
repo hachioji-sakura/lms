@@ -117,7 +117,7 @@ $(function(){
     if(form_data["grade"]){
       form_data["grade_name"] = $('select[name=grade] option:selected').text().trim();
     }
-    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "howto"];
+    var _names = ["lesson_subject", "lesson_week", "lesson_time", "lesson_time_holiday", "lesson_place", "entry_milestone", "howto"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){

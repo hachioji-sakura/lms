@@ -68,6 +68,7 @@
               <i class="fa fa-question-circle mr-1"></i>
               サービス向上のためアンケートをご記入ください
             </div>
+            @component('students.forms.entry_milestone', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
             @component('students.forms.remark', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
             @component('students.forms.howto', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
           </div>
