@@ -42,7 +42,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('place_floors','PlaceFloorController');
 
   Route::resource('events','EventController');
-
+  Route::resource('event_types','EventTypeController');
 
   Route::post('upload_images','ImageController@upload_images');
   Route::resource('images','ImageController');
