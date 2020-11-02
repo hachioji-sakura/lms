@@ -1319,7 +1319,7 @@ EOT;
     }else{
       //有効な設定がなければ契約無効化
       $student_id = Student::where('user_id',$user_id)->first()->id;
-      Agreement::where('student_id',$student_id)->update(['status' => 'cancel']);
+      Agreement::where('student_id',$student_id)->update(['end_date' => date('Y/m/d H:i:s')]);
     }
   }
 }

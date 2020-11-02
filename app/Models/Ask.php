@@ -284,7 +284,7 @@ EOT;
         if($old_agreements->count() > 0){
           $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
         }
-        $agreement->entry_date =  date('Y/m/d H:i:s');
+        $agreement->start_date =  date('Y/m/d H:i:s');
         $agreement->status = 'commit';
         $agreement->save();
         break;

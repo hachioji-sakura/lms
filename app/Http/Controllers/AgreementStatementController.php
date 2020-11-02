@@ -29,22 +29,8 @@ class AgreementStatementController extends AgreementController
             ];
 
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-     public function create(Request $request)
-     {
-         //
-         $param = [
-           'agreements' => Agreement::all(),
-           'domain' => $this->domain,
-         ];
-         return view($this->domain.'.create')->with($param);
-     }
-
      public function index(Request $request){
+       $param = $this->get_param($request);
        $fields = [
          'teacher_name' => [
            'label' => '対象講師',
@@ -106,6 +92,20 @@ class AgreementStatementController extends AgreementController
          ])->with($param);
      }
 
+     public function get_param(Request $request, $id=null){
+       $user = $this->login_details($request);
+       if(!isset($user)) {
+         abort(403);
+       }elseif($user->details()->role != "manager"){
+         abort(403);
+       }
+       $ret = $this->get_common_param($request);
+       if(is_numeric($id) && $id > 0){
+         $item = $this->model()->where('id','=',$id)->first();
+         $ret['item'] = $item;
+       }
+       return $ret;
+     }
 
 
 

@@ -51,8 +51,16 @@ class AgreementController extends MilestoneController
             'button' => [
               'confirm' => [
                 'method' => 'ask/confirm',
+                'icon' => 'envelope',
                 'label' => '承認依頼を送信',
                 'style' => 'primary',
+                'type' => function($row){
+                    if($row->status == 'new'){
+                      return true;
+                    }else{
+                      return false;
+                    }
+                  }
               ],
             ],
           ],
@@ -66,45 +74,6 @@ class AgreementController extends MilestoneController
           'user' => Auth::user()->details(),
         ];
         return view($this->domain.'.list')->with($param);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        //
-        $param = [
-          'student_parents' => StudentParent::all(),
-          'domain' => $this->domain,
-        ];
-        return view($this->domain.'.create')->with($param);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function _store(Request $request)
-    {
-       return $res = $this->transaction($request, function() use($request){
-          $student = Student::find($request->get('agreements')['student_id']);
-          if($student->enable_agreements->count() > 0){
-            $parent_agreement = $student->enable_agreements->first();
-            $parent_agreement->status = 'cancel';
-            $parent_agreement->save();
-            $parent_agreement_id = $parent_agreement->id;
-          }else{
-            $parent_agreement_id = null;
-          }
-          $item = new Agreement;
-          $item->add($request,'commit',$parent_agreement_id);
-          return $this->api_response(200, '', '', $item);
-        },__('labels.registered'), __FILE__, __FUNCTION__, __LINE__);
     }
 
     /**
@@ -141,6 +110,21 @@ class AgreementController extends MilestoneController
         return $this->api_response(200, '', '', $ask);
       }, '契約更新連絡', __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, [], '契約更新の承認依頼を送信しました。');
+    }
+
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details($request);
+      if(!isset($user)) {
+        abort(403);
+      }elseif($user->details()->role != "manager"){
+        abort(403);
+      }
+      $ret = $this->get_common_param($request);
+      if(is_numeric($id) && $id > 0){
+        $item = $this->model()->where('id','=',$id)->first();
+        $ret['item'] = $item;
+      }
+      return $ret;
     }
 
 }

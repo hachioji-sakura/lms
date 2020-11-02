@@ -188,7 +188,7 @@ class Trial extends Model
   public function entry_guidanced_send_date(){
       return $this->get_ask_created_date('agreement','agreements');
   }
-  public function get_ask_created_date($type,$target_model){
+  public function get_ask_created_date($type,$target_model = 'trials'){
     $a = Ask::where('type', $type)
       ->where('target_model', $target_model)
       ->where('target_model_id', $this->id)
