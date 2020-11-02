@@ -396,8 +396,12 @@ return [
   'agreement_update' => '契約変更',
   'ask_teacher_change_description' => '承認が必要な代講依頼',
   'dummy_release' => 'ダミーを解除する',
-  'enable' => '有効',  'text_materials' => '教材・資料',
+  'enable' => '有効',
+   'text_materials' => '教材・資料',
   'entry_milestone' => '特に重視してやってほしいこと',
   'menu' => 'メニュー',
   'task_title' => '例：算数_分数の足し算',
-  'agreement_statements' => '契約明細',];
+  'agreement_statements' => '契約明細',
+  'agreement_new' => '未承認',
+  'agreement_commit' => '承認済',
+];

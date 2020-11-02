@@ -402,4 +402,6 @@ return [
   'entry_milestone' => 'Special Importance',
   'text_materials' => 'Text Material',
   'menu' => 'Menu',
+  'agreement_new' => 'Unapproved',
+  'agreement_commit' => 'Approved',
 ];

@@ -29,14 +29,14 @@
         <li class="nav-item">
           <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
             <i class="fa fa-file nav-icon"></i>
-            {{__('labels.new')}}
+            {{__('labels.agreement_new')}}
           </a>
         </li>
 
         <li class="nav-item">
           <a href="/agreements?status=commit" class="nav-link {{request()->status == 'commit' ? 'active' : ''}}">
             <i class="fa fa-handshake nav-icon"></i>
-            {{__('labels.enable')}}
+            {{__('labels.agreement_commit')}}
           </a>
         </li>
 

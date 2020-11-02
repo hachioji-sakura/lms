@@ -1,7 +1,7 @@
 <?php
 return [
-  'new' => '依頼中',
-  'commit' => '対応済',
+  'new' => '未承認',
+  'commit' => '承認済',
   'cancel' => 'キャンセル',
 ];
 
