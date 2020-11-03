@@ -6,6 +6,7 @@ return array(
   'english_talk_lesson' => '英会話レッスン',
   'kids_lesson' => '習い事',
   'course_minutes' => '授業時間',
+  'season_lesson_course' => '期間講習コース',
   'course_type' => '授業形式',
   'teaching_type' => '授業タイプ',
   'charge_grade' => '担当学年',

@@ -79,7 +79,7 @@ $(function(){
       }
     });
 
-    var _names = ["grade", "student2_grade", "student3_grade"];
+    var _names = ["grade"];
     $.each(_names, function(index, value) {
       if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();
@@ -90,9 +90,7 @@ $(function(){
     _names = ["english_teacher", "piano_level",
               "english_talk_course_type", "kids_lesson_course_type",
               "course_minutes", "lesson_week_count",
-              "gender",
-              "student2_gender",
-              "student3_gender"
+              "gender","regular_schedule_exchange","installment_payment", "season_lesson_course"
             ];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
@@ -114,6 +112,11 @@ $(function(){
       var name = $(this).attr("name");
       name = name.replace('[]', '');
       form_data[name+"_"+val+"_name"] = "〇";
+    });
+    $("input.subject_day_count[type='text']").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      form_data[name] = val;
     });
 
     return form_data;

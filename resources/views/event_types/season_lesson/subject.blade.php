@@ -1,3 +1,4 @@
+<input type="hidden" name="subject_day_count_sum" value=0>
 <div class="col-12 col-md-5">
   <label for="subject_level" class="w-100">
     <?php $__attribute_name = 'lesson_subject_level'; ?>
@@ -7,13 +8,13 @@
   <table class="table">
   <tr>
     <th class="bg-gray">ご希望の授業数</th>
-    <td class="w-40 text-right">
+    <td class="w-40 text-right bg-warning">
       <span id="day_count" >0</span>
     </td>
   </tr>
   <tr>
     <th class="bg-gray">科目授業数計</th>
-    <td class="w-40 text-right">
+    <td class="w-40 text-right bg-warning">
       <span id="subject_day_count_sum" >0</span>
     </td>
   </tr>
@@ -81,7 +82,7 @@
     @if($_teacher == false)
     <script>
     $(function(){
-      subject_onload();
+      subject_day_count_onload();
       $('input.subject_day_count').on('change', function(e){
         subject_day_count_onload();
       });
@@ -103,6 +104,7 @@
         if(v) s+=v|0;
       });
       $('#subject_day_count_sum').html(s);
+      $('input[name="subject_day_count_sum"]').val(s);
     }
     </script>
     @endif
