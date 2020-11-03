@@ -56,19 +56,6 @@
             @yield('sub_contents')
         </div>
       </div>
-      <div class="col-12 col-lg-4 col-md-6 mb-1">
-        <a href="/asks?search_type[]=agreement_update&search_status[]=new">
-        <div class="info-box">
-          <span class="info-box-icon bg-info">
-            <i class="fa fa-handshake"></i>
-          </span>
-          <div class="info-box-content text-dark">
-            <b class="info-box-text text-lg">契約変更依頼</b>
-            <span class="text-sm">未処理の契約変更依頼</span>
-          </div>
-        </div>
-        </a>
-      </div>
     </div>
 	</div>
 </section>

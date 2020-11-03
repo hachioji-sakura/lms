@@ -28,14 +28,14 @@
 
         <li class="nav-item">
           <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
-            <i class="fa fa-file nav-icon"></i>
+            <i class="fa fa-exclamation-triangle nav-icon"></i>
             {{__('labels.agreement_new')}}
           </a>
         </li>
 
         <li class="nav-item">
           <a href="/agreements?status=commit" class="nav-link {{request()->status == 'commit' ? 'active' : ''}}">
-            <i class="fa fa-handshake nav-icon"></i>
+            <i class="fa fa-check-circle nav-icon"></i>
             {{__('labels.agreement_commit')}}
           </a>
         </li>

@@ -14,6 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Agreement;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -939,6 +940,12 @@ class StudentController extends UserController
          $form['search_status'] = ['new', 'commit', 'cancel'];
        }
        break;
+      case "agreement_update":
+        $form['search_type'] = ['agreement_update'];
+        if(!isset($form['search_status'])){
+          $form['search_status'] = ['new'];
+        }
+        break;
    }
 
    if(!isset($form['search_type'])){
@@ -1485,6 +1492,18 @@ class StudentController extends UserController
       return $this->api_response(200, '', '', $item);
     }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+  }
+  public function get_agreements($form, $status, $is_count_only = false){
+    $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+    $count = (new Agreement())->get_user_cache($cache_key, $form['user_id']);
+    if($count != null && $is_count_only==true) return $count;
+
+    $agreements = Agreement::findStatus($status);
+    if($is_count_only == true){
+      return $agreements->count();
+    }else{
+      return $agreements;
+    }
   }
 
 }

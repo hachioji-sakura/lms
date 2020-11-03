@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AgreementStatement;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Traits\WebCache;
 
 class Agreement extends Model
 {
     //
+    use WebCache;
     protected $table = 'common.agreements';
     protected $guarded = array('id');
     protected $fillable = [
