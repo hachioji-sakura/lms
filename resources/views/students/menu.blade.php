@@ -136,8 +136,8 @@
       </li>
         @if($item->enable_normal_agreements->count() > 0)
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/agreement" page_title="{{__('labels.agreements')}}{{__('labels.edit')}}">
-            <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreements')}}{{__('labels.edit')}}
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/agreement" page_title="{{__('labels.agreements')}}">
+            <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreements')}}
           </a>
       </li>
        @endif

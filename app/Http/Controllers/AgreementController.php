@@ -27,9 +27,7 @@ class AgreementController extends MilestoneController
         $fields = [
           'title' => [
             'label' => '概要',
-            "link" => function($row){
-              return "/agreement_statements?agreement_id=".$row->id;
-            },
+            "link" => 'show',
           ],
           'status_name' =>[
             'label' =>  'ステータス',
@@ -85,7 +83,8 @@ class AgreementController extends MilestoneController
     public function show(Request $request, $id)
     {
         //
-        return view('agreement_statements.list');
+        $param = $this->get_param($request,$id);
+        return view($this->domain.'.details')->with($param);
     }
 
     public function ask_page(Request $request, $id, $method){
