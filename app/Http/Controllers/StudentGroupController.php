@@ -155,11 +155,8 @@ class StudentGroupController  extends MilestoneController
     $items = $items->where('teacher_id', $teacher_id);
     $items = $this->_search_scope($request, $items);
     $items = $this->_search_sort($request, $items);
-    $items = $items->paginate($param['_line']);
-    foreach($items as $item){
-      $item = $item->details();
-    }
-    return $this->api_response(200, "", "", $items->toArray());
+
+    return $this->api_response(200, "", "", $items);
   }
   /**
    * フィルタリングロジック
