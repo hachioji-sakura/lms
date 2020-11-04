@@ -188,18 +188,44 @@
 
   $(function(){
     var grade = "{{$target_student->tag_value('grade')}}";
-    var school = grade.match(/^./)[0];
+    if( grade == "" ){
+      var school = 'none';
+    }else{
+      var school = grade.match(/^./)[0];
+    }
+    var lesson = "{{$has_english_lesson}}";
+    var lesson_count = {{$lessons->count()}}
     console.log(school);
-    $('select#select_subject option').each(function(){
-      if($(this).text().match("選択") != null ){
-      }else if(school == "e" && $(this).text().match("小学") == null){
-        $(this).remove();
-      }else if(school == "j" && $(this).text().match("中学") == null){
-        $(this).remove();
-      }else if(school == "h" &&  ($(this).text().match("中学") != null   || $(this).text().match("小学") != null)){
-        $(this).remove();
-      }
-    });
+    if( lesson == true && lesson_count == 1){
+      console.log("hoge");
+      $('select#select_subject option').each(function(){
+        if($(this).text().match("選択") != null ){
+          return true;
+        }else if(lesson == true && $(this).text().match("英会話") != null){
+          return true;
+        }else{
+          $(this).remove();
+        }
+      });
+    }else{
+      $('select#select_subject option').each(function(){
+        if($(this).text().match("選択") != null ){
+          return true;
+        }else if(lesson == true && $(this).text().match("英会話") != null){
+          return true;
+        }else if(school == "e" && $(this).text().match("小学") == null){
+          $(this).remove();
+        }else if(school == "j" && $(this).text().match("中学") == null){
+          $(this).remove();
+        }else if(school == "h" &&  ($(this).text().match("中学") != null   || $(this).text().match("小学") != null ||$(this).text().match("英会話") != null )){
+          $(this).remove();
+        }else{
+          //当てはまらなければ残す
+          return true;
+        }
+      });
+    }
+
     @if($_edit && $item->curriculums->count() > 0)
     $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val()
     +"&task_id={{$item->id}}", function(){
