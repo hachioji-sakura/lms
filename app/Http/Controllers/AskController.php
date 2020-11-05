@@ -374,7 +374,6 @@ class AskController extends MilestoneController
      $param['trial'] = $param['item']->get_target_model_data();
      $param['access_key'] = $param['trial']->parent->user->access_key;
      $param['action'] = '';
-     Auth::loginUsingId($param['trial']->parent->user->id);
      return view('asks.hope_to_join', [])->with($param);
    }
    public function agreement_page(Request $request, $id)
@@ -389,8 +388,6 @@ class AskController extends MilestoneController
      $param['action'] = '';
      $param['fields'] = [];
      $param['student'] = $param['agreement']->student;
-     Auth::loginUsingId($param['agreement']->student_parent->user->id);
-
      return view('asks.agreement', [])->with($param);
    }
 
