@@ -152,7 +152,6 @@ class Agreement extends Model
       //基本契約の追加
       $agreement = $member->user->details()->enable_normal_agreements->first();
       $setting = $member->setting->details();
-      //dd($member->user->details()->get_monthly_fee(),$member->user->details()->get_entry_fee());
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',

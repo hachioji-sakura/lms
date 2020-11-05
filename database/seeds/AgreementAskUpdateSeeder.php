@@ -24,10 +24,14 @@ class AgreementAskUpdateSeeder extends Seeder
 
     public function check_ask(){
       //契約を先に作らないとダメ
-      $target_asks = Ask::where('type','agreement')->where('status','new');
+      $target_asks = Ask::where('type','agreement')->where('status','new')->get();
       foreach($target_asks as $ask){
-        $agreement_id = $ask->student->agreementsByStatus('new')->first()->id;
-        $ask->update(['target_model' => 'agreement', 'target_model_id' => $agreement_id]);
+        $member = $ask->target_user->details()->relations->first()->student->user->calendar_member_settings->first();
+        if(!empty($member)){
+          $new_agreement = Agreement::add_from_member_setting($member);
+          $agreement_id = $new_agreement->id;
+          $ask->update(['target_model' => 'agreement', 'target_model_id' => $agreement_id]);
+        }
       }
     }
 
