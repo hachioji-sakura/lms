@@ -1,23 +1,28 @@
 <?php
 $d = $start_date;
+$m = 0;
 ?>
-<div class="col-12">
-  <h6 class="text-sm p-2 pl-3 bg-success" >
-    受講を希望する日付にチェックを入れて、受講時間を指定してください。<br><br>
-    受講日数分の日程がまだ不明な場合は、現在判明している分のみチェックを入れてください。<br>
-  </h6>
-</div>
 @while(1)
   @if(strtotime($end_date) < strtotime($d)) @break @endif
-
+  @if($m != date('m', strtotime($d)))
+  <div class="col-12 mt-2 bd-b bd-gray">
+    <div class="form-group">
+      <label class="w-100 text-lg">
+          {{date('Y年n月', strtotime($d))}}
+      </label>
+    </div>
+  </div>
+  <?php $m = date('n', strtotime($d)); ?>
+  @endif
 <div class="col-12 bd-b bd-gray">
-  <div class="row mb-2" id="{{strtotime($d)}}">
+  <div class="row mb-2" id="hope_{{strtotime($d)}}">
     <div class="col-12">
       <div class="form-check p-0">
-        <input class="form-check-input icheck flat-green day_check" type="checkbox" name="hope_{{strtotime($d)}}" id="hope_{{strtotime($d)}}" value="true"
-        onChange="hope_date_change('{{strtotime($d)}}')"
+        <input type="hidden" name="hope_datetime[]" value="" accessKey="hope_{{strtotime($d)}}" >
+        <input class="form-check-input icheck flat-green day_check" type="checkbox" name="hope_{{strtotime($d)}}_date" id="hope_{{strtotime($d)}}_date" date="{{date('Y-m-d', strtotime($d))}}" value="true"
+        onChange="hope_date_change('hope_{{strtotime($d)}}')"
         />
-        <label class="form-check-label" for="hope_{{strtotime($d)}}">
+        <label class="form-check-label" for="hope_{{strtotime($d)}}_date">
           {{date('n月d日',strtotime($d)).'('.config('week')[date('w', strtotime($d))].')'}}
         </label>
       </div>
@@ -28,7 +33,7 @@ $d = $start_date;
             checked
           @endif
           required="true"
-          onChange="hope_timezone_change('{{strtotime($d)}}')"
+          onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
           <label class="form-check-label" for="hope_{{strtotime($d)}}_am">
           午前(11:00-16:00）
@@ -40,7 +45,7 @@ $d = $start_date;
            checked ml-1
           @endif
           required="true"
-          onChange="hope_timezone_change('{{strtotime($d)}}')"
+          onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
           <label class="form-check-label" for="hope_{{strtotime($d)}}_pm">
           午後(13:00-18:00）
@@ -56,7 +61,7 @@ $d = $start_date;
            checked
           @endif
           required="true"
-          onChange="hope_timezone_change('{{strtotime($d)}}')"
+          onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
           <label class="form-check-label" for="hope_{{strtotime($d)}}_order">
           指定
@@ -96,46 +101,70 @@ $d = $start_date;
 @endwhile
 <script>
 $(function(){
-  day_count_check_onload();
+  $('.carousel-item .btn-next').on('click', function(e){
+    //carouselの次へで、集計処理する必要がある
+    day_count_check_onload();
+  });
 });
 function hope_date_change(id){
-  var date_checked = $("input[name='hope_"+id+"']").prop('checked');
+  var date_checked = $("#"+id+"_date").prop('checked');
   if(date_checked==true){
     $("#"+id+" .date-selected-open").collapse('show');
   }
   else {
     $("#"+id+" .date-selected-open").collapse('hide');
   }
-  day_count_check_onload();
 }
 function day_count_check_onload(){
   c = 0;
+  $('#hope_datetime_list').empty();
   $("input.day_check").each(function(){
     if($(this).prop('checked')){
       c++;
+      var id = $(this).attr('id');
+      id = id.replace_all('_date', '');
+      var d = $(this).attr('date');
+      var s = $('select[name="'+id+'_start_time"]').val();
+      var e = $('select[name="'+id+'_end_time"]').val();
+      var t = $('input[name="'+id+'_timezone"]:checked').val();
+      var t_name = $('label[for="'+id+'_'+t+'"]').text();
+      if(t=='order') {
+        t_name = ' 指定('+s+'時～'+e+'時)';
+      }
+      date = d.replace_all('-', '');
+      date = util.dateformat(date, '%m月%d(%w)');
+      var v = d+" "+s+"-"+e;
+      var _html = ['<tr>',
+        '<td class="bg-gray">'+date+'</td>',
+        '<td>'+t_name+'</td>',
+       '</tr>'
+      ].join('');
+      $('#hope_datetime_list').append(_html);
+      $('input[name="hope_datetime[]"][accessKey="'+id+'"]').val(v);
     }
   });
   $('input[name="day_count"]').val(c);
   $('#day_count').html(c);
 }
 function hope_timezone_change(id){
-  var timezone = $("input[name='hope_"+id+"_timezone']:checked").val();
+  var timezone = $("input[name='"+id+"_timezone']:checked").val();
+  if(!timezone) return;
   console.log('hope_timezone_change('+id+') / '+ timezone);
   if(timezone=="am" || timezone=="pm"){
-    $("select[name='hope_"+id+"_start_time']").prop('disabled', true);
-    $("select[name='hope_"+id+"_end_time']").prop('disabled', true);
+    $("select[name='"+id+"_start_time']").prop('disabled', true);
+    $("select[name='"+id+"_end_time']").prop('disabled', true);
     if(timezone=='am'){
-      $("select[name='hope_"+id+"_start_time']").val(11);
-      $("select[name='hope_"+id+"_end_time']").val(16);
+      $("select[name='"+id+"_start_time']").val(11);
+      $("select[name='"+id+"_end_time']").val(16);
     }
     else {
-      $("select[name='hope_"+id+"_start_time']").val(13);
-      $("select[name='hope_"+id+"_end_time']").val(18);
+      $("select[name='"+id+"_start_time']").val(13);
+      $("select[name='"+id+"_end_time']").val(18);
     }
   }
   else {
-    $("select[name='hope_"+id+"_start_time']").prop('disabled', false);
-    $("select[name='hope_"+id+"_end_time']").prop('disabled', false);
+    $("select[name='"+id+"_start_time']").prop('disabled', false);
+    $("select[name='"+id+"_end_time']").prop('disabled', false);
   }
 }
 

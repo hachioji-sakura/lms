@@ -2,37 +2,44 @@
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-file-invoice mr-1"></i>
-    #event_title#
+    期間講習ご希望コースについて
   </div>
-  <input type="hidden" name="lesson[]" value="1" />
-  <input type="hidden" class="grade" name="grade" value="h1" />
-  <input type="hidden" name="grade_name" value="高1" />
   <script>
   $(function(){
     lesson_checkbox_change($('input[name="lesson[]"]'));
     $('*[name="grade"]').change();
   });
   </script>
-  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
-  @component('event_types.season_lesson.course', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
-
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
+  @component('event_types.season_lesson.course', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
 </div>
-
 @endsection
+
+
+
 @section('subject_form')
 <div class="row">
-  @component('event_types.season_lesson.subject', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  <div class="col-12 bg-info p-2 pl-4 mb-4">
+    <i class="fa fa-chalkboard-teacher mr-1"></i>
+    ご希望の科目と授業数について
+  </div>
+  @component('event_types.season_lesson.subject', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
 </div>
 @endsection
 
 @section('hope_datetime')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
-    <i class="fa fa-file-invoice mr-1"></i>
+    <i class="fa fa-clock mr-1"></i>
     ご希望の日時について
   </div>
-
-  @component('event_types.season_lesson.hope_datetime', ['_edit'=>$_edit, 'start_date'=>'2020-07-23', 'end_date' => '2020-08-31', 'item'=>$item,'attributes' => $attributes]) @endcomponent
+  <div class="col-12">
+    <h6 class="text-sm p-2 pl-3 bg-success" >
+      受講を希望する日付にチェックを入れて、受講時間を指定してください。<br><br>
+      受講日数分の日程がまだ不明な場合は、現在判明している分のみチェックを入れてください。<br>
+    </h6>
+  </div>
+  @component('event_types.season_lesson.hope_datetime', ['_edit'=>$_edit, 'start_date'=>'2020-07-23', 'end_date' => '2020-08-31', 'event'=>$event,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -40,7 +47,7 @@
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-question-circle mr-1"></i>
-    サービス向上のためアンケートをご記入ください
+    その他、ご要望等
   </div>
   <div class="col-12">
     <div class="form-group">
@@ -91,7 +98,7 @@
   <div class="col-12">
     <div class="form-group">
       <label for="installment_payment">
-        分割払い可能（3ヶ月）をご希望ですか
+        分割払い可能（3ヶ月）をご希望ですか？
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
       <div class="input-group">
@@ -113,9 +120,9 @@
     </div>
   </div>
 
-  @component('students.forms.entry_milestone', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.entry_milestone', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
 
-  @component('students.forms.remark', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.remark', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
 
 </div>
 @endsection

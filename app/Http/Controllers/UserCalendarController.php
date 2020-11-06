@@ -1571,16 +1571,4 @@ class UserCalendarController extends MilestoneController
       }, $message, __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $message);
     }
-    public function season_school_lesson_page(Request $request){
-      $param = [
-        'domain' => $this->domain,
-        'domain_name' => __('labels.'.$this->domain),
-        'attributes' => $this->attributes(),
-        '_edit' => false,
-        'item' => [],
-      ];
-
-      return view('event_types.season_school_lesson', [])
-        ->with($param);
-    }
 }

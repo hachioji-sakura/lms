@@ -1465,5 +1465,11 @@ class StudentController extends UserController
     }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
   }
-
+  public function season_lesson_page(Request $request, $id){
+    $param = $this->get_param($request, $id);
+    $view = 'create';
+    if($this->domain=='teachers') $view='teacher_request';
+    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>[]])
+      ->with($param);
+  }
 }

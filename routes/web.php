@@ -17,7 +17,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //indexページをログインにする
   Route::redirect('/', '/login', 301);
   Route::get('send_access_key','AuthController@send_access_key');
-  Route::get('season_school_lesson','UserCalendarController@season_school_lesson_page');
+  Route::get('students/{id}/season_lesson','StudentController@season_lesson_page');
+  Route::get('teachers/{id}/season_lesson','TeacherController@season_lesson_page');
 
   Route::get('managers/login','ManagerController@login');
   Route::get('auth','AuthController@auth');
@@ -52,7 +53,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('attributes','GeneralAttributeController');
   Route::resource('milestones','MilestoneController');
   Route::resource('text_materials','TextMaterialController');
-  
+
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
   Route::put('comments/{id}/checked','CommentController@checked');

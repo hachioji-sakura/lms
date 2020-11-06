@@ -1,5 +1,5 @@
 @extends('layouts.simplepage')
-@section('title', '体験授業お申し込フォーム')
+@section('title', '期間講習申込ページ')
 
 @if(empty($result))
   @section('title_header')
@@ -9,7 +9,7 @@
     <li id="step_complete">完了</li>
   </ol>
   @endsection
-  @include('event_types.create_form')
+  @include('event_types.season_lesson.create_form')
 @else
   @section('title_header')
   <ol class="step">
@@ -21,7 +21,7 @@
 @endif
 
 @section('content')
-<div id="students_register" class="direct-chat-msg">
+<div class="direct-chat-msg">
   @if(!empty($result))
     <h4 class="bg-success p-3 text-sm">
       @if($result==="success")
@@ -34,7 +34,11 @@
   <form method="POST"  action="/events/100/answer">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
+    <input type="hidden" name="lesson[]" value="1" />
+    <input type="hidden" class="grade" name="grade" value="h1" />
+    <input type="hidden" name="grade_name" value="高1" />
+
+    <div id="season_lesson_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('first_form')
