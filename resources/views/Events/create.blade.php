@@ -34,43 +34,44 @@ selected
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
-            イベント名
+            名称
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <input type="text" id="title" name="title" class="form-control" required="true" maxlength=50
           @if(isset($_edit) && $_edit==true)
            value="{{$item['title']}}" placeholder="(変更前) {{$item['title']}}">
           @else
-           placeholder="50文字まで　例)●●年度夏期講習">
+           placeholder="">
           @endif
         </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-12 col-md-6 mb-1">
+      <div class="col-12 col-md-6 mt-2">
         <div class="form-group">
-          <label for="event_from_date" class="w-100">
-            開催期間(始)
+          <label for="lesson_place_floor" class="w-100">
+            送信対象
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-            </div>
-            <input type="text" id="event_from_date" name="event_from_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
-            @if(isset($_edit) && $_edit==true && isset($item) && isset($item['event_from_date']) && $item['event_from_date']!='9999-12-31')
-              value="{{date('Y/m/d', strtotime($item['event_from_date']))}}"
-            @elseif(isset($item) && isset($item['event_from_date']) && $item['event_from_date']!='9999-12-31')
-              value="{{date('Y/m/d', strtotime($item['event_from_date']))}}"
-            @else
-              value = "{{date('Y/m/d')}}"
-            @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
-            @endif
-            >
-          </div>
+          <select name="place_floor_id" class="form-control" width="100%" required="true" >
+            <option value="">{{__('labels.selectable')}}</option>
+            @foreach( as $place)
+              @foreach($place->floors as $floor)
+              @if(isset($item["tagdata"]) && isset($item["tagdata"]["lesson_place"]) && isset($item["tagdata"]["lesson_place"][$place->id]))
+                <option value="{{$floor->id}}"
+                  @if(isset($calendar) && $calendar->place_floor_id==$floor->id)
+                    selected
+                  @elseif(isset($item->place_floor_id) && $item->place_floor_id==$floor->id)
+                    selected
+                  @elseif($loop->index==0)
+                    selected
+                  @endif
+                >{{$floor->name()}}</option>
+                @endif
+              @endforeach
+            @endforeach
+          </select>
         </div>
       </div>
 

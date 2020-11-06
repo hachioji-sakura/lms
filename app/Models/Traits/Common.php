@@ -176,4 +176,68 @@ trait Common
     $search_words = explode(' ', (($str_search_word)));
     return $search_words;
   }
+  public function has_tag($key, $val=""){
+    if(!isset($this->tags)) return null;
+    $tags = $this->tags;
+    foreach($tags as $tag){
+      if(empty($val) && $tag->tag_key==$key) return true;
+      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    }
+    return false;
+  }
+  public function get_tag($key, $val=""){
+    if(!isset($this->tags)) return null;
+    $item = $this->tags->where('tag_key', $key);
+    if(!empty($val)) $item = $item->where('tag_value', $val);
+    $item = $item->first();
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+  public function get_tags($key){
+    if(!isset($this->tags)) return null;
+    $item = $this->tags->where('tag_key', $key);
+    if(isset($item)){
+      return $item;
+    }
+    return null;
+  }
+  public function get_tag_name($tag_key, $val=""){
+    $tag =  $this->get_tag($tag_key, $val);
+    if(isset($tag)){
+      return $tag->name();
+    }
+    return "";
+  }
+  public function get_tag_value($tag_key, $val=""){
+    $tag =  $this->get_tag($tag_key, $val);
+    if(isset($tag)){
+      return $tag->tag_value;
+    }
+    return "";
+  }
+  public function get_tags_name($tag_key){
+    $tags =  $this->get_tags($tag_key);
+    if(isset($tags)){
+      $ret = "";
+      foreach($tags as $tag){
+        $ret .= $tag->name().',';
+      }
+      return trim($ret, ',');
+    }
+    return "";
+  }
+  public function get_tags_value($tag_key){
+    $tags =  $this->get_tags($tag_key);
+    if(isset($tags)){
+      $ret = "";
+      foreach($tags as $tag){
+        $ret .= $tag->tag_value.',';
+      }
+      return trim($ret, ',');
+    }
+    return "";
+  }
+
 }

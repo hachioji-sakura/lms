@@ -6,15 +6,16 @@
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     <div class="input-group">
-      @foreach($teacher->get_tags('lesson') as $lesson)
+      @foreach(config('attribute.lesson') as $key => $name)
+        @if($teacher->has_tag('lesson', $key)!=true) @continue @endif
         <div class="form-check">
-            <input class="form-check-input icheck flat-green" type="radio" name="lesson" id="lesson_{{$lesson["value"]}}" value="{{$lesson["value"]}}" alt="{{$lesson["name"]}}" required="true" onChange="lesson_change()"
-            @if($item["exchanged_calendar_id"]>0 && $lesson['value']==$item->lesson(true))
+            <input class="form-check-input icheck flat-green" type="radio" name="lesson" id="lesson_{{$key}}" value="{{$key}}" alt="{{$name}}" required="true" onChange="lesson_change()"
+            @if($item["exchanged_calendar_id"]>0 && $key==$item->lesson(true))
              checked
             @elseif($loop->index===0)
              checked
             @endif
-            ><label class="form-check-label" for="lesson_{{$lesson["value"]}}">{{$lesson["name"]}}</label>
+            ><label class="form-check-label" for="lesson_{{$key}}">{{$name}}</label>
         </div>
       @endforeach
     </div>

@@ -1,5 +1,5 @@
 @section('title')
-{{__('labels.milestones_list')}}
+イベントテンプレート一覧
 @endsection
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])

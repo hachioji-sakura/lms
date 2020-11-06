@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEventTypeTagsTable extends Migration
+class CreateEventTemplatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateEventTypeTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_type_tags', function (Blueprint $table) {
+        Schema::create('event_templates', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('event_type_tag_id')->nullable(false)->index('index_event_type_tag_id')->comment('イベントタグID');
-            $table->string('event_type_tag_key')->nullable(false)->index('index_event_type_tag_key')->comment('イベントタグキー');
-            $table->string('event_type_tag_value')->comment('イベントタグ値');
+            $table->string('name')->nullable(false)->comment('イベント名称');
+            $table->string('remark',10000)->nullable(true)->comment('備考');
             $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
         });
@@ -30,6 +29,6 @@ class CreateEventTypeTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_type_tags');
+        Schema::dropIfExists('event_templates');
     }
 }

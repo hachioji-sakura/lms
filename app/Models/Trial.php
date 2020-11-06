@@ -73,28 +73,6 @@ class Trial extends Model
     });
     return $query;
   }
-  public function has_tag($key, $val=""){
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-    }
-    return false;
-  }
-  public function get_tag($key){
-    $item = $this->tags->where('tag_key', $key)->first();
-    if(isset($item)){
-      return $item;
-    }
-    return "";
-  }
-  public function get_tags($key){
-    $item = $this->tags->where('tag_key', $key);
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
   public function get_status(){
     //体験授業登録状況により、ステータスは変動する
     $status = $this->status;
