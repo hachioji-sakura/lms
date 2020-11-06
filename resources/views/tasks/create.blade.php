@@ -197,7 +197,6 @@
     var lesson_count = {{$lessons->count()}}
     console.log(school);
     if( lesson == true && lesson_count == 1){
-      console.log("hoge");
       $('select#select_subject option').each(function(){
         if($(this).text().match("選択") != null ){
           return true;
