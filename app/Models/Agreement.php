@@ -86,7 +86,7 @@ class Agreement extends Model
     }
 
     public function scopeEnable($query){
-      return $query->where('status','commit');
+      return $query->where('status','commit')->whereIsNull('end_date');
     }
 
     public function scopeEnableNormal($query){

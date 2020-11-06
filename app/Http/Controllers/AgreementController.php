@@ -67,6 +67,7 @@ class AgreementController extends MilestoneController
         ];
         $param = [
           'items' => $this->model()->search($request)->paginate(),
+          'new_item_count' => $this->model()->findStatus('new')->count(),
           'search_word' => '',
           'fields' => $fields,
           'domain' => $this->domain,

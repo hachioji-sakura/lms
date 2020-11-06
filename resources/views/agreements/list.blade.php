@@ -30,6 +30,9 @@
           <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
             <i class="fa fa-exclamation-triangle nav-icon"></i>
             {{__('labels.agreement_new')}}
+            <span class="badge badge-danger right ml-2">
+            {{$new_item_count}}
+          </span>
           </a>
         </li>
 
