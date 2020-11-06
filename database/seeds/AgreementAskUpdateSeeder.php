@@ -15,11 +15,12 @@ class AgreementAskUpdateSeeder extends Seeder
      */
     public function run()
     {
+      DB::transaction(function(){
         //カレンダー設定から契約作成
         $this->check_calendar_member_setting();
         //依頼更新
         $this->check_ask();
-
+      });
     }
 
     public function check_ask(){
