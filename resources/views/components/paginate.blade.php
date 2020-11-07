@@ -31,12 +31,15 @@
           <a class="page-link" href="{{ $paginator->url($paginator->lastPage()) }}">»</a>
       </li>
       @endif
+      @if(isset($is_not_filter_button) && $is_not_filter_button==true)
+      @else
       <li class="page-item">
         <a class="page-link btn btn-default btn-sm" data-toggle="modal" data-target="#filter_form" id="filter_button">
           <i class="fa fa-filter"></i>
           <span class="btn-label">{{__('labels.filter')}}</span>
         </a>
       </li>
+      @endif
   </ul>
   @endif
 @endif

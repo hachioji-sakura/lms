@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Event;
-
+use App\Models\EventTemplate;
 //class EventController extends Controller
 class EventController extends MilestoneController
 {
@@ -103,6 +103,18 @@ class EventController extends MilestoneController
    return ['items' => $items, 'fields' => $fields];
 
  }
-
+   /**
+    * 新規登録画面
+    *
+    * @return \Illuminate\Http\Response
+    */
+  public function create(Request $request)
+  {
+    $param = $this->get_param($request);
+    $templates = EventTemplate::all();
+    $param['templates'] = $templates;
+    return view($this->domain.'.create',['_edit' => false])
+    ->with($param);
+  }
 
 }

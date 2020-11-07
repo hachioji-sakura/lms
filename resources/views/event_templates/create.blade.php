@@ -28,10 +28,14 @@
             送信対象
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <select name="role[]" class="form-control select2" width="100%" required="true" multiple="multiple">
+          <select name="user_role[]" class="form-control select2" width="100%" required="true" multiple="multiple">
             <option value="">{{__('labels.selectable')}}</option>
             @foreach(config('attribute.user_role') as $index=>$name)
-                <option value="{{$index}}">{{$name}}</option>
+                <option value="{{$index}}"
+                @if($_edit===true && isset($item) && $item->has_tag('user_role', $index)===true)
+                selected
+                @endif
+                >{{$name}}</option>
             @endforeach
           </select>
         </div>
@@ -44,7 +48,7 @@
           </label>
           @foreach($attributes['lesson'] as $index => $name)
           <label class="mx-1">
-            <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" required="true"
+            <input type="radio" value="{{ $index }}" name="lesson" class="icheck flat-green" required="true"
             @if($_edit===true && isset($item) && $item->has_tag('lesson', $index)===true)
             checked
             @endif
@@ -57,12 +61,16 @@
         <div class="form-group">
           <label for="grade" class="w-100">
             送信対象条件（学年）/生徒のみ
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <select name="grade[]" class="form-control select2" width="100%" required="true" multiple="multiple">
+          <select name="grade[]" class="form-control select2" width="100%" multiple="multiple">
             <option value="">{{__('labels.selectable')}}</option>
             @foreach($attributes['grade'] as $index => $name)
-                <option value="{{$index}}">{{$name}}</option>
+                <option value="{{$index}}"
+                @if($_edit===true && isset($item) && $item->has_tag('grade', $index)===true)
+                selected
+                @endif
+                >{{$name}}</option>
             @endforeach
           </select>
         </div>
@@ -72,13 +80,13 @@
     <div class="row">
       <div class="col-12">
         <div class="form-group">
-          <label for="body" class="w-100">
+          <label for="remark" class="w-100">
             説明
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <textarea type="text" name="description" class="form-control"  maxlength=1000
+          <textarea type="text" name="remark" class="form-control"  maxlength=1000
           @if(isset($_edit) && $_edit==true)
-            placeholder="(変更前) {{$item->description}}" >{{$item->description}}</textarea>
+            placeholder="(変更前) {{$item->remark}}" >{{$item->remark}}</textarea>
           @else
             placeholder="1000文字まで" ></textarea>
           @endif

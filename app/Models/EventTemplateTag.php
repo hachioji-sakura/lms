@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EventTemplateTag extends Model
+class EventTemplateTag extends UserTag
 {
 
   protected $table = 'lms.event_template_tags';

@@ -15,7 +15,7 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('event_type_id')->comment('イベント種別ID');
+            $table->integer('event_template_id')->comment('イベントテンプレートID');
             $table->string('title')->nullable(false)->comment('件名');
             $table->date('event_from_date')->nullable(false)->comment('開催期間_始');
             $table->date('event_to_date')->nullable(false)->comment('開催期間_終');

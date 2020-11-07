@@ -10,20 +10,18 @@
 　  <div class="row">
       <div class="col-12">
         <label for="charge_subject" class="w-100">
-          イベント種別
+          テンプレート
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         </label>
         <div class="">
           <select name="event_type_id" class="form-control select2" width=100% >
-{{--
-@foreach($attributes['work'] as $index=>$name)
-<option value="{{$index}}"
-@if(isset($filter['calendar_filter']['search_work']) && in_array($index, $filter['calendar_filter']['search_work'])==true)
-selected
-@endif
->{{$name}}</option>
-@endforeach
---}}
+            @foreach($templates as $template)
+            <option value="{{$template->id}}"
+              @if(isset($_edit) && $_edit==true && $item->event_template_id == $template->id)
+              selected
+              @endif
+            >{{$template->name}}</option>
+            @endforeach
           </select>
         </div>
       </div>
@@ -48,37 +46,35 @@ selected
     </div>
 
     <div class="row">
-      <div class="col-12 col-md-6 mt-2">
+      <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
-          <label for="lesson_place_floor" class="w-100">
-            送信対象
+          <label for="event_from_date" class="w-100">
+            開催期間（開始）
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <select name="place_floor_id" class="form-control" width="100%" required="true" >
-            <option value="">{{__('labels.selectable')}}</option>
-            @foreach( as $place)
-              @foreach($place->floors as $floor)
-              @if(isset($item["tagdata"]) && isset($item["tagdata"]["lesson_place"]) && isset($item["tagdata"]["lesson_place"][$place->id]))
-                <option value="{{$floor->id}}"
-                  @if(isset($calendar) && $calendar->place_floor_id==$floor->id)
-                    selected
-                  @elseif(isset($item->place_floor_id) && $item->place_floor_id==$floor->id)
-                    selected
-                  @elseif($loop->index==0)
-                    selected
-                  @endif
-                >{{$floor->name()}}</option>
-                @endif
-              @endforeach
-            @endforeach
-          </select>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+            <input type="text" name="event_from_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+            @if(isset($_edit) && $_edit==true && isset($item) && isset($item['event_from_date']) && $item['event_from_date']!='9999-12-31')
+              value="{{date('Y/m/d', strtotime($item['event_from_date']))}}"
+            @elseif(isset($item) && isset($item['event_from_date']) && $item['event_from_date']!='9999-12-31')
+              value="{{date('Y/m/d', strtotime($item['event_from_date']))}}"
+            @else
+              value = "{{date('Y/m/d')}}"
+            @endif
+            @if(!(isset($_edit) && $_edit==true))
+            minvalue="{{date('Y/m/d')}}"
+            @endif
+            >
+          </div>
         </div>
       </div>
-
       <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
           <label for="event_to_date" class="w-100">
-            開催期間(終)
+            開催期間（終了）
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <div class="input-group">
@@ -106,7 +102,7 @@ selected
       <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
           <label for="response_from_date" class="w-100">
-            回答期間(始)
+            回答期間(開始)
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <div class="input-group">
@@ -132,7 +128,7 @@ selected
       <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
           <label for="response_to_date" class="w-100">
-            回答期間(終)
+            回答期間(終了)
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <div class="input-group">

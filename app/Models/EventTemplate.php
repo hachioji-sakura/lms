@@ -7,7 +7,7 @@ use DB;
 
 use App\Models\Traits\Common;
 
-class EventTemplate extends Model
+class EventTemplate extends Milestone
 {
     use Common;
     protected $table = 'lms.event_templates'; //テーブル名を入力(A5MK参照)
@@ -19,7 +19,6 @@ class EventTemplate extends Model
     public function tags(){
       return $this->hasMany('App\Models\EventTemplateTag', 'event_template_id');
     }
-
     //本モデルはcreateではなくaddを使う
     static protected function add($form){
 
@@ -34,12 +33,12 @@ class EventTemplate extends Model
       return $event_template->api_response(200, "", "", $event_template);
     }
     //本モデルはdeleteではなくdisposeを使う
-    public function dispose($login_user_id, $is_send_mail=true){
-      $tags->delete();
+    public function dispose(){
+      EventTemplateTag::where('event_template_id', $this->id)->delete();
       $this->delete();
     }
     //本モデルはupdateではなくchangeを使う
-    public function change($form){
+    public function change($form, $file=null, $is_file_delete = false){
       $update_fields = [
         'name',
         'remark',
@@ -51,7 +50,7 @@ class EventTemplate extends Model
       $this->update($data);
 
       //タグ
-      $tag_names = ['lesson', 'grade', 'role'];
+      $tag_names = ['lesson', 'grade', 'user_role'];
       foreach($tag_names as $tag_name){
         if(!empty($form[$tag_name])){
           EventTemplateTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -60,5 +59,13 @@ class EventTemplate extends Model
       return $this;
     }
     public function getRoleAttribute(){
+      return $this->get_tags_name('user_role');
     }
+    public function getLessonAttribute(){
+      return $this->get_tags_name('lesson');
+    }
+    public function getGradeAttribute(){
+      return $this->get_tags_name('grade');
+    }
+
 }

@@ -39,10 +39,10 @@ class EventTemplateController extends MilestoneController
       'remark' => [
         'label' => '説明'
       ],
-      'create_user_id' => [
+      'create_user_name' => [
         'label' => '作成ユーザID'
       ],
-  　];
+    ];
 
     return view('components.page', [
     'action' => $request->get('action'),
@@ -69,7 +69,7 @@ class EventTemplateController extends MilestoneController
       'role' => [
         'label' => '送信対象'
       ],
-      'event_name' => [
+      'name' => [
         'label' => 'イベント名称'
       ],
       'lesson' => [
@@ -78,17 +78,54 @@ class EventTemplateController extends MilestoneController
       'grade' => [
         'label' => '学年'
       ],
-      'body' => [
-        'label' => '備考'
-      ],
-      'create_user_id' => [
-        'label' => '作成ユーザID'
+      'create_user_name' => [
+        'label' => '作成ユーザー'
       ],
    ];
-
+   $fields['buttons'] = [
+     'label' => '操作',
+     'button' => ['edit', 'delete']
+   ];
     return ['items' => $items, 'fields' => $fields];
   }
+  /**
+   * フィルタリングロジック
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  Collection $items
+   * @return Collection
+   */
+  public function _search_scope(Request $request, $items)
+  {
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where('id',$request->id);
+    }
+    //ステータス 検索
+    if(isset($request->search_status)){
+      $items = $items->where('status',$request->search_status);
+    }
+    //種別 検索
+    if(isset($request->search_lesson)){
+      $lesson = $request->search_lesson;
+      return $items->whereHas('tags', function($query) use ($lesson) {
+          $query->where('tag_key', 'lesson')->where('tag_value', $lesson);
+      });
+    }
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      $items = $items->where(function($items)use($search_words){
+        foreach($search_words as $_search_word){
+          if(empty($_search_word)) continue;
+          $_like = '%'.$_search_word.'%';
+          $items->orWhere('remark','like',$_like)->orWhere('name','like',$_like);
+        }
+      });
+    }
 
+    return $items;
+  }
   /**
    * 新規登録用フォーム
    *
@@ -99,7 +136,7 @@ class EventTemplateController extends MilestoneController
     $user = $this->login_details($request);
     $form = [];
     $form['create_user_id'] = $user->user_id;
-    $form['role'] = $request->get('role');
+    $form['user_role'] = $request->get('user_role');
     $form['grade'] = $request->get('grade');
     $form['lesson'] = $request->get('lesson');
     $form['name'] = $request->get('name');
@@ -124,8 +161,8 @@ class EventTemplateController extends MilestoneController
   {
     $form = $request->all();
     //保存時にパラメータをチェック
-    if(empty($form['name']) || empty($form['role']) || empty($form['lesson'])){
-      return $this->bad_request('リクエストエラー', '種別='.$form['name']);
+    if(empty($form['name']) || empty($form['user_role']) || empty($form['lesson'])){
+      return $this->bad_request('リクエストエラー', ''.$form['name']);
     }
     return $this->api_response(200, '', '');
   }

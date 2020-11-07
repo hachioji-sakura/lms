@@ -240,4 +240,12 @@ trait Common
     return "";
   }
 
+  public function scopeSearchTags($query, $tag_key, $tag_value)
+  {
+    if(!isset($this->tags)) return $query;
+    return $query->whereHas('tags', function($query) use ($tag_key, $tag_value) {
+        $query->where('tag_key', $tag_key)->where('tag_value', $tag_value);
+    });
+    return $query;
+  }
 }
