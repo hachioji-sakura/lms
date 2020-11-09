@@ -38,8 +38,8 @@ class Student extends Model
     return $this->agreements()->where('status',$status);
   }
 
-  public function enable_normal_agreements(){
-    return $this->agreements()->enableNormal();
+  public function enable_agreements_by_type($type){
+    return $this->agreements()->enableByType($type);
   }
   /**
    *　プロパティ：年齢

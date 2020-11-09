@@ -114,7 +114,7 @@ $(function(){
       </a>
     </div>
   @endif
-  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_normal_agreements->first()]) @endcomponent
+  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_agreements_by_type('normal')->first()]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
       @if(isset($user) && $user->id == $agreement->student_parent_id)

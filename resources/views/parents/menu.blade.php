@@ -62,9 +62,9 @@
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
           </a>
         </li>
-        @if($charge_student->student->enable_normal_agreements->count() > 0)
+        @if($charge_student->student->enable_agreements_by_type('normal')->count() > 0)
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_normal_agreements->first()->id}}&target_user_id={{$charge_student->student->user_id}}" >
+          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_agreements_by_type('normal')->first()->id}}&target_user_id={{$charge_student->student->user_id}}" >
             <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
           </a>
         </li>

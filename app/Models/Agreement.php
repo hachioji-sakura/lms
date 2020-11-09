@@ -89,8 +89,8 @@ class Agreement extends Model
       return $query->where('status','commit')->whereNull('end_date');
     }
 
-    public function scopeEnableNormal($query){
-      return $query->enable()->where('type','normal');
+    public function scopeEnableByType($query,$type){
+      return $query->enable()->where('type',$type);
     }
 
     public function scopeSearchWord($query, $word){
@@ -150,7 +150,7 @@ class Agreement extends Model
 
     public static function add_from_member_setting($member){
       //基本契約の追加
-      $agreement = $member->user->details()->enable_normal_agreements->first();
+      $agreement = $member->user->details()->enable_agreements_by_type('normal')->first();
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
