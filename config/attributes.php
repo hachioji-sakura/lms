@@ -3254,6 +3254,43 @@
 			"sort_no" => "7",
 		],
 	],
+	"user_role" => [
+		"student" => [
+			"attribute_value" => "student",
+			"attribute_name" => "生徒",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
+		"teacher" => [
+			"attribute_value" => "teacher",
+			"attribute_name" => "講師",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "2",
+		],
+		"parent" => [
+			"attribute_value" => "parent",
+			"attribute_name" => "契約者",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "3",
+		],
+		"stuff" => [
+			"attribute_value" => "stuff",
+			"attribute_name" => "事務員",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "4",
+		],
+		"manager" => [
+			"attribute_value" => "manager",
+			"attribute_name" => "事務員(管理者)",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "5",
+		],
+	],
 	"work" => [
 		"3" => [
 			"attribute_value" => "3",
