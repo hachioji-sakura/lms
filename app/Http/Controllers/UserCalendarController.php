@@ -186,6 +186,7 @@ class UserCalendarController extends MilestoneController
     $form = [];
     $form['create_user_id'] = $user->user_id;
     $schedule_type = "";
+    $start_time = "";
     if($request->has('schedule_type')){
       $schedule_type = $request->get('schedule_type');
     }
@@ -195,9 +196,12 @@ class UserCalendarController extends MilestoneController
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
-      //授業時間＋開始日時から終了日時を計算
-      $form['start_time'] = $start_time;
     }
+    else if($request->has('start_time')){
+      $start_time = $request->get('start_time');
+    }
+    //授業時間＋開始日時から終了日時を計算
+    $form['start_time'] = $start_time;
 
     if($request->has('course_minutes')){
       //授業時間設定がある
@@ -1089,7 +1093,6 @@ class UserCalendarController extends MilestoneController
       if(!$this->is_success_response($res)){
         return $res;
       }
-      $res = $this->transaction($request, function() use ($request,$id){
         $param = $this->get_param($request);
         $item = $this->model()->where('id',$id)->first();
         $form = $this->create_form($request);
@@ -1120,6 +1123,7 @@ class UserCalendarController extends MilestoneController
         */
         $item->change($form);
         return $this->api_response(200, '', '', $item);
+        $res = $this->transaction($request, function() use ($request,$id){
 
       }, '授業予定更新', __FILE__, __FUNCTION__, __LINE__ );
 

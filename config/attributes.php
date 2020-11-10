@@ -3241,7 +3241,7 @@
 		],
 		"5" => [
 			"attribute_value" => "5",
-			"attribute_name" => "演習",
+			"attribute_name" => "マンツーマン演習",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "3",

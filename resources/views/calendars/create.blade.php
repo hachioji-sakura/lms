@@ -147,7 +147,7 @@ $(function(){
     var _d = $('input[name=start_date]').val();
     var _sh = $('select[name=start_hours] option:selected').val();
     var _sm = $('select[name=start_minutes] option:selected').val();
-    form_data["start_time"] = _d+" "+_sh+":"+_sm;
+    if(_d && _sh && _sm) form_data["start_time"] = _d+" "+_sh+":"+_sm;
 
     var _eh = $('select[name=end_hours] option:selected').val();
     var _em = $('select[name=end_minutes] option:selected').val();
