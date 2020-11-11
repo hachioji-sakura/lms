@@ -725,15 +725,8 @@ class UserCalendarController extends MilestoneController
         if (!View::exists($this->domain.'.'.$status)) {
           abort(404, 'ページがみつかりません(100)');
         }
-        $user = Auth::user();
       }else{
-        $user = Auth::loginUsingId($request->get('user'));
-      }
-      $calendar = UserCalendar::find($id);
-      if(isset($user)){
-        if( $user->details()->role != 'manager' && $user->id != $calendar->user_id ){
-          abort(403);
-        }
+         Auth::loginUsingId($request->get('user'));
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
