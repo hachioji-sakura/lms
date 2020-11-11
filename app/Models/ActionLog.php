@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Session;
 class ActionLog extends Model
 {
   use Common;
-  protected $connection = 'mysql_common';
   protected $table = 'common.action_logs';
   protected $guarded = array('id');
   protected $appends = ['login_user_name', 'created_date', 'updated_date'];

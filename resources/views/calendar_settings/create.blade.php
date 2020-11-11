@@ -11,7 +11,7 @@
     @if(isset($origin))
       <input type="hidden" value="{{$origin}}" name="origin" />
     @endif
-    @if(isset($student_id))
+    @if(isset($student_id) && $student_id>0)
       <input type="hidden" value="{{$student_id}}" name="student_id" />
     @endif
     @if(isset($manager_id))
@@ -24,7 +24,7 @@
           <div class="row">
             @if($item->work==9)
             <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendar_settings_entry"
                   @if(isset($_edit) && $_edit===true)
                   confirm="{{__('messages.confirm_update')}}">
                   {{__('labels.update_button')}}
@@ -140,7 +140,7 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
+    var _names = ["lesson", "lesson_place", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'[]']){

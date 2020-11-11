@@ -63,25 +63,23 @@
                     @endif
                     @endforeach
                   </h6>
-                  {{--
                   <div class="card-footer p-0">
                     <ul class="nav flex-column">
                       @if(!empty($item->recess_duration()))
                       <li class="nav-item pl-1">
-                        <a href="/{{$domain}}/{{$item->id}}/recess" class="nav-link">
-                          <i class="fa fa-calendar-alt mr-2"></i>
+                        <span class="nav-link">
                           休会予定：{{$item->recess_duration()}}
-                        </a>
+                        </span>
                       </li>
                       @endif
                       @if(!empty($item->unsubscribe_date_label()))
                       <li class="nav-item pl-1">
-                        <a href="/{{$domain}}/{{$item->id}}/unsubscribe" class="nav-link">
-                          <i class="fa fa-calendar-alt mr-2"></i>
+                        <span class="nav-link">
                           退会予定：{{$item->unsubscribe_date_label()}}
-                        </a>
+                        </span>
                       </li>
                       @endif
+                      {{--
                       <li class="nav-item">
                         <a href="/{{$domain}}/{{$item->id}}/schedule?list=month" class="nav-link @if($view=="schedule" && $list=="month") active @endif">
                           <i class="fa fa-calendar-check mr-2"></i>

@@ -173,22 +173,33 @@ EOT;
     }
     return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
   }
-  public function scopeFindUser($query, $user_id)
+  public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
     $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id from user_calendar_members where user_id=?)
+      user_calendars.id in (select calendar_id from user_calendar_members where user_id=? and status != ?)
 EOT;
-    return $query->whereRaw($where_raw,[$user_id]);
+    return $query->whereRaw($where_raw,[$user_id, $deactive_status]);
   }
+
   public function scopeHiddenFilter($query)
   {
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role!='manager'){
+        $query = $query->where('status', '!=', 'dummy');
+      }
+    }
+    //work=11の先生の予定はカレンダーに表示しない
     $where_raw = <<<EOT
       user_calendars.id not in (
         select u2.id from user_calendars u2 inner join common.teachers t on t.user_id = u2.user_id
         where u2.work in (11)
       )
 EOT;
-    return $query->whereRaw($where_raw);
+
+    $query =  $query->whereRaw($where_raw);
+    return $query;
   }
   public function scopeFindExchangeTarget($query, $user_id=0, $lesson=0)
   {
@@ -239,11 +250,11 @@ EOT;
   }
   public function get_access_member(){
     $ret = [];
-    $user = Auth::user()->details();
-
+    $user = Auth::user();
     if(!isset($user)) {
       return $ret;
     }
+    $user = $user->details();
     if($user->role=='parent'){
       //保護者の場合、自分の子供のみアクセス可能
       foreach ($user->relation() as $relation){
@@ -624,7 +635,7 @@ EOT;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
       $_member = $member->user->details('teachers');
-      if($_member->role === 'teacher'){
+      if($_member->role === 'teacher' && $member->status != 'invalid'){
         $teacher_name.=$_member['name'].',';
         $teachers[] = $member;
       }
@@ -727,7 +738,14 @@ EOT;
         return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
     }
-
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role=='manager' && $form['target_user_id'] != $user->id && $status=='new'){
+        //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+        $status = 'dummy';
+      }
+    }
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && empty($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -761,12 +779,11 @@ EOT;
       unset($form['send_mail']);
     }
     $calendar->change($form);
-
     return $calendar->api_response(200, "", "", $calendar);
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id, $is_send_mail=true){
-    if($this->status!='new' && $is_send_mail==true){
+    if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
     //事務システム側を先に削除
@@ -1203,6 +1220,57 @@ EOT;
     }
     return false;
   }
+
+  public function is_teacher_changing(){
+    $asks = Ask::findTargetModel('user_calendars',$this->id)->findStatuses(['new'])->get();
+    if($asks->count() > 0){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  //TODO 事務システムリプレース後は不要
+  public function get_schedule_ids(){
+    $members = $this->members;
+    $schedule_ids = [];
+    foreach($members as $member){
+      if($member->schedule_id != 0){
+        $schedule_ids[] = $member->schedule_id;
+      }
+    }
+    return $schedule_ids;
+  }
+  public function teacher_change($is_exec = true, $change_user_id, $target_user_id){
+    if($is_exec==true){
+      //事務システムの更新
+      $teacher_id_onetime = User::find($change_user_id)->get_tag('teacher_no')->tag_value;
+      $schedule_ids = $this->get_schedule_ids();
+      $this->unk_schedule_update($schedule_ids, $teacher_id_onetime);
+
+      //UserCalendarの主催者更新
+      $this->update(['user_id' => $change_user_id]);
+
+      //代講データを登録
+      $member = $this->members->where('user_id',$target_user_id)->first();
+      $new_member = $member->replicate();
+      $new_member->user_id = $change_user_id;
+      $new_member->exchanged_member_id = $member->id;
+      $new_member->save();
+
+      //代講した証拠が必要なので元のレコードをinvalidで残す
+      $member->status = 'invalid';
+      $member->save();
+    }
+  }
+
+  //TODO 事務システムリプレース後は不要
+    public function unk_schedule_update($schedule_ids, $teacher_id){
+      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+        'teacher_id' => $teacher_id,
+      ]);
+    }
+
   public function cache_delete(){
     $this->delete_user_cache($this->user_id);
     foreach($this->members as $member){

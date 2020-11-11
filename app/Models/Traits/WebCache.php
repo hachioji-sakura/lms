@@ -82,7 +82,7 @@ trait WebCache
       $_cache = Cache::get($save_id);
       //期限切れ　Cacheデータそのものを削除
       if(isset($_cache['expired']) && strtotime('now') > $_cache['expired']){
-        Cache:forget($save_id);
+        Cache::forget($save_id);
         return ;
       }
       //$this->tableのデータを削除

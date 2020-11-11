@@ -91,7 +91,7 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     console.log("form_data_adjust:"+form_data);
-    var _names = ["lesson", "lesson_place", "howto", "kids_lesson", "english_talk_lesson"];
+    var _names = ["lesson", "lesson_place", "entry_milestone", "howto", "kids_lesson", "english_talk_lesson"];
     $.each(_names, function(index, value) {
       if(util.isEmpty(form_data[value+"_name"])){
         form_data[value+"_name"] = "";

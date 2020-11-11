@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class StudentRelation extends Model
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.student_relations';
   protected $guarded = array('id');
 

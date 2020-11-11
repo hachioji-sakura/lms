@@ -29,7 +29,7 @@ class User extends Authenticatable
     use Common;
     use WebCache;
     use Notifiable;
-    protected $connection = 'mysql_common';
+    protected $table = 'common.users';
     /**
      * The attributes that are mass assignable.
      *
@@ -203,7 +203,7 @@ class User extends Authenticatable
     public function scopeTag($query, $tagkey, $tagvalue)
     {
       $where_raw = <<<EOT
-        id in (select user_id from user_tags where tag_key=? and tag_value=?)
+        id in (select user_id from common.user_tags where tag_key=? and tag_value=?)
 EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
@@ -224,7 +224,7 @@ EOT;
     }
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
@@ -245,7 +245,7 @@ EOT;
     public function get_enable_calendar_setting_count($lesson){
       $items = UserCalendarSetting::findUser($this->id)
       ->where('schedule_method', 'week')
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->enable()
       ->orderBy('from_time_slot', 'asc')
       ->get();

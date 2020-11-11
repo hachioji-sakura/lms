@@ -222,7 +222,6 @@ class StudentParentController extends TeacherController
        $param['user'] = $param['parent'];
        $student = Student::findChild($param['parent']->id)->orderBy('id', 'desc')->first();
        $trial = Trial::where('student_parent_id', $param['parent']->id)->where('student_parent_id', $param['parent']->id)->first();
-       if(isset($trial)) $param['trial'] = $trial->details();
        $param['access_key'] = $access_key;
        $param['_edit'] = false;
      }
@@ -260,7 +259,7 @@ class StudentParentController extends TeacherController
         abort(403);
       }
 
-      $res = $this->_register_update($request);
+      $res = $this->_register_update($request, 'regular');
       if($this->is_success_response($res)){
         if(empty($param['user'])){
           $form['send_to'] = 'parent';
@@ -271,7 +270,7 @@ class StudentParentController extends TeacherController
       }
       return $this->save_redirect($res, $param, '', $this->domain.'/register');
     }
-    public function _register_update(Request $request)
+    public function _register_update(Request $request, $status='trial')
     {
       $form = $request->all();
 
@@ -279,7 +278,7 @@ class StudentParentController extends TeacherController
       if(!isset($user)){
         abort(403);
       }
-      return $this->transaction($request, function() use ($form, $user){
+      return $this->transaction($request, function() use ($form, $user, $status){
         $form['create_user_id'] = $user->id;
         //ユーザー登録＝入会ではない
         $parent = StudentParent::where('user_id', $user->id)->first();
@@ -292,7 +291,7 @@ class StudentParentController extends TeacherController
                   'phone_no' => $form['phone_no'],
                   'post_no' => $form['post_no'],
                   'address' => $form['address'],
-                  'status' => 'trial',
+                  'status' => $status,
                   'user_id' => $user->id,
                   'create_user_id' => $user->id,
                 ]);
@@ -306,7 +305,7 @@ class StudentParentController extends TeacherController
             'phone_no' => $form['phone_no'],
             'post_no' => $form['post_no'],
             'address' => $form['address'],
-            'status' => 'trial',
+            'status' => $status,
           ]);
         }
         $user->set_password($form['password']);

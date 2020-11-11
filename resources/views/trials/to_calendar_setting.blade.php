@@ -131,8 +131,10 @@ $(function(){
       var from_time_slot = $('input[name="from_time_slot"]').val();
       var to_time_slot = $('input[name="to_time_slot"]').val();
       var calendar_setting_id = $('input[name="calendar_setting_id"]').val();
+      var action = $('input[name="action"]').val();
       var lesson_week = $('input[name="lesson_week"]').val();
-      if(util.isEmpty(calendar_setting_id)){
+      console.log(from_time_slot);
+      if(action=='new'){
         if(util.isEmpty(from_time_slot) || util.isEmpty(to_time_slot) || util.isEmpty(lesson_week)){
           front.showValidateError('button.btn.btn-submit', '予定が選択されていません');
           return;

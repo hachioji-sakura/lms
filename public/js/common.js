@@ -112,6 +112,7 @@ function birth_day_form_change(){
     if($('*[name="grade"]').length > 0){
       var grade = get_grade(year,month,day);
       $('*[name="grade"]').val(grade);
+      $('*[name="grade"]').change();
     }
   });
 }
@@ -183,6 +184,9 @@ function get_subject_grade(grade_name){
     _grade_name = "高校";
   }
   else if(grade_name.substring(0,1)=="幼"){
+    _grade_name = "小学";
+  }
+  else if(grade_name.substring(0,1)=="年"){
     _grade_name = "小学";
   }
   return _grade_name;
@@ -308,6 +312,7 @@ function lesson_place_filter(name){
   }
   if(!check_lesson["is_school"] && !check_lesson["is_english"]){
     //ピアノ＝子安、
+    $("label.lesson_place:contains('三鷹校')").hide();
     $("label.lesson_place:contains('八王子北口校')").hide();
     $("label.lesson_place:contains('国立校')").hide();
     $("label.lesson_place:contains('日野市豊田校')").hide();
@@ -439,7 +444,8 @@ function select_student_change(){
     var grade_code = "";
     if(!util.isEmpty(grade)){
       grade_code = grade.substr(0,1);
-      if(grade_code=='u') grade_code='h';
+      if(grade=='university') grade_code='h';
+      if(grade=='adult') grade_code='h';
     }
     $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
       options[$(this).val()] = $(this).text();
