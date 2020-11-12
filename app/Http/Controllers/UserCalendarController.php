@@ -921,9 +921,6 @@ class UserCalendarController extends MilestoneController
       $res = $this->api_response();
       $is_send = true;
       $calendar = UserCalendar::where('id', $id)->first();
-      if($param['user']->role != 'manager' && $param['user']->user_id != $param['item']->user_id){
-        abort(403);
-      }
       if($status=='rest_cancel' || $status=="lecture_cancel"){
         $ask = $this->get_ask_data($request, $param, $status);
         if($ask==null){
