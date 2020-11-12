@@ -525,9 +525,7 @@ EOT;
     return false;
   }
   public function timezone(){
-    $start_hour_minute = date('H:i',  strtotime($this->start_time));
-    $end_hour_minute = date('H:i',  strtotime($this->end_time));
-    return $start_hour_minute.'～'.$end_hour_minute;
+    return $this->term_format($this->start_time, $this->end_time, 'H:i');
   }
   public function dateweek(){
     return $this->dateweek_format($this->start_time);

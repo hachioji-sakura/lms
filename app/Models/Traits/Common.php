@@ -240,12 +240,23 @@ trait Common
     return "";
   }
 
-  public function scopeSearchTags($query, $tag_key, $tag_value)
+  public function scopeSearchTags($query, $tags)
   {
+    if(!isset($tags)) return $query;
     if(!isset($this->tags)) return $query;
-    return $query->whereHas('tags', function($query) use ($tag_key, $tag_value) {
-        $query->where('tag_key', $tag_key)->where('tag_value', $tag_value);
+    return $query->whereHas('tags', function($query) use ($tags) {
+        $query = $query->where(function($query)use($tags){
+          foreach($tags as $tag){
+            $query = $query->orWhere(function($query)use($tag){
+              $query->where('tag_key', $tag->tag_key)->where('tag_value', $tag->tag_value);
+            });
+          }
+        });
     });
-    return $query;
+  }
+  public function term_format($from, $to, $format='Y-m-d'){
+    $start_hour_minute = date($format,  strtotime($from));
+    $end_hour_minute = date($format,  strtotime($to));
+    return $start_hour_minute.'～'.$end_hour_minute;
   }
 }

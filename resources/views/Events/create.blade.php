@@ -9,12 +9,12 @@
   <input type="text" name="dummy" style="display:none;" / >
 　  <div class="row">
       <div class="col-12">
-        <label for="charge_subject" class="w-100">
+        <label for="event_template_id" class="w-100">
           テンプレート
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         </label>
         <div class="">
-          <select name="event_type_id" class="form-control select2" width=100% >
+          <select name="event_template_id" class="form-control select2" width=100% >
             @foreach($templates as $template)
             <option value="{{$template->id}}"
               @if(isset($_edit) && $_edit==true && $item->event_template_id == $template->id)
@@ -39,7 +39,7 @@
           @if(isset($_edit) && $_edit==true)
            value="{{$item['title']}}" placeholder="(変更前) {{$item['title']}}">
           @else
-           placeholder="">
+           placeholder="(例)2020年冬期講習のお知らせ">
           @endif
         </div>
       </div>
@@ -160,7 +160,7 @@
             備考
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <textarea type="text" name="description" class="form-control"  maxlength=1000
+          <textarea type="text" name="body" class="form-control"  maxlength=1000
           @if(isset($_edit) && $_edit==true)
             placeholder="(変更前) {{$item->description}}" >{{$item->description}}</textarea>
           @else
