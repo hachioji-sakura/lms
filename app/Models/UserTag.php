@@ -7,7 +7,6 @@ use App\Models\GeneralAttribute;
 
 class UserTag extends Model
 {
-  protected $connection = 'mysql_common';
   protected $table = 'common.user_tags';
   protected $guarded = array('id');
   public static $rules = array(
@@ -23,6 +22,7 @@ class UserTag extends Model
     $key = $this->tag_key;
     if($key==="teacher_no") return "No";
     if($key==="student_no") return "No";
+    if($key==="entry_milestone_word") return "やって欲しいこと（その他）";
     if($key==="howto_word") return "検索時のキーワード";
 
     if($key==="lesson_time_holiday") $key = "lesson_time";
@@ -66,7 +66,7 @@ class UserTag extends Model
       //希望科目の場合
       //受験希望、補習希望　生徒向けの定義
       $key = 'lesson_subject_level';
-      if($this->table === 'user_tags'){
+      if($this->table === 'common.user_tags'){
         //ユーザータグ＝人につくので、charge_subject_level
         //受験可、補習可　講師向けの定義
         $key = 'charge_subject_level';

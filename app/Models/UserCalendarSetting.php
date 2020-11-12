@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
 use App\User;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMemberSetting;
@@ -32,7 +34,7 @@ class UserCalendarSetting extends UserCalendar
     return __('messages.info_calendar_setting_delete');
   }
 
-  public function scopeFindUser($query, $user_id)
+  public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
     $where_raw = <<<EOT
       lms.user_calendar_settings.id in (select user_calendar_setting_id from lms.user_calendar_member_settings where user_id=$user_id)
@@ -42,6 +44,13 @@ EOT;
   }
   public function scopeHiddenFilter($query)
   {
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role!='manager'){
+        $query = $query->where('status', '!=', 'dummy');
+      }
+    }
     return $query;
   }
 
@@ -300,6 +309,14 @@ EOT;
       }
     }
 
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role=='manager' && $form['user_id'] != $user->id && $status=='new'){
+        //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+        $status = 'dummy';
+      }
+    }
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -329,7 +346,7 @@ EOT;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id, $is_send_mail=true){
-    if($this->status!='new' && $is_send_mail==true){
+    if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
 

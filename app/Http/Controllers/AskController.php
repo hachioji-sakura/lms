@@ -46,6 +46,9 @@ class AskController extends MilestoneController
   }
   public function show_fields($type){
     $ret = [
+      'title' => [
+        'label' => __('labels.title'),
+      ],
       'type_name' => [
         'label' => __('labels.asks'),
         'size' => 6,
@@ -249,7 +252,6 @@ class AskController extends MilestoneController
       $form = $request->all();
       $form['status'] = $status;
       $form['login_user_id'] = $param['user']->user_id;
-
       $param['item'] = Ask::where('id', $param['item']->id)->first();
       $param['item'] = $param['item']->change($form);
       return $this->api_response(200, '', '', $param['item']);
@@ -301,12 +303,12 @@ class AskController extends MilestoneController
     if(!$this->is_success_response($res)){
       return $res;
     }
-
     $res = $this->transaction($request, function() use ($request){
       $form = $request->all();
       $param = $this->get_param($request);
       $form["create_user_id"] = $param["user"]->user_id;
       $item = Ask::add($form);
+
       return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     /*
@@ -314,6 +316,16 @@ class AskController extends MilestoneController
       $res = $this->error_response("同じ内容がすでに登録されています。");
     }
     */
+    switch ($res['data']->type){
+      //代講以外の登録メッセージを変更する場合追加する
+      case "teacher_change":
+        $message = __('messages.info_teacher_change_send');
+        break;
+      default:
+        $message = '登録しました。';
+        break;
+    }
+    $res['message'] = $message;
     return $res;
    }
    public function destroy(Request $request, $id)
@@ -367,7 +379,6 @@ class AskController extends MilestoneController
      $param['action'] = '';
      $param['fields'] = [];
      $param['student'] = $param['trial']->student;
-     Auth::loginUsingId($param['trial']->parent->user->id);
 
      return view('asks.agreement', [])->with($param);
    }

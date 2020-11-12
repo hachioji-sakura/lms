@@ -9,7 +9,7 @@
         </a>
         @elseif($button==="delete")
         <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
-          <i class="fa fa-times"></i>
+          <i class="fa fa-trash"></i>
         </a>
         @elseif(isset($button['method']))
         <a href="javascript:void(0);" page_title="{{$domain_name}}{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/{{$button['method']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
@@ -32,6 +32,10 @@
            href="javascript:void(0);" page_title="{{$domain_name}}詳細" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}"
         @else
           href="{{$field['link']($row)}}"
+        @endif
+
+        @if(isset($field['target']))
+          target = "{{$field['target']}}"
         @endif
         >
       @endif

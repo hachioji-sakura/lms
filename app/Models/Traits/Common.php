@@ -67,11 +67,11 @@ trait Common
   }
   public function s3_delete($s3_url){
     $controller = new Controller;
+    $form = [];
+    if(isset($this->s3_alias)) $form['s3_alias'] = '';
+    if(isset($this->s3_url)) $form['s3_url'] = '';
     $res = $controller->s3_delete($s3_url);
-    $this->update([
-      's3_alias' => '',
-      's3_url' => '',
-    ]);
+    $this->update($form);
     return $res;
   }
   public function create_token($limit_second=86400){

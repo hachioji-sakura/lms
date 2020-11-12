@@ -46,11 +46,19 @@
     $(function(){
 
       //submit
-      $("button.btn-submit").on('click', function(e){
+      $("button.btn-submit[accesskey=commit_form]").on('click', function(e){
         e.preventDefault();
         if(front.validateFormValue('commit_form')){
           $(this).prop("disabled",true);
           $("#commit_form form").submit();
+        }
+      });
+
+      $("button.btn-submit[accesskey=cancel_form]").on('click', function(e){
+        e.preventDefault();
+        if(front.validateFormValue('commit_form')){
+          $(this).prop("disabled",true);
+          $("#cancel_form form").submit();
         }
       });
     });

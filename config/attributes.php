@@ -1311,6 +1311,27 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "35",
 		],
+		"calendar_status" => [
+			"attribute_value" => "calendar_status",
+			"attribute_name" => "calendar_status",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "35",
+		],
+		"setting_status" => [
+			"attribute_value" => "setting_status",
+			"attribute_name" => "setting_status",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "36",
+		],
+		"entry_milestone" => [
+			"attribute_value" => "entry_milestone",
+			"attribute_name" => "特に重視してやって欲しいことをお知らせください",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "37",
+		],
 	],
 	"kids_lesson" => [
 		"programming" => [

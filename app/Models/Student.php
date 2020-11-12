@@ -18,7 +18,6 @@ use DB;
 class Student extends Model
 {
   use Common;
-  protected $connection = 'mysql_common';
   protected $table = 'common.students';
   protected $guarded = array('id');
   /**
@@ -206,7 +205,7 @@ EOT;
     if(gettype($tag_values) == "string" || gettype($tag_values) == "integer") $tag_values = explode(',', $tag_values.',');
     return $query->whereIn('user_id' , function ($query) use($tag_key, $tag_values){
           $query->select('user_id')
-                  ->from('user_tags')
+                  ->from('common.user_tags')
                   ->where('tag_key', $tag_key)
                   ->whereIn('tag_value', $tag_values);
     });
@@ -477,6 +476,7 @@ EOT;
     return $ret;
   }
   public function recess_duration(){
+    if(strtotime($this->recess_end_date) < strtotime('now')) return "";
     if(empty($this->recess_start_date)) return "";
     $ret = date('Y年m月d日',  strtotime($this->recess_start_date));
     $ret .=  '～'.date('Y年m月d日',  strtotime($this->recess_end_date));
@@ -524,7 +524,8 @@ EOT;
     return false;
   }
   public function get_calendar_settings($filter){
-    $items = UserCalendarSetting::findUser($this->user_id);
+    $items = UserCalendarSetting::hiddenFilter();
+    $items = $items->findUser($this->user_id);
     if(isset($filter["search_status"])){
       $_param = "";
       if(gettype($filter["search_status"]) == "array") $_param  = $filter["search_status"];
