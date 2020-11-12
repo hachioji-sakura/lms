@@ -168,7 +168,7 @@
 						                  course_minutes="{{$setting->course_minutes}}"
 						                  teacher_id="{{$setting->user->details('teachers')->id}}"
 															student_id="{{$item->id}}"
-															grade="{{$item->tag_value('grade')}}"
+															grade="{{$item->get_tag_value('grade')}}"
 															lesson_week_count="{{$item->user->get_enable_calendar_setting_count($setting->get_tag_value('lesson'))}}"
 															@if($item->is_juken()==true)
 												        is_juken="1"

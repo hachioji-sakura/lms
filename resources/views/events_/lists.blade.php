@@ -82,9 +82,9 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach($attributes['milestone_type'] as $index => $name)
+      @foreach($attributes['event_status'] as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
+         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($search_status) && $index===$search_status) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$name}}
          </a>
        </li>

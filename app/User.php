@@ -200,6 +200,10 @@ class User extends Authenticatable
       if(!empty($item["name"])) return $item["name"];
       return "";
     }
+    public function get_url(){
+      $d = $this->details();
+      return $d->role.'s/'.$d->id;
+    }
     public function scopeTag($query, $tagkey, $tagvalue)
     {
       $where_raw = <<<EOT

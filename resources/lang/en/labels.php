@@ -392,6 +392,7 @@ return [
   'learning_record' => 'Learning Records',
   'actionlogs' => 'System Logs',
   'event_templates' => 'Event Template',
+  'event_users' => 'Event User',
   'ask_teacher_change_description' => 'About teacher change you should check',
   'teacher_change' => 'Change assigned teacher',
   'dummy_release' => 'Dummy Release',

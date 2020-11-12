@@ -3,19 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\EventTemplate;
-use App\Models\EventTemplateTag;
+use App\Models\Event;
+use App\Models\EventUser;
 
-//class EventTemplateController extends Controller
-class EventTemplateController extends MilestoneController
+class EventUserController extends EventController
 {
-  public $domain = 'event_templates'; //URLで使われるページ名
-  public $table = 'event_templates'; //スキーマ名(lms.)無しのテーブル名
+  public $domain = 'event_users';
+  public $table = 'event_users';
 
   public function model(){
-    return EventTemplate::query();
+    return EventUser::query();
   }
+  /**
+   * 一覧表示
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return view / domain.lists
+   */
+  public function index(Request $request)
+  {
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
 
+    $param = $this->get_param($request);
+    $user = $param['user'];
+    if(!$this->is_manager($user->role)){
+      //事務以外 一覧表示は不可能
+      abort(403);
+    }
+    $_table = $this->search($request);
+    return view($this->domain.'.lists', $_table)
+      ->with($param);
+  }
   /**
    * イベント画面表示
    *
@@ -24,23 +56,17 @@ class EventTemplateController extends MilestoneController
   {
     $param = $this->get_param($request, $id);
     $fields = [
-      'role' => [
-        'label' => '送信対象'
+      'id' => [
+        'label' => 'ID'
       ],
-      'name' => [
-        'label' => 'イベント名称'
+      'user_name' => [
+        'label' => '対象者'
       ],
-      'lesson' => [
-        'label' => '担当部門'
+      'status_name' => [
+        'label' => 'ステータス'
       ],
-      'grade' => [
-        'label' => '学年'
-      ],
-      'remark' => [
-        'label' => '説明'
-      ],
-      'create_user_name' => [
-        'label' => '作成ユーザID'
+      'created_date' => [
+        'label' => '登録日'
       ],
     ];
 
@@ -63,28 +89,33 @@ class EventTemplateController extends MilestoneController
     $items = $this->model();
     $user = $this->login_details($request);
     $items = $this->_search_scope($request, $items);
-    $items = $items->paginate($param['_line']);
+    $items = $items->paginate();
 
     $fields = [
-      'role' => [
-        'label' => '送信対象'
+      'id' => [
+        'label' => 'ID',
+        'link' => 'show',
       ],
-      'name' => [
-        'label' => 'イベント名称'
+      'user_name' => [
+        'label' => '対象者',
+        "target" => '_blank',
+        "link" => function($row){
+          return $row->url;
+        }
       ],
-      'lesson' => [
+      'status_name' => [
         'label' => '担当部門'
       ],
-      'grade' => [
-        'label' => '学年'
+      'tags' => [
+        'label' => 'タグ'
       ],
-      'create_user_name' => [
-        'label' => '作成ユーザー'
+      'created_date' => [
+        'label' => '登録日'
       ],
    ];
    $fields['buttons'] = [
      'label' => '操作',
-     'button' => ['edit', 'delete']
+     'button' => ['delete']
    ];
     return ['items' => $items, 'fields' => $fields];
   }
@@ -101,22 +132,11 @@ class EventTemplateController extends MilestoneController
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
     }
-    //ステータス 検索
-    if(isset($request->search_status)){
-      $items = $items->where('status',$request->search_status);
+    //event_id 検索
+    if(isset($request->event_id)){
+      $items = $items->where('event_id',$request->event_id);
     }
 
-    //検索ワード
-    if(isset($request->search_word)){
-      $search_words = explode(' ', $request->search_word);
-      $items = $items->where(function($items)use($search_words){
-        foreach($search_words as $_search_word){
-          if(empty($_search_word)) continue;
-          $_like = '%'.$_search_word.'%';
-          $items->orWhere('body','like',$_like)->orWhere('title','like',$_like);
-        }
-      });
-    }
 
     return $items;
   }
@@ -130,11 +150,8 @@ class EventTemplateController extends MilestoneController
     $user = $this->login_details($request);
     $form = [];
     $form['create_user_id'] = $user->user_id;
-    $form['user_role'] = $request->get('user_role');
-    $form['grade'] = $request->get('grade');
-    $form['lesson'] = $request->get('lesson');
-    $form['name'] = $request->get('name');
-    $form['remark'] = htmlentities($request->get('remark'), ENT_QUOTES, 'UTF-8');
+    $form['event_id'] = $request->get('event_id');
+    $form['user_id'] = $request->get('user_id');
     return $form;
   }
   /**
@@ -155,8 +172,8 @@ class EventTemplateController extends MilestoneController
   {
     $form = $request->all();
     //保存時にパラメータをチェック
-    if(empty($form['name']) || empty($form['user_role']) || empty($form['lesson'])){
-      return $this->bad_request('リクエストエラー', ''.$form['name']);
+    if(empty($form['user_id']) || empty($form['event_id'])){
+      return $this->bad_request('リクエストエラー', ''.$form['event_id']);
     }
     return $this->api_response(200, '', '');
   }
@@ -173,25 +190,12 @@ class EventTemplateController extends MilestoneController
       return $res;
     }
     $res = $this->transaction($request, function() use ($request, $form){
-      $item = EventTemplate::add($form);
+      $item = EventUser::create($form);
       return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
-   public function _update(Request $request, $id)
-   {
-     $res = $this->save_validate($request);
-     if(!$this->is_success_response($res)){
-       return $res;
-     }
-     $res =  $this->transaction($request, function() use ($request, $id){
-       $form = $this->update_form($request);
-       $item = $this->model()->where('id', $id)->first();
-       $item->change($form);
-       return $this->api_response(200, '', '', $item);
-     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
-     return $res;
-   }
+
    /**
     * Remove the specified resource from storage.
     *

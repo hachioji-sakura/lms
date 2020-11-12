@@ -34,6 +34,9 @@ class EventController extends MilestoneController
     'event_term' => [
       'label' => '開催期間'
     ],
+    'status_name' => [
+      'label' => 'ステータス'
+    ],
     'response_term' => [
       'label' => '回答期間'
     ],
@@ -71,6 +74,9 @@ class EventController extends MilestoneController
      'template_title' => [
        'label' => 'テンプレート'
      ],
+     'status_name' => [
+       'label' => 'ステータス'
+     ],
      'event_term' => [
        'label' => '開催期間'
      ],
@@ -79,6 +85,12 @@ class EventController extends MilestoneController
      ],
      'event_user_count' => [
        'label' => '対象者数'
+     ],
+     'event_user_count' => [
+       'label' => '対象者数',
+       "link" => function($row){
+         return "/event_users?event_id=".$row['id'];
+       }
      ],
      'create_user_name' => [
        'label' => '作成者'

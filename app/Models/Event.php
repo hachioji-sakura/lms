@@ -83,6 +83,15 @@ class Event extends Milestone
 
       return $this;
     }
+    public function getStatusNameAttribute(){
+      $status_name = "";
+      if(app()->getLocale()=='en') return $this->status;
+
+      if(isset(config('attribute.event_status')[$this->status])){
+        $status_name = config('attribute.event_status')[$this->status];
+      }
+      return $status_name;
+    }
     public function evet_user_add(){
       $user_ids = [];
       $lesson_tag = $this->template->get_tag('lesson');

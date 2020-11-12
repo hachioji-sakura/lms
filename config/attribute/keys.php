@@ -38,5 +38,6 @@ return array(
   'calendar_status' => 'calendar_status',
   'setting_status' => 'setting_status',
   'entry_milestone' => '特に重視してやって欲しいことをお知らせください',
+  'event_status' => 'イベントステータス',
 );
 ?>

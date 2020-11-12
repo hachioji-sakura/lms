@@ -147,6 +147,11 @@ class MilestoneController extends UserController
         }
         $ret['item'] = $item;
       }
+      else {
+        if($user->role!="manager"){
+          abort(403);
+        }
+      }
       return $ret;
     }
     /**

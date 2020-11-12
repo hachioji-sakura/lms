@@ -26,5 +26,5 @@
 <input type="hidden" name="lesson" value="{{$item->lesson(true)}}" >
 @elseif(isset($teacher))
 {{-- レッスンが１つしかない --}}
-<input type="hidden" name="lesson" value="{{$teacher->get_tag('lesson')['value']}}" alt="{{$teacher->get_tag('lesson')['name']}}">
+<input type="hidden" name="lesson" value="{{$teacher->get_tag_value('lesson')}}" alt="{{$teacher->get_tag_name('lesson')}}">
 @endif

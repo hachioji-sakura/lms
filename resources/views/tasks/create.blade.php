@@ -187,7 +187,7 @@
   <script>
 
   $(function(){
-    var grade = "{{$target_student->tag_value('grade')}}";
+    var grade = "{{$target_student->get_tag_value('grade')}}";
     var school = grade.match(/^./)[0];
     console.log(school);
     $('select#select_subject option').each(function(){

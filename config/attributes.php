@@ -796,6 +796,36 @@
 			"sort_no" => "6",
 		],
 	],
+	"event_status" => [
+		"new" => [
+			"attribute_value" => "new",
+			"attribute_name" => "実施予定",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
+		"progress" => [
+			"attribute_value" => "progress",
+			"attribute_name" => "実施中",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "2",
+		],
+		"cancel" => [
+			"attribute_value" => "cancel",
+			"attribute_name" => "キャンセル",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "3",
+		],
+		"closed" => [
+			"attribute_value" => "closed",
+			"attribute_name" => "終了",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "4",
+		],
+	],
 	"faq_type" => [
 		"control" => [
 			"attribute_value" => "control",
@@ -1316,21 +1346,28 @@
 			"attribute_name" => "calendar_status",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "35",
+			"sort_no" => "36",
 		],
 		"setting_status" => [
 			"attribute_value" => "setting_status",
 			"attribute_name" => "setting_status",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "36",
+			"sort_no" => "37",
 		],
 		"entry_milestone" => [
 			"attribute_value" => "entry_milestone",
 			"attribute_name" => "特に重視してやって欲しいことをお知らせください",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "37",
+			"sort_no" => "38",
+		],
+		"event_status" => [
+			"attribute_value" => "event_status",
+			"attribute_name" => "イベントステータス",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "39",
 		],
 	],
 	"kids_lesson" => [
@@ -2284,6 +2321,29 @@
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "2",
+		],
+	],
+	"season_lesson_course" => [
+		"60" => [
+			"attribute_value" => "60",
+			"attribute_name" => "個別60分コース（マンツーマン授業1時間＋演習解説授業4時間）",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "1",
+		],
+		"90" => [
+			"attribute_value" => "90",
+			"attribute_name" => "個別90分コース（マンツーマン授業1.5時間＋演習解説授業3.5時間）",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "2",
+		],
+		"120" => [
+			"attribute_value" => "120",
+			"attribute_name" => "個別120分コース（マンツーマン授業2時間＋演習解説授業3時間）",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "3",
 		],
 	],
 	"setting_status" => [
@@ -3285,7 +3345,7 @@
 		],
 		"5" => [
 			"attribute_value" => "5",
-			"attribute_name" => "演習",
+			"attribute_name" => "マンツーマン演習",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "3",
