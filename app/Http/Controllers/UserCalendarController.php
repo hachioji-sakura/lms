@@ -725,9 +725,8 @@ class UserCalendarController extends MilestoneController
         if (!View::exists($this->domain.'.'.$status)) {
           abort(404, 'ページがみつかりません(100)');
         }
-      }
-      else {
-        Auth::loginUsingId($request->get('user'));
+      }else{
+         Auth::loginUsingId($request->get('user'));
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
@@ -1017,6 +1016,9 @@ class UserCalendarController extends MilestoneController
         }
         if($param['item']->work!=9){
           foreach($members as $member){
+            if($member->status == 'invalid'){
+              continue;
+            }
             //メンバーステータスの個別指定がある場合
             if(isset($form['is_all_student']) && $form['is_all_student']==1){
               //全生徒指定がある場合

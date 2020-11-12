@@ -132,12 +132,13 @@ class StudentController extends UserController
       '_sort' => 'id',
       '_sort_order' => $sort,
     ]);
-   $items = $this->_search_pagenation($request, $items);
+    //tilesで表示するので、paging不要
+    //$items = $this->_search_pagenation($request, $items);
 
-   $items = $this->_search_sort($request, $items);
+    $items = $this->_search_sort($request, $items);
 
-   $items = $items->get();
-   return ["items" => $items];
+    $items = $items->get();
+    return ["items" => $items];
   }
   /**
    * フィルタリングロジック
