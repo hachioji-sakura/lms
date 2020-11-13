@@ -54,6 +54,24 @@ class Subject extends Milestone
       return $this;
     }
 
+    public function add_with_curriculums_by_name($subject_name,$curriculum_names){
+      $sort_no = Subject::all()->max('sort_no') + 1;
+      $subject_form = [
+        'name' => $subject_name,
+        'sort_no' => $sort_no,
+        'create_user_id' => 1,
+      ];
+      $this->fill($subject_form)->save();
 
-
+      $curriculum_form = [];
+      foreach($curriculum_names as $name){
+        $sort_no = Curriculum::all()->max('sort_no') + 1;
+        $curriculum_form[] = [
+          'name' => $name,
+          'sort_no' => $sort_no,
+          'create_user_id' => 1,
+        ];
+      }
+      $this->curriculums()->createMany($curriculum_form);
+    }
 }
