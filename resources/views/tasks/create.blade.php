@@ -59,7 +59,7 @@
           <label>{{__('labels.tasks_remarks')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
-            <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{$_edit ? $item->title : ''}}</textarea>
+            <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{$_edit ? $item->full_title : ''}}</textarea>
           </div>
         </div>
       </div>
