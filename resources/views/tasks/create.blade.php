@@ -56,25 +56,14 @@
       </div>
       <div class="row mt-2">
         <div class="col-12">
-          <label>{{__('labels.title')}}</label>
+          <label>{{__('labels.tasks_remarks')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="title" id="title" placeholder="{{__('labels.task_title')}}" required="true" value="{{$_edit ? $item->title : ''}}" maxlength=255>
-            {{--タイトル変更系のボタンは封印
-            <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="title_set">
-                <i class="fa fa-copy"></i>
-              </button>
-            </div>
-            <div class="input-group-append">
-              <button class="btn btn-danger" type="button" id="clear_title">
-                <i class="fa fa-times-circle"></i>
-              </button>
-            </div>
-            --}}
+            <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{$_edit ? $item->title : ''}}</textarea>
           </div>
         </div>
       </div>
+      {{--詳細の役割はtitleが担うのでコメントアウト
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.tasks_remarks')}}</label>
@@ -82,6 +71,7 @@
           <textarea name="body" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" >{{$_edit ? $item->body : ''}}</textarea>
         </div>
       </div>
+      --}}
       <div class="row mt-2">
         <div class="col-12">
           <h3 class="card-title">

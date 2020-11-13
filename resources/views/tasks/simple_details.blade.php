@@ -1,4 +1,5 @@
 <div class="">
+  {{--詳細単体では表示しなくなったので、コメントアウト
   @if(isset($item->body))
   <div class="row">
     <div class="col-12">
@@ -9,6 +10,15 @@
     </div>
   </div>
   @endif
+  --}}
+  <div class="row">
+    <div class="col-12">
+      <label>{{__('labels.details')}}</label>
+      <div class="form-group">
+          {!!nl2br($item->full_title)!!}
+      </div>
+    </div>
+  </div>
 
     <div class="row mt-1">
       <div class="col-6">
