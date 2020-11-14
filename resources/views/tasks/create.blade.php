@@ -230,29 +230,13 @@
     }else{
       $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
         base.pageSettinged('create_tasks');
-        set_title();
       });
     }
-  });
-  $("#title_set").on('click', function(e){
-    set_title();
   });
 
   $('#clear_title').on('click',function(e){
     $('#title').val("");
   });
-
-  function set_title(){
-    var curriculums = "";
-    $("#select_curriculum option:selected").each(function(){
-      curriculums += "_" + $(this).text();
-    });
-    $('input:text[name="new_curriculums[]"]').each(function(){
-      curriculums += "_" + $(this).val();
-    });
-    var title = $("#select_subject option:selected" ).text().trim() +  curriculums;
-    $("#title").val(title);
-  }
 
 
   </script>

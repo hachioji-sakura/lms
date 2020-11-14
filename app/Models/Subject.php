@@ -12,7 +12,7 @@ class Subject extends Milestone
     protected $guarded = array('id');
 
     public function curriculums(){
-      return $this->belongsToMany('App\Models\Curriculum','curriculum_subject','curriculum_id','subject_id')->withTimestamps();
+      return $this->belongsToMany('App\Models\Curriculum','curriculum_subject','subject_id','curriculum_id')->withTimestamps();
     }
 
     public function details(){
