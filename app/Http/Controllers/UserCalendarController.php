@@ -200,7 +200,6 @@ class UserCalendarController extends MilestoneController
     else if($request->has('start_time')){
       $start_time = $request->get('start_time');
     }
-    //授業時間＋開始日時から終了日時を計算
     $form['start_time'] = $start_time;
 
     if($request->has('course_minutes')){
@@ -1093,6 +1092,7 @@ class UserCalendarController extends MilestoneController
       if(!$this->is_success_response($res)){
         return $res;
       }
+      $res = $this->transaction($request, function() use ($request,$id){
         $param = $this->get_param($request);
         $item = $this->model()->where('id',$id)->first();
         $form = $this->create_form($request);
@@ -1123,7 +1123,6 @@ class UserCalendarController extends MilestoneController
         */
         $item->change($form);
         return $this->api_response(200, '', '', $item);
-        $res = $this->transaction($request, function() use ($request,$id){
 
       }, '授業予定更新', __FILE__, __FUNCTION__, __LINE__ );
 
