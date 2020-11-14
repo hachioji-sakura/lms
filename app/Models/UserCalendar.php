@@ -452,6 +452,10 @@ EOT;
     }
     return "";
   }
+  public function is_season_lesson(){
+    if($this->work==10 || $this->work==11) return true;
+    return false;
+  }
   public function schedule_type_name(){
     $code = $this->schedule_type_code();
     return __('labels.'.$code);
