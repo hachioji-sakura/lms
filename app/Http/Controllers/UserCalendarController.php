@@ -59,7 +59,7 @@ class UserCalendarController extends MilestoneController
   public function model(){
     return UserCalendar::query();
   }
-  public function show_fields($item){
+  public function show_fields($item=''){
     $base_ret = [
       'datetime' => [
         'label' => __('labels.datetime'),

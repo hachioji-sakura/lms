@@ -15,6 +15,7 @@
         </label>
         <div class="">
           <select name="event_template_id" class="form-control select2" width=100% onChange="template_change()">
+            <option value="">({{__('labels.select')}})</option>
             @foreach($templates as $template)
             <option value="{{$template->id}}"
               @if(isset($_edit) && $_edit==true && $item->event_template_id == $template->id)
@@ -25,14 +26,29 @@
           </select>
         </div>
       </div>
-　  </div>
-    <script>
-    function template_change(){
-      
-    }
-    </script>
-
-    <div class="row">
+      <script>
+      function template_change(){
+        var template_id = $('select[name="event_template_id"]').val();
+        var url  = 'event_templates/'+template_id+'?api=1';
+        service.getAjax(false, url, null,
+          function(result, st, xhr) {
+            var t = $('input[name="title"]');
+            var b = $('textarea[name="body"]');
+            var data =  result["data"];
+            console.log(data);
+            if(confirm('件名と内容を、テンプレートの設定値にしますか？')){
+              t.val(data['name']);
+              b.val(data['remark']);
+            }
+          },
+          function(xhr, st, err) {
+            var messageCode = "error";
+            var messageParam= "\n"+err.message+"\n"+xhr.responseText;
+            alert("UIエラー\n"+messageParam);
+          }
+        ,true);
+      }
+      </script>
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
@@ -47,9 +63,6 @@
           @endif
         </div>
       </div>
-    </div>
-
-    <div class="row">
       <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
           <label for="event_from_date" class="w-100">
@@ -100,9 +113,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="row">
       <div class="col-12 col-md-6 mb-1">
         <div class="form-group">
           <label for="response_from_date" class="w-100">
@@ -154,10 +164,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-
-    <div class="row">
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">

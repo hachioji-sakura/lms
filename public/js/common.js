@@ -486,3 +486,31 @@ function select_student_change(){
     }
   }
 }
+function all_checked_change(obj){
+  var _val = $(obj).val();
+  var _checked = $(obj).prop('checked');
+  var _accesskey = $(obj).attr('accesskey');
+  if(!util.isEmpty(_accesskey)){
+    if(_checked){
+      $('*[name="'+_accesskey+'"]').each(function(i, e){
+        $(this).iCheck('check');
+      });
+    }
+    else{
+      $('*[name="'+_accesskey+'"]').each(function(i, e){
+        $(this).iCheck('uncheck');
+      });
+    }
+  }
+}
+function is_checked_exist(group_id, target_name){
+  var _is_checked = false;
+  $('*[name="'+target_name+'"]').each(function(){
+    var f = $(this).prop('checked');
+    if(f) _is_checked = true;
+  });
+  if(_is_checked==false){
+    front.showValidateError('#'+group_id, '対象が選択されていません');
+  }
+  return _is_checked;
+}

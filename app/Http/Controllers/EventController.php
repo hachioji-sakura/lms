@@ -65,10 +65,12 @@ class EventController extends MilestoneController
         'size' => 6,
       ],
       'event_term' => [
-        'label' => '開催期間'
+        'label' => '開催期間',
+        'size' => 6,
       ],
       'response_term' => [
-        'label' => '回答期間'
+        'label' => '回答期間',
+        'size' => 6,
       ],
       'body' => [
         'label' => '内容'

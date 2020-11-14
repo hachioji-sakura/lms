@@ -108,6 +108,9 @@ class MilestoneController extends UserController
         abort(403);
       }
       $_table = $this->search($request);
+      if($request->has('api')){
+        if($request->has('api')) return $this->api_response(200, '', '', $_table['items']);
+      }
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
@@ -340,6 +343,7 @@ class MilestoneController extends UserController
       }
       $form = $request->all();
       $form['fields'] = $fields;
+      if($request->has('api')) return $this->api_response(200, '', '', $param['item']);
       return view('components.page', $form)
         ->with($param);
     }
