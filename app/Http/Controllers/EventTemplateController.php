@@ -15,20 +15,13 @@ class EventTemplateController extends MilestoneController
   public function model(){
     return EventTemplate::query();
   }
-
-  /**
-   * イベント画面表示
-   *
-   */
-  public function show(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $fields = [
+  public function show_fields($type=''){
+    $ret = [
       'role' => [
         'label' => '送信対象'
       ],
       'name' => [
-        'label' => 'イベント名称'
+        'label' => '件名',
       ],
       'lesson' => [
         'label' => '担当部門'
@@ -37,18 +30,13 @@ class EventTemplateController extends MilestoneController
         'label' => '学年'
       ],
       'remark' => [
-        'label' => '説明'
+        'label' => '内容'
       ],
       'create_user_name' => [
         'label' => '作成ユーザID'
       ],
     ];
-
-    return view('components.page', [
-    'action' => $request->get('action'),
-    'fields'=>$fields])
-    ->with($param);
-
+    return $ret;
   }
 
   /**
@@ -70,7 +58,8 @@ class EventTemplateController extends MilestoneController
         'label' => '送信対象'
       ],
       'name' => [
-        'label' => 'イベント名称'
+        'label' => '件名',
+        'link' => 'show',
       ],
       'lesson' => [
         'label' => '担当部門'
@@ -103,7 +92,7 @@ class EventTemplateController extends MilestoneController
     }
     //ステータス 検索
     if(isset($request->search_status)){
-      $items = $items->where('status',$request->search_status);
+      $items = $items->findStatuses($request->search_status);
     }
 
     //検索ワード

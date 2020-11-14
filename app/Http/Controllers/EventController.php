@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\EventUserController;
 use App\Models\Event;
 use App\Models\EventTemplate;
 //class EventController extends Controller
@@ -18,41 +19,72 @@ class EventController extends MilestoneController
     $ret = parent::get_param($request, $id);
     $templates = EventTemplate::all();
     $ret['templates'] = $templates;
+    if(!$request->has('search_status')) $ret['search_status'] = 'new,progress';
     return $ret;
   }
-/**
- * イベント画面表示
- *
- */
- public function show(Request $request, $id)
- {
-  $param = $this->get_param($request, $id);
-  $fields = [
-    'title' => [
-      'label' => '件名'
-    ],
-    'event_term' => [
-      'label' => '開催期間'
-    ],
-    'status_name' => [
-      'label' => 'ステータス'
-    ],
-    'response_term' => [
-      'label' => '回答期間'
-    ],
-    'body' => [
-      'label' => '備考'
-    ],
-    'create_user_name' => [
-      'label' => '作成者'
-    ],
-  ];
-  return view('components.page', [
-  'action' => $request->get('action'),
-  'fields'=>$fields])
-  ->with($param);
+  /**
+   * フィルタリングロジック
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  Collection $items
+   * @return Collection
+   */
+  public function _search_scope(Request $request, $items)
+  {
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where('id',$request->id);
+    }
+    //ステータス 検索
+    if(isset($request->search_status)){
+      $items = $items->findStatuses($request->search_status);
+    }
 
- }
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      $items = $items->where(function($items)use($search_words){
+        foreach($search_words as $_search_word){
+          if(empty($_search_word)) continue;
+          $_like = '%'.$_search_word.'%';
+          $items->orWhere('body','like',$_like)->orWhere('title','like',$_like);
+        }
+      });
+    }
+
+    return $items;
+  }
+  public function show_fields($type=''){
+    $ret = [
+      'title' => [
+        'label' => '件名',
+        'size' => 6,
+      ],
+      'status_name' => [
+        'label' => 'ステータス',
+        'size' => 6,
+      ],
+      'event_term' => [
+        'label' => '開催期間'
+      ],
+      'response_term' => [
+        'label' => '回答期間'
+      ],
+      'body' => [
+        'label' => '内容'
+      ],
+      'template_title' => [
+        'label' => 'テンプレート',
+        'size' => 6,
+      ],
+      'create_user_name' => [
+        'label' => '作成者',
+        'size' => 6,
+      ],
+    ];
+    return $ret;
+  }
+
 
  /**
   * 検索～一覧
@@ -69,22 +101,26 @@ class EventController extends MilestoneController
    $items = $items->paginate($param['_line']);
    $fields = [
      'title' => [
-       'label' => '件名'
+       'label' => '件名',
+       'link' => 'show'
      ],
-     'template_title' => [
-       'label' => 'テンプレート'
-     ],
-     'status_name' => [
-       'label' => 'ステータス'
-     ],
-     'event_term' => [
-       'label' => '開催期間'
-     ],
+     /*
+
      'response_term' => [
        'label' => '回答期間'
      ],
+     'create_user_name' => [
+       'label' => '作成者'
+     ],
+     */
+     'status_name' => [
+       'label' => 'ステータス'
+     ],
      'event_user_count' => [
        'label' => '対象者数'
+     ],
+     'event_term' => [
+       'label' => '開催期間'
      ],
      'event_user_count' => [
        'label' => '対象者数',
@@ -92,13 +128,18 @@ class EventController extends MilestoneController
          return "/event_users?event_id=".$row['id'];
        }
      ],
-     'create_user_name' => [
-       'label' => '作成者'
-     ],
    ];
    $fields['buttons'] = [
      'label' => '操作',
-     'button' => ['edit', 'delete']
+     'button' => [
+       'edit',
+       'delete',
+       "send_mail" => [
+         "method" => "send_mail",
+         "label" => "一斉送信",
+         "style" => "outline-primary",
+       ],
+     ]
    ];
 
    return ['items' => $items, 'fields' => $fields];
@@ -146,5 +187,12 @@ class EventController extends MilestoneController
       return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
+   }
+   public function send_mail_page(Request $request , $id){
+     $param = $this->get_param($request, $id);
+     $param['fields'] = $this->show_fields('');
+
+     return view($this->domain.'.send_mail', [])
+     ->with($param);
    }
 }

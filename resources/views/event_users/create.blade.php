@@ -7,89 +7,23 @@
   @endif
   @csrf
   <input type="text" name="dummy" style="display:none;" / >
+  <input type="hidden" name="event_id" value="{{$event->id}}" / >
 　  <div class="row">
-      <div class="col-12 col-md-6 mt-2">
-        <div class="form-group">
-          <label for="title" class="w-100">
-            イベント名
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          <input type="text" name="name" class="form-control" required="true" maxlength=50
-          @if(isset($_edit) && $_edit==true)
-           value="{{$item['name']}}" placeholder="(変更前) {{$item['name']}}">
-          @else
-           placeholder="">
-          @endif
-        </div>
-      </div>
-      <div class="col-12 col-md-6 mt-2">
-        <div class="form-group">
-          <label for="role" class="w-100">
-            送信対象
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          <select name="user_role[]" class="form-control select2" width="100%" required="true" multiple="multiple">
-            <option value="">{{__('labels.selectable')}}</option>
-            @foreach(config('attribute.user_role') as $index=>$name)
-                <option value="{{$index}}"
-                @if($_edit===true && isset($item) && $item->has_tag('user_role', $index)===true)
-                selected
-                @endif
-                >{{$name}}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-      <div class="col-12 col-md-6 mt-2">
-        <div class="form-group">
-          <label for="grade" class="w-100">
-            送信対象条件（部門）
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          @foreach($attributes['lesson'] as $index => $name)
-          <label class="mx-1">
-            <input type="radio" value="{{ $index }}" name="lesson" class="icheck flat-green" required="true"
-            @if($_edit===true && isset($item) && $item->has_tag('lesson', $index)===true)
-            checked
-            @endif
-            onChange="lesson_checkbox_change(this)">{{$name}}
-          </label>
-          @endforeach
-        </div>
-      </div>
-      <div class="col-12 col-md-6 mt-2">
-        <div class="form-group">
-          <label for="grade" class="w-100">
-            送信対象条件（学年）/生徒のみ
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          </label>
-          <select name="grade[]" class="form-control select2" width="100%" multiple="multiple">
-            <option value="">{{__('labels.selectable')}}</option>
-            @foreach($attributes['grade'] as $index => $name)
-                <option value="{{$index}}"
-                @if($_edit===true && isset($item) && $item->has_tag('grade', $index)===true)
-                selected
-                @endif
-                >{{$name}}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
       <div class="col-12">
         <div class="form-group">
-          <label for="remark" class="w-100">
-            説明
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <label for="role" class="w-100">
+            追加する送信対象を選択してください
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <textarea type="text" name="remark" class="form-control"  maxlength=1000
-          @if(isset($_edit) && $_edit==true)
-            placeholder="(変更前) {{$item->remark}}" >{{$item->remark}}</textarea>
-          @else
-            placeholder="1000文字まで" ></textarea>
-          @endif
+          <select name="user_id[]" class="form-control select2" width="100%" required="true" multiple="multiple">
+            <option value="">{{__('labels.selectable')}}</option>
+            @foreach($event->get_event_user() as $target)
+              @if(!$event->has_user($target->user_id))
+                <option value="{{$target->user_id}}"
+                >{{$target->name()}}</option>
+              @endif
+            @endforeach
+          </select>
         </div>
       </div>
     </div>

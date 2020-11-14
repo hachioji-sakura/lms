@@ -1,9 +1,10 @@
 @section('title')
-イベントテンプレート一覧
+イベント対象者一覧
 @endsection
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
+    <input type="hidden" name="event_id" value={{$event_id}} />
     <div class="col-12">
       <div class="form-group">
         <label for="is_asc_1" class="w-100">
@@ -33,8 +34,16 @@
 @endsection
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
+    <a href="/events" class="nav-link">
+      <i class="fa fa-calendar-check nav-icon"></i>{{__('labels.events')}}一覧
+    </a>
+  </li>
+
+  <li class="nav-item hr-1">
+    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create?event_id={{$event_id}}" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
@@ -49,19 +58,20 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-         <a href="/{{$domain}}" class="nav-link @if(!isset($filter['user_filter']['search_lesson'])) active @endif">
+         <a href="/{{$domain}}?event_id={{$event_id}}" class="nav-link @if(!isset($filter['user_filter']['search_lesson'])) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>すべて
          </a>
        </li>
       @foreach(config('attribute.mail_status') as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_lesson={{$index}}" class="nav-link @if(isset($filter['user_filter']['search_lesson']) && $index==intval($filter['user_filter']['search_lesson'])) active @endif">
+         <a href="/{{$domain}}?event_id={{$event_id}}&search_status={{$index}}" class="nav-link @if(isset($filter['user_filter']['search_lesson']) && $index==intval($filter['user_filter']['search_lesson'])) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$name}}
          </a>
        </li>
        @endforeach
     </ul>
   </li>
+
 </ul>
 @endsection
 

@@ -41,6 +41,9 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
+  Route::get('auth/mail','AuthController@mail_send');
+
+  Route::get('events/{id}/send_mail','EventController@send_mail_page');
   Route::resource('events','EventController');
   Route::resource('event_users','EventUserController');
   Route::resource('event_templates','EventTemplateController');

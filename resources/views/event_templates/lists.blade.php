@@ -33,6 +33,13 @@
 @endsection
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+  <li class="nav-item hr-1">
+    <a href="/events" class="nav-link">
+      <i class="fa fa-calendar-check nav-icon"></i>{{__('labels.events')}}一覧
+    </a>
+  </li>
+
   <li class="nav-item hr-1">
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
@@ -62,6 +69,8 @@
        @endforeach
     </ul>
   </li>
+
+
 </ul>
 @endsection
 

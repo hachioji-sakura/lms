@@ -45,12 +45,20 @@ class EventUser extends Milestone
   public function getUrlAttribute(){
     return $this->user->get_url();
   }
+  public function getUserRoleAttribute(){
+    return $this->user->role_name;
+  }
   public function getTagsAttribute(){
     $ret = [];
     foreach($this->user->tags->whereIn('tag_key', ['lesson', 'grade']) as $tag){
       $ret[] = $tag->name();
     }
     return $ret;
+  }
+  public function to_inform(){
+    $param = [];
+    $param['body'] = $this->event->body;
+    return $this->user->send_mail($this->event->name, $param, 'text', 'event_mail');
   }
   public function getStatusNameAttribute(){
     $status_name = "";

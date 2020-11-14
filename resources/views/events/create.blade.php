@@ -14,7 +14,7 @@
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         </label>
         <div class="">
-          <select name="event_template_id" class="form-control select2" width=100% >
+          <select name="event_template_id" class="form-control select2" width=100% onChange="template_change()">
             @foreach($templates as $template)
             <option value="{{$template->id}}"
               @if(isset($_edit) && $_edit==true && $item->event_template_id == $template->id)
@@ -26,13 +26,17 @@
         </div>
       </div>
 　  </div>
-
+    <script>
+    function template_change(){
+      
+    }
+    </script>
 
     <div class="row">
       <div class="col-12">
         <div class="form-group">
           <label for="title" class="w-100">
-            名称
+            件名
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           <input type="text" id="title" name="title" class="form-control" required="true" maxlength=50
@@ -157,14 +161,14 @@
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">
-            備考
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            内容
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <textarea type="text" name="body" class="form-control"  maxlength=1000
+          <textarea type="text" name="body" class="form-control"  maxlength=5000
           @if(isset($_edit) && $_edit==true)
-            placeholder="(変更前) {{$item->description}}" >{{$item->description}}</textarea>
+            placeholder="(変更前) {{$item->body}}" >{{$item->body}}</textarea>
           @else
-            placeholder="1000文字まで" ></textarea>
+            placeholder="5000文字まで" ></textarea>
           @endif
         </div>
       </div>

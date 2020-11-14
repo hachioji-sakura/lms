@@ -68,6 +68,12 @@
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">
+    <a href="/event_templates" class="nav-link">
+      <i class="fa fa-calendar-alt nav-icon"></i>{{__('labels.event_templates')}}一覧
+    </a>
+  </li>
+
+  <li class="nav-item hr-1">
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
@@ -83,14 +89,24 @@
     </a>
     <ul class="nav nav-treeview">
       @foreach($attributes['event_status'] as $index => $name)
+      @if($index=='new') @continue @endif
+      @if($index=='progress')
+      <?php
+        $index='new,progress';
+        $name='実施中(予定含む)';
+        ?>
+      @endif
       <li class="nav-item">
-         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($search_status) && $index===$search_status) active @endif">
+         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
            <i class="fa fa-list-alt nav-icon"></i>{{$name}}
          </a>
        </li>
        @endforeach
     </ul>
   </li>
+
+
+
 </ul>
 @endsection
 

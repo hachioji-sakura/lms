@@ -111,7 +111,7 @@ class MilestoneController extends UserController
       return view($this->domain.'.lists', $_table)
         ->with($param);
     }
-    public function show_fields($type){
+    public function show_fields($type=''){
       $ret = [
         'type_name' => [
           'label' => '種別',
@@ -332,7 +332,7 @@ class MilestoneController extends UserController
       $fields = $this->show_fields($param['item']->type);
       if($this->is_manager_or_teacher($param['user']->role)===true){
         //生徒以外の場合は、対象者も表示する
-        if(isset($param['item']['target_user_name'])){
+        if(isset($param['item']['target_user_id'])){
           $fields['target_user_name'] = [
             'label' => 'ユーザー',
           ];

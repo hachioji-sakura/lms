@@ -84,11 +84,11 @@
             説明
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <textarea type="text" name="remark" class="form-control"  maxlength=1000
+          <textarea type="text" name="remark" class="form-control"  maxlength=5000
           @if(isset($_edit) && $_edit==true)
             placeholder="(変更前) {{$item->remark}}" >{{$item->remark}}</textarea>
           @else
-            placeholder="1000文字まで" ></textarea>
+            placeholder="5000文字まで" ></textarea>
           @endif
         </div>
       </div>

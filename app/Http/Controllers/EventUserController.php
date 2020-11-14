@@ -14,6 +14,13 @@ class EventUserController extends EventController
   public function model(){
     return EventUser::query();
   }
+  public function get_param(Request $request, $id=null){
+    $ret = parent::get_param($request, $id);
+    if(!$request->has('event_id')) abort(404);
+
+    $ret['event_id'] = $request->get('event_id');
+    return $ret;
+  }
   /**
    * 一覧表示
    *
@@ -22,6 +29,8 @@ class EventUserController extends EventController
    */
   public function index(Request $request)
   {
+    if(!$request->has('event_id')) abort(404);
+
     if(!$request->has('_line')){
       $request->merge([
         '_line' => $this->pagenation_line,
@@ -45,6 +54,7 @@ class EventUserController extends EventController
       abort(403);
     }
     $_table = $this->search($request);
+    $param['event_id'] = $request->get('event_id');
     return view($this->domain.'.lists', $_table)
       ->with($param);
   }
@@ -103,8 +113,11 @@ class EventUserController extends EventController
           return $row->url;
         }
       ],
+      'user_role' => [
+        'label' => '権限'
+      ],
       'status_name' => [
-        'label' => '担当部門'
+        'label' => 'ステータス'
       ],
       'tags' => [
         'label' => 'タグ'
@@ -135,6 +148,10 @@ class EventUserController extends EventController
     //event_id 検索
     if(isset($request->event_id)){
       $items = $items->where('event_id',$request->event_id);
+    }
+    //status 検索
+    if(isset($request->search_status)){
+      $items = $items->where('status',$request->search_status);
     }
 
 
@@ -222,5 +239,18 @@ class EventUserController extends EventController
      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
+   /**
+    * 新規登録画面
+    *
+    * @return \Illuminate\Http\Response
+    */
+  public function create(Request $request)
+  {
 
+     $param = $this->get_param($request);
+     $event = Event::where('id', $param['event_id'])->first();
+     $param['event'] = $event;
+     return view($this->domain.'.create',['_edit' => false])
+       ->with($param);
+   }
 }

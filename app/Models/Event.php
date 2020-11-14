@@ -57,7 +57,7 @@ class Event extends Milestone
       ]);
 
       $event->change($form);
-      $event->evet_user_add();
+      $event->event_user_add();
       return $event->api_response(200, "", "", $event);
     }
     //本モデルはdeleteではなくdisposeを使う
@@ -92,8 +92,7 @@ class Event extends Milestone
       }
       return $status_name;
     }
-    public function evet_user_add(){
-      $user_ids = [];
+    public function get_event_user(){
       $lesson_tag = $this->template->get_tag('lesson');
       $user_role_tag = $this->template->get_tag('user_role');
       $grade_tags = $this->template->get_tags('grade');
@@ -120,6 +119,10 @@ class Event extends Milestone
         $targets = $targets->searchTags($grade_tags);
       }
       $targets = $targets->get();
+      return $targets;
+    }
+    public function event_user_add(){
+      $targets = $this->get_event_user();
       foreach($targets as $target){
         $eu = EventUser::where('event_id', $this->id)->where('user_id' , $target->user_id)->first();
         if(isset($eu)) continue;
@@ -129,5 +132,10 @@ class Event extends Milestone
           'status' => 'new',
         ]);
       }
+    }
+    public function has_user($user_id){
+      $u = $this->event_users->where('user_id', $user_id)->first();
+      if(isset($u)) return true;
+      return false;
     }
 }

@@ -204,6 +204,13 @@ class User extends Authenticatable
       $d = $this->details();
       return $d->role.'s/'.$d->id;
     }
+    public function get_role(){
+      return $this->details()->role;
+    }
+    public function getAttributeRoleName(){
+      if(isset(config('attribute.user_role')[$this->get_role()])) return config('attribute.user_role')[$this->get_role()];
+      return "";
+    }
     public function scopeTag($query, $tagkey, $tagvalue)
     {
       $where_raw = <<<EOT
