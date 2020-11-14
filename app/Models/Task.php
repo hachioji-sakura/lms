@@ -25,6 +25,10 @@ class Task extends Milestone
       return $query->whereIn('status',$statuses);
     }
 
+    public function getFullTitleAttribute(){
+      return $this->body.$this->title;
+    }
+
 
     public function task_comments(){
       return $this->hasMany('App\Models\TaskComment','task_id')->orderBy('created_at','desc');
