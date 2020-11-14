@@ -62,8 +62,10 @@ class MailLog extends Model
     if(empty($send_schedule)) $send_schedule = date('Y-m-d H:i:s');
     $src = [];
     $dst = [];
+    $body = htmlentities($body, ENT_QUOTES, 'UTF-8');
     foreach($param as $key=>$val){
-      if(gettype($val)!='string' && gettype($val) !='int' && gettype($val)!='double') continue;
+      if(gettype($val)=='array') continue;
+      if(gettype($val)!='string' && gettype($val) !='integer' && gettype($val)!='double') continue;
       $src[] = '#'.$key.'#';
       $dst[] = $val;
     }
