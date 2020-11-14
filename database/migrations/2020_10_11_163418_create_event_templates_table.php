@@ -15,8 +15,9 @@ class CreateEventTemplatesTable extends Migration
     {
         Schema::create('event_templates', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable(false)->comment('イベント名称');
-            $table->string('remark',10000)->nullable(true)->comment('備考');
+            $table->string('title')->nullable(false)->comment('件名');
+            $table->string('url')->nullable(true)->comment('URL');
+            $table->string('body',10000)->nullable(true)->comment('内容');
             $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
         });

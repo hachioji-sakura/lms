@@ -1,11 +1,9 @@
 @component('components.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>$action])
 {{-- メッセージカスタマイズ --}}
   @slot('page_message')
-  <div class="col-12">
-    <div class="alert alert-warning text-sm pr-2 schedule_type schedule_type_class">
+    <div class="alert alert-primary">
       下記の内容にて、送信対象者にメールを送信します。
     </div>
-  </div>
   @endslot
 
   {{-- フォーム部分カスタマイズ --}}
@@ -16,7 +14,7 @@
      <div class="row">
       <div class="col-12">
         <label for="" class="w-100">
-          参加生徒
+          送信対象
         </label>
         <table class="table w-80" id="send_user_list">
           <tr class="bg-gray">
@@ -25,7 +23,7 @@
               <label class="mx-2">
                 {{__('labels.select')}}
               </label>
-              <input class="form-check-input icheck flat-blue ml-2" type="checkbox" accesskey="select_send_user_id[]" value="1" onChange='all_checked_change(this);' validate="is_checked_exist('send_user_list', 'select_send_user_id[]');">
+              <input class="form-check-input icheck flat-blue ml-2" type="checkbox" accesskey="select_send_user_ids[]" value="1" onChange='all_checked_change(this);' validate="is_checked_exist('send_user_list', 'select_send_user_ids[]');">
             </th>
           </tr>
           @foreach($item->event_users as $event_user)
@@ -40,7 +38,7 @@
               @else
               <div class="input-group">
                 <div class="form-check">
-                  <input class="form-check-input icheck flat-blue" type="checkbox" name="select_send_user_id[]" id="select_send_user_id_{{$event_user->id}}" value="{{$event_user->id}}"
+                  <input class="form-check-input icheck flat-blue" type="checkbox" name="select_send_user_ids[]" id="select_send_user_id_{{$event_user->id}}" value="{{$event_user->id}}"
                   @if($event_user->status=='new')
                    checked
                   @endif
@@ -57,7 +55,7 @@
     </div>
     <div class="row">
       <div class="col-12 col-md-6 mb-1">
-          <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="削除しますか？">
+          <button type="button" class="btn btn-submit btn-primary btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="送信しますか？">
             <i class="fa fa-envelope mr-1"></i>
               {{__('labels.send_button')}}
           </button>

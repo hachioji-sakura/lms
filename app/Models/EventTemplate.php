@@ -13,8 +13,7 @@ class EventTemplate extends Milestone
     protected $table = 'lms.event_templates'; //テーブル名を入力(A5MK参照)
     protected $guarded = array('id'); //書き換え禁止領域　(今回の場合はid)
     public static $rules = array( //必須フィールド
-        'role' => 'required',
-        'event_name' => 'required'
+        'title' => 'required'
     );
     public function tags(){
       return $this->hasMany('App\Models\EventTemplateTag', 'event_template_id');
@@ -24,8 +23,9 @@ class EventTemplate extends Milestone
 
       $ret = [];
       $event_template = EventTemplate::create([
-        'name' => $form['name'],
-        'remark' => $form['remark'],
+        'title' => $form['title'],
+        'url' => $form['url'],
+        'body' => $form['body'],
         'create_user_id' => $form['create_user_id'],
       ]);
       $event_template->change($form);
@@ -40,8 +40,9 @@ class EventTemplate extends Milestone
     //本モデルはupdateではなくchangeを使う
     public function change($form, $file=null, $is_file_delete = false){
       $update_fields = [
-        'name',
-        'remark',
+        'title',
+        'body',
+        'url',
       ];
       foreach($update_fields as $field){
         if(!isset($form[$field])) continue;

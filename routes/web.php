@@ -43,7 +43,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::get('auth/mail','AuthController@mail_send');
 
-  Route::get('events/{id}/send_mail','EventController@send_mail_page');
+  Route::get('events/{id}/to_inform','EventController@to_inform_page');
+  Route::post('events/{id}/to_inform','EventController@to_inform');
   Route::resource('events','EventController');
   Route::resource('event_users','EventUserController');
   Route::resource('event_templates','EventTemplateController');

@@ -2323,29 +2323,6 @@
 			"sort_no" => "2",
 		],
 	],
-	"season_lesson_course" => [
-		"60" => [
-			"attribute_value" => "60",
-			"attribute_name" => "個別60分コース（マンツーマン授業1時間＋演習解説授業4時間）",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "1",
-		],
-		"90" => [
-			"attribute_value" => "90",
-			"attribute_name" => "個別90分コース（マンツーマン授業1.5時間＋演習解説授業3.5時間）",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "2",
-		],
-		"120" => [
-			"attribute_value" => "120",
-			"attribute_name" => "個別120分コース（マンツーマン授業2時間＋演習解説授業3時間）",
-			"parent_attribute_key" => "",
-			"parent_attribute_value" => "",
-			"sort_no" => "3",
-		],
-	],
 	"setting_status" => [
 		"dummy" => [
 			"attribute_value" => "dummy",
@@ -3345,7 +3322,7 @@
 		],
 		"5" => [
 			"attribute_value" => "5",
-			"attribute_name" => "マンツーマン演習",
+			"attribute_name" => "演習",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
 			"sort_no" => "3",

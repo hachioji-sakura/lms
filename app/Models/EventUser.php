@@ -56,9 +56,13 @@ class EventUser extends Milestone
     return $ret;
   }
   public function to_inform(){
-    $param = [];
-    $param['body'] = $this->event->body;
-    return $this->user->send_mail($this->event->name, $param, 'text', 'event_mail');
+    $param = $this->event->toArray();
+    $param['app_url'] = config('app.url');
+    $param['event_id'] = $this->event->id;
+    $param['event_template_id'] = $this->event->template->id;
+    $param['url'] = $this->event->template->url;
+    $param['user_name'] = $this->user_name;
+    return $this->user->send_mail($this->event->title, $param, 'text', 'event_mail');
   }
   public function getStatusNameAttribute(){
     $status_name = "";

@@ -20,7 +20,7 @@ class EventTemplateController extends MilestoneController
       'role' => [
         'label' => '送信対象'
       ],
-      'name' => [
+      'title' => [
         'label' => '件名',
       ],
       'lesson' => [
@@ -29,7 +29,10 @@ class EventTemplateController extends MilestoneController
       'grade' => [
         'label' => '学年'
       ],
-      'remark' => [
+      'url' => [
+        'label' => 'url'
+      ],
+      'body' => [
         'label' => '内容'
       ],
       'create_user_name' => [
@@ -57,7 +60,7 @@ class EventTemplateController extends MilestoneController
       'role' => [
         'label' => '送信対象'
       ],
-      'name' => [
+      'title' => [
         'label' => '件名',
         'link' => 'show',
       ],
@@ -122,8 +125,9 @@ class EventTemplateController extends MilestoneController
     $form['user_role'] = $request->get('user_role');
     $form['grade'] = $request->get('grade');
     $form['lesson'] = $request->get('lesson');
-    $form['name'] = $request->get('name');
-    $form['remark'] = htmlentities($request->get('remark'), ENT_QUOTES, 'UTF-8');
+    $form['title'] = $request->get('title');
+    $form['url'] = $request->get('url');
+    $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
     return $form;
   }
   /**
@@ -144,8 +148,8 @@ class EventTemplateController extends MilestoneController
   {
     $form = $request->all();
     //保存時にパラメータをチェック
-    if(empty($form['name']) || empty($form['user_role']) || empty($form['lesson'])){
-      return $this->bad_request('リクエストエラー', ''.$form['name']);
+    if(empty($form['title']) || empty($form['user_role']) || empty($form['lesson'])){
+      return $this->bad_request('リクエストエラー', ''.$form['title']);
     }
     return $this->api_response(200, '', '');
   }

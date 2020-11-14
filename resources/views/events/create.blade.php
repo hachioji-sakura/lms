@@ -21,7 +21,7 @@
               @if(isset($_edit) && $_edit==true && $item->event_template_id == $template->id)
               selected
               @endif
-            >{{$template->name}}</option>
+            >{{$template->title}}</option>
             @endforeach
           </select>
         </div>
@@ -37,8 +37,8 @@
             var data =  result["data"];
             console.log(data);
             if(confirm('件名と内容を、テンプレートの設定値にしますか？')){
-              t.val(data['name']);
-              b.val(data['remark']);
+              t.val(data['title']);
+              b.val(data['body']);
             }
           },
           function(xhr, st, err) {

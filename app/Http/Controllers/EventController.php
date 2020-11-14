@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\EventUserController;
 use App\Models\Event;
 use App\Models\EventTemplate;
+use App\Models\EventUser;
 //class EventController extends Controller
 class EventController extends MilestoneController
 {
@@ -136,8 +137,8 @@ class EventController extends MilestoneController
      'button' => [
        'edit',
        'delete',
-       "send_mail" => [
-         "method" => "send_mail",
+       "to_inform" => [
+         "method" => "to_inform",
          "label" => "一斉送信",
          "style" => "outline-primary",
        ],
@@ -190,11 +191,28 @@ class EventController extends MilestoneController
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
-   public function send_mail_page(Request $request , $id){
+   public function to_inform_page(Request $request , $id){
      $param = $this->get_param($request, $id);
      $param['fields'] = $this->show_fields('');
 
-     return view($this->domain.'.send_mail', [])
+     return view($this->domain.'.to_inform', [])
      ->with($param);
+   }
+   public function to_inform(Request $request , $id){
+     $param = $this->get_param($request, $id);
+     $select_send_user_ids = $request->get('select_send_user_ids');
+     $send_users = EventUser::where('event_id', $id)->whereIn('id', $select_send_user_ids)->get();
+     if(count($send_users)<1){
+       $res = $this->error_response('送信対象がありません');
+     }
+     else {
+       $res = $this->transaction($request, function() use ($send_users){
+         foreach($send_users as $send_user){
+           $send_user->to_inform();
+         }
+         return $this->api_response(200, '', '', $send_users);
+       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+     }
+     return $this->save_redirect($res, $param, '送信しました');
    }
 }

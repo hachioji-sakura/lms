@@ -11,12 +11,12 @@
       <div class="col-12 col-md-6 mt-2">
         <div class="form-group">
           <label for="title" class="w-100">
-            イベント名
+            イベント名(件名）
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="text" name="name" class="form-control" required="true" maxlength=50
+          <input type="text" name="title" class="form-control" required="true" maxlength=50
           @if(isset($_edit) && $_edit==true)
-           value="{{$item['name']}}" placeholder="(変更前) {{$item['name']}}">
+           value="{{$item->title}}" placeholder="(変更前) {{$item->title}}">
           @else
            placeholder="">
           @endif
@@ -75,22 +75,36 @@
           </select>
         </div>
       </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
+      <div class="col-12 mt-2">
         <div class="form-group">
-          <label for="remark" class="w-100">
-            説明
+          <label for="url" class="w-100">
+            URL
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <textarea type="text" name="remark" class="form-control"  maxlength=5000
+          <input type="text" name="url" class="form-control" required="true" maxlength=50
           @if(isset($_edit) && $_edit==true)
-            placeholder="(変更前) {{$item->remark}}" >{{$item->remark}}</textarea>
+           value="{{$item->url}}" placeholder="(変更前) {{$item->url}}">
+          @else
+           placeholder="">
+          @endif
+        </div>
+        <h6 class="text-danger text-sm">
+        </h6>
+      </div>
+      <div class="col-12">
+        <div class="form-group">
+          <label for="body" class="w-100">
+            内容
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          </label>
+          <textarea type="text" name="body" class="form-control"  maxlength=5000
+          @if(isset($_edit) && $_edit==true)
+            placeholder="(変更前) {{$item->body}}" >{{$item->body}}</textarea>
           @else
             placeholder="5000文字まで" ></textarea>
           @endif
         </div>
+
       </div>
     </div>
 

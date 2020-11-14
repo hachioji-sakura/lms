@@ -21,7 +21,7 @@ class CreateEventsTable extends Migration
             $table->date('event_to_date')->nullable(false)->comment('開催期間_終');
             $table->date('response_from_date')->nullable(false)->comment('回答期間_始');
             $table->date('response_to_date')->nullable(false)->comment('回答期間_終');
-            $table->string('body',10000)->nullable(true)->comment('備考');
+            $table->string('body',10000)->nullable(true)->comment('内容');
             $table->string('status')->nullable(false)->comment('ステータス'); //後から追加したフィールド
             $table->integer('create_user_id')->index('index_create_user_id')->comment('作成ユーザーID');
             $table->timestamps();
