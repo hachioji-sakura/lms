@@ -102,10 +102,6 @@ class EventUserController extends EventController
     $items = $items->paginate();
 
     $fields = [
-      'id' => [
-        'label' => 'ID',
-        'link' => 'show',
-      ],
       'user_name' => [
         'label' => '対象者',
         "target" => '_blank',
