@@ -84,6 +84,7 @@ class Event extends Milestone
       return $this;
     }
     public function getStatusNameAttribute(){
+      $this->status_update();
       $status_name = "";
       if(app()->getLocale()=='en') return $this->status;
 
@@ -92,12 +93,24 @@ class Event extends Milestone
       }
       return $status_name;
     }
+    public function status_update(){
+      if($this->status=='cancel' || $this->status=='closed') return;
+      $status = $this->status;
+      if(strtotime(date('now')) > strtotime($this->event_from_date)){
+        //開催日（開始）経過
+        $status = 'progress';
+      }
+      if(strtotime(date('now')) > strtotime($this->event_to_date)){
+        //開催日（終了）経過
+        $status = 'closed';
+      }
+      if($this->status!=$status){
+        $this->update(['status'=>$status]);
+      }
+    }
     public function get_event_user(){
-      $lesson_tag = $this->template->get_tag('lesson');
       $user_role_tag = $this->template->get_tag('user_role');
-      $grade_tags = $this->template->get_tags('grade');
-      if(!isset($lesson_tag)) return ;
-      if(!isset($user_role_tag)) return ;
+      if(!isset($user_role_tag)) return null;
       $target = null;
       switch($user_role_tag->tag_value){
         case "student":
@@ -107,14 +120,22 @@ class Event extends Milestone
           $target = Teacher::query();
           break;
         case "manager":
+          $target = Manager::searchTags([['tag_key' => 'manager_type', 'tag_value'=>'admin']]);
+          break;
+        case "stuff":
           $target = Manager::query();
           break;
         case "parent":
           $target = StudentParent::query();
           break;
       }
-      if($target==null) return;
-      $targets = $target->findStatuses(['regular'])->searchTags([$lesson_tag]);
+      if($target==null) return null;
+      $targets = $target->findStatuses(['regular'])->where('user_id', '!=', 1);
+      $lesson_tag = $this->template->get_tags('lesson');
+      if(isset($lesson_tag) && count($lesson_tag)>0){
+        $targets = $targets->searchTags($lesson_tag);
+      }
+      $grade_tags = $this->template->get_tags('grade');
       if(isset($grade_tags) && count($grade_tags)>0){
         $targets = $targets->searchTags($grade_tags);
       }

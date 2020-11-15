@@ -26,6 +26,11 @@
           </select>
         </div>
       </div>
+      <div class="col-12">
+        <small class="badge badge-primary mt-1 mr-1" id="role"></small>
+        <small class="badge badge-primary mt-1 mr-1" id="lesson"></small>
+        <small class="badge badge-primary mt-1 mr-1" id="grade"></small>
+      </div>
       <script>
       function template_change(){
         var template_id = $('select[name="event_template_id"]').val();
@@ -35,6 +40,9 @@
             var t = $('input[name="title"]');
             var b = $('textarea[name="body"]');
             var data =  result["data"];
+            $('#role').html('送信対象：'+data['role']);
+            $('#lesson').html('条件（部門）：'+data['lesson']);
+            $('#grade').html('条件（学年）：'+data['grade']);
             console.log(data);
             if(confirm('件名と内容を、テンプレートの設定値にしますか？')){
               t.val(data['title']);
@@ -117,13 +125,13 @@
         <div class="form-group">
           <label for="response_from_date" class="w-100">
             回答期間(開始)
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.required')}}</span>
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="fa fa-calendar"></i></span>
             </div>
-            <input type="text" id="response_from_date" name="response_from_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+            <input type="text" id="response_from_date" name="response_from_date" class="form-control float-left" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
             @if(isset($_edit) && $_edit==true && isset($item) && isset($item['response_from_date']) && $item['response_from_date']!='9999-12-31')
               value="{{date('Y/m/d', strtotime($item['response_from_date']))}}"
             @elseif(isset($item) && isset($item['response_from_date']) && $item['response_from_date']!='9999-12-31')
@@ -143,13 +151,13 @@
         <div class="form-group">
           <label for="response_to_date" class="w-100">
             回答期間(終了)
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.required')}}</span>
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="fa fa-calendar"></i></span>
             </div>
-            <input type="text" id="response_to_date" name="response_to_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+            <input type="text" id="response_to_date" name="response_to_date" class="form-control float-left" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
             @if(isset($_edit) && $_edit==true && isset($item) && isset($item['response_to_date']) && $item['response_to_date']!='9999-12-31')
               value="{{date('Y/m/d', strtotime($item['response_to_date']))}}"
             @elseif(isset($item) && isset($item['response_to_date']) && $item['response_to_date']!='9999-12-31')

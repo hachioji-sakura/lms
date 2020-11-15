@@ -17,26 +17,32 @@ class EventTemplateController extends MilestoneController
   }
   public function show_fields($type=''){
     $ret = [
-      'role' => [
-        'label' => '送信対象'
-      ],
       'title' => [
         'label' => '件名',
+        'size' => 6,
+      ],
+      'role' => [
+        'label' => '送信対象',
+        'size' => 6,
       ],
       'lesson' => [
-        'label' => '担当部門'
+        'label' => '担当部門',
+        'size' => 6,
       ],
       'grade' => [
-        'label' => '学年'
+        'label' => '学年',
+        'size' => 6,
       ],
       'url' => [
-        'label' => 'url'
+        'label' => 'url',
+        'size' => 6,
+      ],
+      'create_user_name' => [
+        'label' => '作成ユーザID',
+        'size' => 6,
       ],
       'body' => [
         'label' => '内容'
-      ],
-      'create_user_name' => [
-        'label' => '作成ユーザID'
       ],
     ];
     return $ret;
@@ -57,12 +63,12 @@ class EventTemplateController extends MilestoneController
     $items = $items->paginate($param['_line']);
 
     $fields = [
-      'role' => [
-        'label' => '送信対象'
-      ],
       'title' => [
         'label' => '件名',
         'link' => 'show',
+      ],
+      'role' => [
+        'label' => '送信対象'
       ],
       'lesson' => [
         'label' => '担当部門'
@@ -97,7 +103,11 @@ class EventTemplateController extends MilestoneController
     if(isset($request->search_status)){
       $items = $items->findStatuses($request->search_status);
     }
-
+    //ステータス 検索
+    if(isset($request->search_lesson)){
+      $tags = [ ["tag_key" => "lesson" , "tag_value" => $request->search_lesson]];
+      $items = $items->searchTags($tags);
+    }
     //検索ワード
     if(isset($request->search_word)){
       $search_words = explode(' ', $request->search_word);
@@ -148,7 +158,7 @@ class EventTemplateController extends MilestoneController
   {
     $form = $request->all();
     //保存時にパラメータをチェック
-    if(empty($form['title']) || empty($form['user_role']) || empty($form['lesson'])){
+    if(empty($form['title']) || empty($form['user_role'])){
       return $this->bad_request('リクエストエラー', ''.$form['title']);
     }
     return $this->api_response(200, '', '');

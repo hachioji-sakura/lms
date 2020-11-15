@@ -15,6 +15,8 @@ class EventTemplate extends Milestone
     public static $rules = array( //必須フィールド
         'title' => 'required'
     );
+    protected $appends = ['role', 'lesson', 'grade', 'created_date', 'updated_date'];
+
     public function tags(){
       return $this->hasMany('App\Models\EventTemplateTag', 'event_template_id');
     }
@@ -24,8 +26,6 @@ class EventTemplate extends Milestone
       $ret = [];
       $event_template = EventTemplate::create([
         'title' => $form['title'],
-        'url' => $form['url'],
-        'body' => $form['body'],
         'create_user_id' => $form['create_user_id'],
       ]);
       $event_template->change($form);

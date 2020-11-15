@@ -43,12 +43,12 @@
       <div class="col-12 col-md-6 mt-2">
         <div class="form-group">
           <label for="grade" class="w-100">
-            送信対象条件（部門）
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            送信対象条件（部門）/生徒・講師のみ
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
           @foreach($attributes['lesson'] as $index => $name)
           <label class="mx-1">
-            <input type="radio" value="{{ $index }}" name="lesson" class="icheck flat-green" required="true"
+            <input type="checkbox" value="{{ $index }}" name="lesson[]" class="icheck flat-green" 
             @if($_edit===true && isset($item) && $item->has_tag('lesson', $index)===true)
             checked
             @endif

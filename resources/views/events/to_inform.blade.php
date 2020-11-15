@@ -33,9 +33,7 @@
               <small title="{{$item["id"]}}" class="ml-2 badge badge-{{config('status_style')[$event_user->status]}} mt-1 mr-1">{{$event_user->status_name}}</small>
             </th>
             <td class="p-1 text-sm text-center">
-              @if($event_user->is_last_status()==true )
-                <i class="fa fa-times mr-1"></i>
-              @else
+
               <div class="input-group">
                 <div class="form-check">
                   <input class="form-check-input icheck flat-blue" type="checkbox" name="select_send_user_ids[]" id="select_send_user_id_{{$event_user->id}}" value="{{$event_user->id}}"
@@ -46,7 +44,7 @@
                   <label class="form-check-label" for="select_send_user_id_{{$event_user->id}}">{{__('labels.select')}}</label>
                 </div>
               </div>
-              @endif
+
             </td>
           </tr>
           @endforeach

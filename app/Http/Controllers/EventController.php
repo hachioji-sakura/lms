@@ -185,15 +185,30 @@ class EventController extends MilestoneController
     if(!$this->is_success_response($res)){
       return $res;
     }
-    $res = $this->transaction($request, function() use ($request, $form){
       $item = Event::add($form);
       return $this->api_response(200, '', '', $item);
+      $res = $this->transaction($request, function() use ($request, $form){
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
    public function to_inform_page(Request $request , $id){
      $param = $this->get_param($request, $id);
-     $param['fields'] = $this->show_fields('');
+     $param['fields'] = [
+       'event_term' => [
+         'label' => '開催期間',
+         'size' => 6,
+       ],
+       'status_name' => [
+         'label' => 'ステータス',
+         'size' => 6,
+       ],
+       'title' => [
+         'label' => '件名',
+       ],
+       'body' => [
+         'label' => '内容'
+       ],
+     ];
 
      return view($this->domain.'.to_inform', [])
      ->with($param);

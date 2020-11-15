@@ -248,7 +248,7 @@ trait Common
         $query = $query->where(function($query)use($tags){
           foreach($tags as $tag){
             $query = $query->orWhere(function($query)use($tag){
-              $query->where('tag_key', $tag->tag_key)->where('tag_value', $tag->tag_value);
+              $query->where('tag_key', $tag["tag_key"])->where('tag_value', $tag["tag_value"]);
             });
           }
         });

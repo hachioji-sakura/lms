@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Event;
+use App\Models\EventUserMail;
 class EventUser extends Milestone
 {
   protected $table = 'lms.event_users'; //テーブル名を入力
@@ -15,6 +16,9 @@ class EventUser extends Milestone
   );
   protected $appends = ['created_date', 'updated_date'];
 
+  public function mails(){
+    return $this->hasMany('App\Models\EventUserMail');
+  }
   public function event(){
     return $this->belongsTo('App\Models\Event', 'event_id');
   }
@@ -62,9 +66,16 @@ class EventUser extends Milestone
     $param['event_template_id'] = $this->event->template->id;
     $param['url'] = $this->event->template->url;
     $param['user_name'] = $this->user_name;
-    return $this->user->send_mail($this->event->title, $param, 'text', 'event_mail');
+    $res = $this->user->send_mail($this->event->title, $param, 'text', 'event_mail');
+    if($this->is_success_response($res)){
+      EventUserMail::create([
+        'event_user_id' => $this->id,
+        'mail_id' => $res['data']->id
+      ]);
+    }
   }
   public function getStatusNameAttribute(){
+    $this->status_update();
     $status_name = "";
     if(app()->getLocale()=='en') return $this->status;
 
@@ -73,5 +84,9 @@ class EventUser extends Milestone
     }
     return $status_name;
   }
-
+  public function status_update(){
+    $m = $this->mails->sortByDesc('created_at')->first();
+    if(empty($m)) return;
+    $this->update(['status' => $m->mail->status]);
+  }
 }
