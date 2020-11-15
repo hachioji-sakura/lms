@@ -49,6 +49,12 @@ class EventUser extends Milestone
   public function getUrlAttribute(){
     return $this->user->get_url();
   }
+  public function getSendedDateAttribute(){
+    if($this->status!='sended') return "";
+    $m = $this->mails->sortByDesc('created_at')->first();
+    if(empty($m)) return;
+    return $m->updated_date;
+  }
   public function getUserRoleAttribute(){
     return $this->user->role_name;
   }

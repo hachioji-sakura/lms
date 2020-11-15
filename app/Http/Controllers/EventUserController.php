@@ -122,6 +122,9 @@ class EventUserController extends EventController
       'tags' => [
         'label' => 'タグ'
       ],
+      'sended_date' => [
+        'label' => '送信日'
+      ],
       'created_date' => [
         'label' => '登録日'
       ],
@@ -166,7 +169,6 @@ class EventUserController extends EventController
   public function create_form(Request $request){
     $user = $this->login_details($request);
     $form = [];
-    $form['create_user_id'] = $user->user_id;
     $form['event_id'] = $request->get('event_id');
     $form['user_id'] = $request->get('user_id');
     return $form;
@@ -207,7 +209,12 @@ class EventUserController extends EventController
       return $res;
     }
     $res = $this->transaction($request, function() use ($request, $form){
-      $item = EventUser::create($form);
+      foreach($form['user_id'] as $user_id){
+        $item = EventUser::create([
+          'event_id' => $form['event_id'],
+          'user_id' => $user_id
+        ]);
+      }
       return $this->api_response(200, '', '', $item);
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
