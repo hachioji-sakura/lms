@@ -34,11 +34,11 @@ class EventTemplateController extends MilestoneController
         'size' => 6,
       ],
       'url' => [
-        'label' => 'url',
+        'label' => 'URL',
         'size' => 6,
       ],
       'create_user_name' => [
-        'label' => '作成ユーザID',
+        'label' => '作成者',
         'size' => 6,
       ],
       'body' => [
