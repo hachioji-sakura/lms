@@ -202,7 +202,9 @@ class User extends Authenticatable
     }
     public function get_url(){
       $d = $this->details();
-      return $d->role.'s/'.$d->id;
+      $role = $d->role;
+      if($role=='staff') $role='manager';
+      return $role.'s/'.$d->id;
     }
     public function get_role(){
       return $this->details()->role;

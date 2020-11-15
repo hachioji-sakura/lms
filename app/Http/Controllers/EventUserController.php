@@ -16,7 +16,7 @@ class EventUserController extends EventController
   }
   public function get_param(Request $request, $id=null){
     $ret = parent::get_param($request, $id);
-    if(!$request->has('event_id')) abort(404);
+    if($id==null && !$request->has('event_id')) abort(404);
 
     $ret['event_id'] = $request->get('event_id');
     return $ret;
