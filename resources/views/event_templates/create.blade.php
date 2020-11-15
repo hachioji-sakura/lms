@@ -81,7 +81,7 @@
             URL
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <input type="text" name="url" class="form-control" required="true" maxlength=50
+          <input type="text" name="url" class="form-control" maxlength=255
           @if(isset($_edit) && $_edit==true)
            value="{{$item->url}}" placeholder="(変更前) {{$item->url}}">
           @else
