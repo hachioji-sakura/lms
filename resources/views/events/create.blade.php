@@ -125,7 +125,7 @@
         <div class="form-group">
           <label for="response_from_date" class="w-100">
             回答期間(開始)
-            <span class="right badge badge-secondary ml-1">{{__('labels.required')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
@@ -151,7 +151,7 @@
         <div class="form-group">
           <label for="response_to_date" class="w-100">
             回答期間(終了)
-            <span class="right badge badge-secondary ml-1">{{__('labels.required')}}</span>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
           <div class="input-group">
             <div class="input-group-prepend">
