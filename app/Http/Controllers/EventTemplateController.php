@@ -133,8 +133,10 @@ class EventTemplateController extends MilestoneController
     $form = [];
     $form['create_user_id'] = $user->user_id;
     $form['user_role'] = $request->get('user_role');
-    $form['grade'] = $request->get('grade');
-    $form['lesson'] = $request->get('lesson');
+    $form['lesson'] = [''];
+    $form['grade'] = [''];
+    if($request->has('lesson')) $form['lesson'] = $request->get('lesson');
+    if($request->has('grade')) $form['grade'] = $request->get('grade');
     $form['title'] = $request->get('title');
     $form['url'] = $request->get('url');
     $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
