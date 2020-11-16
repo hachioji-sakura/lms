@@ -59,7 +59,7 @@ class UserCalendarController extends MilestoneController
   public function model(){
     return UserCalendar::query();
   }
-  public function show_fields($item=''){
+  public function show_fields($item){
     $base_ret = [
       'datetime' => [
         'label' => __('labels.datetime'),
@@ -186,6 +186,7 @@ class UserCalendarController extends MilestoneController
     $form = [];
     $form['create_user_id'] = $user->user_id;
     $schedule_type = "";
+    $start_time = "";
     if($request->has('schedule_type')){
       $schedule_type = $request->get('schedule_type');
     }
@@ -195,8 +196,11 @@ class UserCalendarController extends MilestoneController
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
-      $form['start_time'] = $start_time;
     }
+    else if($request->has('start_time')){
+      $start_time = $request->get('start_time');
+    }
+    $form['start_time'] = $start_time;
 
     if($request->has('course_minutes')){
       //授業時間設定がある
@@ -724,9 +728,8 @@ class UserCalendarController extends MilestoneController
         if (!View::exists($this->domain.'.'.$status)) {
           abort(404, 'ページがみつかりません(100)');
         }
-      }
-      else {
-        Auth::loginUsingId($request->get('user'));
+      }else{
+         Auth::loginUsingId($request->get('user'));
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
@@ -1016,6 +1019,9 @@ class UserCalendarController extends MilestoneController
         }
         if($param['item']->work!=9){
           foreach($members as $member){
+            if($member->status == 'invalid'){
+              continue;
+            }
             //メンバーステータスの個別指定がある場合
             if(isset($form['is_all_student']) && $form['is_all_student']==1){
               //全生徒指定がある場合
@@ -1269,8 +1275,6 @@ class UserCalendarController extends MilestoneController
       $param['student_id'] = 0;
       $param['lesson_id'] = 0;
       $param['exchanged_calendar_id'] = 0;
-      $param['teachers'] = [];
-
       if($request->has('exchanged_calendar_id')){
         $param['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
       }
@@ -1290,6 +1294,7 @@ class UserCalendarController extends MilestoneController
           $param['teachers'] = $candidate_teachers[$lesson_id];
         }
         else {
+          $param['teachers'] = [];
           foreach($candidate_teachers as $lesson_id => $teachers){
             $param['teachers'] = array_merge($param['teachers'], $teachers);
           }
@@ -1335,7 +1340,7 @@ class UserCalendarController extends MilestoneController
       }
 
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-        if(isset($param["teachers"]) && count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])
           ->with($param);

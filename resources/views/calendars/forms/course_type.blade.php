@@ -1,4 +1,4 @@
-@if($item["exchanged_calendar_id"] > 0)
+@if($item["exchanged_calendar_id"] > 0 || $item->is_season_lesson()==true)
 <input type="hidden" name="course_type" value="{{$item->get_tag_value('course_type')}}" >
 <input type="hidden" name="course_type_name" value="{{$item->get_tag_name('course_type')}}" >
 @elseif($_edit==true )

@@ -19,6 +19,7 @@ class CalendarRecoverySeeder extends Seeder
       $this->delete_calendar_sync();
       $this->post_calendar_sync();
       $this->put_calendar_sync();
+      $this->season_schedule_lesson_sync();
     }
     public function delete_calendar_sync(){
       $this->no_relate_onetime_schedule_delete();
@@ -206,6 +207,17 @@ EOT;
           'subject_expr' => implode (',', $calendar->subject())
         ]);
         $updated_id[$row->schedule_onetime_id] = true;
+      }
+    }
+    public function season_schedule_lesson_sync(){
+      $calendars = UserCalendar::whereIn('work',[10,11])->get();
+      foreach($calendars as $calendar){
+        if(!$calendar->has_tag('lesson', 1)){
+          UserCalendarTag::setTag($calendar->id, 'lesson', 1, 1);
+        }
+        if(!$calendar->has_tag('course_type', 'single')){
+          UserCalendarTag::setTag($calendar->id, 'course_type', 'single', 1);
+        }
       }
     }
 }
