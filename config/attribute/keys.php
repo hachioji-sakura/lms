@@ -1,6 +1,7 @@
 <?php
 return array(
   'keys' => '定義項目',
+  'user_role' => 'ユーザー権限',
   'schedule_method' => '定期カレンダー反映方法',
   'lesson' => 'レッスン',
   'english_talk_lesson' => '英会話レッスン',
@@ -37,5 +38,6 @@ return array(
   'calendar_status' => 'calendar_status',
   'setting_status' => 'setting_status',
   'entry_milestone' => '特に重視してやって欲しいことをお知らせください',
+  'event_status' => 'イベントステータス',
 );
 ?>

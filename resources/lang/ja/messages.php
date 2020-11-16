@@ -150,6 +150,7 @@ return [
   'task_reviewed' => 'レビューしました。',
   'task_body_placeholder' => '例：応用問題にチャレンジしましたが、難しいようでした。基本問題を解きなおします。',
   'warning_schedule_add' => 'この授業追加は、受講料の追加を伴うため、親御様の承認を得る必要があります。',
+  'warning_season_lesson_edit' => "期間講習予定の編集は、演習担当講師が不在とならないように設定を行う必要があります。\n(講師は日時・場所の変更はできません）",
   "copyright" => "Copyright © 国立・八王子・日野の個別指導塾 さくら One All Rights Reserved.",
   'message_restore_contents' => '前回入力された内容が残っています。復元しますか？',
   "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
@@ -157,5 +158,4 @@ return [
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
   'mail_reply_recomend' => "＊本メールは送信専用ですので、ご返信できません。\n＊ご返信は、SaKuRa One Netのメッセージ一覧をご利用ください。",
-
 ];

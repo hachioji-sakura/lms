@@ -32,7 +32,7 @@
         {{__('labels.schedule_remark')}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <textarea type="text" name="schedule_remark" class="form-control" placeholder="{{__('labels.schedule_remark_placeholder')}}" maxlength=200>{{$item->tag_value('schedule_remark')}}</textarea>
+      <textarea type="text" name="schedule_remark" class="form-control" placeholder="{{__('labels.schedule_remark_placeholder')}}" maxlength=200>{{$item->get_tag_value('schedule_remark')}}</textarea>
     </div>
   </div>
   @endisset

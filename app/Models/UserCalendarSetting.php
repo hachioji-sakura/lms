@@ -44,9 +44,12 @@ EOT;
   }
   public function scopeHiddenFilter($query)
   {
-    $user = Auth::user()->details();
-    if($user->role!='manager'){
-      $query = $query->where('status', '!=', 'dummy');
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role!='manager'){
+        $query = $query->where('status', '!=', 'dummy');
+      }
     }
     return $query;
   }
@@ -306,12 +309,14 @@ EOT;
       }
     }
 
-    $user = Auth::user()->details();
-    if($user->role=='manager' && $form['user_id'] != $user->id && $status=='new'){
-      //事務かつ、自分の予定でない場合は、ステータスをダミーにする
-      $status = 'dummy';
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role=='manager' && $form['user_id'] != $user->id && $status=='new'){
+        //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+        $status = 'dummy';
+      }
     }
-
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && !isset($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -341,7 +346,7 @@ EOT;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id, $is_send_mail=true){
-    if($this->status!='new' && $is_send_mail==true){
+    if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
 

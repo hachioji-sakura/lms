@@ -51,6 +51,11 @@ class RemindCommand extends Command
     }
 
     private function remind_calendar($calendar, $title, $send_schedule){
+      if(strtotime('now') >strtotime($send_schedule)){
+        $this->info("送信予定が過ぎているため送信しない[id=".$calendar->id."][".$calendar->start_time."][".$title."][".$send_schedule."]--");
+        @$this->send_slack("送信予定が過ぎているため送信しない[id=".$calendar->id."][".$calendar->start_time."][".$title."][".$send_schedule."]--", 'warning', "remind_trial_calendar");
+        return null;
+      }
       $teacher1 = Teacher::where('id', 1)->first();
 
       $res = $teacher1->user->remind_mail($title, [

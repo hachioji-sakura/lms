@@ -70,7 +70,7 @@
     </div>
   </div>
   <div class="col-12">
-    {{$teacher->tag_value('schedule_remark')}}
+    {{$teacher->get_tag_value('schedule_remark')}}
   </div>
   @if(!isset($is_detail) || $is_detail!==true)
   <div class="col-12 mb-2">

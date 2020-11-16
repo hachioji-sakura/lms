@@ -186,6 +186,7 @@ class UserCalendarController extends MilestoneController
     $form = [];
     $form['create_user_id'] = $user->user_id;
     $schedule_type = "";
+    $start_time = "";
     if($request->has('schedule_type')){
       $schedule_type = $request->get('schedule_type');
     }
@@ -195,9 +196,11 @@ class UserCalendarController extends MilestoneController
       $form['start_hours'] = $request->get('start_hours');
       $form['start_minutes'] = $request->get('start_minutes');
       $start_time = $form['start_date'].' '.$form['start_hours'].':'.$form['start_minutes'].':00';
-      //授業時間＋開始日時から終了日時を計算
-      $form['start_time'] = $start_time;
     }
+    else if($request->has('start_time')){
+      $start_time = $request->get('start_time');
+    }
+    $form['start_time'] = $start_time;
 
     if($request->has('course_minutes')){
       //授業時間設定がある
@@ -725,9 +728,8 @@ class UserCalendarController extends MilestoneController
         if (!View::exists($this->domain.'.'.$status)) {
           abort(404, 'ページがみつかりません(100)');
         }
-      }
-      else {
-        Auth::loginUsingId($request->get('user'));
+      }else{
+         Auth::loginUsingId($request->get('user'));
       }
       $param = $this->page_access_check($request, $id);
       $param['ask'] = $this->get_ask_data($request, $param, $status);
@@ -1017,6 +1019,9 @@ class UserCalendarController extends MilestoneController
         }
         if($param['item']->work!=9){
           foreach($members as $member){
+            if($member->status == 'invalid'){
+              continue;
+            }
             //メンバーステータスの個別指定がある場合
             if(isset($form['is_all_student']) && $form['is_all_student']==1){
               //全生徒指定がある場合
