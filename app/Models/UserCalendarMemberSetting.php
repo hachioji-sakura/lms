@@ -237,7 +237,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
-    $grade = $user->tag_value('grade');
+    $grade = $user->get_tag_value('grade');
     $course_minutes = $this->setting->course_minutes(true);
     //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
     $filter = ["search_status" => ["new", "confirm", "fix"]];
@@ -350,7 +350,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
     }
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
-    $grade = $user->tag_value('grade');
+    $grade = $user->get_tag_value('grade');
     $course_minutes = $this->setting->course_minutes(true);
     //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
     $settings = $user->get_calendar_settings(["search_status"=>["new", "confirm", "fix"]]);
@@ -389,7 +389,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
 
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
-    $grade = $user->tag_value('grade');
+    $grade = $user->get_tag_value('grade');
     $course_minutes = $this->setting->course_minutes(true);
     $jukensei_flag = 0;
     if($user->is_juken()==true){

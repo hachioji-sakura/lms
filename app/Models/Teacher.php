@@ -225,7 +225,7 @@ EOT;
 
     foreach($charge_students as $charge_student){
       $detail = $charge_student->user->details("students");
-      $detail['grade'] = $detail->tag_value('grade');
+      $detail['grade'] = $detail->get_tag_value('grade');
       $items[$detail->id] = $detail;
     }
     return $items;
