@@ -44,7 +44,7 @@ class AskController extends MilestoneController
     ];
     return $ret;
   }
-  public function show_fields($type){
+  public function show_fields($type=''){
     $ret = [
       'title' => [
         'label' => __('labels.title'),

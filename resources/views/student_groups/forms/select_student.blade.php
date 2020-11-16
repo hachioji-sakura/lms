@@ -13,7 +13,7 @@
       @foreach($item->teacher->get_charge_students() as $student)
          <option
          value="{{ $student->id }}"
-         grade="{{$student->tag_value('grade')}}"
+         grade="{{$student->get_tag_value('grade')}}"
          @if($item->is_member($student->id)===true) selected @endif
          >{{$student->name()}}</option>
       @endforeach

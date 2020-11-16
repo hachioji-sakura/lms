@@ -30,6 +30,10 @@ class Student extends Model
       'kana_first' => 'required',
       'gender' => 'required',
   );
+  public function tags(){
+    return $this->hasMany('App\Models\UserTag', 'user_id', 'user_id');
+  }
+
   /**
    *　プロパティ：年齢
    */
@@ -99,7 +103,7 @@ class Student extends Model
    */
   public function grade()
   {
-    $grade_name = $this->tag_name('grade');
+    $grade_name = $this->get_tag_name('grade');
     if(empty($grade_name)) return "-";
     return $grade_name;
   }
@@ -108,21 +112,21 @@ class Student extends Model
    */
   public function school_name()
   {
-    return $this->tag_name('school_name');
+    return $this->get_tag_name('school_name');
   }
   /**
    *　プロパティ：希望レッスン場所
    */
   public function lesson_place()
   {
-    return $this->tags_name('lesson_place');
+    return $this->get_tags_name('lesson_place');
   }
   /**
    *　プロパティ：希望レッスン
    */
   public function lesson()
   {
-    return $this->tags_name('lesson');
+    return $this->get_tags_name('lesson');
   }
   /**
    *　プロパティ：ステータス名
@@ -135,76 +139,6 @@ class Student extends Model
       $status_name = config('attribute.student_status')[$this->status];
     }
     return $status_name;
-  }
-
-  public function tag_value($key)
-  {
-    $tag = $this->get_tag($key);
-    if(isset($tag)){
-      return $tag['value'];
-    }
-    return "";
-  }
-  public function tag_name($key)
-  {
-    $tag = $this->get_tag($key);
-    if(isset($tag)){
-      return $tag['name'];
-    }
-    return "";
-  }
-  public function tags_value($key)
-  {
-    $tags = $this->get_tags($key);
-    $ret = "";
-    if(isset($tags)){
-      foreach($tags as $tag){
-        $ret .= $tag['value'].',';
-      }
-      return trim($ret, ',');
-    }
-    return "";
-  }
-  public function tags_name($key)
-  {
-    $tags = $this->get_tags($key);
-    $ret = "";
-    if(isset($tags)){
-      foreach($tags as $tag){
-        $ret .= $tag['name'].',';
-      }
-      return trim($ret, ',');
-    }
-    return "";
-  }
-  /**
-   *　プロパティ：タグ取得
-   */
-  public function get_tag($key)
-  {
-    if(!isset($this->user)) return null;
-    $tag = $this->user->get_tag($key);
-    if(isset($tag)){
-      return ["name" => $tag->name(), "key" => $tag->keyname(), "value" => $tag->tag_value];
-    }
-    return ["name" => '-', "key" => $key, "value" => ''];
-  }
-  /**
-   *　プロパティ：タグ取得
-   */
-  public function get_tags($key)
-  {
-    if(!isset($this->user)) return null;
-    $tags = $this->user->get_tags($key);
-    $ret = null;
-    if(isset($tags)){
-      $ret = [];
-      foreach($tags as $tag){
-        $ret[] = ["name" => $tag->name(), "key" => $tag->keyname(), "value" => $tag->tag_value];
-      }
-      return $ret;
-    }
-    return null;
   }
 
   /**
@@ -437,7 +371,7 @@ EOT;
     return $this;
   }
   public function is_juken(){
-    $grade = $this->tag_value('grade');
+    $grade = $this->get_tag_value('grade');
     //中３、高３の場合＝受験
     if($grade == 'j3' || $grade == 'h3') return true;
 
@@ -1027,7 +961,7 @@ EOT;
     return '';
   }
   public function gradeUp(){
-    $current_grade = $this->tag_value('grade');
+    $current_grade = $this->get_tag_value('grade');
     $current_grade_code = $this->grade_to_code($current_grade);
     $current_grade_code++;
     $new_grade = $this->default_grade($current_grade_code);
@@ -1066,18 +1000,18 @@ EOT;
   }
   public function get_tuition($setting, $is_enable_only=true){
     \Log::warning("------get_tuition start------");
-    $lesson = $setting->get_tag_value('lesson');
+    $lesson = $setting->get_get_tag_value('lesson');
 
-    $tuitions = $this->tuitions->where('lesson', $setting->get_tag_value('lesson'))
-    ->where('course_type', $setting->get_tag_value('course_type'))
+    $tuitions = $this->tuitions->where('lesson', $setting->get_get_tag_value('lesson'))
+    ->where('course_type', $setting->get_get_tag_value('course_type'))
     ->where('course_minutes', $setting->course_minutes)
     ->where('lesson_week_count', $this->user->get_enable_calendar_setting_count($lesson))
     ->where('teacher_id', $setting->user->details()->id);
-    if($setting->get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
-      $tuitions =  $tuitions->where('subject', $setting->get_tag_value('subject'));
+    if($setting->get_get_tag_value('lesson')==2 && $setting->has_tag('english_talk_lesson', 'chinese')==true){
+      $tuitions =  $tuitions->where('subject', $setting->get_get_tag_value('subject'));
     }
-    else if($setting->get_tag_value('lesson')==4){
-      $tuitions =  $tuitions->where('subject', $setting->get_tag_value('kids_lesson'));
+    else if($setting->get_get_tag_value('lesson')==4){
+      $tuitions =  $tuitions->where('subject', $setting->get_get_tag_value('kids_lesson'));
     }
     $tuitions = $tuitions->sortByDesc('id');
     \Log::warning("------get_tuition end------");

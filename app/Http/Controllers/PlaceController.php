@@ -11,7 +11,7 @@ class PlaceController extends MilestoneController
   public function model(){
     return Place::query();
   }
-  public function show_fields($type){
+  public function show_fields($type=''){
     $fields = [
       "name" => [
         "label" => "名称",

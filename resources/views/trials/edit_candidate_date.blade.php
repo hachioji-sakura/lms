@@ -8,7 +8,7 @@
       授業を受ける生徒様：{{$student1->name()}} 様 / {{$student1->grade()}}
     </div>
     <input type="hidden" name="grade_name" value="{{$student1->grade()}}">
-    <input type="hidden" class="grade" name="grade" value="{{$student1->tag_value('grade')}}">
+    <input type="hidden" class="grade" name="grade" value="{{$student1->get_tag_value('grade')}}">
     <input type="hidden" name="student_id" value="{{$student1->id}}">
     <input type="hidden" name="student_parent_id" value="{{$student_parent_id}}">
     <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">

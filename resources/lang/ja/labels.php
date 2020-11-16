@@ -391,6 +391,8 @@ return [
   'created_date' => '起票日',
   'learning_record' => '学習記録',
   'actionlogs' => '操作ログ',
+  'event_templates' => 'イベントテンプレート',
+  'event_users' => 'イベント対象者',
   'ask_teacher_change_description' => '承認が必要な代講依頼',
   'teacher_change' => '講師変更',
   'dummy_release' => 'ダミーを解除する',
@@ -398,4 +400,5 @@ return [
   'entry_milestone' => '特に重視してやってほしいこと',
   'menu' => 'メニュー',
   'task_title' => '例：算数_分数の足し算',
+
 ];
