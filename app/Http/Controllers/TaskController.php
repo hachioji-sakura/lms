@@ -49,7 +49,7 @@ class TaskController extends MilestoneController
         $param['task_type'] = $request->get('task_type');
         $lessons = collect($param['target_student']->get_tags('lesson'));
         $param['lessons'] = $lessons;
-        $param['has_english_lesson'] = $lessons->pluck('value')->contains(2);
+        $param['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
         return view($this->domain . '.create',$param);
     }
 
