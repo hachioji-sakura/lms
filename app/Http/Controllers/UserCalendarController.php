@@ -1275,6 +1275,7 @@ class UserCalendarController extends MilestoneController
       $param['student_id'] = 0;
       $param['lesson_id'] = 0;
       $param['exchanged_calendar_id'] = 0;
+      $param['teachers'] = [];
       if($request->has('exchanged_calendar_id')){
         $param['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
       }
@@ -1294,7 +1295,6 @@ class UserCalendarController extends MilestoneController
           $param['teachers'] = $candidate_teachers[$lesson_id];
         }
         else {
-          $param['teachers'] = [];
           foreach($candidate_teachers as $lesson_id => $teachers){
             $param['teachers'] = array_merge($param['teachers'], $teachers);
           }
