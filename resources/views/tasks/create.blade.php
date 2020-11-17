@@ -8,6 +8,7 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      <input type="hidden" name="grade" value="{{$target_student->get_tag_value('grade')}}">
       <div class="row">
         <div class="col-12">
           <label>
@@ -177,7 +178,7 @@
   <script>
 
   $(function(){
-    var grade = "{{$target_student->tag_value('grade')}}";
+    var grade = $('input[name="grade"]').val();
     if( grade == "" ){
       var school = 'none';
     }else{
