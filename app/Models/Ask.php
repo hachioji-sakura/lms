@@ -280,7 +280,7 @@ EOT;
         $is_complete = true;
         //agreementを更新
         $agreement = $this->get_target_model_data();
-        $old_agreements = $agreement->student->enable_agreements_by_type('normal')();
+        $old_agreements = $agreement->student->enable_agreements_by_type('normal');
         if($old_agreements->count() > 0){
           $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
         }

@@ -3,6 +3,7 @@
 @extends('dashboard.common')
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  {{--依頼が追加できないほうが良いので、いったんコメントアウト
   <li class="nav-item hr-1">
     @if(isset($teacher_id) && $teacher_id>0)
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create?teacher_id={{$teacher_id}}" class="nav-link">
@@ -12,6 +13,7 @@
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
+  --}}
   <li class="nav-item has-treeview menu-open mt-2">
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-filter"></i>
@@ -22,7 +24,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-         <a href="{{request()->fullUrl()}}" class="nav-link">
+         <a href="/{{$domain}}?search_type[]={{request()->search_type[0]}}" class="nav-link">
            <i class="fa fa-calendar nav-icon"></i>すべて
          </a>
        </li>

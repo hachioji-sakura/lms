@@ -41,6 +41,9 @@ class AgreementController extends MilestoneController
           'start_date' => [
             'label' => '承認日',
           ],
+          'end_date' => [
+            'label' => '終了日',
+          ],
           /*
           'statement_summary' =>[
             'label' => '明細概要',

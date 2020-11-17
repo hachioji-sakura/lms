@@ -175,7 +175,7 @@ class Agreement extends Model
           'title' => $setting_key,
           'teacher_id' => $st->user->details()->id,
           'lesson_id' => $st->lesson(true),
-          'grade' => $mb->user->details()->tag_value('grade'),
+          'grade' => $mb->user->details()->get_tag_value('grade'),
           'course_type' => $st->get_tag_value('course_type'),
           'course_minutes' =>  $st['course_minutes'],
           'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
