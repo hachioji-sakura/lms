@@ -60,6 +60,16 @@ class MailLog extends Model
   static protected function add($from, $to, $title, $param, $type, $template, $locale, $status='new', $send_schedule=''){
     $body = View::make('emails.'.$template.'_'.$type)->with($param)->render();
     if(empty($send_schedule)) $send_schedule = date('Y-m-d H:i:s');
+    $src = [];
+    $dst = [];
+    $body = htmlentities($body, ENT_QUOTES, 'UTF-8');
+    foreach($param as $key=>$val){
+      if(gettype($val)=='array') continue;
+      if(gettype($val)!='string' && gettype($val) !='integer' && gettype($val)!='double') continue;
+      $src[] = '#'.$key.'#';
+      $dst[] = $val;
+    }
+    $body = str_replace($src, $dst, $body);
     $create_form = [
       'from_address' => $from,
       'to_address' => $to,

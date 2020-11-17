@@ -76,7 +76,7 @@
     <div class="col-6 p-3 font-weight-bold" >{{$name}}</div>
     <div class="col-6 p-3"><span id="{{$key}}"></span></div>
     @endforeach
-    @if(isset($teachers) && $user->role=='manager')
+    @if(isset($teachers) && $user->role=='manager' && $_edit==false)
     <div class="col-12">
       <div class="alert alert-danger text-sm">
         <i class="icon fa fa-exclamation-triangle"></i>この予定はダミーで登録します

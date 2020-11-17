@@ -7,7 +7,7 @@
     <span>{{$item->trial->student->name()}}</span>
       <input type="hidden" name="student_id[]"
         value="{{$item->trial->student->id}}"
-        grade="{{$item->trial->student->tag_value('grade')}}"
+        grade="{{$item->trial->student->get_tag_value('grade')}}"
         >
   </div>
   <input type="hidden" name="student_name" value="{{$item->trial->student->name()}}">
@@ -22,7 +22,7 @@
     @foreach($item->get_students() as $member)
       <input type="hidden" name="student_id[]"
         value="{{$member->user->details('students')->id}}"
-        grade="{{$member->user->details('students')->tag_value('grade')}}"
+        grade="{{$member->user->details('students')->get_tag_value('grade')}}"
         >
     @endforeach
   </div>
@@ -42,7 +42,7 @@
       @foreach($item->get_students() as $member)
         <input type="hidden" name="select_student_id[]"
           value="{{$member->user->details('students')->id}}"
-          grade="{{$member->user->details('students')->tag_value('grade')}}"
+          grade="{{$member->user->details('students')->get_tag_value('grade')}}"
           >
       @endforeach
     @endif

@@ -73,7 +73,7 @@
             @if(isset($_edit) && $_edit==true)
               value="{{$item->grade}}"
             @else
-              value="{{$student->tag_value('grade')}}"
+              value="{{$student->get_tag_value('grade')}}"
             @endif
           >
         </div>

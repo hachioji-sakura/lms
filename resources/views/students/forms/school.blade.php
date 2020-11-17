@@ -18,14 +18,14 @@ col-md-3
         {{$item->grade()}}
       </span>
       <input type="hidden" name="{{$prefix}}grade_name" value="{{$item->grade()}}">
-      <input type="hidden" class="grade" name="{{$prefix}}grade" value="{{$item->tag_value('grade')}}">
+      <input type="hidden" class="grade" name="{{$prefix}}grade" value="{{$item->get_tag_value('grade')}}">
       @endif
     @else
     <select name="{{$prefix}}grade" class="form-control grade" placeholder="学年" required="true" onChange="subject_onload()" accesskey="{{$prefix}}grade" >
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($attributes['grade'] as $index => $name)
         <option value="{{$index}}"
-        @if(isset($_edit) && $_edit==true && isset($item) && !empty($item) && $index==$item->tag_value('grade')) selected @endif
+        @if(isset($_edit) && $_edit==true && isset($item) && !empty($item) && $index==$item->get_tag_value('grade')) selected @endif
         >{{$name}}</option>
       @endforeach
     </select>
@@ -54,7 +54,7 @@ col-md-9
       @endif
     @else
     <input type="text" id="{{$prefix}}school_name" name="{{$prefix}}school_name" class="form-control" required="true" placeholder="例：八王子市立サクラ中学校"
-      @if(isset($_edit) && $_edit==true && isset($item) && !empty($item->tag_value('school_name'))) value="{{$item->tag_value('school_name')}}" @endif
+      @if(isset($_edit) && $_edit==true && isset($item) && !empty($item->get_tag_value('school_name'))) value="{{$item->get_tag_value('school_name')}}" @endif
       >
     @endif
   </div>

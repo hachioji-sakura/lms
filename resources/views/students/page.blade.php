@@ -24,7 +24,7 @@
                 @slot('alias')
                   <h6 class="widget-user-desc">
                     <small class="badge badge-dark mt-1 mr-1">
-                      No.{{$item->tag_name('student_no')}}
+                      No.{{$item->get_tag_name('student_no')}}
                     </small>
                     <small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
                       {{$item->status_name()}}
