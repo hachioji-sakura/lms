@@ -332,42 +332,6 @@ EOT;
     }
     return true;
   }
-  public function has_tag($key, $val=""){
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-    }
-    return false;
-  }
-  public function get_tag($key){
-    $item = $this->tags->where('tag_key', $key)->first();
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function get_tags($key){
-    $item = $this->tags->where('tag_key', $key);
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function get_tag_name($tag_key){
-    $tag =  $this->get_tag($tag_key);
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-  public function get_tag_value($tag_key){
-    $tag =  $this->get_tag($tag_key);
-    if(isset($tag)){
-      return $tag->tag_value;
-    }
-    return "";
-  }
   public function get_attribute_name($key, $val){
     $item = GeneralAttribute::get_item($key,$val);
     if(isset($item)) return $item["attribute_name"];
@@ -450,6 +414,10 @@ EOT;
         return 'season_school_lesson';
     }
     return "";
+  }
+  public function is_season_lesson(){
+    if($this->work==10 || $this->work==11) return true;
+    return false;
   }
   public function schedule_type_name(){
     $code = $this->schedule_type_code();
@@ -571,9 +539,7 @@ EOT;
     return false;
   }
   public function timezone(){
-    $start_hour_minute = date('H:i',  strtotime($this->start_time));
-    $end_hour_minute = date('H:i',  strtotime($this->end_time));
-    return $start_hour_minute.'～'.$end_hour_minute;
+    return $this->term_format($this->start_time, $this->end_time, 'H:i');
   }
   public function dateweek(){
     return $this->dateweek_format($this->start_time);

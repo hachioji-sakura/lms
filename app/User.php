@@ -50,28 +50,6 @@ class User extends Authenticatable
     public function tags(){
       return $this->hasMany('App\Models\UserTag');
     }
-    public function has_tag($key, $val=""){
-      $tags = $this->tags;
-      foreach($tags as $tag){
-        if(empty($val) && $tag->tag_key==$key) return true;
-        if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-      }
-      return false;
-    }
-    public function get_tag($key){
-      $item = $this->tags->where('tag_key', $key)->first();
-      if(isset($item)){
-        return $item;
-      }
-      return null;
-    }
-    public function get_tags($key){
-      $item = $this->tags->where('tag_key', $key);
-      if(isset($item)){
-        return $item;
-      }
-      return null;
-    }
 
     public function student(){
       return $this->hasOne('App\Models\Student');
@@ -224,6 +202,19 @@ class User extends Authenticatable
     public function get_name(){
       $item = $this->details();
       if(!empty($item["name"])) return $item["name"];
+      return "";
+    }
+    public function get_url(){
+      $d = $this->details();
+      $role = $d->role;
+      if($role=='staff') $role='manager';
+      return $role.'s/'.$d->id;
+    }
+    public function get_role(){
+      return $this->details()->role;
+    }
+    public function getAttributeRoleName(){
+      if(isset(config('attribute.user_role')[$this->get_role()])) return config('attribute.user_role')[$this->get_role()];
       return "";
     }
     public function scopeTag($query, $tagkey, $tagvalue)

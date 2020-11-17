@@ -24,7 +24,7 @@
               @foreach($item->get_students() as $member)
                 <input type="hidden" name="select_student_id[]"
                   value="{{$member->user->details('students')->id}}"
-                  grade="{{$member->user->details('students')->tag_value('grade')}}"
+                  grade="{{$member->user->details('students')->get_tag_value('grade')}}"
                   >
               @endforeach
           </div>

@@ -41,6 +41,13 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
+  Route::get('auth/mail','AuthController@mail_send');
+
+  Route::get('events/{id}/to_inform','EventController@to_inform_page');
+  Route::post('events/{id}/to_inform','EventController@to_inform');
+  Route::resource('events','EventController');
+  Route::resource('event_users','EventUserController');
+  Route::resource('event_templates','EventTemplateController');
 
   Route::post('upload_images','ImageController@upload_images');
   Route::resource('images','ImageController');
@@ -51,7 +58,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('attributes','GeneralAttributeController');
   Route::resource('milestones','MilestoneController');
   Route::resource('text_materials','TextMaterialController');
-  
+
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
   Route::put('comments/{id}/checked','CommentController@checked');

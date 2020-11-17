@@ -4,7 +4,7 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="grade_name" value="{{$item->grade()}}">
-    <input type="hidden" class="grade" name="grade" value="{{$item->tag_value('grade')}}">
+    <input type="hidden" class="grade" name="grade" value="{{$item->get_tag_value('grade')}}">
     @method('PUT')
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">

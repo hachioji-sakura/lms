@@ -42,11 +42,14 @@
         @if($field['link']==='show')
            href="javascript:void(0);" page_title="{{$domain_name}}詳細" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}"
         @else
-          href="{{$field['link']($row)}}"
-        @endif
-
-        @if(isset($field['target']))
-          target = "{{$field['target']}}"
+          @if(isset($field['page_title']))
+            page_title = "{{$field['page_title']}}"
+          @endif
+          @if(isset($field['page_form']))
+            href="javascript:void(0);"  page_form = "{{$field['page_form']}}" page_url="{{$field['link']($row)}}"
+          @else
+            href="{{$field['link']($row)}}"
+          @endif
         @endif
         >
       @endif

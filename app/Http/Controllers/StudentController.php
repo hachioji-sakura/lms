@@ -133,12 +133,13 @@ class StudentController extends UserController
       '_sort' => 'id',
       '_sort_order' => $sort,
     ]);
-   $items = $this->_search_pagenation($request, $items);
+    //tilesで表示するので、paging不要
+    //$items = $this->_search_pagenation($request, $items);
 
-   $items = $this->_search_sort($request, $items);
+    $items = $this->_search_sort($request, $items);
 
-   $items = $items->get();
-   return ["items" => $items];
+    $items = $items->get();
+    return ["items" => $items];
   }
   /**
    * フィルタリングロジック
@@ -652,15 +653,15 @@ class StudentController extends UserController
 
    switch($this->domain){
      case "students":
-      $no = $item->tag_value('student_no');
+      $no = $item->get_tag_value('student_no');
       $url = '/sakura/schedule/student_fee_list.php?student_id='.$no.'&api-token='.$this->token;
       break;
      case "teachers":
-      $no = $item->tag_value('teacher_no');
+      $no = $item->get_tag_value('teacher_no');
       $url = '/sakura/schedule/teacher_list.php?teacher_id='.$no.'&api-token='.$this->token;
       break;
     case "managers":
-     $no = $item->tag_value('manager_no');
+     $no = $item->get_tag_value('manager_no');
      $url = '/sakura/schedule/staff_list.php?staff_id='.$no.'&api-token='.$this->token;
      break;
    }

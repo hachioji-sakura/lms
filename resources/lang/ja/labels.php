@@ -393,8 +393,8 @@ return [
   'actionlogs' => '操作ログ',
   'teacher_change' => '講師変更',
   'agreements' => '契約',
-  'agreement_update' => '契約変更',
-  'ask_teacher_change_description' => '承認が必要な代講依頼',
+  'agreement_update' => '契約変更',  'event_templates' => 'イベントテンプレート',
+  'event_users' => 'イベント対象者',  'ask_teacher_change_description' => '承認が必要な代講依頼',
   'dummy_release' => 'ダミーを解除する',
   'enable' => '有効',
    'text_materials' => '教材・資料',
@@ -403,5 +403,4 @@ return [
   'task_title' => '例：算数_分数の足し算',
   'agreement_statements' => '契約明細',
   'agreement_new' => '未承認',
-  'agreement_commit' => '承認済',
-];
+  'agreement_commit' => '承認済',];

@@ -23,7 +23,7 @@ class StudentGroupController  extends MilestoneController
   public function model(){
     return StudentGroup::query();
   }
-  public function show_fields($type){
+  public function show_fields($type=''){
     $ret = [
       'title' => [
         'label' => 'グループ名',

@@ -44,7 +44,7 @@ class UserCalendarSettingController extends UserCalendarController
       }
       return $title;
     }
-    public function show_fields($item){
+    public function show_fields($item=''){
       $base_ret = [
         'title' => [
           'label' => __('labels.title'),
