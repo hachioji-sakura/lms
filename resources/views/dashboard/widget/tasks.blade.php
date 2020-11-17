@@ -194,13 +194,13 @@
         <div class="input-group">
           <div class="form-check">
             <label class="form-check-label" for="type_class_record">
-              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_class_record" value="class_record"  {{request()->get('search_type') == 'class_record' ? 'checked': ''}} checked>
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="search_type_class_record" value="class_record"  {{request()->get('search_type') == 'class_record' ? 'checked': ''}} checked>
               {{__('labels.class_record')}}
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label" for="type_homework">
-              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_homework" value="homework" {{request()->get('search_type') == 'homework' ? 'checked': ''}}>
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="search_type_homework" value="homework" {{request()->get('search_type') == 'homework' ? 'checked': ''}}>
               {{__('labels.homework')}}
             </label>
           </div>

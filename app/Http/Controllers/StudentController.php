@@ -652,15 +652,15 @@ class StudentController extends UserController
 
    switch($this->domain){
      case "students":
-      $no = $item->tag_value('student_no');
+      $no = $item->get_tag_value('student_no');
       $url = '/sakura/schedule/student_fee_list.php?student_id='.$no.'&api-token='.$this->token;
       break;
      case "teachers":
-      $no = $item->tag_value('teacher_no');
+      $no = $item->get_tag_value('teacher_no');
       $url = '/sakura/schedule/teacher_list.php?teacher_id='.$no.'&api-token='.$this->token;
       break;
     case "managers":
-     $no = $item->tag_value('manager_no');
+     $no = $item->get_tag_value('manager_no');
      $url = '/sakura/schedule/staff_list.php?staff_id='.$no.'&api-token='.$this->token;
      break;
    }
