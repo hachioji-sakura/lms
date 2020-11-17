@@ -126,6 +126,7 @@ return [
   'charge_lesson' => 'Charge Lesson',
   'lesson_week_time' => 'time/week for lesson',
   'trial_week_time' => 'time/week for trial lesson',
+  'season_lesson_week_time' => 'time/week for season lesson',
   'week_day' => 'WeekDay',
   'charge_subject' => 'Charge Subject',
   'no_data' => 'No Data',
@@ -396,9 +397,9 @@ return [
   'ask_teacher_change_description' => 'About teacher change you should check',
   'teacher_change' => 'Change assigned teacher',
   'dummy_release' => 'Dummy Release',
-  'task_title' => 'ex: English_selfIntroduction',
-  'entry_milestone' => 'Special Importance',
   'text_materials' => 'Text Material',
+  'entry_milestone' => 'Special Importance',
   'menu' => 'Menu',
-
+  'task_title' => 'ex: English_selfIntroduction',
+  'workable_classroom' => 'Workable ClassRoom',
 ];

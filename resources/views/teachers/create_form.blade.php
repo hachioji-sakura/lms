@@ -36,9 +36,15 @@
 </div>
 @endsection
 
-@section('lesson_week_form')
+@section('charge_form')
 <div class="row">
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=> __('labels.charge_lesson')]) @endcomponent
+  @component('students.forms.lesson_place', ['title'=>__('labels.workable_classroom'), '_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes]) @endcomponent
+</div>
+@endsection
+
+@section('lesson_week_form')
+<div class="row">
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'trial', 'attributes' => $attributes, 'title' => __('labels.trial_week_time')]) @endcomponent
   <div class="col-12">
@@ -52,6 +58,13 @@
   </div>
 </div>
 @endsection
+
+@section('season_lesson_week_form')
+<div class="row">
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'season_lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
+</div>
+@endsection
+
 
 @section('subject_form')
 <div class="row">

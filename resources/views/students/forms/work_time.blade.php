@@ -20,7 +20,7 @@
     </tr>
     <?php
       $attribute_name = $prefix.'_time';
-      if($prefix=='trial'){
+      if($prefix=='trial' || $prefix=='season_lesson'){
         $attribute_name = 'lesson_time';
       }
     ?>
