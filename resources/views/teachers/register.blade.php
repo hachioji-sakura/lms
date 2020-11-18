@@ -152,7 +152,7 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('teachers_register .carousel-item.active')){
       var form_data = front.getFormValue('teachers_register');
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#teachers_register').carousel('next');
       $('#teachers_register').carousel({ interval : false});
 
@@ -160,7 +160,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#teachers_register').carousel('prev');
     $('#teachers_register').carousel({ interval : false});
   });

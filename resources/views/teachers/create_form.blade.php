@@ -40,13 +40,9 @@
 <div class="row">
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=> __('labels.charge_lesson')]) @endcomponent
   @component('students.forms.lesson_place', ['title'=>__('labels.workable_classroom'), '_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes]) @endcomponent
-</div>
-@endsection
-
-@section('lesson_week_form')
-<div class="row">
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'trial', 'attributes' => $attributes, 'title' => __('labels.trial_week_time')]) @endcomponent
+</div>
+<div class="row">
   <div class="col-12">
     <div class="form-group">
       <label for="schedule_remark" class="w-100">
@@ -59,9 +55,23 @@
 </div>
 @endsection
 
+@section('lesson_week_form')
+<div class="row">
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'trial', 'attributes' => $attributes, 'title' => __('labels.trial_week_time')]) @endcomponent
+</div>
+<div class="row subject_form">
+  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'season_lesson', 'attributes' => $attributes, 'title' => __('labels.season_lesson_week_time'), 'from_time_index' => '11_12', 'to_time_index'=> '17_18']) @endcomponent
+  <div class="col-12">
+    <div class="alert alert-warning text-sm">
+      <i class="icon fa fa-exclamation-triangle"></i>
+      {!!nl2br(__('messages.info_season_lesson_week_time'))!!}
+    </div>
+  </div>
+</div>
+@endsection
+
 @section('season_lesson_week_form')
 <div class="row">
-  @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'season_lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
 </div>
 @endsection
 

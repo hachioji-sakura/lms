@@ -23,8 +23,16 @@
       if($prefix=='trial' || $prefix=='season_lesson'){
         $attribute_name = 'lesson_time';
       }
+      $display = true;
+      if(isset($from_time_index)) $display = false;
     ?>
     @foreach($attributes[$attribute_name] as $index => $name)
+    <?php
+      if(isset($from_time_index) && $display==false && $index==$from_time_index){
+        $display = true;
+      }
+    ?>
+    @if($display!=true) @continue @endif
     <tr class="">
       <th class="p-1 text-center bg-gray text-sm week_time_label">
         {{$name}}
@@ -40,6 +48,11 @@
       </td>
       @endforeach
     </tr>
+    <?php
+      if(isset($to_time_index) && $display==true && $index==$to_time_index){
+        $display = false;
+      }
+    ?>
     @endforeach
     </table>
     <script>

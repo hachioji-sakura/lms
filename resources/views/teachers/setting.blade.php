@@ -84,6 +84,7 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     if(front.validateFormValue('teachers_edit .carousel-item.active')){
       var form_data = front.getFormValue('teachers_edit');
       $('#teachers_edit').carousel('next');
@@ -92,6 +93,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     $('#teachers_edit').carousel('prev');
     $('#teachers_edit').carousel({ interval : false});
   });
