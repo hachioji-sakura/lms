@@ -469,6 +469,14 @@ EOT;
         $this->student_mail($mail_title, ['old_item' => $old_item, 'mail_title'=>$mail_title], 'text', 'calendar_setting_update');
       }
     }
+    //契約処理
+    if($this->status = 'fix' ){
+      foreach($setting->members as $member ){
+        if($member->user->details()->role == 'student'){
+          $this->agreement_update($member->user_id);
+        }
+      }
+    }
 
     return $this;
   }

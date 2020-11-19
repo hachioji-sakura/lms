@@ -148,7 +148,8 @@ class Agreement extends Model
       return $this;
     }
 
-    public static function add_from_member_setting($member){
+    public static function add_from_member_setting($member_id){
+      $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
       $agreement = $member->user->details()->enable_agreements_by_type('normal')->first();
       $setting = $member->setting->details();
@@ -200,7 +201,7 @@ class Agreement extends Model
           //既存の契約idを取得してparent_idへセット
           $new_agreement->parent_agreement_id = $agreement->id;
         }
-        $invalid_agreements = $member->user->details()->agreementsByStatus('new');
+        $invalid_agreements = $member->user->details()->agreementsByStatuses(['new']);
         if($invalid_agreements->count()){
           //newのままの契約はキャンセルに
           $invalid_agreements->update(['status' => 'cancel']);

@@ -29,9 +29,8 @@ class AgreementAskUpdateSeeder extends Seeder
       foreach($target_asks as $ask){
         $member = $ask->target_user->details()->relations->first()->student->user->calendar_member_settings->first();
         if(!empty($member)){
-          $new_agreement = Agreement::add_from_member_setting($member);
-          $agreement_id = $new_agreement->id;
-          $ask->update(['target_model' => 'agreement', 'target_model_id' => $agreement_id]);
+          $new_agreement = Agreement::add_from_member_setting($member->id);
+          $ask->update(['target_model' => 'agreement', 'target_model_id' => $new_agreement->id]);
         }
       }
     }
@@ -44,7 +43,7 @@ class AgreementAskUpdateSeeder extends Seeder
       $new_agreement = [];
       foreach($target_members as $member){
         if(!empty($member)){
-          $new_agreement[] = Agreement::add_from_member_setting($member);
+          $new_agreement[] = Agreement::add_from_member_setting($member->id);
         }
       }
     }

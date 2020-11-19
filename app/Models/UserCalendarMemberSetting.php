@@ -423,9 +423,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
         break;
       case "fix":
         if($this->user->details()->role == 'student'){
-          //addの中でmember->setting->details()してるせいでset_statusの中でupdateが通らないから違う変数に取得して渡す。$thisは変えない
-          $member = UserCalendarMemberSetting::find($this->id);
-          $agreement = Agreement::add_from_member_setting($member);
+          $agreement = Agreement::add_from_member_setting($this->id);
         }
         break;
       }

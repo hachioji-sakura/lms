@@ -32,11 +32,13 @@ class Student extends Model
   );
   public function tags(){
     return $this->hasMany('App\Models\UserTag', 'user_id', 'user_id');
-  }  public function agreements(){
+  }
+
+  public function agreements(){
     return $this->hasMany('App\Models\Agreement','student_id');
   }
-  public function agreementsByStatus($status){
-    return $this->agreements()->where('status',$status);
+  public function agreementsByStatuses($statuses){
+    return $this->agreements()->whereIn('status',$statuses);
   }
 
   public function enable_agreements_by_type($type){
@@ -1064,6 +1066,7 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
+  //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
     //契約後は契約参照

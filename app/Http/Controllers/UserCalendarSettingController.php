@@ -652,8 +652,6 @@ class UserCalendarSettingController extends UserCalendarController
             foreach($form['students'] as $student){
               if($member->user_id == $student->user_id){
                 $is_delete = false;
-                //設定変更と同時に契約も更新
-                Agreement::add_from_member_setting($member);
                 break;
               }
             }
@@ -698,7 +696,7 @@ class UserCalendarSettingController extends UserCalendarController
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
             foreach($form['students'] as $student){
-              $member = $setting->memberAdd($student->user_id, $form['create_user_id']);
+               $setting->memberAdd($student->user_id, $form['create_user_id']);
             }
           }
           $setting = $res["data"]->details();
