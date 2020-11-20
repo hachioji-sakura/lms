@@ -5,12 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\AgreementStatement;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
+use App\Models\Traits\Scopes;
 
 class Agreement extends Model
 {
     //
     use WebCache;
+    use Scopes;
+    use Common;
+
     protected $table = 'common.agreements';
     protected $guarded = array('id');
     protected $fillable = [
@@ -68,23 +73,6 @@ class Agreement extends Model
       return $ret;
     }
 
-    public function scopeSearch($query, $request){
-      if( $request->has('search_word')){
-        $query = $query->searchWord($request->get('search_word'));
-      }
-      if( $request->has('id')){
-        $query = $query->where('id', $request->get('id'));
-      }
-      if( $request->has('status')){
-        $query = $query->findStatus($request->get('status'));
-      }
-      return $query;
-    }
-
-    public function scopeFindStatus($query,$status){
-      return $query->where('status',$status);
-    }
-
     public function scopeEnable($query){
       return $query->where('status','commit')->whereNull('end_date');
     }
@@ -98,8 +86,7 @@ class Agreement extends Model
       $query = $query->where(function($query)use($search_words){
         foreach($search_words as $_search_word){
           $_like = '%'.$_search_word.'%';
-          $query = $query->orWhere('remarks','like', $_like)
-            ->orWhere('title','like', $_like);
+          $query = $query->orWhere('title','like', $_like);
         }
       });
       return $query;

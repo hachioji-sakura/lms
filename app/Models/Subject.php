@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Scopes;
 
 class Subject extends Milestone
 {
     //
+    use Scopes;
     protected $connection = 'mysql';
     protected $table = 'lms.subjects';
     protected $guarded = array('id');
@@ -29,12 +31,6 @@ class Subject extends Milestone
       return $this;
     }
 
-    public function scopeSearch($query,$request){
-      if($request->has('search_word')){
-        $query = $query->searchWord($request->get('search_word'));
-      }
-      return $query;
-    }
 
     public function scopeSearchWord($query, $word){
       $search_words = $this->get_search_word_array($word);

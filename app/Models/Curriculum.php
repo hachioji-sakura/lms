@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Scopes;
+use App\Models\Traits\Common;
 
 
 class Curriculum extends Milestone
 {
     //
+    use Scopes;
+    use Common;
     protected $connection = 'mysql';
     protected $table = 'lms.curriculums';
     protected $guarded = array('id');
@@ -42,23 +46,6 @@ class Curriculum extends Milestone
       return $this;
     }
 
-    public function scopeSearchBySubjectId($query,$subject_id){
-      return $query->whereHas('subjects', function($query) use ($subject_id) {
-          $query->where('subjects.id', $subject_id);
-      });
-    }
-
-    public function scopeSearch($query, $request){
-      if( $request->has('search_subject_id') && is_numeric( $request->get('search_subject_id'))){
-        $search_subject_id = $request->get('search_subject_id');
-        $query = $query->searchBySubjectId($search_subject_id);
-      }
-
-      if($request->has('search_word')){
-        $query = $query->searchWord($request->get('search_word'));
-      }
-      return $query;
-    }
 
     public function scopeSearchWord($query, $word){
       $search_words = $this->get_search_word_array($word);

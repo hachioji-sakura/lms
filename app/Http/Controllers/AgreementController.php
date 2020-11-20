@@ -68,15 +68,14 @@ class AgreementController extends MilestoneController
             ],
           ],
         ];
-        $param = [
-          'items' => $this->model()->search($request)->paginate(),
-          'new_item_count' => $this->model()->findStatus('new')->count(),
-          'search_word' => '',
-          'fields' => $fields,
-          'domain' => $this->domain,
-          'domain_name' => "契約管理",
-          'user' => Auth::user()->details(),
-        ];
+        $param = $this->get_param($request);
+        $param['items'] = $this->model()->search($request)->paginate();
+        $param['new_item_count'] = $this->model()->findStatuses(['new'])->count();
+        $param['search_word'] = '';
+        $param['fields'] = $fields;
+        $param['domain'] = $this->domain;
+        $param['domain_name'] = "契約管理";
+        $param['user'] = Auth::user()->details();
         return view($this->domain.'.list')->with($param);
     }
 

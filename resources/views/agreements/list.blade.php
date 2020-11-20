@@ -20,14 +20,14 @@
       </a>
       <ul class="nav nav-treeview">
         <li class="nav-item">
-          <a href="/agreements" class="nav-link {{!request()->has('status') ? 'active': ''}}">
+          <a href="/agreements" class="nav-link {{!request()->has('search_status') ? 'active': ''}}">
             <i class="fa fa-list-alt nav-icon"></i>
             {{__('labels.all')}}
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="/agreements?status=new" class="nav-link {{request()->status == 'new' ? 'active' : ''}}">
+          <a href="/agreements?search_status=new" class="nav-link {{request()->search_status == 'new' ? 'active' : ''}}">
             <i class="fa fa-exclamation-triangle nav-icon"></i>
             {{__('labels.agreement_new')}}
             <span class="badge badge-danger right ml-2">
@@ -37,14 +37,14 @@
         </li>
 
         <li class="nav-item">
-          <a href="/agreements?status=commit" class="nav-link {{request()->status == 'commit' ? 'active' : ''}}">
+          <a href="/agreements?search_status=commit" class="nav-link {{request()->search_status == 'commit' ? 'active' : ''}}">
             <i class="fa fa-check-circle nav-icon"></i>
             {{__('labels.agreement_commit')}}
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="/agreements?status=cancel" class="nav-link {{request()->status == 'cancel' ? 'active' : ''}}">
+          <a href="/agreements?search_status=cancel" class="nav-link {{request()->search_status == 'cancel' ? 'active' : ''}}">
             <i class="fa fa-times-circle nav-icon"></i>
             {{__('labels.cancel')}}
           </a>
@@ -60,6 +60,20 @@
 @endsection
 
 @section('list_filter')
+@component('components.list_filter_message', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
+  @slot("search_form")
+    <div class="col-12 mb-2">
+        <label for="search_word" class="w-100">
+          {{__('labels.search_keyword')}}
+        </label>
+        <input type="text" name="search_word" class="form-control" placeholder="" inputtype=""
+        @isset($filter['search_keyword'])
+        value = "{{$filter['search_keyword']}}"
+        @endisset
+        >
+    </div>
+  @endslot
+@endcomponent
 @endsection
 
 @include('dashboard.lists')
