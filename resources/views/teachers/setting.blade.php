@@ -6,46 +6,63 @@
     @method('PUT')
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
-        <div class="carousel-item active">
-          @yield('lesson_week_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                {{__('labels.cancel_button')}}
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-right mr-1"></i>
-                {{__('labels.next_button')}}
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          @yield('subject_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                {{__('labels.back_button')}}
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-times-circle mr-1"></i>
-                {{__('labels.cancel_button')}}
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_edit">
-                  <i class="fa fa-edit mr-1"></i>
-                  {{__('labels.update_button')}}
-                </button>
+          <div class="carousel-item active">
+            @yield('charge_form')
+            <div class="row">
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
+                  <i class="fa fa-times-circle mr-1"></i>
+                  {{__('labels.cancel_button')}}
+                </a>
+              </div>
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                  <i class="fa fa-arrow-circle-right mr-1"></i>
+                  {{__('labels.next_button')}}
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="carousel-item">
+            @yield('lesson_week_form')
+            <div class="row">
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                  <i class="fa fa-arrow-circle-left mr-1"></i>
+                  {{__('labels.back_button')}}
+                </a>
+              </div>
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                  <i class="fa fa-arrow-circle-right mr-1"></i>
+                  {{__('labels.next_button')}}
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            @yield('subject_form')
+            <div class="row">
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                  <i class="fa fa-arrow-circle-left mr-1"></i>
+                  {{__('labels.back_button')}}
+                </a>
+              </div>
+              <div class="col-12 mb-1">
+                <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
+                  <i class="fa fa-times-circle mr-1"></i>
+                  {{__('labels.cancel_button')}}
+                </a>
+              </div>
+              <div class="col-12 mb-1">
+                  <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="teachers_edit">
+                    <i class="fa fa-edit mr-1"></i>
+                    {{__('labels.update_button')}}
+                  </button>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
   </form>
@@ -67,6 +84,7 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     if(front.validateFormValue('teachers_edit .carousel-item.active')){
       var form_data = front.getFormValue('teachers_edit');
       $('#teachers_edit').carousel('next');
@@ -75,6 +93,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     $('#teachers_edit').carousel('prev');
     $('#teachers_edit').carousel({ interval : false});
   });

@@ -27,12 +27,13 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     var form_data = front.getFormValue('trials_entry');
     if(front.validateFormValue('trials_entry .carousel-item.active')){
       @if($_edit==false)
       util.setLocalData('trials_entry', form_data);
       @endif
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#trials_entry').carousel('next');
       $('#trials_entry').carousel({ interval : false});
     }
@@ -48,7 +49,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#trials_entry').carousel('prev');
     $('#trials_entry').carousel({ interval : false});
   });
