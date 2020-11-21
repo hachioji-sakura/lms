@@ -58,7 +58,7 @@ class AgreementController extends MilestoneController
                 'label' => '承認依頼を送信',
                 'style' => 'primary',
                 'type' => function($row){
-                    if($row->status == 'new'){
+                    if($row->status == 'new' && $row->student->has_trial() == false){
                       return true;
                     }else{
                       return false;
