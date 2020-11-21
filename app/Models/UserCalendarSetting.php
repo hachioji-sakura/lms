@@ -732,6 +732,7 @@ EOT;
     $c = (new UserCalendar())->rangeDate($start_time, $end_time)
         ->where('user_calendar_setting_id','!=', $this->id)
         ->where('user_id', $this->user_id)
+        ->whereNotIn('status', ['cancel', 'rest'])
         ->first();
 
     $default_status = 'fix';
