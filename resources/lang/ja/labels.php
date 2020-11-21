@@ -283,6 +283,8 @@ return [
   'charge_student' => '担当生徒',
   'charge_teacher' => '担当講師',
   'recess_or_unsubscribe' => '休会・退会',
+  'join' => '入会',
+  'entiring' => '入社',
   'retirement' => '退職',
   'unsubscribe' => '退会',
   'recess' => '休会',

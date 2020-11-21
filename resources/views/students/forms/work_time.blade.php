@@ -1,10 +1,10 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="week_table" class="w-100">
+    <label for="{{$prefix}}week_table" class="w-100">
       {{$title}}
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
-    <table class="table" id="week_table">
+    <table class="table" id="{{$prefix}}week_table">
     <tr class="bg-gray">
       <th class="p-1 text-center">時間帯 / 曜日</th>
       @foreach($attributes['lesson_week'] as $index => $name)
@@ -39,7 +39,7 @@
       </th>
       @foreach($attributes['lesson_week'] as $week_code => $week_name)
       <td class="p-1 text-center">
-        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green week_time" onChange="week_change(this)"  validate="week_validate()"
+        <input type="checkbox" value="{{ $index }}" name="{{$prefix}}_{{$week_code}}_time[]" class="icheck flat-green {{$prefix}}week_time"  validate="week_validate('{{$prefix}}')"
         @if($_edit===true && isset($item) && $item->has_tag($prefix.'_'.$week_code.'_time', $index)==1)
        checked
        @elseif($_edit==false)
@@ -56,39 +56,11 @@
     @endforeach
     </table>
     <script>
-    function week_change(obj){
-      return true;
-      //TODO disableのチェック処理を外す
-      var _name = $(obj).attr("name");
-      var _val = $(obj).val();
-      var _checked = $(obj).prop("checked");
-      console.log('week_change');
-      if(_checked && _val=='disabled'){
-        //個別時間帯をすべてdisabled
-        $('input[type="checkbox"][name="'+_name+'"][value!="disabled"]').each(function(i, e){
-          if($(e).attr("value") !== "disabled") {
-            $(this).prop('disabled', true);
-            $(this).iCheck('uncheck');
-            $(this).iCheck('disable');
-          }
-        });
-      }
-      else if(!_checked && _val=='disabled'){
-        $('input[type="checkbox"][name="'+_name+'"][value!="disabled"]').each(function(i, e){
-          if($(e).attr("value") !== "disabled"){
-            $(this).parent().removeClass('disabled');
-            $(this).prop('disabled', false);
-            $(this).iCheck('check');
-            $(this).iCheck('enable');
-          }
-        });
-      }
-    }
-    function week_validate(){
+    function week_validate(prefix){
       var _is_scceuss = false;
-      if( $("input.week_time[type='checkbox']").length > 0){
+      if( $("input."+prefix+"week_time[type='checkbox']").length > 0){
         var _week_input = [];
-        $("input.week_time[type='checkbox']").each(function(index, value){
+        $("input."+prefix+"week_time[type='checkbox']").each(function(index, value){
           var val = $(this).val();
           var name = $(this).attr('name');
           var checked = $(this).prop('checked');
@@ -98,14 +70,14 @@
             _week_input[name] = true;
           }
         });
-        console.log(_week_input[name]);
+        console.log(prefix+":"+_week_input[name]);
         for(var key in _week_input){
           if(_week_input[key] == false){
-            $("input.week_time[name='"+key+"'][value='disabled']").prop('checked', true);
+            $("input."+prefix+"week_time[name='"+key+"'][value='disabled']").prop('checked', true);
           }
         }
         if(!_is_scceuss){
-          front.showValidateError('#week_table', '希望の時間帯を１つ以上選択してください');
+          front.showValidateError('#'+prefix+'week_table', '希望の時間帯を１つ以上選択してください');
         }
       }
       else {

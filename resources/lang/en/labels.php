@@ -283,6 +283,8 @@ return [
   'charge_student' => 'Charge Student',
   'charge_teacher' => 'Charge Teacher',
   'recess_or_unsubscribe' => 'Recess Or Unsubscribe',
+  'join' => 'Join',
+  'entiring' => 'Entireing',
   'unsubscribe' => 'Unsubscribe',
   'retirement' => 'Retirement',
   'recess' => 'Recess',
