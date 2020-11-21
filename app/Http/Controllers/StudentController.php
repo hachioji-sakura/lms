@@ -1499,7 +1499,7 @@ class StudentController extends UserController
     $count = (new Agreement())->get_user_cache($cache_key, $form['user_id']);
     if($count != null && $is_count_only==true) return $count;
 
-    $agreements = Agreement::findStatus($status);
+    $agreements = Agreement::findStatuses($status);
     if($is_count_only == true){
       return $agreements->count();
     }else{
