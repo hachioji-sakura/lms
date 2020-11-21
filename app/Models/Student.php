@@ -348,6 +348,8 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
+      'entry_date' => null,
+
     ];
     $update_form = [];
     foreach($update_field as $key => $val){

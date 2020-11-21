@@ -95,7 +95,7 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-
+    $('body, html, .modal-body').scrollTop(0);
     if($(this).hasClass('btn-confirm')){
       @if($item['exchanged_calendar_id'] > 0)
       if($("input[name='course_minutes']").length > 0 ){
@@ -106,7 +106,7 @@ $(function(){
 
     var form_data = front.getFormValue('calendars_entry');
     if(front.validateFormValue('calendars_entry .carousel-item.active')){
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#calendars_entry').carousel('next');
       $('#calendars_entry').carousel({ interval : false});
     }
@@ -122,7 +122,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#calendars_entry').carousel('prev');
     $('#calendars_entry').carousel({ interval : false});
   });

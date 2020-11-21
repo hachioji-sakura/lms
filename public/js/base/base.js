@@ -511,7 +511,11 @@
 				$("#"+form_id).on('hide.bs.modal', function () {
 					console.log('modal close');
 					if(front.isInput(form_id)==true){
-						return confirm("このフォームを閉じますか？\n入力したデータは残りません。");
+						if(confirm("このフォームを閉じますか？\n入力したデータは残りません。")){
+							$('.modal-body').scrollTop(0);
+							return true;
+						}
+						return false;
 					}
 				});
 				$("#"+form_id).on('hidden.bs.modal', function () {

@@ -158,4 +158,5 @@ return [
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
   'mail_reply_recomend' => "＊本メールは送信専用ですので、ご返信できません。\n＊ご返信は、SaKuRa One Netのメッセージ一覧をご利用ください。",
+  "info_season_lesson_week_time" => "春期・夏期・冬期の講習、土日講習については、別途勤務可能な日時の確認を行います。\nその際、上記の設定の曜日・時間帯は勤務可能として連絡を行います。",
 ];

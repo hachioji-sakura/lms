@@ -138,7 +138,7 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     var form_data = front.getFormValue('ask_entry');
     if(front.validateFormValue('ask_entry .carousel-item.active')){
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#ask_entry').carousel('next');
       $('#ask_entry').carousel({ interval : false});
       $("ol.step li").removeClass("is-current");
@@ -154,7 +154,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#ask_entry').carousel('prev');
     $('#ask_entry').carousel({ interval : false});
   });
