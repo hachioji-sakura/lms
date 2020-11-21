@@ -92,6 +92,7 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     if(front.validateFormValue('trials_confirm .carousel-item.active')){
       var form_data = front.getFormValue('trials_confirm');
       util.setLocalData('trials_confirm', form_data);
@@ -102,6 +103,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
+    $('body, html, .modal-body').scrollTop(0);
     $('#trials_confirm').carousel('prev');
     $('#trials_confirm').carousel({ interval : false});
   });

@@ -20,7 +20,7 @@
     </a>
   </div>
   <div class="col-12 col-lg-4 col-md-6 mb-1">
-    <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.working')}}{{__('labels.setting')}}">
+    <a class="" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/edit" page_title="{{__('labels.teacher_setting')}}">
     <div class="info-box">
       <span class="info-box-icon bg-secondary">
         <i class="fa fa-user-edit"></i>

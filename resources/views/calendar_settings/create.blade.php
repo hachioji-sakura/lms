@@ -118,7 +118,7 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     var form_data = front.getFormValue('calendar_settings_entry');
     if(front.validateFormValue('calendar_settings_entry .carousel-item.active')){
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#calendar_settings_entry').carousel('next');
       $('#calendar_settings_entry').carousel({ interval : false});
     }
@@ -134,7 +134,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#calendar_settings_entry').carousel('prev');
     $('#calendar_settings_entry').carousel({ interval : false});
   });

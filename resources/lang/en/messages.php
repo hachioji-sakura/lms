@@ -158,4 +158,5 @@ return [
  'info_mail_reply' => 'You cannot reply to this email address',
  'confirm_dummy_release' => 'Do you want to release the dummy status?',
  'mail_reply_recomend' => "＊This e-mail is for sending only, so we cannot reply to you. \n＊If you want to reply, you should use SaKuRa One Net.",
+ 'info_season_lesson_week_time' => "Season Lesson and Weekend Lesson, we will check the dates and times when you can work separately.\nAt that time, we will contact you as if you can work on the days and hours set above.",
  ];
