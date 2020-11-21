@@ -14,7 +14,7 @@ class ChangeUrlActionLogs extends Migration
     public function up()
     {
         Schema::connection('mysql_common')->table('action_logs', function (Blueprint $table) {
-          $table->string('url', 10000)->comment('REQUEST_URI')->change();
+          $table->longText('url')->comment('REQUEST_URI')->change();
         });
     }
 
@@ -25,7 +25,7 @@ class ChangeUrlActionLogs extends Migration
      */
     public function down()
     {
-        Schema::table('action_logs', function (Blueprint $table) {
+        Schema::connection('mysql_common')->table('action_logs', function (Blueprint $table) {
           $table->string('url')->comment('REQUEST_URI')->change();
         });
     }
