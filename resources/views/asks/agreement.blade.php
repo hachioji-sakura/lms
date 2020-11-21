@@ -51,7 +51,7 @@
               @csrf
               <input type="text" name="dummy" style="display:none;" / >
               @method('PUT')
-              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form">
+              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled>
                 <i class="fa fa-check mr-1"></i>
                 上記の内容について了承しました
               </button>
@@ -67,6 +67,12 @@
                 $(this).prop("disabled",true);
                 $("#commit_form form").submit();
               }
+            });
+            $("body").on("ifChecked", "#important_check", function(e){
+              $("#commit_form button.btn-submit").prop("disabled",false);
+            });
+            $("body").on("ifUnchecked", "#important_check", function(e){
+              $("#commit_form button.btn-submit").prop("disabled",true);
             });
           });
           </script>
