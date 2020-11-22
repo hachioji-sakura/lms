@@ -1,10 +1,9 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
   @slot('page_message')
     {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
-    @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
-    @elseif(isset($user) && $user->role==="manager")
+    @if(isset($user) && $user->role==="manager")
     {!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
-    @else
+    @elseif(isset($user))
     {!!nl2br(__('messages.info_calendar_confirm'))!!}
     @endif
   @endslot
@@ -23,8 +22,8 @@
           <div class="col-12 mb-1" id="{{$domain}}_confirm">
             <input type="hidden" name="is_all_student" value="1" />
             <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
-                <i class="fa fa-envelope mr-1"></i>
-                {{__('labels.schedule_remind')}}
+                <i class="fa fa-check mr-1"></i>
+                {{__('labels.schedule_to_confirm')}}
             </button>
           </div>
       </form>
@@ -47,7 +46,7 @@
         @csrf
     		<input type="text" name="dummy" style="display:none;" / >
         @method('PUT')
-        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="この予定を確定しますか？">
+        <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm" confirm="{{__('labels.confirm_calendar_confirm')}}">
             <i class="fa fa-envelope mr-1"></i>
               {{__('labels.update_button')}}
         </button>
