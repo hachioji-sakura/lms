@@ -275,9 +275,10 @@ EOT;
         $target_model_data->hope_to_join($is_commit, $form);
         break;
       case "agreement":
+        $is_complete = true;
+        $this->get_target_model_data()->student->regular();
       case "agreement_confirm":
         $ret = true;
-        $is_complete = true;
         //agreementを更新
         $agreement = $this->get_target_model_data();
         $old_agreements = $agreement->student->enable_agreements_by_type('normal');
