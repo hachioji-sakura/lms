@@ -103,7 +103,7 @@ $(function(){
         });
       }
     });
-    $("input.week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+    $("input.lessonweek_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
       var val = $(this).val();
       var name = $(this).attr("name");
       name = name.replace('[]', '');
