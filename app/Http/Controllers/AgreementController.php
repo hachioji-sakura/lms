@@ -58,7 +58,7 @@ class AgreementController extends MilestoneController
                 'label' => '承認依頼を送信',
                 'style' => 'primary',
                 'type' => function($row){
-                    if($row->status == 'new' && $row->student->enable_agreements_by_type('normal')->count() > 0){
+                    if($row->status == 'new' && $row->student->status == 'regular'){
                       return true;
                     }else{
                       return false;
