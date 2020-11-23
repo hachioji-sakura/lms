@@ -182,14 +182,6 @@ class Student extends Model
     return $this->hasMany('App\Models\Trial', 'student_id')->where('status', '!=', 'cancel');
   }
 
-  public function has_trial(){
-    if($this->trials()->FindStatuses(['compolete'],true)->count() > 0){
-      return true;
-    }else {
-      return false;
-    }
-  }
-
   /**
    *　スコープ：ユーザーステータス
    */
