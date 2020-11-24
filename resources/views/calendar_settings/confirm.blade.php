@@ -1,11 +1,14 @@
 @component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => '', 'user'=>$user])
   @slot('page_message')
   {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
-  @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
-    @elseif(isset($user) && $user->role==="manager")
-    {!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
+    @if(isset($user) && $user->role==="manager")
+    <div class="col-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
+    </div>
     @else
-    {!!nl2br(__('messages.info_calendar_confirm'))!!}
+    <div class="col-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_calendar_confirm'))!!}
+    </div>
     @endif
   @endslot
   @slot('forms')
@@ -23,8 +26,8 @@
           <div class="col-12 mb-1" >
             <input type="hidden" name="is_all_student" value="1" />
             <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
-                <i class="fa fa-envelope mr-1"></i>
-                {{__('labels.schedule_remind')}}
+                <i class="fa fa-check mr-1"></i>
+                {{__('labels.schedule_to_confirm')}}
             </button>
           </div>
       </form>

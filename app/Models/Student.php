@@ -415,6 +415,12 @@ EOT;
     }
     return $ret;
   }
+  public function getNameAttribute(){
+    return $this->name();
+  }
+  public function getKanaAttribute(){
+    return $this->kana();
+  }
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
