@@ -415,6 +415,12 @@ EOT;
     }
     return $ret;
   }
+  public function getNameAttribute(){
+    return $this->name();
+  }
+  public function getKanaAttribute(){
+    return $this->kana();
+  }
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
@@ -787,9 +793,10 @@ EOT;
 
     $user_calendar_members = [];
     //休会範囲の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date)
-                  ->findUser($this->user_id)
+    $calendars = UserCalendar::findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('start_time', '>=', $this->recess_start_date)
+                  ->where('start_time', '<=', $this->recess_end_date)
                   ->get();
     foreach($calendars as $calendar){
       foreach($calendar->members as $member){
