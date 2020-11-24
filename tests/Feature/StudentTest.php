@@ -19,7 +19,13 @@ class StudentTest extends TestCase
      *
      * @return void
      */
-    public function testStore()
+    public function test()
+    {
+      $this->page_request();
+      $this->store();
+      $this->recess();
+    }
+    private function page_request()
     {
       echo "\n----------StudentTest::".__FUNCTION__." Start---------------";
       $s = Student::find(1)->first();
@@ -39,11 +45,21 @@ class StudentTest extends TestCase
       $response = $this->get('/students/create?student_parent_id=1');
       $response->assertStatus(200);
       $response->assertSee('<input type="hidden" name="student_parent_id" value="1">');
-      $this->store();
+      echo "\n----------StudentTest::".__FUNCTION__." End---------------";
+    }
+    private function recess()
+    {
+      echo "\n----------StudentTest::".__FUNCTION__." Start---------------";
+      $students = Student::where('recess_end_date','>', date('Y-m-d'))
+                          ->where('status', 'regular')->get();
+      foreach($students as $student){
+        $student->recess();
+      }
       echo "\n----------StudentTest::".__FUNCTION__." End---------------";
     }
     private function store()
     {
+      echo "\n----------StudentTest::".__FUNCTION__." Start---------------";
       $c = new StudentController;
       $request = new Request();
       $random_string = substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyz'), 0, 32);
@@ -120,5 +136,6 @@ class StudentTest extends TestCase
         'kana_last' => $data2['kana_last'],
         'kana_first' => $data2['kana_first'],
       ]);
+      echo "\n----------StudentTest::".__FUNCTION__." End---------------";
     }
 }
