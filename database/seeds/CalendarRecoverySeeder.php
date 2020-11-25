@@ -17,10 +17,12 @@ class CalendarRecoverySeeder extends Seeder
     {
       set_time_limit(3600);
       $this->set_rest_judgement();
+
       $this->delete_calendar_sync();
       $this->post_calendar_sync();
       $this->put_calendar_sync();
       $this->season_schedule_lesson_sync();
+
     }
     public function delete_calendar_sync(){
       $this->no_relate_onetime_schedule_delete();
@@ -254,7 +256,7 @@ EOT;
         $member->update(['rest_type' => $res['rest_type'],'rest_result' => $res['rest_result'],'exchange_limit_date' => $res['exchange_limit_date']]);
         DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $member->schedule_id)->update([
           'cancel' => $res['rest_type'],
-          'cancel_reason' => $res['rest_result'] 
+          'cancel_reason' => $res['rest_result']
         ]);
       }
     }

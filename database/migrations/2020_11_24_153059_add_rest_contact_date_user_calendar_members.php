@@ -37,7 +37,7 @@ class AddRestContactDateUserCalendarMembers extends Migration
                       ->where('url', 'like', '%/calendars/'.$member->calendar_id.'')
                       ->where('url', 'not like', '%/status_update/%')
                       ->whereRaw('login_user_id in (select user_id from common.student_parents)',[])
-                      ->where('post_param', 'not like', '%_status":"rest"%')
+                      ->where('post_param', 'like', '%_status":"rest"%')
                       ->first();
             if(isset($log)){
               \Log::warning("is_group?:".$member->calendar->is_group());
