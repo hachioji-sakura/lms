@@ -16,6 +16,7 @@ class CalendarRecoverySeeder extends Seeder
     public function run()
     {
       set_time_limit(3600);
+      $this->set_rest_judgement();
       $this->delete_calendar_sync();
       $this->post_calendar_sync();
       $this->put_calendar_sync();
@@ -198,6 +199,7 @@ EOT;
       }
 
     }
+
     public function subject_expr_sync($d){
       $updated_id = [];
       foreach($d as $row){
@@ -218,6 +220,38 @@ EOT;
         if(!$calendar->has_tag('course_type', 'single')){
           UserCalendarTag::setTag($calendar->id, 'course_type', 'single', 1);
         }
+      }
+    }
+    public function set_rest_judgement(){
+      $controller = new Controller;
+
+      $members = UserCalendarMember::with('calendar')->where('schedule_id', '>', 0)
+                  ->where('status', 'rest')->whereNull('rest_type')->whereNotNull('rest_contact_date')->get();
+      foreach($members as $member){
+        if($member->user_id==$member->calendar_user_id) continue;
+        $res = null;
+        switch($member->calendar->work){
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+          case 8:
+            if($member->user_id != $member->calendar->user_id){
+              $res = $member->_rest_judgement();
+            }
+            break;
+          default:
+            $res = $member->_rest_judgement();
+            break;
+        }
+        if($res==null) continue;
+        if($res['exchange_limit_date']==$member->exchange_limit_date &&
+            $res['rest_type']==$member->rest_type &&
+            $res['rest_result']==$member->rest_result){
+              continue;
+        }
+        $member->update(['rest_type' => $res['rest_type'],'rest_result' => $res['rest_result'],'exchange_limit_date' => $res['exchange_limit_date']]);
       }
     }
 }
