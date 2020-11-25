@@ -252,6 +252,10 @@ EOT;
               continue;
         }
         $member->update(['rest_type' => $res['rest_type'],'rest_result' => $res['rest_result'],'exchange_limit_date' => $res['exchange_limit_date']]);
+        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $member->schedule_id)->update([
+          'cancel' => $res['rest_type'],
+          'cancel_reason' => $res['rest_result'] 
+        ]);
       }
     }
 }
