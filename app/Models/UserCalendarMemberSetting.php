@@ -80,7 +80,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
         $teacher_no = $user->get_tag_value('teacher_no');
       }
       $user = $_member->user->details('managers');
-      if($user->role==="manager"){
+      if($user->role==="manager" || $user->role==="staff"){
         $manager_no = $user->get_tag_value('manager_no');
       }
     }
