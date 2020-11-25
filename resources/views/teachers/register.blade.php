@@ -65,6 +65,7 @@
     <div id="teachers_register" class="carousel slide" data-ride="carousel" data-interval="false">
       <input type="hidden" name="access_key" value="{{$access_key}}" />
       <input type="hidden" name="id" value="{{$item->id}}" />
+      <input type="hidden" name="status" value="regular" />
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
@@ -80,6 +81,23 @@
         <div class="carousel-item">
           @yield('account_form')
           @yield('bank_form')
+          <div class="row">
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-left mr-1"></i>
+                {{__('labels.back_button')}}
+              </a>
+            </div>
+            <div class="col-12 mb-1">
+              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+                <i class="fa fa-arrow-circle-right mr-1"></i>
+                {{__('labels.next_button')}}
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          @yield('charge_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -152,7 +170,7 @@ $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     if(front.validateFormValue('teachers_register .carousel-item.active')){
       var form_data = front.getFormValue('teachers_register');
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#teachers_register').carousel('next');
       $('#teachers_register').carousel({ interval : false});
 
@@ -160,7 +178,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#teachers_register').carousel('prev');
     $('#teachers_register').carousel({ interval : false});
   });

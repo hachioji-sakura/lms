@@ -68,7 +68,7 @@ $(function(){
 
     var form_data = front.getFormValue('add_charge_student');
     if(front.validateFormValue('add_charge_student .carousel-item.active')){
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#add_charge_student').carousel('next');
       $('#add_charge_student').carousel({ interval : false});
     }
@@ -84,7 +84,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#add_charge_student').carousel('prev');
     $('#add_charge_student').carousel({ interval : false});
   });

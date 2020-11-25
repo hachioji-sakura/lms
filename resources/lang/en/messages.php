@@ -20,7 +20,8 @@ return [
  "info_proxy_contact_for_student" => "The following lesson schedule has been finalized.",
  "confirm_calendar_fix" => "Do you want to confirm this class schedule?",
  "info_calendar_fix" => "We will be in touch with you,\nThe following class schedule has been decided.",
- "confirm_calendar_confirm" => "Do you decide the following class schedule and contact the students?",
+ "info_calendar_to_fix" => "Confirm this schedule.",
+ "confirm_calendar_confirm" => "Do you want to confirm this schedule?",
  "confirm_calendar_confirm_for_teacher" => "Do you want to send a confirmation email for the following class schedule?",
  "confirm_calendar_cancel" => "Cancel the following schedule?",
  "info_calendar_confirm" => "Please confirm the following class schedule",
@@ -158,4 +159,5 @@ return [
  'info_mail_reply' => 'You cannot reply to this email address',
  'confirm_dummy_release' => 'Do you want to release the dummy status?',
  'mail_reply_recomend' => "＊This e-mail is for sending only, so we cannot reply to you. \n＊If you want to reply, you should use SaKuRa One Net.",
+ 'info_season_lesson_week_time' => "Season Lesson and Weekend Lesson, we will check the dates and times when you can work separately.\nAt that time, we will contact you as if you can work on the days and hours set above.",
  ];

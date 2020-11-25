@@ -20,7 +20,8 @@ return [
   "info_proxy_contact_for_student" => "生徒の代わりに連絡をします。",
   "confirm_calendar_fix" => "この予定確認の連絡をしますか？",
   "info_calendar_fix" => "以下の 予定が確定となりました。",
-  "confirm_calendar_confirm" => "以下の予定を確定し、生徒に連絡しますか？",
+  "info_calendar_to_fix" => "生徒の授業予定を確定します。",
+  "confirm_calendar_confirm" => "この予定を確定しますか？",
   "confirm_calendar_confirm_for_teacher" => "以下の授業予定を担当講師あてに連絡しますか？",
   "confirm_calendar_cancel" => "以下の予定をキャンセルしますか？",
   "info_calendar_confirm" => "以下の授業予定をご確認ください",
@@ -158,4 +159,5 @@ return [
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
   'mail_reply_recomend' => "＊本メールは送信専用ですので、ご返信できません。\n＊ご返信は、SaKuRa One Netのメッセージ一覧をご利用ください。",
+  "info_season_lesson_week_time" => "春期・夏期・冬期の講習、土日講習については、別途勤務可能な日時の確認を行います。\nその際、上記の設定の曜日・時間帯は勤務可能として連絡を行います。",
 ];

@@ -14,6 +14,9 @@
           @endslot
           @slot('alias')
           <h6 class="widget-user-desc">
+            <small class="badge badge-{{config('status_style')[$item->status]}} mt-1 mr-1">
+              {{$item->status_name()}}
+            </small>
             @foreach($item->user->tags as $tag)
               @if($tag->tag_key=="manager_no")
                 <small class="badge badge-dark mt-1 mr-1">

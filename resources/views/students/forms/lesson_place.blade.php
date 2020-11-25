@@ -1,7 +1,11 @@
 <div class="col-12 mt-2">
   <div class="form-group">
     <label for="lesson_place" class="w-100">
+      @if(!isset($title) || empty($title))
       ご希望の校舎
+      @else
+      {{$title}}
+      @endif
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['places'] as $place)
