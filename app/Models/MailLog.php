@@ -64,13 +64,15 @@ class MailLog extends Model
     $dst = [];
     $body = htmlentities($body, ENT_QUOTES, 'UTF-8');
     foreach($param as $key=>$val){
+      \Log::warning($key."=".gettype($val));
       if(gettype($val)=='array') continue;
       if(gettype($val)!='string' && gettype($val) !='integer' && gettype($val)!='double') continue;
+      \Log::warning($key."=".$val);
       $src[] = '#'.$key.'#';
       $dst[] = $val;
     }
     $body = str_replace($src, $dst, $body);
-    $body = html_entity_decode($body); 
+    $body = html_entity_decode($body);
     $create_form = [
       'from_address' => $from,
       'to_address' => $to,

@@ -14,6 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Event;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -1469,8 +1470,11 @@ class StudentController extends UserController
   public function season_lesson_page(Request $request, $id){
     $param = $this->get_param($request, $id);
     $view = 'create';
+    if(!$request->has('event_id')) abort(404);
     if($this->domain=='teachers') $view='teacher_request';
-    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>[]])
+    $event = Event::find($request->get('event_id'))->first();
+
+    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>$event])
       ->with($param);
   }
 }

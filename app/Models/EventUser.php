@@ -67,11 +67,13 @@ class EventUser extends Milestone
   }
   public function to_inform(){
     $param = $this->event->toArray();
+    $param['url'] = $this->event->template->url;
     $param['app_url'] = config('app.url');
     $param['event_id'] = $this->event->id;
     $param['event_template_id'] = $this->event->template->id;
-    $param['url'] = $this->event->template->url;
     $param['user_name'] = $this->user_name;
+    $param['user_id'] = $this->user->id;
+    $param['user_details_id'] = $this->user->details()->id;
     $res = $this->user->send_mail($this->event->title, $param, 'text', 'event_mail');
     if($this->is_success_response($res)){
       EventUserMail::create([

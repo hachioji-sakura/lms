@@ -10,8 +10,8 @@
     $('*[name="grade"]').change();
   });
   </script>
-  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
-  @component('event_types.season_lesson.course', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
+  @component('students.forms.lesson_place', ['_edit'=>$_edit, 'attributes' => $attributes]) @endcomponent
+  @component('event_types.season_lesson.course', ['_edit'=>$_edit, 'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 
@@ -23,7 +23,7 @@
     <i class="fa fa-chalkboard-teacher mr-1"></i>
     ご希望の科目と授業数について
   </div>
-  @component('event_types.season_lesson.subject', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
+  @component('event_types.season_lesson.subject', ['_edit'=>$_edit,  'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
 </div>
 @endsection
 
@@ -39,7 +39,7 @@
       受講日数分の日程がまだ不明な場合は、現在判明している分のみチェックを入れてください。<br>
     </h6>
   </div>
-  @component('event_types.season_lesson.hope_datetime', ['_edit'=>$_edit, 'start_date'=>'2020-07-23', 'end_date' => '2020-08-31', 'event'=>$event,'attributes' => $attributes]) @endcomponent
+  @component('event_types.season_lesson.hope_datetime', ['_edit'=>$_edit, 'start_date'=>$event->event_from_date, 'end_date' => $event->event_to_date ,'attributes' => $attributes]) @endcomponent
 </div>
 @endsection
 

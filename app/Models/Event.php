@@ -13,6 +13,7 @@ class Event extends Milestone
     //
     protected $table = 'lms.events'; //テーブル名を入力
     protected $guarded = array('id'); //書き換え禁止領域　(今回の場合はid)
+    protected $appends = ['create_user_name', 'template_title', 'event_term', 'response_term', 'created_date', 'updated_date'];
 
     public static $rules = array( //必須フィールド
         'event_template_id' => 'required',
