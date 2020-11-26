@@ -14,7 +14,7 @@ class AddEntryDateTeachers extends Migration
     public function up()
     {
         Schema::connection('mysql_common')->table('teachers', function (Blueprint $table) {
-          $table->date('entry_date')->nullable(true)->before('recess_start_date')->comment('入社日');
+          $table->date('entry_date')->after('birth_day')->nullable(true)->comment('入社日');
         });
     }
 
