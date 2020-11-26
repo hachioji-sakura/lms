@@ -242,9 +242,9 @@
         <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($list=="entry_guidanced") active @endif">
           <i class="fa fa-file-export nav-icon"></i>
           <p>
-            入会案内連絡済
+            入会規約承諾待
             @if($entry_guidanced_count > 0)
-            <span class="badge badge-secondary right">{{$entry_guidanced_count}}</span>
+            <span class="badge badge-warning right">{{$entry_guidanced_count}}</span>
             @endif
           </p>
         </a>
