@@ -8,6 +8,11 @@
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('item_form')
+          @if($user->role=="manager")
+          <div class="row mb-4">
+            @yield('account_date_form')
+          </div>
+          @endif
           @yield('bank_form')
           <div class="row">
             <div class="col-12 mb-1">
