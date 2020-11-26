@@ -112,6 +112,7 @@ class UserController extends Controller
         'is_all_data' => $request->is_all_data,
         'is_exchange' => $request->is_exchange,
         'teaching_type' => $request->teaching_type,
+        'search_is_online' => $request->search_is_online,
       ],
       'sort' => [
         'is_asc'=>$request->is_asc,

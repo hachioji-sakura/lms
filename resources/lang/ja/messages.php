@@ -9,6 +9,7 @@ return [
   "info_add" => "登録しました",
   'info_updated' => '更新しました。',
   'info_deleted' => '削除しました。',
+  'error_passed_calendar' => "この予定は過ぎているため、操作はできません。",
   "message_already_email" => "このメールアドレスは登録済みです",
   "error_exchange_target" => "振替対象の授業を選択してください",
   "error_single_exchange_is_one_student" => "振替対象の生徒を一人にしてください",

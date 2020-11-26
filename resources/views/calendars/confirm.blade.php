@@ -1,10 +1,14 @@
 @component('calendars.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
   @slot('page_message')
+    @if($item->is_passed()==true)
+    <div class="col-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.error_passed_calendar'))!!}
+    </div>
+    @else
     {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
-    @if(isset($user) && $user->role==="manager")
-    {!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
-    @elseif(isset($user))
-    {!!nl2br(__('messages.info_calendar_confirm'))!!}
+    <div class="col-12 bg-danger p-2 mb-2">
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_calendar_confirm'))!!}
+    </div>
     @endif
   @endslot
   @slot('forms')
@@ -13,11 +17,13 @@
     {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
     @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
       {{-- 講師の場合 --}}
+      @if($item->is_passed()==true)
+      @else
       <div class="col-12 p-0 mb-1" id ="{{$domain}}_confirm">
         <form method="POST" action="/calendars/{{$item['id']}}">
-          @csrf
-          <input type="text" name="dummy" style="display:none;" / >
-          @method('PUT')
+        @csrf
+        <input type="text" name="dummy" style="display:none;" / >
+        @method('PUT')
         @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
           <div class="col-12 mb-1" id="{{$domain}}_confirm">
             <input type="hidden" name="is_all_student" value="1" />
@@ -26,8 +32,9 @@
                 {{__('labels.schedule_to_confirm')}}
             </button>
           </div>
-      </form>
-    </div>
+        </form>
+      </div>
+      @endif
     @elseif(isset($user) && $user->role==="manager" && $item->user_id != $user->user_id)
     <div class="col-12 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendars/{{$item['id']}}/remind">
@@ -55,19 +62,8 @@
     @endif
 
     @if($item['trial_id'] < 1)
-    <div class="col-12 col-lg-6 mb-1" id="{{$domain}}_action">
-      <form method="POST" action="/calendars/{{$item['id']}}">
-        @csrf
-        <input type="text" name="dummy" style="display:none;" / >
-        @method('DELETE')
-        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_delete')}}">
-          <i class="fa fa-trash-alt mr-1"></i>
-          {{__('labels.schedule_delete')}}
-        </button>
-      </form>
-    </div>
     @endif
-    <div class="col-12 @if($item['trial_id'] < 1) col-lg-6 @endif mb-1">
+    <div class="col-12 mb-1">
       <button type="reset" class="btn btn-secondary btn-block">
           {{__('labels.close_button')}}
       </button>
