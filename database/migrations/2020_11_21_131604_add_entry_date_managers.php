@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
+use App\Models\Manager;
 class AddEntryDateManagers extends Migration
 {
     /**
@@ -13,8 +13,8 @@ class AddEntryDateManagers extends Migration
      */
     public function up()
     {
-        Schema::table('managers', function (Blueprint $table) {
-            //
+        Schema::connection('mysql_common')->table('managers', function (Blueprint $table) {
+          $table->date('entry_date')->after('birth_day')->nullable(true)->comment('入会日');
         });
     }
 
@@ -25,8 +25,9 @@ class AddEntryDateManagers extends Migration
      */
     public function down()
     {
-        Schema::table('managers', function (Blueprint $table) {
-            //
+        Schema::connection('mysql_common')->table('managers', function (Blueprint $table) {
+          $m = Manager::find(1)->first();
+          if(isset($m->entry_date))  $table->dropColumn('entry_date');
         });
     }
 }
