@@ -126,6 +126,7 @@ return [
   'charge_lesson' => '担当可能なレッスン',
   'lesson_week_time' => '担当可能な曜日・時間帯',
   'trial_week_time' => '体験授業可能な曜日・時間帯',
+  'season_lesson_week_time' => '季節講習・土日講習担当可能な曜日・時間帯',
   'week_day' => '曜日',
   'charge_subject' => '担当科目',
   'no_data' => 'データがありません',
@@ -282,6 +283,8 @@ return [
   'charge_student' => '担当生徒',
   'charge_teacher' => '担当講師',
   'recess_or_unsubscribe' => '休会・退会',
+  'join' => '入会',
+  'entiring' => '入社',
   'retirement' => '退職',
   'unsubscribe' => '退会',
   'recess' => '休会',
@@ -400,5 +403,5 @@ return [
   'entry_milestone' => '特に重視してやってほしいこと',
   'menu' => 'メニュー',
   'task_title' => '例：算数_分数の足し算',
-
+  'workable_classroom' => '勤務可能な教室',
 ];
