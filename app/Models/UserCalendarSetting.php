@@ -830,4 +830,10 @@ EOT;
     if(isset($tuition)) return $tuition->tuition;
     return null;
   }
+  public function is_passed(){
+    $d = intval(strtotime('now')) - intval(strtotime($this->enable_start_date));
+    $c = 0;
+    if($d < 0) return false;
+    return true;
+  }
 }

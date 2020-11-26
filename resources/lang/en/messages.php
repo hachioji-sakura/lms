@@ -9,6 +9,7 @@ return [
  "info_add" => "Has registered.",
  'info_updated' => 'Updated.',
  'info_deleted' => 'Deleted.',
+ 'error_passed_calendar' => "This schedule has passed and cannot be operated.",
  "message_already_email" => "This email address is already registered.",
  "error_exchange_target" => "Please select classes for transfer",
  "error_single_exchange_is_one_student" => "Please leave only one student for transfer",

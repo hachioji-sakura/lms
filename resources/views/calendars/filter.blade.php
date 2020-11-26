@@ -85,6 +85,13 @@
         >{{$place->name()}}
       </label>
     @endforeach
+    <label class="mx-2">
+      <input type="checkbox" value="true" name="search_is_online" class="icheck flat-green"
+        @if(isset($filter['calendar_filter']['search_is_online']) && $filter['calendar_filter']['search_is_online']==true)
+        checked
+        @endif
+        >{{__('labels.online')}}
+    </label>
   </div>
 </div>
 <div class="col-4 mb-2">
