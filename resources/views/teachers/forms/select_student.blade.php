@@ -1,6 +1,6 @@
 @if($item->trial_id>0)
 <input type="hidden" name="student_id" value="{{$item->trial->student_id}}"
- grade="{{$item->trial->student->user->details('students')->tag_value('grade')}}"
+ grade="{{$item->trial->student->user->details('students')->get_tag_value('grade')}}"
 >
 @else
 <div class="col-12">
@@ -13,7 +13,7 @@
       <option value="">{{__('labels.selectable')}}</option>
       @foreach($charge_students as $item)
         <option value="{{$item->id}}"
-          grade="{{$item->user->details('students')->tag_value('grade')}}"
+          grade="{{$item->user->details('students')->get_tag_value('grade')}}"
           >{{$item->name()}}</option>
       @endforeach
     </select>

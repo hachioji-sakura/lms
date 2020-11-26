@@ -518,7 +518,7 @@ class TeacherController extends StudentController
         $students = Student::findStatuses(['regular','trial'])->get();
         foreach($students as $student){
           $detail = $student->user->details("students");
-          $detail['grade'] = $detail->tag_value('grade');
+          $detail['grade'] = $detail->get_tag_value('grade');
           $items[$detail->id] = $detail;
         }
       }

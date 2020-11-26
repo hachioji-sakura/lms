@@ -11,6 +11,8 @@
 @if($item->status=='new')
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
+    @method('PUT')
+    <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="key" value="{{$access_key}}" />
     @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $trial, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
@@ -34,36 +36,19 @@
     		<div class="row">
           <div class="col-12 mt-2 mb-1">
             <div class="form-group">
-              <input class="form-check-input icheck flat-green" type="checkbox" id="important_check" name="important_check" value="1" required="true" >
+              <input class="form-check-input icheck flat-green" type="checkbox" id="important_check" name="important_check" value="1" required="true" onChange="important_checked()">
               <label class="form-check-label" for="important_check">
                 {{__('labels.important_check')}}
               </label>
             </div>
           </div>
-          <div class="col-12 mb-1" id="commit_form">
-            <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
-              @csrf
-              <input type="text" name="dummy" style="display:none;" / >
-              @method('PUT')
-              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form">
+          <div class="col-12 mb-1">
+              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled="disabled">
                 <i class="fa fa-check mr-1"></i>
                 上記の内容について了承しました
               </button>
             </form>
           </div>
-          <script>
-          $(function(){
-            base.pageSettinged("commit_form", null);
-            //submit
-            $("#commit_form button.btn-submit").on('click', function(e){
-              e.preventDefault();
-              if(front.validateFormValue('commit_form')){
-                $(this).prop("disabled",true);
-                $("#commit_form form").submit();
-              }
-            });
-          });
-          </script>
     		</div>
     	</div>
     </section>
@@ -79,11 +64,14 @@ $(function(){
       if(!confirm(_confirm)) return false;
     }
     if(front.validateFormValue('admission_mail')){
-      $(this).prop("disabled",true);
       $("form").submit();
     }
   });
 });
+function important_checked(){
+  var ret = $('input[name="important_check"]').prop('checked');
+  $("button.btn-submit").prop("disabled",!ret);
+}
 </script>
 @elseif($item->status=='commit')
   @if($trial->parent->user->status==0)

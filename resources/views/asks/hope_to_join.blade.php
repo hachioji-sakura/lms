@@ -12,7 +12,7 @@
   <input type="text" name="dummy" style="display:none;" / >
   <input type="hidden" name="grade_name" value="{{$trial->student->grade()}}">
   <input type="hidden" name="key" value="{{$access_key}}">
-  <input type="hidden" class="grade" name="grade" value="{{$trial->student->tag_value('grade')}}">
+  <input type="hidden" class="grade" name="grade" value="{{$trial->student->get_tag_value('grade')}}">
 
   <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
   <div class="carousel-inner">

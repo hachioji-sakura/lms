@@ -22,10 +22,6 @@
         $("#new_curriculums").append('<input type="text" class="form-control mt-1" name="new_curriculums[]" placeholder="{{__('labels.curriculums').__('labels.add')}}"  required="true">');
       });
       $("#clear_curriculum").on('click', function(e){
-        console.log('hoge');
         $('#new_curriculums').empty();
-      });
-      $("#select_curriculum").on('change', function(e){
-        set_title();
       });
     </script>

@@ -183,11 +183,13 @@ EOT;
 
   public function scopeHiddenFilter($query)
   {
-    $user = Auth::user()->details();
-    if($user->role!='manager'){
-      $query = $query->where('status', '!=', 'dummy');
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role!='manager'){
+        $query = $query->where('status', '!=', 'dummy');
+      }
     }
-
     //work=11の先生の予定はカレンダーに表示しない
     $where_raw = <<<EOT
       user_calendars.id not in (
@@ -248,11 +250,11 @@ EOT;
   }
   public function get_access_member(){
     $ret = [];
-    $user = Auth::user()->details();
-
+    $user = Auth::user();
     if(!isset($user)) {
       return $ret;
     }
+    $user = $user->details();
     if($user->role=='parent'){
       //保護者の場合、自分の子供のみアクセス可能
       foreach ($user->relation() as $relation){
@@ -330,42 +332,6 @@ EOT;
       return false;
     }
     return true;
-  }
-  public function has_tag($key, $val=""){
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
-    }
-    return false;
-  }
-  public function get_tag($key){
-    $item = $this->tags->where('tag_key', $key)->first();
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function get_tags($key){
-    $item = $this->tags->where('tag_key', $key);
-    if(isset($item)){
-      return $item;
-    }
-    return null;
-  }
-  public function get_tag_name($tag_key){
-    $tag =  $this->get_tag($tag_key);
-    if(isset($tag)){
-      return $tag->name();
-    }
-    return "";
-  }
-  public function get_tag_value($tag_key){
-    $tag =  $this->get_tag($tag_key);
-    if(isset($tag)){
-      return $tag->tag_value;
-    }
-    return "";
   }
   public function get_attribute_name($key, $val){
     $item = GeneralAttribute::get_item($key,$val);
@@ -449,6 +415,10 @@ EOT;
         return 'season_school_lesson';
     }
     return "";
+  }
+  public function is_season_lesson(){
+    if($this->work==10 || $this->work==11) return true;
+    return false;
   }
   public function schedule_type_name(){
     $code = $this->schedule_type_code();
@@ -570,9 +540,7 @@ EOT;
     return false;
   }
   public function timezone(){
-    $start_hour_minute = date('H:i',  strtotime($this->start_time));
-    $end_hour_minute = date('H:i',  strtotime($this->end_time));
-    return $start_hour_minute.'～'.$end_hour_minute;
+    return $this->term_format($this->start_time, $this->end_time, 'H:i');
   }
   public function dateweek(){
     return $this->dateweek_format($this->start_time);
@@ -772,12 +740,14 @@ EOT;
         return $controller->error_response("unsubscribe", "この予定主催者は退職（退会）しています");
       }
     }
-    $user = Auth::user()->details();
-    if($user->role=='manager' && $form['target_user_id'] != $user->id && $status=='new'){
-      //事務かつ、自分の予定でない場合は、ステータスをダミーにする
-      $status = 'dummy';
+    $user = Auth::user();
+    if(isset($user)){
+      $user = $user->details();
+      if($user->role=='manager' && $form['target_user_id'] != $user->id && $status=='new'){
+        //事務かつ、自分の予定でない場合は、ステータスをダミーにする
+        $status = 'dummy';
+      }
     }
-
     //TODO Workの補間どうにかしたい
     if(isset($form['course_type']) && empty($form['work'])){
       $work_data = ["single" => 6, "group"=>7, "family"=>8];
@@ -815,7 +785,7 @@ EOT;
   }
   //本モデルはdeleteではなくdisposeを使う
   public function dispose($login_user_id, $is_send_mail=true){
-    if($this->status!='new' && $is_send_mail==true){
+    if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
     //事務システム側を先に削除

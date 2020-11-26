@@ -10,11 +10,13 @@ $(function(){
   base.pageSettinged(page_id, form_data);
   subject_onload();
 
+
   $('#'+page_id).carousel({ interval : false});
   $("input[name='lesson[]']").change();
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
+
     if(front.validateFormValue(page_id+' .carousel-item.active')){
       $(this).prop("disabled",true);
       $("form").submit();
@@ -28,7 +30,7 @@ $(function(){
       @if($_edit==false)
       util.setLocalData(page_id, form_data);
       @endif
-      $('body, html').scrollTop(0);
+      $('body, html, .modal-body').scrollTop(0);
       $('#'+page_id).carousel('next');
       $('#'+page_id).carousel({ interval : false});
     }
@@ -44,7 +46,7 @@ $(function(){
   });
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
-    $('body, html').scrollTop(0);
+    $('body, html, .modal-body').scrollTop(0);
     $('#'+page_id).carousel('prev');
     $('#'+page_id).carousel({ interval : false});
   });
@@ -96,7 +98,7 @@ $(function(){
         });
       }
     });
-    $("input.week_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
+    $("input.lessonweek_time[type='checkbox'][value!='disabled']:checked").each(function(index, value){
       var val = $(this).val();
       var name = $(this).attr("name");
       name = name.replace('[]', '');

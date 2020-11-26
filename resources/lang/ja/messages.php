@@ -20,7 +20,8 @@ return [
   "info_proxy_contact_for_student" => "生徒の代わりに連絡をします。",
   "confirm_calendar_fix" => "この予定確認の連絡をしますか？",
   "info_calendar_fix" => "以下の 予定が確定となりました。",
-  "confirm_calendar_confirm" => "以下の予定を確定し、生徒に連絡しますか？",
+  "info_calendar_to_fix" => "生徒の授業予定を確定します。",
+  "confirm_calendar_confirm" => "この予定を確定しますか？",
   "confirm_calendar_confirm_for_teacher" => "以下の授業予定を担当講師あてに連絡しますか？",
   "confirm_calendar_cancel" => "以下の予定をキャンセルしますか？",
   "info_calendar_confirm" => "以下の授業予定をご確認ください",
@@ -150,6 +151,7 @@ return [
   'task_reviewed' => 'レビューしました。',
   'task_body_placeholder' => '例：応用問題にチャレンジしましたが、難しいようでした。基本問題を解きなおします。',
   'warning_schedule_add' => 'この授業追加は、受講料の追加を伴うため、親御様の承認を得る必要があります。',
+  'warning_season_lesson_edit' => "期間講習予定の編集は、演習担当講師が不在とならないように設定を行う必要があります。\n(講師は日時・場所の変更はできません）",
   "copyright" => "Copyright © 国立・八王子・日野の個別指導塾 さくら One All Rights Reserved.",
   'message_restore_contents' => '前回入力された内容が残っています。復元しますか？',
   "info_signup" => "ご入力いただいたメールアドレスに、\n本登録用のURLを送信します",
@@ -157,5 +159,5 @@ return [
   'info_mail_reply' => 'このメールアドレスへの返信はできません',
   'confirm_dummy_release' => 'ダミーステータスを解除しますか？',
   'mail_reply_recomend' => "＊本メールは送信専用ですので、ご返信できません。\n＊ご返信は、SaKuRa One Netのメッセージ一覧をご利用ください。",
-
+  "info_season_lesson_week_time" => "春期・夏期・冬期の講習、土日講習については、別途勤務可能な日時の確認を行います。\nその際、上記の設定の曜日・時間帯は勤務可能として連絡を行います。",
 ];

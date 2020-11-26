@@ -190,7 +190,7 @@ class CurriculumController extends MilestoneController
       if(!empty($request->get('task_id'))){
         $param['item'] = Task::find($request->get('task_id'));
       }
-      $curriculums = $this->model()->searchBySubjectId($request->get('subject_id'))->get();
+      $curriculums = Subject::find($request->get('subject_id'))->curriculums;
       $param['curriculums'] = $curriculums;
       $param['_edit'] = true;
       return view('curriculums.components.select_list')->with($param);

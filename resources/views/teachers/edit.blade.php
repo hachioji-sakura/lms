@@ -5,11 +5,14 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     @yield('item_form')
-    @if($user->role=="manager")
-    @component('students.forms.editable_email', ['item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
-    @else
-    @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
-    @endif
+    <div class="row mb-2">
+      @if($user->role=="manager")
+      @component('students.forms.editable_email', ['item' =>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+      @yield('account_date_form')
+      @else
+        @component('students.forms.email', ['item'=>$item, 'attributes' => $attributes, 'is_label'=>true]) @endcomponent
+      @endif
+    </div>
     @yield('bank_form')
     <div class="row">
       <div class="col-12 mb-1">

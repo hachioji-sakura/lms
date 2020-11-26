@@ -71,8 +71,8 @@
               <div class="col-md-11 col-10">
                 <div class="row">
                   <div class="col-10 text-wrap">
-                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
-                        {{$item->title}}
+                    <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
+                        {{$item->full_title}}
                     </a>
                   </div>
                   <div class="col-2">
@@ -82,12 +82,13 @@
                     </small>
                     @endif
                   </div>
-
+                  {{--詳細単体では表示しなくてよくなったのでコメントアウト
                   <div class="col-12 col-md-9">
                     <small class="text-muted">
                       {{$item->body}}
                     </small>
                   </div>
+                  --}}
                   @if($item->curriculums->count() > 0)
                     <div class="col-12">
                       <small class="badge badge-primary">
@@ -141,7 +142,7 @@
                 <a class="toggle-btn ml-2" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-chevron-circle-down fa-lg"></i></a>
               </small>
             </div>
-            <div class="row mt-4 collapse" id="setting_details{{$loop->iteration}}">
+            <div class="row mt-4" id="setting_details{{$loop->iteration}}">
               <div class="col-12">
                 @component('tasks.components.buttons',[
                   'item' => $item,
@@ -149,10 +150,10 @@
                 ])
                 @endcomponent
                 <div class="float-right">
-                  <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
+                  <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
                     <i class="fa fa-file-alt"></i>
                   </a>
-                  <a href="javascript:void(0)" page_title="{{$item->title}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                  <a href="javascript:void(0)" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
                     <i class="fa fa-edit"></i>
                   </a>
                 @if($item->status != "cancel")
@@ -193,13 +194,13 @@
         <div class="input-group">
           <div class="form-check">
             <label class="form-check-label" for="type_class_record">
-              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_class_record" value="class_record"  {{request()->get('search_type') == 'class_record' ? 'checked': ''}} checked>
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="search_type_class_record" value="class_record"  {{request()->get('search_type') == 'class_record' ? 'checked': ''}} checked>
               {{__('labels.class_record')}}
             </label>
           </div>
           <div class="form-check">
             <label class="form-check-label" for="type_homework">
-              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="type_homework" value="homework" {{request()->get('search_type') == 'homework' ? 'checked': ''}}>
+              <input class="frm-check-input icheck flat-green" type="radio" name="search_type" id="search_type_homework" value="homework" {{request()->get('search_type') == 'homework' ? 'checked': ''}}>
               {{__('labels.homework')}}
             </label>
           </div>

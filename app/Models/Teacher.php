@@ -114,8 +114,11 @@ EOT;
       'bank_account_type' => "",
       'bank_account_no' => "",
       'bank_account_name' => "",
+      'entry_date' => null,
+      'unsubscribe_date' => null,
+      'status' => '',
     ];
-    $update_form = ['status' => 'regular'];
+    $update_form = [];
     foreach($update_field as $key => $val){
       if(isset($form[$key])){
         $update_form[$key] = $form[$key];
@@ -135,7 +138,7 @@ EOT;
 
     //希望シフト
     $lesson_weeks = config('attribute.lesson_week');
-    $fields = ["lesson", "work", "trial"];
+    $fields = ["lesson","work", "trial", "season_lesson"];
     foreach($fields as $field){
       $is_setting_find = false;
       $tag_names = [];
@@ -159,7 +162,7 @@ EOT;
         }
       }
     }
-    $tag_names = ['lesson', 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
+    $tag_names = ['lesson', "lesson_place", 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         //設定があれば差し替え
@@ -225,7 +228,7 @@ EOT;
 
     foreach($charge_students as $charge_student){
       $detail = $charge_student->user->details("students");
-      $detail['grade'] = $detail->tag_value('grade');
+      $detail['grade'] = $detail->get_tag_value('grade');
       $items[$detail->id] = $detail;
     }
     return $items;
