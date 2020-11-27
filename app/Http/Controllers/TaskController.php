@@ -193,7 +193,7 @@ class TaskController extends MilestoneController
     {
         //
         $param = $this->get_param($request, $id);
-        if( $param['user']->details()->role != "manager" && $param['user']->user_id != $param['item']->create_user_id ) abort('403');
+        if( $param['user']->user_id != $param['item']->create_user_id ) abort('403');
         $param['target_student'] = Student::where('user_id',$param['item']->target_user_id)->first();
         $param['_edit'] = true;
         $param['task_type'] = $request->get('task_type');
