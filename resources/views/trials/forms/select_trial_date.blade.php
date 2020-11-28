@@ -9,37 +9,32 @@
   </div>
   <div class="col-12">
     <div class="form-group">
-      <?php
-      $d = [1=>date('Y-m-d',strtotime($item->trial_start_time1)),
-            2=>date('Y-m-d',strtotime($item->trial_start_time2)),
-            3=>date('Y-m-d',strtotime($item->trial_start_time3))];
-      $is_first = true;
-        ?>
-      @for($i=1;$i<4;$i++)
+      <?php $is_first=true; ?>
+      @foreach($item->request_dates as $d)
       <label class="mx-2">
-        @if(isset($candidate_teacher->trial["trial_date".$i]) && count($candidate_teacher->trial["trial_date".$i])>0)
+        @if(isset($candidate_teacher->request_lessons[$d->day]) && count($candidate_teacher->request_lessons[$d->day])>0)
           {{-- 空き予定が存在する --}}
-          <input type="radio" name="trial_date_hope" value="{{$d[$i]}}" class="icheck flat-green" required="true"
-          @if($is_first==true)
+          <input type="radio" name="trial_date_hope" value="{{$d->day}}" class="icheck flat-green" required="true"
+          @if($is_first == true)
           checked
           <?php $is_first=false; ?>
           @endif
-          attr="{{$i}}"
+          attr="{{$d->sort_no}}"
           onChange="trial_date_hope_change()"
           >
         @else
           <i class="fa fa-times mr-1"></i>
         @endif
-        第{{$i}}希望({{$d[$i]}})
+        第{{$d->sort_no}}希望({{$d->month_day}})
       </label>
-      @endfor
+      @endforeach
     </div>
   </div>
   <div class="col-md-6">
     @component('components.calendar', [
       'id' => 1,
       'item' => $candidate_teacher,
-      'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time1)),
+      'defaultDate'=> date('Y-m-d',strtotime($item->request_dates[0]->day)),
       'mode'=>'day',
       'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id,
       'domain'=> $domain,
@@ -88,14 +83,14 @@
              @if($is_first==false) checked @endif
              >
             <label class="form-check-label" for="calendar_{{$c}}" >
-              {{$_list['timezone']}}
+              {{$_list->start_time}} {{$_list['timezone']}}
             </label>
           </div>
           <?php $is_first=true; $c++; ?>
         @endforeach
       @endforeach
       <?php $is_first=false; $c=0; ?>
-        @foreach($candidate_teacher->trial as $remark=>$_lists)
+        @foreach($candidate_teacher->request_lessons as $day=>$_lists)
           @foreach($_lists as $i => $_list)
             @if($_list['status']==='free')
             <div class="form-check ml-2 teacher_schedule action_form action_new" remark="{{$_list['remark']}}">
@@ -178,7 +173,7 @@ function trial_date_hope_change(){
   $("#calendar1").fullCalendar("updateEvents", sources);
   $("#calendar1").fullCalendar("rerenderEvents");
 
-  var selecter = ".action_"+a+"[remark='trial_date"+no+"']";
+  var selecter = ".action_"+a+"[remark='"+d+"']";
   $(selecter).show();
   if($(selecter+" input").length < 1){
       $("#no_data_message").removeClass("hide");

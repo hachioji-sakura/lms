@@ -440,7 +440,7 @@ class LessonRequestController extends UserCalendarController
        $form['create_user_id'] = $user->user_id;
        //カレンダーステータス変更
        $trial = LessonRequest::where('id', $id)->first();
-       $res = $trial->trial_to_calendar($form);
+       $res = $trial->request_to_calendar($form);
        return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
      return $this->save_redirect($res, $param, "授業予定の確認連絡をしました。", $this->domain.'/'.$id);

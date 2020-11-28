@@ -34,9 +34,6 @@ class LessonRequest extends Model
   public function user_calendar_settings(){
     return $this->hasMany('App\Models\UserCalendarSetting', 'lesson_request_id');
   }
-  public function candidate_calendars(){
-    return $this->hasMany('App\Models\UserCalendarSetting', 'lesson_request_id');
-  }
   public function calendars(){
     //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
     return $this->hasMany('App\Models\UserCalendar', 'lesson_request_id');
@@ -349,7 +346,7 @@ class LessonRequest extends Model
     $user_calendar_settings = UserCalendarSetting::findUser($this->student->user_id)->orderByWeek()->get();
     return $user_calendar_settings;
   }
-  public function _to_calendar($form){
+  public function request_to_calendar($form){
     $this->update(['status' => 'confirm']);
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
@@ -359,7 +356,7 @@ class LessonRequest extends Model
     $calendar_form = [
       'start_time' =>  $form["start_time"],
       'end_time' =>  $form["end_time"],
-      'trial_id' => $this->id,
+      'lesson_request_id' => $this->id,
       'place_floor_id' => $form['place_floor_id'],
       'lesson' => $form['lesson'],
       'course_type' => $form['course_type'],
@@ -469,7 +466,7 @@ class LessonRequest extends Model
     //この申し込みの希望日時より、30分ごとの開始時間から授業時間までのslotを作成
     $time_lists = [];
     foreach($this->request_dates->sortBy('sort_no') as $d){
-      $time_lists[$d->date] = $this->get_time_list($d->from_datetime, $d->to_datetime, $lesson);
+      $time_lists[$d->day] = $this->get_time_list($d->from_datetime, $d->to_datetime, $lesson);
     }
     $ret = [];
     foreach($teachers as $teacher){
@@ -583,7 +580,7 @@ class LessonRequest extends Model
           $teacher->match_schedule = $match_schedule;
           $calendars = [];
           foreach($this->request_dates->sortBy('sort_no') as $d){
-            $calendars[$d->date] = UserCalendar::findUser($teacher->user_id)
+            $calendars[$d->day] = UserCalendar::findUser($teacher->user_id)
                             ->findStatuses(['fix', 'confirm', 'new'])
                             ->searchDate($d->from_datetime, $d->to_datetime)
                             ->orderBy('start_time')
@@ -593,7 +590,9 @@ class LessonRequest extends Model
           $teacher->calendars = $calendars;
           $request_lessons = [];
           foreach($time_lists as $date => $time_list){
-            $request_lessons = array_merge($request_lessons, $this->get_time_list_free($lesson, $time_list, $teacher->user_id, $date, $calendars[$date], ''));
+            $request_lessons = array_merge($request_lessons,
+              $this->get_time_list_free($lesson, $time_list, $teacher->user_id, $date, $calendars[$date], $date)
+            );
           }
           $request_lessons = $this->get_time_list_review($teacher->user_id, $request_lessons);
           $teacher->request_lessons = $request_lessons;

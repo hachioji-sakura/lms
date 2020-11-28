@@ -1,5 +1,6 @@
-@if(count($item["calendars"])>0)
-  @foreach($item["calendars"] as $calendar)
+@if(count($item->get_calendar())>0)
+  @foreach($item->get_calendar() as $calendar)
+  <?php $calendar = $calendar->details(); ?>
     <div class="row border-bottom
     @if($calendar->is_cancel_status()==true)
     calendar_rest
@@ -20,12 +21,10 @@
         </small>
         <br>
         <span class="description-text mr-2">
-        @foreach($calendar['teachers'] as $member)
-          <a href='/teachers/{{$member->user->teacher->id}}'>
+          <a href='/teachers/{{$calendar->user->teacher->id}}'>
           <i class="fa fa-user-tie mr-1"></i>
-          {{$member->user->teacher->name()}}
+          {{$calendar->user->teacher->name()}}
           </a>
-        @endforeach
         </span>
         @foreach($calendar['subject'] as $subject)
         <span class="text-xs mx-2">
