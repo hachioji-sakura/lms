@@ -27,8 +27,6 @@
           <ul class="mailbox-attachments clearfix row">
             @foreach($items as $item)
             <?php
-              $get_tagdata = $item->get_tagdata();
-              $tagdata = $get_tagdata["tagdata"];
               $status = $item->get_status();
              ?>
             <li class="col-12" accesskey="" target="">
@@ -48,37 +46,28 @@
                       （{{$item->student->grade()}}）<br>
                     </small>
                     </a>
-                    @isset($tagdata["lesson"])
-                    @foreach($tagdata["lesson"] as $label)
+                    @foreach($item->get_tags('lesson') as $tag)
                     <span class="text-xs">
                       <small class="badge badge-primary p-1 mr-1">
                         <i class="fa fa-chalkboard mr-1"></i>
-                        {{$label}}
+                        {{$tag->name()}}
                       </small>
                     </span>
                     @endforeach
-                    @endisset
-                    @isset($tagdata["lesson_place"])
-                    @foreach($tagdata["lesson_place"] as $label)
+                    @foreach($item->get_tags('lesson_place') as $tag)
                     <span class="text-xs">
                       <small class="badge badge-success p-1 mr-1">
                         <i class="fa fa-map-marker mr-1"></i>
-                        {{$label}}
+                        {{$tag->name()}}
                       </small>
                     </span>
                     @endforeach
-                    @endisset
                   </div>
                   <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
-                    @if($item->is_trial_lesson_complete()==false)
-                      第1希望:{{$item->trial_start_end_time(1)}}</span><br>
-                      第2希望:{{$item->trial_start_end_time(2)}}</span><br>
-                      第3希望:{{$item->trial_start_end_time(3)}}</span>
-{{--
-<br>
-第4希望:{{$item->trial_start_end_time(4)}}</span><br>
-第5希望:{{$item->trial_start_end_time(5)}}</span>
---}}
+                    @if($item->is_request_lesson_complete()==false)
+                      @foreach($item->request_dates->sortBy('sort_no') as $d)
+                      第{{$d->sort_no}}希望:{{$d->term}}</span><br>
+                      @endforeach
                     @else
                       入会希望連絡: {{$item->entry_contact_send_date()}}</span><br>
                       授業開始希望日: {{$item->dateweek_format($item->schedule_start_hope_date)}}</span><br>

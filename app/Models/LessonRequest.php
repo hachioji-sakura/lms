@@ -8,42 +8,38 @@ use App\Models\StudentParent;
 use App\Models\Comment;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
+use App\Models\LessonRequestDate;
 use App\Models\Ask;
 use App\Models\Traits\Common;
 
-class Trial extends Model
+class LessonRequest extends Model
 {
   use Common;
-  protected $table = 'lms.trials';
+  protected $table = 'lms.lesson_requests';
   protected $guarded = array('id');
   public static $rules = array(
       'student_parent_id' => 'required',
       'student_id' => 'required',
   );
+  protected $appends = ['status_name', 'created_date', 'updated_date'];
+
   public $student_schedule = null;
   public $course_minutes = 0;
   public function tags(){
-    return $this->hasMany('App\Models\TrialTag', 'trial_id');
+    return $this->hasMany('App\Models\LessonRequestTag', 'lesson_request_id');
+  }
+  public function request_dates(){
+    return $this->hasMany('App\Models\LessonRequestDate', 'lesson_request_id');
   }
   public function user_calendar_settings(){
-    return $this->hasMany('App\Models\UserCalendarSetting', 'trial_id');
+    return $this->hasMany('App\Models\UserCalendarSetting', 'lesson_request_id');
   }
-  public function is_exist_calendar_settings(){
-    $calendar_settings = $this->student->user->get_enable_lesson_calendar_settings();
-    foreach($calendar_settings as $lesson => $d0){
-      foreach($d0 as $schedule_method => $d1){
-        foreach($d1 as $lesson_week => $settings){
-          foreach($settings as $setting){
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+  public function candidate_calendars(){
+    return $this->hasMany('App\Models\UserCalendarSetting', 'lesson_request_id');
   }
   public function calendars(){
     //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
-    return $this->hasMany('App\Models\UserCalendar');
+    return $this->hasMany('App\Models\UserCalendar', 'lesson_request_id');
   }
   public function parent(){
     return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
@@ -73,6 +69,19 @@ class Trial extends Model
     });
     return $query;
   }
+  public function is_exist_calendar_settings(){
+    $calendar_settings = $this->student->user->get_enable_lesson_calendar_settings();
+    foreach($calendar_settings as $lesson => $d0){
+      foreach($d0 as $schedule_method => $d1){
+        foreach($d1 as $lesson_week => $settings){
+          foreach($settings as $setting){
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
   public function get_status(){
     //体験授業登録状況により、ステータスは変動する
     $status = $this->status;
@@ -82,13 +91,13 @@ class Trial extends Model
       case "presence":
       case "new":
         $status = 'new';
-        if($this->is_confirm_trial_lesson()==true){
+        if($this->is_confirm_request_lesson()==true){
           $status = 'confirm';
         }
-        else if($this->is_all_fix_trial_lesson()==true){
+        else if($this->is_all_fix_request_lesson()==true){
           $status = 'fix';
         }
-        else if($this->is_presence_trial_lesson()==true){
+        else if($this->is_presence_request_lesson()==true){
           $status = 'presence';
         }
         break;
@@ -96,10 +105,10 @@ class Trial extends Model
     if($this->student->status=='regular'){
       $status = 'complete';
     }
-    if($this->status != $status) Trial::where('id', $this->id)->update(['status' => $status]);
+    if($this->status != $status) LessonRequest::where('id', $this->id)->update(['status' => $status]);
     return $status;
   }
-  public function is_all_fix_trial_lesson(){
+  public function is_all_fix_request_lesson(){
     $is_find = false;
     foreach($this->calendars as $calendar){
       if($calendar->status=='cancel') continue;
@@ -109,7 +118,7 @@ class Trial extends Model
     }
     return $is_find;
   }
-  public function is_confirm_trial_lesson(){
+  public function is_confirm_request_lesson(){
     foreach($this->calendars as $calendar){
       if($calendar->status=='cancel') continue;
       if($calendar->status=='new') return true;
@@ -117,7 +126,7 @@ class Trial extends Model
     }
     return false;
   }
-  public function is_presence_trial_lesson(){
+  public function is_presence_request_lesson(){
     if(count($this->calendars) < 1) return false;
     $is_find = false;
     foreach($this->calendars as $calendar){
@@ -145,17 +154,22 @@ class Trial extends Model
       }
       return true;
   }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
+  }
   public function status_name(){
     if(app()->getLocale()=='en') return $this->status;
-    if(isset(config('attribute.trial_status')[$this->status])){
-      return config('attribute.trial_status')[$this->status];
+    if(isset(config('attribute.lesson_request_status')[$this->status])){
+      return config('attribute.lesson_request_status')[$this->status];
     }
     return "(定義なし)";
   }
+  /*
   public function trial_start_end_time($i){
     $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
     return $ret;
   }
+  */
   public function entry_contact_send_date(){
       return $this->get_ask_created_date('hope_to_join');
   }
@@ -164,89 +178,25 @@ class Trial extends Model
   }
   public function get_ask_created_date($type){
     $a = Ask::where('type', $type)
-      ->where('target_model', 'trials')
+      ->where('target_model', 'lesson_requests')
       ->where('target_model_id', $this->id)
       ->first();
       if(!isset($a)) return "-";
     return $this->dateweek_format($a->created_at);
   }
-  public function details(){
-    $item = $this;
-    $item->status = $this->get_status();
-    $item['status_name'] = $this->status_name();
-    $item['create_date'] = date('Y/m/d',  strtotime($this->created_at));
-
-    $item['trial_date1'] = date('Y/m/d',  strtotime($this->trial_start_time1));
-    $item['trial_start1'] = date('H:i',  strtotime($this->trial_start_time1));
-    $item['trial_end1'] = date('H:i',  strtotime($this->trial_end_time1));
-
-    $item['trial_date2'] = date('Y/m/d',  strtotime($this->trial_start_time2));
-    $item['trial_start2'] = date('H:i',  strtotime($this->trial_start_time2));
-    $item['trial_end2'] = date('H:i',  strtotime($this->trial_end_time2));
-
-    $item['trial_date3'] = date('Y/m/d',  strtotime($this->trial_start_time3));
-    $item['trial_start3'] = date('H:i',  strtotime($this->trial_start_time3));
-    $item['trial_end3'] = date('H:i',  strtotime($this->trial_end_time3));
-/*TODO 後まわし
-    $item['date4'] = '-';
-    if(!empty($this->trial_start_time4)){
-      $item['trial_date4'] = date('Y/m/d',  strtotime($this->trial_start_time4));
-      $item['trial_start4'] = date('H:i',  strtotime($this->trial_start_time4));
-      $item['trial_end4'] = date('H:i',  strtotime($this->trial_end_time4));
-      $item['date4'] = date('m月d日 H:i',  strtotime($this->trial_start_time4)).'～'.$item['trial_end4'];
-    }
-    $item['date5'] = '-';
-    if(!empty($this->trial_start_time5)){
-      $item['trial_date5'] = date('Y/m/d',  strtotime($this->trial_start_time5));
-      $item['trial_start5'] = date('H:i',  strtotime($this->trial_start_time5));
-      $item['trial_end5'] = date('H:i',  strtotime($this->trial_end_time5));
-      $item['date5'] = date('m月d日 H:i',  strtotime($this->trial_start_time5)).'～'.$item['trial_end5'];
-    }
-*/
-    $item['parent_name'] =  $this->parent->name();
-    $item['parent_phone_no'] =  $this->parent->phone_no;
-    $item['parent_address'] =  $this->parent->address;
-    $item['parent_email'] =  $this->parent->user->email;
-    $item['date1'] = $this->dateweek_format($this->trial_start_time1).date(' H:i',  strtotime($this->trial_start_time1)).'～'.$item['trial_end1'];
-    $item['date2'] = $this->dateweek_format($this->trial_start_time2).date(' H:i',  strtotime($this->trial_start_time2)).'～'.$item['trial_end2'];
-    $item['date3'] = $this->dateweek_format($this->trial_start_time3).date(' H:i',  strtotime($this->trial_start_time3)).'～'.$item['trial_end3'];
-    $item['start_hope_date'] = $this->dateweek_format($this->schedule_start_hope_date);
-    $get_tagdata = $this->get_tagdata();
-    foreach($get_tagdata as $key => $val){
-      $item[$key] = $val;
-    }
-    $calendars = $this->get_calendar();
-    foreach($calendars as $i => $calendar){
-      $calendars[$i] = $calendar->details();
-    }
-    $item['calendars'] = $calendars;
-    $calendar_settings = [];
-    $user_calendar_settings = $this->get_calendar_settings();
-    foreach($user_calendar_settings as $user_calendar_setting){
-      $calendar_settings[] = $user_calendar_setting->details();
-    }
-    $item['calendar_settings'] = $calendar_settings;
-    return $item;
-  }
-  public function get_tagdata(){
-    $subject1 = [];
-    $subject2 = [];
-    $tagdata = [];
+  public function get_subject($is_juken=false){
+    $subject = [];
+    $filter_val = 1;
+    if($is_juken==true) $filter_val = 10;
     foreach($this->tags as $tag){
       $tag_data = $tag->details();
       if(isset($tag_data['charge_subject_level_item'])){
-        if(intval($tag->tag_value) > 10){
-          $subject1[]= $tag->keyname();
+        if(intval($tag->tag_value) > $filter_val){
+          $subject[]= $tag->keyname();
         }
-        else if(intval($tag->tag_value) > 1){
-          $subject2[] = $tag->keyname();
-        }
-      }
-      else {
-        $tagdata[$tag->tag_key][$tag->tag_value] = $tag->name();
       }
     }
-    return ['subject1' => $subject1, 'subject2' => $subject2, 'tagdata' => $tagdata];
+    return $subject;
   }
   /**
    * 体験授業申し込み登録
@@ -289,14 +239,15 @@ class Trial extends Model
     $ret = [];
 
     //登録申し込み情報
-    $trial = Trial::where('student_parent_id', $parent->id)
+    $lesson_request = LessonRequest::where('student_parent_id', $parent->id)
     ->where('student_id', $student->id)
     ->where('status', '!=' ,'cancel')
     ->first();
 
-    if(!isset($trial)){
+    if(!isset($lesson_request)){
       //同じ対象生徒の内容の場合は(cancel以外)登録しない
-      $trial = Trial::create([
+      $lesson_request = LessonRequest::create([
+        'type' => $form['type'],
         'student_parent_id' => $parent->id,
         'student_id' => $student->id,
         'create_user_id' => $form['create_user_id'],
@@ -314,19 +265,32 @@ class Trial extends Model
     unset($form['grade']);
     unset($form['school_name']);
 
-    $trial->trial_update($form);
-    return $trial;
+    $lesson_request->change($form);
+    return $lesson_request;
   }
-  public function trial_update($form){
-    $fields = ['trial_start_time1', 'trial_end_time1', 'trial_start_time2', 'trial_end_time2', 'trial_start_time3', 'trial_end_time3', 'trial_start_time4', 'trial_end_time4', 'trial_start_time5', 'trial_end_time5', 'remark'];
+  static public function add($form){
+  }
+  public function change($form){
+    $fields = ['remark'];
     $data = [];
     foreach($fields as $field){
       if(!empty($form[$field])) $data[$field] = $form[$field];
     }
     $this->update($data);
-    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
-    $tag_names[] ='entry_milestone'; //体験のみのタグ
-    $tag_names[] ='howto'; //体験のみのタグ
+    if(count($this->request_dates)>0) LessonRequestDate::where('lesson_request_id', $this->id)->delete();
+    foreach($form['request_dates'] as $datetime){
+      if(empty($datetime['sort_no'])) $datetime['sort_no'] = 1;
+      LessonRequestDate::create(['lesson_request_id' => $this->id,
+                                'day' => date('Y-m-d', strtotime($datetime['from_datetime'])),
+                                'from_time_slot' => date('H:i', strtotime($datetime['from_datetime'])),
+                                'to_time_slot' => date('H:i', strtotime($datetime['to_datetime'])),
+                                'sort_no' => $datetime['sort_no']
+      ]);
+    }
+
+    $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson'];
+    $tag_names[] ='entry_milestone';
+    $tag_names[] ='howto';
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
     foreach($lesson_weeks as $lesson_week=>$name){
@@ -334,10 +298,10 @@ class Trial extends Model
     }
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
-        TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        LessonRequestTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       else {
-        TrialTag::clearTags($this->id, $tag_name);
+        LessonRequestTag::clearTags($this->id, $tag_name);
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
@@ -349,32 +313,25 @@ class Trial extends Model
     }
     foreach($tag_names as $tag_name){
       if(empty($form[$tag_name])) $form[$tag_name] = '';
-      TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      LessonRequestTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->write_comment('trial');
+    $this->write_comment($this->type);
     $this->student->profile_update($form);
   }
   public function remark_full(){
-    $tagdata = $this->get_tagdata()['tagdata'];
     $ret = "";
     $is_other = false;
-    if(isset($tagdata['entry_milestone'])){
+    if(count($this->get_tags('entry_milestone')) > 0){
       $ret .= "■".__('labels.entry_milestone')."\n";
-      foreach($tagdata['entry_milestone'] as $index => $label){
-        if($index=='other'){
+      foreach($this->get_tags('entry_milestone') as $tag){
+        if($tag->tag_value=='other'){
           $is_other = true;
           continue;
         }
-        if(empty($label)) continue;
-        $ret .= "・".$label."\n";
+        $ret .= "・".$tag->tag_name."\n";
       }
-      if(isset($tagdata['entry_milestone_word'])){
-        if($is_other){
-          foreach($tagdata['entry_milestone_word'] as $index => $label){
-            if(empty($label)) continue;
-            $ret .= "・".$label."\n";
-          }
-        }
+      if($is_other && empty($this->get_tag_value('entry_milestone_word'))){
+        $ret .= "・".$this->get_tag_value('entry_milestone_word')."\n";
       }
     }
     if(!empty($this->remark)){
@@ -392,12 +349,12 @@ class Trial extends Model
     $user_calendar_settings = UserCalendarSetting::findUser($this->student->user_id)->orderByWeek()->get();
     return $user_calendar_settings;
   }
-  public function trial_to_calendar($form){
+  public function _to_calendar($form){
     $this->update(['status' => 'confirm']);
     $teacher = Teacher::where('id', $form['teacher_id'])->first();
     //$calendar = $this->get_calendar();
     $calendar = null;
-    //１トライアル複数授業予定のケースもある
+    //１申し込み複数授業予定のケースもある
     $course_minutes = intval(strtotime($form['end_time']) - strtotime($form['start_time']))/60;
     $calendar_form = [
       'start_time' =>  $form["start_time"],
@@ -427,7 +384,7 @@ class Trial extends Model
       $calendar = UserCalendar::where('id', $form['calendar_id'])->first();
       if(!isset($calendar)){
         \Log::error("存在しないカレンダーへの参加者追加");
-        return $this->error_response("存在しないカレンダーへの参加者追加(id=".$this->id.")", "Trial::trial_to_calendar");
+        return $this->error_response("存在しないカレンダーへの参加者追加(id=".$this->id.")", "LessonRequest::_to_calendar");
       }
     }
     else {
@@ -438,7 +395,6 @@ class Trial extends Model
       $calendar = $res['data'];
     }
     if($calendar!=null){
-      //体験同時申し込み生徒数だけ追加
       $calendar->memberAdd($this->student->user_id, $form['create_user_id']);
       $charge_student_form['student_id'] = $this->student->id;
       ChargeStudent::add($charge_student_form);
@@ -463,9 +419,7 @@ class Trial extends Model
   }
   public function _candidate_teachers($teacher_id=0, $lesson=0){
 
-    $detail = $this->details();
-    //体験希望科目を取得
-    $trial_subjects = [];
+    $_subjects = [];
     $kids_lesson = [];
     $english_talk_lesson = [];
     $course_minutes = 0;
@@ -475,7 +429,7 @@ class Trial extends Model
       if(isset($tag_data['charge_subject_level_item'])){
         if(intval($tag->tag_value) > 1){
           //希望科目のタグのみ集める
-          $trial_subjects[$tag->tag_key] = $tag;
+          $_subjects[$tag->tag_key] = $tag;
         }
       }
       if($tag->tag_key==='course_minutes'){
@@ -491,10 +445,9 @@ class Trial extends Model
     $teachers = Teacher::findStatuses(["regular"]);
     if($lesson > 0){
       $teachers = $teachers->hasTag('lesson', $lesson);
-
       if($lesson===1){
         //塾の場合、担当可能な科目がある講師
-        $teachers = $teachers->chargeSubject($trial_subjects);
+        $teachers = $teachers->chargeSubject($_subjects);
       }
       else if($lesson===2){
         //英会話の場合、希望レッスンが担当可能な講師
@@ -513,14 +466,11 @@ class Trial extends Model
     }
     $teachers = $teachers->get();
 
-    //30分ごとの開始時間から授業時間までのslotを作成
-    $time_list1 = $this->get_time_list($this->trial_start_time1, $this->trial_end_time1, $lesson);
-    $time_list2 = $this->get_time_list($this->trial_start_time2, $this->trial_end_time2, $lesson);
-    $time_list3 = $this->get_time_list($this->trial_start_time3, $this->trial_end_time3, $lesson);
-/*TODO 後まわし
-    $time_list4 = $this->get_time_list($this->trial_start_time4, $this->trial_end_time4, $lesson);
-    $time_list5 = $this->get_time_list($this->trial_start_time5, $this->trial_end_time5, $lesson);
-*/
+    //この申し込みの希望日時より、30分ごとの開始時間から授業時間までのslotを作成
+    $time_lists = [];
+    foreach($this->request_dates->sortBy('sort_no') as $d){
+      $time_lists[$d->date] = $this->get_time_list($d->from_datetime, $d->to_datetime, $lesson);
+    }
     $ret = [];
     foreach($teachers as $teacher){
       $enable_point = 0;
@@ -531,7 +481,7 @@ class Trial extends Model
       if($lesson==1){
         $charge_subjects = $teacher->get_charge_subject();
         //塾の場合、担当可能、不可能な科目の情報セットを作る
-        foreach($trial_subjects as $tag_key  => $tag){
+        foreach($_subjects as $tag_key  => $tag){
           $tag_val = intval($tag->tag_value);
           $tag_keyname = $tag->keyname();
           $tag_name = $tag->name();
@@ -631,53 +581,22 @@ class Trial extends Model
           $teacher->disable_subject = $disable_subject;
 
           $teacher->match_schedule = $match_schedule;
-          $calendars1 = UserCalendar::findUser($teacher->user_id)
-                          ->findStatuses(['fix', 'confirm', 'new'])
-                          ->searchDate($detail['trial_start_time1'], $detail['trial_end_time1'])
-                          ->orderBy('start_time')
-                          ->get();
-          $calendars2 = UserCalendar::findUser($teacher->user_id)
-                          ->findStatuses(['fix', 'confirm', 'new'])
-                          ->searchDate($detail['trial_start_time2'], $detail['trial_end_time2'])
-                          ->orderBy('start_time')
-                          ->get();
-          $calendars3 = UserCalendar::findUser($teacher->user_id)
-                          ->findStatuses(['fix', 'confirm', 'new'])
-                          ->searchDate($detail['trial_start_time3'], $detail['trial_end_time3'])
-                          ->orderBy('start_time')
-                          ->get();
-/*TODO 後まわし
-          $calendars4 = UserCalendar::findUser($teacher->user_id)
-                          ->findStatuses(['fix', 'confirm', 'new'])
-                          ->searchDate($detail['trial_start_time4'], $detail['trial_end_time4'])
-                          ->orderBy('start_time')
-                          ->get();
+          $calendars = [];
+          foreach($this->request_dates->sortBy('sort_no') as $d){
+            $calendars[$d->date] = UserCalendar::findUser($teacher->user_id)
+                            ->findStatuses(['fix', 'confirm', 'new'])
+                            ->searchDate($d->from_datetime, $d->to_datetime)
+                            ->orderBy('start_time')
+                            ->get();
+          }
 
-          $calendars5 = UserCalendar::findUser($teacher->user_id)
-                          ->findStatuses(['fix', 'confirm', 'new'])
-                          ->searchDate($detail['trial_start_time5'], $detail['trial_end_time5'])
-                          ->orderBy('start_time')
-                          ->get();
-*/
-
-          $teacher->calendars=[
-            'trial_date1' => $calendars1,
-            'trial_date2' => $calendars2,
-            'trial_date3' => $calendars3,
-/*TODO 後まわし
-            'trial_date4' => $calendars4,
-            'trial_date5' => $calendars5,
-*/
-          ];
-
-          $teacher->trial = $this->get_time_list_free($lesson, $time_list1, $teacher->user_id, $detail['trial_date1'], $calendars1, "trial_date1");
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($lesson, $time_list2, $teacher->user_id, $detail['trial_date2'], $calendars2, "trial_date2"));
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($lesson, $time_list3, $teacher->user_id, $detail['trial_date3'], $calendars3, "trial_date3"));
-/*TODO 後まわし
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list4, $teacher->user_id, $detail['trial_date4'], $calendars3, "trial_date4"));
-          $teacher->trial = array_merge($teacher->trial, $this->get_time_list_free($time_list5, $teacher->user_id, $detail['trial_date5'], $calendars3, "trial_date5"));
-*/
-          $teacher->trial = $this->get_time_list_review($teacher->user_id, $teacher->trial);
+          $teacher->calendars = $calendars;
+          $request_lessons = [];
+          foreach($time_lists as $date => $time_list){
+            $request_lessons = array_merge($request_lessons, $this->get_time_list_free($lesson, $time_list, $teacher->user_id, $date, $calendars[$date], ''));
+          }
+          $request_lessons = $this->get_time_list_review($teacher->user_id, $request_lessons);
+          $teacher->request_lessons = $request_lessons;
           $ret[] = $teacher;
         }
 
@@ -1311,11 +1230,11 @@ class Trial extends Model
       "charge_user_id" => 1,
     ]);
     //ステータス：入会希望連絡済み
-    Trial::where('id', $this->id)->update(['status' => 'entry_contact']);
+    LessonRequest::where('id', $this->id)->update(['status' => 'entry_contact']);
     return $ask;
   }
   public function hope_to_join($is_commit=false, $form){
-    \Log::warning("Trial::hope_to_join start");
+    \Log::warning("LessonRequest::hope_to_join start");
     if($is_commit==false){
       //ステータス：入会希望なし
       $update_data = [
@@ -1337,16 +1256,16 @@ class Trial extends Model
       }
       foreach($tag_names as $tag_name){
         if(isset($form[$tag_name]) && count($form[$tag_name])>0){
-          TrialTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+          LessonRequestTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
         }
         else {
-          TrialTag::clearTags($this->id, $tag_name);
+          LessonRequestTag::clearTags($this->id, $tag_name);
         }
       }
       $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes', 'course_type', 'entry_milestone_word'];
       foreach($tag_names as $tag_name){
         if(empty($form[$tag_name])) $form[$tag_name] = '';
-        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        LessonRequestTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       //科目タグ
       $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
@@ -1355,12 +1274,12 @@ class Trial extends Model
       }
       foreach($tag_names as $tag_name){
         if(empty($form[$tag_name])) $form[$tag_name] = '';
-        TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        LessonRequestTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       $this->student->profile_update($form);
       $this->write_comment('entry');
     }
-    Trial::where('id', $this->id)->update($update_data);
+    LessonRequest::where('id', $this->id)->update($update_data);
     return true;
   }
 
@@ -1369,7 +1288,7 @@ class Trial extends Model
     //保護者にアクセスキーを設定
 
     $this->parent->user->update(['access_key' => $access_key]);
-    Trial::where('id', $this->id)->update(['status' => 'entry_guidanced']);
+    LessonRequest::where('id', $this->id)->update(['status' => 'entry_guidanced']);
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
@@ -1407,6 +1326,7 @@ class Trial extends Model
     $type_title = [
       "trial" => "体験申し込み時のご要望",
       "entry" => "入会希望時のご要望",
+      "season_lesson" => "季節講習申し込み時のご要望",
     ];
     if(!empty($remark)){
       $comment = Comment::where('target_user_id', $this->student->user_id)

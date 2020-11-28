@@ -75,6 +75,9 @@ class UserCalendar extends Model
   public function trial(){
     return $this->belongsTo('App\Models\Trial');
   }
+  public function lesson_request(){
+    return $this->belongsTo('App\Models\LessonRequest');
+  }
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);

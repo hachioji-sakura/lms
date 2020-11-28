@@ -11,7 +11,7 @@
   <i class="fa fa-times mr-1"></i>{{__('labels.delete')}}
 </a>
 <br>
-@if($item->is_trial_lesson_complete()==false)
+@if($item->is_request_lesson_complete()==false)
 <a href="trials/{{$item->id}}/to_calendar" role="button" class="btn btn-info btn-sm mt-1">
   <i class="fa fa-plus mr-1"></i>
   体験授業登録
@@ -21,7 +21,7 @@
   入会希望に関するご連絡
 </a>
 @endif
-@if($item->is_trial_lesson_complete()==true)
+@if($item->is_request_lesson_complete()==true)
 <a href="trials/{{$item->id}}/to_calendar_setting" role="button" class="btn btn-info btn-sm mt-1">
   <i class="fa fa-plus mr-1"></i>
   通常授業登録
