@@ -54,7 +54,7 @@
               <input type="text" name="dummy" style="display:none;" / >
               @method('PUT')
               <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled="disabled">
+                <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" {{$item->type == 'agreement_confirm' ? : 'disabled="disabled"'}}>
                   <i class="fa fa-check mr-1"></i>
                   上記の内容について了承しました
                 </button>

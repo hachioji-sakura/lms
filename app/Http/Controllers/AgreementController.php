@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class AgreementController extends MilestoneController
 {
     public $domain = 'agreements';
+    public $domain_name = '契約';
     public function model(){
       return Agreement::query();
     }
@@ -28,6 +29,7 @@ class AgreementController extends MilestoneController
           'title' => [
             'label' => '概要',
             "link" => 'show',
+
           ],
           'status_name' =>[
             'label' =>  'ステータス',
@@ -51,6 +53,7 @@ class AgreementController extends MilestoneController
           */
           'buttons' => [
             'label' => '操作',
+            'page_title' => __('labels.send_approval'),
             'button' => [
               'confirm' => [
                 'method' => 'ask/confirm',
@@ -74,7 +77,7 @@ class AgreementController extends MilestoneController
         $param['search_word'] = '';
         $param['fields'] = $fields;
         $param['domain'] = $this->domain;
-        $param['domain_name'] = "契約管理";
+        $param['domain_name'] = $this->domain_name;
         $param['user'] = Auth::user()->details();
         return view($this->domain.'.list')->with($param);
     }

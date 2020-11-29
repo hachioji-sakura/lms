@@ -396,8 +396,10 @@ return [
   'actionlogs' => 'System Logs',
   'teacher_change' => 'Change assigned teacher',
   'agreements' => 'Agreements',
-  'agreement_update' => 'Agreements update',  'event_templates' => 'Event Template',
-  'event_users' => 'Event User',  'ask_teacher_change_description' => 'About teacher change you should check',
+  'agreement_update' => 'Agreements update',
+  'event_templates' => 'Event Template',
+  'event_users' => 'Event User',
+  'ask_teacher_change_description' => 'About teacher change you should check',
   'dummy_release' => 'Release dummy',
   'enable' => 'Enable',
   'agreement_statements' => 'Agreement Statements',
@@ -412,4 +414,5 @@ return [
   'menu' => 'Menu',
   'task_title' => 'ex: English_selfIntroduction',
   'workable_classroom' => 'Workable ClassRoom',
+  'send_approval' => 'Send Approval Request',
 ];

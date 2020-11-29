@@ -138,6 +138,9 @@ class AskController extends MilestoneController
       ],
       'target_user_name' => [
         'label' => '対象者',
+        'link' => function($row){
+          return $row->target_user->details()->domain."/".$row->target_user->details()->id;
+        }
       ],
       'status_name' => [
         'label' => 'ステータス',
@@ -155,6 +158,13 @@ class AskController extends MilestoneController
             'label' => '完了にする',
             'style' => 'danger',
             'method' => 'status_update/commit',
+            'type' => function($row){
+                if($row->status == 'new'){
+                  return true;
+                }else{
+                  return false;
+                }
+              }
           ],
         ],
       ],

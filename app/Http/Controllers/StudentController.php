@@ -1213,6 +1213,7 @@ class StudentController extends UserController
       foreach($request->get('title') as $title){
          $_t .= $title .' / ';
       }
+      $_t = rtrim($_t,' / ');
       $form['title'] = $_t;
       if( !$request->has('target_user_id')){
         $form["target_user_id"] = $param["item"]->user_id;
