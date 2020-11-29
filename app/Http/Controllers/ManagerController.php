@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Manager;
 use Illuminate\Http\Request;
+use App\Models\Ask;
 use DB;
 class ManagerController extends TeacherController
 {
@@ -35,7 +36,12 @@ class ManagerController extends TeacherController
         $ret['ask_count'] = $count;
         $lists = ['lecture_cancel', 'teacher_change', 'recess', 'unsubscribe', 'phone','agreement_update'];
         foreach($lists as $list){
-          $count = $this->get_ask(["list" => $list, 'user_id'=> $ret['item']->user_id], true);
+          if($list == "agreement_update"){
+            $count = Ask::findTypes(['agreement_update'])->findStatuses(['new'])->count();
+          }else{
+            $count = $this->get_ask(["list" => $list, 'user_id'=> $ret['item']->user_id], true);
+          }
+
           $ret[$list.'_count'] = $count;
         }
         $statuses = ['new'];
