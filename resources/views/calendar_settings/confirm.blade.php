@@ -1,11 +1,11 @@
 @component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action' => '', 'user'=>$user])
   @slot('page_message')
-  {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
-    @if(isset($user) && $user->role==="manager")
+    @if($item->is_passed()==true)
     <div class="col-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.confirm_calendar_confirm_for_teacher'))!!}
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.error_passed_calendar'))!!}
     </div>
     @else
+    {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
     <div class="col-12 bg-danger p-2 mb-2">
       <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.info_calendar_confirm'))!!}
     </div>
@@ -17,6 +17,8 @@
     {{--TODO 講師に代わって予定確認できるようにするが、暫定とし、運用が回ったら解除したい --}}
     @if(isset($user) && ($user->role==="teacher" || $user->role==="manager"))
       {{-- 講師の場合 --}}
+      @if($item->is_passed()==true)
+      @else
       <div class="col-12 p-0 mb-1" id="{{$domain}}_confirm">
         <form method="POST" action="/calendar_settings/{{$item['id']}}">
           @csrf
@@ -32,6 +34,7 @@
           </div>
       </form>
     </div>
+    @endif
     @elseif(isset($user) && $user->role==="manager" && $item->user_id != $user->user_id)
     <div class="col-12 mb-1" id="{{$domain}}_confirm">
       <form method="POST" action="/calendar_settings/{{$item['id']}}/remind">
