@@ -153,14 +153,17 @@
                   <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
                     <i class="fa fa-file-alt"></i>
                   </a>
-                  <a href="javascript:void(0)" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
-                    <i class="fa fa-edit"></i>
-                  </a>
-                @if($item->status != "cancel")
-                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
-                    <i class="fa fa-trash"></i>
-                  </a>
-                @endif
+                  @if(  $user->user_id == $item->create_user_id )
+                    <a href="javascript:void(0)" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                      <i class="fa fa-edit"></i>
+                    </a>
+
+                    @if($item->status != "cancel")
+                    <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                    @endif
+                  @endif
                 </div>
               </div>
             </div>
