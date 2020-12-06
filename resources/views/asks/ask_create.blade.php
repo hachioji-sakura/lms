@@ -1,4 +1,4 @@
-<div class="direct-chat-msg">
+<div class="direct-chat-msg" id="ask_create">
   @if(isset($_edit) && $_edit==true)
     <form id="edit" method="POST" action="/{{$domain}}/{{$item->id}}/ask/{{$ask->id}}">
       @method('PUT')
@@ -102,7 +102,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="ask_create"
                   @if(isset($_edit) && $_edit==true)
                   confirm="{{__('messages.confirm_update')}}">
                     {{__('labels.update_button')}}
@@ -122,18 +122,6 @@
 <script>
 
 $(function(){
-  var form_data = null;
-  base.pageSettinged("ask_entry", form_data);
-  $('#ask_entry').carousel({ interval : false});
-  //submit
-  $("button.btn-submit").on('click', function(e){
-    e.preventDefault();
-    if(front.validateFormValue('ask_entry .carousel-item.active')){
-      $(this).prop("disabled",true);
-      $("#edit").submit();
-    }
-  });
-
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
     var form_data = front.getFormValue('ask_entry');
