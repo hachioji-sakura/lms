@@ -161,7 +161,7 @@ class Agreement extends Model
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
         $form = [
           'title' => $setting_key,
-          'teacher_id' => $st->user->details()->id,
+          'teacher_id' => $st->user->details('teachers')->id,
           'lesson_id' => $st->lesson(true),
           'grade' => $mb->user->details()->get_tag_value('grade'),
           'course_type' => $st->get_tag_value('course_type'),
