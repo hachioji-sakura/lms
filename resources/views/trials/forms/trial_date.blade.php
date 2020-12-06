@@ -17,10 +17,19 @@
     @endforeach
   @endif
 @else
-  @foreach($item->request_dates as $d)
+<?php
+  $d = ["","",""];
+  if(isset($item) && $item!=[]){
+    $d = [];
+    foreach($item->request_dates as $request_date){
+      $d[] = $request_date->day;
+    }
+  }
+?>
+  @for($i=0;$i<count($d);$i++)
   <div class="col-12 mt-2">
     <label for="start_date" class="w-100">
-      第{{$d->sort_no}}希望日時
+      第{{($i+1)}}希望日時
       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
   </div>
@@ -31,9 +40,9 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
           </div>
-          <input type="text" name="trial_date{{$d->sort_no}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
-          @if($_edit===true)
-           value="{{date('Y/m/d', strtotime($d->day))}}"
+          <input type="text" name="trial_date{{($i+1)}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+          @if(!empty($d[$i]))
+           value="{{date('Y/m/d', strtotime($d[$i]))}}"
           @else
            minvalue="{{date('Y/m/d')}}"
           @endif
@@ -45,7 +54,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-clock"></i></span>
           </div>
-          <select name="trial_start_time{{$d->sort_no}}" class="form-control mw-80px" required="true">
+          <select name="trial_start_time{{($i+1)}}" class="form-control mw-80px" required="true">
             <option value="">{{__('labels.selectable')}}</option>
             @for ($h = 8; $h < 23; $h++)
               <option value="{{$h}}"
@@ -56,7 +65,7 @@
             @endfor
           </select>
           <span class="mt-2 ml-2">時 ～</span>
-          <select name="trial_end_time{{$d->sort_no}}" class="form-control mw-80px" required="true" greater="trial_start_time{{$d->sort_no}}" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time{{$d->sort_no}}" not_equal_error="{{__('messages.validate_timezone_error')}}" >
+          <select name="trial_end_time{{($i+1)}}" class="form-control mw-80px" required="true" greater="trial_start_time{{($i+1)}}" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="trial_start_time{{($i+1)}}" not_equal_error="{{__('messages.validate_timezone_error')}}" >
             <option value="">{{__('labels.selectable')}}</option>
             @for ($h = 8; $h < 23; $h++)
               <option value="{{$h}}"
@@ -71,7 +80,7 @@
       </div>
     </div>
   </div>
-  @endforeach
+  @endfor
   <div class="col-12">
     <h6 class="text-sm p-1 pl-2 mt-2 bg-warning" >
       ※生徒様に最適な講師を紹介いたしますので、<br>

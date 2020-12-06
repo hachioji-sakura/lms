@@ -1,20 +1,11 @@
-<?php
-$tag = $item->get_tagdata();
-?>
 ■ご希望ノレッスン
-@foreach($tag['tagdata']['lesson'] as $label)
-{{$label}}
-@endforeach
+{{$item->get_tags_name('lesson')}}
 
 ■ご希望の授業時間
-@foreach($tag['tagdata']['course_minutes'] as $label)
-{{$label}}授業
-@endforeach
+{{$item->get_tag_name('course_minutes')}}授業
 
 ■ご希望の教室
-@foreach($tag['tagdata']['lesson_place'] as $label)
-{{$label}}　
-@endforeach
+{{$item->get_tag_name('lesson_place')}}
 
 @if($item->is_request_lesson_complete()==false || $item->status=='entry_contact')
 ■体験希望日時
@@ -27,68 +18,45 @@ $tag = $item->get_tagdata();
 {{$item->start_hope_date}}
 @endif
 @endif
-@if(count($tag["subject2"])>0)
+@if(count($item->get_subject())>0)
 
 ■補習希望科目
-@foreach($tag["subject2"] as $label)
+@foreach($item->get_subject() as $label)
 {{$label}}　
 @endforeach
 @endif
-@if(count($tag["subject1"])>0)
+@if(count($item->get_subject(true))>0)
 
 ■受験希望科目
-@foreach($tag["subject1"] as $label)
+@foreach($item->get_subject(true) as $label)
 {{$label}}　
 @endforeach
 @endif
-@isset($tag['tagdata']['lesson'][2]) {{-- english_talk_lesson --}}
-@isset($tag['tagdata']['english_teacher'])
+@if($item->has_tag('lesson', 2))
 
 ■英会話希望講師
-@foreach($tag['tagdata']['english_teacher'] as $label)
-{{$label}}　
-@endforeach
-@endisset
-@isset($tag['tagdata']['english_talk_lesson'])
+{{$item->get_tag_name('english_teacher')}}　
 
 ■ご希望の英会話レッスン
-@foreach($tag['tagdata']['english_talk_lesson'] as $label)
-{{$label}}
-@endforeach
-@endisset
-@isset($tag['tagdata']['english_talk_course_type'])
+{{$item->get_tag_name('english_talk_lesson')}}　
 
 ■授業形式(英会話）
-@foreach($tag['tagdata']['english_talk_course_type'] as $label)
-{{$label}}
-@endforeach
-@endisset
-@endisset
-@isset($tag['tagdata']['lesson'][3]) {{-- piano_lesson --}}
-@isset($tag['tagdata']['piano_level'])
+{{$item->get_tag_name('english_talk_course_type')}}　
+@endif
+
+@if($item->has_tag('lesson', 3))
 
 ■ピアノのご経験
-@foreach($tag['tagdata']['piano_level'] as $label)
-{{$label}}　
-@endforeach
-@endisset
-@endisset
-@isset($tag['tagdata']['lesson'][4]){{-- kids_lesson --}}
-@isset($tag['tagdata']['kids_lesson'])
+{{$item->get_tag_name('piano_level')}}　
+@endif
+@if($item->has_tag('lesson', 4))
 
 ■ご希望の習い事
-@foreach($tag['tagdata']['kids_lesson'] as $label)
-{{$label}}　
-@endforeach
-@endisset
-@isset($tag['tagdata']['kids_lesson_course_type'])
-
+{{$item->get_tags_name('kids_lesson')}}　
+　
 ■授業形式(習い事）
-@foreach($tag['tagdata']['kids_lesson_course_type'] as $label)
-{{$label}}
-@endforeach
-@endisset
-@endisset
+{{$item->get_tag_name('kids_lesson_course_type')}}　
+@endif
 
 ■通塾可能時間帯/曜日
 @foreach(config('attribute.lesson_week') as $week_code => $week_name)

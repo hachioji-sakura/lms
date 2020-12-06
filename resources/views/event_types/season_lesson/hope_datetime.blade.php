@@ -116,7 +116,10 @@ function hope_date_change(id){
   }
 }
 function day_count_check_onload(){
-  c = 0;
+  var c = 0;
+  var weight = 1;
+  var course_minutes = $('input[name="season_lesson_course"]:checked').val()|0;
+  if(course_minutes==120) weight = 2;
   $('#hope_datetime_list').empty();
   $("input.day_check").each(function(){
     if($(this).prop('checked')){
@@ -143,6 +146,7 @@ function day_count_check_onload(){
       $('input[name="hope_datetime[]"][accessKey="'+id+'"]').val(v);
     }
   });
+  c = c*weight;
   $('input[name="day_count"]').val(c);
   $('#day_count').html(c);
 }
