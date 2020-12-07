@@ -237,4 +237,15 @@ class Agreement extends Model
       }
       return $is_update;
     }
+
+    public function is_agreement_confirm_send(){
+       $ask_count = Ask::where('target_model','agreements')
+                    ->where('target_model_id',$this->id)
+                    ->where('type','agreement_confirm')->count();
+       if($ask_count > 0){
+         return true;
+       }else{
+         return false;
+       }
+    }
 }

@@ -303,6 +303,7 @@ return [
   'target_month' => '対象年月',
   'important' => '重要事項',
   'important_check' => '重要事項について確認しました',
+  'agreement_check' => '上記の内容について確認しました',
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',
 
@@ -411,4 +412,5 @@ return [
   'agreement_commit' => '承認済',
   'workable_classroom' => '勤務可能な教室',
   'send_approval' => '承認依頼を送信',
+  'out_of_date' => '期限切れ',
 ];

@@ -37,16 +37,16 @@
         </li>
 
         <li class="nav-item">
-          <a href="/agreements?search_status=commit" class="nav-link {{request()->search_status == 'commit' ? 'active' : ''}}">
+          <a href="/agreements?search_status=commit&search_enable=1" class="nav-link {{request()->search_status == 'commit' && request()->search_enable == 1 ? 'active' : ''}}">
             <i class="fa fa-check-circle nav-icon"></i>
-            {{__('labels.agreement_commit')}}
+            {{__('labels.enable')}}
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="/agreements?search_status=cancel" class="nav-link {{request()->search_status == 'cancel' ? 'active' : ''}}">
+          <a href="/agreements?search_status=commit&search_enable=0" class="nav-link {{request()->search_status == 'commit' && request()->search_enable == 0 ? 'active' : ''}}">
             <i class="fa fa-times-circle nav-icon"></i>
-            {{__('labels.cancel')}}
+            {{__('labels.out_of_date')}}
           </a>
         </li>
       </ul>

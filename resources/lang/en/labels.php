@@ -303,6 +303,7 @@ return [
   'target_month' => 'Target Month',
   'important' => 'Important',
   'important_check' => 'I confirmed about important matter',
+  'agreement_check' => 'I agree with above contents',
   'faq_button' => 'FAQ Add',
   'publiced_at' => 'Publiced At',
 
@@ -415,4 +416,5 @@ return [
   'task_title' => 'ex: English_selfIntroduction',
   'workable_classroom' => 'Workable ClassRoom',
   'send_approval' => 'Send Approval Request',
+  'out_of_date' => 'Out of Date',
 ];

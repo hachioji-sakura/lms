@@ -32,6 +32,15 @@ trait Scopes
       $query = $query->searchBySubjectId($search_subject_id);
     }
 
+    if( $request->has('search_enable') ){
+      $enable = $request->get('search_enable');
+      if($enable == 1){
+        $query = $query->enable();
+      }elseif($enable == 0){
+        $query = $query->unable();
+      }
+    }
+
     return $query;
   }
 
@@ -99,6 +108,14 @@ trait Scopes
     return $query->whereHas('subjects', function($query) use ($subject_id) {
         $query->where('subjects.id', $subject_id);
     });
+  }
+
+  public function scopeEnable($query){
+    return $query->where('status','commit')->whereNull('end_date');
+  }
+
+  public function scopeUnable($query){
+    return $query->where('status','commit')->whereNotNUll('end_date');
   }
 }
 

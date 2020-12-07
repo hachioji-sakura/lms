@@ -53,21 +53,33 @@ class AgreementController extends MilestoneController
           */
           'buttons' => [
             'label' => '操作',
-            'page_title' => __('labels.send_approval'),
             'button' => [
               'confirm' => [
                 'method' => 'ask/confirm',
                 'icon' => 'envelope',
-                'label' => '承認依頼を送信',
+                'label' => __('labels.send_approval'),
                 'style' => 'primary',
                 'type' => function($row){
-                    if($row->status == 'new' && $row->student->status == 'regular'){
+                    if($row->status == 'new' && $row->student->status == 'regular' && !$row->is_agreement_confirm_send()){
                       return true;
                     }else{
                       return false;
                     }
                   }
               ],
+              'remind' => [
+                'method' => 'ask/confirm',
+                'icon' => 'envelope',
+                'label' => __('labels.remind_button'),
+                'style' => 'secondary',
+                'type' => function($row){
+                    if($row->status == 'new' && $row->student->status == 'regular' && $row->is_agreement_confirm_send()){
+                      return true;
+                    }else{
+                      return false;
+                    }
+                  }
+              ]
             ],
           ],
         ];

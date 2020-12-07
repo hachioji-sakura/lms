@@ -38,25 +38,25 @@
             </div>
           </div>
         </div>
-    		<div class="row">
+        @endif
+        <div class="row">
           <div class="col-12 mt-2 mb-1">
             <div class="form-group">
               <input class="form-check-input icheck flat-green" type="checkbox" id="important_check" name="important_check" value="1" required="true" onChange="important_checked()">
               <label class="form-check-label" for="important_check">
-                {{__('labels.important_check')}}
+                {{__('labels.agreement_check')}}
               </label>
             </div>
           </div>
-          @endif
           <div class="col-12 mb-1" id="commit_form">
             <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
               @csrf
               <input type="text" name="dummy" style="display:none;" / >
               @method('PUT')
               <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" {{$item->type == 'agreement_confirm' ? : 'disabled="disabled"'}}>
+                <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled="disabled">
                   <i class="fa fa-check mr-1"></i>
-                  上記の内容について了承しました
+                  {{__('labels.send_button')}}
                 </button>
               </div>
             </form>
