@@ -5,8 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Event;
 use App\Models\EventUserMail;
+use App\Models\Traits\Common;
+
 class EventUser extends Milestone
 {
+  use Common;
+
   protected $table = 'lms.event_users'; //テーブル名を入力
   protected $guarded = array('id'); //書き換え禁止領域　(今回の場合はid)
 
@@ -66,14 +70,19 @@ class EventUser extends Milestone
     return $ret;
   }
   public function to_inform(){
+    $access_key = $this->create_token();
     $param = $this->event->toArray();
+
     $param['url'] = $this->event->template->url;
     $param['app_url'] = config('app.url');
     $param['event_id'] = $this->event->id;
+    $param['access_key'] = $access_key;
     $param['event_template_id'] = $this->event->template->id;
     $param['user_name'] = $this->user_name;
     $param['user_id'] = $this->user->id;
+    $param['event_user_id'] = $this->id;
     $param['user_details_id'] = $this->user->details()->id;
+    $this->update(['access_key' => $access_key]);
     $res = $this->user->send_mail($this->event->title, $param, 'text', 'event_mail');
     if($this->is_success_response($res)){
       EventUserMail::create([

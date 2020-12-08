@@ -12,7 +12,95 @@
   </script>
   @component('students.forms.lesson_place', ['_edit'=>$_edit, 'attributes' => $attributes]) @endcomponent
   @component('event_types.season_lesson.course', ['_edit'=>$_edit, 'attributes' => $attributes]) @endcomponent
+  <div class="col-12 mt-1">
+    <label for="season_lesson_course" class="w-100">
+      時間帯について
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+    </label>
+    <label class="mx-2" for="hope_timezone_am">
+      <input class="form-check-input icheck flat-blue ml-1" type="radio" name="hope_timezone" id="hope_timezone_am" value="am"
+        @if(isset($item) && isset($item->id) && $item->has_tag("hope_timezone", "am"))
+        checked
+        @endif
+        onChange="hope_timezone_all_set()"
+        required="true">
+        午前(11:00-16:00）
+    </label>
+    <label class="mx-2" for="hope_timezone_pm">
+      <input class="form-check-input icheck flat-blue ml-1" type="radio" name="hope_timezone" id="hope_timezone_pm" value="pm"
+        @if(isset($item) && isset($item->id) && $item->has_tag("hope_timezone", "pm"))
+        checked
+        @endif
+        onChange="hope_timezone_all_set()"
+        required="true">
+        午後(13:00-18:00）
+    </label>
+
+  </div>
+  <div class="col-12 mt-1 mb-2">
+    <div class="input-group">
+      <label class="mx-2" for="hope_timezone_order">
+        <input class="form-check-input icheck flat-red ml-1" type="radio" name="hope_timezone" id="hope_timezone_order" value="order"
+          @if(isset($item) && isset($item->id) && $item->has_tag("hope_timezone", "order"))
+          checked
+          @endif
+          onChange="hope_timezone_all_set()"
+          required="true">
+          指定
+      </label>
+      <select name="hope_start_time" class="form-control mw-80px" required="true" disabled>
+        <option value="">{{__('labels.selectable')}}</option>
+        @for ($h = 8; $h < 23; $h++)
+          <option value="{{$h}}"
+          @if($_edit===true && 1==2)
+          selected
+          @endif
+          >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>
+        @endfor
+      </select>
+      <span class="mt-2 ml-2">時 ～</span>
+      <select name="hope_end_time" class="form-control mw-80px" required="true" greater="hope_start_time" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="hope_start_time" not_equal_error="{{__('messages.validate_timezone_error')}}" disabled>
+        <option value="">{{__('labels.selectable')}}</option>
+        @for ($h = 8; $h < 23; $h++)
+          <option value="{{$h}}"
+          @if($_edit===true && 1==2)
+          selected
+          @endif
+          >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>
+          @endfor
+      </select>
+      <span class="mt-2 ml-2">時</span>
+    </div>
+  </div>
 </div>
+<script>
+function hope_timezone_all_set(){
+  var timezone = $("input[name='hope_timezone']:checked").val();
+  if(!timezone) return;
+  if(timezone=="am" || timezone=="pm"){
+    $("select[name='hope_start_time']").prop('disabled', true);
+    $("select[name='hope_end_time']").prop('disabled', true);
+    if(timezone=='am'){
+      $("select[name='hope_start_time']").val(11);
+      $("select[name='hope_end_time']").val(16);
+    }
+    else {
+      $("select[name='hope_start_time']").val(13);
+      $("select[name='hope_end_time']").val(18);
+    }
+  }
+  else {
+    $("select[name='hope_start_time']").prop('disabled', false);
+    $("select[name='hope_end_time']").prop('disabled', false);
+  }
+  console.log('hoge:'+timezone);
+  $('input.hope_date_timezone[value="'+timezone+'"]').each(function(){
+    $(this).iCheck('check');
+  });
+  $('select.hope_date_start_time').val($("select[name='hope_start_time']").val());
+  $('select.hope_date_end_time').val($("select[name='hope_end_time']").val());
+}
+</script>
 @endsection
 
 
@@ -22,6 +110,12 @@
   <div class="col-12 bg-info p-2 pl-4 mb-4">
     <i class="fa fa-chalkboard-teacher mr-1"></i>
     ご希望の科目と授業数について
+  </div>
+  <div class="col-12">
+    <h6 class="text-sm p-2 pl-3 bg-success" >
+      授業コマ数は、60分ごとで1（120分の場合、2)となります。<br>
+      希望科目数と、授業コマ数が一致するように入力してください
+    </h6>
   </div>
   @component('event_types.season_lesson.subject', ['_edit'=>$_edit,  'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false]) @endcomponent
 </div>

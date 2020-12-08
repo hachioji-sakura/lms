@@ -75,13 +75,13 @@
 <div class="col-5 col-md-5">
   <table class="table">
   <tr>
-    <th class="bg-gray">授業日数</th>
+    <th class="bg-gray">授業コマ数</th>
     <td class="w-40 text-right bg-warning">
       <span id="day_count" >0</span>
     </td>
   </tr>
   <tr>
-    <th class="bg-gray">科目授業数</th>
+    <th class="bg-gray">希望科目コマ数</th>
     <td class="w-40 text-right bg-warning">
       <span id="subject_day_count_sum" >0</span>
     </td>
@@ -101,7 +101,7 @@ function day_count_check(){
   s1 = $('#day_count').html()|0;
   s2 = $('#subject_day_count_sum').html()|0;
   if(s1!=s2){
-    front.showValidateError('#subject_table', '希望授業数と、科目授業数が一致しません');
+    front.showValidateError('#subject_table', '授業コマ数と、希望科目コマ数が一致しません');
     return false;
   }
   return true;

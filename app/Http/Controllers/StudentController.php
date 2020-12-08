@@ -14,7 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
-use App\Models\Event;
+use App\Models\EventUser;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -1468,13 +1468,18 @@ class StudentController extends UserController
     return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
   }
   public function season_lesson_page(Request $request, $id){
-    $param = $this->get_param($request, $id);
+    $param = $this->get_common_param($request, false);
     $view = 'create';
-    if(!$request->has('event_id')) abort(404);
+    if(!$request->has('event_user_id')) abort(404);
+    if(!$request->has('access_key')) abort(404);
     if($this->domain=='teachers') $view='teacher_request';
-    $event = Event::find($request->get('event_id'))->first();
-
-    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>$event])
+    $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
+    if(!isset($event_user)) abort(404);
+    if($event_user->access_key != $request->get('access_key')) abort(403);
+    $param['item'] = $this->model()->find($id);
+    $param['access_key'] = $request->get('access_key');
+    $param['event_user_id'] = $request->get('event_user_id');
+    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>$event_user->event])
       ->with($param);
   }
 }

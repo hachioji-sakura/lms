@@ -266,6 +266,7 @@ class LessonRequest extends Model
     return $lesson_request;
   }
   static public function add($form){
+
   }
   public function change($form){
     $fields = ['remark'];
@@ -302,7 +303,9 @@ class LessonRequest extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'entry_milestone_word','howto_word', 'course_type'];
+      ,'entry_milestone_word','howto_word', 'course_type'
+      ,'school_vacation_start_date', 'school_vacation_end_date', 'installment_payment'
+    ];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){

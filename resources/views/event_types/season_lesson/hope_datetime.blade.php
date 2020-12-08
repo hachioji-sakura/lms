@@ -14,7 +14,7 @@ $m = 0;
   </div>
   <?php $m = date('n', strtotime($d)); ?>
   @endif
-<div class="col-12 bd-b bd-gray">
+<div class="col-12 bd-b bd-gray ">
   <div class="row mb-2" id="hope_{{strtotime($d)}}">
     <div class="col-12">
       <div class="form-check p-0">
@@ -28,7 +28,7 @@ $m = 0;
       </div>
       <div class="input-group  date-selected-open text-sm mt-1 collapse">
         <div class="form-check">
-          <input class="form-check-input icheck flat-blue ml-1" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_am" value="am"
+          <input class="form-check-input icheck flat-blue ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_am" value="am"
           @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='am')
             checked
           @endif
@@ -40,9 +40,9 @@ $m = 0;
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input icheck flat-blue ml-1" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_pm" value="pm"
+          <input class="form-check-input icheck flat-blue ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_pm" value="pm"
           @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='pm')
-           checked ml-1
+           checked
           @endif
           required="true"
           onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
@@ -53,10 +53,10 @@ $m = 0;
         </div>
       </div>
     </div>
-    <div class="col-12 mt-1  date-selected-open text-sm collapse">
+    <div class="col-12 mt-1 date-selected-open text-sm collapse">
       <div class="input-group">
         <div class="form-check mt-2 mr-2">
-          <input class="form-check-input icheck flat-red ml-1" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_order" value="order"
+          <input class="form-check-input icheck flat-red ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_order" value="order"
           @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='order')
            checked
           @endif
@@ -67,7 +67,7 @@ $m = 0;
           指定
           </label>
         </div>
-        <select name="hope_{{strtotime($d)}}_start_time" class="form-control mw-80px" required="true" disabled>
+        <select name="hope_{{strtotime($d)}}_start_time" class="form-control mw-80px hope_date_start_time" required="true" disabled>
           <option value="">{{__('labels.selectable')}}</option>
           @for ($h = 8; $h < 23; $h++)
             <option value="{{$h}}"
@@ -79,7 +79,7 @@ $m = 0;
           @endfor
         </select>
         <span class="mt-2 ml-2">時 ～</span>
-        <select name="hope_{{strtotime($d)}}_end_time" class="form-control mw-80px" required="true" greater="hope_{{strtotime($d)}}_start_time" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="hope_{{strtotime($d)}}_start_time" not_equal_error="{{__('messages.validate_timezone_error')}}" disabled>
+        <select name="hope_{{strtotime($d)}}_end_time" class="form-control mw-80px hope_date_end_time" required="true" greater="hope_{{strtotime($d)}}_start_time" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="hope_{{strtotime($d)}}_start_time" not_equal_error="{{__('messages.validate_timezone_error')}}" disabled>
           <option value="">{{__('labels.selectable')}}</option>
           @for ($h = 8; $h < 23; $h++)
             <option value="{{$h}}"

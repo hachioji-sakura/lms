@@ -349,6 +349,36 @@ class LessonRequestController extends UserCalendarController
        '_edit' => false])
       ->with($param);
    }
+   public function store(Request $request)
+   {
+     $form = $request->all();
+     if(!$request->has('student_id')) abort(403);
+     $student = Student::where('id', $request->get('student_id'))->first();
+     if(!isset($student)) abort(403);
+
+     $param = $this->get_param($request, $id);
+     $access_key = $this->create_token();
+     $request->merge([
+       'access_key' => $access_key,
+     ]);
+     $form = $request->all();
+     $form['create_user_id'] = $param['user']->user_id;
+     $res = $this->transaction($request, function() use ($form){
+       $item = LessonRequest::add($form);
+       return $this->api_response(200, '', '', $item);
+     }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
+
+     if($this->is_success_response($res)){
+       $param['item']->user->send_mail(
+         'お申込み、ありがとうございます', [
+         'user_name' => $student->name(),
+         'access_key' => $access_key,
+         'item' => $res['data'],
+         'send_to' => 'parent',
+       ], 'text', 'trial');
+     }
+     return $this->save_redirect($res, [], '');
+   }
    /**
     * 体験授業申し込みページ
     *

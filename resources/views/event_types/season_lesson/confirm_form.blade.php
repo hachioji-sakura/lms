@@ -66,7 +66,7 @@
               @if($loop->index == 0)
                 @continue
               @endif
-              <td class="text-center" id="{{$subject}}_level_{{$index}}_name">
+              <td class="text-center" id="{{$subject}}_day_count">
                 -
               </td>
             @endforeach
