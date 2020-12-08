@@ -65,6 +65,7 @@
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <input type="hidden" name="id" value="{{$item->id}}" />
+    <input type="hidden" name="status" value="regular" />
 
     <div id="managers_register" class="carousel slide" data-ride="carousel" data-interval="false" data-wrap="false">
       <div class="carousel-inner" role="listbox">
