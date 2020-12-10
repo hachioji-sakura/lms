@@ -159,6 +159,12 @@ class Agreement extends Model
       foreach($settings as $st){
         $mb = $st->members->where('user_id',$member->user_id)->first();
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
+        if(!isset($mb->get_lesson_fee()['data']['lesson_fee']) ){
+          //見つからなかったら0
+          $tuition = 0;
+        }else{
+          $tuition = $mb->get_lesson_fee()['data']['lesson_fee'];
+        }
         $form = [
           'title' => $setting_key,
           'teacher_id' => $st->user->details('teachers')->id,
@@ -167,7 +173,7 @@ class Agreement extends Model
           'course_type' => $st->get_tag_value('course_type'),
           'course_minutes' =>  $st['course_minutes'],
           'lesson_week_count' => $mb->user->get_enable_calendar_setting_count($st->lesson(true)),
-          'tuition' => $mb->get_lesson_fee()['data']['lesson_fee'],
+          'tuition' => $tuition,
           'is_exam' => $mb->user->details()->is_juken(),
         ];
         $statement_form[$setting_key] = new AgreementStatement($form);
@@ -180,7 +186,6 @@ class Agreement extends Model
       }else{
         $is_update = true;
       }
-
 
       if($is_update == true){
         $new_agreement->status = 'new';

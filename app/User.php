@@ -91,6 +91,10 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function enable_calendar_member_settings(){
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy']);
+    }
     /**
      * パスワードリセット通知の送信
      *
