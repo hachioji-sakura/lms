@@ -41,7 +41,7 @@ class Holiday extends Model
     }
     return false;
   }
-  //Googleカレンダーから祝日を取得
+  //内閣府HPから祝日を取得
   static protected function holiday_update() {
     $url = "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv";
 
