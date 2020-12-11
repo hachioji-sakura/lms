@@ -103,10 +103,9 @@
     >
   </div>
 </div>
-@if($item->status=='unsubscribe')
 <div class="col-6">
   <label for="start_date" class="w-100">
-    {{__('labels.unsubscribe')}}{{__('labels.day')}}
+    {{__('labels.retirement')}}{{__('labels.day')}}
     <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
   </label>
   <div class="input-group">
@@ -117,5 +116,4 @@
     >
   </div>
 </div>
-@endif
 @endsection
