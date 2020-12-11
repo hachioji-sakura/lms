@@ -7,14 +7,14 @@ use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 use App\Models\Traits\Scopes;
 
-class FeeMaster extends Model
+class TuitionMaster extends Model
 {
     //
     use WebCache;
     use Scopes;
     use Common;
-    
-    protected $table = 'common.fee_masters';
+
+    protected $table = 'common.tuition_masters';
     protected $guarded = array('id');
     protected $fillable = [
       'grade',

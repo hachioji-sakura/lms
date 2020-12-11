@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFeeMastersTable extends Migration
+class CreateTuitionMastersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateFeeMastersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql_common')->create('fee_masters', function (Blueprint $table) {
+        Schema::connection('mysql_common')->create('tuition_masters', function (Blueprint $table) {
           $table->increments('id');
           $table->string('title')->nullable(true)->comment('概要');
           $table->date('start_date')->nullable(false)->comment('開始日');

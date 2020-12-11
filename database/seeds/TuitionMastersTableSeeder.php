@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\GeneralAttribute;
-use App\Models\FeeMaster;
+use App\Models\TuitionMaster;
 
-class FeeMastersTableSeeder extends Seeder
+class TuitionMastersTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -54,7 +54,7 @@ class FeeMastersTableSeeder extends Seeder
 EOT;
         $old_fees = DB::table('hachiojisakura_management.tbl_lesson_fee')->whereRaw($where_raw)->get();
         DB::transaction(function() use ($old_fees){
-          DB::table('common.fee_masters')->truncate();
+          DB::table('common.tuition_masters')->truncate();
           $this->create_fee_master($old_fees);
         });
     }
@@ -115,7 +115,7 @@ EOT;
             'updated_at' => date('Y/m/d H:i:s'),
           ];
         }
-        $fee_master = new FeeMaster;
+        $fee_master = new TuitionMaster;
         $res = $fee_master->insert($form);
       }
     }
