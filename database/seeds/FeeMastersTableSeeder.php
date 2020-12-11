@@ -37,13 +37,26 @@ class FeeMastersTableSeeder extends Seeder
           43 chinese
           49 dance
         */
-
-        $old_fees = DB::table('hachiojisakura_management.tbl_lesson_fee')->get();
+        //2020/4時点で有効なマスターのみ抽出して救う
+        $where_raw = <<<EOT
+              lesson_fee != 0
+              and (
+                  date (concat(start_month, "/01")) >= date ("2020/02/01")
+                  or (
+                      start_month = ""
+                      and (
+                          end_month = ""
+                          or date (concat(end_month, "/01")) > date ("2020/04/01")
+                      )
+                      or (lesson_id = 2 and start_month = "2019/08")
+                  )
+              );
+EOT;
+        $old_fees = DB::table('hachiojisakura_management.tbl_lesson_fee')->whereRaw($where_raw)->get();
         DB::transaction(function() use ($old_fees){
           DB::table('common.fee_masters')->truncate();
           $this->create_fee_master($old_fees);
         });
-
     }
 
     public function create_fee_master($old_fees){
@@ -86,6 +99,7 @@ class FeeMastersTableSeeder extends Seeder
         $form = [];
         foreach($grades as $grade){
           $form[] = [
+            'title' => config('attribute.lesson')[$old_fee->lesson_id].'/'.$course_types[$old_fee->course_id].'/'.$grade->attribute_value.'/'.$old_fee->lesson_length.'m/週'.$old_fee->lesson_count.'回',
             'grade' => $grade->attribute_value,
             'fee' => $old_fee->lesson_fee,
             'lesson' => $old_fee->lesson_id,
@@ -103,7 +117,6 @@ class FeeMastersTableSeeder extends Seeder
         }
         $fee_master = new FeeMaster;
         $res = $fee_master->insert($form);
-
       }
     }
 

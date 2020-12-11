@@ -26,6 +26,9 @@ class AgreementTableSeeder extends Seeder
       $target_users = User::has('enable_calendar_member_settings')->has('student')->get();
       $old_tbl_fee = DB::table('hachiojisakura_management.tbl_fee')->get();
       $old_tbl_member = DB::table('hachiojisakura_management.tbl_member')->get();
+      $old_entrance_fees = DB::table('hachiojisakura_management.tbl_entrance_fee')->get();
+
+      //体験生徒と職員を除く
       $target_users = $target_users->reject(function($item){
         return $item->id == 888 || $item->id == 890;
       });
@@ -37,15 +40,24 @@ class AgreementTableSeeder extends Seeder
         $new_agreement = $agreement->add_from_member_setting($member_setting->id);
 
         //旧情報で上書き
+        //月会費
         $student_no = str_pad($user->get_tag_value('student_no'),6,0,STR_PAD_LEFT);
         $old_member = $old_tbl_member->where('no',$student_no);
         if($old_member->count() > 0){
           $new_agreement->monthly_fee = $old_member->first()->membership_fee;
         }else{
+          //なかったら0円
           $new_agreement->monthly_fee = 0;
         }
-
-        $new_agreement->entry_fee = 0;//見つけらんなかったからとりあえず一律0
+        //入会金
+        $old_entrance_fee = $old_entrance_fees->where('member_no',$user->get_tag_value('student_no'));
+        if($old_entrance_fee->count() > 0){
+          $entry_fee = $old_entrance_fee->first()->price;
+        }else{
+          //なかったら0
+          $entry_fee = 0;
+        }
+        $new_agreement->entry_fee = $entry_fee;
         $new_agreement->status = "new";
         $new_agreement->save();
 
@@ -56,12 +68,12 @@ class AgreementTableSeeder extends Seeder
           //講師と部門で料金をひっかける
           $old_fee = $old_tbl_fee->where('member_no',$user->get_tag_value('student_no'))
                       ->where('lesson_id',$statement->lesson_id)
-                      ->where('teacher_id',$teacher_id)->first();
+                      ->where('teacher_id',$teacher_id);
           //なかったら0
-          if(empty($old_fee)){
-            $fee = 0;
+          if($old_fee->count() > 0){
+            $fee = $old_fee->first()->fee;            
           }else{
-            $fee = $old_fee->fee;
+            $fee = 0;
           }
           $statement->tuition = $fee;
           $statement->save();
