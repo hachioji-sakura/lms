@@ -1,3 +1,8 @@
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/asks/{{$ask->id}}" role="button" class="btn btn-default btn-sm">
+  <i class="fa fa-file mr-1"></i>
+  詳細
+</a>
+
 @if($user->role==="teacher" || $user->role==="manager" )
   @if($ask["status"]==="new" && ($ask["charge_user_id"]==$item->user_id || $domain=='managers'))
   {{-- 講師予定確認済み --}}
