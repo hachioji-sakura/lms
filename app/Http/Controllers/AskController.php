@@ -457,10 +457,10 @@ class AskController extends MilestoneController
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function edit_start_date(Request $request, $id)
+  public function edit_date(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    return view($this->domain.'.edit_start_date', [
+    return view($this->domain.'.edit_date', [
       '_edit' => true])
       ->with($param);
   }
@@ -474,7 +474,7 @@ class AskController extends MilestoneController
       $form = $request->all();
       $item = $this->model()->where('id', $id)->first();
       $is_file_delete = false;
-      $fields = ['start_date'];
+      $fields = ['start_date', 'end_date'];
       $d = [];
       foreach($fields as $field){
         if(!isset($form[$field])) continue;

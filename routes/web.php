@@ -335,7 +335,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
 
   Route::get('asks/{ask_id}/commit','AskController@commit_page');
-  Route::get('asks/{id}/edit_start_date','AskController@edit_start_date');
+  Route::get('asks/{id}/edit_date','AskController@edit_date');
 
   Route::resource('asks','AskController');
 
