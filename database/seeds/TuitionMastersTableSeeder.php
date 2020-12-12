@@ -101,7 +101,7 @@ EOT;
           $form[] = [
             'title' => config('attribute.lesson')[$old_fee->lesson_id].'/'.$course_types[$old_fee->course_id].'/'.$grade->attribute_value.'/'.$old_fee->lesson_length.'m/週'.$old_fee->lesson_count.'回',
             'grade' => $grade->attribute_value,
-            'fee' => $old_fee->lesson_fee,
+            'tuition' => $old_fee->lesson_fee,
             'lesson' => $old_fee->lesson_id,
             'course_type' => $course_types[$old_fee->course_id],
             'course_minutes' => $old_fee->lesson_length,

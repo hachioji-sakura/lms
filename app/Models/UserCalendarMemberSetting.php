@@ -12,6 +12,7 @@ use App\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Tuition;
+use App\Models\TuitionMaster;
 use App\Models\Agreement;
 use App\Models\AgreementStatement;
 
@@ -459,5 +460,31 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
   public function get_rest_result(){
     return "";
+  }
+
+  public function get_tuition_master(){
+    $setting = $this->setting->details();
+    //2020年4月1日以前のユーザーは0円で返す
+    if( strtotime($this->user->created_at) > strtotime("2020/04/01") ){
+      $user_created_date = date('Y/m/d',strtotime($this->user->created_at));
+      $tuition_master = TuitionMaster::where('lesson',$setting->lesson(true))
+                              ->where('grade',$this->user->details()->get_tag_value('grade'))
+                              ->where('course_type',$setting->get_tag_value('course_type'))
+                              ->where('course_minutes',$setting['course_minutes'])
+                              ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
+                              ->where('is_exam',$this->user->details()->is_juken())
+                              ->whereDate('start_date','<',$user_created_date)
+                              ->whereDate('end_date','>',$user_created_date)->get();
+      if($tuition_master->count() > 0){
+        $tuition = $tuition_master->first()->tuition;
+      }else{
+        //なかったら0円
+        $tuition = 0;
+      }
+      return $tuition;
+    }else{
+      //昔の人は0円
+      return 0;
+    }
   }
 }

@@ -108,7 +108,7 @@
 												 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
 											</label>
 											<input type="text" id="{{$statement->id}}_tuition" name="agreement_statements[{{$statement->id}}][tuition]" class="form-control w-50 float-left tuition" required="true" maxlength=5 inputtype="numeric"
-											 minvalue="1000" value="{{$statement->tuition}}" placeholder="(受講料定義)  {{$statement->tuition}}"
+											 minvalue="1000" value="{{$statement->tuition==0 ? '': $statement->tuition}}" placeholder="(受講料定義)  {{$statement->tuition==0 ?'見つかりませんでした。' : $statement->tition}}"
 											>
 											<span class="ml-2 float-left mt-2">円 / 時間</span>
 										</div>

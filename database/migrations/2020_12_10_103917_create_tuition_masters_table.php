@@ -19,7 +19,7 @@ class CreateTuitionMastersTable extends Migration
           $table->date('start_date')->nullable(false)->comment('開始日');
           $table->date('end_date')->nullable(true)->comment('失効日');
           $table->string('grade')->comment('学年');
-          $table->integer('fee')->comment('料金');
+          $table->integer('tuition')->comment('料金');
           $table->integer('lesson')->comment('部門ID');
           $table->string('course_type')->comment('コースタイプ');
           $table->integer('course_minutes')->comment('コマ時間');
@@ -39,6 +39,6 @@ class CreateTuitionMastersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fee_masters');
+        Schema::dropIfExists('tuition_masters');
     }
 }
