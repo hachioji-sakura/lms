@@ -451,4 +451,39 @@ class AskController extends MilestoneController
      }, 'daily_proc', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit_start_date(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    return view($this->domain.'.edit_start_date', [
+      '_edit' => true])
+      ->with($param);
+  }
+  public function _update(Request $request, $id)
+  {
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $res =  $this->transaction($request, function() use ($request, $id){
+      $form = $request->all();
+      $item = $this->model()->where('id', $id)->first();
+      $is_file_delete = false;
+      $fields = ['start_date'];
+      $d = [];
+      foreach($fields as $field){
+        if(!isset($form[$field])) continue;
+        $d[$field] = $form[$field];
+      }
+      $item->update($d);
+      return $this->api_response(200, '', '', $item);
+    }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+  }
+
 }

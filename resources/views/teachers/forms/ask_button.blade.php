@@ -34,3 +34,9 @@
   削除
 </a>
 @endif
+@if($ask->type=='unsubscribe' && $ask->status=='new')
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="退会予定日変更" page_form="dialog" page_url="/asks/{{$ask->id}}/edit_start_date" role="button" class="btn btn-success btn-sm">
+  <i class="fa fa-edit mr-1"></i>
+  退会予定日変更
+</a>
+@endif
