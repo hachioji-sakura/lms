@@ -71,7 +71,7 @@ class AgreementTableSeeder extends Seeder
                       ->where('teacher_id',$teacher_id);
           //なかったら0
           if($old_fee->count() > 0){
-            $fee = $old_fee->first()->fee;            
+            $fee = $old_fee->first()->fee;
           }else{
             $fee = 0;
           }
