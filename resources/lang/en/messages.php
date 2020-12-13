@@ -108,7 +108,7 @@ return [
  'mail_title_calendar_setting_confirm' => 'Please confirm repeat class schedule',
  'mail_title_calendar_setting_fix' => 'The schedule has been confirmed repeat class schedule',
  'mail_title_calendar_setting_cancel' => 'The schedule has been canceled repeat class schedule',
- 'warning_unsubscribe' => "Please specify the cancellation date after today. \nPlease confirm here, and you will be withdrawn after approval of withdrawal. \n\nYou will not be able to log in to this system after withdrawing. \nAll classes scheduled after the day of withdrawal will be canceled automatically.",
+ 'warning_unsubscribe' => "Based on the membership agreement, please specify the withdrawal date after one month from today.\n(ex. If today is October 15th, after November 16th)\nAfter we confirm and approve the withdrawal, we will withdraw.\nDepending on the reason for withdrawal, we will change the withdrawal date and contact you when you approve the withdrawal.\nFirst of all, we would appreciate it if you could enter the withdrawal date according to the rules.\nIn addition, tuition fees will be charged during the period from the acceptance of withdrawal to the day of withdrawal.\nAfter withdrawing from the membership, you will not be able to log in to this system.\nAll class schedules after the withdrawal date will be automatically cancelled.",
  'confirm_unsubscribe' => "Do you want to send a unsubscribed request?",
  'confirm_unsubscribe_cancel' => "Do you want to cancel the unsubscribed request?",
  'confirm_recess' => "Do you want to send a recess request?",

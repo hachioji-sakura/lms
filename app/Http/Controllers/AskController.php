@@ -46,9 +46,6 @@ class AskController extends MilestoneController
   }
   public function show_fields($type=''){
     $ret = [
-      'title' => [
-        'label' => __('labels.title'),
-      ],
       'type_name' => [
         'label' => __('labels.asks'),
         'size' => 6,
