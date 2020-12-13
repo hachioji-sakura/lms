@@ -753,8 +753,8 @@ EOT;
     if($this->status!='regular') return null;
     $user_calendar_members = [];
 
-    //退会以降の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->unsubscribe_date)
+    //退会以降(退会日含まず）の授業予定をキャンセルにする
+    $calendars = UserCalendar::where('start_time', '>', $this->unsubscribe_date)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
                   ->get();
