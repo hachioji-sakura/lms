@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarTag;
+use App\Models\Student;
+use App\Models\Teacher;
 use App\Http\Controllers\Controller;
 class CalendarRecoverySeeder extends Seeder
 {
@@ -39,7 +41,6 @@ class CalendarRecoverySeeder extends Seeder
         where o.delflag=0 and m.schedule_id is null
         and o.work_id not in(10, 11)
 EOT;
-        //出席ステータスの同期
         $_sql = $sql."";
         $d = DB::select($_sql);
         $delete_ids = [];
@@ -64,6 +65,7 @@ EOT;
         , u.work
         , u.exchanged_calendar_id
         , u.trial_id as u_trial_id
+        , u.user_id as u_user_id
         , (select schedule_id from user_calendar_members a where a.calendar_id = u.exchanged_calendar_id limit 1) as exchanged_schedule_id
         , m.id as member_id
         , m.user_id
@@ -76,6 +78,9 @@ EOT;
         , o.cancel
         , o.trial_id as o_trial_id
         , o.cancel_reason
+        , o.user_id as o_user_id
+        , o.teacher_id as o_teacher_id
+        , o.student_no as o_student_no
         from user_calendars u
         inner join user_calendar_members m  on u.id = m.calendar_id
         left outer join hachiojisakura_calendar.tbl_schedule_onetime o  on m.schedule_id = o.id
@@ -132,6 +137,11 @@ EOT;
         $d = DB::select($_sql);
         $this->subject_expr_sync($d);
 
+        //aステータスの同期(事務の休み)
+        $_sql = $sql." where u.work not in (9) and (o.user_id=0 or o.teacher_id = 0 or o.student_no=0)";
+        $d = DB::select($_sql);
+        $this->update_schedule_ontime_for_user_id($d);
+
     }
     public function update_schedule_ontime($confirm, $cancel, $d){
       $id = [];
@@ -139,12 +149,43 @@ EOT;
         $id[] = $row->schedule_onetime_id;
       }
       if(count($id)==0) return;
+
       DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id', $id)->update([
         'confirm' => $confirm,
         'cancel' => $cancel,
       ]);
 
     }
+    public function update_schedule_ontime_for_user_id($d){
+      $id = [];
+      foreach($d as $row){
+        if(!isset($row->schedule_onetime_id)) continue;
+        \Log::warning("update_schedule_ontime_for_user_id:".$row->schedule_onetime_id);
+        $student_no = 0;
+        $user_id = 0;
+        $teacher_id = 0;
+        if(isset($row->u_user_id)){
+          $t = Teacher::where('user_id', $row->u_user_id)->first();
+          if(isset($t)){
+            $teacher_id = $t->get_tag_value('teacher_no');
+            $user_id = $teacher_id;
+          }
+        }
+        if(isset($row->user_id)){
+          $s = Student::where('user_id', $row->user_id)->first();
+          if(isset($s)){
+            $student_no = $s->get_tag_value('student_no');
+            $user_id = $student_no;
+          }
+        }
+        DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->where('id', $row->schedule_onetime_id)->update([
+          'user_id' => $user_id,
+          'teacher_id' => $teacher_id,
+          'student_no' => $student_no
+        ]);
+      }
+    }
+
     public function update_exchange_limit_date_20201231(){
       DB::table('lms.user_calendar_members')->where('exchange_limit_date','>','2020-03-26')
                                             ->whereRaw("calendar_id in (select id from user_calendars where start_time between '2020-04-01 00:00:00' and '2020-06-01 00:00:00')", [])
