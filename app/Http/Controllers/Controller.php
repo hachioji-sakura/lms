@@ -219,27 +219,6 @@ class Controller extends BaseController
        $this->send_slack("アップロードファイル削除:\n".$file, "info", "s3_delete");
        return $ret;
      }
-     //Googleカレンダーから祝日を取得
-     public function getHolidays() {
-       $url = "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv";
-
-       //JSON形式で取得した情報を配列に変換
-       $results = file_get_contents($url);
-       $results = mb_convert_encoding($results, 'UTF-8', 'sjis-win');
-       $temp = tmpfile();
-       $csv  = array();
-
-       fwrite($temp, $results);
-       rewind($temp);
-
-       while (($results = fgetcsv($temp, 0, ",")) !== FALSE) {
-           $csv[] = $results;
-       }
-       fclose($temp);
-
-       //配列として祝日を返す
-       return $csv;
-     }
      public function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
          try {
            DB::beginTransaction();
