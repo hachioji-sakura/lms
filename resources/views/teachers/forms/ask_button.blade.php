@@ -39,3 +39,17 @@
   削除
 </a>
 @endif
+
+@if($user->role==="manager" )
+@if($ask->type=='unsubscribe' && $ask->status=='new')
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="退会予定日変更" page_form="dialog" page_url="/asks/{{$ask->id}}/edit_date" role="button" class="btn btn-success btn-sm">
+  <i class="fa fa-edit mr-1"></i>
+  退会予定日変更
+</a>
+@elseif($ask->type=='recess' && $ask->status=='new')
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="退会予定日変更" page_form="dialog" page_url="/asks/{{$ask->id}}/edit_date" role="button" class="btn btn-success btn-sm">
+  <i class="fa fa-edit mr-1"></i>
+  休会予定期間変更
+</a>
+@endif
+@endif

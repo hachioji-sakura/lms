@@ -10,6 +10,11 @@
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="student_parent_id" value="{{$student_parent_id}}">
     @yield('item_form')
+    @if($user->role=="manager")
+    <div class="row mb-4">
+      @yield('account_date_form')
+    </div>
+    @endif
     <div class="row">
       <div class="col-12 mb-1">
         <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_edit">
