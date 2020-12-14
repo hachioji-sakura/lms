@@ -752,9 +752,9 @@ EOT;
   public function unsubscribe(){
     if($this->status!='regular') return null;
     $user_calendar_members = [];
-
+    $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
     //退会以降(退会日含まず）の授業予定をキャンセルにする
-    $calendars = UserCalendar::where('start_time', '>', $this->unsubscribe_date)
+    $calendars = UserCalendar::where('start_time', '>=', $unsubscribe_date_tomorrow)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
                   ->get();
@@ -766,7 +766,7 @@ EOT;
         $user_calendar_members[$member->id] = $member;
       }
     }
-    if(strtotime($this->unsubscribe_date) <= strtotime(date('Y-m-d'))){
+    if(strtotime($unsubscribe_date_tomorrow) <= strtotime(date('Y-m-d'))){
       //退会開始日経過＝ステータスを退会
       $this->update(['status' => 'unsubscribe']);
       $this->user->update(['status' => 9]);
