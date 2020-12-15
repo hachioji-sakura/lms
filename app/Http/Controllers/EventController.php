@@ -18,6 +18,7 @@ class EventController extends MilestoneController
 
   public function get_param(Request $request, $id=null){
     $ret = parent::get_param($request, $id);
+    if($ret['user']->role!='manager') abort(403);
     $templates = EventTemplate::all();
     $ret['templates'] = $templates;
     if(!$request->has('search_status')) $ret['search_status'] = 'new,progress';
