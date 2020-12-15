@@ -45,14 +45,14 @@
                     </small>
                     @endif
                     <small class="badge badge-primary mt-1 mr-1">
-	                {{$item->gender()}}
+	                {{$item->gender}}
                     </small>
                     <small class="badge badge-primary mt-1 mr-1">
-                      {{$item->grade()}}
+                      {{$item->grade}}
                     </small>
-                    @if(!empty($item->school_name()))
+                    @if(!empty($item->school_name))
                     <small class="badge badge-primary mt-1 mr-1">
-                      {{$item->school_name()}}
+                      {{$item->school_name}}
                     </small>
                     @endif
                     @foreach($item->user->tags as $tag)

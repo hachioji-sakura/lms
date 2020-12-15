@@ -1579,5 +1579,4 @@ class UserCalendarController extends MilestoneController
       }, $message, __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $message);
     }
-
 }

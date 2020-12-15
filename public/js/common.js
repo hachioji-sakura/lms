@@ -514,3 +514,28 @@ function is_checked_exist(group_id, target_name){
   }
   return _is_checked;
 }
+function howto_checkbox_change(obj){
+  //Google検索・Yahoo検索と答えた場合、検索ワードフォームを表示
+  var is_google = $('input[type="checkbox"][name="howto[]"][value="google"]').prop("checked");
+  var is_yahoo = $('input[type="checkbox"][name="howto[]"][value="yahoo"]').prop("checked");
+  if(is_google || is_yahoo){
+    $(".howto_word_form").collapse("show");
+    $(".howto_word_confirm").collapse("show");
+  }
+  else {
+    $(".howto_word_form").collapse("hide");
+    $(".howto_word_confirm").collapse("hide");
+  }
+}
+function season_school_lesson_milestone_checkbox_change(){
+  //その他を選択した場合詳細フォームを表示
+  var is_other = $('input[type="checkbox"][name="season_school_lesson_milestone[]"][value="other"]').prop("checked");
+  if(is_other){
+    $(".season_school_lesson_milestone_word_form").collapse("show");
+    $(".season_school_lesson_milestone_word_confirm").collapse("show");
+  }
+  else {
+    $(".season_school_lesson_milestone_word_form").collapse("hide");
+    $(".season_school_lesson_milestone_word_confirm").collapse("hide");
+  }
+}

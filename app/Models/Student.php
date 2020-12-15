@@ -433,6 +433,12 @@ EOT;
     }
     return $subjects;
   }
+  public function getNameAttribute(){
+    return $this->name();
+  }
+  public function getGradeAttribute(){
+    return $this->grade();
+  }
   public function get_subject($lesson=0){
     $ret = [];
     $lesson = intval($lesson);

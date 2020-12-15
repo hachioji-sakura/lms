@@ -8,6 +8,7 @@ use App\Models\GeneralAttribute;
 class UserTag extends Model
 {
   protected $table = 'common.user_tags';
+  public static $id_name = 'user_id';
   protected $guarded = array('id');
   public static $rules = array(
       'user_id' => 'required',
@@ -18,6 +19,7 @@ class UserTag extends Model
   public function user(){
     return $this->belongsTo('App\User');
   }
+
   public function keyname(){
     $key = $this->tag_key;
     if($key==="teacher_no") return "No";
@@ -87,33 +89,34 @@ class UserTag extends Model
       return $query->where('tag_key', $val);
   }
   //1 key = 1tagの場合利用する(上書き差し替え）
-  public static function setTag($user_id, $tag_key, $tag_value , $create_user_id){
-    UserTag::where('user_id', $user_id)
+  public static function setTag($id, $tag_key, $tag_value , $create_user_id){
+    static::where(static::$id_name, $id)
       ->where('tag_key' , $tag_key)->delete();
-    $item = UserTag::create([
-        'user_id' => $user_id,
+    $item = static::create([
+        static::$id_name => $id,
         'tag_key' => $tag_key,
         'tag_value' => $tag_value,
         'create_user_id' => $create_user_id,
       ]);
       return $item;
   }
+
   //1 key = n tagの場合利用する(上書き差し替え）
-  public static function setTags($user_id, $tag_key, $tag_values, $create_user_id){
-    UserTag::where('user_id', $user_id)
+  public static function setTags($id, $tag_key, $tag_values, $create_user_id){
+    static::where(static::$id_name, $id)
       ->where('tag_key' , $tag_key)->delete();
     foreach($tag_values as $tag_value){
-      $item = UserTag::create([
-        'user_id' => $user_id,
+      $item = static::create([
+        static::$id_name => $id,
         'tag_key' => $tag_key,
         'tag_value' => $tag_value,
         'create_user_id' => $create_user_id,
       ]);
     }
-    return UserTag::where('user_id', $user_id)->where('tag_key', $tag_key)->get();
+    return static::where(static::$id_name, $id)->where('tag_key', $tag_key)->get();
   }
-  public static function clearTags($user_id, $tag_key){
-    UserTag::where('user_id', $user_id)
+  public static function clearTags($id, $tag_key){
+    static::where(static::$id_name, $id)
       ->where('tag_key' , $tag_key)->delete();
   }
 

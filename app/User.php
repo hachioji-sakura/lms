@@ -60,6 +60,9 @@ class User extends Authenticatable
     public function manager(){
       return $this->hasOne('App\Models\Manager');
     }
+    public function student_parent(){
+      return $this->hasOne('App\Models\StudentParent');
+    }
     public function image(){
       return $this->belongsTo('App\Models\Image');
     }

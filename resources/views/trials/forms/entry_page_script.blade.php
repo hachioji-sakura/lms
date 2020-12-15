@@ -1,25 +1,23 @@
 <script>
 $(function(){
+  var page_id = $('div.carousel').attr('id');
+  console.log('entry_page_script:'+page_id);
   @if($_edit==true)
   var form_data = null;
   @else
-  var form_data = util.getLocalData('trials_entry');
+  var form_data = util.getLocalData(page_id);
   @endif
-  base.pageSettinged("trials_entry", form_data);
+  base.pageSettinged(page_id, form_data);
   subject_onload();
 
-  $('#trials_entry').carousel({ interval : false});
-  if(form_data && !util.isEmpty(form_data['student2_name_last'])){
-    $('.student2').collapse('show');
-  }
-  if(form_data && !util.isEmpty(form_data['student3_name_last'])){
-    $('.student3').collapse('show');
-  }
+
+  $('#'+page_id).carousel({ interval : false});
   $("input[name='lesson[]']").change();
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
-    if(front.validateFormValue('trials_entry .carousel-item.active')){
+
+    if(front.validateFormValue(page_id+' .carousel-item.active')){
       $(this).prop("disabled",true);
       $("form").submit();
     }
@@ -27,15 +25,14 @@ $(function(){
 
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
-    $('body, html, .modal-body').scrollTop(0);
-    var form_data = front.getFormValue('trials_entry');
-    if(front.validateFormValue('trials_entry .carousel-item.active')){
+    var form_data = front.getFormValue(page_id);
+    if(front.validateFormValue(page_id+' .carousel-item.active')){
       @if($_edit==false)
-      util.setLocalData('trials_entry', form_data);
+      util.setLocalData(page_id, form_data);
       @endif
       $('body, html, .modal-body').scrollTop(0);
-      $('#trials_entry').carousel('next');
-      $('#trials_entry').carousel({ interval : false});
+      $('#'+page_id).carousel('next');
+      $('#'+page_id).carousel({ interval : false});
     }
 
     $("ol.step li").removeClass("is-current");
@@ -50,8 +47,8 @@ $(function(){
   //戻る
   $('.carousel-item .btn-prev').on('click', function(e){
     $('body, html, .modal-body').scrollTop(0);
-    $('#trials_entry').carousel('prev');
-    $('#trials_entry').carousel({ interval : false});
+    $('#'+page_id).carousel('prev');
+    $('#'+page_id).carousel({ interval : false});
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
@@ -80,7 +77,7 @@ $(function(){
       }
     });
 
-    var _names = ["grade", "student2_grade", "student3_grade"];
+    var _names = ["grade"];
     $.each(_names, function(index, value) {
       if(form_data[value]){
         var _name = $('select[name='+value+'] option:selected').text().trim();
@@ -91,9 +88,7 @@ $(function(){
     _names = ["english_teacher", "piano_level",
               "english_talk_course_type", "kids_lesson_course_type",
               "course_minutes", "lesson_week_count",
-              "gender",
-              "student2_gender",
-              "student3_gender"
+              "gender","regular_schedule_exchange","installment_payment", "season_lesson_course"
             ];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
@@ -116,6 +111,14 @@ $(function(){
       name = name.replace('[]', '');
       form_data[name+"_"+val+"_name"] = "〇";
     });
+    $("input.subject_day_count[type='text']").each(function(index, value){
+      var val = $(this).val();
+      var name = $(this).attr("name");
+      form_data[name] = val;
+    });
+    if(form_data["school_vacation_start_date"] && form_data["school_vacation_end_date"]){
+      form_data["school_vacation_date"] = util.dateformat(form_data["school_vacation_start_date"], '%m月%d日(%w)')+'～'+util.dateformat(form_data["school_vacation_end_date"], '%m月%d日(%w)');
+    }
 
     return form_data;
   }

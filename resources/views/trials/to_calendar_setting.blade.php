@@ -50,7 +50,7 @@
                       >
                     </div>
                   </div>
-                  @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
+                  @component('trials.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes, 'calendar'=>$calendar]) @endcomponent
                   @component('calendar_settings.forms.course_type', ['item'=>$item,'select_lesson' => $select_lesson,  'attributes' => $attributes]) @endcomponent
                   @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
                 </div>

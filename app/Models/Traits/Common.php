@@ -257,8 +257,13 @@ trait Common
     });
   }
   public function term_format($from, $to, $format='Y-m-d'){
-    $start_hour_minute = date($format,  strtotime($from));
-    $end_hour_minute = date($format,  strtotime($to));
-    return $start_hour_minute.'～'.$end_hour_minute;
+    $res = '～';
+    if(!empty($from)){
+      $res = date($format,  strtotime($from)).'～';
+    }
+    if(!empty($to)){
+      $res .= date($format,  strtotime($to));
+    }
+    return $res;
   }
 }

@@ -1,5 +1,5 @@
 @extends('layouts.simplepage')
-@section('title', '体験授業お申し込フォーム')
+@section('title', '期間講習申込ページ')
 
 @if(empty($result))
   @section('title_header')
@@ -9,7 +9,7 @@
     <li id="step_complete">完了</li>
   </ol>
   @endsection
-  @include('trials.create_form')
+  @include('event_types.season_lesson.create_form')
 @else
   @section('title_header')
   <ol class="step">
@@ -21,7 +21,7 @@
 @endif
 
 @section('content')
-<div id="students_register" class="direct-chat-msg">
+<div class="direct-chat-msg">
   @if(!empty($result))
     <h4 class="bg-success p-3 text-sm">
       @if($result==="success")
@@ -31,14 +31,20 @@
       @endif
     </h4>
   @else
-  <form method="POST"  action="/entry">
+  <form method="POST"  action="/lesson_requests">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    <input type="hidden" name="type" value="trial" / >
-    <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
+    <input type="hidden" name="lesson[]" value="1" />
+    <input type="hidden" class="grade" name="grade" value="{{$item->grade(true)}}" />
+    <input type="hidden" name="grade_name" value="{{$item->grade}}" />
+    <input type="hidden" name="student_id" value="{{$item->id}}" />
+    <input type="hidden" name="event_user_id" value="{{$event_user_id}}" />
+    <input type="hidden" name="access_key" value="{{$access_key}}" />
+
+    <div id="season_lesson_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('trial_form')
+          @yield('first_form')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -49,24 +55,7 @@
           </div>
         </div>
         <div class="carousel-item">
-          @yield('student_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                戻る
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
-                次へ
-                <i class="fa fa-arrow-circle-right ml-1"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          @yield('lesson_week_form')
+          @yield('hope_datetime')
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -117,7 +106,7 @@
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
-          @component('trials.forms.confirm_form', ['attributes' => $attributes, 'is_trial' => true]) @endcomponent
+          @component('event_types.season_lesson.confirm_form', ['attributes' => $attributes, 'is_trial' => true]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

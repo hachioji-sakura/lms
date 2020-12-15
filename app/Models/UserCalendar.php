@@ -75,6 +75,9 @@ class UserCalendar extends Model
   public function trial(){
     return $this->belongsTo('App\Models\Trial');
   }
+  public function lesson_request(){
+    return $this->belongsTo('App\Models\LessonRequest');
+  }
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);
@@ -703,6 +706,7 @@ EOT;
   static protected function add($form){
 
     $ret = [];
+    $lesson_request_id = 0;
     $trial_id = 0;
     $user_calendar_setting_id = 0;
     if(isset($form['user_calendar_setting_id'])){
@@ -710,6 +714,7 @@ EOT;
     }
 
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+    if(isset($form['lesson_request_id'])) $lesson_request_id = $form['lesson_request_id'];
     if(!isset($form['work'])) $form['work'] = '';
 
     //TODO 重複登録、競合登録の防止が必要
@@ -762,6 +767,7 @@ EOT;
       'lecture_id' => 0,
       'course_minutes' => $course_minutes,
       'trial_id' => $trial_id,
+      'lesson_request_id' => $lesson_request_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
       'place_floor_id' => $form['place_floor_id'],
