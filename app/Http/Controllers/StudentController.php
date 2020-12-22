@@ -15,7 +15,7 @@ use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
 use App\Models\EventUser;
-
+use App\Models\LessonRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -1479,7 +1479,18 @@ class StudentController extends UserController
     $param['item'] = $this->model()->find($id);
     $param['access_key'] = $request->get('access_key');
     $param['event_user_id'] = $request->get('event_user_id');
-    return view('event_types.season_lesson.'.$view, ['_edit' => false, 'event'=>$event_user->event])
+    $param['is_already_data'] = false;
+    $param['event_dates'] = $event_user->event->get_event_dates();
+
+    $lesson_request = LessonRequest::where('event_id', $event_user->event->id)
+                  ->where('user_id', $event_user->user_id)
+                  ->where('status', '!=', 'cancel')
+                  ->first();
+    $param['lesson_request'] = $lesson_request;
+    if(isset($lesson_request)){
+      $param['is_already_data'] = true;
+    }
+    return view('season_lesson.'.$view, ['_edit' => false, 'event'=>$event_user->event])
       ->with($param);
   }
 }

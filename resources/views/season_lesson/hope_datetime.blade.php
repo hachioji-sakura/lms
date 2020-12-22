@@ -1,9 +1,5 @@
-<?php
-$d = $start_date;
-$m = 0;
-?>
-@while(1)
-  @if(strtotime($end_date) < strtotime($d)) @break @endif
+<?php $m = 0; ?>
+@foreach($event_dates as $d)
   @if($m != date('m', strtotime($d)))
   <div class="col-12 mt-2 bd-b bd-gray">
     <div class="form-group">
@@ -12,26 +8,29 @@ $m = 0;
       </label>
     </div>
   </div>
-  <?php $m = date('n', strtotime($d)); ?>
   @endif
+  <?php
+    $m = date('n', strtotime($d));
+    $hope_date = $item->get_hope_date($d);
+  ?>
+
 <div class="col-12 bd-b bd-gray ">
   <div class="row mb-2" id="hope_{{strtotime($d)}}">
     <div class="col-12">
       <div class="form-check p-0">
         <input type="hidden" name="hope_datetime[]" value="" accessKey="hope_{{strtotime($d)}}" >
         <input class="form-check-input icheck flat-green day_check" type="checkbox" name="hope_{{strtotime($d)}}_date" id="hope_{{strtotime($d)}}_date" date="{{date('Y-m-d', strtotime($d))}}" value="true"
+        @if(isset($hope_date)) checked @endif
         onChange="hope_date_change('hope_{{strtotime($d)}}')"
         />
         <label class="form-check-label" for="hope_{{strtotime($d)}}_date">
           {{date('n月d日',strtotime($d)).'('.config('week')[date('w', strtotime($d))].')'}}
         </label>
       </div>
+      @if(isset($is_student) && $is_student==true)
       <div class="input-group  date-selected-open text-sm mt-1 collapse">
         <div class="form-check">
           <input class="form-check-input icheck flat-blue ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_am" value="am"
-          @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='am')
-            checked
-          @endif
           required="true"
           onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
@@ -41,9 +40,6 @@ $m = 0;
         </div>
         <div class="form-check">
           <input class="form-check-input icheck flat-blue ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_pm" value="pm"
-          @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='pm')
-           checked
-          @endif
           required="true"
           onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
@@ -52,14 +48,13 @@ $m = 0;
           </label>
         </div>
       </div>
+      @endif
     </div>
     <div class="col-12 mt-1 date-selected-open text-sm collapse">
       <div class="input-group">
+        @if(isset($is_student) && $is_student==true)
         <div class="form-check mt-2 mr-2">
           <input class="form-check-input icheck flat-red ml-1 hope_date_timezone" type="radio" name="hope_{{strtotime($d)}}_timezone" id="hope_{{strtotime($d)}}_order" value="order"
-          @if(isset($item) && isset($item['hope_{{strtotime($d)}}_timezone']) && $item['hope_{{strtotime($d)}}_timezone']==='order')
-           checked
-          @endif
           required="true"
           onChange="hope_timezone_change('hope_{{strtotime($d)}}')"
           >
@@ -67,11 +62,16 @@ $m = 0;
           指定
           </label>
         </div>
-        <select name="hope_{{strtotime($d)}}_start_time" class="form-control mw-80px hope_date_start_time" required="true" disabled>
+        @endif
+        <select name="hope_{{strtotime($d)}}_start_time" class="form-control mw-80px hope_date_start_time" required="true"
+        @if(isset($is_student) && $is_student==true)
+        disabled
+        @endif
+        >
           <option value="">{{__('labels.selectable')}}</option>
-          @for ($h = 8; $h < 23; $h++)
+          @for ($h = 11; $h < 19; $h++)
             <option value="{{$h}}"
-            @if($_edit===true && 1==2)
+            @if($_edit===true && isset($hope_date) && $hope_date->from_hour==$h)
             selected
             @endif
 
@@ -79,11 +79,15 @@ $m = 0;
           @endfor
         </select>
         <span class="mt-2 ml-2">時 ～</span>
-        <select name="hope_{{strtotime($d)}}_end_time" class="form-control mw-80px hope_date_end_time" required="true" greater="hope_{{strtotime($d)}}_start_time" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="hope_{{strtotime($d)}}_start_time" not_equal_error="{{__('messages.validate_timezone_error')}}" disabled>
+        <select name="hope_{{strtotime($d)}}_end_time" class="form-control mw-80px hope_date_end_time" required="true" greater="hope_{{strtotime($d)}}_start_time" greater_error="{{__('messages.validate_timezone_error')}}" not_equal="hope_{{strtotime($d)}}_start_time" not_equal_error="{{__('messages.validate_timezone_error')}}"
+        @if(isset($is_student) && $is_student==true)
+        disabled
+        @endif
+        >
           <option value="">{{__('labels.selectable')}}</option>
-          @for ($h = 8; $h < 23; $h++)
+          @for ($h = 11; $h < 19; $h++)
             <option value="{{$h}}"
-            @if($_edit===true && 1==2)
+            @if($_edit===true && isset($hope_date) && $hope_date->to_hour==$h)
             selected
             @endif
             >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>
@@ -95,20 +99,25 @@ $m = 0;
   </div>
 </div>
 <input type="hidden" name="day_count" value=0" />
-  <?php
-  $d = date('Y/m/d', strtotime('+1 day '.$d));
-  ?>
-@endwhile
+@endforeach
 <script>
 $(function(){
   $('.carousel-item .btn-next').on('click', function(e){
     //carouselの次へで、集計処理する必要がある
     day_count_check_onload();
   });
+  day_count_check_onload();
 });
 function hope_date_change(id){
   var date_checked = $("#"+id+"_date").prop('checked');
   if(date_checked==true){
+    var timezone = $("input[name='hope_timezone']:checked").val();
+    console.log('hope_date_change:'+timezone);
+    if(timezone){
+      $('input[name="'+id+'_timezone"][value="'+timezone+'"]').iCheck('check');
+      $('select[name="'+id+'_start_time"]').val($("select[name='hope_start_time']").val());
+      $('select[name="'+id+'_end_time"]').val($("select[name='hope_end_time']").val());
+    }
     $("#"+id+" .date-selected-open").collapse('show');
   }
   else {
@@ -126,14 +135,14 @@ function day_count_check_onload(){
       c++;
       var id = $(this).attr('id');
       id = id.replace_all('_date', '');
+      hope_date_change(id);
       var d = $(this).attr('date');
       var s = $('select[name="'+id+'_start_time"]').val();
       var e = $('select[name="'+id+'_end_time"]').val();
       var t = $('input[name="'+id+'_timezone"]:checked').val();
       var t_name = $('label[for="'+id+'_'+t+'"]').text();
-      if(t=='order') {
-        t_name = ' 指定('+s+'時～'+e+'時)';
-      }
+      if(!(t=="pm" || t=="am")) t_name = ' '+s+'時～'+e+'時';
+      console.log(t_name);
       date = d.replace_all('-', '');
       date = util.dateformat(date, '%m月%d(%w)');
       var v = d+" "+s+"-"+e;

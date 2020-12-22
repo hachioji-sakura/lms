@@ -7,7 +7,7 @@
   <li id="step_input" class="bg-info">@yield('title')</li>
 </ol>
 @endsection
-@include('event_types.season_lesson.create_form')
+@include('season_lesson.create_form')
 
 
 @section('content')
@@ -21,10 +21,14 @@
       @endif
     </h4>
   @else
-  <form method="POST"  action="/events/100/answer">
+  <form method="POST"  action="/lesson_requests">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="lesson[]" value="1" />
+    <input type="hidden" name="event_user_id" value="{{$event_user_id}}" />
+    <input type="hidden" name="access_key" value="{{$access_key}}" />
+    <input type="hidden" name="type" value="season_lesson_teacher" />
+    <input type="hidden" name="domain" value="{{$domain}}" />
 
     <div id="season_lesson_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
@@ -33,9 +37,13 @@
           <div class="row">
             <div class="col-12 bg-info p-2 pl-4 mb-4">
               <i class="fa fa-file-invoice mr-1"></i>
-              勤務希望教室
+              勤務設定
             </div>
-            @component('students.forms.lesson_place', ['_edit'=>$_edit, 'event'=>$event, 'attributes' => $attributes]) @endcomponent
+            @component('students.forms.lesson_place', ['_edit'=>true, 'event'=>$event, 'attributes' => $attributes, 'title' => '勤務可能校舎', 'item'=>$item]) @endcomponent
+          </div>
+          <div class="row">
+            @component('season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯']) @endcomponent
+
           </div>
           <div class="row">
             <div class="col-12 mb-1">
@@ -53,7 +61,7 @@
             <i class="fa fa-file-invoice mr-1"></i>
             勤務可能日時
           </div>
-          @component('event_types.season_lesson.hope_datetime', ['_edit'=>$_edit, 'start_date'=>'2020-07-23', 'end_date' => '2020-08-31', 'event'=>$event,'attributes' => $attributes]) @endcomponent
+          @component('season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

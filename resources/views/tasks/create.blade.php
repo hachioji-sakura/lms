@@ -1,4 +1,3 @@
-
   <div id="create_tasks" class="form-group">
     @if($_edit)
     <form method="POST" id="create_task_form" action="/tasks/{{$item->id}}" enctype="multipart/form-data">

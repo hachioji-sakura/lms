@@ -24,7 +24,9 @@ $(function(){
   });
 
   //次へ
+  console.log('carousel-item .btn-next');
   $('.carousel-item .btn-next').on('click', function(e){
+    console.log('next');
     var form_data = front.getFormValue(page_id);
     if(front.validateFormValue(page_id+' .carousel-item.active')){
       @if($_edit==false)

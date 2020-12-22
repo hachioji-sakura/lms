@@ -8,6 +8,7 @@ use App\Models\StudentParent;
 use App\Models\Comment;
 use App\Models\ChargeStudent;
 use App\Models\UserCalendar;
+use App\Models\StudentRelation;
 use App\Models\LessonRequestDate;
 use App\Models\Ask;
 use App\Models\Traits\Common;
@@ -18,8 +19,6 @@ class LessonRequest extends Model
   protected $table = 'lms.lesson_requests';
   protected $guarded = array('id');
   public static $rules = array(
-      'student_parent_id' => 'required',
-      'student_id' => 'required',
   );
   protected $appends = ['status_name', 'created_date', 'updated_date'];
 
@@ -34,15 +33,20 @@ class LessonRequest extends Model
   public function user_calendar_settings(){
     return $this->hasMany('App\Models\UserCalendarSetting', 'lesson_request_id');
   }
+  public function event(){
+    return $this->belongsTo('App\Models\Event', 'event_id');
+  }
   public function calendars(){
-    //一つのトライアルをもとに複数のスケジュールに派生する（キャンセルなどもあるため）
     return $this->hasMany('App\Models\UserCalendar', 'lesson_request_id');
   }
+  public function user(){
+    return $this->belongsTo('App\User');
+  }
   public function parent(){
-    return $this->belongsTo('App\Models\StudentParent', 'student_parent_id');
+    return $this->belongsTo('App\Models\StudentParent', 'create_user_id', 'user_id');
   }
   public function student(){
-    return $this->belongsTo('App\Models\Student', 'student_id');
+    return $this->belongsTo('App\Models\Student', 'user_id', 'user_id');
   }
   /**
    *　スコープ：ステータス
@@ -161,6 +165,13 @@ class LessonRequest extends Model
     }
     return "(定義なし)";
   }
+  public function getTypeNameAttribute(){
+    if(app()->getLocale()=='en') return $this->type;
+    if(isset(config('attribute.lesson_request_type')[$this->type])){
+      return config('attribute.lesson_request_type')[$this->type];
+    }
+    return "(定義なし)";
+  }
   /*
   public function trial_start_end_time($i){
     $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
@@ -236,8 +247,8 @@ class LessonRequest extends Model
     $ret = [];
 
     //登録申し込み情報
-    $lesson_request = LessonRequest::where('student_parent_id', $parent->id)
-    ->where('student_id', $student->id)
+    $lesson_request = LessonRequest::where('create_user_id', $parent->user_id)
+    ->where('user_id', $student->user_id)
     ->where('status', '!=' ,'cancel')
     ->first();
 
@@ -245,9 +256,8 @@ class LessonRequest extends Model
       //同じ対象生徒の内容の場合は(cancel以外)登録しない
       $lesson_request = LessonRequest::create([
         'type' => $form['type'],
-        'student_parent_id' => $parent->id,
-        'student_id' => $student->id,
-        'create_user_id' => $form['create_user_id'],
+        'create_user_id' => $parent->user_id,
+        'user_id' => $student->user_id
       ]);
     }
 
@@ -266,16 +276,41 @@ class LessonRequest extends Model
     return $lesson_request;
   }
   static public function add($form){
+    $event_user = EventUser::find($form['event_user_id']);
+    $form['create_user_id'] = $event_user->user_id;
+    if($event_user->user->get_role()=='student'){
+      $relation = StudentRelation::where('student_id', $event_user->user->student->id)->first();
+      $form['create_user_id'] = $relation->parent->user_id;
+    }
+    //登録申し込み情報
+    $lesson_request = LessonRequest::where('user_id', $event_user->user_id)
+    ->where('event_id', $event_user->event->id)
+    ->where('status', '!=' ,'cancel')
+    ->first();
 
+    if(!isset($lesson_request)){
+      //同じ対象生徒の内容の場合は(cancel以外)登録しない
+      $lesson_request = LessonRequest::create([
+        'type' => $form['type'],
+        'user_id' => $event_user->user_id,
+        'event_id' => $event_user->event->id,
+        'create_user_id' => $form['create_user_id']
+      ]);
+    }
+    $lesson_request->change($form);
+    return $lesson_request;
   }
   public function change($form){
+    $old_item = $this->replicate();
+    $old_item->id = $this->id;
+
     $fields = ['remark'];
     $data = [];
     foreach($fields as $field){
       if(!empty($form[$field])) $data[$field] = $form[$field];
     }
     $this->update($data);
-    if(count($this->request_dates)>0) LessonRequestDate::where('lesson_request_id', $this->id)->delete();
+    LessonRequestDate::where('lesson_request_id', $this->id)->delete();
     foreach($form['request_dates'] as $datetime){
       if(empty($datetime['sort_no'])) $datetime['sort_no'] = 1;
       LessonRequestDate::create(['lesson_request_id' => $this->id,
@@ -304,19 +339,36 @@ class LessonRequest extends Model
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'entry_milestone_word','howto_word', 'course_type'
+      ,'season_lesson_course', 'regular_schedule_exchange', 'hope_timezone'
       ,'school_vacation_start_date', 'school_vacation_end_date', 'installment_payment'
     ];
     //科目タグ
-    $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
-    foreach($charge_subject_level_items as $charge_subject_level_item){
-      $tag_names[] = $charge_subject_level_item['attribute_value'];
+    foreach(config('charge_subjects') as $grade => $subject_group){
+      if(isset($subject_group['items'])){
+        foreach($subject_group['items'] as $subject => $name){
+          $tag_names[] = $name.'_day_count';
+          $tag_names[] = $name.'_level';
+        }
+      }
+      else {
+        foreach($subject_group as $subject => $item){
+          $tag_names[] = $subject.'_day_count';
+          $tag_names[] = $subject.'_level';
+        }
+      }
     }
     foreach($tag_names as $tag_name){
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       LessonRequestTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
+
     $this->write_comment($this->type);
-    $this->student->profile_update($form);
+    if($this->type=='trial'){
+      $this->student->profile_update($form);
+    }
+    if(isset($form['send_mail'])){
+      $this->teacher_mail('申し込み内容を変更しました', ['old_item' => $old_item], 'text', $this->type.'_update');
+    }
   }
   public function remark_full(){
     $ret = "";
@@ -1348,5 +1400,17 @@ class LessonRequest extends Model
         ]);
       }
     }
+  }
+  public function get_hope_date($day, $from_time_slot='', $to_time_slot=''){
+    $d = LessonRequestDate::where('lesson_request_id', $this->id);
+    $d = $d->where('day', $day);
+    if($d!=null && !empty($from_time_slot)){
+      $d = $d->where('from_time_slot', $from_time_slot);
+    }
+    if($d!=null && !empty($to_time_slot)){
+      $d = $d->where('to_time_slot', $to_time_slot);
+    }
+    $d = $d->first();
+    return $d;
   }
 }

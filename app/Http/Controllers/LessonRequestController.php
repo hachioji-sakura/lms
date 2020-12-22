@@ -7,6 +7,8 @@ use App\User;
 use App\Models\LessonRequest;
 use App\Models\Tuition;
 use App\Models\StudentParent;
+use App\Models\Student;
+use App\Models\EventUser;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
@@ -15,8 +17,8 @@ use DB;
 use View;
 class LessonRequestController extends UserCalendarController
 {
-  public $domain = "trials";
-  public $table = "trials";
+  public $domain = "lesson_requests";
+  public $table = "lesson_requests";
 
   private $show_fields = [
     'student_name' => [
@@ -114,22 +116,58 @@ class LessonRequestController extends UserCalendarController
    * @param  \Illuminate\Http\Request  $request
    * @return json
    */
-  public function create_form(Request $request){
-    $form = $request->all();
-    if(!empty($form['trial_date1'])){
-      $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
-      $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
-    }
-    if(!empty($form['trial_date2'])){
-      $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
-      $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
-    }
-    if(!empty($form['trial_date3'])){
-      $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
-      $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
-    }
-    return $form;
-  }
+   public function create_form(Request $request){
+     $form = $request->all();
+     $form['request_dates'] = [];
+     $i = 0;
+     if(!empty($form['trial_date1'])){
+       $form['request_dates'][] = [
+         "from_datetime" => $form['trial_date1'].' '.$form['trial_start_time1'].':00:00',
+         "to_datetime" => $form['trial_date1'].' '.$form['trial_end_time1'].':00:00',
+         "sort_no" => $i++
+       ];
+     }
+     if(!empty($form['trial_date2'])){
+       $form['request_dates'][] = [
+         "from_datetime" => $form['trial_date2'].' '.$form['trial_start_time2'].':00:00',
+         "to_datetime" => $form['trial_date2'].' '.$form['trial_end_time2'].':00:00',
+         "sort_no" => $i++
+       ];
+     }
+     if(!empty($form['trial_date3'])){
+       $form['request_dates'][] = [
+         "from_datetime" => $form['trial_date3'].' '.$form['trial_start_time3'].':00:00',
+         "to_datetime" => $form['trial_date3'].' '.$form['trial_end_time3'].':00:00',
+         "sort_no" => $i++
+       ];
+     }
+     if(!empty($form['hope_datetime'])){
+       foreach($form['hope_datetime'] as $datetime){
+         if(empty($datetime)) continue;
+         $d = explode(' ', $datetime);
+         $date = $d[0];
+         $timezone = trim($d[1]);
+         $t = explode('-', $timezone);
+         $form['request_dates'][$date] = [
+           "from_datetime" => $date.' '.$t[0].':00:00',
+           "to_datetime" => $date.' '.$t[1].':00:00',
+           "sort_no" => 1
+         ];
+       }
+     }
+     $user = $this->login_details($request);
+     if(isset($user)){
+       $form['create_user_id'] = $user->user_id;
+     }
+     else if($request->has('event_user_id')>0 && $request->has('access_key')){
+       $event_user = EventUser::where('id', $request->get('event_user_id'))
+                  ->where('access_key', $request->get('access_key'))
+                  ->first();
+       $form['create_user_id'] = $event_user->user_id;
+     }
+
+     return $form;
+   }
 
   /**
    * 一覧表示
@@ -175,25 +213,25 @@ class LessonRequestController extends UserCalendarController
    * @return json
    */
   public function get_param(Request $request, $id=null, $user_id=null){
-    $user = $this->login_details($request);
-    if(!isset($user)) {
-      abort(403);
-    }
-    $ret = $this->get_common_param($request);
+    $ret = $this->get_common_param($request, false);
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
+      $item = $this->model()->where('id',$id)->first();
       if(!isset($item)){
         abort(404);
       }
-      if($this->is_manager($user->role)!=true){
-        if($this->is_parent($user->role)==true && $user->id != $item->student_parent_id){
-          abort(403);
-        }
+      if($request->has('event_user_id') && $request->has('access_key')){
+        //access_keyとevent_user_idを持つ場合
+        $event_user = EventUser::where('access_key', $request->get('access_key'))
+                  ->where('id', $request->get('event_user_id'))->first();
+        if($event_user->event_id != $item->event_id) abort(404);
       }
-      $ret['item'] = $item->details();
+      else if($this->is_parent($ret['user']->role)==true && $ret['user']->user_id != $item->create_user_id){
+        //ログインユーザーが起票者ではない場合
+        abort(404);
+      }
+      $ret['item'] = $item;
     }
     else {
-
       if($this->is_manager($user->role)!=true){
         abort(403);
       }
@@ -302,10 +340,20 @@ class LessonRequestController extends UserCalendarController
         'size' => 6
       ],
     ]);
-    $param['view'] = 'page';
-    return view($this->domain.'.'.$param['view'], [
+    $param = $this->get_param($request, $id);
+    switch($param['item']->type){
+      case "trial":
+        $view = 'trials.page';
+        break;
+      case "season_lesson":
+        $view = 'season_lesson.page';
+        $param['event'] = $param['item']->event;
+        $param['event_dates'] = $param['item']->event->get_event_dates();
+        break;
+    }
+    return view($view, [
       'action' => $request->get('action'),
-      'fields'=>$fields])
+      'fields'=>$fields, '_edit' => false])
       ->with($param);
   }
   public function show_dialog(Request $request, $id)
@@ -327,7 +375,19 @@ class LessonRequestController extends UserCalendarController
   public function edit(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    return view($this->domain.'.edit', [
+    switch($param['item']->type){
+      case "trial":
+        $view = 'trials.edit';
+        break;
+      case "season_lesson":
+        $view = 'season_lesson.edit';
+        $param['event'] = $param['item']->event;
+        $param['access_key'] = $request->get('access_key');
+        $param['event_user_id'] = $request->get('event_user_id');
+        $param['event_dates'] = $param['item']->event->get_event_dates();
+        break;
+    }
+    return view($view, [
       '_edit' => true])
       ->with($param);
   }
@@ -352,30 +412,34 @@ class LessonRequestController extends UserCalendarController
    public function store(Request $request)
    {
      $form = $request->all();
-     if(!$request->has('student_id')) abort(403);
-     $student = Student::where('id', $request->get('student_id'))->first();
-     if(!isset($student)) abort(403);
+     if(!$request->has('event_user_id')) abort(403);
+     $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
+     if(!isset($event_user)) abort(403);
 
-     $param = $this->get_param($request, $id);
-     $access_key = $this->create_token();
-     $request->merge([
-       'access_key' => $access_key,
-     ]);
-     $form = $request->all();
-     $form['create_user_id'] = $param['user']->user_id;
+     $param = $this->get_param($request);
+     $form = $this->create_form($request);
+     $form['access_key'] = $this->create_token();
+
      $res = $this->transaction($request, function() use ($form){
        $item = LessonRequest::add($form);
        return $this->api_response(200, '', '', $item);
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
      if($this->is_success_response($res)){
-       $param['item']->user->send_mail(
-         'お申込み、ありがとうございます', [
-         'user_name' => $student->name(),
-         'access_key' => $access_key,
+       $mail_title = [
+         'trial' => '授業のお申込み、ありがとうございます',
+         'season_lesson' => '授業のお申込み、ありがとうございます',
+         'season_lesson_teacher' => '講習の勤務可能日時を登録しました',
+       ];
+       $event_user->user->send_mail(
+         $mail_title[$form['type']], [
+         'user_name' => $event_user->user->get_name(),
+         'event_user_id' => $request->get('event_user_id'),
+         'domain' => $request->get('domain'),
+         'access_key' => $form['access_key'],
          'item' => $res['data'],
-         'send_to' => 'parent',
-       ], 'text', 'trial');
+         'send_to' => $event_user->user->get_role(),
+       ], 'text', $form['type']);
      }
      return $this->save_redirect($res, [], '');
    }
@@ -400,12 +464,9 @@ class LessonRequestController extends UserCalendarController
      }
      $res = $this->transaction($request, function() use ($request){
        $form = $this->create_form($request);
-       $form['create_user_id'] = 1;
+       $form["event_id"] = 0;
        $form["accesskey"] = '';
        $form["password"] = 'sakusaku';
-       if(!empty($form['student2_name_last'])){
-         $form['course_type'] = 'family';
-       }
        $item = LessonRequest::entry($form);
        return $this->api_response(200, '', '', $item);
      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
@@ -695,15 +756,40 @@ class LessonRequestController extends UserCalendarController
 
      return $this->save_redirect($res, [], '体験授業希望日を変更しました');
    }
-
+   public function update(Request $request, $id)
+   {
+     $param = $this->get_param($request, $id);
+     $res = $this->_update($request, $id);
+     if($this->is_success_response($res) && !(isset($param['user']) && $param['user']->role=='manager')){
+       $mail_title = [
+         'trial' => '授業のお申込み内容の変更を承りました',
+         'season_lesson' => '授業のお申込み内容の変更を承りました',
+         'season_lesson_teacher' => '講習の勤務可能日時を変更しました',
+       ];
+       $event_user_id = 0;
+       if($param['item']->event_id > 0){
+         $event_user = EventUser::where('event_id', $param['item']->event_id)
+                                ->where('user_id', $param['item']->user_id)
+                                ->first();
+         $event_user_id = $event_user->id;
+       }
+       $param['item']->user->send_mail(
+         $mail_title[$param['item']->type], [
+         'user_name' => $param['item']->user->get_name(),
+         'event_user_id' => $event_user_id,
+         'domain' => $request->get('domain'),
+         'item' => $res['data'],
+         'send_to' => $param['item']->user->get_role(),
+       ], 'text', $param['item']->type.'_update');
+     }
+     return $this->save_redirect($res, $param, '更新しました。');
+   }
    public function _update(Request $request, $id)
    {
      $res =  $this->transaction($request, function() use ($request, $id){
        $form = $this->create_form($request);
-       $user = $this->login_details($request);
-       $form['create_user_id'] = $user->user_id;
        $item = LessonRequest::where('id', $id)->first();
-       $item->trial_update($form);
+       $item->change($form);
        if($item->status=='reapply'){
          $item->update(['status' => 'confirm']);
        }

@@ -433,6 +433,9 @@ EOT;
   public function getGradeAttribute(){
     return $this->grade();
   }
+  public function getSchoolNameAttribute(){
+    return $this->school_name();
+  }
   public function get_subject($lesson=0){
     $ret = [];
     $lesson = intval($lesson);

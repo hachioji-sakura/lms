@@ -1,11 +1,11 @@
-@if(isset($_edit) && $_edit==true && isset($item))
+@if(isset($is_label) && $_edit==true && isset($item))
 <div class="col-12 mb-2">
   <label for="season_lesson_course" class="w-100">
     {{__('labels.lesson_time')}}
   </label>
-  <input type="hidden" name="season_lesson_course" value="{{$item["season_lesson_course"]}}">
-  <input type="hidden" name="season_lesson_course_name" value="{{$attributes['season_lesson_course'][$item["season_lesson_course"]]}}">
-  <span>{{$attributes['season_lesson_course'][$item["season_lesson_course"]]}}</span>
+  <input type="hidden" name="season_lesson_course" value="{{$item->get_tag_value('season_lesson_course')}}">
+  <input type="hidden" name="season_lesson_course_name" value="{{$attributes['season_lesson_course'][$item->get_tag_value('season_lesson_course')]}}">
+  <span>{{$attributes['season_lesson_course'][$item->get_tag_value('season_lesson_course')]}}</span>
 </div>
 @else
 <div class="col-12 mb-2">
@@ -18,7 +18,7 @@
         <input type="radio" value="{{ $index }}" name="season_lesson_course" class="icheck flat-green"
         @if(isset($item) && isset($item->id) && $item->has_tag("season_lesson_course", $index))
         checked
-        @elseif(!empty($item) && isset($item["season_lesson_course"]) && $index==$item["season_lesson_course"])
+        @elseif(!empty($item) && $item->has_tag("season_lesson_course", $index))
         checked
         @endif
         id="season_lesson_course_{{$index}}"

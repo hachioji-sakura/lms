@@ -40,6 +40,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::resource('lesson_requests','LessonRequestController');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 

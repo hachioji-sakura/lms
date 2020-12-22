@@ -8,6 +8,8 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\StudentParent;
+use App\Models\Holiday;
+
 class Event extends Milestone
 {
     //
@@ -159,5 +161,17 @@ class Event extends Milestone
       $u = $this->event_users->where('user_id', $user_id)->first();
       if(isset($u)) return true;
       return false;
+    }
+    public function get_event_dates(){
+      $event_dates = [];
+      $d = $this->event_from_date;
+      while(strtotime($this->event_to_date) > strtotime($d)){
+        $h = Holiday::where('date', $d)->first();
+        if(!isset($h) || $h->is_private_holiday()==false){
+          $event_dates[] = $d;
+        }
+        $d = date('Y/m/d', strtotime('+1 day '.$d));
+      }
+      return $event_dates;
     }
 }
