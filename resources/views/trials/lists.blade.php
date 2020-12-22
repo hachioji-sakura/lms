@@ -73,7 +73,19 @@
                     @if($item->is_trial_lesson_complete()==false)
                       第1希望:{{$item->trial_start_end_time(1)}}</span><br>
                       第2希望:{{$item->trial_start_end_time(2)}}</span><br>
-                      第3希望:{{$item->trial_start_end_time(3)}}</span>
+                      第3希望:{{$item->trial_start_end_time(3)}}</span><br>
+                      <span class="text-xs">
+                        @if($item->has_tag('parent_interview', 'true')==true)
+                        <small class="badge badge-danger p-1 mr-1">
+                          <i class="fa fa-exclamation-triangle mr-1"></i>
+                          入会説明希望あり
+                        </small>
+                        @else
+                        <small class="badge badge-secondary p-1 mr-1">
+                          入会説明希望なし
+                        </small>
+                        @endif
+                      </span>
 {{--
 <br>
 第4希望:{{$item->trial_start_end_time(4)}}</span><br>
