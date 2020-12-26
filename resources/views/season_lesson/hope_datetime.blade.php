@@ -11,7 +11,7 @@
   @endif
   <?php
     $m = date('n', strtotime($d));
-    $hope_date = $item->get_hope_date($d);
+    if($_edit==true)  $hope_date = $item->get_hope_date($d);
   ?>
 
 <div class="col-12 bd-b bd-gray ">
@@ -113,10 +113,11 @@ function hope_date_change(id){
   if(date_checked==true){
     var timezone = $("input[name='hope_timezone']:checked").val();
     console.log('hope_date_change:'+timezone);
+    if(!timezone) timezone = $("input[name='hope_timezone'][type='hidden']").val();
     if(timezone){
       $('input[name="'+id+'_timezone"][value="'+timezone+'"]').iCheck('check');
-      $('select[name="'+id+'_start_time"]').val($("select[name='hope_start_time']").val());
-      $('select[name="'+id+'_end_time"]').val($("select[name='hope_end_time']").val());
+      if(util.isEmpty($('select[name="'+id+'_start_time"]').val())) $('select[name="'+id+'_start_time"]').val($("select[name='hope_start_time']").val());
+      if(util.isEmpty($('select[name="'+id+'_end_time"]').val())) $('select[name="'+id+'_end_time"]').val($("select[name='hope_end_time']").val());
     }
     $("#"+id+" .date-selected-open").collapse('show');
   }

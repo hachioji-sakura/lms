@@ -124,6 +124,13 @@
                   @if($user->role!=="student")
                     @if($charge_student->student->is_hachiojisakura()==true && $charge_student->student->status != 'trial')
                       {{-- ①入会後から、予定管理のメニューを表示 --}}
+                      @if($charge_student->student->has_lesson_request()==true)
+                      <div class="col-12 float-left mt-1">
+                        <a class="btn btn-sm btn-flat btn-block btn-outline-danger" href="/students/{{$charge_student->student->id}}/season_lesson">
+                          <i class="fa fa-exclamation-triangle nav-icon mr-1"></i>期間講習申し込み
+                        </a>
+                      </div>
+                      @endif
                       <div class="col-6 float-left mt-1">
                         <a href="/students/{{$charge_student->student->id}}/schedule?list=month" role="button" class="btn btn-primary btn-sm btn-flat btn-block">
                           <i class="fa fa-calendar-check mr-1"></i>{{__('labels.month_schedule_list')}}
@@ -168,7 +175,7 @@
                         </a>
                       </div>
                       <div class="col-6 float-left mt-1">
-                        <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/create_login_info" page_title="{{__('labels.login_setting')}}" role="button" class="btn  btn-sm btn-flat btn-block
+                        <a href="javascript:void(0);" page_form="dialog" page_url="/students/{{$charge_student->id}}/create_login_info" page_title="{{__('labels.login_setting')}}" role="button" class="btn btn-sm btn-flat btn-block
                         @if($charge_student->student->status == 'unsubscribe')
                          btn-secondary
                          disabled
@@ -181,6 +188,7 @@
                         @endif
                         </a>
                       </div>
+
                       {{-- TODO　既存生徒の表示が不安定なので、まだコメントアウト
                       <div class="col-6 float-left mt-1">
                         <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">

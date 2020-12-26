@@ -173,6 +173,7 @@ class Student extends Model
     return $this->hasMany('App\Models\Trial', 'student_id')->where('status', '!=', 'cancel');
   }
 
+
   /**
    *　スコープ：ユーザーステータス
    */
@@ -1068,4 +1069,14 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
+  public function has_lesson_request(){
+    foreach($this->user->enable_lesson_requests as $l){
+      if($l->status == 'new' && $l->event->is_need_request()==true && $l->event->is_answerable()==true) return true;
+    }
+    foreach($this->user->event_users as $event_user){
+      if($event_user->event->is_need_request()==true && $event_user->event->is_answerable()==true) return true;
+    }
+    return false;
+  }
+
 }

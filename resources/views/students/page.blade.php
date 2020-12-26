@@ -63,6 +63,17 @@
                     @endif
                     @endforeach
                   </h6>
+                  <div class="card-body p-0">
+                    <ul class="nav flex-column">
+                      @if($item->has_lesson_request()==true)
+                      <li class="nav-item pl-1">
+                        <a class="btn-block btn btn-sm btn-danger" href="/{{$domain}}/{{$item->id}}/season_lesson">
+                          <i class="fa fa-exclamation-triangle nav-icon mr-1"></i>講習申し込み内容
+                        </a>
+                      </li>
+                      @endif
+                    </ul>
+                  </div>
                   <div class="card-footer p-0">
                     <ul class="nav flex-column">
                       @if(!empty($item->recess_duration()))

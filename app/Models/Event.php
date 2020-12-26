@@ -32,6 +32,13 @@ class Event extends Milestone
     public function event_users(){
       return $this->hasMany('App\Models\EventUser');
     }
+    public function scopeFindUser($query, $user_id)
+    {
+      if(empty($user_id)) return $query;
+      return $query->whereHas('event_users', function($query) use ($user_id) {
+          $query = $query->where('user_id', $user_id);
+      });
+    }
     public function getResponseTermAttribute(){
       return $this->term_format($this->response_from_date, $this->response_to_date, 'Y年m月d日');
     }
@@ -173,5 +180,16 @@ class Event extends Milestone
         $d = date('Y/m/d', strtotime('+1 day '.$d));
       }
       return $event_dates;
+    }
+    public function is_answerable(){
+      if(strtotime($this->response_from_date) < strtotime('now') && strtotime($this->response_to_date) > strtotime('now')){
+        return true;
+      }
+      return false;
+    }
+    public function is_need_request(){
+      //暫定対応＝templateのurlがある場合、lesson_requestを必要とする
+      if(!empty($this->template->url)) return true;
+      return false;
     }
 }

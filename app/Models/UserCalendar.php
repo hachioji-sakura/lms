@@ -178,12 +178,11 @@ EOT;
   }
   public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
-    $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id from user_calendar_members where user_id=? and status != ?)
-EOT;
-    return $query->whereRaw($where_raw,[$user_id, $deactive_status]);
+    if(empty($user_id)) return $query;
+    return $query->whereHas('members', function($query) use ($user_id, $deactive_status) {
+        $query = $query->where('user_id', $user_id)->where('status', '!=', $deactive_status);
+    });
   }
-
   public function scopeHiddenFilter($query)
   {
     $user = Auth::user();

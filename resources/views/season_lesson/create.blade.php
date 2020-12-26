@@ -57,6 +57,7 @@
     <input type="hidden" name="event_user_id" value="{{$event_user_id}}" />
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <input type="hidden" name="domain" value="{{$domain}}" />
+    <input type="hidden" name="domain_item_id" value="{{$item->id}}" />
     <input type="hidden" name="send_mail" value="true" />
 
     <div id="season_lesson_entry" class="carousel slide" data-ride="carousel" data-interval="false">

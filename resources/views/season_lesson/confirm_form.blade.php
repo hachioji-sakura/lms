@@ -99,12 +99,12 @@
 
   <div class="col-12 p-2 font-weight-bold" >通常授業を講習に振り替えますか？</div>
   <div class="col-12 pl-3"><span id="regular_schedule_exchange_name">
-    @if(isset($item) && $item->has_tag('regular_schedule_exchange', 'true'))はい@endif
+    @if(isset($item) && $item->has_tag('regular_schedule_exchange', 'true'))はい @elseいいえ@endif
   </span></div>
 
   <div class="col-12 p-2 font-weight-bold" >分割払い可能（3ヶ月）をご希望ですか？</div>
   <div class="col-12 pl-3"><span id="installment_payment_name">
-    @if(isset($item) && $item->has_tag('installment_payment', 'true'))はい@endif
+    @if(isset($item) && $item->has_tag('installment_payment', 'true'))はい @elseいいえ@endif
   </span></div>
 
   <div class="col-12 p-2 font-weight-bold" >学校の休み期間をおしらせください</div>
@@ -122,6 +122,6 @@
   </span></div>
   <div class="col-12 p-2 font-weight-bold" >ご要望につきまして</div>
   <div class="col-12 pl-3"><span id="remark">
-    @if(isset($item)){!!nl2br($item->remark_full())!!}@endif
+    @if(isset($item)){!!nl2br($item->remark)!!}@endif
   </span></div>
 </div>

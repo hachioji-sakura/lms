@@ -90,6 +90,15 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function enable_lesson_requests()
+    {
+      return $this->hasMany('App\Models\LessonRequest')->where('status', 'new');
+    }
+    public function event_users()
+    {
+      return $this->hasMany('App\Models\EventUser');
+    }
+
     /**
      * パスワードリセット通知の送信
      *

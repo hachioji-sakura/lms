@@ -12,14 +12,24 @@
 
 @section('content')
 <div class="direct-chat-msg">
-  @if(!empty($result))
-    <h4 class="bg-success p-3 text-sm">
-      @if($result==="success")
-      {!!nl2br(__('messages.trial_entry1'))!!}
-  <br><br>
-      {!!nl2br(__('messages.trial_entry2'))!!}
+  @if($is_already_data == true)
+
+    <div class="row">
+      <div class="col-12 mb-1">
+        <a href="javascript:void(0);" page_form="dialog" page_title="講習勤務日時の確認" page_url="/lesson_requests/{{$lesson_request->id}}?event_user_id={{$event_user_id}}&access_key={{$access_key}}" role="button" class="btn-next btn btn-secondary btn-block float-left mr-1">
+          <i class="fa fa-file ml-1"></i>
+          講習勤務日時の確認
+        </a>
+      </div>
+      @if($lesson_request->status=='new')
+      <div class="col-12 mb-1">
+        <a href="javascript:void(0);" page_form="dialog" page_title="講習勤務日時の変更" page_url="/lesson_requests/{{$lesson_request->id}}/edit?event_user_id={{$event_user_id}}&access_key={{$access_key}}" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
+          <i class="fa fa-edit ml-1"></i>
+          講習勤務日時の変更
+        </a>
+      </div>
       @endif
-    </h4>
+    </div>
   @else
   <form method="POST"  action="/lesson_requests">
     @csrf
@@ -29,6 +39,8 @@
     <input type="hidden" name="access_key" value="{{$access_key}}" />
     <input type="hidden" name="type" value="season_lesson_teacher" />
     <input type="hidden" name="domain" value="{{$domain}}" />
+    <input type="hidden" name="domain_item_id" value="{{$item->id}}" />
+    <input type="hidden" name="hope_timezone" value="order" />
 
     <div id="season_lesson_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">

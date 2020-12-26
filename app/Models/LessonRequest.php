@@ -301,9 +301,6 @@ class LessonRequest extends Model
     return $lesson_request;
   }
   public function change($form){
-    $old_item = $this->replicate();
-    $old_item->id = $this->id;
-
     $fields = ['remark'];
     $data = [];
     foreach($fields as $field){
@@ -343,19 +340,9 @@ class LessonRequest extends Model
       ,'school_vacation_start_date', 'school_vacation_end_date', 'installment_payment'
     ];
     //科目タグ
-    foreach(config('charge_subjects') as $grade => $subject_group){
-      if(isset($subject_group['items'])){
-        foreach($subject_group['items'] as $subject => $name){
-          $tag_names[] = $name.'_day_count';
-          $tag_names[] = $name.'_level';
-        }
-      }
-      else {
-        foreach($subject_group as $subject => $item){
-          $tag_names[] = $subject.'_day_count';
-          $tag_names[] = $subject.'_level';
-        }
-      }
+    foreach($this->charge_subject_attributes() as $attribute){
+      $tag_names[] = $attribute->attribute_value.'_day_count';
+      $tag_names[] = $attribute->attribute_value.'_level';
     }
     foreach($tag_names as $tag_name){
       if(empty($form[$tag_name])) $form[$tag_name] = '';
@@ -365,9 +352,6 @@ class LessonRequest extends Model
     $this->write_comment($this->type);
     if($this->type=='trial'){
       $this->student->profile_update($form);
-    }
-    if(isset($form['send_mail'])){
-      $this->teacher_mail('申し込み内容を変更しました', ['old_item' => $old_item], 'text', $this->type.'_update');
     }
   }
   public function remark_full(){
@@ -1412,5 +1396,9 @@ class LessonRequest extends Model
     }
     $d = $d->first();
     return $d;
+  }
+  public function charge_subject_attributes(){
+    $attributes = GeneralAttribute::where('attribute_key', 'charge_subject')->get();
+    return $attributes;
   }
 }

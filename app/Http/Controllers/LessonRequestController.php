@@ -232,7 +232,7 @@ class LessonRequestController extends UserCalendarController
       $ret['item'] = $item;
     }
     else {
-      if($this->is_manager($user->role)!=true){
+      if(isset($ret['user']) && $this->is_manager($ret['user']->role)!=true){
         abort(403);
       }
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
@@ -346,7 +346,8 @@ class LessonRequestController extends UserCalendarController
         $view = 'trials.page';
         break;
       case "season_lesson":
-        $view = 'season_lesson.page';
+      case "season_lesson_teacher":
+        $view = $param['item']->type.'.page';
         $param['event'] = $param['item']->event;
         $param['event_dates'] = $param['item']->event->get_event_dates();
         break;
@@ -380,7 +381,8 @@ class LessonRequestController extends UserCalendarController
         $view = 'trials.edit';
         break;
       case "season_lesson":
-        $view = 'season_lesson.edit';
+      case "season_lesson_teacher":
+        $view = $param['item']->type.'.edit';
         $param['event'] = $param['item']->event;
         $param['access_key'] = $request->get('access_key');
         $param['event_user_id'] = $request->get('event_user_id');
@@ -436,6 +438,7 @@ class LessonRequestController extends UserCalendarController
          'user_name' => $event_user->user->get_name(),
          'event_user_id' => $request->get('event_user_id'),
          'domain' => $request->get('domain'),
+         'domain_item_id' => $request->get('domain_item_id'),
          'access_key' => $form['access_key'],
          'item' => $res['data'],
          'send_to' => $event_user->user->get_role(),
@@ -759,29 +762,40 @@ class LessonRequestController extends UserCalendarController
    public function update(Request $request, $id)
    {
      $param = $this->get_param($request, $id);
+     $old_item = $param['item']->replicate();
+     $old_item->id = $id;
+
      $res = $this->_update($request, $id);
      if($this->is_success_response($res) && !(isset($param['user']) && $param['user']->role=='manager')){
-       $mail_title = [
-         'trial' => '授業のお申込み内容の変更を承りました',
-         'season_lesson' => '授業のお申込み内容の変更を承りました',
-         'season_lesson_teacher' => '講習の勤務可能日時を変更しました',
-       ];
-       $event_user_id = 0;
-       if($param['item']->event_id > 0){
-         $event_user = EventUser::where('event_id', $param['item']->event_id)
-                                ->where('user_id', $param['item']->user_id)
-                                ->first();
-         $event_user_id = $event_user->id;
-       }
-       $param['item']->user->send_mail(
-         $mail_title[$param['item']->type], [
-         'user_name' => $param['item']->user->get_name(),
-         'event_user_id' => $event_user_id,
-         'domain' => $request->get('domain'),
-         'item' => $res['data'],
-         'send_to' => $param['item']->user->get_role(),
-       ], 'text', $param['item']->type.'_update');
      }
+     $mail_title = [
+       'trial' => '授業のお申込み内容の変更を承りました',
+       'season_lesson' => '授業のお申込み内容の変更を承りました',
+       'season_lesson_teacher' => '講習の勤務可能日時を変更しました',
+     ];
+     $event_user_id = 0;
+     $access_key = "";
+     if($param['item']->event_id > 0){
+       //event派生のlessonRequestの場合
+       $event_user = EventUser::where('event_id', $param['item']->event_id)
+                              ->where('user_id', $param['item']->user_id)
+                              ->first();
+       $event_user_id = $event_user->id;
+       $access_key = $event_user->access_key;
+     }
+     $domain_item_id = $param['item']->user->details()->id;
+     $param['item']->user->send_mail(
+       $mail_title[$param['item']->type], [
+       'user_name' => $param['item']->user->get_name(),
+       'event_user_id' => $event_user_id,
+       'domain' => $request->get('domain'),
+       'domain_item_id' => $domain_item_id,
+       'access_key' => $access_key,
+       'item' => $res['data'],
+       'old_item' => $old_item,
+       'send_to' => $param['item']->user->get_role(),
+     ], 'text', $param['item']->type.'_update');
+
      return $this->save_redirect($res, $param, '更新しました。');
    }
    public function _update(Request $request, $id)

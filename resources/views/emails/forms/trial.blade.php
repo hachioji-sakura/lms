@@ -5,7 +5,7 @@
 {{$item->get_tag_name('course_minutes')}}授業
 
 ■ご希望の教室
-{{$item->get_tag_name('lesson_place')}}
+{{$item->get_tags_name('lesson_place')}}
 
 @if($item->is_request_lesson_complete()==false || $item->status=='entry_contact')
 ■体験希望日時

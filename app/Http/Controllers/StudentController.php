@@ -14,6 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Event;
 use App\Models\EventUser;
 use App\Models\LessonRequest;
 use App\Http\Controllers\Controller;
@@ -1469,28 +1470,40 @@ class StudentController extends UserController
   }
   public function season_lesson_page(Request $request, $id){
     $param = $this->get_common_param($request, false);
-    $view = 'create';
-    if(!$request->has('event_user_id')) abort(404);
-    if(!$request->has('access_key')) abort(404);
-    if($this->domain=='teachers') $view='teacher_request';
-    $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
-    if(!isset($event_user)) abort(404);
-    if($event_user->access_key != $request->get('access_key')) abort(403);
+    $view = 'season_lesson.create';
+    $user = $this->login_details($request);
     $param['item'] = $this->model()->find($id);
-    $param['access_key'] = $request->get('access_key');
-    $param['event_user_id'] = $request->get('event_user_id');
-    $param['is_already_data'] = false;
-    $param['event_dates'] = $event_user->event->get_event_dates();
-
-    $lesson_request = LessonRequest::where('event_id', $event_user->event->id)
-                  ->where('user_id', $event_user->user_id)
-                  ->where('status', '!=', 'cancel')
-                  ->first();
-    $param['lesson_request'] = $lesson_request;
-    if(isset($lesson_request)){
-      $param['is_already_data'] = true;
+    $event = Event::findUser($param['item']->user_id)->where('status', 'new')->first();
+    if(isset($user) && $user->role=='manager'){
+      if(isset($event)){
+        $event_user = $event->event_users->where('user_id', $param['item']->user_id)->sortByDesc('id')->first();
+      }
+      else {
+        abort(404);
+      }
     }
-    return view('season_lesson.'.$view, ['_edit' => false, 'event'=>$event_user->event])
+    else {
+      if(!$request->has('event_user_id')) abort(404);
+      if(!$request->has('access_key')) abort(404);
+      $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
+      if(!isset($event_user)) abort(404);
+      if($event_user->access_key != $request->get('access_key')) abort(403);
+    }
+    $param['event_user_id'] = $event_user->id;
+    $param['access_key'] = $event_user->access_key;
+    if($this->domain=='teachers') $view='season_lesson_teacher.create';
+    $param['is_already_data'] = false;
+
+    if(isset($param['item']->user->enable_lesson_requests)){
+      $param['lesson_request'] = $param['item']->user->enable_lesson_requests->sortByDesc('id')->first();
+      if($param['lesson_request'] != null){
+        $param['is_already_data'] = true;
+      }
+    }
+
+    $param['event_dates'] = $event->get_event_dates();
+    $param['event'] = $event;
+    return view($view, ['_edit' => false])
       ->with($param);
   }
 }
