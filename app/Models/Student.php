@@ -350,11 +350,14 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     //1:1タグ
