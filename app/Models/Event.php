@@ -32,11 +32,23 @@ class Event extends Milestone
     public function event_users(){
       return $this->hasMany('App\Models\EventUser');
     }
+    public function lesson_requests(){
+      return $this->hasMany('App\Models\LessonRequest');
+    }
     public function scopeFindUser($query, $user_id)
     {
       if(empty($user_id)) return $query;
       return $query->whereHas('event_users', function($query) use ($user_id) {
           $query = $query->where('user_id', $user_id);
+      });
+    }
+    public function scopeStudentLessonRequest($query)
+    {
+      return $query->whereHas('template', function($query){
+        $query->where('url', '!=', '');
+        $query->whereHas('tags', function($query){
+          $query->where('tag_key', 'user_role')->where('tag_value', 'student');
+        });
       });
     }
     public function getResponseTermAttribute(){
@@ -47,6 +59,9 @@ class Event extends Milestone
     }
     public function getEventUserCountAttribute(){
       return count($this->event_users);
+    }
+    public function getLessonRequestCountAttribute(){
+      return count($this->lesson_requests);
     }
     public function getTemplateTitleAttribute(){
       return $this->template->name;

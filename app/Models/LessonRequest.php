@@ -83,32 +83,6 @@ class LessonRequest extends Model
     }
     return false;
   }
-  public function get_status(){
-    //体験授業登録状況により、ステータスは変動する
-    $status = $this->status;
-    switch($this->status){
-      case "confirm":
-      case "fix":
-      case "presence":
-      case "new":
-        $status = 'new';
-        if($this->is_confirm_request_lesson()==true){
-          $status = 'confirm';
-        }
-        else if($this->is_all_fix_request_lesson()==true){
-          $status = 'fix';
-        }
-        else if($this->is_presence_request_lesson()==true){
-          $status = 'presence';
-        }
-        break;
-    }
-    if($this->student->status=='regular'){
-      $status = 'complete';
-    }
-    if($this->status != $status) LessonRequest::where('id', $this->id)->update(['status' => $status]);
-    return $status;
-  }
   public function is_all_fix_request_lesson(){
     $is_find = false;
     foreach($this->calendars as $calendar){

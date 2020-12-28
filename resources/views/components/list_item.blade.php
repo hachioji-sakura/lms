@@ -40,6 +40,9 @@
             href="{{$field['link']($row)}}"
           @endif
         @endif
+        @if(isset($field['style']))
+          class = "btn btn-sm btn-{{$field['style']}}"
+        @endif
         >
       @endif
       @if($key==="status_name")

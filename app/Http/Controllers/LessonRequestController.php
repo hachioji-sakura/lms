@@ -8,6 +8,7 @@ use App\Models\LessonRequest;
 use App\Models\Tuition;
 use App\Models\StudentParent;
 use App\Models\Student;
+use App\Models\Event;
 use App\Models\EventUser;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
@@ -44,14 +45,6 @@ class LessonRequestController extends UserCalendarController
     ],
     'status_name' => [
       'label' => 'ステータス',
-      'size' => 3,
-    ],
-    'date1' => [
-      'label' => '第１希望',
-      'size' => 3,
-    ],
-    'date2' => [
-      'label' => '第２希望',
       'size' => 3,
     ],
     'lesson' => [
@@ -175,7 +168,7 @@ class LessonRequestController extends UserCalendarController
    * @param  \Illuminate\Http\Request  $request
    * @return view / domain.lists
    */
-  public function index(Request $request)
+  public function index(Request $request, $event_id=0)
   {
     if(!$request->has('_line')){
       $request->merge([
@@ -194,15 +187,24 @@ class LessonRequestController extends UserCalendarController
     }
 
     $param = $this->get_param($request);
+    $events = Event::where('event_to_date', '>', date('Y-m-d'))->studentLessonRequest();
+    if($event_id>0){
+      $events = $events->where('id', $event_id);
+    }
+    else {
+      abort(404);
+    }
+    $events = $events->get();
     $user = $param['user'];
     if(!$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
       abort(403);
     }
+
     $_table = $this->search($request);
 
-
-    return view($this->domain.'.lists', $_table)
+    $param['event_id'] = $event_id;
+    return view('season_lesson.lists', $_table)
       ->with($param);
   }
   /**
@@ -252,7 +254,8 @@ class LessonRequestController extends UserCalendarController
    */
   public function search(Request $request, $user_id=0)
   {
-    $items = $this->model();
+    $items = $this->model()->where('type', 'season_lesson');
+    if($request->has('event_id')) $items = $this->model()->where('event_id', $request->get('event_id'));
     $items->with('parent');
     $user = $this->login_details($request);
     $items = $this->_search_scope($request, $items);
@@ -865,5 +868,29 @@ class LessonRequestController extends UserCalendarController
     }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
 
     return $this->save_redirect($res,$param,__('messages.info_deleted'));
+  }
+  public function save_matcihng_page(Request $request,$event_id){
+    $param = $this->get_param($request);
+    $event = Event::find($event_id);
+    if(!isset($event)) abort(404);
+    $param['action'] = 'matching';
+    $param['item'] = $event;
+    $param['event_id'] = $event_id;
+    $param['message'] = __('messages.info_schedule_matching');
+    return view('components.confirm')->with($param);
+  }
+  public function save_matcihng(Request $request,$event_id){
+    $param = $this->get_param($request);
+    $event = Event::find($event_id);
+    if(!isset($event)) abort(404);
+    $param['action'] = 'matching';
+    $param['item'] = $event;
+    $param['event_id'] = $event_id;
+
+    $res = $this->transaction($request, function() use ($request, $id, $param){
+      return $this->api_response(200, '', '', null);
+    }, '', __FILE__, __FUNCTION__, __LINE__ );
+
+    return $this->save_redirect($res,$param, 'ほげほげ', "/events/".$event_id."/");
   }
 }

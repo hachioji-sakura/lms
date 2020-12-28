@@ -41,10 +41,18 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('logout','Auth\LoginController@logout');
 
   Route::resource('lesson_requests','LessonRequestController');
+
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
   Route::get('auth/mail','AuthController@mail_send');
+
+  Route::get('events/{event_id}/lesson_requests', 'LessonRequestController@index');
+  Route::get('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matcihng_page');
+  Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matcihng');
+
+  Route::get('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matcihng');
+
 
   Route::get('events/{id}/to_inform','EventController@to_inform_page');
   Route::post('events/{id}/to_inform','EventController@to_inform');

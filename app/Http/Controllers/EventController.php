@@ -33,16 +33,20 @@ class EventController extends MilestoneController
   public function _search_scope(Request $request, $items)
   {
     //ID 検索
-    if(isset($request->id)){
+    if($request->has('id')){
       $items = $items->where('id',$request->id);
     }
     //ステータス 検索
-    if(isset($request->search_status)){
+    if($request->has('search_status')){
       $items = $items->findStatuses($request->search_status);
     }
 
+    if($request->has('student_lesson_request')){
+      $items = $items->studentLessonRequest();
+    }
+
     //検索ワード
-    if(isset($request->search_word)){
+    if($request->has('search_word')){
       $search_words = explode(' ', $request->search_word);
       $items = $items->where(function($items)use($search_words){
         foreach($search_words as $_search_word){
@@ -129,6 +133,15 @@ class EventController extends MilestoneController
        'label' => '対象者数',
        "link" => function($row){
          return "/event_users?event_id=".$row['id'];
+       }
+     ],
+     'lesson_request_count' => [
+       'label' => '新規申込数',
+       'button_style' => 'primary',
+       "link" => function($row){
+         if(isset($row->event) && $row->event->is_need_request()==false) return '';
+         if(count($row->lesson_requests->where('status', 'new')) == 0) return '';
+         return "/events/".$row['id']."/lesson_requests";
        }
      ],
    ];

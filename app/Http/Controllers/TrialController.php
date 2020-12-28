@@ -203,7 +203,7 @@ class TrialController extends UserCalendarController
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
-        $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
+        $ret[$list.'_count'] = $this->model()->where('type', 'trial')->findStatuses($_status)->count();
       }
     }
     return $ret;
@@ -246,6 +246,7 @@ class TrialController extends UserCalendarController
    */
   public function _search_scope(Request $request, $items)
   {
+    $items = $items->where('type','trial');
     //ID 検索
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
