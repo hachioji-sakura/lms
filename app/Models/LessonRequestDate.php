@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
+use App\Models\UserCalendar;
+use App\Models\LessonRequestCalendar;
 
 class LessonRequestDate extends Model
 {
@@ -32,6 +34,12 @@ class LessonRequestDate extends Model
     $h = explode(':', $this->to_time_slot);
     return intval($h[0]);
   }
+  public function scopeSearchEvent($event_id){
+    if(empty($event_id)) return $query;
+    return $query->whereHas('lesson_request', function($query) use ($event_id) {
+        $query = $query->where('event_id', $event_id);
+    });
+  }
   public function getFromDatetimeAttribute(){
     return $this->day.' '.$this->from_time_slot.':00';
   }
@@ -46,5 +54,31 @@ class LessonRequestDate extends Model
   }
   public function getTimezoneAttribute(){
     return $this->from_time_slot.'-'.$this->to_time_slot;
+  }
+  public function add_calendar(){
+    //1.対象ユーザーの予定がすでに登録されているかチェック
+    $c = UserCalendar::findUser($this->lesson_request->user_id)
+        ->where('start_time', '>=', $this->day.' '.$this->from_time_slot)
+        ->where('start_time', '<=', $this->day.' '.$this->to_time_slot)
+        ->findStatuses(['rest', 'cancel', 'lecture_cancel'], true)
+        ->get();
+    if($this->lesson_request->is_hope_exchange()==true){
+      if(isset($c) && count($c)==1){
+        //1-1. 登録済みかつ、通常授業→講習への振替希望の場合
+        //予定が1件の場合
+
+      }
+      else {
+        //振替元が一意にできない
+        
+      }
+    }
+    else {
+      //1-2. 登録済みかつ、通常授業→講習への振替希望ではない →　競合あり登録不可
+      if(isset($c) && count($c)==1) return false;
+    }
+
+
+
   }
 }

@@ -1375,4 +1375,7 @@ class LessonRequest extends Model
     $attributes = GeneralAttribute::where('attribute_key', 'charge_subject')->get();
     return $attributes;
   }
+  public function is_hope_exchange(){
+    return $this->has_tag('regular_schedule_exchange', 'true');
+  }
 }

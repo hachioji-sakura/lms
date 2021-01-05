@@ -9,6 +9,8 @@ use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\StudentParent;
 use App\Models\Holiday;
+use App\Models\LessonRequest;
+use App\Models\LessonRequestDate;
 
 class Event extends Milestone
 {
@@ -31,6 +33,7 @@ class Event extends Milestone
     }
     public function event_users(){
       return $this->hasMany('App\Models\EventUser');
+
     }
     public function lesson_requests(){
       return $this->hasMany('App\Models\LessonRequest');
@@ -206,5 +209,13 @@ class Event extends Milestone
       //暫定対応＝templateのurlがある場合、lesson_requestを必要とする
       if(!empty($this->template->url)) return true;
       return false;
+    }
+    public function add_matching_calendar(){
+        if($this->is_need_request()!=true) return false;
+        if($this->status != 'new') return false;
+        $dates = LessonRequestDate::searchEvent($this->id)->get();
+        foreach($dates as $d){
+
+        }
     }
 }

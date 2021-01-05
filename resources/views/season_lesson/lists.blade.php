@@ -19,7 +19,7 @@
           講習申し込み一覧
         </h3>
         <div class="card-title text-sm">
-          <a class="btn btn-sm btn-primary" href="javascript:void(0);" page_url="/events/{{$event_id}}/lesson_requests/calendars" page_title="予定マッチング" page_form="dialog" >
+          <a class="btn btn-sm btn-primary" href="javascript:void(0);" page_url="/events/{{$event_id}}/lesson_requests/matching" page_title="予定マッチング" page_form="dialog" >
             <i class="fa fa-hands-helping mr-1"></i>
             予定マッチング
           </a>
@@ -124,13 +124,13 @@
     <a href="#" class="nav-link">
       <i class="nav-icon fa fa-envelope-square"></i>
       <p>
-        体験授業完了前
+        申し込み一覧
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/{{$domain}}?list=new" class="nav-link @if($list=="new") active @endif">
+        <a href="/events/{{$event_id}}/lesson_requests?list=new" class="nav-link @if($list=="new") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>
           <p>
             未対応
@@ -141,34 +141,10 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=confirm" class="nav-link @if($list=="confirm") active @endif">
-          <i class="fa fa-calendar-alt nav-icon"></i>
-          <p>
-            体験授業調整中
-            @if($confirm_count > 0)
-            <span class="badge badge-warning right">{{$confirm_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      {{-- TODO : 実用化されるまでコメントアウト
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=reapply" class="nav-link @if($list=="reapply") active @endif">
-          <i class="fa fa-reply nav-icon"></i>
-          <p>
-            希望日変更依頼中
-            @if($reapply_count > 0)
-            <span class="badge badge-secondary right">{{$reapply_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      --}}
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=fix" class="nav-link @if($list=="fix") active @endif">
+        <a href="/events/{{$event_id}}/lesson_requests?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
-            体験授業確定
+            予定確定
             @if($fix_count > 0)
             <span class="badge badge-primary right">{{$fix_count}}</span>
             @endif
@@ -176,78 +152,12 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/{{$domain}}?list=presence" class="nav-link @if($list=="presence") active @endif">
-          <i class="fa fa-calendar-check nav-icon"></i>
+        <a href="/events/{{$event_id}}/lesson_requests?list=cancel" class="nav-link @if($list=="cancel") active @endif">
+          <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
-            体験授業完了
-            @if($presence_count > 0)
-            <span class="badge badge-success right">{{$presence_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-    </ul>
-  </li>
-  <li class="nav-item has-treeview menu-open mt-2">
-    <a href="#" class="nav-link">
-      <i class="nav-icon fa fa-envelope-open-text"></i>
-      <p>
-        体験授業完了後
-        <i class="right fa fa-angle-left"></i>
-      </p>
-    </a>
-    <ul class="nav nav-treeview">
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_contact" class="nav-link @if($list=="entry_contact") active @endif">
-          <i class="fa fa-hourglass-half nav-icon"></i>
-          <p>
-            入会希望連絡待ち
-            @if($entry_contact_count > 0)
-            <span class="badge badge-success right">{{$entry_contact_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_hope" class="nav-link @if($list=="entry_hope") active @endif">
-          <i class="fa fa-thumbs-up nav-icon"></i>
-          <p>
-            入会希望あり
-            @if($entry_hope_count > 0)
-            <span class="badge badge-danger right">{{$entry_hope_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($list=="entry_guidanced") active @endif">
-          <i class="fa fa-file-export nav-icon"></i>
-          <p>
-            入会案内連絡済
-            @if($entry_guidanced_count > 0)
-            <span class="badge badge-secondary right">{{$entry_guidanced_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=complete" class="nav-link @if($list=="complete") active @endif">
-          <i class="fa fa-check-circle nav-icon"></i>
-          <p>
-            入会済み
-            @if($complete_count > 0)
-            <span class="badge badge-secondary right">{{$complete_count}}</span>
-            @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}?list=entry_cancel" class="nav-link @if($list=="entry_cancel") active @endif">
-          <i class="fa fa-ban nav-icon"></i>
-          <p>
-            入会キャンセル
-            @if($entry_cancel_count > 0)
-            <span class="badge badge-secondary right">{{$entry_cancel_count}}</span>
+            申込キャンセル
+            @if($cancel_count > 0)
+            <span class="badge badge-secondary right">{{$cancel_count}}</span>
             @endif
           </p>
         </a>

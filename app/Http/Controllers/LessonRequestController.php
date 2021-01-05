@@ -869,17 +869,18 @@ class LessonRequestController extends UserCalendarController
 
     return $this->save_redirect($res,$param,__('messages.info_deleted'));
   }
-  public function save_matcihng_page(Request $request,$event_id){
+  public function save_matching_page(Request $request,$event_id){
     $param = $this->get_param($request);
     $event = Event::find($event_id);
     if(!isset($event)) abort(404);
     $param['action'] = 'matching';
     $param['item'] = $event;
     $param['event_id'] = $event_id;
+    $param['action_url'] = '/events/'.$event_id.'/lesson_requests/matching';
     $param['message'] = __('messages.info_schedule_matching');
     return view('components.confirm')->with($param);
   }
-  public function save_matcihng(Request $request,$event_id){
+  public function save_matching(Request $request,$event_id){
     $param = $this->get_param($request);
     $event = Event::find($event_id);
     if(!isset($event)) abort(404);
@@ -887,10 +888,24 @@ class LessonRequestController extends UserCalendarController
     $param['item'] = $event;
     $param['event_id'] = $event_id;
 
-    $res = $this->transaction($request, function() use ($request, $id, $param){
+    $res = $this->transaction($request, function() use ($request, $event_id, $param){
+      $event = Event::find($event_id);
+      $event->add_matching_calendar();
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
-
-    return $this->save_redirect($res,$param, 'ほげほげ', "/events/".$event_id."/");
+    if($this->is_success_response($res)){
+      return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
+    }
+    abort(500);
+  }
+  public function _delete(Request $request, $id)
+  {
+    $res = $this->transaction($request, function() use ($request, $id){
+      $param = $this->get_param($request, $id);
+      $user = $this->login_details($request);
+      $param["item"]->update(['status'=>'cancel']);
+      return $this->api_response(200, '', '', $param["item"]);
+    }, '申し込みをキャンセルにしました', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
   }
 }

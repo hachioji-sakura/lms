@@ -8,7 +8,7 @@
   <i class="fa fa-edit"></i>
   {{__('labels.edit')}}
 </a>
-<a title="{{$item->id}}" href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}/cancel"  role="" class="mr-1 underline">
+<a title="{{$item->id}}" href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$item['id']}}?action=delete"  role="" class="mr-1 underline">
   <i class="fa fa-times mr-1"></i>{{__('labels.delete')}}
 </a>
 {{--

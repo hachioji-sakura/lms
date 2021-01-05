@@ -7,7 +7,13 @@
     </div>
     @endif
     <div class="col-6">
-      <form method="POST" action="/{{$domain}}/{{$item->id}}/{{$action}}">
+      <form method="POST"
+        @if(isset($action_url))
+          action="{{$action_url}}"
+        @else
+          action="/{{$domain}}/{{$item->id}}/{{$action}}"
+        @endif
+        >
         @csrf
         @method('PUT')
         <button type="button" class="btn btn-submit btn-primary w-100" accesskey="{{$action}}_form">
