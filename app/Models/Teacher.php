@@ -164,6 +164,12 @@ EOT;
     }
     $tag_names = ['lesson', "lesson_place", 'kids_lesson', 'english_talk_lesson', 'teacher_character', 'manager_type'];
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        //設定があれば差し替え
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         //設定があれば差し替え
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
@@ -171,11 +177,14 @@ EOT;
     }
     $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        //設定があれば差し替え
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && !empty($form[$tag_name])){
         UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     $tag_names = ['schedule_remark'];
