@@ -1486,6 +1486,7 @@ class StudentController extends UserController
       if(!$request->has('event_user_id')) abort(404);
       if(!$request->has('access_key')) abort(404);
       $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
+      $event = $event_user->event;
       if(!isset($event_user)) abort(404);
       if($event_user->access_key != $request->get('access_key')) abort(403);
     }

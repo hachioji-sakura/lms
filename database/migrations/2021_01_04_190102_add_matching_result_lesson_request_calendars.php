@@ -15,7 +15,7 @@ class AddMatchingResultLessonRequestCalendars extends Migration
     {
         Schema::table('lesson_request_calendars', function (Blueprint $table) {
           $table->string('matching_result')->after('id')->default('')->comment('マッチング処理判定結果');
-          $table->integer('lesson_request_date_id')->index('index_lesson_request_date_id')->after('id')->default('')->comment('lesson_requests_dates_id');
+          $table->integer('lesson_request_date_id')->index('index_lesson_request_date_id')->after('id')->comment('lesson_requests_dates_id');
         });
     }
 
