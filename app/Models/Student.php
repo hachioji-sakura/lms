@@ -754,6 +754,7 @@ EOT;
   }
   public function unsubscribe(){
     if($this->status!='regular') return null;
+    if(empty($this->unsubscribe_date)) return null;
     $user_calendar_members = [];
     $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
     //退会以降(退会日含まず）の授業予定をキャンセルにする
@@ -786,6 +787,8 @@ EOT;
     }
   }
   public function recess(){
+    if(empty($this->recess_end_date)) return null;
+    if(empty($this->recess_start_date)) return null;
 
     if(strtotime($this->recess_end_date) < strtotime(date('Y-m-d'))){
       //休会終了の場合
