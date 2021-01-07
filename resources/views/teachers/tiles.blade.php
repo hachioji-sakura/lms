@@ -84,6 +84,24 @@ $(function(){
     </div>
   </div>
   <div class="col-12 col-md-8">
+    <label for="search_subject" class="w-100">
+      {{__('labels.charge_subject')}}
+    </label>
+
+    <div class="form-group w-100 charge_subject_1 charge_subject">
+      <select name="search_subject[]" class="form-control select2" width=100% placeholder="{{__('labels.charge_subject')}}"  multiple="multiple" >
+        @foreach($attributes['charge_subject'] as $index=>$name)
+        <option
+        @if(isset($filter['user_filter']['search_subject']) && in_array($index, $filter['user_filter']['search_subject'])==true)
+        selected
+        @endif
+        value="{{$index}}"
+        >{{$name}}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="col-12 col-md-8">
       <label for="search_word" class="w-100">
         {{__('labels.search_keyword')}}
       </label>

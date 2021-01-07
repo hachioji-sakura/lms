@@ -210,6 +210,15 @@ EOT;
                   ->whereIn('tag_value', $tag_values);
     });
   }
+  public function scopeSearchSubjects($query, $subjects){
+    $tags = [];
+    foreach($subjects as $subject){
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 10];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 20];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 30];
+    }
+    return $this->scopeSearchTags($query, $tags);
+  }
   /**
    *　スコープ：担当生徒
    * @param  Integer $id  講師ID

@@ -169,6 +169,9 @@ class StudentController extends UserController
     if(isset($request->search_lesson)){
       $items->hasTags('lesson', $request->search_lesson);
     }
+    if(isset($request->search_subject)){
+      $items->searchSubjects($request->search_subject);
+    }
 
     //ステータス
     if(isset($request->status)){

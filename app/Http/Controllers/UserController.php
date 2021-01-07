@@ -99,6 +99,7 @@ class UserController extends Controller
       'user_filter' => [
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
+        'search_subject' => $request->search_subject,
         'post_no' => $request->post_no,
         'place_id' => $request->place_id,
       ],
