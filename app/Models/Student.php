@@ -210,6 +210,15 @@ EOT;
                   ->whereIn('tag_value', $tag_values);
     });
   }
+  public function scopeSearchSubjects($query, $subjects){
+    $tags = [];
+    foreach($subjects as $subject){
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 10];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 20];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 30];
+    }
+    return $this->scopeSearchTags($query, $tags);
+  }
   /**
    *　スコープ：担当生徒
    * @param  Integer $id  講師ID
@@ -350,11 +359,14 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     //1:1タグ
@@ -751,6 +763,7 @@ EOT;
   }
   public function unsubscribe(){
     if($this->status!='regular') return null;
+    if(empty($this->unsubscribe_date)) return null;
     $user_calendar_members = [];
     $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
     //退会以降(退会日含まず）の授業予定をキャンセルにする
@@ -783,6 +796,8 @@ EOT;
     }
   }
   public function recess(){
+    if(empty($this->recess_end_date)) return null;
+    if(empty($this->recess_start_date)) return null;
 
     if(strtotime($this->recess_end_date) < strtotime(date('Y-m-d'))){
       //休会終了の場合

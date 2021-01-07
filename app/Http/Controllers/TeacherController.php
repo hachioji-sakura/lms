@@ -154,6 +154,7 @@ class TeacherController extends StudentController
                     ->get();
         foreach($students as $student){
           foreach($calendars as $calendar){
+            if($calendar->status=='dummy') continue;
             if($calendar->is_member($student->user_id)){
               $student['current_calendar_start_time'] = $calendar['start_time'];
               $student['current_calendar'] = $calendar->details();
