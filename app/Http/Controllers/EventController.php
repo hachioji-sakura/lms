@@ -215,6 +215,7 @@ class EventController extends MilestoneController
      ->with($param);
    }
    public function to_inform(Request $request , $id){
+     set_time_limit(600);
      $param = $this->get_param($request, $id);
      $select_send_user_ids = $request->get('select_send_user_ids');
      $send_users = EventUser::where('event_id', $id)->whereIn('id', $select_send_user_ids)->get();

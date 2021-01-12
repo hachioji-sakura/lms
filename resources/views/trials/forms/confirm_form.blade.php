@@ -20,6 +20,8 @@
 --}}
   <div class="col-6 p-3 font-weight-bold" >ご希望の校舎</div>
   <div class="col-6 p-3"><span id="lesson_place_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >体験授業当日に入会等の説明を希望しますか</div>
+  <div class="col-6 p-3"><span id="parent_interview_name"></span></div>
 </div>
 @if((!isset($_edit) || $_edit!=true) && !(isset($is_already_registered_student) && $is_already_registered_student==true))
 <div class="row">

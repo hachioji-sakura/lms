@@ -549,7 +549,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function datetime(){
-    return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
+    return $this->dateweek_format($this->start_time, 'Y年n月j日').' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
   public function getTimezoneAttribute(){
     return $this->timezone();
