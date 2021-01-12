@@ -227,6 +227,7 @@ class EventController extends MilestoneController
      ->with($param);
    }
    public function to_inform(Request $request , $id){
+     set_time_limit(1200);
      $param = $this->get_param($request, $id);
      $select_send_user_ids = $request->get('select_send_user_ids');
      $send_users = EventUser::where('event_id', $id)->whereIn('id', $select_send_user_ids)->get();
@@ -242,5 +243,11 @@ class EventController extends MilestoneController
        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
      }
      return $this->save_redirect($res, $param, '送信しました');
+   }
+   public function schedule_lists(Request $request, $id){
+     return "hoge";
+   }
+   public function schedule_lists_commit(Request $request, $id){
+     return "fuga";
    }
 }

@@ -233,9 +233,10 @@ EOT;
 
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
     }
+    //そのUserの有効なカレンダーを取得（$ret[w][sun] = items形式で取得)
     public function get_enable_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel', 'dummy'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -247,6 +248,7 @@ EOT;
       }
       return $ret;
     }
+    //レッスン単位に有効なカレンダーを取得（$ret[lesson][w][sun] = items形式で取得)
     public function get_enable_lesson_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
       ->whereNotIn('status', ['cancel', 'dummy'])

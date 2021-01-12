@@ -887,16 +887,17 @@ class LessonRequestController extends UserCalendarController
     $param['action'] = 'matching';
     $param['item'] = $event;
     $param['event_id'] = $event_id;
-
+    echo "-------save_matching--------";
     $res = $this->transaction($request, function() use ($request, $event_id, $param){
       $event = Event::find($event_id);
       $event->add_matching_calendar();
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
     if($this->is_success_response($res)){
+      return "hoge";
       return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
     }
-    abort(500);
+    abort(500, "マッチング処理不具合");
   }
   public function _delete(Request $request, $id)
   {

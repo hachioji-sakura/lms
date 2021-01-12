@@ -1,5 +1,5 @@
-@if(count($item->calendar_settings)>0)
-  @foreach($item->calendar_settings as $setting)
+@if(count($item->get_calendar_settings())>0)
+  @foreach($item->get_calendar_settings() as $setting)
     <div class="row border-bottom">
       <div class="col-12 col-md-9 p-2 border-right">
           <span class="description-text mr-2">
@@ -17,7 +17,8 @@
           </small>
           <br>
           <span class="description-text mr-2">
-          @foreach($setting['teachers'] as $member)
+          @foreach($setting->members as $member)
+            @if($member->user->teacher == null ) @continue @endif
             <a href='/teachers/{{$member->user->teacher->id}}'>
             <i class="fa fa-user-tie mr-1"></i>
             {{$member->user->teacher->name()}}
@@ -56,10 +57,10 @@
         </a>
         @endif
         @if($setting->status=='fix')
-        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/to_calendar" role="button" class="btn btn-outline-success btn-sm ml-1">
+        <a href="javascript:void(0);" title="{{$setting->id}}" page_title="{{__('labels.schedule_add')}}" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/to_calendar" role="button" class="btn btn-outline-success btn-sm ml-1">
           <i class="fa fa-calendar-plus"></i>
         </a>
-        <a href="javascript:void(0);" title="{{$setting["id"]}}" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendar_settings/{{$setting["id"]}}/delete_calendar" role="button" class="btn btn-outline-danger btn-sm  ml-1">
+        <a href="javascript:void(0);" title="{{$setting->id}}" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/calendar_settings/{{$setting->id}}/delete_calendar" role="button" class="btn btn-outline-danger btn-sm  ml-1">
           <i class="fa fa-calendar-minus"></i>
         </a>
         @elseif($setting->status=='new')

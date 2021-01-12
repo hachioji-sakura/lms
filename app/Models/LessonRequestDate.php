@@ -26,6 +26,9 @@ class LessonRequestDate extends Model
   public function lesson_request(){
     return $this->belongsTo('App\Models\LessonRequest');
   }
+  public function calendars(){
+    return $this->hasMany('App\Models\LessonRequestCalendar');
+  }
   public function getFromHourAttribute(){
     $h = explode(':', $this->from_time_slot);
     return intval($h[0]);
@@ -70,7 +73,7 @@ class LessonRequestDate extends Model
       }
       else {
         //振替元が一意にできない
-        
+
       }
     }
     else {

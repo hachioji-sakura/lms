@@ -5,6 +5,7 @@ use App;
 use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
+use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;
@@ -1078,5 +1079,31 @@ EOT;
     }
     return false;
   }
-
+  public function get_current_charge_teachers(){
+    $ret = [];
+    foreach($this->get_current_schedule() as $c){
+      $ret[$c->user_id] = $c->user->teacher;
+    }
+    if(count($ret)==0){
+      $lesson = 1;
+      $calendar_settings = $this->user->get_enable_lesson_calendar_settings();
+      if(isset($calendar_settings[$lesson])){
+        foreach($calendar_settings[$lesson] as $method => $v1){
+          foreach($v1 as $w => $calendar_setting){
+            $ret[$calendar_setting->user_id] = $calendar_setting->user-teacher;
+          }
+        }
+      }
+    }
+    return $ret;
+  }
+  public function get_current_schedule(){
+    //1か月前の通常授業をベースに担当の講師を取得する
+    $s = date('Y-m-1 00:00:00', strtotime('-1 month'));
+    $c = UserCalendar::findUser($this->user_id)
+                    ->where('teaching_type', 'regular')
+                    ->where('start_time', '>', $s)
+                    ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
+    return $c;
+  }
 }

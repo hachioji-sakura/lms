@@ -15,6 +15,18 @@ class LessonRequestCalendar extends UserCalendar
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  public function lesson_request_date(){
+    return $this->belongsTo('App\Models\LessonRequestDate');
+  }
+  public function prev_calendar(){
+    return $this->belongsTo('App\Models\UserCalendar', 'prev_calendar_id');
+  }
+  public function next_calendar(){
+    return $this->belongsTo('App\Models\UserCalendar', 'next_calendar_id');
+  }
+  public function getDurationAttribute(){
+    return date('H:i', strtotime($this->start_time)).'～'.date('H:i', strtotime($this->end_time));
+  }
   public function tags(){
     //TODO :
     return null;

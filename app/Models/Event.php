@@ -195,7 +195,7 @@ class Event extends Milestone
         if(!isset($h) || $h->is_private_holiday()==false){
           $event_dates[] = $d;
         }
-        $d = date('Y/m/d', strtotime('+1 day '.$d));
+        $d = date('Y-m-d', strtotime('+1 day '.$d));
       }
       return $event_dates;
     }
@@ -212,10 +212,33 @@ class Event extends Milestone
     }
     public function add_matching_calendar(){
         if($this->is_need_request()!=true) return false;
-        if($this->status != 'new') return false;
-        $dates = LessonRequestDate::searchEvent($this->id)->get();
-        foreach($dates as $d){
-
+        //if($this->status != 'new') return false;
+        //このイベントに対する申し込みを取得
+        foreach($this->get_event_dates() as $d){
+          $requests = LessonRequest::where('event_id', $this->id)->where('type', 'season_lesson')->searchDate($d)->get();
+          //日単位に申し込みをチェック
+          $teacher_request_count = [];
+          if(isset($requests) && count($requests)>0){
+            echo "<h4>--------------(".$d.")(request_count=".count($requests).")------------------------</h4>";
+            if(count($requests)>2){
+              //申し込みが3件以上ある日を優先的にチェック
+              foreach($requests as $r){
+                $charge_teachers = $r->student->get_current_charge_teachers();
+                echo "<h5>request_id=".$r->id."/charge_teacher_count = ".count($charge_teachers)."</h5>";
+                foreach($charge_teachers as $user_id => $teacher){
+                  echo "<h5>user_id=".$user_id."</h5>";
+                  if(isset($teacher_request_count[$user_id])) $teacher_request_count[$user_id]++;
+                  else $teacher_request_count[$user_id] = 1;
+                  if($teacher_request_count[$user_id] > 2) {
+                    //この講師を中心に予定を組む
+                    \Log::warning("--------------add_matching_calendar 優先度１------------------------");
+                    $r->create_matching_lessons(1, $teacher->id);
+                  }
+                }
+              }
+            }
+          }
         }
     }
+
 }

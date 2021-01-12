@@ -50,7 +50,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('events/{event_id}/lesson_requests', 'LessonRequestController@index');
   Route::get('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching_page');
   Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
-  Route::get('events/{event_id}/schedules', 'EventController@schedule_lists');
+  Route::get('events/{id}/schedules', 'EventController@schedule_lists');
+  Route::put('events/{id}/schedules', 'EventController@schedule_lists_commit');
 
 
   Route::get('events/{id}/to_inform','EventController@to_inform_page');
