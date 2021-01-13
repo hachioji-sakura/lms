@@ -97,7 +97,7 @@
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <input type="text"  name="school_vacation_start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
-        @if($debug==true && $_edit==false) value="2020/01/01" @endif
+        @if($debug==true && $_edit==false) value="2020/12/26" @endif
         @if($_edit==true)
         value="{{$item->get_tag_value('school_vacation_start_date')}}"
         @endif
@@ -108,7 +108,7 @@
           <span class="input-group-text">～</span>
         </div>
         <input type="text"  name="school_vacation_end_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
-        @if($debug==true && $_edit==false) value="2020/02/01" @endif
+        @if($debug==true && $_edit==false) value="2021/01/06" @endif
         @if($_edit==true)
         value="{{$item->get_tag_value('school_vacation_end_date')}}"
         @endif

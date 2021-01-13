@@ -89,9 +89,6 @@
             @else
               value = "{{date('Y/m/d')}}"
             @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
-            @endif
             >
           </div>
         </div>
@@ -113,9 +110,6 @@
               value="{{date('Y/m/d', strtotime($item['event_to_date']))}}"
             @else
               value = "{{date('Y/m/d')}}"
-            @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
             @endif
             >
           </div>
@@ -139,9 +133,6 @@
             @else
               value = "{{date('Y/m/d')}}"
             @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
-            @endif
             >
           </div>
         </div>
@@ -164,9 +155,6 @@
               value="{{date('Y/m/d', strtotime($item['response_to_date']))}}"
             @else
               value = "{{date('Y/m/d')}}"
-            @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
             @endif
             >
           </div>

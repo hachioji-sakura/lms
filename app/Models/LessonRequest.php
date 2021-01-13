@@ -729,6 +729,8 @@ class LessonRequest extends Model
     $course_minutes = 30;
     if($lesson==1) $course_minutes = 60;
     //１０分ずらしで、授業時間分の範囲を配列に設定する
+    $slot_unit_minutes = 10;
+    if($this->type=='season_lesson') $slot_unit_minutes = 30;
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
@@ -747,7 +749,7 @@ class LessonRequest extends Model
       $time_list[]=[
         'start_time' => $_start, 'end_time' => $_end, 'status' => $status, 'duration' => $_duration,
       ];
-      $_start = date("Y-m-d H:i:s", strtotime("+10 minute ".$_start));
+      $_start = date("Y-m-d H:i:s", strtotime("+".$slot_unit_minutes." minute ".$_start));
     }
     return $time_list;
   }

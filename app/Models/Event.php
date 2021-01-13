@@ -229,10 +229,10 @@ class Event extends Milestone
                   echo "<h5>user_id=".$user_id."</h5>";
                   if(isset($teacher_request_count[$user_id])) $teacher_request_count[$user_id]++;
                   else $teacher_request_count[$user_id] = 1;
-                  if($teacher_request_count[$user_id] > 2) {
+                  if($teacher_request_count[$user_id] > 0) {
                     //この講師を中心に予定を組む
                     \Log::warning("--------------add_matching_calendar 優先度１------------------------");
-                    $r->create_matching_lessons(1, $teacher->id);
+                    $r->create_matching_lessons(1, $teacher->id, $d);
                   }
                 }
               }
