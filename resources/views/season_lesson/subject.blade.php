@@ -39,7 +39,7 @@
             <th class="p-1 text-center bg-gray subject_name">{{$subject_name}}</th>
             <td class="p-1 text-center">
               <select name="{{$subject}}_day_count" class="form-control subject_day_count"  required="true" onChange='subject_day_count_onload()' validate="day_count_check()">
-                @for($i=0;$i<10;$i++)
+                @for($i=0;$i<31;$i++)
                 <option value="{{$i}}"
                   @if($_edit==true && $item->has_tag($subject.'_day_count', $i)==true) selected @endif
                   >{{$i}}</option>

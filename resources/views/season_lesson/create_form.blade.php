@@ -1,3 +1,4 @@
+<?php $debug = true ?>
 @section('first_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
@@ -96,7 +97,7 @@
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
-        <input type="text"  name="school_vacation_start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
+        <input type="text" name="school_vacation_start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
         @if($debug==true && $_edit==false) value="2020/12/26" @endif
         @if($_edit==true)
         value="{{$item->get_tag_value('school_vacation_start_date')}}"

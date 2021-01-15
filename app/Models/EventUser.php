@@ -69,6 +69,26 @@ class EventUser extends Milestone
     }
     return $ret;
   }
+  /**
+   *　スコープ：キーワード検索
+   * @param  String $word  キーワード
+   */
+  public function scopeSearchWord($query, $word)
+  {
+    $search_words = $this->get_search_word_array($word);
+    return $query->whereHas('student', function($query) use ($search_words) {
+        $query = $query->where(function($query)use($search_words){
+          foreach($search_words as $_search_word){
+            $_like = '%'.$_search_word.'%';
+            $query = $query->orWhere('name_last','like', $_like)
+              ->orWhere('name_first','like', $_like)
+              ->orWhere('kana_last','like', $_like)
+              ->orWhere('kana_first','like', $_like);
+            }
+        });
+    });
+  }
+
   public function to_inform(){
     $access_key = $this->create_token();
     $param = $this->event->toArray();

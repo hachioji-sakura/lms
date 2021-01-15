@@ -1,3 +1,4 @@
+<?php $debug = true; ?>
 <div class="col-12 mt-1">
   <label for="season_lesson_course" class="w-100">
     @if(!isset($title) || empty($title))
@@ -35,6 +36,8 @@
       <input class="form-check-input icheck flat-red ml-1" type="radio" name="hope_timezone" id="hope_timezone_order" value="order"
         @if(isset($item) && isset($item->id) && $item->has_tag("hope_timezone", "order"))
         checked
+        @elseif($debug==true)
+        checked
         @endif
         onChange="hope_timezone_all_set()"
         required="true">
@@ -51,6 +54,8 @@
         <option value="{{$h}}"
         @if($_edit===true )
         selected
+        @elseif($debug==true && $h==11)
+        selected
         @endif
         >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>
       @endfor
@@ -65,6 +70,8 @@
       @for ($h = 11; $h < 19; $h++)
         <option value="{{$h}}"
         @if($_edit===true )
+        selected
+        @elseif($debug==true && $h==18)
         selected
         @endif
         >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>

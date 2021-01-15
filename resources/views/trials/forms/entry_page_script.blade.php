@@ -4,8 +4,13 @@ $(function(){
   console.log('entry_page_script:'+page_id);
   @if($_edit==true)
   var form_data = null;
+  util.removeLocalData(page_id);
   @else
   var form_data = util.getLocalData(page_id);
+  if(util.isEmpty(form_data) || util.isEmpty(form_data['url']) || form_data['url']!=location.href){
+    form_data = null;
+    util.removeLocalData(page_id);
+  }
   @endif
   base.pageSettinged(page_id, form_data);
   subject_onload();
@@ -16,7 +21,7 @@ $(function(){
   //submit
   $("button.btn-submit").on('click', function(e){
     e.preventDefault();
-
+    util.removeLocalData(page_id);
     if(front.validateFormValue(page_id+' .carousel-item.active')){
       $(this).prop("disabled",true);
       $("form").submit();
@@ -54,6 +59,7 @@ $(function(){
   });
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
+    form_data["url"] = location.href;
     console.log('form_data_adjust');
     form_data["email"] = $("input[name=email]").val();
     for(var i=1;i<4;i++){

@@ -139,6 +139,7 @@ class LessonRequestController extends UserCalendarController
          if(empty($datetime)) continue;
          $d = explode(' ', $datetime);
          $date = $d[0];
+         if(!isset($form['hope_'.strtotime($date).'_date']) || $form['hope_'.strtotime($date).'_date']!='true') continue;
          $timezone = trim($d[1]);
          $t = explode('-', $timezone);
          $form['request_dates'][$date] = [
@@ -158,7 +159,6 @@ class LessonRequestController extends UserCalendarController
                   ->first();
        $form['create_user_id'] = $event_user->user_id;
      }
-
      return $form;
    }
 
@@ -186,6 +186,7 @@ class LessonRequestController extends UserCalendarController
       ]);
     }
 
+
     $param = $this->get_param($request);
     $events = Event::where('event_to_date', '>', date('Y-m-d'))->studentLessonRequest();
     if($event_id>0){
@@ -196,12 +197,12 @@ class LessonRequestController extends UserCalendarController
     }
     $events = $events->get();
     $user = $param['user'];
-    if(!$this->is_manager($user->role)){
+    if(isset($user) && !$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
       abort(403);
     }
 
-    $_table = $this->search($request);
+    $_table = $this->search($request, $event_id);
 
     $param['event_id'] = $event_id;
     return view('season_lesson.lists', $_table)
@@ -221,16 +222,24 @@ class LessonRequestController extends UserCalendarController
       if(!isset($item)){
         abort(404);
       }
-      if($request->has('event_user_id') && $request->has('access_key')){
+      if($request->has('event_user_id')){
         //access_keyとevent_user_idを持つ場合
-        $event_user = EventUser::where('access_key', $request->get('access_key'))
-                  ->where('id', $request->get('event_user_id'))->first();
+        $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
         if($event_user->event_id != $item->event_id) abort(404);
+        if(isset($ret['user'])){
+          if(!(
+            ($this->is_parent($ret['user']->role)==true && $ret['user']->user_id == $item->create_user_id) ||
+              $this->is_manager($ret['user']->role)==true)){
+            //ログインユーザーが起票者ではない
+            //事務権限ではない場合
+            abort(404);
+          }
+        }
+        else if($event_user->acces_key!=$event_user->access_key) {
+          abort(404);
+        }
       }
-      else if($this->is_parent($ret['user']->role)==true && $ret['user']->user_id != $item->create_user_id){
-        //ログインユーザーが起票者ではない場合
-        abort(404);
-      }
+
       $ret['item'] = $item;
     }
     else {
@@ -252,14 +261,14 @@ class LessonRequestController extends UserCalendarController
    * @param  \Illuminate\Http\Request  $request
    * @return [Collection, field]
    */
-  public function search(Request $request, $user_id=0)
+  public function search(Request $request, $event_id=0)
   {
-    $items = $this->model()->where('type', 'season_lesson');
-    if($request->has('event_id')) $items = $this->model()->where('event_id', $request->get('event_id'));
-    $items->with('parent');
     $user = $this->login_details($request);
+    $items = $this->model()->where('type', 'season_lesson');
+    $items = $items->where('event_id', $event_id);
+    dd($items->toSql());
+    $items->with('parent');
     $items = $this->_search_scope($request, $items);
-
     $count = $items->count();
 
     $request->merge([
@@ -272,7 +281,7 @@ class LessonRequestController extends UserCalendarController
     }
     $items = $this->_search_sort($request, $items);
     $items = $items->paginate($request->get('_line'));
-    \Log::warning("TrailController::search");
+    dd($items);
     return ['items' => $items, 'count' => $count];
   }
   /**
@@ -803,7 +812,6 @@ class LessonRequestController extends UserCalendarController
    }
    public function _update(Request $request, $id)
    {
-     $res =  $this->transaction($request, function() use ($request, $id){
        $form = $this->create_form($request);
        $item = LessonRequest::where('id', $id)->first();
        $item->change($form);
@@ -811,6 +819,7 @@ class LessonRequestController extends UserCalendarController
          $item->update(['status' => 'confirm']);
        }
        return $this->api_response(200, '', '', $item);
+       $res =  $this->transaction($request, function() use ($request, $id){
      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
@@ -894,7 +903,6 @@ class LessonRequestController extends UserCalendarController
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
     if($this->is_success_response($res)){
-      return "hoge";
       return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
     }
     abort(500, "マッチング処理不具合");

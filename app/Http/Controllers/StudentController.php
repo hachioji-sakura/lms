@@ -1473,7 +1473,16 @@ class StudentController extends UserController
     $view = 'season_lesson.create';
     $user = $this->login_details($request);
     $param['item'] = $this->model()->find($id);
-    $event = Event::findUser($param['item']->user_id)->where('status', 'new')->first();
+
+    //TODO
+    $event = Event::findUser($param['item']->user_id);//->where('event_from_date', '>', date('Y-m-d'));
+    if($this->domain=='students'){
+      $event = $event->studentLessonRequest();
+    }
+    else if($this->domain=='teachers'){
+      $event = $event->teacherLessonRequest();
+    }
+    $event = $event->first();
     if(isset($user) && $user->role=='manager'){
       if(isset($event)){
         $event_user = $event->event_users->where('user_id', $param['item']->user_id)->sortByDesc('id')->first();

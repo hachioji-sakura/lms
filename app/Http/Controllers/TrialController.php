@@ -315,9 +315,12 @@ class TrialController extends UserCalendarController
   public function show_dialog(Request $request, $id)
   {
     if(!$request->has('student_parent_id')) abort(403);
+    dd(1);
     $param = $this->get_common_param($request);
     $item = LessonRequest::where('id', $id)->first();
-    if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id'))abort(403);
+    if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id')){
+      abort(403);
+    }
     $param['item'] = $item;
     return view('trials.dialog', [])
       ->with($param);

@@ -182,7 +182,7 @@ class EventController extends MilestoneController
     $form['response_from_date'] = $request->get('response_from_date');
     $form['response_to_date'] = $request->get('response_to_date');
     $form['title'] = $request->get('title');
-    $form['status'] = 'new';
+    //$form['status'] = 'new';
     $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
     return $form;
   }
@@ -203,6 +203,21 @@ class EventController extends MilestoneController
       $res = $this->transaction($request, function() use ($request, $form){
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
+   }
+   public function _update(Request $request, $id)
+   {
+     $form = $this->create_form($request);
+     $res = $this->save_validate($request);
+     if(!$this->is_success_response($res)){
+       return $res;
+     }
+     $res =  $this->transaction($request, function() use ($request, $id){
+       $form = $this->create_form($request);
+       $item = $this->model()->where('id', $id)->first();
+       $item->change($form);
+       return $this->api_response(200, '', '', $item);
+     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
    }
    public function to_inform_page(Request $request , $id){
      $param = $this->get_param($request, $id);

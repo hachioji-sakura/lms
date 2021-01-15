@@ -153,6 +153,7 @@ function day_count_check_onload(){
        '</tr>'
       ].join('');
       $('#hope_datetime_list').append(_html);
+      console.log(v);
       $('input[name="hope_datetime[]"][accessKey="'+id+'"]').val(v);
     }
   });

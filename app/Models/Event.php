@@ -54,6 +54,15 @@ class Event extends Milestone
         });
       });
     }
+    public function scopeTeacherLessonRequest($query)
+    {
+      return $query->whereHas('template', function($query){
+        $query->where('url', '!=', '');
+        $query->whereHas('tags', function($query){
+          $query->where('tag_key', 'user_role')->where('tag_value', 'teacher');
+        });
+      });
+    }
     public function getResponseTermAttribute(){
       return $this->term_format($this->response_from_date, $this->response_to_date, 'Y年m月d日');
     }
@@ -190,7 +199,7 @@ class Event extends Milestone
     public function get_event_dates(){
       $event_dates = [];
       $d = $this->event_from_date;
-      while(strtotime($this->event_to_date) > strtotime($d)){
+      while(strtotime($this->event_to_date) >= strtotime($d)){
         $h = Holiday::where('date', $d)->first();
         if(!isset($h) || $h->is_private_holiday()==false){
           $event_dates[] = $d;
@@ -218,6 +227,7 @@ class Event extends Milestone
           $requests = LessonRequest::where('event_id', $this->id)->where('type', 'season_lesson')->searchDate($d)->get();
           //日単位に申し込みをチェック
           $teacher_request_count = [];
+          dd($requests);
           if(isset($requests) && count($requests)>0){
             echo "<h4>--------------(".$d.")(request_count=".count($requests).")------------------------</h4>";
             if(count($requests)>2){
@@ -232,7 +242,7 @@ class Event extends Milestone
                   if($teacher_request_count[$user_id] > 0) {
                     //この講師を中心に予定を組む
                     \Log::warning("--------------add_matching_calendar 優先度１------------------------");
-                    $r->create_matching_lessons(1, $teacher->id, $d);
+                    //$r->create_matching_lessons(1, $teacher->id, $d);
                   }
                 }
               }
