@@ -623,7 +623,8 @@ class UserCalendarController extends MilestoneController
         else $_param = explode(',', $form['search_place'].',');
         $items = $items->findPlaces($_param);
       }
-      if(isset($form['search_is_online']) && $form['search_is_online']=='true'){
+
+      if(isset($form['search_is_online']) && ($form['search_is_online']=='true' || $form['search_is_online']==['true'])){
         $items = $items->searchTags([['tag_key'=>'is_online', 'tag_value' => 'true']]);
       }
       //講師ID
