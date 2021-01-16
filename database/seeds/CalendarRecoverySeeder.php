@@ -188,7 +188,7 @@ EOT;
 
     public function update_exchange_limit_date_20201231(){
       DB::table('lms.user_calendar_members')->where('exchange_limit_date','>','2020-03-26')
-                                            ->where('exchange_limit_date','<','2021-01-91')
+                                            ->where('exchange_limit_date','<','2021-01-01')
                                             ->whereRaw("calendar_id in (select id from user_calendars where start_time between '2020-04-01 00:00:00' and '2020-06-01 00:00:00')", [])
                                             ->update([
                                               'exchange_limit_date' => '2020-12-31'
