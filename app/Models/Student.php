@@ -340,15 +340,17 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
-      'entry_date' => null,
-      'unsubscribe_date' => null,
+      'entry_date' => '',
+      'unsubscribe_date' => '',
     ];
-    $update_form = [];
+    $update_form = [
+    ];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
+      if(array_key_exists($key, $form)){
         $update_form[$key] = $form[$key];
       }
     }
+
     $this->update($update_form);
     //1:nタグ
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
