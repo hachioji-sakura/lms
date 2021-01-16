@@ -120,7 +120,7 @@ EOT;
     ];
     $update_form = [];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
+      if(array_key_exists($key, $form)){
         $update_form[$key] = $form[$key];
       }
     }
