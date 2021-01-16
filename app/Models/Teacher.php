@@ -114,13 +114,15 @@ EOT;
       'bank_account_type' => "",
       'bank_account_no' => "",
       'bank_account_name' => "",
-      'entry_date' => "",
-      'unsubscribe_date' => "",
+      'entry_date' => null,
+      'unsubscribe_date' => null,
       'status' => '',
     ];
     $update_form = [];
     foreach($update_field as $key => $val){
-      $update_form[$key] = $form[$key];
+      if(isset($form[$key])){
+        $update_form[$key] = $form[$key];
+      }
     }
     $this->update($update_form);
 
