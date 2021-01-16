@@ -645,6 +645,7 @@ class LessonRequest extends Model
     foreach($this->get_time_list($lesson) as $day => $time_list){
       if(!empty($target_day) && $day!=$target_day) continue;
       $this->create_request_calendar($lesson, $time_list, $teacher_id, $day);
+      return ;
     }
     return $this->request_calendar_review($teacher_id, $target_day);
   }
@@ -722,15 +723,18 @@ class LessonRequest extends Model
     if(empty($trial_start_time) || empty($trial_end_time)){
       return $time_list;
     }
+    /*TODO デバッグのため一時的にコメントアウト 2021/1/15
     if(strtotime("now") > strtotime($trial_start_time)){
       return [];
     }
+    */
     //体験授業は、30分、60分の2択
     $course_minutes = 30;
     if($lesson==1) $course_minutes = 60;
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     $slot_unit_minutes = 10;
     if($this->type=='season_lesson') $slot_unit_minutes = 30;
+
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
@@ -762,8 +766,25 @@ class LessonRequest extends Model
     $teacher = Teacher::find($teacher_id);
     $lesson_request_date = $this->request_dates->where('day', $target_day)->first();
     $updated_at = LessonRequestCalendar::where('lesson_request_date_id', $lesson_request_date->id)->where('user_id', $teacher->user_id)->max('updated_at');
+    $teacher_calendars = UserCalendar::findUser($teacher->user_id)
+                    ->findStatuses(['fix', 'confirm', 'new'])
+                    ->searchDate($lesson_request_date->from_datetime, $lesson_request_date->to_datetime)
+                    ->orderBy('start_time')
+                    ->get();
+
     $is_create = false;
-    if(strtotime($this->updated_at)  > strtotime($updated_at) && strtotime($teacher->updated_at) > strtotime($updated_at)){
+    $course_minutes = intval($this->course_minutes);
+    if($this->type=='trial'){
+      if($course_minutes > 60) $course_minutes = 60;
+      //塾以外の体験授業は、すべて30分
+      if($lesson != 1 && $course_minutes > 30) $course_minutes=30;
+      $minute_count = intval($course_minutes / 10);
+    }
+    else if($this->type=='season_lesson'){
+      if($course_minutes > 90) $course_minutes = 60;
+    }
+
+    if($updated_at==null || (strtotime($this->updated_at)  > strtotime($updated_at) && strtotime($teacher->updated_at) > strtotime($updated_at))){
       $is_create = true;
       //更新すべき状況
       $w = date('w', strtotime($target_day));
@@ -772,20 +793,6 @@ class LessonRequest extends Model
       $trial_enable_times = $teacher->user->get_trial_enable_times(10);
       if(isset($trial_enable_times[$lesson_week])) $trial_enable_times = $trial_enable_times[$lesson_week];
       else $trial_enable_times = null;
-      //講師の対象日のカレンダーを取得
-      $_time_list = $time_list;
-      $course_minutes = intval($this->course_minutes);
-      if($course_minutes > 60) $course_minutes = 60;
-      //塾以外の体験授業は、すべて30分
-      if($lesson != 1 && $course_minutes > 30) $course_minutes=30;
-      $minute_count = intval($course_minutes / 10);
-      //TODO create_user_id　属性除去
-      //lesson_request_idは、lesson_request_date_idがあればいらない
-      $teacher_calendars = UserCalendar::findUser($teacher->user_id)
-                      ->findStatuses(['fix', 'confirm', 'new'])
-                      ->searchDate($lesson_request_date->from_datetime, $lesson_request_date->to_datetime)
-                      ->orderBy('start_time')
-                      ->get();
 
       if(!isset($lesson_request_date)) return false;
       $create_form = [
@@ -794,12 +801,13 @@ class LessonRequest extends Model
         'remark' => ''
       ];
       LessonRequestCalendar::where('lesson_request_date_id', $lesson_request_date->id)->where('user_id', $teacher->user_id)->delete();
-      foreach($_time_list as $i => $_time){
+      foreach($time_list as $i => $_time){
         $create_form['start_time'] = $_time['start_time'];
         $create_form['end_time'] = $_time['end_time'];
         LessonRequestCalendar::create($create_form);
       }
     }
+
     foreach($lesson_request_date->calendars as $calendar){
       $conflict_calendar = null;
       $is_time_conflict = false;

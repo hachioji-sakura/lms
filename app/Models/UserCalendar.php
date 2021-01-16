@@ -557,6 +557,7 @@ EOT;
     return $this->timezone();
   }
   public function getStatusNameAttribute(){
+    return $this->status;
     return $this->status_name();
   }
   public function getPlaceFloorNameAttribute(){

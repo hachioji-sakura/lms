@@ -1081,16 +1081,21 @@ EOT;
   }
   public function get_current_charge_teachers(){
     $ret = [];
-    foreach($this->get_current_schedule() as $c){
-      $ret[$c->user_id] = $c->user->teacher;
+    $current_schedule = $this->get_current_schedule();
+    if(isset($current_schedule)){
+      foreach($current_schedule as $c){
+        $ret[$c->user_id] = $c->user->teacher;
+      }
     }
     if(count($ret)==0){
       $lesson = 1;
       $calendar_settings = $this->user->get_enable_lesson_calendar_settings();
-      if(isset($calendar_settings[$lesson])){
+      if(isset($calendar_settings) && isset($calendar_settings[$lesson])){
         foreach($calendar_settings[$lesson] as $method => $v1){
-          foreach($v1 as $w => $calendar_setting){
-            $ret[$calendar_setting->user_id] = $calendar_setting->user-teacher;
+          foreach($v1 as $w => $_settings){
+            foreach($_settings as $setting){
+              $ret[$setting->user_id] = $setting->user->teacher;
+            }
           }
         }
       }
@@ -1100,6 +1105,7 @@ EOT;
   public function get_current_schedule(){
     //1か月前の通常授業をベースに担当の講師を取得する
     $s = date('Y-m-1 00:00:00', strtotime('-1 month'));
+    \Log::warning("get_current_schedule");
     $c = UserCalendar::findUser($this->user_id)
                     ->where('teaching_type', 'regular')
                     ->where('start_time', '>', $s)

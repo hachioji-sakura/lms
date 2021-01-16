@@ -266,7 +266,6 @@ class LessonRequestController extends UserCalendarController
     $user = $this->login_details($request);
     $items = $this->model()->where('type', 'season_lesson');
     $items = $items->where('event_id', $event_id);
-    dd($items->toSql());
     $items->with('parent');
     $items = $this->_search_scope($request, $items);
     $count = $items->count();
@@ -281,7 +280,6 @@ class LessonRequestController extends UserCalendarController
     }
     $items = $this->_search_sort($request, $items);
     $items = $items->paginate($request->get('_line'));
-    dd($items);
     return ['items' => $items, 'count' => $count];
   }
   /**
@@ -902,6 +900,7 @@ class LessonRequestController extends UserCalendarController
       $event->add_matching_calendar();
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
+
     if($this->is_success_response($res)){
       return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
     }
