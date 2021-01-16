@@ -116,7 +116,6 @@ EOT;
       'bank_account_name' => "",
       'entry_date' => "",
       'unsubscribe_date' => "",
-      'status' => '',
     ];
     $update_form = [];
     foreach($update_field as $key => $val){
