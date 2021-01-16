@@ -340,14 +340,12 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
-      'entry_date' => null,
-      'unsubscribe_date' => null,
+      'entry_date' => '',
+      'unsubscribe_date' => '',
     ];
     $update_form = [];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
-        $update_form[$key] = $form[$key];
-      }
+      $update_form[$key] = $form[$key];
     }
     $this->update($update_form);
     //1:nタグ
