@@ -72,7 +72,7 @@
                 <div class="row">
                   <div class="col-10 text-wrap">
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
-                        {{$item->full_title}}
+                        {!!nl2br($item->full_title)!!}
                     </a>
                   </div>
                   <div class="col-2">
