@@ -11,7 +11,7 @@ use App\Models\StudentParent;
 use App\Models\Holiday;
 use App\Models\LessonRequest;
 use App\Models\LessonRequestDate;
-
+use App\Models\Place;
 class Event extends Milestone
 {
     //
@@ -224,33 +224,44 @@ class Event extends Milestone
       //if($this->status != 'new') return false;
       //このイベントに対する申し込みを取得
       foreach($this->get_event_dates() as $d){
-        $this->_add_matching_calendar($d);
+        $this->_add_matching_calendar_for_date($d);
       }
     }
-    public function _add_matching_calendar($date){
-      $requests = LessonRequest::where('event_id', $this->id)->where('type', 'season_lesson')->searchDate($date)->get();
-      //日単位に申し込みをチェック
+    public function _add_matching_calendar_for_date($date){
+      echo "<h4>--------------_add_matching_calendar_for_date(d=".$date.")------------------------</h4>";
+      $places = Place::all();
+      foreach($places as $place){
+        $this->_add_matching_calendar_for_date_place($date, $place->id);
+      }
+      echo "<h4>--------------_add_matching_calendar_for_date end------------------------</h4>";
+    }
+    public function _add_matching_calendar_for_date_place($date, $place_id){
+      echo "<h4>--------------_add_matching_calendar_for_date_place(d=".$date.")(place=".$place_id.")------------------------</h4>";
+      $requests = LessonRequest::where('event_id', $this->id)->where('type', 'season_lesson')
+            ->searchTags([['tag_key' => 'lesson_place', 'tag_value'=> $place_id]])
+            ->searchDate($date)->get();
+      //日単位・場所単位に申し込みをチェック
       $teacher_request_count = [];
-      if(isset($requests) && count($requests)>0){
+      if(isset($requests) && count($requests)>1){
         echo "<h4>--------------(".$date.")(request_count=".count($requests).")------------------------</h4>";
-        if(count($requests)>2){
-          //申し込みが3件以上ある日を優先的にチェック
-          foreach($requests as $r){
-            $charge_teachers = $r->student->get_current_charge_teachers();
-            echo "<h5>request_id=".$r->id."/charge_teacher_count = ".count($charge_teachers)."</h5>";
-            foreach($charge_teachers as $user_id => $teacher){
-              echo "<h5>user_id=".$user_id."</h5>";
-              if(isset($teacher_request_count[$user_id])) $teacher_request_count[$user_id]++;
-              else $teacher_request_count[$user_id] = 1;
-              if($teacher_request_count[$user_id] > 0) {
-                //この講師を中心に予定を組む
-                echo "<h3>--------------add_matching_calendar 優先度１------------------------</h3>";
-              }
-              $r->create_matching_lessons(1, $teacher->id, $date);
+        //申し込みが3件以上ある日を優先的にチェック
+        foreach($requests as $r){
+          $charge_teachers = $r->student->get_current_charge_teachers();
+          echo "<h5>request_id=".$r->id."/charge_teacher_count = ".count($charge_teachers)."</h5>";
+          foreach($charge_teachers as $user_id => $teacher){
+            echo "<h5>user_id=".$user_id."</h5>";
+            if(isset($teacher_request_count[$user_id])) $teacher_request_count[$user_id]++;
+            else $teacher_request_count[$user_id] = 1;
+            if($teacher_request_count[$user_id] > 0) {
+              //この講師を中心に予定を組む
+              echo "<h3>--------------add_matching_calendar 優先度１------------------------</h3>";
             }
+            $r->create_matching_lessons(1, $teacher->id, $date, $place_id);
           }
         }
       }
+      echo "<h4>--------------_add_matching_calendar_for_date_place end ------------------------</h4>";
+
       return "debug";
     }
 

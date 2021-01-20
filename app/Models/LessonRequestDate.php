@@ -43,6 +43,13 @@ class LessonRequestDate extends Model
         $query = $query->where('event_id', $event_id);
     });
   }
+  public function scopeSearchUser($user_id)
+  {
+    if(empty($user_id)) return $query;
+    return $query->whereHas('lesson_request', function($query) use ($user_id) {
+        $query = $query->where('user_id', $user_id);
+    });
+  }
   public function getFromDatetimeAttribute(){
     return $this->day.' '.$this->from_time_slot.':00';
   }
@@ -81,7 +88,21 @@ class LessonRequestDate extends Model
       if(isset($c) && count($c)==1) return false;
     }
 
+  }
 
-
+  public function get_time_slots($minute=30)
+  {
+    $ret = [];
+    $_to_hour = $this->getToHourAttribute();
+    $h = $this->getFromHourAttribute();
+    for($i=$h;$i<intval($_to_hour);$i++){
+      //nn_nn形式
+      $c = 0;
+      while($c < 60){
+        $ret[sprintf('%02d', $i).sprintf('%02d', $c)] = true;
+        $c+=$minute;
+      }
+    }
+    return $ret;
   }
 }
