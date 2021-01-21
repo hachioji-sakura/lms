@@ -769,9 +769,11 @@ EOT;
     $user_calendar_members = [];
     $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
     //退会以降(退会日含まず）の授業予定をキャンセルにする
+    // 20201.01.20 update 通常授業のみキャンセルにする
     $calendars = UserCalendar::where('start_time', '>=', $unsubscribe_date_tomorrow)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('user_calendar_setting_id' , '>', 0)
                   ->get();
 
     foreach($calendars as $calendar){

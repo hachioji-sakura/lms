@@ -214,10 +214,12 @@ class UserCalendarMember extends Model
   }
   public function status_name(){
     $status = $this->status;
+    /* TODO 退会日以降も授業予定となり可能性がある（2021.01.20)
     if($this->is_recess_or_unsubscribe()==true){
       //生徒が退会日以降、休会日範囲の場合、cancel表記
       $status = 'cancel';
     }
+    */
     if(app()->getLocale()=='en') return $status;
     $status_name = "";
     if(isset(config('attribute.calendar_status')[$status])){
