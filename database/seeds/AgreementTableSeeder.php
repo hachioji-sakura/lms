@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\Agreement;
 use App\Models\UserCalendarMemberSetting;
 use App\User;
@@ -50,7 +51,7 @@ class AgreementTableSeeder extends Seeder
           $new_agreement->monthly_fee = 0;
         }
         //入会金
-        $old_entrance_fee = $old_entrance_fees->where('member_no',$user->get_tag_value('student_no'));
+        $old_entrance_fee = $old_entrance_fees->where('member_no',$student_no);
         if($old_entrance_fee->count() > 0){
           $entry_fee = $old_entrance_fee->first()->price;
         }else{
@@ -62,13 +63,13 @@ class AgreementTableSeeder extends Seeder
         $new_agreement->save();
 
         //明細のターン
-        foreach($agreement->agreement_statements as $statement){
+        foreach($new_agreement->agreement_statements as $statement){
           $long_teacher_id = Teacher::find($statement->teacher_id)->user->get_tag_value('teacher_no');
           $teacher_id = preg_replace('/^10+([0-9]*)$/','$1',$long_teacher_id);
           //講師と部門で料金をひっかける
-          $old_fee = $old_tbl_fee->where('member_no',$user->get_tag_value('student_no'))
+          $old_fee = $old_tbl_fee->where('member_no',$student_no)
                       ->where('lesson_id',$statement->lesson_id)
-                      ->where('teacher_id',$teacher_id);
+                      ->where('teacher_id',$teacher_id)->sortByDesc('insert_timestamp');
           //なかったら0
           if($old_fee->count() > 0){
             $fee = $old_fee->first()->fee;
