@@ -188,14 +188,13 @@ class LessonRequestController extends UserCalendarController
 
 
     $param = $this->get_param($request);
-    $events = Event::where('event_to_date', '>', date('Y-m-d'))->studentLessonRequest();
+    $event = null;
     if($event_id>0){
-      $events = $events->where('id', $event_id);
+      $event = Event::where('id', $event_id)->first();
     }
     else {
       abort(404);
     }
-    $events = $events->get();
     $user = $param['user'];
     if(isset($user) && !$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
@@ -203,9 +202,10 @@ class LessonRequestController extends UserCalendarController
     }
 
     $_table = $this->search($request, $event_id);
-
+    if(!isset($event)) abort(404);
     $param['event_id'] = $event_id;
-    return view('season_lesson.lists', $_table)
+    $param['event'] = $event;
+    return view($this->domain.'.lists', $_table)
       ->with($param);
   }
   /**
@@ -279,8 +279,8 @@ class LessonRequestController extends UserCalendarController
       ]);
     }
     $items = $this->_search_sort($request, $items);
-    $items = $items->paginate($request->get('_line'));
-    return ['items' => $items, 'count' => $count];
+    //$items = $items->paginate($request->get('_line'));
+    return ['items' => $items->get(), 'count' => $count];
   }
   /**
    * フィルタリングロジック
@@ -351,13 +351,13 @@ class LessonRequestController extends UserCalendarController
       ],
     ]);
     $param = $this->get_param($request, $id);
+    $view = $this->domain.".".$param['item']->type.'.page';
     switch($param['item']->type){
       case "trial":
         $view = 'trials.page';
         break;
       case "season_lesson":
       case "season_lesson_teacher":
-        $view = $param['item']->type.'.page';
         $param['event'] = $param['item']->event;
         $param['event_dates'] = $param['item']->event->get_event_dates();
         break;
@@ -876,17 +876,6 @@ class LessonRequestController extends UserCalendarController
 
     return $this->save_redirect($res,$param,__('messages.info_deleted'));
   }
-  public function save_matching_page(Request $request,$event_id){
-    $param = $this->get_param($request);
-    $event = Event::find($event_id);
-    if(!isset($event)) abort(404);
-    $param['action'] = 'matching';
-    $param['item'] = $event;
-    $param['event_id'] = $event_id;
-    $param['action_url'] = '/events/'.$event_id.'/lesson_requests/matching';
-    $param['message'] = __('messages.info_schedule_matching');
-    return view('components.confirm')->with($param);
-  }
   public function save_matching(Request $request,$event_id){
     set_time_limit(1200);
 
@@ -896,19 +885,14 @@ class LessonRequestController extends UserCalendarController
     $param['action'] = 'matching';
     $param['item'] = $event;
     $param['event_id'] = $event_id;
-    echo "-------save_matching--------";
+    $res = $this->transaction($request, function() use ($request, $event_id, $param){
       $event = Event::find($event_id);
-      $event->add_matching_calendar();
-      /*
-      $res = $this->transaction($request, function() use ($request, $event_id, $param){
+      $event->add_matching_calendar($request->get('selected_lesson_request_ids'));
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
-    */
-    /*
     if($this->is_success_response($res)){
       return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
     }
-    */
     abort(500, "マッチング処理不具合");
   }
   public function _delete(Request $request, $id)

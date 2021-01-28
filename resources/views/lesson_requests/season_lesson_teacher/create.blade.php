@@ -54,7 +54,7 @@
             @component('students.forms.lesson_place', ['_edit'=>true, 'event'=>$event, 'attributes' => $attributes, 'title' => '勤務可能校舎', 'item'=>$item]) @endcomponent
           </div>
           <div class="row">
-            @component('season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯']) @endcomponent
+            @component($domain.'.season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯']) @endcomponent
 
           </div>
           <div class="row">
@@ -73,7 +73,7 @@
             <i class="fa fa-file-invoice mr-1"></i>
             勤務可能日時
           </div>
-          @component('season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes]) @endcomponent
+          @component($domain.'.season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

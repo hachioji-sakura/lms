@@ -44,7 +44,7 @@
                       <i class="fa fa-user mr-1"></i>
                       {{$item->student->name}} 様
                       （{{$item->student->grade}}）<br>
-                    </small>
+                    </span>
                     </a>
                     @foreach($item->get_tags('lesson') as $tag)
                     <span class="text-xs">

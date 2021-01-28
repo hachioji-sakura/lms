@@ -34,5 +34,6 @@ return array(
   'progress' => 'primary',
   'reapply' => 'secondary',
   'dummy' => 'danger',
+  'free' => 'success',
   );
 ?>

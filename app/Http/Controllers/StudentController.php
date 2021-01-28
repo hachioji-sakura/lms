@@ -1477,10 +1477,10 @@ class StudentController extends UserController
     //TODO
     $event = Event::findUser($param['item']->user_id);//->where('event_from_date', '>', date('Y-m-d'));
     if($this->domain=='students'){
-      $event = $event->studentLessonRequest();
+      $event = $event->forStudent();
     }
     else if($this->domain=='teachers'){
-      $event = $event->teacherLessonRequest();
+      $event = $event->forTeacher();
     }
     $event = $event->first();
     if(isset($user) && $user->role=='manager'){

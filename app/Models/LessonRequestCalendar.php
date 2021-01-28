@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
+use App\Models\GeneralAttribute;
 
 class LessonRequestCalendar extends UserCalendar
 {
@@ -18,6 +19,12 @@ class LessonRequestCalendar extends UserCalendar
   public function lesson_request_date(){
     return $this->belongsTo('App\Models\LessonRequestDate');
   }
+  public function lesson_request(){
+    return $this->lesson_request_date->lesson_request();
+  }
+  public function student(){
+    return $this->lesson_request_date->lesson_request->student();
+  }
   public function prev_calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'prev_calendar_id');
   }
@@ -26,6 +33,21 @@ class LessonRequestCalendar extends UserCalendar
   }
   public function getDurationAttribute(){
     return date('H:i', strtotime($this->start_time)).'～'.date('H:i', strtotime($this->end_time));
+  }
+  public function scopeSearchLessonRequest($query, $lesson_request_id){
+    if(empty($lesson_request_id)) return $query;
+    return $query->whereHas('lesson_request_date', function($query) use ($lesson_request_id) {
+        $query = $query->where('lesson_request_id', $lesson_request_id);
+    });
+  }
+  public function status_name(){
+    $status_name = "";
+    if(app()->getLocale()=='en') return $this->status;
+
+    if(isset(config('attribute.request_calendar_status')[$this->status])){
+      $status_name = config('attribute.request_calendar_status')[$this->status];
+    }
+    return $status_name;
   }
   public function tags(){
     //TODO :
@@ -71,5 +93,13 @@ class LessonRequestCalendar extends UserCalendar
     }
     $calendar->change($form);
     return $calendar->api_response(200, "", "", $calendar);
+  }
+  public function getStudentNameAttribute(){
+    return $this->student->name;
+  }
+  public function subject(){
+    $d = GeneralAttribute::where('attribute_key', 'charge_subject')->where('attribute_value', $this->subject_code)->first();
+    if(!isset($d)) return "";
+    return $d->attribute_name;
   }
 }

@@ -48,7 +48,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('auth/mail','AuthController@mail_send');
 
   Route::get('events/{event_id}/lesson_requests', 'LessonRequestController@index');
-  Route::get('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
   Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
   Route::get('events/{id}/schedules', 'EventController@schedule_lists');
   Route::put('events/{id}/schedules', 'EventController@schedule_lists_commit');

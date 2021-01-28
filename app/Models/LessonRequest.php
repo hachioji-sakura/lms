@@ -180,9 +180,10 @@ class LessonRequest extends Model
     return $this->status_name();
   }
   public function status_name(){
-    if(app()->getLocale()=='en') return $this->status;
-    if(isset(config('attribute.lesson_request_status')[$this->status])){
-      return config('attribute.lesson_request_status')[$this->status];
+    $status = $this->set_status();
+    if(app()->getLocale()=='en') return $status;
+    if(isset(config('attribute.lesson_request_status')[$status])){
+      return config('attribute.lesson_request_status')[$status];
     }
     return "(定義なし)";
   }
@@ -640,15 +641,162 @@ class LessonRequest extends Model
     }
     return $ret;
   }
-  public function create_matching_lessons($lesson, $teacher_id, $target_day='', $place_id=0){
-    //講師の希望日の予定を取得
+  public function set_status(){
+    $subject_count = [];
+    foreach($this->charge_subject_attributes() as $attribute){
+      $subject_code = $attribute->attribute_value;
+      $c = intval($this->get_tag_value($subject_code.'_day_count'));
+      if($c < 1 ) continue;
+      $subject_count[$subject_code] = $c;
+    }
+
+    $calendars = LessonRequestCalendar::searchLessonRequest($this->id)->where('status', 'fix')->get();
+    $set_calendar_subject_count = [];
+    $status = 'new';
+    foreach($calendars as $calendar){
+      if(!isset($calendar->subject_code)) continue;
+      if(!isset($set_calendar_subject_count[$calendar->subject_code])){
+        $set_calendar_subject_count[$calendar->subject_code]=0;
+      }
+      $set_calendar_subject_count[$calendar->subject_code]++;
+      if($status == 'new') $status='confirm';
+    }
+    $calendars = UserCalendar::where('lesson_request_id', $this->id)->whereIn('status', ['rest_cacel', 'absence', 'lecture_cancel', 'presence', 'rest', 'fix'])->get();
+    $fix_calendar_subject_count = [];
+    $status = 'new';
+    foreach($calendars as $calendar){
+      foreach($calendar->get_tags('charge_subject') as $tag){
+        if(!isset($fix_calendar_subject_count[$tag->tag_value])){
+          $fix_calendar_subject_count[$tag->tag_value]=0;
+        }
+        $fix_calendar_subject_count[$tag->tag_value]++;
+      }
+    }
+    $is_fixed = true;
+    $is_complete = true;
+    foreach($subject_count as $subject_code => $c){
+      if(!isset($set_calendar_subject_count[$subject_code])){
+        $is_fixed = false;
+      }
+      else if($c > $set_calendar_subject_count[$subject_code]){
+        //要望科目数＞登録授業科目数
+        $is_fixed = false;
+      }
+      if(!isset($fix_calendar_subject_count[$subject_code])){
+        $is_complete = false;
+      }
+      else if($c > $fix_calendar_subject_count[$subject_code]){
+        //要望科目数＞登録授業科目数
+        $is_complete = false;
+      }
+    }
+    if($is_complete==true){
+      $status = 'complete';
+    }
+    else if($is_fixed==true){
+      $status = 'fix';
+    }
+    $this->update(['status' => $status]);
+    return $status;
+  }
+  public function _add_matching_calendar_for_place($place_id=0){
+    //①担当講師を取得(直近予定のある講師＞有効なカレンダー設定の講師）
+    $charge_teachers = $this->student->get_current_charge_teachers();
+    $subject_teacher_set = [];
+    $subject_count = [];
+    //②科目にて必要なデータを集計
+    //この申し込みが必要としている科目ごとのコマ数
+    //科目を担当する講師
+    foreach($this->charge_subject_attributes() as $attribute){
+      $subject_code = $attribute->attribute_value;
+      $c = intval($this->get_tag_value($subject_code.'_day_count'));
+      if($c < 1 ) continue;
+      $subject_count[$subject_code] = $c;
+      if(!isset($subject_teacher_set[$subject_code])){
+        foreach($charge_teachers as $teacher){
+          if($teacher->has_charge_subject($subject_code)==true){
+            $subject_teacher_set[$subject_code] = $teacher;
+          }
+        }
+      }
+    }
+    //登録済みの予定を外す
+    $calendars = LessonRequestCalendar::searchLessonRequest($this->id)->where('status', 'fix')->get();
+    foreach($calendars as $calendar){
+      if(!isset($calendar->subject_code)) continue;
+      if(!isset($subject_count[$calendar->subject_code])) continue;
+      $subject_count[$calendar->subject_code]--;
+    }
+
+    $que = [];
+    while(count($subject_count)>0){
+      foreach($subject_count as $subject_code => $count){
+        if($count>0){
+          if(isset($subject_teacher_set[$subject_code])){
+            $que[] = $subject_code;
+          }
+          $subject_count[$subject_code]--;
+        }
+        if($subject_count[$subject_code]==0){
+          unset($subject_count[$subject_code]);
+        }
+      }
+    }
+    //レッスン=1 の希望日ごとのtime_slotを取得
+    $date_time_list = $this->get_time_list(1);
+    foreach($que as $i => $subject_code){
+      //queを参照＞担当講師決定
+      $teacher = $subject_teacher_set[$subject_code];
+      $teacher_calendar_dates = LessonRequestCalendar::where('user_id', $teacher->user_id)
+        ->searchDate($this->event->event_from_date, $this->event->event_to_date)
+        ->where('status', 'fix')->pluck('start_time');
+      echo "<h5>try1(".$subject_code.")(".$teacher->id.")(".count($teacher_calendar_dates).")</h5>";
+      foreach($teacher_calendar_dates as $teacher_calendar_date){
+        $d = date('Y-m-d', strtotime($teacher_calendar_date));
+        if(!isset($date_time_list[$d])) continue;
+        $this->create_request_calendar(1, $date_time_list[$d], $teacher->id, $d, $place_id, $subject_code);
+        $calendar = $this->request_calendar_review($teacher->id, $d);
+        if(isset($calendar[$day]) && count($calendar[$day])>0){
+          $is_add = true;
+          $calendar[$day][0]->update(['status' => 'fix']);
+        }
+        if($is_add==true){
+          unset($que[$i]);
+          break;
+        }
+      }
+    }
+    //第１優先ロジック、講習予定が存在する日
+    foreach($que as $i => $subject_code){
+      //queを参照＞担当講師決定
+      $teacher = $subject_teacher_set[$subject_code];
+      echo "<h5>try2(".$subject_code.")(".$teacher->id.")</h5>";
+      foreach($this->event->get_event_dates() as $j=>$d){
+        if(!isset($date_time_list[$d])) continue;
+        $this->create_request_calendar(1, $date_time_list[$d], $teacher->id, $d, $place_id, $subject_code);
+        $calendar = $this->request_calendar_review($teacher->id, $d);
+        if(isset($calendar[$d]) && count($calendar[$d])>0){
+          $is_add = true;
+          $calendar[$d][0]->update(['status' => 'fix']);
+        }
+        if($is_add==true){
+          unset($que[$i]);
+          break;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  public function create_matching_lessons($lesson, $teacher_id, $target_day='', $place_id=0, $subject_code=""){
     foreach($this->get_time_list($lesson) as $day => $time_list){
       if(!empty($target_day) && $day!=$target_day) continue;
-      $this->create_request_calendar($lesson, $time_list, $teacher_id, $day, $place_id);
-      break ;
+      $this->create_request_calendar($lesson, $time_list, $teacher_id, $day, $place_id, $subject_code);
     }
     return $this->request_calendar_review($teacher_id, $target_day);
   }
+
   public function get_teacher_request_dates_schedule($teacher_id, $target_day=''){
     $teacher = Teacher::find($teacher_id);
     if(!isset($teacher)) return null;
@@ -657,7 +805,7 @@ class LessonRequest extends Model
       $dates = $dates->where('day',$target_day);
     }
     foreach($dates->sortBy('sort_no') as $d){
-      if(!empty($day) && $d->day!=$day) continue;
+      if(!empty($target_day) && $d->day!=$target_day) continue;
       $calendars[$d->day] = UserCalendar::findUser($teacher->user_id)
                       ->findStatuses(['fix', 'confirm', 'new'])
                       ->searchDate($d->from_datetime, $d->to_datetime)
@@ -757,8 +905,8 @@ class LessonRequest extends Model
     }
     return $time_list;
   }
-  private function create_request_calendar($lesson, $time_list, $teacher_id, $target_day, $place_id=0){
-    echo "<h3>-----------create_request_calendar-----------</h3>";
+  private function create_request_calendar($lesson, $time_list, $teacher_id, $target_day, $place_id=0, $subject_code=""){
+    echo "<h3>-----------create_request_calendar[$subject_code]-----------</h3>";
     /*create_request_calendar
     過ぎた予定の追加を無効にする
     if(strtotime("now") > strtotime($target_day)){
@@ -771,11 +919,6 @@ class LessonRequest extends Model
     $teacher = Teacher::find($teacher_id);
     $lesson_request_date = $this->request_dates->where('day', $target_day)->first();
     $updated_at = LessonRequestCalendar::where('lesson_request_date_id', $lesson_request_date->id)->where('user_id', $teacher->user_id)->max('updated_at');
-    $teacher_calendars = UserCalendar::findUser($teacher->user_id)
-                    ->findStatuses(['fix', 'confirm', 'new'])
-                    ->searchDate($lesson_request_date->from_datetime, $lesson_request_date->to_datetime)
-                    ->orderBy('start_time')
-                    ->get();
 
     $is_create = false;
     $course_minutes = intval($this->course_minutes);
@@ -786,6 +929,7 @@ class LessonRequest extends Model
       if($course_minutes > 60) $course_minutes = 60;
       //塾以外の体験授業は、すべて30分
       if($lesson != 1 && $course_minutes > 30) $course_minutes=30;
+      //講師の体験授業希望日時を取得
       $_enable_times = $teacher->user->get_trial_enable_times($slot_unit_minutes);
       if(isset($_enable_times[$lesson_week])) $_enable_times = $_enable_times[$lesson_week];
     }
@@ -794,16 +938,15 @@ class LessonRequest extends Model
       if($course_minutes==120) $course_minutes = 60;
       $teacher_lesson_request = LessonRequest::where('user_id', $teacher->user_id)->first();
       if(!isset($teacher_lesson_request)) return false;
+      //講師の講習希望日時を取得
       $teacher_lesson_request_date = $teacher_lesson_request->request_dates->where('day', $target_day)->first();
       if(!isset($teacher_lesson_request_date)) return false;
       $_enable_times = $teacher_lesson_request_date->get_time_slots();
     }
     $minute_count = intval($course_minutes / $slot_unit_minutes);
-
     if($updated_at==null || (strtotime($this->updated_at)  > strtotime($updated_at) && strtotime($teacher->updated_at) > strtotime($updated_at))){
       $is_create = true;
       //更新すべき状況
-
       if(!isset($lesson_request_date)) return false;
       $place_floor = Place::find($place_id)->floors()->first();
       $create_form = [
@@ -811,15 +954,26 @@ class LessonRequest extends Model
         'lesson_request_date_id' => $lesson_request_date->id,
         'remark' => '',
         'place_floor_id' => $place_floor->id,
+        'subject_code' => $subject_code,
       ];
       LessonRequestCalendar::where('lesson_request_date_id', $lesson_request_date->id)->where('user_id', $teacher->user_id)->delete();
       foreach($time_list as $i => $_time){
         $create_form['start_time'] = $_time['start_time'];
         $create_form['end_time'] = $_time['end_time'];
+        //希望日時範囲内の予定をすべて作成する
         $c = LessonRequestCalendar::create($create_form);
       }
     }
-    foreach($lesson_request_date->calendars as $calendar){
+    //申し込みの希望日時範囲内の既存予定を取得
+    $teacher_calendars = UserCalendar::findUser($teacher->user_id)
+                    ->findStatuses(['fix', 'confirm', 'new'])
+                    ->searchDate($lesson_request_date->from_datetime, $lesson_request_date->to_datetime)
+                    ->orderBy('start_time')
+                    ->get();
+
+    LessonRequestCalendar::whereIn('id', $lesson_request_date->calendars()->pluck('id')->toArray())->update(['status' => 'new']);
+
+    foreach($lesson_request_date->calendars()->get() as $calendar){
       $conflict_calendar = null;
       $is_time_conflict = false;
       $is_place_conflict = false;
@@ -829,7 +983,6 @@ class LessonRequest extends Model
       $review = 0;
       //講師の体験授業可能曜日・空き時間をチェック
       if(isset($_enable_times)){
-
         $find_start = false;
         $from = date('Hi', strtotime($calendar->start_time));
         $to = date('Hi', strtotime($calendar->end_time));
@@ -911,7 +1064,6 @@ class LessonRequest extends Model
     return true;
   }
   private function request_calendar_review($teacher_id, $target_day=''){
-    echo "<h4>--------------request_calendar_review(t=".$teacher_id."/d=".$target_day.")------------------------</h4>";
     $teacher = Teacher::find($teacher_id);
     $date_id = [];
     foreach($this->request_dates as $d){
@@ -927,34 +1079,50 @@ class LessonRequest extends Model
     foreach($calendars as $calendar){
       $review = $this->schedule_review($teacher_id, $calendar);
       if($review > $max_review) $max_review = $review;
+      if($this->type=='season_lesson') {
+        echo "<h4>-----------schedule_review season_lesson start---------------</h4>";
+        echo "<h6>request_id=".$this->id." / lesson_request_date_id = ".$calendar->lesson_request_date_id."</h6>";
+        echo "<h6>teacher_id=".$teacher_id." / calendar_id = ".$calendar->id."</h6>";
+        $review = $this->schedule_review($teacher_id, $calendar, 'lesson_request_calendars');
+        echo "<h4>--------------------------</h4>";
+        if($review > $max_review) $max_review = $review;
+      }
     }
     //優先度の最も高いものから返却する
     $ret = [];
     $calendars = LessonRequestCalendar::where('user_id', $teacher->user_id)
                       ->whereIn('lesson_request_date_id', $date_id)
                       ->where('review_value','>=', $max_review)
-                      ->where('status', 'free')->get();
+                      ->where('status', 'free')->orderBy('start_time')->get();
     foreach($calendars as $calendar){
       $d = date('Y-m-d', strtotime($calendar->start_time));
-      if(isset($ret[$d])) $ret[$d] = [];
+      if(!isset($ret[$d])) $ret[$d] = [];
       $ret[$d][] = $calendar;
     }
     return $ret;
   }
-  private function schedule_review($teacher_id, $target_calendar){
+  private function schedule_review($teacher_id, $target_calendar, $check_model='user_calendars'){
     if($target_calendar->status!=="free") return false;
+
     $teacher = Teacher::find($teacher_id);
     $review_value = 0;
     $prev_calendar_id = 0;
     $next_calendar_id = 0;
-    $place_floor_id = 0;
+    $place_floor_id = $target_calendar->place_floor_id;
 
     //上に隣接する授業設定を取得
-    $prev_calendars = UserCalendar::where('user_id', $teacher->user_id)
+    $prev_calendars = UserCalendar::query();
+    if($check_model=='lesson_request_calendars'){
+      $prev_calendars = LessonRequestCalendar::query();
+    }
+    $prev_calendars = $prev_calendars->where('user_id', $teacher->user_id)
                       ->findStatuses(['fix', 'confirm'])
                       ->where('start_time', $target_calendar->end_time)
                       ->get();
+
     foreach($prev_calendars as $calendar){
+      echo "<h6>prev_calendar_id".$calendar->id."</h6>";
+
       foreach($this->get_tags('lesson_place') as $tag){
         //体験希望所在地のフロアと同じ場合隣接とみなす
         if($calendar->is_same_place($tag->tag_value)){
@@ -975,11 +1143,17 @@ TODO:このロジックは再度検討
 */
     $review_value = 100;
     //下に隣接する授業設定を取得
-    $next_calendars = UserCalendar::where('user_id', $teacher->user_id)
+    $next_calendars = UserCalendar::query();
+    if($check_model=='lesson_request_calendars'){
+      $next_calendars = LessonRequestCalendar::query();
+    }
+    $next_calendars = $next_calendars->where('user_id', $teacher->user_id)
                       ->findStatuses(['fix', 'confirm'])
                       ->where('end_time', $target_calendar->start_time)
                       ->get();
     foreach($next_calendars as $calendar){
+      echo "<h6>next_calendar_id".$calendar->id."</h6>";
+
       $same_place = "";
       foreach($this->get_tags('lesson_place') as $tag){
         if($calendar->is_same_place($tag->tag_value)){
@@ -1008,7 +1182,11 @@ TODO:このロジックは再度検討
       //隣接しない
       $d = date('Y-m-d', strtotime($target_calendar->start_time));
       //同日のスケジュール
-      $calendars = UserCalendar::where('user_id', $teacher->user_id)
+      $calendars = UserCalendar::query();
+      if($check_model=='lesson_request_calendars'){
+        $calendars = LessonRequestCalendar::query();
+      }
+      $calendars = $calendars->where('user_id', $teacher->user_id)
                         ->rangeDate($d." 00:00:00",  $d." 23:59:59")
                         ->findStatuses(['fix', 'confirm'])
                         ->get();
@@ -1038,11 +1216,19 @@ TODO:このロジックは再度検討
     if($is_adjacent===true){
       $d = date('Y-m-d', strtotime($target_calendar->start_time));
       //同日のスケジュール
-      $min_start_time = UserCalendar::where('user_id', $teacher->user_id)
+      $calendars = UserCalendar::query();
+      if($check_model=='lesson_request_calendars'){
+        $calendars = LessonRequestCalendar::query();
+      }
+      $min_start_time = $calendars->where('user_id', $teacher->user_id)
                         ->rangeDate($d." 00:00:00",  $d." 23:59:59")
                         ->where('status', 'fix')
                         ->min('start_time');
-      $max_end_time = UserCalendar::where('user_id', $teacher->user_id)
+      $calendars = UserCalendar::query();
+      if($check_model=='lesson_request_calendars'){
+        $calendars = LessonRequestCalendar::query();
+      }
+      $max_end_time = $calendars->where('user_id', $teacher->user_id)
                         ->rangeDate($d." 00:00:00",  $d." 23:59:59")
                         ->where('status', 'fix')
                         ->max('end_time');

@@ -4,13 +4,13 @@
 @extends('dashboard.common')
 
 @section('list_pager')
-  @if(count($items) > 0)
-  {{$items->appends(Request::query())->links('components.paginate')}}
-  @endif
 @endsection
 
 @section('contents')
 <div class="row">
+  <form method="POST" action='/events/{{$event_id}}/lesson_requests/matching' >
+  @csrf
+  @method('PUT')
   <div class="col-12">
     <div class="card">
       <div class="card-header">
@@ -19,10 +19,12 @@
           講習申し込み一覧
         </h3>
         <div class="card-title text-sm">
-          <a class="btn btn-sm btn-primary" href="javascript:void(0);" page_url="/events/{{$event_id}}/lesson_requests/matching" page_title="予定マッチング" page_form="dialog" >
-            <i class="fa fa-hands-helping mr-1"></i>
-            予定マッチング
+          @if($event->is_season_lesson()==true)
+          <a class="btn btn-sm btn-outline-success" href="/events/{{$event->id}}/schedules" >
+            <i class="fa fa-calendar mr-1"></i>
+            予定一覧
           </a>
+          @endif
           @yield('list_pager')
         </div>
       </div>
@@ -32,23 +34,23 @@
             @foreach($items as $item)
             <li class="col-12" accesskey="" target="">
                 <div class="row">
-                  <div class="col-12 col-lg-4 col-md-6 mt-1">
-                    <a href="season_lessons/{{$item->id}}">
-                    <span class="text-xs">
+                  <div class="col-12 mt-1">
+                    <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"  checked="checked"/>
+                    <a href="/events/{{$event->id}}/schedules?lesson_request_id={{$item->id}}&search_status=fix">
+                    <span class="text-xs ml-3">
                       <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
                         {{$item->status_name()}}
                       </small>
                     </span>
                     <span class="text-sm time">申込日:{{$item->dateweek_format($item->created_at)}}</span>
-                    <br>
                     <span class="text-xs ml-1">
                       <i class="fa fa-user mr-1"></i>
                       {{$item->student->name}} 様
                       （{{$item->student->grade}}）<br>
-                    </small>
+                    </span>
                     </a>
                   </div>
-                  <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
+                  <div class="col-12 mt-1 pl-5">
                     @foreach($item->charge_subject_attributes() as $attribute)
                     @if($item->get_tag_value($attribute->attribute_value.'_day_count')<1)
                       @continue
@@ -66,8 +68,8 @@
                     </span>
                     @endforeach
                   </div>
-                  <div class="col-12 col-lg-4 mt-1 text-sm">
-                    @component('season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
+                  <div class="col-12 text-sm">
+                    @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
                   </div>
                 </div>
             </li>
@@ -79,6 +81,23 @@
         </div>
         @endif
       </div>
+      @if($event->is_season_lesson()==true)
+      <div class="card-footer">
+        <div class="row">
+          <div class="col-12 mb-2 bg-warning p-4">
+            <i class="fa fa-exclamation-triangle mr-2"></i>
+            選択した申し込みに対しマッチング処理を行い、予定を作成します。<br>
+            この処理はしばらく時間がかかります。
+          </div>
+          <div class="col-12">
+            <button type="button" class="btn btn-submit btn-primary w-100" accesskey="{{$action}}_form">
+              <i class="fa fa-check"></i>
+              マッチング処理開始
+            </button>
+          </div>
+        </div>
+      </div>
+      @endif
     </div>
   </div>
 </div>
@@ -130,7 +149,7 @@
     </a>
     <ul class="nav nav-treeview">
       <li class="nav-item">
-        <a href="/events/{{$event_id}}/lesson_requests?list=new" class="nav-link @if($list=="new") active @endif">
+        <a href="/events/{{$event->id}}/lesson_requests?list=new" class="nav-link @if($list=="new") active @endif">
           <i class="fa fa-exclamation-triangle nav-icon"></i>
           <p>
             未対応
@@ -141,7 +160,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/events/{{$event_id}}/lesson_requests?list=fix" class="nav-link @if($list=="fix") active @endif">
+        <a href="/events/{{$event->id}}/lesson_requests?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
             予定確定
@@ -152,7 +171,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="/events/{{$event_id}}/lesson_requests?list=cancel" class="nav-link @if($list=="cancel") active @endif">
+        <a href="/events/{{$event->id}}/lesson_requests?list=cancel" class="nav-link @if($list=="cancel") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
             申込キャンセル

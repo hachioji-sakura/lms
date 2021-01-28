@@ -267,5 +267,11 @@ EOT;
                 });
           });
   }
-
+  public function has_charge_subject($subject_code){
+    $charge_subject = $this->get_charge_subject();
+    if(isset($charge_subject[$subject_code.'_level'])) {
+      return true;
+    }
+    return false;
+  }
 }

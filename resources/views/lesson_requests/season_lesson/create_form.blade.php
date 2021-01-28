@@ -12,9 +12,9 @@
   });
   </script>
   @component('students.forms.lesson_place', ['_edit'=>$_edit, 'attributes' => $attributes, 'item' => $item]) @endcomponent
-  @component('season_lesson.course', ['_edit'=>$_edit, 'attributes' => $attributes, 'item' => $item]) @endcomponent
+  @component($domain.'.season_lesson.course', ['_edit'=>$_edit, 'attributes' => $attributes, 'item' => $item]) @endcomponent
   @if($_edit==false)
-  @component('season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'is_student' => true, 'item' => $item]) @endcomponent
+  @component($domain.'.season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'is_student' => true, 'item' => $item]) @endcomponent
   @endif
 </div>
 
@@ -34,7 +34,7 @@
       希望科目数と、授業コマ数が一致するように入力してください
     </h6>
   </div>
-  @component('season_lesson.subject', ['_edit'=>$_edit,  'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false, 'item'=>$item]) @endcomponent
+  @component($domain.'.season_lesson.subject', ['_edit'=>$_edit,  'attributes' => $attributes, '_teacher' => false, 'category_display' => false, 'grade_display' => false, 'item'=>$item]) @endcomponent
 </div>
 @endsection
 
@@ -50,7 +50,7 @@
       受講日数分の日程がまだ不明な場合は、現在判明している分のみチェックを入れてください。<br>
     </h6>
   </div>
-  @component('season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes, 'is_student' => !$_edit, 'item' => $item]) @endcomponent
+  @component($domain.'.season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes, 'is_student' => !$_edit, 'item' => $item]) @endcomponent
 </div>
 @endsection
 

@@ -15,8 +15,8 @@ use App\Models\Place;
 class Event extends Milestone
 {
     //
-    protected $table = 'lms.events'; //テーブル名を入力
-    protected $guarded = array('id'); //書き換え禁止領域　(今回の場合はid)
+    protected $table = 'lms.events';
+    protected $guarded = array('id');
     protected $appends = ['create_user_name', 'template_title', 'event_term', 'response_term', 'created_date', 'updated_date'];
 
     public static $rules = array( //必須フィールド
@@ -45,7 +45,8 @@ class Event extends Milestone
           $query = $query->where('user_id', $user_id);
       });
     }
-    public function scopeStudentLessonRequest($query)
+    //生徒あてのイベント条件
+    public function scopeForStudent($query)
     {
       return $query->whereHas('template', function($query){
         $query->where('url', '!=', '');
@@ -54,7 +55,8 @@ class Event extends Milestone
         });
       });
     }
-    public function scopeTeacherLessonRequest($query)
+    //講師あてのイベント条件
+    public function scopeForTeacher($query)
     {
       return $query->whereHas('template', function($query){
         $query->where('url', '!=', '');
@@ -219,50 +221,53 @@ class Event extends Milestone
       if(!empty($this->template->url)) return true;
       return false;
     }
-    public function add_matching_calendar(){
+    public function _get_calendar($filter){
+      if($this->is_need_request()!=true) return [];
+      $lesson_request_dates = LessonRequestDate::searchEvent($this->id);
+      if(isset($filter['lesson_request_id'])){
+        $lesson_request_dates = $lesson_request_dates->where('lesson_request_id', $filter['lesson_request_id']);
+      }
+      $data = LessonRequestCalendar::whereIn('lesson_request_date_id', $lesson_request_dates->pluck('id'));
+
+      if(isset($filter['search_status'])){
+        $data = $data->findStatuses($filter['search_status']);
+      }
+      if(isset($filter['search_status'])){
+        $data = $data->findStatuses($filter['search_status']);
+      }
+
+      return $data;
+    }
+    public function get_calendar($filter){
+      if($this->is_need_request()!=true) return [];
+      return $this->_get_calendar($filter)->orderBy('start_time')->orderBy('place_floor_id')->get();
+    }
+    public function get_calendar_count($filter){
+      if($this->is_need_request()!=true) return 0;
+      return $this->_get_calendar($filter)->count();
+    }
+    public function add_matching_calendar($selected_lesson_request_ids){
       if($this->is_need_request()!=true) return false;
       //if($this->status != 'new') return false;
       //このイベントに対する申し込みを取得
-      foreach($this->get_event_dates() as $d){
-        $this->_add_matching_calendar_for_date($d);
-      }
+      $ids = LessonRequestDate::searchEvent($this->id)->pluck('id')->toArray();
+      LessonRequestCalendar::whereIn('lesson_request_date_id', $ids)->delete();
+      $this->_add_matching_calendar();
     }
-    public function _add_matching_calendar_for_date($date){
-      echo "<h4>--------------_add_matching_calendar_for_date(d=".$date.")------------------------</h4>";
-      $places = Place::all();
-      foreach($places as $place){
-        $this->_add_matching_calendar_for_date_place($date, $place->id);
+    public function _add_matching_calendar(){
+      echo "<h4>--------------_add_matching_calendar()------------------------</h4>";
+      foreach($this->lesson_requests as $r){
+        foreach($r->get_tags('lesson_place') as $tag){
+          $r->_add_matching_calendar_for_place($tag->tag_value);
+        }
       }
       echo "<h4>--------------_add_matching_calendar_for_date end------------------------</h4>";
     }
-    public function _add_matching_calendar_for_date_place($date, $place_id){
-      echo "<h4>--------------_add_matching_calendar_for_date_place(d=".$date.")(place=".$place_id.")------------------------</h4>";
-      $requests = LessonRequest::where('event_id', $this->id)->where('type', 'season_lesson')
-            ->searchTags([['tag_key' => 'lesson_place', 'tag_value'=> $place_id]])
-            ->searchDate($date)->get();
-      //日単位・場所単位に申し込みをチェック
-      $teacher_request_count = [];
-      if(isset($requests) && count($requests)>1){
-        echo "<h4>--------------(".$date.")(request_count=".count($requests).")------------------------</h4>";
-        //申し込みが3件以上ある日を優先的にチェック
-        foreach($requests as $r){
-          $charge_teachers = $r->student->get_current_charge_teachers();
-          echo "<h5>request_id=".$r->id."/charge_teacher_count = ".count($charge_teachers)."</h5>";
-          foreach($charge_teachers as $user_id => $teacher){
-            echo "<h5>user_id=".$user_id."</h5>";
-            if(isset($teacher_request_count[$user_id])) $teacher_request_count[$user_id]++;
-            else $teacher_request_count[$user_id] = 1;
-            if($teacher_request_count[$user_id] > 0) {
-              //この講師を中心に予定を組む
-              echo "<h3>--------------add_matching_calendar 優先度１------------------------</h3>";
-            }
-            $r->create_matching_lessons(1, $teacher->id, $date, $place_id);
-          }
-        }
-      }
-      echo "<h4>--------------_add_matching_calendar_for_date_place end ------------------------</h4>";
-
-      return "debug";
+    public function is_season_lesson(){
+      //TODO 属性が不足しているので、LessonRequestのタイプで識別する
+      //暫定対応：季節講習かどうか
+      if(!isset($this->lesson_requests) || count($this->lesson_requests) < 1) return false;
+      if($this->lesson_requests[0]->type=='season_lesson') return true;
+      return false;
     }
-
 }

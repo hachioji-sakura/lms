@@ -112,18 +112,17 @@ class UserCalendar extends Model
     }
     return $query;
   }
+
   public function scopeSearchDate($query, $from_date, $to_date)
   {
-    $where_raw = <<<EOT
-      ((user_calendars.start_time >= ?
-       AND user_calendars.start_time <= ?
-      )
-      OR (user_calendars.end_time >= ?
-        AND user_calendars.end_time <= ?
-      ))
-EOT;
-    return $query->whereRaw($where_raw,[$from_date, $to_date, $from_date, $to_date]);
-
+    return $query = $query->where(function($query)use($from_date, $to_date){
+        $query = $query->where(function($query)use($from_date, $to_date){
+          $query->where('start_time', '>=', $from_date)->where('start_time', '>=', $to_date);
+        });
+        $query = $query->orWhere(function($query)use($from_date, $to_date){
+          $query->where('end_time', '>=', $from_date)->where('end_time', '>=', $to_date);
+        });
+    });
   }
   public function scopeSearchWord($query, $word)
   {
@@ -557,7 +556,6 @@ EOT;
     return $this->timezone();
   }
   public function getStatusNameAttribute(){
-    return $this->status;
     return $this->status_name();
   }
   public function getPlaceFloorNameAttribute(){

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
 use App\Models\UserCalendar;
-use App\Models\LessonRequestCalendar;
 
 class LessonRequestDate extends Model
 {
@@ -37,13 +36,13 @@ class LessonRequestDate extends Model
     $h = explode(':', $this->to_time_slot);
     return intval($h[0]);
   }
-  public function scopeSearchEvent($event_id){
+  public function scopeSearchEvent($query, $event_id){
     if(empty($event_id)) return $query;
     return $query->whereHas('lesson_request', function($query) use ($event_id) {
         $query = $query->where('event_id', $event_id);
     });
   }
-  public function scopeSearchUser($user_id)
+  public function scopeSearchUser($query, $user_id)
   {
     if(empty($user_id)) return $query;
     return $query->whereHas('lesson_request', function($query) use ($user_id) {

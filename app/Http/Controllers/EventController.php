@@ -40,9 +40,12 @@ class EventController extends MilestoneController
     if($request->has('search_status')){
       $items = $items->findStatuses($request->search_status);
     }
-
-    if($request->has('student_lesson_request')){
-      $items = $items->studentLessonRequest();
+    //forStudentのテスト
+    if($request->has('for_student')){
+      $items = $items->forStudent();
+    }
+    if($request->has('for_teacher')){
+      $items = $items->forTeacher();
     }
 
     //検索ワード
@@ -198,9 +201,9 @@ class EventController extends MilestoneController
     if(!$this->is_success_response($res)){
       return $res;
     }
+    $res = $this->transaction($request, function() use ($request, $form){
       $item = Event::add($form);
       return $this->api_response(200, '', '', $item);
-      $res = $this->transaction($request, function() use ($request, $form){
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
    }
@@ -260,7 +263,37 @@ class EventController extends MilestoneController
      return $this->save_redirect($res, $param, '送信しました');
    }
    public function schedule_lists(Request $request, $id){
-     return "hoge";
+     set_time_limit(600);
+     $param = $this->get_param($request, $id);
+     $view = "schedules";
+     $request->merge([
+       '_sort' => 'start_time',
+     ]);
+     //当月1日より、checked_atに日にちが入っている
+     $is_checked = false;
+     //未入力の予定＝最終ステータス以外
+     $enable_confirm = true; //確認ボタン押せる場合 = true
+     foreach(['fix', 'complete'] as $index => $status){
+       $param[$status."_schedule_count"] = $param['item']->get_calendar_count(['search_status' => $status]);
+     }
+
+     $filter = ['search_status' => 'fix'];
+     if($request->has('lesson_request_id')){
+       $filter['lesson_request_id'] = $request->get('lesson_request_id');
+     }
+     if($request->has('search_status')){
+       $filter['search_status'] = $request->get('search_status');
+     }
+     if($request->has('search_date')){
+       $filter['search_date'] = $request->get('search_date');
+     }
+     $param["calendars"] = $param['item']->get_calendar($filter);
+     $param['view'] = $view;
+     $param['is_checked'] = false;
+     $param['enable_confirm'] = false;
+     //echo strtotime('now')-$s;
+     return view($this->domain.'.'.$view, [
+     ])->with($param);
    }
    public function schedule_lists_commit(Request $request, $id){
      return "fuga";
