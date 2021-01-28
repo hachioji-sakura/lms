@@ -85,7 +85,7 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date, $format = "n月j日"){
+  public function dateweek_format($date, $format = "Y年n月j日"){
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
