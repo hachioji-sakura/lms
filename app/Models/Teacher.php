@@ -192,7 +192,9 @@ EOT;
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       UserTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->user->update(['status' => 0]);
+    if(!empty($form['locale'])){
+      $this->user->update(['locale' => $form['locale']]);
+    }
   }
   public function is_manager(){
     $manager = Manager::where('user_id', $this->user_id)->first();

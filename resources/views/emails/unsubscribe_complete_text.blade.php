@@ -1,11 +1,10 @@
 @include('emails.common')
 
-{{$student_name}} 様は、下記の日付にて退会予定となります。
+{{__('messages.info_unsubscribe_for_teacher1', ['student_name'=>$student->name()])}}
 
 {{__('labels.unsubscribe')}}{{__('labels.day')}}: {{$unsubscribe_date}}
 
-振替授業については、退会予定日までに行うように、
-授業の登録をお願いいたします。
+{{__('messages.info_unsubscribe_for_teacher2')}}
 
 …………………………………………………………………………………………
 @yield('signature')

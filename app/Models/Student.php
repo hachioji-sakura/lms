@@ -763,9 +763,11 @@ EOT;
       $this->unsubscribe();
       $current_charge_teachers = $this->get_current_charge_teachers();
       foreach($current_charge_teachers as $teacher){
-        $teacher->user->send_mail('生徒様退会についてのご連絡', [
+        $title = '生徒様退会についてのご連絡';
+        if($teacher->user->locale=='en') $title = 'Contact about student unsubscribe';
+        $teacher->user->send_mail($title, [
           'send_to' => 'teacher',
-          'student_name' => $this->name(),
+          'student' => $this,
           'unsubscribe_date' => $this->dateweek_format($start_date),
         ], 'text', 'unsubscribe_complete');
       }

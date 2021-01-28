@@ -31,6 +31,8 @@
   </div>
   @component('students.forms.address', ['_edit'=>$_edit, 'item' => $item, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
+  @component('teachers.forms.select_locale', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes])@endcomponent
+
 </div>
 @endsection
 
