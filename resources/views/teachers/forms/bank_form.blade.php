@@ -9,9 +9,9 @@
     <div class="form-group">
       <label for="bank_no">
         {{__('labels.bank_no')}}
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <input type="text" name="bank_no" class="form-control" placeholder="ex.0006" required="true" inputtype="number"
+      <input type="text" name="bank_no" class="form-control" placeholder="ex.0006" inputtype="number"
       @isset($item)
         value="{{$item['bank_no']}}"
       @else
@@ -24,9 +24,9 @@
     <div class="form-group">
       <label for="bank_branch_no">
         {{__('labels.bank_branch_no')}}
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <input type="text" name="bank_branch_no" class="form-control" placeholder="ex.215" required="true" inputtype="number"
+      <input type="text" name="bank_branch_no" class="form-control" placeholder="ex.215" inputtype="number"
       @isset($item)
         value="{{$item['bank_branch_no']}}"
       @endisset
@@ -37,11 +37,11 @@
     <div class="form-group">
       <label for="bank_account_type" class="w-100">
         {{__('labels.bank_account_type')}}
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
       @foreach($attributes['bank_account_type'] as $index => $name)
       <label class="mx-2">
-        <input type="radio" value="{{ $index }}" name="bank_account_type" class="icheck flat-green" required="true"
+        <input type="radio" value="{{ $index }}" name="bank_account_type" class="icheck flat-green"
         @if($_edit===true && isset($item) && $item['bank_account_type'] == $index)
         checked
         @endif
@@ -54,9 +54,9 @@
     <div class="form-group">
       <label for="bank_account_no">
         {{__('labels.bank_account_no')}}
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <input type="text" name="bank_account_no" class="form-control" placeholder="ex.0012345" required="true" inputtype="number"
+      <input type="text" name="bank_account_no" class="form-control" placeholder="ex.0012345" inputtype="number"
       @isset($item)
         value="{{$item['bank_account_no']}}"
       @endisset
@@ -67,9 +67,9 @@
     <div class="form-group">
       <label for="bank_account_name">
         {{__('labels.bank_account_name')}}
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <input type="text" name="bank_account_name" class="form-control" placeholder="ex.ハチオウジ タロウ" required="true" inputtype="zenkakukana"
+      <input type="text" name="bank_account_name" class="form-control" placeholder="ex.ハチオウジ タロウ" inputtype="zenkakukana"
       @isset($item)
         value="{{$item['bank_account_name']}}"
       @endisset
