@@ -15,8 +15,11 @@
       @if($_edit===true && isset($item) && $item->has_tag("lesson_place", $place->id))
       checked
       @endif
-      >{{$place->name}}
-      @if($place->is_home()==false)
+      >
+      @if($place->is_home()==true)
+      自宅（オンライン授業）
+      @else
+      {{$place->name}}
       <a href="javascript:void(0);"
         onclick="window.open('http://maps.google.co.jp/maps?q='+encodeURI('{{$place->address}}'));return false;">[MAP]
       </a>
