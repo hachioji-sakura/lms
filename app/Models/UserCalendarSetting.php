@@ -428,6 +428,12 @@ EOT;
     }
     $this->cache_delete();
     UserCalendarSetting::where('id', $this->id)->update($data);
+
+    if($this->place_floor->place->is_home()==true){
+      //自宅の場合はオンラインタグを付与
+      $form['is_online'] = 'true';
+    }
+
     $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){

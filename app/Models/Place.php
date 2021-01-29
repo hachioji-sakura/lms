@@ -33,11 +33,16 @@ class Place extends Model
     }
     return false;
   }
+  //自宅という文字を含むかどうか
+  //自宅の場合は地図表示不要などに利用する
+  public function is_home(){
+    if(strpos($this->name, '自宅')!==false) return true;
+    return false;
+  }
   public function getIsUseAttribute(){
     if($this->is_use()==true) return '使用中';
     return '未使用';
   }
-
   public function scopeSearchWord($query, $word){
     $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words){

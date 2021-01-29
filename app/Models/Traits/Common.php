@@ -264,4 +264,8 @@ trait Common
     $end_hour_minute = date($format,  strtotime($to));
     return $start_hour_minute.'～'.$end_hour_minute;
   }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
+  }
 }
