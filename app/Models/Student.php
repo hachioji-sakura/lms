@@ -1106,7 +1106,7 @@ EOT;
     $current_schedule = $this->get_current_schedule();
     if(isset($current_schedule)){
       foreach($current_schedule as $c){
-        $ret[$c->user_id] = $c->user->teacher;
+        $ret[$c->user->teacher->id] = $c->user->teacher;
       }
     }
     if(count($ret)==0){
@@ -1116,7 +1116,7 @@ EOT;
         foreach($calendar_settings[$lesson] as $method => $v1){
           foreach($v1 as $w => $_settings){
             foreach($_settings as $setting){
-              $ret[$setting->user_id] = $setting->user->teacher;
+              $ret[$setting->user->teacher->id] = $setting->user->teacher;
             }
           }
         }
