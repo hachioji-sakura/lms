@@ -305,10 +305,6 @@ EOT;
     if($d < 0) return false;
     return true;
   }
-  public function is_online(){
-    if($this->has_tag('is_online', 'true')) return true;
-    return false;
-  }
   //振替対象の場合:true
   public function is_exchange_target(){
     if($this->is_single()==false) return false;
@@ -846,6 +842,10 @@ EOT;
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
+    }
+    if($this->place_floor->place->is_home()==true){
+      //自宅の場合はオンラインタグを付与
+      $form['is_online'] = 'true';
     }
     //TODO 将来的にsubject_exprに関するロジックは不要
     $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];

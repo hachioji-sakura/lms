@@ -24,13 +24,15 @@ class UserController extends Controller
   }
   protected function attributes()
   {
+    $user = $this->login_details(new Request());
+
     $attributes = [];
     $_attributes = GeneralAttribute::where('attribute_key', '!=', 'keys')
     ->orderBy('attribute_key', 'asc')
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
       //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
-      if($_attribute->attribute_value=='dummy') continue;
+      if($this->is_manager($user->role)!=true && $_attribute->attribute_value=='dummy') continue;
 
       if(!isset($attributes[$_attribute->attribute_key])){
         $attributes[$_attribute->attribute_key] = [];
