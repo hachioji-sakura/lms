@@ -435,6 +435,12 @@ EOT;
     }
     $this->cache_delete();
     UserCalendarSetting::where('id', $this->id)->update($data);
+
+    if($this->place_floor->place->is_home()==true){
+      //自宅の場合はオンラインタグを付与
+      $form['is_online'] = 'true';
+    }
+
     $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
@@ -836,5 +842,11 @@ EOT;
     $tuition = $member->get_tuition();
     if(isset($tuition)) return $tuition;
     return null;
+  }
+  public function is_passed(){
+    $d = intval(strtotime('now')) - intval(strtotime($this->enable_start_date));
+    $c = 0;
+    if($d < 0) return false;
+    return true;
   }
 }

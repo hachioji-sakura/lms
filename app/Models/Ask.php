@@ -216,6 +216,9 @@ EOT;
     $d .= '('.config('week')[date('w',  strtotime($this->end_date))].')';
     return $d;
   }
+  public function getTypeNameAttribute(){
+    return $this->type_name();
+  }
   public function type_name()
   {
     return $this->config_attribute_name('ask_type', $this->type);

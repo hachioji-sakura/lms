@@ -85,15 +85,15 @@ class UserCalendarMemberSetting extends UserCalendarMember
     foreach($this->setting->members as $_member){
       $user = $_member->user->details('students');
       if($user->role==="student"){
-        $student_no = $user->get_tag('student_no')["value"];
+        $student_no = $user->get_tag_value('student_no');
       }
       $user = $_member->user->details('teachers');
       if($user->role==="teacher"){
-        $teacher_no = $user->get_tag('teacher_no')["value"];
+        $teacher_no = $user->get_tag_value('teacher_no');
       }
       $user = $_member->user->details('managers');
-      if($user->role==="manager"){
-        $manager_no = $user->get_tag('manager_no')["value"];
+      if($user->role==="manager" || $user->role==="staff"){
+        $manager_no = $user->get_tag_value('manager_no');
       }
     }
     \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no."\nwork=".$this->setting->work);

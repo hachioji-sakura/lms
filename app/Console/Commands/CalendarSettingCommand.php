@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
+use App\Models\Holiday;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,6 +49,7 @@ class CalendarSettingCommand extends Command
       if(!empty($this->option("view_mode"))){
         $view_mode = true;
       }
+      Holiday::holiday_update(); //休日を更新しておく
       $this->to_calendar($this->option("start_date"), $this->option("end_date"), $this->option("range_month"), $this->option("week_count"), $this->option("id"), $view_mode);
     }
     public function to_calendar($start_date='', $end_date='', $range_month=1, $week_count=5, $id=0, $view_mode=false)

@@ -152,6 +152,9 @@ class UserCalendarMember extends Model
         $is_send_mail = false;
         $is_send_teacher_mail = false;
         break;
+      case "rest":
+        if($this->rest_contact_date == null) $update_form['rest_contact_date'] = date('Y-m-d H:i:s');
+        break;
     }
 
     if($is_update==true){
@@ -211,10 +214,12 @@ class UserCalendarMember extends Model
   }
   public function status_name(){
     $status = $this->status;
+    /* TODO 退会日以降も授業予定となり可能性がある（2021.01.20)
     if($this->is_recess_or_unsubscribe()==true){
       //生徒が退会日以降、休会日範囲の場合、cancel表記
       $status = 'cancel';
     }
+    */
     if(app()->getLocale()=='en') return $status;
     $status_name = "";
     if(isset(config('attribute.calendar_status')[$status])){
@@ -338,15 +343,15 @@ class UserCalendarMember extends Model
     foreach($this->calendar->members as $_member){
       $user = $_member->user->details('students');
       if($user->role==="student"){
-        $student_no = $user->get_tag('student_no')["value"];
+        $student_no = $user->get_tag_value('student_no');
       }
       $user = $_member->user->details('teachers');
       if($user->role==="teacher"){
-        $teacher_no = $user->get_tag('teacher_no')["value"];
+        $teacher_no = $user->get_tag_value('teacher_no');
       }
       $user = $_member->user->details('managers');
       if($user->role==="manager" || $user->role==="staff"){
-        $manager_no = $user->get_tag('manager_no')["value"];
+        $manager_no = $user->get_tag_value('manager_no');
       }
     }
     \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no);
@@ -718,5 +723,68 @@ class UserCalendarMember extends Model
     $item['str_exchange_limit_date'] = $this->dateweek_format($this->exchange_limit_date);
 
     return $this;
+  }
+  //Todo 休み判定（暫定版）
+  //本休み判定は、会計システムリプレース時にoffice_system_apiで対応している更新＋休み判定を置き換える
+  public function _rest_judgement(){
+    if($this->status != 'rest') return null;
+    if($this->user_id == $this->calendar->user_id) return null;
+    if($this->user->get_role() != 'student') return null;
+    //休み2当日の期限＝その予定の前日21時
+    $d = date('Y-m-d 21:00:00', strtotime("-1 day ".$this->calendar->start_time));
+    //振替期限
+    $exchange_limit_date = date('Y-m-d', strtotime("+2 month ".$this->calendar->start_time));
+    //休み２当日かどうかの判定
+    if(strtotime($this->rest_contact_date) > strtotime($d)){
+      //休み２当日
+      return ['rest_type'=>'a2', 'exchange_limit_date' => null, 'rest_result' => '当日', 'description' => $d.'<['.$this->rest_contact_date.']/a2'];
+    }
+    //規定回数かチェック
+    $lesson = $this->calendar->lesson(true);
+    $lesson_week_count = 0;
+    foreach($this->user->get_enable_lesson_calendar_settings() as $lesson=>$d1){
+      foreach($d1 as $method => $d2){
+        foreach($d2 as $week => $d3){
+          foreach($d3 as $i => $d4){
+            //休み判定は部門ごとで独立しているので、同じ部門の通塾設定がいくつあるか取得する
+            if($this->calendar->has_tag('lesson', $lesson) && $d4->is_group()==$this->calendar->is_group()){
+              $lesson_week_count++;
+            }
+          }
+        }
+      }
+    }
+    $from = date('Y-m-1', strtotime($this->calendar->start_time));
+    $to = date('Y-m-1', strtotime('+1 month '.$from));
+    //当月のカレンダーを、休み連絡順にソート
+    $monthly_rests = UserCalendarMember::where('user_id', $this->user_id)->where('status', 'rest')
+              ->whereHas('calendar', function($query) use ($from, $to){
+                $query->where('start_time', '>=', $from)
+                      ->where('start_time', '<', $to);
+              })->orderBy('rest_contact_date')->orderBy('created_at')->get();
+    $rest_count = 0;
+    foreach($monthly_rests as $monthly_rest){
+      if($monthly_rest->id == $this->id){
+        if($rest_count < $lesson_week_count){
+          //規定回数以内の休み
+          //Todo 休み判定（暫定版）
+          //斬作業として、ユーザーごとの休み判定タグを参照し、さらにロジックコントロールする部分が未実装
+          if($this->calendar->is_group()){
+            //グループレッスンの場合：a1 / 無償休み
+            return ['rest_type'=>'a1', 'exchange_limit_date' => null, 'rest_result' => '', 'description' => 'group('.$rest_count.'/'.$lesson_week_count.')/a1'];
+          }
+          else {
+            //マンツーマンの場合： a2 /  有償＋振替あり
+            return ['rest_type'=>'a2', 'exchange_limit_date' => $exchange_limit_date, 'rest_result' => '', 'description' => 'single('.$rest_count.'/'.$lesson_week_count.')/a2+ex'];
+          }
+        }
+        else {
+          //規定回数以上 / 有償＋振替なし
+          return ['rest_type'=>'a2', 'exchange_limit_date' => null, 'rest_result' => '規定回数以上', 'description' => '規定回数以上'];
+        }
+      }
+      $rest_count++;
+    }
+    return null;
   }
 }

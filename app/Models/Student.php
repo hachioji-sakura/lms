@@ -219,6 +219,15 @@ EOT;
                   ->whereIn('tag_value', $tag_values);
     });
   }
+  public function scopeSearchSubjects($query, $subjects){
+    $tags = [];
+    foreach($subjects as $subject){
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 10];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 20];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 30];
+    }
+    return $this->scopeSearchTags($query, $tags);
+  }
   /**
    *　スコープ：担当生徒
    * @param  Integer $id  講師ID
@@ -340,15 +349,17 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
-      'entry_date' => null,
-
+      'entry_date' => '',
+      'unsubscribe_date' => '',
     ];
-    $update_form = [];
+    $update_form = [
+    ];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
+      if(array_key_exists($key, $form)){
         $update_form[$key] = $form[$key];
       }
     }
+
     $this->update($update_form);
     //1:nタグ
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
@@ -359,11 +370,14 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     //1:1タグ
@@ -423,6 +437,12 @@ EOT;
       }
     }
     return $ret;
+  }
+  public function getNameAttribute(){
+    return $this->name();
+  }
+  public function getKanaAttribute(){
+    return $this->kana();
   }
   public function get_charge_subject(){
     //担当科目を取得
@@ -750,16 +770,34 @@ EOT;
         'unsubscribe_date' => $start_date,
       ]);
       $this->unsubscribe();
+      $current_charge_teachers = $this->get_current_charge_teachers();
+      foreach($current_charge_teachers as $teacher){
+        $title = '生徒様退会についてのご連絡';
+        $unsubscribe_date = $this->dateweek_format($start_date);
+        if($teacher->user->locale=='en') {
+          $title = 'Contact about student unsubscribe';
+          $unsubscribe_date = $start_date;
+        }
+        $teacher->user->send_mail($title, [
+          'send_to' => 'teacher',
+          'student' => $this,
+          'unsubscribe_date' => $unsubscribe_date,
+        ], 'text', 'unsubscribe_complete');
+      }
+
     }
   }
   public function unsubscribe(){
     if($this->status!='regular') return null;
+    if(empty($this->unsubscribe_date)) return null;
     $user_calendar_members = [];
-
-    //退会以降の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->unsubscribe_date)
+    $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
+    //退会以降(退会日含まず）の授業予定をキャンセルにする
+    // 20201.01.20 update 通常授業のみキャンセルにする
+    $calendars = UserCalendar::where('start_time', '>=', $unsubscribe_date_tomorrow)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('user_calendar_setting_id' , '>', 0)
                   ->get();
 
     foreach($calendars as $calendar){
@@ -769,7 +807,7 @@ EOT;
         $user_calendar_members[$member->id] = $member;
       }
     }
-    if(strtotime($this->unsubscribe_date) <= strtotime(date('Y-m-d'))){
+    if(strtotime($unsubscribe_date_tomorrow) <= strtotime(date('Y-m-d'))){
       //退会開始日経過＝ステータスを退会
       $this->update(['status' => 'unsubscribe']);
       $this->user->update(['status' => 9]);
@@ -786,6 +824,8 @@ EOT;
     }
   }
   public function recess(){
+    if(empty($this->recess_end_date)) return null;
+    if(empty($this->recess_start_date)) return null;
 
     if(strtotime($this->recess_end_date) < strtotime(date('Y-m-d'))){
       //休会終了の場合
@@ -796,9 +836,10 @@ EOT;
 
     $user_calendar_members = [];
     //休会範囲の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date)
-                  ->findUser($this->user_id)
+    $calendars = UserCalendar::findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('start_time', '>=', $this->recess_start_date)
+                  ->where('start_time', '<=', $this->recess_end_date)
                   ->get();
     foreach($calendars as $calendar){
       foreach($calendar->members as $member){
@@ -1068,6 +1109,7 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
+  
   //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
@@ -1133,6 +1175,40 @@ EOT;
         $entry_fee = 0;
       }
       return $entry_fee;
+  }
+
+  public function get_current_charge_teachers(){
+    $ret = [];
+    $current_schedule = $this->get_current_schedule();
+    if(isset($current_schedule)){
+      foreach($current_schedule as $c){
+        $ret[$c->user->teacher->id] = $c->user->teacher;
+      }
+    }
+    if(count($ret)==0){
+      $lesson = 1;
+      $calendar_settings = $this->user->get_enable_lesson_calendar_settings();
+      if(isset($calendar_settings) && isset($calendar_settings[$lesson])){
+        foreach($calendar_settings[$lesson] as $method => $v1){
+          foreach($v1 as $w => $_settings){
+            foreach($_settings as $setting){
+              $ret[$setting->user->teacher->id] = $setting->user->teacher;
+            }
+          }
+        }
+      }
+    }
+    return $ret;
+  }
+  public function get_current_schedule(){
+    //1か月前の通常授業をベースに担当の講師を取得する
+    $s = date('Y-m-1 00:00:00', strtotime('-1 month'));
+    \Log::warning("get_current_schedule");
+    $c = UserCalendar::findUser($this->user_id)
+                    ->where('teaching_type', 'regular')
+                    ->where('start_time', '>', $s)
+                    ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
+    return $c;
   }
 
 }

@@ -24,9 +24,15 @@
           </div>
           @endif
         @else
-        <div class="col-12 mb-1 bg-success p-2">
-          <i class="fa fa-exclamation-triangle mr-2"></i>{{__('messages.info_calendar_confirm')}}
-        </div>
+          @if($item->is_passed()==true)
+          <div class="col-12 bg-danger p-2 mb-2">
+            <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.error_passed_calendar'))!!}
+          </div>
+          @else
+          <div class="col-12 mb-1 bg-success p-2">
+            <i class="fa fa-exclamation-triangle mr-2"></i>{{__('messages.info_calendar_confirm')}}
+          </div>
+          @endif
         @endif
       @endif
     @endslot
@@ -38,6 +44,8 @@
           @csrf
 		      <input type="text" name="dummy" style="display:none;" / >
           @method('PUT')
+          @if($item->is_passed()==true)
+          @else
           <input type="hidden" value="{{$user->user_id}}" name="user" />
           <input type="hidden" value="fix" name="status" />
           <div class="row">
@@ -53,6 +61,7 @@
               </form>
             </div>
           </div>
+          @endif
         @elseif($item['status']==="fix" && $subpage==="rest")
 
             @csrf

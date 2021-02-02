@@ -85,7 +85,7 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date, $format = "n月j日"){
+  public function dateweek_format($date, $format = "Y年n月j日"){
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
@@ -245,11 +245,14 @@ trait Common
     if(!isset($tags)) return $query;
     if(!isset($this->tags)) return $query;
     return $query->whereHas('tags', function($query) use ($tags) {
-        $query = $query->where(function($query)use($tags){
+        $query->where(function($query)use($tags){
           foreach($tags as $tag){
-            $query = $query->orWhere(function($query)use($tag){
+            $query->orWhere(function($query)use($tag){
               if(!empty($tag["tag_key"]) && !empty($tag["tag_value"])){
-                $query->where('tag_key', $tag["tag_key"])->where('tag_value', $tag["tag_value"]);
+                $query->where('tag_key', $tag["tag_key"]);
+              }
+              if(!empty($tag["tag_key"]) && !empty($tag["tag_value"])){
+                $query->where('tag_value', $tag["tag_value"]);
               }
             });
           }
@@ -260,5 +263,9 @@ trait Common
     $start_hour_minute = date($format,  strtotime($from));
     $end_hour_minute = date($format,  strtotime($to));
     return $start_hour_minute.'～'.$end_hour_minute;
+  }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
   }
 }

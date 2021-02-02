@@ -90,7 +90,7 @@ $(function(){
 
     _names = ["english_teacher", "piano_level",
               "english_talk_course_type", "kids_lesson_course_type",
-              "course_minutes", "lesson_week_count",
+              "course_minutes", "lesson_week_count",'parent_interview',
               "gender",
               "student2_gender",
               "student3_gender"

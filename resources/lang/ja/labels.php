@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'ja' => '日本語',
+  'en' => 'English',
   'system_name' => 'SaKuRa One Net',
   'yes' => 'はい',
   'no' => 'いいえ',
@@ -75,6 +77,7 @@ return [
   'schedule_details' => '予定詳細',
   'schedule_delete' => '予定削除',
   'schedule_remind' => '予定連絡',
+  'schedule_to_confirm' => '予定を講師確認済みにします',
   'schedule_rest_cancel' => '休み取消連絡',
   'schedule_fix' => '予定を確定する',
   'schedule_edit' => '予定を変更する',

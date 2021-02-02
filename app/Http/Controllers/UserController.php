@@ -24,13 +24,15 @@ class UserController extends Controller
   }
   protected function attributes()
   {
+    $user = $this->login_details(new Request());
+
     $attributes = [];
     $_attributes = GeneralAttribute::where('attribute_key', '!=', 'keys')
     ->orderBy('attribute_key', 'asc')
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
       //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
-      if($_attribute->attribute_value=='dummy') continue;
+      if($_attribute->attribute_value=='dummy' && (!isset($user) || $this->is_manager($user->role)!=true)) continue;
 
       if(!isset($attributes[$_attribute->attribute_key])){
         $attributes[$_attribute->attribute_key] = [];
@@ -98,6 +100,7 @@ class UserController extends Controller
       'user_filter' => [
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
+        'search_subject' => $request->search_subject,
         'post_no' => $request->post_no,
         'place_id' => $request->place_id,
       ],
@@ -111,6 +114,7 @@ class UserController extends Controller
         'is_all_data' => $request->is_all_data,
         'is_exchange' => $request->is_exchange,
         'teaching_type' => $request->teaching_type,
+        'search_is_online' => $request->search_is_online,
       ],
       'sort' => [
         'is_asc'=>$request->is_asc,

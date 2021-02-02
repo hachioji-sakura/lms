@@ -31,6 +31,8 @@
   </div>
   @component('students.forms.address', ['_edit'=>$_edit, 'item' => $item, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.phoneno', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'prefix'=>'',]) @endcomponent
+  @component('teachers.forms.select_locale', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes])@endcomponent
+
 </div>
 @endsection
 
@@ -103,10 +105,9 @@
     >
   </div>
 </div>
-@if($item->status=='unsubscribe')
 <div class="col-6">
   <label for="start_date" class="w-100">
-    {{__('labels.unsubscribe')}}{{__('labels.day')}}
+    {{__('labels.retirement')}}{{__('labels.day')}}
     <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
   </label>
   <div class="input-group">
@@ -117,5 +118,4 @@
     >
   </div>
 </div>
-@endif
 @endsection

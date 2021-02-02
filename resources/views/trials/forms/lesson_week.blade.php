@@ -208,11 +208,11 @@ function lesson_week_datetime_change(){
     var option_name = $(this).html();
     _detail+=_template.replace('#item#', option_name).replace('#style#', 'primary');
   });
-
+  var _student_name = $('input[name="student_name"]').val();
   var _html = [
     '<tr class="bg-warning" id="new_row">',
     '<td>'+_label+'</td>',
-    '<td>体験</td>',
+    '<td>'+_student_name+'</td>',
     '<td>'+_detail+'</td>',
     '</tr>',
   ].join('');

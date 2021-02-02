@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'ja' => 'Japanese',
+  'en' => 'English',
   'system_name' => 'SaKuRa One Net',
   'yes' => 'Yes',
   'no' => 'No',
@@ -75,6 +77,7 @@ return [
   'schedule_details' => 'Details',
   'schedule_delete' => 'Schedule Delete',
   'schedule_remind' => 'Schedule Remind',
+  'schedule_to_confirm' => 'Update the schedule to teachers confirmation',
   'schedule_rest_cancel' => 'Schedule Rest Cancel',
   'schedule_fix' => 'Fix',
   'schedule_edit' => 'Edit',

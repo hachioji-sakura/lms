@@ -192,17 +192,16 @@ class TaskController extends MilestoneController
     public function edit(Request $request ,$id)
     {
         //
-        $param = $this->get_param($request);
-        $item = $this->model()->where('id',$id)->first();
-        $param['item'] = $item;
-        $param['target_student'] = Student::where('user_id',$item->target_user_id)->first();
+        $param = $this->get_param($request, $id);
+        if( $param['user']->user_id != $param['item']->create_user_id ) abort('403');
+        $param['target_student'] = Student::where('user_id',$param['item']->target_user_id)->first();
         $param['_edit'] = true;
         $param['task_type'] = $request->get('task_type');
         $param['curriculums'] = Curriculum::all();
         $param['subjects'] = Subject::all();
         $lessons = collect($param['target_student']->get_tags('lesson'));
         $param['lessons'] = $lessons;
-        $param['has_english_lesson'] = $lessons->pluck('value')->contains(2);
+        $param['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
         return view($this->domain.'.create')->with($param);
     }
 
