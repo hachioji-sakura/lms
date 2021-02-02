@@ -15,10 +15,10 @@
           {{$calendar['place_floor_name']}}
           </a>
         </span>
+        <br>
         <small class="badge badge-{{config('status_style')[$calendar->status]}} mx-2">
           {{$calendar["status_name"]}}
         </small>
-        <br>
         <span class="description-text mr-2">
         @foreach($calendar['teachers'] as $member)
           <a href='/teachers/{{$member->user->teacher->id}}'>
@@ -34,6 +34,11 @@
           </small>
         </span>
         @endforeach
+        @if($calendar->is_online()==true)
+        <small class="badge badge-info mx-1 text-sm">
+          <i class="fa fa-globe">{{__('labels.online')}}</i>
+        </small>
+        @endif
       </div>
       @if($calendar->status=='dummy' || $calendar->status=='new' || $calendar->status=='confirm' || $calendar->status=='cancel')
       <div class="col-12 col-md-3 my-1">

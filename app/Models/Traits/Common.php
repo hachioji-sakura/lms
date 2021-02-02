@@ -85,7 +85,7 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date, $format = "n月j日"){
+  public function dateweek_format($date, $format = "Y年n月j日"){
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
@@ -263,5 +263,9 @@ trait Common
     $start_hour_minute = date($format,  strtotime($from));
     $end_hour_minute = date($format,  strtotime($to));
     return $start_hour_minute.'～'.$end_hour_minute;
+  }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
   }
 }

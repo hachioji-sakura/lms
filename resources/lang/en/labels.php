@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'ja' => 'Japanese',
+  'en' => 'English',
   'system_name' => 'SaKuRa One Net',
   'yes' => 'Yes',
   'no' => 'No',

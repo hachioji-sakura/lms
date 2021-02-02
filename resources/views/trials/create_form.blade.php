@@ -13,7 +13,7 @@
   @component('students.forms.lesson_place', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes]) @endcomponent
   <div class="col-12">
     <div class="form-group">
-      <label for="regular_schedule_exchange">
+      <label for="parent_interview">
         体験授業当日に入会等の説明を希望しますか
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
