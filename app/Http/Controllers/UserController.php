@@ -32,7 +32,7 @@ class UserController extends Controller
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
       //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
-      if($this->is_manager($user->role)!=true && $_attribute->attribute_value=='dummy') continue;
+      if($_attribute->attribute_value=='dummy' && (!isset($user) || $this->is_manager($user->role)!=true)) continue;
 
       if(!isset($attributes[$_attribute->attribute_key])){
         $attributes[$_attribute->attribute_key] = [];
