@@ -39,6 +39,6 @@ class CreateTuitionMastersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tuition_masters');
+        Schema::connection('mysql_common')->dropIfExists('tuition_masters');
     }
 }
