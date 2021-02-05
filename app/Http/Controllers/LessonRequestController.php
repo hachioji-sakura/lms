@@ -885,11 +885,13 @@ class LessonRequestController extends UserCalendarController
     $param['action'] = 'matching';
     $param['item'] = $event;
     $param['event_id'] = $event_id;
-    $res = $this->transaction($request, function() use ($request, $event_id, $param){
       $event = Event::find($event_id);
       $event->add_matching_calendar($request->get('selected_lesson_request_ids'));
+    $res = $this->transaction($request, function() use ($request, $event_id, $param){
       return $this->api_response(200, '', '', null);
     }, '', __FILE__, __FUNCTION__, __LINE__ );
+    abort(500, "マッチング処理不具合");
+
     if($this->is_success_response($res)){
       return $this->save_redirect($res,$param, '', "/events/".$event_id."/schedules");
     }

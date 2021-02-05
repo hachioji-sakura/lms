@@ -1,3 +1,6 @@
+<?php
+$checked = '';
+?>
 @section('title')
   {{$domain_name}}一覧
 @endsection
@@ -8,13 +11,13 @@
 
 @section('contents')
 <div class="row">
-  <form method="POST" action='/events/{{$event_id}}/lesson_requests/matching' >
-  @csrf
-  @method('PUT')
   <div class="col-12">
-    <div class="card">
+    <div class="card" id="matching_form">
+      <form method="POST" action='/events/{{$event_id}}/lesson_requests/matching' >
+      @csrf
+      @method('PUT')
       <div class="card-header">
-        <h3 class="card-title" id="charge_students">
+        <h3 class="card-title" >
           <i class="fa fa-calendar mr-1"></i>
           講習申し込み一覧
         </h3>
@@ -24,61 +27,69 @@
             <i class="fa fa-calendar mr-1"></i>
             予定一覧
           </a>
+          <button type="button" class="btn btn-sm btn-submit btn-primary" accesskey="matching_form" confirm="マッチング処理を開始しますか？">
+            <i class="fa fa-check"></i>
+            マッチング処理開始
+          </button>
           @endif
           @yield('list_pager')
         </div>
       </div>
-      <div id="season_lesson_list" class="card-body table-responsive p-3">
+      <div class="card-body table-responsive p-3">
         @if(count($items) > 0)
-          <ul class="mailbox-attachments clearfix row">
-            @foreach($items as $item)
-            <li class="col-12" accesskey="" target="">
-                <div class="row">
-                  <div class="col-12 mt-1">
-                    <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"  checked="checked"/>
-                    <a href="/events/{{$event->id}}/schedules?lesson_request_id={{$item->id}}&search_status=fix">
-                    <span class="text-xs ml-3">
-                      <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
-                        {{$item->status_name()}}
-                      </small>
-                    </span>
-                    <span class="text-sm time">申込日:{{$item->dateweek_format($item->created_at)}}</span>
-                    <span class="text-xs ml-1">
-                      <i class="fa fa-user mr-1"></i>
-                      {{$item->student->name}} 様
-                      （{{$item->student->grade}}）<br>
-                    </span>
-                    </a>
-                  </div>
-                  <div class="col-12 mt-1 pl-5">
-                    @foreach($item->charge_subject_attributes() as $attribute)
-                    @if($item->get_tag_value($attribute->attribute_value.'_day_count')<1)
-                      @continue
-                    @else
-                    {{$attribute->attribute_name}}:{{$item->get_tag_value($attribute->attribute_value.'_day_count')}}
-                    @endif
-                    @endforeach
-                    <br>
-                    @foreach($item->get_tags('lesson_place') as $tag)
-                    <span class="text-xs">
-                      <small class="badge badge-success p-1 mr-1">
-                        <i class="fa fa-map-marker mr-1"></i>
-                        {{$tag->name()}}
-                      </small>
-                    </span>
-                    @endforeach
-                  </div>
-                  <div class="col-12 text-sm">
-                    @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
-                  </div>
-                </div>
-            </li>
-            @endforeach
-          </ul>
+          @foreach($items as $item)
+          <div class="row p-1 bd-gray hr-1">
+            <div class="col-8 mt-1">
+              <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"
+              <
+              />
+              <a href="/events/{{$event->id}}/schedules?lesson_request_id={{$item->id}}&search_status=fix">
+              <span class="text-xs ml-1">
+                <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
+                  {{$item->status_name()}}
+                </small>
+                <i class="fa fa-user mr-1"></i>
+                {{$item->student->name}} 様
+                （{{$item->student->grade}}）<br>
+              </span>
+              </a>
+            </div>
+            <div class="col-4 mt-1">
+              <span class="text-sm float-right">申込日:{{$item->dateweek_format($item->created_at)}}</span>
+            </div>
+            <div class="col-12 mt-1 pl-5">
+              @foreach($item->charge_subject_attributes() as $attribute)
+              @if($item->get_tag_value($attribute->attribute_value.'_day_count')<1)
+                @continue
+              @else
+              {{$attribute->attribute_name}}:{{$item->get_tag_value($attribute->attribute_value.'_day_count')}}
+              @endif
+              @endforeach
+              <br>
+              @foreach($item->get_tags('lesson_place') as $tag)
+              <span class="text-xs">
+                <small class="badge badge-success p-1 mr-1">
+                  <i class="fa fa-map-marker mr-1"></i>
+                  {{$tag->name()}}
+                </small>
+              </span>
+              @endforeach
+            </div>
+            <div class="col-12 mt-1 pl-5">
+              <span class="mr-1">
+                登録済予定数：{{count($item->calendars)}}
+                (候補予定数：{{$item->lesson_request_calendar_count(['fix', 'complete'])}})
+              </span>
+            </div>
+            <div class="col-12 text-sm">
+              @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
+            </div>
+          </div>
+          @endforeach
         @else
-        <div class="alert">
-          <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
-        </div>
+          <div class="alert">
+            <h4><i class="icon fa fa-exclamation-triangle"></i>{{__('labels.no_data')}}</h4>
+          </div>
         @endif
       </div>
       @if($event->is_season_lesson()==true)
@@ -90,14 +101,34 @@
             この処理はしばらく時間がかかります。
           </div>
           <div class="col-12">
-            <button type="button" class="btn btn-submit btn-primary w-100" accesskey="{{$action}}_form">
+            <button type="button" class="btn btn-submit btn-primary w-100" accesskey="matching_form" confirm="マッチング処理を開始しますか？">
               <i class="fa fa-check"></i>
               マッチング処理開始
             </button>
           </div>
         </div>
       </div>
+      <script>
+      $(function(){
+        base.pageSettinged("matching_form", null);
+        $("#matching_form button.btn-submit").on('click', function(e){
+          e.preventDefault();
+          var _confirm = $(this).attr("confirm");
+          if(!util.isEmpty(_confirm)){
+            if(!confirm(_confirm)) return false;
+          }
+          if(front.validateFormValue('matching_form')){
+            $("#matching_form form").submit();
+          }
+        });
+      });
+      function important_checked(){
+        var ret = $('input[name="important_check"]').prop('checked');
+        $("button.btn-submit").prop("disabled",!ret);
+      }
+      </script>
       @endif
+      </form>
     </div>
   </div>
 </div>

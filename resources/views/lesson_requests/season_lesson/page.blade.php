@@ -1,7 +1,7 @@
-@include('season_lesson.create_form')
+@include('lesson_requests.season_lesson.create_form')
 <div id="">
     <div class="row p-2">
-      @component($this->domain.'.season_lesson.confirm_form', ['attributes' => $attributes, 'is_trial' => false, 'item'=> $item]) @endcomponent
+      @component($domain.'.season_lesson.confirm_form', ['attributes' => $attributes, 'is_trial' => false, 'item'=> $item]) @endcomponent
       @if($action=='delete')
       <div class="col-12  mb-1">
         <div id="delete_form">

@@ -1,4 +1,4 @@
-@include('season_lesson.create_form')
+@include('lesson_requests.season_lesson.create_form')
 <div id="">
   @component($domain.'.season_lesson_teacher.confirm_form', ['attributes' => $attributes, 'is_trial' => false, 'item'=> $item]) @endcomponent
   <div class="row p-2">

@@ -7,7 +7,7 @@
   <li id="step_input" class="bg-info">@yield('title')</li>
 </ol>
 @endsection
-@include('season_lesson.create_form')
+@include('lesson_requests.season_lesson.create_form')
 
 
 @section('content')

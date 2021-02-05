@@ -82,7 +82,6 @@ class Event extends Milestone
     }
     //本モデルはcreateではなくaddを使う
     static protected function add($form){
-      $ret = [];
       $event = Event::create([
         'title' => $form['title'],
         'event_template_id' => $form['event_template_id'],
@@ -247,18 +246,20 @@ class Event extends Milestone
       return $this->_get_calendar($filter)->count();
     }
     public function add_matching_calendar($selected_lesson_request_ids){
+      if($selected_lesson_request_ids==null) return false;
       if($this->is_need_request()!=true) return false;
       //if($this->status != 'new') return false;
       //このイベントに対する申し込みを取得
-      $ids = LessonRequestDate::searchEvent($this->id)->pluck('id')->toArray();
+      $ids = LessonRequestDate::searchEvent($this->id)->whereIn('lesson_request_id', $selected_lesson_request_ids)->pluck('id')->toArray();
       LessonRequestCalendar::whereIn('lesson_request_date_id', $ids)->delete();
-      $this->_add_matching_calendar();
+      $this->_add_matching_calendar($selected_lesson_request_ids);
     }
-    public function _add_matching_calendar(){
+    public function _add_matching_calendar($selected_lesson_request_ids){
       echo "<h4>--------------_add_matching_calendar()------------------------</h4>";
-      foreach($this->lesson_requests as $r){
+      foreach($this->lesson_requests->whereIn('id', $selected_lesson_request_ids) as $r){
         foreach($r->get_tags('lesson_place') as $tag){
           $r->_add_matching_calendar_for_place($tag->tag_value);
+          break;
         }
       }
       echo "<h4>--------------_add_matching_calendar_for_date end------------------------</h4>";

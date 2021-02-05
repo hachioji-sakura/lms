@@ -9,7 +9,7 @@
     <li id="step_complete">完了</li>
   </ol>
   @endsection
-  @include('season_lesson.create_form')
+  @include('lesson_requests.season_lesson.create_form')
 @else
   @section('title_header')
   <ol class="step">
