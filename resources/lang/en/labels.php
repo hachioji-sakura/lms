@@ -407,4 +407,6 @@ return [
   'menu' => 'Menu',
   'task_title' => 'ex: English_selfIntroduction',
   'workable_classroom' => 'Workable ClassRoom',
+  'skype_name' => 'Skype Name',
+  'skype_name_about' => 'What is my Skype ID?',
 ];

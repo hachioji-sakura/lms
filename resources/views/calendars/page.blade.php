@@ -46,11 +46,14 @@
             {{$field['label']}}
           </label>
           @component('calendars.forms.label_students', ['item' => $item, 'user'=>$user, 'set_br' => true , 'status_visible'=> true]) @endcomponent
-        @elseif($key==='teacher_name' && $user->role=='manager')
+        @elseif($key==='teacher_name')
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
         </label>
-        <a href="/teachers/{{$item->user->teacher->id}}" target="_blank">{{$item[$key]}}</a>
+          @if($user->role=='manager') <a href="/teachers/{{$item->user->teacher->id}}" target="_blank"> @endif
+          {{$item[$key]}}
+          @if($item->is_online()==true && $item->user->has_tag('skype_name')==true)({{__('labels.skype_name')}}:{{$item->user->get_tag_value('skype_name')}})@endif
+          @if($user->role=='manager') </a> @endif
         @elseif($key==='teaching_name' || $key==='course')
         <label for="{{$key}}" class="w-100">
           {{$field['label']}}
