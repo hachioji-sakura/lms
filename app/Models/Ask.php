@@ -30,10 +30,6 @@ class Ask extends Milestone
     return $this->hasMany('App\Models\AskComment');
   }
 
-  public function getTypeNameAttribute(){
-    return config('attribute.ask_type')[$this->type];
-  }
-
   public function getStatusNameAttribute(){
     return config('attribute.ask_status')[$this->status];
   }
