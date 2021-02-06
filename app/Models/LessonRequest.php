@@ -169,6 +169,7 @@ class LessonRequest extends Model
     return $status;
   }
   public function _add_matching_calendar_for_place($place_id=0){
+    \Log::warning("_add_matching_calendar_for_place(".$place_id.")");
     //①担当講師を取得(直近予定のある講師＞有効なカレンダー設定の講師）
     $charge_teachers = $this->student->get_current_charge_teachers();
     $subject_teacher_set = [];
@@ -295,6 +296,7 @@ class LessonRequest extends Model
   }
 
   public function get_teacher_request_dates_schedule($teacher_id, $target_day=''){
+    \Log::warning("get_teacher_request_dates_schedule(".$teacher_id.")(".$target_day.")");
     $teacher = Teacher::find($teacher_id);
     if(!isset($teacher)) return null;
     $dates = $this->request_dates;
@@ -312,6 +314,7 @@ class LessonRequest extends Model
     return $calendars;
   }
   private function create_request_calendar($lesson, $time_list, $teacher_id, $target_day, $place_id=0, $subject_code=""){
+    \Log::warning("create_request_calendar(".$lesson.")(".$teacher_id.")(".$target_day.")(".$place_id.")(".$subject_code.")");
     /*create_request_calendar
     過ぎた予定の追加を無効にする
     if(strtotime("now") > strtotime($target_day)){
@@ -387,12 +390,13 @@ class LessonRequest extends Model
                     ->orderBy('start_time')
                     ->get();
 
-    LessonRequestCalendar::whereIn('id', $lesson_request_date->calendars()->pluck('id')->toArray())->update(['status' => 'new']);
-
+    //LessonRequestCalendar::whereIn('id', $lesson_request_date->calendars()->pluck('id')->toArray())->update(['status' => 'new']);
     foreach($lesson_request_date->calendars()->get() as $calendar){
       $matching_result = "";
-      $status = "free";
+      $status = $calendar->status;
+      if($calendar->status=='new') $status = 'free';
       //講師の体験授業可能曜日・空き時間をチェック
+      \Log::warning("create_request_calendar:講師の体験授業可能曜日・空き時間をチェック");
       if(isset($_enable_times)){
         $find_start = false;
         $from = date('Hi', strtotime($calendar->start_time));
@@ -424,10 +428,12 @@ class LessonRequest extends Model
 
       if(isset($teacher_calendars) && $status == "free"){
         //講師の現在の授業予定との競合するかチェック
+        \Log::warning("create_request_calendar:講師の現在の授業予定との競合するかチェック");
         $matching_result = $this->get_matching_result($calendar, $teacher_calendars, $place_id);
       }
 
       if(isset($teacher_lesson_request_calendars) && $status == "free"){
+        \Log::warning("create_request_calendar:講師の申し込みでfixした予定と競合するかチェック");
         $matching_result = $this->get_matching_result($calendar, $teacher_lesson_request_calendars, $place_id);
       }
 
@@ -435,11 +441,14 @@ class LessonRequest extends Model
       if($matching_result=='time_conflict' || $matching_result=='place_conflict'){
         $status = 'disabled';
       }
+      \Log::warning("[".$calendar->id."][".$matching_result."][".$calendar->status."][".$status."]");
       $calendar->update(['matching_result' => $matching_result, 'status' => $status]);
     }
     return true;
   }
   public function request_calendar_review($teacher_id, $target_day='', $subject_code=''){
+    \Log::warning("request_calendar_review(".$teacher_id.")(".$target_day.")(".$subject_code.")");
+
     $teacher = Teacher::find($teacher_id);
     //対象の空き予定を取得
     $calendars = LessonRequestCalendar::where('user_id', $teacher->user_id)
@@ -500,6 +509,7 @@ class LessonRequest extends Model
     return $ret;
   }
   private function schedule_review($teacher_id, $target_calendar, $check_model='user_calendars'){
+    \Log::warning("schedule_review(".$teacher_id.")");
     if($target_calendar->status!=="free") return false;
 
     $teacher = Teacher::find($teacher_id);

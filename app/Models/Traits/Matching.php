@@ -813,7 +813,7 @@ trait Matching
   public function get_matching_result($target_calendar, $teacher_calendars, $place_id=0){
     $conflict_calendar = null;
     $free_place_floor = "";
-    $matching_result = "";
+    $matching_result = $target_calendar->matching_result;
     $is_time_conflict = false;
     $is_place_conflict = false;
 
