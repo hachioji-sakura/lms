@@ -85,6 +85,11 @@
       </ul>
     </li>
     @endforeach
+    <li class="nav-item">
+      <a href="/faqs" class="nav-link">
+        <i class="fa fa-question-circle nav-icon"></i>{{__('labels.faqs')}}
+      </a>
+    </li>
 </ul>
 @endsection
 @section('page_footer')
