@@ -16,7 +16,7 @@ return [
   'signup' =>     'アカウント登録',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
-  'faqs'             => 'FAQ',
+  'faqs'             => 'よくあるご質問(FAQ)',
   'icons'             => 'アイコン変更',
   'to_login'             => 'ログインへ',
   'account_setting' => 'アカウント設定',
