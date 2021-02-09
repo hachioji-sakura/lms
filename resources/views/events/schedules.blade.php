@@ -159,10 +159,11 @@
                   <div class="col-12">
                     <span class="float-left">
                     <input class="form-check-input icheck flat-red day_check" type="checkbox" name="selected_lesson_request_calendar_ids[]" value="{{$calendar->id}}"  checked="checked"/>
-                      <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="">
+                      <a href="javascript:void(0);" title="{{$calendar->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="">
+                        {{$calendar->id}}
                       </a>
                         <span class="mr-2">
-                          <small class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
+                          <small title="{{$calendar->id}}" class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
                             {{$calendar->status_name}}
                           </small>
                         </span>
