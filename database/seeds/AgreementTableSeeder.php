@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Agreement;
+use App\Models\AgreementStatement;
 use App\Models\UserCalendarMemberSetting;
 use App\User;
 
@@ -20,6 +21,7 @@ class AgreementTableSeeder extends Seeder
 
       DB::transaction(function(){
         $this->add_agreement();
+//        $this->update_agreement_statement();
       });
     }
 
@@ -36,7 +38,35 @@ class AgreementTableSeeder extends Seeder
       foreach($target_users as $user){
         $agreement = new Agreement;
         $member_setting = $user->calendar_member_settings()->first();
+        $student = Student::where("user_id",$user->id)->first();
+        $ret = $this->get_agreement_data_source($student->name);
+        $form = [
+          'title' => $student->name.":".date('Y/m/d'),
+          'type' => 'normal',
+          'student_id' => $student->id,
+          'status' => 'new',
+          'entry_fee' => $ret["entry_fee"], //スプレッドシートの値を持ってくる
+          'monthly_fee' => $ret["monthly_fee"], //スプレッドシートの値を持ってくる
+          'student_parent_id' => $student->relations->first()->student_parent_id,
+        ];
+        $agreement = new Agreement($form);
+        $agreement->save();
 
+        $forms =  $this->get_statement_update_array()->where('name',$student->name);
+        if($forms->count()>0){
+          $forms->map(function($item){
+            return $item->pull("name");
+          });
+          $forms->map(function($item) use ($student){
+            $count = $student->user->get_enable_calendar_setting_count($item["lesson_id"]);
+            return $item->put("lesson_week_count",$count);
+          });
+          $forms = $forms->toArray();
+          $agreement->agreement_statements()->createMany($forms);
+        }
+
+
+        /* カレンダーメンバーから契約を起こすときに使った
         //既存の物を現状のロジックで契約追加
         $new_agreement = $agreement->add_from_member_setting($member_setting->id);
 
@@ -79,6 +109,83 @@ class AgreementTableSeeder extends Seeder
           $statement->tuition = $fee;
           $statement->save();
         }
+        */
       }
+    }
+
+    public function update_agreement_statement(){
+      /*
+      生徒名・部門・コースタイプ・時間をキーにしてひっかける
+      料金は1時間単価で入力
+      生徒の学年もついでに更新する？
+      */
+      $update_array = $this->get_statement_update_array();
+      foreach($update_array as $fields){
+        $student = Student::all()->where("name",$fields["name"])->first();
+        $statement = $student->agreements->map(function($item){
+          return $item->agreement_statements;
+        })->first();
+        foreach($fields as $field => $value){
+          if($field != "name" && $field != "tuition"){
+            $statement = $statement->where($field,$value);
+          }
+        }
+        $st = $statement->first();
+        if(empty($st)){
+          dd($st,$statement,$fields,$student);
+        }
+        $st->tuition = $fields["tuition"];
+        $st->save();
+      }
+    }
+
+    public function get_agreement_data_source($student_name){
+      $ret = $this->get_agreement_update_array()->where("name",$student_name)->first();
+      if(empty($ret)){
+        return [ "entry_fee" => 0, "monthly_fee" => 0];
+      }
+      return $ret;
+    }
+
+
+
+    public function get_agreement_update_array(){
+      return collect([
+        [
+          "name" => "伊勢崎 あい",
+          "entry_fee" => 100000000,
+          "monthly_fee" => 300000000,
+        ],
+        [
+          "name" => "北川 賢治",
+          "entry_fee" => 100000000,
+          "monthly_fee" => 300000000,
+        ],
+      ]);
+    }
+
+    public function get_statement_update_array(){
+      return collect([
+          collect([
+            "name" => "津田 和佳子",
+            "teacher_id" => "46",
+            "lesson_id" => 1,
+            "course_type" => "single",
+            "course_minutes" => 60,
+            "grade" => "e5",
+            "tuition" => 200000,
+            "is_exam" => 0,
+          ]),
+          collect([
+            "name" => "津田 和佳子",
+            "teacher_id" => "46",
+            "lesson_id" => 1,
+            "course_type" => "single",
+            "course_minutes" => 90,
+            "grade" => "e5",
+            "tuition" => 1500,
+            "is_exam" => 0,
+          ]),
+      ]);
     }
 }
