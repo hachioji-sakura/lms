@@ -391,6 +391,26 @@ class StudentController extends UserController
      ])->with($param);
   }
 
+  public function show_school_grade_page(Request $request, $id)
+  {
+    $init = $this->init_show_page
+    ($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.school_grades";
+    $param['view'] = $view;
+
+    $school_grades = $item->school_grades;
+    //dd($school_grades);
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'school_grades' => $school_grades,
+   ])->with($param);
+  }
+
 
   public function emergency_lecture_cancel(Request $request, $id)
   {

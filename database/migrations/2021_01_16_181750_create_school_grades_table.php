@@ -17,11 +17,11 @@ class CreateSchoolGradesTable extends Migration
           $table->increments('id');
           $table->integer('student_id')->nullable(false)->index('index_student_id')->comment('生徒ID');
           $table->string('title')->nullable(false)->comment('タイトル');
-          $table->string('remark',10000)->comment('備考');
+          $table->string('remark',10000)->nullable(true)->comment('備考');
           $table->string('grade')->nullable(false)->comment('学年コード');
           $table->integer('semester_no')->default(1)->comment('学期番号');
-          $table->string('s3_alias')->nullable()->default(null);
-          $table->string('s3_url')->nullable()->default(null);
+          $table->string('s3_alias')->nullable(true)->default(null);
+          $table->string('s3_url')->nullable(true)->default(null);
           $table->timestamps();
         });
     }

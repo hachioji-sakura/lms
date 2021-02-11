@@ -59,6 +59,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('milestones','MilestoneController');
   Route::resource('text_materials','TextMaterialController');
 
+  Route::resource('school_grades','SchoolGradeController');
+
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
   Route::put('comments/{id}/checked','CommentController@checked');
@@ -260,6 +262,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/comments','StudentController@show_comment_page');
   Route::get('students/{id}/milestones','StudentController@show_milestone_page');
   Route::get('students/{id}/tasks','StudentController@show_task_page');
+  Route::get('students/{id}/school_grades','StudentController@show_school_grade_page');
+
 
 
   Route::get('teachers/{id}/calendar','TeacherController@calendar');

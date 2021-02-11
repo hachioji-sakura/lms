@@ -32,6 +32,7 @@ return [
   'milestones_list'             => '目標一覧',
   'attributes_list'             => '属性一覧',
   'events_list'             => 'イベント一覧',
+  'school_grades_list'             => '成績一覧',
   'maillogs'                 =>'メール履歴',
   'student_groups_list'             => '生徒グループ一覧',
   'account'             => 'アカウント',
@@ -170,6 +171,8 @@ return [
   'to_exchange_only' => '振替対象のみを表示',
   'dashboard' => 'ダッシュボード',
   'comment_add' => 'コメント登録',
+  'school_grades' => '成績',
+  'school_grades_add' => '成績登録',
 
   'tags' => 'タグ',
   'start_date' => '開始日時',

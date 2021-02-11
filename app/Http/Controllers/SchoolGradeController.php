@@ -13,9 +13,11 @@ class SchoolGradeController extends MilestoneController
 {
   public $domain = 'school_grades';
   public $table = 'school_grades';
+
   public function model(){
     return SchoolGrade::query();
   }
+
   /**
    * 検索～一覧
    *
@@ -39,100 +41,57 @@ class SchoolGradeController extends MilestoneController
       'id' => [
         'label' => 'ID',
       ],
-      'type_name' => [
-        'label' => '種別',
+      'student_id' => [
+        'label' => '生徒ID',
       ],
-      'body' => [
+      'student_name' => [
+        'label' => '生徒氏名',
+      ],
+      'grade_name' => [
+        'label' => '学年',
+      ],
+      'semester_name' => [
+        'label' => '学期',
+      ],
+      'title' => [
         'label' => '内容',
         'link' => 'show',
       ],
     ];
-    $fields['target_user_name'] = [
-      'label' => '対象者',
-    ];
-    /*
-    $fields['publiced_at'] = [
-      'label' => '公開日',
-    ];
-    */
-    $fields['create_user_name'] = [
-      'label' => '起票者',
-    ];
-    $fields['created_date'] = [
-      'label' => __('labels.add_datetime'),
-    ];
+
     $fields['buttons'] = [
       'label' => '操作',
       'button' => ['edit', 'delete']
     ];
-    return ['items' => $items, 'fields' => $fields, 'count' => $count];
-  }
-  /**
-   * フィルタリングロジック
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  Collection $items
-   * @return Collection
-   */
-  public function _search_scope(Request $request, $items)
-  {
-    //ID 検索
-    if(isset($request->id)){
-      $items = $items->where('id',$request->id);
-    }
-    //ステータス 検索
-    if(isset($request->search_status)){
-      $items = $items->where('status',$request->search_status);
-    }
-    //種別 検索
-    if(isset($request->search_type)){
-      if($request->search_type==='private'){
-        $items = $items->where('publiced_at', '>=' , date('Y-m-d'));
-      }
-      else {
-        $items = $items->where('type',$request->search_type);
-      }
-    }
-    //検索ワード
-    if(isset($request->search_word)){
-      $search_words = explode(' ', $request->search_word);
-      $items = $items->where(function($items)use($search_words){
-        foreach($search_words as $_search_word){
-          if(empty($_search_word)) continue;
-          $_like = '%'.$_search_word.'%';
-          $items->orWhere('title','like',$_like)->orWhere('body','like',$_like);
-        }
-      });
-    }
 
-    return $items;
+    return ['items' => $items, 'fields' => $fields, 'count' => $count];
   }
 
   public function create_form(Request $request){
     $user = $this->login_details($request);
     $form = [];
-    $form['publiced_at'] = '9999-12-31';
-    if($this->is_manager_or_teacher($user->role)){
-      $form['publiced_at'] = date('Y-m-d');
-    }
-    $form['create_user_id'] = $user->user_id;
-    $form['type'] = $request->get('type');
+
+    $form['student_id'] = $request->get('student_id');
     $form['title'] = $request->get('title');
-    $form['body'] = $request->get('body');
-    $form['target_user_id'] = $this->get_target_user_id($request);
-    $form['importance'] = 0;
+    $form['grade'] = $request->get('grade');
+    $form['semester_no'] = $request->get('semester_no');
+    $form['remark'] = $request->get('remark');
+
+    //dd($request->all());
     return $form;
   }
 
+
   public function update_form(Request $request){
     $form = [];
-    if(!empty($request->get('publiced_at'))){
-      $form['publiced_at'] = $request->get('publiced_at');
-    }
-    $form['type'] = $request->get('type');
+    //$form['student_id'] = $request->get('student_id');
     $form['title'] = $request->get('title');
-    $form['importance'] = $request->get('importance');
-    $form['body'] = $request->get('body');
+    $form['grade'] = $request->get('grade');
+    $form['semester_no'] = $request->get('semester_no');
+    $form['remark'] = $request->get('remark');
+
+//    dd($request->all());
+//    dd($form);
     return $form;
   }
 
@@ -147,30 +106,15 @@ class SchoolGradeController extends MilestoneController
     $param = $this->get_param($request, $id);
 
     $fields = [
-      'type_name' => [
-        'label' => '種別',
+      'id'  => [
+        'label' => 'ID',
       ],
-      'body' => [
-        'label' => '内容',
+      'student_id' => [
+        'label' => '生徒ID',
       ],
-    ];
-    if($this->is_manager_or_teacher($param['user']->role)===true){
-      //生徒以外の場合は、対象者も表示する
-      $fields['target_user_name'] = [
-        'label' => '対象者',
-      ];
-      $fields['create_user_name'] = [
-        'label' => '起票者',
-      ];
-      $fields['publiced_date'] = [
-        'label' => '公開日',
-      ];
-    }
-    $fields['created_date'] = [
-      'label' => __('labels.add_datetime'),
-    ];
-    $fields['updated_date'] = [
-      'label' => __('labels.upd_datetime'),
+      'student_name' => [
+        'label' => '生徒氏名'
+      ],
     ];
 
     return view('components.page', [
@@ -179,4 +123,89 @@ class SchoolGradeController extends MilestoneController
       ->with($param);
   }
 
+//新規登録時の処理
+  public function _store(Request $request)
+  {
+    //dd($request->all());
+    $form = $this->create_form($request);
+    if(empty($form['student_id'])) {
+      return $this->bad_request('リクエストエラー', '生徒ID='.$form['student_id']);
+    }
+    $res = $this->save_validate($request);
+
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $item = $this->model();
+    foreach($form as $key=>$val){
+      $item = $item->where($key, $val);
+    }
+    $item = $item->first();
+    if(isset($item)){
+      return $this->error_response('すでに登録済みです');
+    }
+    $res = $this->transaction($request, function() use ($request, $form){
+      $item = $this->model()->create($form);
+      if($request->hasFile('upload_file')){
+        if ($request->file('upload_file')->isValid([])) {
+          $item->file_upload($request->file('upload_file'));
+        }
+      }
+      return $this->api_response(200, '', '', $item);
+    }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+   }
+
+  //更新時の処理
+  public function _update(Request $request, $id)
+  {
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $res =  $this->transaction($request, function() use ($request, $id){
+      $form = $this->update_form($request);
+      $item = $this->model()->where('id', $id)->first();
+      $is_file_delete = false;
+      if($request->has('upload_file_delete') && $request->get('upload_file_delete')==1){
+        $is_file_delete = true;
+      }
+      $file = null;
+      if($request->hasFile('upload_file')){
+        if ($request->file('upload_file')->isValid([])) {
+          $file = $request->file('upload_file');
+        }
+      }
+      $item->change($form, $file, $is_file_delete);
+      return $this->api_response(200, '', '', $item);
+    }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+
+  }
+
+
+   public function _search_scope(Request $request, $items)
+   {
+     //ID 検索
+     if(isset($request->id)){
+       $items = $items->where('id',$request->id);
+     }
+     //生徒ID検索
+     if(isset($request->student_id)){
+       $items = $items->where('student_id',$request->student_id);
+     }
+
+     return $items;
+   }
+
+
+   //保存時にパラメータをチェック
+   public function save_validate(Request $request)
+   {
+     $form = $request->all();
+     if(empty($form['title']) || empty($form['grade']) || empty($form['semester_no'] )){
+       return $this->bad_request('リクエストエラー', 'タイトル='.$form['title'].'/学年='.$form['grade'].'/学期='.$form['semester_no']);
+     }
+     return $this->api_response(200, '', '');
+  }
 }
