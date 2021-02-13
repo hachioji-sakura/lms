@@ -1429,13 +1429,22 @@ class StudentController extends UserController
       $title = __('labels.unsubscribe');
     }
     $param = $this->get_param($request, $id);
-
-    $res = $this->transaction($request, function() use ($request, $id){
+    set_time_limit(1200);
+    $res = $this->transaction($request, function() use ($request, $id, $title){
       $form = $request->all();
-      $item = $this->model()->where('id', $id)->first()->unsubscribe();
-      return $this->api_response(200, '', '', $item);
-    }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-    return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+      $item = $this->model()->where('id', $id)->first();
+      if(!empty($form['unsubscribe_date'])){
+        $item->update(['unsubscribe_date'=>$form['unsubscribe_date']]);
+      }
+      $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$form['unsubscribe_date']));
+      $message = date('Y年m月d日', strtotime('+1 day '.$form['unsubscribe_date'])).'に'.$title.'する設定をしました';
+      if(strtotime($unsubscribe_date_tomorrow) <= strtotime(date('Y-m-d'))){
+        $message = $title.'に更新しました';
+        $item->unsubscribe();
+      }
+      return $this->api_response(200, $message, '', $item);
+    }, $title.'', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param,$res['message']);
   }
   public function regular_page(Request $request, $id)
   {
