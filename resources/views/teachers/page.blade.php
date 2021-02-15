@@ -59,7 +59,7 @@
           <a class="nav-link btn btn-sm btn-default {{$view == 'text_materials'  ? 'active ': ''}}" href="/{{$domain}}/{{$item->id}}?view=text_materials">
             <small>
               <i class="fa fa-book"></i>
-              教材
+              {{__('labels.text_materials')}}
             </small>
           </a>
         </li>
