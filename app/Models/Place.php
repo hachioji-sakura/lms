@@ -5,6 +5,31 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\Place
+ *
+ * @property int $id
+ * @property string $name 所在地名
+ * @property string|null $name_en 名称（英語）
+ * @property int $sort_no 表示順
+ * @property string|null $post_no 郵便番号
+ * @property string|null $address 住所
+ * @property string|null $phone_no 連絡先
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PlaceFloor[] $floors
+ * @property-read mixed $created_date
+ * @property-read mixed $is_use
+ * @property-read mixed $updated_date
+ * @method static \Illuminate\Database\Eloquent\Builder|Place fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Place findId($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Place newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Place newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Place query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Place searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Place searchWord($word)
+ * @mixin \Eloquent
+ */
 class Place extends Model
 {
   use Common;

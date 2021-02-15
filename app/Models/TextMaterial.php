@@ -4,6 +4,44 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\TextMaterial
+ *
+ * @property int $id
+ * @property string $name 保存ファイル名
+ * @property string|null $description 説明
+ * @property string $type mimetype
+ * @property int $size ファイルサイズ
+ * @property string $s3_url S3ダウンロードURL
+ * @property string $publiced_at 公開日
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $importance_label
+ * @property-read mixed $publiced_date
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|TextMaterial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TextMaterial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|TextMaterial query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class TextMaterial extends Milestone
 {
   //リンクするテーブル名

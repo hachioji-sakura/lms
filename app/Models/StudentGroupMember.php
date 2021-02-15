@@ -4,6 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\StudentGroupMember
+ *
+ * @property int $id
+ * @property int $student_group_id 生徒グループID
+ * @property int $student_id 生徒ID
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read \App\Models\Student $student
+ * @property-read \App\Models\StudentGroup $student_group
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroupMember newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroupMember newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroupMember query()
+ * @mixin \Eloquent
+ */
 class StudentGroupMember extends Model
 {
   protected $table = 'common.student_group_members';
