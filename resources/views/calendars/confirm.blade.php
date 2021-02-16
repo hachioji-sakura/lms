@@ -27,10 +27,18 @@
         @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
           <div class="col-12 mb-1" id="{{$domain}}_confirm">
             <input type="hidden" name="is_all_student" value="1" />
+            @if($item->is_online()==true && $item->user->has_tag('skype_name')!=true)
+            <div class="col-12">
+              <div class="alert alert-danger text-sm">
+                <i class="icon fa fa-exclamation-triangle"></i>{!!nl2br(__('messages.error_skype_name_not_found'))!!}
+              </div>
+            </div>
+            @else
             <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
                 <i class="fa fa-check mr-1"></i>
                 {{__('labels.schedule_to_confirm')}}
             </button>
+            @endif
           </div>
         </form>
       </div>

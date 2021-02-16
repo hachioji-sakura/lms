@@ -825,6 +825,7 @@ EOT;
     foreach($update_fields as $field){
       if($field=='status') continue;
       if(!isset($form[$field])) continue;
+      if(empty($form[$field]) && ($field=='start_time' || $field=='end_time')) continue;
       $data[$field] = $form[$field];
     }
     if(isset($data['start_time']) && isset($data['end_time'])){
