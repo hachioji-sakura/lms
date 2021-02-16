@@ -186,6 +186,7 @@
                             {{$calendar->subject}}
                           </small>
                         </span>
+                        <br>
                     </span>
                     <span class="float-right">
                       <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$calendar->id}}/edit" role="button" class="btn btn-default btn-sm ml-1">
@@ -196,7 +197,15 @@
                       </a>
                     </span>
                   </div>
-
+                  <div class="col-12">
+                    @if(!empty($calendar->matching_result))
+                    <span class="mr-2">
+                      <small class="badge badge-primary mt-1 mr-1">
+                        {{$calendar->matching_result}}
+                      </small>
+                    </span>
+                    @endif
+                  </div>
                 </div>
                 <?php
                   $__date = $calendar["date"];

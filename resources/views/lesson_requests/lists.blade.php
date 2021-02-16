@@ -40,10 +40,12 @@ $checked = '';
           @foreach($items as $item)
           <div class="row p-1 bd-gray hr-1">
             <div class="col-8 mt-1">
+              @if($item->is_unfixed()==true)
               <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"
-              <
+               checked
               />
-              <a href="/events/{{$event->id}}/schedules?lesson_request_id={{$item->id}}&search_status=fix">
+              @endif
+              <a href="/students/{{$item->stuendent_id}}">
               <span class="text-xs ml-1">
                 <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
                   {{$item->status_name()}}
@@ -58,13 +60,21 @@ $checked = '';
               <span class="text-sm float-right">申込日:{{$item->dateweek_format($item->created_at)}}</span>
             </div>
             <div class="col-12 mt-1 pl-5">
+              <span class="text-xs">
+                  {{$item->get_tag_name('season_lesson_course')}}
+              </span>
+              <br>
               @foreach($item->charge_subject_attributes() as $attribute)
               @if($item->get_tag_value($attribute->attribute_value.'_day_count')<1)
                 @continue
               @else
-              {{$attribute->attribute_name}}:{{$item->get_tag_value($attribute->attribute_value.'_day_count')}}
+                {{$attribute->attribute_name}}:{{$item->get_tag_value($attribute->attribute_value.'_day_count')}}コマ
               @endif
               @endforeach
+              <small class="badge badge-info p-1 mr-1">
+                <i class="fa fa-clock"></i>
+                {{$item->get_tag_value('season_lesson_course')}}分
+              </small>
               <br>
               @foreach($item->get_tags('lesson_place') as $tag)
               <span class="text-xs">
@@ -80,9 +90,19 @@ $checked = '';
                 登録済予定数：{{count($item->calendars)}}
                 (候補予定数：{{$item->lesson_request_calendar_count(['fix', 'complete'])}})
               </span>
+              <br>
+              担当講師:
+              @foreach($item->student->get_current_charge_teachers() as $teacher)
+              <a href="/teachers/{{$teacher->id}}">
+              <span class="text-xs ml-1">
+                <i class="fa fa-user-tie mr-1"></i>
+                {{$teacher->name}}
+              </span>
+              </a>
+              @endforeach
             </div>
             <div class="col-12 text-sm">
-              @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes]) @endcomponent
+              @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'event' => $event]) @endcomponent
             </div>
           </div>
           @endforeach
@@ -186,6 +206,17 @@ $checked = '';
             未対応
             @if($new_count > 0)
             <span class="badge badge-danger right">{{$new_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/events/{{$event->id}}/lesson_requests?list=confirm" class="nav-link @if($list=="confirm") active @endif">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          <p>
+            調整中
+            @if($confirm_count > 0)
+            <span class="badge badge-warning right">{{$confirm_count}}</span>
             @endif
           </p>
         </a>

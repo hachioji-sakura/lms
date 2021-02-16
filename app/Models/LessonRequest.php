@@ -118,21 +118,20 @@ class LessonRequest extends Model
       if($c < 1 ) continue;
       $subject_count[$subject_code] = $c;
     }
-
-    $calendars = $this->lesson_request_calendars();
+    $calendars = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete'])->get();
     $set_calendar_subject_count = [];
     $status = 'new';
     foreach($calendars as $calendar){
-      if(!isset($calendar->subject_code)) continue;
       if(!isset($set_calendar_subject_count[$calendar->subject_code])){
         $set_calendar_subject_count[$calendar->subject_code]=0;
       }
       $set_calendar_subject_count[$calendar->subject_code]++;
       if($status == 'new') $status='confirm';
     }
+
+
     $calendars = UserCalendar::where('lesson_request_id', $this->id)->whereIn('status', ['rest_cacel', 'absence', 'lecture_cancel', 'presence', 'rest', 'fix'])->get();
     $fix_calendar_subject_count = [];
-    $status = 'new';
     foreach($calendars as $calendar){
       foreach($calendar->get_tags('charge_subject') as $tag){
         if(!isset($fix_calendar_subject_count[$tag->tag_value])){
@@ -143,8 +142,10 @@ class LessonRequest extends Model
     }
     $is_fixed = true;
     $is_complete = true;
+
     foreach($subject_count as $subject_code => $c){
       if(!isset($set_calendar_subject_count[$subject_code])){
+        //希望科目の予定登録がない
         $is_fixed = false;
       }
       else if($c > $set_calendar_subject_count[$subject_code]){
@@ -165,9 +166,11 @@ class LessonRequest extends Model
     else if($is_fixed==true){
       $status = 'fix';
     }
+
     $this->update(['status' => $status]);
     return $status;
   }
+
   public function _add_matching_calendar_for_place($place_id=0){
     \Log::warning("_add_matching_calendar_for_place(".$place_id.")");
     //①担当講師を取得(直近予定のある講師＞有効なカレンダー設定の講師）
@@ -224,11 +227,13 @@ class LessonRequest extends Model
     foreach($que as $i=>$subject_code){
       echo "Que[".$i."][".$subject_code."]<br>\n";
     }
+    $date_time_list = $this->get_time_list(1);
+
     //レッスン=1 の希望日ごとのtime_slotを取得
+    /*
     echo "-----------------------------<br>\n";
     echo "-------予定が存在する日に登録する---<br>\n";
     echo "-----------------------------<br>\n";
-    $date_time_list = $this->get_time_list(1);
     foreach($que as $i => $subject_code){
       $is_add = false;
       //queを参照＞担当講師決定
@@ -259,35 +264,54 @@ class LessonRequest extends Model
         }
       }
     }
+    */
     echo "-----------------------------<br>\n";
     echo "ひとまず予定登録する<br>\n";
     echo "----------------------------<br>\n";
-    foreach($que as $i => $subject_code){
+    //foreach($que as $i => $subject_code){
+    $i=0;
+    while(count($que) > 0){
       //queを参照＞担当講師決定
-      $is_add = false;
+      echo "que:";
+      $subject_code = "";
+      foreach($que as $i => $_subject_code){
+        echo $i."=".$que[$i]."<br>";
+        if(empty($subject_code)) $subject_code = $que[$i];
+      }
+      echo "<br>";
       $teacher = $subject_teacher_set[$subject_code];
-      echo "●que pop[".$i."][subject=".$subject_code."][講師id=".$teacher->id."]<br>\n";
+      echo "●que pop[subject=".$subject_code."][講師id=".$teacher->id."]<br>\n";
+      $has_fix_calendar = false;
       foreach($date_time_list as $d => $time_list){
-        $already_calendar = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete'])
+        $already_calendar = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete', 'prohibit'])
                             ->rangeDate($d.' 00:00:00', $d.' 23:59:59')->first();
-        if(isset($already_calendar)) continue;
-
+        if(isset($already_calendar)) continue;    //すでにその日に予定が入っている場合はスルー
         echo "候補予定[".$d."]を探索<br>\n";
         $this->create_request_calendar(1, $time_list, $teacher->id, $d, $place_id, $subject_code);
         $calendar = $this->request_calendar_review($teacher->id, $d, $subject_code);
-
-        if(isset($calendar[$d]) && count($calendar[$d])>0){
-          $is_add = $this->fix_calendar($calendar[$d]);
-          echo "候補予定数[".count($calendar[$d])."]<br>\n";
-          echo "確定予定[".$calendar[$d][0]->id."]<br>\n";
+        if(isset($calendar[$d]) && count($calendar[$d])>0) $fix_calendars = $this->fix_calendar($calendar[$d]);
+        if(count($fix_calendars) > 0){
+          $fix_calendars = $this->fix_calendar($calendar[$d]);
+          $has_fix_calendar = true;
+          foreach($fix_calendars as $fix_calendar){
+            echo "fix_calendar[id=".$fix_calendar->id."][".$fix_calendar->place_floor_id."]<br>";
+            for($p=0;$p<count($que);$p++){
+              echo "fix_calendar check[id=".$que[$p]."][".$fix_calendar->subject_code."]<br>";
+              if($que[$p]==$fix_calendar->subject_code){
+                array_splice($que, $p, 1);
+                break;
+              }
+            }
+          }
         }
         else {
           echo "候補予定なし<br>\n";
         }
-        if($is_add==true){
-          unset($que[$i]);
-          break;
-        }
+        if($has_fix_calendar == true ) break;
+      }
+      if($has_fix_calendar == false){
+        //fiｘ予定が作れないケース
+        array_shift($que);
       }
     }
 
@@ -295,32 +319,30 @@ class LessonRequest extends Model
   }
   public function fix_calendar($calendars){
     $course_minutes = $this->get_tag_value('season_lesson_course');
-    $is_add = false;
-    for($t=0;$t<count($calendars)-1;$t++){
-      $status = 'fix';
-      $d = date('Y-m-d', strtotime($calendars[$t]->start_time));
-      $diffrent_place_calendar = LessonRequestCalendar::where('user_id', $calendars[$t]->user_id)
-                                ->rangeDate($d.' 00:00:00', $d.' 23:59:59')
-                                ->whereIn('status', ['fix', 'complete'])
-                                ->where('place_floor_id', '!=', $calendars[$t]->place_floor_id)
-                                ->first();
-      if(isset($diffrent_place_calendar)) $status = 'prohibit';
-      if($course_minutes==120){
-        if($calendars[$t]->end_time==$calendars[$t+1]->start_time &&
-            $calendars[$t]->place_floor_id==$calendars[$t+1]->place_floor_id){
+    $ret = [];
+    $t = 0;
+    $status = 'fix';
+    $d = date('Y-m-d', strtotime($calendars[$t]->start_time));
+    $diffrent_place_calendar = LessonRequestCalendar::where('user_id',$calendars[$t]->user_id)
+            ->rangeDate($d.' 00:00:00', $d.' 23:59:59')
+            ->whereIn('status', ['fix', 'complete'])
+            ->where('place_floor_id', '!=', $calendars[$t]->place_floor_id)
+            ->first();
+    if(isset($diffrent_place_calendar)) $status = 'prohibit';
+    if(intval($course_minutes)==120){
+      if($calendars[$t]->end_time==$calendars[$t+2]->start_time &&
+          $calendars[$t]->place_floor_id==$calendars[$t+2]->place_floor_id){
           $calendars[$t]->update(['status' => $status]);
-          $calendars[$t+1]->update(['status' => $status]);
-          $is_add = true;
-        }
+          $calendars[$t+2]->update(['status' => $status]);
+          $ret[] = $calendars[$t];
+          $ret[] = $calendars[$t+2];
       }
-      else {
-        \Log::warning("fix_calendar[id=".$calendar[$d][$t]->id."]");
-        $calendar[$d][$t]->update(['status' => $status]);
-        $is_add = true;
-      }
-      if($is_add==true) break;
     }
-    return $is_add;
+    else {
+      $calendars[$t]->update(['status' => $status]);
+      $ret[] = $calendars[$t];
+    }
+    return $ret;
   }
   public function get_teacher_request_dates_schedule($teacher_id, $target_day=''){
     \Log::warning("get_teacher_request_dates_schedule(".$teacher_id.")(".$target_day.")");
@@ -959,5 +981,10 @@ TODO:このロジックは再度検討
       }
     }
     return $ret;
+  }
+  public function is_unfixed(){
+    if($this->status=='fix') return false;
+    if($this->status=='complete') return false;
+    return true;
   }
 }
