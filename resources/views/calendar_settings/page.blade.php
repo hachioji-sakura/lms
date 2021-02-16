@@ -40,6 +40,14 @@
                 </small>
               @endif
             @endif
+          @elseif($key==='teacher_name')
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+            @if($user->role=='manager') <a href="/teachers/{{$item->user->teacher->id}}" target="_blank"> @endif
+            {{$item[$key]}}
+            @if($item->is_online()==true && $item->user->has_tag('skype_name')==true)({{__('labels.skype_name')}}:{{$item->user->get_tag_value('skype_name')}})@endif
+            @if($user->role=='manager') </a> @endif
           @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
