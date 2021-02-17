@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use CSVReader;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -59,22 +60,8 @@ class Holiday extends Model
   }
   //内閣府HPから祝日を取得
   static protected function holiday_update() {
-    $url = "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv";
-
-    //JSON形式で取得した情報を配列に変換
-    $results = file_get_contents($url);
-    $results = mb_convert_encoding($results, 'UTF-8', 'sjis-win');
-    $temp = tmpfile();
-    $csv  = array();
-
-    fwrite($temp, $results);
-    rewind($temp);
-
-    while (($results = fgetcsv($temp, 0, ",")) !== FALSE) {
-        $csv[] = $results;
-    }
-    fclose($temp);
-    $i=0;
+    $csv =  CSVReader::readByUrl('https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv');
+    
     foreach($csv as $i => $d){
       if($i==0) continue;
       Holiday::add($d[0], $d[1], true, false);
