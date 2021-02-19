@@ -41,6 +41,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('logout','Auth\LoginController@logout');
 
   Route::resource('lesson_requests','LessonRequestController');
+  Route::resource('lesson_request_calendars','LessonRequestCalendarController');
 
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
@@ -50,6 +51,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('events/{event_id}/lesson_requests', 'LessonRequestController@index');
   Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
   Route::get('events/{id}/schedules', 'EventController@schedule_lists');
+  Route::get('events/{id}/calendar', 'EventController@calendar');
   Route::put('events/{id}/schedules', 'EventController@schedule_lists_commit');
 
 

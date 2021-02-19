@@ -110,7 +110,7 @@ class LessonRequest extends Model
     return $ret;
   }
   */
-  public function set_status(){
+  public function get_request_subject_count(){
     $subject_count = [];
     foreach($this->charge_subject_attributes() as $attribute){
       $subject_code = $attribute->attribute_value;
@@ -118,18 +118,20 @@ class LessonRequest extends Model
       if($c < 1 ) continue;
       $subject_count[$subject_code] = $c;
     }
+    return $subject_count;
+  }
+  public function get_calendar_subject_count(){
+    $calendar_subject_count = [];
     $calendars = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete'])->get();
-    $set_calendar_subject_count = [];
-    $status = 'new';
     foreach($calendars as $calendar){
-      if(!isset($set_calendar_subject_count[$calendar->subject_code])){
-        $set_calendar_subject_count[$calendar->subject_code]=0;
+      if(!isset($calendar_subject_count[$calendar->subject_code])){
+        $calendar_subject_count[$calendar->subject_code]=0;
       }
-      $set_calendar_subject_count[$calendar->subject_code]++;
-      if($status == 'new') $status='confirm';
+      $calendar_subject_count[$calendar->subject_code]++;
     }
-
-
+    return $calendar_subject_count;
+  }
+  public function get_user_calendar_subject_count(){
     $calendars = UserCalendar::where('lesson_request_id', $this->id)->whereIn('status', ['rest_cacel', 'absence', 'lecture_cancel', 'presence', 'rest', 'fix'])->get();
     $fix_calendar_subject_count = [];
     foreach($calendars as $calendar){
@@ -140,6 +142,14 @@ class LessonRequest extends Model
         $fix_calendar_subject_count[$tag->tag_value]++;
       }
     }
+    return $fix_calendar_subject_count;
+  }
+  public function set_status(){
+    $subject_count = $this->get_request_subject_count();
+    $set_calendar_subject_count = $this->get_calendar_subject_count();
+    $status = 'new';
+    if(count($set_calendar_subject_count)>0) $status = 'confirm';
+    $fix_calendar_subject_count = $this->get_user_calendar_subject_count();
     $is_fixed = true;
     $is_complete = true;
 
@@ -170,11 +180,18 @@ class LessonRequest extends Model
     $this->update(['status' => $status]);
     return $status;
   }
-
-  public function _add_matching_calendar_for_place($place_id=0){
+  public function add_matching_calendar_for_place($place_id=0){
+    $charge_teachers = $this->student->get_current_charge_teachers();
+    $res = $this->_add_matching_calendar_for_place($charge_teachers, $place_id);
+    $status = $this->set_status();
+    if($status != 'fix' && $status != 'complete'){
+      $charge_teachers = $this->candidate_teachers(0, 1);
+      $res = $this->_add_matching_calendar_for_place($charge_teachers[1], $place_id);
+    }
+  }
+  public function _add_matching_calendar_for_place($charge_teachers, $place_id=0){
     \Log::warning("_add_matching_calendar_for_place(".$place_id.")");
     //①担当講師を取得(直近予定のある講師＞有効なカレンダー設定の講師）
-    $charge_teachers = $this->student->get_current_charge_teachers();
     $subject_teacher_set = [];
     $subject_count = [];
     //②科目にて必要なデータを集計
@@ -185,9 +202,10 @@ class LessonRequest extends Model
       $c = intval($this->get_tag_value($subject_code.'_day_count'));
       if($c < 1 ) continue;
       $subject_count[$subject_code] = $c;
-      if(!isset($subject_teacher_set[$subject_code])){
-        foreach($charge_teachers as $teacher){
-          if($teacher->has_charge_subject($subject_code)==true){
+      foreach($charge_teachers as $teacher){
+        $subject_val = $teacher->get_charge_subject_val($subject_code);
+        if($subject_val > 0){
+          if(!isset($subject_teacher_set[$subject_code]) || (isset($subject_teacher_set[$subject_code]) && $subject_teacher_set[$subject_code]->get_charge_subject_val($subject_code) > $subject_val)){
             $subject_teacher_set[$subject_code] = $teacher;
           }
         }
@@ -329,7 +347,7 @@ class LessonRequest extends Model
             ->where('place_floor_id', '!=', $calendars[$t]->place_floor_id)
             ->first();
     if(isset($diffrent_place_calendar)) $status = 'prohibit';
-    if(intval($course_minutes)==120){
+    if(intval($course_minutes)==120 && isset($calendars[$t]) && isset($calendars[$t+2])){
       if($calendars[$t]->end_time==$calendars[$t+2]->start_time &&
           $calendars[$t]->place_floor_id==$calendars[$t+2]->place_floor_id){
           $calendars[$t]->update(['status' => $status]);
@@ -732,7 +750,12 @@ TODO:このロジックは再度検討
     }
     if($this->couser_minutes==0){
       if(!isset($student)) $student = $this->student;
-      $this->course_minutes = intval($this->get_tag('course_minutes')['tag_value']);
+      if($this->type=='season_lesson'){
+        $this->course_minutes = intval($this->get_tag_value('season_lesson_course'));
+      }
+      else {
+        $this->course_minutes = intval($this->get_tag_value('course_minutes'));
+      }
     }
 
     //２．講師の勤務可能スケジュール、通常授業スケジュールを取得

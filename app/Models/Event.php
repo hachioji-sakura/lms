@@ -258,7 +258,7 @@ class Event extends Milestone
       echo "<h4>--------------_add_matching_calendar()------------------------</h4>";
       foreach($this->lesson_requests->whereIn('id', $selected_lesson_request_ids) as $r){
         foreach($r->get_tags('lesson_place') as $tag){
-          $r->_add_matching_calendar_for_place($tag->tag_value);
+          $r->add_matching_calendar_for_place($tag->tag_value);
           break;
         }
       }

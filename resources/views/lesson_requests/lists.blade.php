@@ -23,10 +23,12 @@ $checked = '';
         </h3>
         <div class="card-title text-sm">
           @if($event->is_season_lesson()==true)
+
           <a class="btn btn-sm btn-outline-success" href="/events/{{$event->id}}/schedules" >
             <i class="fa fa-calendar mr-1"></i>
             予定一覧
           </a>
+          </button>
           <button type="button" class="btn btn-sm btn-submit btn-primary" accesskey="matching_form" confirm="マッチング処理を開始しますか？">
             <i class="fa fa-check"></i>
             マッチング処理開始
@@ -45,7 +47,7 @@ $checked = '';
                checked
               />
               @endif
-              <a href="/students/{{$item->stuendent_id}}">
+              <a href="/students/{{$item->student_id}}" target = "_blank">
               <span class="text-xs ml-1">
                 <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
                   {{$item->status_name()}}
@@ -64,18 +66,80 @@ $checked = '';
                   {{$item->get_tag_name('season_lesson_course')}}
               </span>
               <br>
-              @foreach($item->charge_subject_attributes() as $attribute)
-              @if($item->get_tag_value($attribute->attribute_value.'_day_count')<1)
-                @continue
-              @else
-                {{$attribute->attribute_name}}:{{$item->get_tag_value($attribute->attribute_value.'_day_count')}}コマ
-              @endif
+              <table class="table-bordered my-2">
+              <?php
+                $request_subject_count = $item->get_request_subject_count();
+                $calendar_subject_count = $item->get_calendar_subject_count();
+                $user_calendar_subject_count = $item->get_user_calendar_subject_count();
+              ?>
+              <tr class="bg-gray text-center">
+                <th class="text-center p-1">＼</th>
+                @foreach($item->charge_subject_attributes() as $attribute)
+                @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
+                <th class="text-center p-1">
+                  {{$attribute->attribute_name}}
+                </th>
+                @endforeach
+              </tr>
+              <tr>
+                <th class="text-center p-1 bg-gray">希望数</th>
+                @foreach($item->charge_subject_attributes() as $attribute)
+                @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
+                <td class="text-center p-1">
+                @if(isset($request_subject_count[$attribute->attribute_value]))
+                {{$request_subject_count[$attribute->attribute_value]}}
+                @else
+                0
+                @endif
+                </td>
+                @endforeach
+              </tr>
+              <tr>
+                <th class="text-center p-1 bg-gray">仮登録数</th>
+                @foreach($item->charge_subject_attributes() as $attribute)
+                @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
+                <td class="text-center p-1
+                @if(!isset($calendar_subject_count[$attribute->attribute_value]) || $calendar_subject_count[$attribute->attribute_value] < $request_subject_count[$attribute->attribute_value])
+                  bg-danger
+                @endif
+                ">
+                @if(isset($calendar_subject_count[$attribute->attribute_value]))
+                {{$calendar_subject_count[$attribute->attribute_value]}}
+                @else
+                0
+                @endif
+                </td>
+                @endforeach
+              </tr>
+              <tr>
+                <th class="text-center p-1 bg-gray">登録数</th>
+                @foreach($item->charge_subject_attributes() as $attribute)
+                @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
+                <td class="text-center p-1">
+                @if(isset($user_calendar_subject_count[$attribute->attribute_value]))
+                {{$user_calendar_subject_count[$attribute->attribute_value]}}
+                @else
+                0
+                @endif
+                </td>
+                @endforeach
+              </tr>
+              </table>
+            </div>
+            <div class="col-12 mt-1 pl-5">
+              担当講師:
+              @foreach($item->student->get_current_charge_teachers() as $teacher)
+              <a href="/teachers/{{$teacher->id}}" target = "_blank">
+              <span class="text-xs ml-1">
+                <i class="fa fa-user-tie mr-1"></i>
+                {{$teacher->name}}
+              </span>
+              </a>
               @endforeach
               <small class="badge badge-info p-1 mr-1">
                 <i class="fa fa-clock"></i>
                 {{$item->get_tag_value('season_lesson_course')}}分
               </small>
-              <br>
               @foreach($item->get_tags('lesson_place') as $tag)
               <span class="text-xs">
                 <small class="badge badge-success p-1 mr-1">
@@ -83,22 +147,6 @@ $checked = '';
                   {{$tag->name()}}
                 </small>
               </span>
-              @endforeach
-            </div>
-            <div class="col-12 mt-1 pl-5">
-              <span class="mr-1">
-                登録済予定数：{{count($item->calendars)}}
-                (候補予定数：{{$item->lesson_request_calendar_count(['fix', 'complete'])}})
-              </span>
-              <br>
-              担当講師:
-              @foreach($item->student->get_current_charge_teachers() as $teacher)
-              <a href="/teachers/{{$teacher->id}}">
-              <span class="text-xs ml-1">
-                <i class="fa fa-user-tie mr-1"></i>
-                {{$teacher->name}}
-              </span>
-              </a>
               @endforeach
             </div>
             <div class="col-12 text-sm">

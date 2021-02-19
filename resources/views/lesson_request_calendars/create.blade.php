@@ -1,5 +1,5 @@
 <div id="calendars_entry" class="direct-chat-msg">
-  @include('calendars.create_form')
+  @include($domain.'.create_form')
   @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
     @method('PUT')
@@ -20,46 +20,36 @@
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
-          @yield('first_form')
           <div class="row">
-            @if($item->work==9)
-            <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry">
-                  {{__('labels.update_button')}}
-                  <i class="fa fa-caret-right ml-1"></i>
-              </button>
+            @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+            @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+            @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+            @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+            <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
+              <div class="form-group">
+                <label for="remark" class="w-100">
+                {{__('labels.remark')}}
+                  <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+                </label>
+                <textarea type="text" id="body" name="remark" class="form-control" placeholder="例：ミーティング" >@if($_edit==true){{$item->remark}}@endif</textarea>
+              </div>
             </div>
-            @else
+          </div>
+          <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
                 {{__('labels.next_button')}}
                 <i class="fa fa-arrow-circle-right ml-1"></i>
               </a>
             </div>
-            @endif
           </div>
         </div>
-        @if($item->work!=9)
         <div class="carousel-item">
-          @yield('second_form')
-          <div class="row">
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
-                <i class="fa fa-arrow-circle-left mr-1"></i>
-                {{__('labels.back_button')}}
-              </a>
-            </div>
-            <div class="col-12 mb-1">
-              <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1 btn-confirm">
-                <i class="fa fa-file-alt mr-1"></i>
-                {{__('labels.confirm_button')}}
-              </a>
-            </div>
-          </div>
-        </div>
-        @endif
-        <div class="carousel-item" id="confirm_form">
-          @yield('confirm_form')
+          @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+          @component('calendars.forms.select_work', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
+          @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+          @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
+          @component('calendars.forms.charge_subject', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'), 'attributes' => $attributes]); @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
@@ -69,13 +59,8 @@
             </div>
             <div class="col-12 mb-1">
                 <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry"
-                  @if(isset($_edit) && $_edit==true)
                   confirm="{{__('messages.confirm_update')}}">
                     {{__('labels.update_button')}}
-                  @else
-                  confirm="{{__('messages.confirm_add')}}">
-                    {{__('labels.create_button')}}
-                  @endif
                     <i class="fa fa-caret-right ml-1"></i>
                 </button>
             </div>

@@ -4,7 +4,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
 use App\Models\MailLog;
+use App\Models\Teacher;
 use App\Models\UserCalendar;
+use App\Models\LessonRequestDate;
+use App\Models\LessonRequestTag;
 use App\Models\UserCalendarSetting;
 
 trait Matching
@@ -660,6 +663,18 @@ trait Matching
         $english_talk_lesson[] = $tag->tag_value;
       }
     }
+    if($this->type=='season_lesson'){
+      $weight = 10;
+      foreach($this->charge_subject_attributes() as $attribute){
+        $subject_code = $attribute->attribute_value;
+        $c = intval($this->get_tag_value($subject_code.'_day_count'));
+        if($c < 1 ) continue;
+        $subject_code .='_level';
+        $_subjects[$subject_code] = new LessonRequestTag;
+        $_subjects[$subject_code]->tag_key = $subject_code;
+        $_subjects[$subject_code]->tag_value = $weight;
+      }
+    }
     $teachers = Teacher::findStatuses(["regular"]);
     if($lesson > 0){
       $teachers = $teachers->hasTag('lesson', $lesson);
@@ -683,7 +698,6 @@ trait Matching
       $teachers = $teachers->where('id', $teacher_id);
     }
     $teachers = $teachers->get();
-
     //この申し込みの希望日時より、30分ごとの開始時間から授業時間までのslotを作成
     $time_lists = [];
     foreach($this->request_dates->sortBy('sort_no') as $d){
@@ -795,7 +809,8 @@ trait Matching
           $teacher->enable_subject = $enable_subject;
           $teacher->disable_subject = $disable_subject;
           $teacher->match_schedule = $this->get_match_schedule($teacher->id);
-          $teacher->matching_lessons = $this->create_matching_lessons($lesson, $teacher->id);
+          //TODO 体験申し込み処理にて先にマッチングする予定取得が噛み合わなくなった修正が必要
+          //$teacher->matching_lessons = $this->create_matching_lessons($lesson, $teacher->id);
           $ret[] = $teacher;
       }
     }

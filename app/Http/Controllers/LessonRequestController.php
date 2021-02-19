@@ -185,6 +185,11 @@ class LessonRequestController extends UserCalendarController
         '_page' => 1,
       ]);
     }
+    if($event_id>0){
+      $request->merge([
+        'event_id' => $event_id,
+      ]);
+    }
 
 
     $param = $this->get_param($request);
@@ -249,7 +254,9 @@ class LessonRequestController extends UserCalendarController
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
-        $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
+        if($request->has('event_id')){
+          $ret[$list.'_count'] = $this->model()->where('event_id', $request->get('event_id'))->findStatuses($_status)->count();
+        }
       }
     }
     return $ret;
@@ -321,7 +328,7 @@ class LessonRequestController extends UserCalendarController
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-
+    dd($param['item']->_candidate_teachers(0,1));
     $fields = array_merge($this->show_fields, [
       'parent_email' => [
         'label' => 'email',
@@ -392,7 +399,7 @@ class LessonRequestController extends UserCalendarController
         break;
       case "season_lesson":
       case "season_lesson_teacher":
-        $view = $param['item']->type.'.edit';
+        $view = 'lesson_requests.'.$param['item']->type.'.edit';
         $param['event'] = $param['item']->event;
         $param['access_key'] = $request->get('access_key');
         $param['event_user_id'] = $request->get('event_user_id');

@@ -429,6 +429,13 @@ EOT;
     }
     return $subjects;
   }
+  public function get_charge_subject_val($subject_code){
+    $subjects = $this->get_charge_subject();
+    if(isset($subjects[$subject_code.'_level'])){
+      return $subjects[$subject_code.'_level'];
+    }
+    return -1;
+  }
   public function getNameAttribute(){
     return $this->name();
   }

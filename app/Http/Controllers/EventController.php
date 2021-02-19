@@ -143,7 +143,7 @@ class EventController extends MilestoneController
        'button_style' => 'primary',
        "link" => function($row){
          if(isset($row->event) && $row->event->is_need_request()==false) return '';
-         if(count($row->lesson_requests->where('status', 'new')) == 0) return '';
+         if(count($row->lesson_requests->whereIn('status', ['new','confirm','fix'])) == 0) return '';
          return "/events/".$row['id']."/lesson_requests";
        }
      ],
@@ -261,6 +261,14 @@ class EventController extends MilestoneController
        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
      }
      return $this->save_redirect($res, $param, '送信しました');
+   }
+   public function calendar(Request $request, $id){
+     $param = $this->get_param($request, $id);
+     $view = "calendar";
+     $param['view'] = $view;
+     return view($this->domain.'.'.$view, [
+       'item' => $item,
+     ])->with($param);
    }
    public function schedule_lists(Request $request, $id){
      set_time_limit(600);
