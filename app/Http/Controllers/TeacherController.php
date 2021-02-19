@@ -118,7 +118,7 @@ class TeacherController extends StudentController
     $param['view'] = $view;
     return view($this->domain.'.page.'.$view, [
       'charge_students'=>$this->get_students($request, $id),
-      'text_materials' =>["abcd", "あいうえお", "かきくけこ", "さしすせそ"],
+      'text_materials' => $text_materials,
     ])->with($param);
   }
   /**
