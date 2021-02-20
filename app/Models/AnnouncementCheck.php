@@ -14,6 +14,6 @@ class AnnouncementCheck extends CommentCheck
   );
 
   public function announcement(){
-    return $this->belongsTo('App\Model\A', 'announcement_id');
+    return $this->belongsTo('App\Models\Announcement', 'announcement_id');
   }
 }

@@ -17,7 +17,7 @@ class CommentCheck extends Model
     return $this->belongsTo('App\User', 'check_user_id');
   }
   public function comment(){
-    return $this->belongsTo('App\Model\Comment', 'comment_id');
+    return $this->belongsTo('App\Models\Comment', 'comment_id');
   }
 
 }

@@ -17,6 +17,6 @@ class TextMaterialTag extends Model
       'tag_value' => 'required'
   );
   public function text_material(){
-    return $this->belongsTo('App\TextMaterial');
+    return $this->belongsTo('App\Models\TextMaterial');
   }
 }

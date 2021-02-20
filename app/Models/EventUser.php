@@ -26,16 +26,16 @@ class EventUser extends Milestone
     return $this->belongsTo('App\User', 'user_id');
   }
   public function student(){
-    return $this->belongsTo('App\Student', 'user_id');
+    return $this->belongsTo('App\Models\Student', 'user_id', 'user_id');
   }
   public function teacher(){
-    return $this->belongsTo('App\Teacher', 'user_id');
+    return $this->belongsTo('App\Models\Teacher', 'user_id', 'user_id');
   }
   public function manager(){
-    return $this->belongsTo('App\Manager', 'user_id');
+    return $this->belongsTo('App\Models\Manager', 'user_id', 'user_id');
   }
   public function parent(){
-    return $this->belongsTo('App\StudentParent', 'user_id');
+    return $this->belongsTo('App\StudentParent', 'user_id', 'user_id');
   }
   public function getUserNameAttribute(){
     return $this->user->details()->name();

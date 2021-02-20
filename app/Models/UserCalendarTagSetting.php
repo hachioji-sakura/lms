@@ -15,7 +15,7 @@ class UserCalendarTagSetting extends UserTag
       'tag_value' => 'required'
   );
   public function user_calendar_setting(){
-    return $this->belongsTo('App\Models/UserCalendarSetting', 'user_calendar_setting_id');
+    return $this->belongsTo('App\Models\UserCalendarSetting', 'user_calendar_setting_id');
   }
   //1 key = 1tagの場合利用する(上書き差し替え）
   public static function setTag($user_calendar_setting_id, $tag_key, $tag_value , $create_user_id){
