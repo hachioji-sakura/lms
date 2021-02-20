@@ -1,4 +1,4 @@
-<?php $debug = true; ?>
+<?php $debug = false; ?>
 <div class="col-12 mt-1">
   <label for="season_lesson_course" class="w-100">
     @if(!isset($title) || empty($title))

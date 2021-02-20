@@ -79,4 +79,9 @@ class LessonRequestCalendar extends UserCalendar
   public function work(){
     return "";
   }
+  public function is_teacher_place_enabled(){
+    $enable_places = $this->user->teacher->enable_places('season_lesson');
+    if(isset($enable_places[$this->place_floor->place->id])) return true;
+    return false;
+  }
 }

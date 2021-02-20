@@ -186,7 +186,9 @@ class LessonRequest extends Model
     $status = $this->set_status();
     if($status != 'fix' && $status != 'complete'){
       $charge_teachers = $this->candidate_teachers(0, 1);
-      $res = $this->_add_matching_calendar_for_place($charge_teachers[1], $place_id);
+      if(count($charge_teachers) >0){
+        $res = $this->_add_matching_calendar_for_place($charge_teachers[1], $place_id);
+      }
     }
   }
   public function _add_matching_calendar_for_place($charge_teachers, $place_id=0){

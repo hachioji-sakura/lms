@@ -709,6 +709,16 @@ trait Matching
       $disable_point = 0;
       $disable_subject = [];
       $enable_subject = [];
+      $enable_place = $teacher->enable_places($this->type);
+      $is_place_enable = false;
+      foreach($this->tags->where('lesson_place') as $tag){
+        if($is_place_ebale==false){
+          $is_place_enable = $enable_place[intaval($tag->tag_value)];
+        }
+      }
+      //TODO　フィルタリング？　対応可能な場所を持っていなかったら表示しない
+      if($is_place_enable==false) continue;
+
       if($lesson==1){
         $charge_subjects = $teacher->get_charge_subject();
         //塾の場合、担当可能、不可能な科目の情報セットを作る

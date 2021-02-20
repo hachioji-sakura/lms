@@ -274,4 +274,20 @@ EOT;
     }
     return false;
   }
+  public function enable_places($type='default'){
+    $ret = [];
+    $tags = null;
+    if($type=='season_lesson' && isset($this->user->lesson_requests)){
+      $tags = $this->user->lesson_requests[0]->tags;
+    }
+    else if($type=='default'){
+      $tags = $this->user->tags;
+    }
+    if($tags!=null){
+      foreach($tags->where('tag_key', 'lesson_place') as $tag){
+        $ret[$tag->tag_value] = true;
+      }
+    }
+    return $ret;
+  }
 }

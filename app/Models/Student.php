@@ -1078,6 +1078,8 @@ EOT;
     return false;
   }
   public function has_lesson_request(){
+    //TODO debug
+    return true;
     foreach($this->user->enable_lesson_requests as $l){
       if($l->status == 'new' && $l->event->is_need_request()==true && $l->event->is_answerable()==true) return true;
     }

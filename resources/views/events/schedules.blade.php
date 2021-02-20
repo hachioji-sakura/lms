@@ -97,21 +97,6 @@
             <?php
               $__date = "";
             ?>
-            @if($is_checked==true)
-                <h6 class="text-sm p-1 pl-2 mt-2 bg-secondary" >
-                  <i class="fa fa-info-circle mr-1"></i>
-                  {!!nl2br(__('messages.info_work_record_all_check'))!!}
-                </h6>
-            @elseif($enable_confirm==false)
-                <h6 class="text-sm p-1 pl-2 mt-2 bg-danger" >
-                  <i class="fa fa-exclamation-triangle mr-1"></i>
-                  @if($user->user_id === $item->user_id)
-                  {!!nl2br(__('messages.error_work_record'))!!}
-                  @else
-                  {!!nl2br(__('messages.error_work_record_not_owner'))!!}
-                  @endif
-                </h6>
-            @endif
             <ul id="lesson_request_calendars_list" class="mailbox-attachments clearfix row">
               @foreach($calendars as $calendar)
                 @if($__date != $calendar["date"])
@@ -149,15 +134,11 @@
                       <span class="mr-2">
                         <i class="fa fa-map-marker"></i>{{$calendar->place_floor_name}}
                       </span>
-                      <span class="mr-2">
-                        <i class="fa fa-user-tie"></i>
-                        {{$calendar->user->teacher->name()}}
-                      </span>
-                      <a href="/students/{{$calendar->student_id}} target="_blank" >
-                      <span class="mr-2">
-                        <i class="fa fa-user-graduate"></i>
-                        {{$calendar->student_name}}
-                      </span>
+                      <a href="/students/{{$calendar->student_id}}" target="_blank" >
+                        <span class="mr-2">
+                          <i class="fa fa-user-graduate"></i>
+                          {{$calendar->student_name}}
+                        </span>
                       </a>
                       <span class="mr-2">
                         <small class="badge badge-success mt-1 mr-1">
@@ -181,10 +162,23 @@
                     </span>
                   </div>
                   <div class="col-12">
+                    <a href="/teachers/{{$calendar->user->teacher->id}}" target = "_blank">
+                    <span class="mr-2">
+                      <i class="fa fa-user-tie"></i>
+                      {{$calendar->user->teacher->name()}}
+                    </span>
+                    </a>
                     @if($calendar->is_charge_teacher()==false)
                     <span class="mr-2">
-                      <small class="badge badge-danger mt-1 mr-1">
+                      <small class="badge badge-warning mt-1 mr-1">
                         担当外講師
+                      </small>
+                    </span>
+                    @endif
+                    @if($calendar->is_teacher_place_enabled()==false)
+                    <span class="mr-2">
+                      <small class="badge badge-danger mt-1 mr-1">
+                        講師の希望外校舎
                       </small>
                     </span>
                     @endif

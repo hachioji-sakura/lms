@@ -328,7 +328,7 @@ class LessonRequestController extends UserCalendarController
   public function show(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    dd($param['item']->_candidate_teachers(0,1));
+
     $fields = array_merge($this->show_fields, [
       'parent_email' => [
         'label' => 'email',

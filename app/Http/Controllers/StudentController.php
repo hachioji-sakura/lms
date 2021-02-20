@@ -1470,7 +1470,7 @@ class StudentController extends UserController
   }
   public function season_lesson_page(Request $request, $id){
     $param = $this->get_common_param($request, false);
-    $view = 'season_lesson.create';
+    $view = 'lesson_requests.season_lesson.create';
     $user = $this->login_details($request);
     $param['item'] = $this->model()->find($id);
 
@@ -1501,7 +1501,7 @@ class StudentController extends UserController
     }
     $param['event_user_id'] = $event_user->id;
     $param['access_key'] = $event_user->access_key;
-    if($this->domain=='teachers') $view='season_lesson_teacher.create';
+    if($this->domain=='teachers') $view='lesson_requests.season_lesson_teacher.create';
     $param['is_already_data'] = false;
 
     if(isset($param['item']->user->enable_lesson_requests)){

@@ -92,7 +92,11 @@ class User extends Authenticatable
     }
     public function enable_lesson_requests()
     {
-      return $this->hasMany('App\Models\LessonRequest')->where('status', 'new');
+      return $this->hasMany('App\Models\LessonRequest')->whereIn('status', ['new']);
+    }
+    public function lesson_requests()
+    {
+      return $this->hasMany('App\Models\LessonRequest')->orderBy('id', 'desc');
     }
     public function event_users()
     {
