@@ -408,5 +408,5 @@ return [
   'task_title' => '例：算数_分数の足し算',
   'workable_classroom' => '勤務可能な教室',
   'skype_name' => 'Skype名',
-  'skype_name_about' => 'Skype名の確認方法',
+  'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
 ];

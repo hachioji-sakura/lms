@@ -27,7 +27,7 @@
         @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
           <div class="col-12 mb-1" id="{{$domain}}_confirm">
             <input type="hidden" name="is_all_student" value="1" />
-            @if($item->is_online()==true && $item->user->has_tag('skype_name')!=true)
+            @if($item->is_online()==true && empty($item->user->get_tag_value('skype_name')))
             <div class="col-12">
               <div class="alert alert-danger text-sm">
                 <i class="icon fa fa-exclamation-triangle"></i>{!!nl2br(__('messages.error_skype_name_not_found'))!!}
