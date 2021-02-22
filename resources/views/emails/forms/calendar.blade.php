@@ -49,6 +49,10 @@
 スカイプがダウンロードされたパソコン・ダブレット・スマホで、講師のSkype名にてアカウントを検索していただけますと、
 担当講師と繋がります。
 
-※講師のSkype Name：{{$item->user->get_tag_value('skype_name')}}
+※講師のSkype名{{$item->user->get_tag_value('skype_name')}}
+
+※Skype名にてアカウント登録の方法がご不明な場合は、以下をご確認ください
+https://support.skype.com/ja/faq/fa34807/skype-dexin-shiilian-luo-xian-wojian-tsukerufang-fa
+
 @endif
 @endif

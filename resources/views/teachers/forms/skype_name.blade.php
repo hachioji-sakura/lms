@@ -11,6 +11,6 @@
       value=""
     @endisset
     maxlength=100>
-    <a href="https://support.skype.com/ja/faq/fa10858/skype-ming-tohahe-desuka" target="_blank">{{__('labels.skype_name_about')}}</a>
+    <a href="https://support.skype.com/ja/faq/fa10858/skype-ming-tohahe-desuka" target="_blank" class="underline">{{__('labels.skype_name_about')}}</a>
   </div>
 </div>
