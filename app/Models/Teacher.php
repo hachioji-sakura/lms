@@ -175,7 +175,7 @@ EOT;
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
+    $tag_names = ['piano_level', 'english_teacher', 'schedule_remark', "skype_name"];
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name])){
         //設定があれば差し替え

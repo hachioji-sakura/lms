@@ -163,4 +163,5 @@ return [
  'info_season_lesson_week_time' => "Season Lesson and Weekend Lesson, we will check the dates and times when you can work separately.\nAt that time, we will contact you as if you can work on the days and hours set above.",
  "info_unsubscribe_for_teacher1" => ":student_name will be unsubscribe on the following dates.",
  "info_unsubscribe_for_teacher2" => "About exchange lessons, make sure to do it by the scheduled unsubscribe date.\nPlease register for the exchange lesson.",
+ "error_skype_name_not_found" => "For online classes, you need to set a Skype Name.\nPlease set the Skype Name from the work settings.",
  ];
