@@ -62,11 +62,13 @@
     <input type="text" name="entry_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"
     @if(isset($item) && !empty($item->entry_date))
     value = "{{date('Y/m/d', strtotime($item->entry_date))}}"
+    @else
+    value = "{{date('Y/m/d')}}"
     @endif
     >
   </div>
 </div>
-@if($item->status=='unsubscribe' || !empty($item->unsubscribe_date))
+@if(isset($item) && ($item->status=='unsubscribe' || !empty($item->unsubscribe_date)))
 <div class="col-6">
   <label for="start_date" class="w-100">
     {{__('labels.unsubscribe')}}{{__('labels.day')}}
