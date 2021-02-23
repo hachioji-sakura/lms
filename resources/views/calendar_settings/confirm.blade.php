@@ -69,18 +69,7 @@
     </div>
     @endif
 
-    <div class="col-12 col-lg-6 mb-1" id="{{$domain}}_action">
-      <form method="POST" action="/calendar_settings/{{$item['id']}}">
-        @csrf
-        <input type="text" name="dummy" style="display:none;" / >
-        @method('DELETE')
-        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_delete')}}">
-          <i class="fa fa-trash-alt mr-1"></i>
-          {{__('labels.schedule_delete')}}
-        </button>
-      </form>
-    </div>
-    <div class="col-12 col-lg-6 mb-1">
+    <div class="col-12 mb-1">
       <button type="reset" class="btn btn-secondary btn-block">
           {{__('labels.close_button')}}
       </button>
