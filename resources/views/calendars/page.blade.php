@@ -194,7 +194,7 @@
     <form method="POST" action="/{{$domain}}/{{$item['id']}}/status_update/new">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    @if(empty($item->user->teacher->get_tag_value('skype_name')))
+    @if($item->is_online()==true empty($item->user->teacher->get_tag_value('skype_name')))
     <div class="row">
       <div class="col-12 mb-1">
         <div class="form-group">
