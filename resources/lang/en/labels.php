@@ -405,4 +405,6 @@ return [
   'menu' => 'Menu',
   'task_title' => 'ex: English_selfIntroduction',
   'workable_classroom' => 'Workable ClassRoom',
+  'semester' => 'Semester',
+  'school_grade_reports' => 'School Grade by subjects',
 ];

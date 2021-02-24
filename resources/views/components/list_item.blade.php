@@ -40,6 +40,9 @@
             href="{{$field['link']($row)}}"
           @endif
         @endif
+        @if(isset($field['blank']) && $field['blank'] == true)
+          target=_blank
+        @endif
         >
       @endif
       @if($key==="status_name")

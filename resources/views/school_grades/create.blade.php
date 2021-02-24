@@ -8,106 +8,57 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
 
-  @if(isset($origin))
-    <input type="hidden" value="{{$origin}}" name="origin" />
-  @endif
-  @if(isset($item_id))
-    <input type="hidden" value="{{$item_id}}" name="item_id" />
-  @endif
-  @if(isset($student_id))
-    <input type="hidden" value="{{$student_id}}" name="student_id" />
-  @endif
-  @if(isset($teacher_id))
-    <input type="hidden" value="{{$teacher_id}}" name="teacher_id" />
-  @endif
-  @if(isset($manager_id))
-    <input type="hidden" value="{{$manager_id}}" name="manager_id" />
-  @endif
-
-
-  <div class="row">
-    <div class="col-12">
-      <div class="form-group">
-        <label for="title" class="w-100">
-          成績名 (例：中学2年2学期の成績)
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        </label>
-        @if(isset($_edit) && $_edit==true)
-        <input type="text" class="form-control" name="title" value="{{$item->title}}"  required="true">
+    @if(isset($student_id))
+      <input type="hidden" name="student_id" value="{{$student_id}}">
+    @endif
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label>{{__('labels.grade')}}</label>
+        @if(isset($item) && $_edit == true)
+        <span>{{$item->grade_name}}</span>
+        <input type="hidden" name="grade" value="{{$item->grade}}">
         @else
-        <input type="text" class="form-control" name="title" required="true">
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <select name="grade" id="select_grade" width="100%" class="form-control select2">
+          <option value=" ">{{__('labels.selectable')}}</option>
+          @foreach($grades as $key => $name)
+          <option value="{{$key}}"
+            {{$student->grade() == $name ? "selected" : ""}}
+          >
+          {{$name}}</option>
+          @endforeach
+        </select>
         @endif
+
       </div>
-    </div>
-  </div>
-
-
-    <div class="row">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="grade" class="w-100">
-            学年
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          <select name="grade" class="form-control" required="true">
-            @foreach(config('grade') as $index=>$name){
-              $weeks[] = "'".$index."'";
-            }
-               <option value="{{ $index }}"
-               @if(isset($_edit)  && $_edit==true && $item['grade'] == $index)
-               selected
-               @endif
-               >{{$name}}</option>
-            @endforeach
-          </select>
+      <div class="col-12 col-md-6">
+        <label>{{__('labels.semester')}}</label>
+        @if(isset($item) && $_edit == true)
+        <span>{{$item->semester_name}}</span>
+        <input type="hidden" name="semester_no" value="{{$item->semester_no}}">
+        @else
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <div class="input-group">
+          @foreach(config('attribute.semester_no') as $key => $name)
+          <div class="form-check">
+            <label class="form-check-label" for="type_{{$key}}">
+              <input class="frm-check-input icheck flat-green" type="radio" name="semester_no" id="type_{{$key}}" value="{{$key}}" required="true">
+              {{$name}}
+            </label>
+          </div>
+          @endforeach
         </div>
+        @endif
+
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="semester_no" class="w-100">
-            学期
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          <select name="semester_no" class="form-control" required="true">
-            @foreach(config('attribute.semester_no') as $index=>$name){
-              $weeks[] = "'".$index."'";
-            }
-               <option value="{{ $index }}"
-               @if(isset($_edit)  && $_edit==true && $item['semester_no'] == $index)
-               selected
-               @endif
-               >{{$name}}</option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <div class="form-group">
-          <label for="remark" class="w-100">
-            備考
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          </label>
-          <textarea type="text" name="remark" class="form-control" maxlength=500
-          @if(isset($_edit) && $_edit==true)
-            placeholder="(変更前) {{$item['remark']}}" >{{$item['body']}}</textarea>
-          @else
-            placeholder="500文字まで" ></textarea>
-          @endif
-        </div>
-      </div>
-    </div>
-    <div class="row">
+    <div class="row mt-2">
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">
-            アップロード
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            {{__('labels.file')}}
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
           @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))
           <label for="upload_file" class="w-100 upload_file">
@@ -119,14 +70,16 @@
           <input type="hidden" name="upload_file_delete" value="0">
           <input type="hidden" name="upload_file_name" value="{{$item['s3_alias']}}">
           <script>
+          $("input[name='upload_file']").hide();
           function upload_file_clear(){
             console.log("update_file_clear");
             $(".upload_file").hide();
             $("input[name='upload_file_delete']").val(1);
+            $("input[name='upload_file']").show();
           }
           </script>
           @endif
-          <input type="file" name="upload_file" class="form-control" placeholder="ファイル">
+          <input type="file" name="upload_file" class="form-control" placeholder="ファイル" required="true">
           @if ($errors->has('upload_file'))
           <span class="invalid-feedback">
           <strong>{{ $errors->first('upload_file') }}</strong>
@@ -137,6 +90,34 @@
     </div>
 
     <div class="row">
+      <div class="col-12">
+        <label>{{__('labels.school_grade_reports')}}</label>
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <button class="btn btn-sm btn-primary add" type="button"><i class="fa fa-plus"></i>{{__('labels.add')}}</button>
+      </div>
+      @if(isset($item) && $_edit == true && $item->school_grade_reports->count() > 0)
+        @foreach($item->school_grade_reports as $report)
+          @include("school_grades.add_report")
+        @endforeach
+      @else
+        @include("school_grades.add_report")
+      @endif
+    </div>
+    <div class="alert alert-warning text-sm pr-2">
+      <b>
+        <i class="icon fa fa-exclamation-triangle"></i>5段階評価の場合は2倍した値を選択してください。<br/>
+        例:　評価値　4　→　入力値　8
+      </b>
+    </div>
+    {{--
+    <div class="row">
+      <div class="col-12">
+        <button class="btn btn-sm btn-primary add" type="button"><i class="fa fa-plus"></i>{{__('labels.subjects').__('labels.add')}}</button>
+      </div>
+    </div>
+    --}}
+
+    <div class="row mt-3">
       <div class="col-12 col-md-6 mb-1">
           <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="{{$domain}}_create">
             @if(isset($_edit) && $_edit==true)
@@ -159,3 +140,23 @@
     </div>
   </form>
 </div>
+<script>
+$("button.add").on("click",function(){
+   //var clone = $("div.report_point:first").clone(true).removeClass("report_point").insertAfter($("div.report_point:first"));
+  $clone = $("div.report_point:first").clone(true);
+
+  $clone.find("span").remove();
+  $clone.find("select").select2({width:"100%",ariahidden:false});
+  $clone.insertAfter($("div.report_point:last"));
+  base.pageSettinged('school_grades_create');
+
+
+
+
+});
+$("button.delete").on("click",function(){
+  if($('select[name="subject[]"]').length > 1 && $(this).parent().parent().attr("class") != "report_point"){
+    $(this).parent().parent().parent().remove();
+  }
+});
+</script>

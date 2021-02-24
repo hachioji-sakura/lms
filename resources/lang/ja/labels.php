@@ -408,4 +408,6 @@ return [
   'menu' => 'メニュー',
   'task_title' => '例：算数_分数の足し算',
   'workable_classroom' => '勤務可能な教室',
+  'semester' => '学期',
+  'school_grade_reports' => '成績詳細',
 ];

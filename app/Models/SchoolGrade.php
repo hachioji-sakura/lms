@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Common;
 
 class SchoolGrade extends Milestone
 {
+
+  use Common;
+
   protected $table = 'lms.school_grades';
   protected $guarded = array('id');
 
@@ -14,6 +18,16 @@ class SchoolGrade extends Milestone
       'body' => 'required',
       'type' => 'required'
   );
+
+  protected $fillable = [
+    "title",
+    "student_id",
+    "grade",
+    "semester_no",
+    "remark",
+    "s3_alias",
+    "s3_url",
+  ];
 
   protected $appends = ['student_name','grade_name','semester_name'];
 
@@ -49,7 +63,14 @@ public function getSemesterNameAttribute(){
   return $semester_name;
 }
 
-
+public function getSchoolGradeReportPointsAttribute(){
+  $items =  $this->school_grade_reports->pluck('report_point','subject_name')->toArray();
+  $ret = [];
+  foreach($items as $key => $value){
+    $ret[] = $key.":".$value;
+  }
+  return $ret;
+}
 
 //belongsTo　=　あのテーブルは”俺”のデータを持っている(俺はあのテーブルに属している) という意味
 //hasone = ”俺”はあのテーブルのデータを1つ持つ という意味
@@ -64,10 +85,70 @@ public function getSemesterNameAttribute(){
   }
 
 //SchoolGradeReportは子なので「hasmeny」or「hasone」
-  public function reports(){
+  public function school_grade_reports(){
     return $this->hasMany('App\Models\SchoolGradeReport');
     //相手先のMigrateに自分を参照するためのIDが用意されていれば、「hasmany」「hasone」が使用できる。
   }
 
+  public function scopeGrades($query,$grades){
+    return $query->whereIn('grade',$grades);
+  }
+
+  public function scopeSemesterNos($query,$semester_nos){
+    return $query->whereIn('semester_no',$semester_nos);
+  }
+
+  public function scopeSearch($query, $request){
+    if($request->has('search_grade')){
+      $query->grades($request->get('search_grade'));
+    }
+    if($request->has('order_by')){
+      $query->orderBy($request->get('order_by'),'asc');
+    }else{
+      $query->orderBy('semester_no','asc');
+    }
+    return $query;
+  }
+
+  public function scopeFindExistings($query, $grade,$semester_no){
+    return $query->grades([$grade])->semesterNos([$semester_no]);
+  }
+
+  public function add($form){
+    $existings = SchoolGrade::findExistings($form['grade'],$form['semester_no']);
+    if($existings->count() > 0 ){
+      $item = $existings->first();
+    }else{
+      $item = $this;
+      $title = config("grade")[$form['grade']]."/".config("attribute.semester_no")[$form["semester_no"]];
+      $item->fill($form);
+      $item->title = $title;
+      $item->save();
+    }
+
+    $subjects = $form["subject"];
+    $report_points = $form["report_point"];
+
+    $is_null = false;
+    if(count(array_unique($subjects)) == 1 && array_unique($subjects)[0] === null){
+      if(count(array_unique($report_points)) == 1 && array_unique($report_points)[0] === null){
+        $is_null = true;
+      }
+    }
+
+    if($is_null == false){
+      $item->school_grade_reports()->delete();
+      foreach($subjects as $i => $subject){
+        $item->school_grade_reports()->updateOrCreate(["subject_id" => $subject],["report_point" => $report_points[$i]]);
+      }
+    }
+
+    return $item;
+  }
+
+  public function dispose(){
+    $this->school_grade_reports()->delete();
+    $this->delete();
+  }
 
 }
