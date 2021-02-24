@@ -285,7 +285,7 @@ EOT;
     }
     if($tags!=null){
       foreach($tags->where('tag_key', 'lesson_place') as $tag){
-        $ret[$tag->tag_value] = true;
+        $ret[intval($tag->tag_value)] = true;
       }
     }
     return $ret;

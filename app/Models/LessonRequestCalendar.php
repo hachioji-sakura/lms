@@ -16,8 +16,13 @@ class LessonRequestCalendar extends UserCalendar
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  protected $appends = ['work', 'create_user_name', 'target_user_name', 'created_date', 'updated_date'];
+
   public function lesson_request_date(){
     return $this->belongsTo('App\Models\LessonRequestDate');
+  }
+  public function traing_calendars(){
+    return $this->hasMany('App\Models\LessonRequestCalendar', 'parent_lesson_request_calendar_id');
   }
   public function lesson_request(){
     return $this->lesson_request_date->lesson_request();
@@ -50,10 +55,8 @@ class LessonRequestCalendar extends UserCalendar
     return $status_name;
   }
   public function tags(){
-    //TODO :
-    return null;
+    return $this->hasMany('App\Models\LessonRequestCalendarTag');
   }
-
   public function getStudentNameAttribute(){
     return $this->student->name;
   }

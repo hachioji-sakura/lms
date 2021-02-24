@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddWorkLessonRequestCalendars extends Migration
+class AddTeachingTypeLessonRequestCalendars extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class AddWorkLessonRequestCalendars extends Migration
     public function up()
     {
         Schema::table('lesson_request_calendars', function (Blueprint $table) {
-          $table->string('traing_start_time')->comment('演習開始時刻')->after('end_time');
-          $table->string('traing_end_time')->comment('演習終了時刻')->after('end_time');
+          $table->string('teaching_type')->after('status')->default('')->comment('season=期間講習, trainng=演習');
+          $table->integer('parent_lesson_request_calendar_id')->after('id')->default(0)->comment('親予定ID');
         });
     }
 
@@ -27,8 +27,8 @@ class AddWorkLessonRequestCalendars extends Migration
     public function down()
     {
         Schema::table('lesson_request_calendars', function (Blueprint $table) {
-          $table->dropColumn('traing_start_time');
-          $table->dropColumn('traing_end_time');
+          $table->dropColumn('teaching_type');
+          $table->dropColumn('parent_lesson_request_calendar_id');
         });
     }
 }

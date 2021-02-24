@@ -44,7 +44,7 @@ $checked = '';
             <div class="col-8 mt-1">
               @if($item->is_unfixed()==true)
               <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"
-               checked
+               {{$checked}}
               />
               @endif
               <a href="/students/{{$item->student_id}}" target = "_blank">

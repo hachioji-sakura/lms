@@ -1,84 +1,7 @@
 @section('title')
-  {{__('labels.work_record')}}
+{{$item->title}}
 @endsection
 @extends('dashboard.common')
-@section('page_sidemenu')
-<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  <li class="nav-item has-treeview menu-open">
-    <a href="#" class="nav-link">
-    <i class="nav-icon fa fa-clock"></i>
-    <p>
-      {{__('labels.schedule_list')}}
-      <i class="right fa fa-angle-left"></i>
-    </p>
-    </a>
-    <ul class="nav nav-treeview pl-2">
-      <li class="nav-item">
-        <a class="nav-link" href="/events/{{$item->id}}/lesson_requests" >
-          <i class="fa fa-envelope nav-icon"></i>
-          申し込み一覧
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
-          <i class="fa fa-history nav-icon "></i>
-          {{__('labels.schedule_history')}}
-        </a>
-      </li>
-    </ul>
-  </li>
-  <li class="nav-item has-treeview menu-open">
-    <a href="#" class="nav-link">
-    <i class="nav-icon fa fa-business-time"></i>
-    <p>
-      マッチング予定
-      <i class="right fa fa-angle-left"></i>
-    </p>
-    </a>
-    <ul class="nav nav-treeview pl-2">
-      <li class="nav-item ">
-        <a href="/events/{{$item->id}}/schedules?search_status=fix" class="nav-link @if(empty($filter['calendar_filter']['search_status']) || $filter['calendar_filter']['search_status']=='fix') active @endif">
-          <i class="fa fa-exclamation-triangle nav-icon"></i>
-          予定仮確定
-          <p>
-          @if($fix_schedule_count>0)
-            <span class="badge badge-primary right">{{$fix_schedule_count}}</span>
-          @endif
-          </p>
-        </a>
-      </li>
-      <li class="nav-item ">
-        <a href="/events/{{$item->id}}/schedules?search_status=complete" class="nav-link @if(isset($filter['calendar_filter']['search_status']) && $filter['calendar_filter']['search_status']=='complete') active @endif">
-          <i class="fa fa-exclamation-triangle nav-icon"></i>
-          予定確定済み
-          <p>
-          @if($complete_schedule_count>0)
-            <span class="badge badge-primary right">{{$complete_schedule_count}}</span>
-          @endif
-          </p>
-        </a>
-      </li>
-    </ul>
-  </li>
-</ul>
-@endsection
-
-@section('page_footer')
-{{--
-<dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
-    <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
-  </a>
-</dt>
-<dt>
-  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
-    <i class="fa fa-chalkboard-teacher"></i>{{__('labels.schedule_add')}}
-  </a>
-</dt>
---}}
-@endsection
-
-
 @section('contents')
 <section class="content">
   <form id="lesson_request_calendars_post" method="POST"  action="/fuga">
@@ -99,14 +22,15 @@
             ?>
             <ul id="lesson_request_calendars_list" class="mailbox-attachments clearfix row">
               @foreach($calendars as $calendar)
-                @if($__date != $calendar["date"])
+                @if($calendar->teaching_type=='training') @continue @endif
+                @if($__date != $calendar->date)
                 <li class="col-12 p-0" accesskey="" target="">
                   <div class="row">
                     <div class="col-12 pl-3">
-                      <a data-toggle="collapse" data-parent="#lesson_request_calendars_list" href="#{{date('Ymd', strtotime($calendar["date"]))}}" class="" aria-expanded="false">
+                      <a data-toggle="collapse" data-parent="#lesson_request_calendars_list" href="#{{date('Ymd', strtotime($calendar->date))}}" class="" aria-expanded="false">
                         <i class="fa fa-chevron-down mr-1"></i>
-                        {{$calendar["dateweek"]}}
-                        @if(date('Y-m-d')==date('Y-m-d', strtotime($calendar["date"])))
+                        {{$calendar->dateweek}}
+                        @if(date('Y-m-d')==date('Y-m-d', strtotime($calendar->date)))
                           <small class="badge badge-danger ml-1">
                             {{__('labels.calendar_button_today')}}
                           </small>
@@ -114,7 +38,7 @@
                       </a>
                     </div>
                   </div>
-                  <div id="{{date('Ymd', strtotime($calendar["date"]))}}" class="collapse show">
+                  <div id="{{date('Ymd', strtotime($calendar->date))}}" class="collapse show">
                 @endif
                 <div class="row pl-3 p-1 border-bottom  ">
                   <div class="col-12">
@@ -192,9 +116,9 @@
                   </div>
                 </div>
                 <?php
-                  $__date = $calendar["date"];
+                  $__date = $calendar->date;
                 ?>
-                @if($__date != $calendar["date"])
+                @if($__date != $calendar->date)
                   </div>
                 </li>
                 @endif
@@ -279,4 +203,79 @@
     </script>
   </form>
 </section>
+@endsection
+@section('page_sidemenu')
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-clock"></i>
+    <p>
+      {{__('labels.schedule_list')}}
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item">
+        <a class="nav-link" href="/events/{{$item->id}}/lesson_requests" >
+          <i class="fa fa-envelope nav-icon"></i>
+          申し込み一覧
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/{{$domain}}/{{$item->id}}/schedule?list=history" class="nav-link @if($view=="schedule" && $list=="history") active @endif">
+          <i class="fa fa-history nav-icon "></i>
+          {{__('labels.schedule_history')}}
+        </a>
+      </li>
+    </ul>
+  </li>
+  <li class="nav-item has-treeview menu-open">
+    <a href="#" class="nav-link">
+    <i class="nav-icon fa fa-business-time"></i>
+    <p>
+      マッチング予定
+      <i class="right fa fa-angle-left"></i>
+    </p>
+    </a>
+    <ul class="nav nav-treeview pl-2">
+      <li class="nav-item ">
+        <a href="/events/{{$item->id}}/schedules?search_status=fix" class="nav-link @if(empty($filter['calendar_filter']['search_status']) || $filter['calendar_filter']['search_status']=='fix') active @endif">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          予定仮確定
+          <p>
+          @if($fix_schedule_count>0)
+            <span class="badge badge-primary right">{{$fix_schedule_count}}</span>
+          @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a href="/events/{{$item->id}}/schedules?search_status=complete" class="nav-link @if(isset($filter['calendar_filter']['search_status']) && $filter['calendar_filter']['search_status']=='complete') active @endif">
+          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          予定確定済み
+          <p>
+          @if($complete_schedule_count>0)
+            <span class="badge badge-primary right">{{$complete_schedule_count}}</span>
+          @endif
+          </p>
+        </a>
+      </li>
+    </ul>
+  </li>
+</ul>
+@endsection
+
+@section('page_footer')
+{{--
+<dt>
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
+    <i class="fa fa-comment-dots"></i>{{__('labels.comment_add')}}
+  </a>
+</dt>
+<dt>
+  <a class="btn btn-app" href="javascript:void(0);" page_form="dialog" page_url="/calendars/create?teacher_id={{$item->id}}" page_title="{{__('labels.schedule_add')}}">
+    <i class="fa fa-chalkboard-teacher"></i>{{__('labels.schedule_add')}}
+  </a>
+</dt>
+--}}
 @endsection

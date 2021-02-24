@@ -187,6 +187,7 @@ class LessonRequest extends Model
     if($status != 'fix' && $status != 'complete'){
       $charge_teachers = $this->candidate_teachers(0, 1);
       if(count($charge_teachers) >0){
+        echo "2回戦！！<br>";
         $res = $this->_add_matching_calendar_for_place($charge_teachers[1], $place_id);
       }
     }
@@ -249,46 +250,6 @@ class LessonRequest extends Model
     }
     $date_time_list = $this->get_time_list(1);
 
-    //レッスン=1 の希望日ごとのtime_slotを取得
-    /*
-    echo "-----------------------------<br>\n";
-    echo "-------予定が存在する日に登録する---<br>\n";
-    echo "-----------------------------<br>\n";
-    foreach($que as $i => $subject_code){
-      $is_add = false;
-      //queを参照＞担当講師決定
-      $teacher = $subject_teacher_set[$subject_code];
-      echo "●que pop[".$i."][subject=".$subject_code."][講師id=".$teacher->id."]<br>\n";
-      $teacher_calendar_dates = LessonRequestCalendar::where('user_id', $teacher->user_id)
-        ->searchDate($this->event->event_from_date, $this->event->event_to_date)
-        ->where('status', 'fix')->pluck('start_time');
-
-      foreach($teacher_calendar_dates as $teacher_calendar_date){
-        $d = date('Y-m-d', strtotime($teacher_calendar_date));
-        echo "候補予定[".$d."]を探索<br>\n";
-        if(!isset($date_time_list[$d])) continue;
-        $this->create_request_calendar(1, $date_time_list[$d], $teacher->id, $d, $place_id, $subject_code);
-        $calendar = $this->request_calendar_review($teacher->id, $d, $subject_code);
-
-        if(isset($calendar[$d]) && count($calendar[$d])>0){
-          $is_add = $this->fix_calendar($calendar[$d]);
-          echo "候補予定数[".count($calendar[$d])."]<br>\n";
-          echo "確定予定[".$calendar[$d][0]->id."]<br>\n";
-        }
-        else {
-          echo "候補予定なし<br>\n";
-        }
-        if($is_add==true){
-          unset($que[$i]);
-          break;
-        }
-      }
-    }
-    */
-    echo "-----------------------------<br>\n";
-    echo "ひとまず予定登録する<br>\n";
-    echo "----------------------------<br>\n";
-    //foreach($que as $i => $subject_code){
     $i=0;
     while(count($que) > 0){
       //queを参照＞担当講師決定
@@ -309,6 +270,7 @@ class LessonRequest extends Model
         echo "候補予定[".$d."]を探索<br>\n";
         $this->create_request_calendar(1, $time_list, $teacher->id, $d, $place_id, $subject_code);
         $calendar = $this->request_calendar_review($teacher->id, $d, $subject_code);
+        $fix_calendars = [];
         if(isset($calendar[$d]) && count($calendar[$d])>0) $fix_calendars = $this->fix_calendar($calendar[$d]);
         if(count($fix_calendars) > 0){
           $fix_calendars = $this->fix_calendar($calendar[$d]);
@@ -361,6 +323,60 @@ class LessonRequest extends Model
     else {
       $calendars[$t]->update(['status' => $status]);
       $ret[] = $calendars[$t];
+    }
+    if($status=='fix' && count($ret)>0){
+      $this->set_training_calendar($ret);
+    }
+    return $ret;
+  }
+  public function set_training_calendar($fix_calendars){
+    echo "------------set_training_calendar[".count($fix_calendars)."]----------------------";
+    $course_minutes = $this->get_tag_value('season_lesson_course');
+    //演習時間は、トータル5時間（300分）- 授業時間
+    $training_minutes = 300 - intval($course_minutes);
+    $ret = [];
+    $create_form = [
+      'user_id' => $this->student->user_id,
+      'parent_lesson_request_calendar_id' => $fix_calendars[0]->id,
+      'lesson_request_date_id' => $fix_calendars[0]->lesson_request_date_id,
+      'remark' => '',
+      'teaching_type' => 'training',
+      'place_floor_id' => $fix_calendars[0]->place_floor_id,
+      'subject_code' => '',
+      'status' => 'fix',
+    ];
+    $_start_time = strtotime($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->from_time_slot);
+    $_end_time = strtotime($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->to_time_slot);
+    //①上の時間チェック(from = 要望の開始時刻　、　to = 講習コマの開始時刻）
+    $_from = $_start_time;
+    $_to = strtotime($fix_calendars[0]->start_time);
+    $_minutes = intval($_to-$_from / 60);
+    if($_minutes > $training_minutes){
+      //空きが多過ぎる場合の調整
+      $_from = strtotime('-'.$training_minutes.'minutes '.date('Y-m-d H:i:s', $_to));
+      $_minutes = intval($_to-$_from / 60);
+    }
+    if($_minutes > 30){
+      $create_form['start_time'] = date('Y-m-d H:i:s', $_from);
+      $create_form['end_time'] = date('Y-m-d H:i:s', $_to);
+      echo "create before / start_time=[".$create_form['start_time']."]end_time=[".$create_form['end_time']."]<br>";
+      $ret[] = LessonRequestCalendar::create($create_form);
+    }
+    //②下の時間チェック(from = 講習の終了時刻　、　to = 要望の終了時刻）
+    $create_form['parent_lesson_request_calendar_id'] = $fix_calendars[count($fix_calendars)-1]->id;
+    $_from = strtotime($fix_calendars[count($fix_calendars)-1]->start_time);
+    $_to = $_end_time;
+    $_minutes = intval($_to-$_from / 60);
+    if($_minutes > $training_minutes){
+      //空きが多過ぎる場合の調整
+      $_to = strtotime('+'.$training_minutes.'minutes '.date('Y-m-d H:i:s', $_from));
+      $_minutes = intval($_to-$_from / 60);
+    }
+    if($_minutes > 30){
+      $create_form['start_time'] = date('Y-m-d H:i:s', $_from);
+      $create_form['end_time'] = date('Y-m-d H:i:s', $_to);
+      echo "create after / start_time=[".$create_form['start_time']."]end_time=[".$create_form['end_time']."]<br>";
+      $ret[] = LessonRequestCalendar::create($create_form);
     }
     return $ret;
   }
@@ -430,6 +446,7 @@ class LessonRequest extends Model
         'user_id' => $teacher->user_id,
         'lesson_request_date_id' => $lesson_request_date->id,
         'remark' => '',
+        'teaching_type' => 'season',
         'place_floor_id' => $place_floor->id,
         'subject_code' => $subject_code,
       ];

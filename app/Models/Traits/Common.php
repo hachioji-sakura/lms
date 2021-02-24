@@ -177,7 +177,7 @@ trait Common
     return $search_words;
   }
   public function has_tag($key, $val=""){
-    if(!isset($this->tags)) return null;
+    if(!isset($this->tags) || $this->tags==null) return null;
     $tags = $this->tags;
     foreach($tags as $tag){
       if(empty($val) && $tag->tag_key==$key) return true;
