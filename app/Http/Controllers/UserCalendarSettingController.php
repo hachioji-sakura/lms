@@ -92,12 +92,12 @@ class UserCalendarSettingController extends UserCalendarController
       }
       else {
         $ret = [
+          'teacher_name' => [
+            'label' => __('labels.teachers'),
+            'size' => 12,
+          ],
           'student_name' => [
             'label' => __('labels.students'),
-            'size' => 6,
-          ],
-          'user_name' => [
-            'label' => __('labels.teachers'),
             'size' => 6,
           ],
           'subject' => [

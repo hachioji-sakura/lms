@@ -121,7 +121,7 @@ class UserCalendarController extends MilestoneController
       $ret = [
         'teacher_name' => [
           'label' => __('labels.teachers'),
-          'size' => 6,
+          'size' => 12,
         ],
         'lesson' => [
           'label' => __('labels.lesson'),

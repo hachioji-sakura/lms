@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'ja' => 'Japanese',
+  'en' => 'English',
   'system_name' => 'SaKuRa One Net',
   'yes' => 'Yes',
   'no' => 'No',
@@ -407,4 +409,6 @@ return [
   'workable_classroom' => 'Workable ClassRoom',
   'semester' => 'Semester',
   'school_grade_reports' => 'School Grade by subjects',
+  'skype_name' => 'Skype Name',
+  'skype_name_about' => 'Click here if you don't know how to check your Skype name',
 ];
