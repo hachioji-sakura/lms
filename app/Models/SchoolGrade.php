@@ -122,7 +122,7 @@ public function getSchoolGradeReportPointsAttribute(){
     if(!isset($form['student_id'])){
       $form['student_id'] = $this->student_id;
     }
-    $existings = SchoolGrade::findExistings($form['grade'],$form['semester_no'],$form['student_id']);
+    $existings = self::findExistings($form['grade'],$form['semester_no'],$form['student_id']);
     if($existings->count() > 0 ){
       $item = $existings->first();
     }else{
