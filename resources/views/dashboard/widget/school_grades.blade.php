@@ -5,8 +5,8 @@
     <h3 class="card-title">
       <i class="fa fa-chart-line mr-1"></i>{{__('labels.school_grades')}}
     </h3>
+    @if($grades->count() > 0)
     <select name="grades[]" width="100%" class="form-control select2" onChange="location.href=value;">
-      <option value=" ">{{__('labels.selectable')}}</option>
       @foreach($grades as $key => $name)
       <option value="/students/{{$item->id}}/school_grades?search_grade[]={{$key}}"
         @if(request()->has("search_grade") && in_array($key, request()->get("search_grade")))
@@ -15,6 +15,7 @@
       >{{$name}}</option>
       @endforeach
     </select>
+    @endif
     <div class="card-tools">
       <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/school_grades/create?student_id={{$item->id}}" page_title="{{__('labels.school_grades')}}{{__('labels.add')}}">
           <i class="fa fa-pen nav-icon"></i>
