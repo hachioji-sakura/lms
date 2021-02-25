@@ -169,7 +169,6 @@ class SchoolGradeController extends MilestoneController
           $item->file_upload($request->file('upload_file'));
         }
       }
-//      $item->change($form, $file, $is_file_delete);
       return $this->api_response(200, '', '', $item);
     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;

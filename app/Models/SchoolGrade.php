@@ -98,6 +98,10 @@ public function getSchoolGradeReportPointsAttribute(){
     return $query->whereIn('semester_no',$semester_nos);
   }
 
+  public function scopeStudentIds($query,$student_ids){
+    return $query->whereIn('student_id',$student_ids);
+  }
+
   public function scopeSearch($query, $request){
     if($request->has('search_grade')){
       $query->grades($request->get('search_grade'));
@@ -110,12 +114,15 @@ public function getSchoolGradeReportPointsAttribute(){
     return $query;
   }
 
-  public function scopeFindExistings($query, $grade,$semester_no){
-    return $query->grades([$grade])->semesterNos([$semester_no]);
+  public function scopeFindExistings($query, $grade,$semester_no, $student_id){
+    return $query->grades([$grade])->semesterNos([$semester_no])->studentIds([$student_id]);
   }
 
   public function add($form){
-    $existings = SchoolGrade::findExistings($form['grade'],$form['semester_no']);
+    if(!isset($form['student_id'])){
+      $form['student_id'] = $this->student_id;
+    }
+    $existings = SchoolGrade::findExistings($form['grade'],$form['semester_no'],$form['student_id']);
     if($existings->count() > 0 ){
       $item = $existings->first();
     }else{
@@ -131,9 +138,7 @@ public function getSchoolGradeReportPointsAttribute(){
 
     $is_null = false;
     if(count(array_unique($subjects)) == 1 && array_unique($subjects)[0] === null){
-      if(count(array_unique($report_points)) == 1 && array_unique($report_points)[0] === null){
-        $is_null = true;
-      }
+      $is_null = true;
     }
 
     if($is_null == false){

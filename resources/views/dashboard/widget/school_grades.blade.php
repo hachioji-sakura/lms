@@ -60,8 +60,8 @@
         <h5>
           <i class="icon fa fa-exclamation-triangle"></i>
           {{__('messages.please_register',['target' => __('labels.school_grade_reports')])}}
-          <a class="btn btn-primary" href="javascript:void(0);" page_form="dialog" page_url="/school_grades/{{$school_grades->first()->id}}/edit" page_title="{{__('labels.school_grades')}}{{__('labels.add')}}">
-              <i class="fa fa-pen nav-icon"></i>
+          <a class="btn btn-primary btn-block mt-2" href="javascript:void(0);" page_form="dialog" page_url="/school_grades/{{$school_grades->first()->id}}/edit" page_title="{{__('labels.school_grades')}}{{__('labels.add')}}">
+              <i class="fa fa-plus nav-icon"></i>
               {{__('labels.add_button')}}
           </a>
         </h5>
@@ -74,8 +74,8 @@
       <h5>
         <i class="icon fa fa-exclamation-triangle"></i>
         {{__('messages.please_register',['target' => __('labels.school_grades')])}}
-        <a class="btn btn-primary" href="javascript:void(0);" page_form="dialog" page_url="/school_grades/create?student_id={{$item->id}}" page_title="{{__('labels.school_grades')}}{{__('labels.add')}}" role="button">
-            <i class="fa fa-pen nav-icon"></i>
+        <a class="btn btn-primary btn-block mt-2" href="javascript:void(0);" page_form="dialog" page_url="/school_grades/create?student_id={{$item->id}}" page_title="{{__('labels.school_grades')}}{{__('labels.add')}}" role="button">
+            <i class="fa fa-plus nav-icon"></i>
             {{__('labels.add_button')}}
         </a>
       </h5>
