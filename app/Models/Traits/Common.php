@@ -85,7 +85,7 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date, $format = "n月j日"){
+  public function dateweek_format($date, $format = "Y年n月j日"){
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
@@ -177,11 +177,13 @@ trait Common
     return $search_words;
   }
   public function has_tag($key, $val=""){
-    if(!isset($this->tags)) return null;
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    if(!isset($this->tags)) return false;
+    $tags = $this->tags->where('tag_key', $key);
+    if(empty($val)){
+      if(count($this->tags->where('tag_key', $key)) > 0) return true;
+    }
+    else {
+      if(count($this->tags->where('tag_key', $key)->where('tag_value', $val)) > 0) return true;
     }
     return false;
   }
@@ -263,5 +265,9 @@ trait Common
     $start_hour_minute = date($format,  strtotime($from));
     $end_hour_minute = date($format,  strtotime($to));
     return $start_hour_minute.'～'.$end_hour_minute;
+  }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
   }
 }

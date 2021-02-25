@@ -1,6 +1,8 @@
 <?php
 
 return [
+  'ja' => '日本語',
+  'en' => 'English',
   'system_name' => 'SaKuRa One Net',
   'yes' => 'はい',
   'no' => 'いいえ',
@@ -14,7 +16,7 @@ return [
   'signup' =>     'アカウント登録',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
-  'faqs'             => 'FAQ',
+  'faqs'             => 'よくあるご質問(FAQ)',
   'icons'             => 'アイコン変更',
   'to_login'             => 'ログインへ',
   'account_setting' => 'アカウント設定',
@@ -410,4 +412,6 @@ return [
   'workable_classroom' => '勤務可能な教室',
   'semester' => '学期',
   'school_grade_reports' => '成績詳細',
+  'skype_name' => 'Skype名',
+  'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
 ];

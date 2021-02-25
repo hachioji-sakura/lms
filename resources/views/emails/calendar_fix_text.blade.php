@@ -10,7 +10,6 @@
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice', '']) @endcomponent
 …………………………………………………………………………………………
 @if($send_to==='student')
-…………………………………………………………………………………………
 授業をお休みする場合は、以下の画面よりご連絡ください。
 {{config('app.url')}}/calendars/{{$item['id']}}/status_update/rest?key={{$token}}&user={{$user->user_id}}
 

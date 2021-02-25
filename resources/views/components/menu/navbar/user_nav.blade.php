@@ -34,6 +34,12 @@
     @endforeach
   </div>
 </li>
+<li class="nav-item">
+  <a href="/faqs" class="nav-link">
+    <i class="fa fa-question-circle"></i>
+    <span class="d-none d-sm-inline-block">{{__('labels.faqs')}}</span>
+  </a>
+</li>
 @elseif($user->role==="teacher")
   <li class="nav-item">
     <a class="nav-link" data-toggle="dropdown" href="#">

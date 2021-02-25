@@ -348,15 +348,17 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
-      'entry_date' => null,
-      'unsubscribe_date' => null,
+      'entry_date' => '',
+      'unsubscribe_date' => '',
     ];
-    $update_form = [];
+    $update_form = [
+    ];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
+      if(array_key_exists($key, $form)){
         $update_form[$key] = $form[$key];
       }
     }
+
     $this->update($update_form);
     //1:nタグ
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
@@ -767,6 +769,21 @@ EOT;
         'unsubscribe_date' => $start_date,
       ]);
       $this->unsubscribe();
+      $current_charge_teachers = $this->get_current_charge_teachers();
+      foreach($current_charge_teachers as $teacher){
+        $title = '生徒様退会についてのご連絡';
+        $unsubscribe_date = $this->dateweek_format($start_date);
+        if($teacher->user->locale=='en') {
+          $title = 'Contact about student unsubscribe';
+          $unsubscribe_date = $start_date;
+        }
+        $teacher->user->send_mail($title, [
+          'send_to' => 'teacher',
+          'student' => $this,
+          'unsubscribe_date' => $unsubscribe_date,
+        ], 'text', 'unsubscribe_complete');
+      }
+
     }
   }
   public function unsubscribe(){
@@ -775,9 +792,11 @@ EOT;
     $user_calendar_members = [];
     $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
     //退会以降(退会日含まず）の授業予定をキャンセルにする
+    // 20201.01.20 update 通常授業のみキャンセルにする
     $calendars = UserCalendar::where('start_time', '>=', $unsubscribe_date_tomorrow)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('user_calendar_setting_id' , '>', 0)
                   ->get();
 
     foreach($calendars as $calendar){
@@ -1088,5 +1107,39 @@ EOT;
     //入会後の体験申し込み機能リリース以前の場合
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
+  }
+
+  public function get_current_charge_teachers(){
+    $ret = [];
+    $current_schedule = $this->get_current_schedule();
+    if(isset($current_schedule)){
+      foreach($current_schedule as $c){
+        $ret[$c->user->teacher->id] = $c->user->teacher;
+      }
+    }
+    if(count($ret)==0){
+      $lesson = 1;
+      $calendar_settings = $this->user->get_enable_lesson_calendar_settings();
+      if(isset($calendar_settings) && isset($calendar_settings[$lesson])){
+        foreach($calendar_settings[$lesson] as $method => $v1){
+          foreach($v1 as $w => $_settings){
+            foreach($_settings as $setting){
+              $ret[$setting->user->teacher->id] = $setting->user->teacher;
+            }
+          }
+        }
+      }
+    }
+    return $ret;
+  }
+  public function get_current_schedule(){
+    //1か月前の通常授業をベースに担当の講師を取得する
+    $s = date('Y-m-1 00:00:00', strtotime('-1 month'));
+    \Log::warning("get_current_schedule");
+    $c = UserCalendar::findUser($this->user_id)
+                    ->where('teaching_type', 'regular')
+                    ->where('start_time', '>', $s)
+                    ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
+    return $c;
   }
 }
