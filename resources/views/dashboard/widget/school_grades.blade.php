@@ -3,7 +3,7 @@
 <div class="card">
   <div class="card-header">
     <h3 class="card-title">
-      <i class="fa fa-flag mr-1"></i>{{__('labels.school_grades')}}
+      <i class="fa fa-chart-line mr-1"></i>{{__('labels.school_grades')}}
     </h3>
     <select name="grades[]" width="100%" class="form-control select2" onChange="location.href=value;">
       <option value=" ">{{__('labels.selectable')}}</option>

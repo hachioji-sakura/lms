@@ -12,7 +12,7 @@
       <input type="hidden" name="student_id" value="{{$student_id}}">
     @endif
     <div class="row">
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 mb-2">
         <label>{{__('labels.grade')}}</label>
         @if(isset($item) && $_edit == true)
         <span>{{$item->grade_name}}</span>
@@ -142,17 +142,12 @@
 </div>
 <script>
 $("button.add").on("click",function(){
-   //var clone = $("div.report_point:first").clone(true).removeClass("report_point").insertAfter($("div.report_point:first"));
   $clone = $("div.report_point:first").clone(true);
 
   $clone.find("span").remove();
   $clone.find("select").select2({width:"100%",ariahidden:false});
   $clone.insertAfter($("div.report_point:last"));
   base.pageSettinged('school_grades_create');
-
-
-
-
 });
 $("button.delete").on("click",function(){
   if($('select[name="subject[]"]').length > 1 && $(this).parent().parent().attr("class") != "report_point"){
