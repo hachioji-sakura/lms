@@ -4,6 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\StudentRelation
+ *
+ * @property int $id
+ * @property int $student_id 生徒ID
+ * @property int $student_parent_id 保護者ID
+ * @property string $type 関係性
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\StudentParent $parent
+ * @property-read \App\Models\Student $student
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation findParent($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation findParents($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation findStudent($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation likeStudentName($search_word)
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentRelation query()
+ * @mixin \Eloquent
+ */
 class StudentRelation extends Model
 {
   protected $table = 'common.student_relations';

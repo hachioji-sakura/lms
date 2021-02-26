@@ -8,6 +8,27 @@ use App\Models\ChargeStudentTag;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\ChargeStudent
+ *
+ * @property int $id
+ * @property int $student_id 生徒ID
+ * @property int $teacher_id 講師ID
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Lecture $lecture
+ * @property-read Student $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|ChargeStudentTag[] $tags
+ * @property-read Teacher $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent findStudent($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent findTeacher($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent likeStudentName($search_word)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChargeStudent query()
+ * @mixin \Eloquent
+ */
 class ChargeStudent extends Model
 {
   protected $table = 'lms.charge_students';
