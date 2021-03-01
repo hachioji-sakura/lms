@@ -8,6 +8,52 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\StudentParent;
+/**
+ * App\Models\Event
+ *
+ * @property int $id
+ * @property int $event_template_id イベントテンプレートID
+ * @property string $title 件名
+ * @property string $event_from_date 開催期間_始
+ * @property string $event_to_date 開催期間_終
+ * @property string $response_from_date 回答期間_始
+ * @property string $response_to_date 回答期間_終
+ * @property string|null $body 内容
+ * @property string $status ステータス
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|EventUser[] $event_users
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $event_term
+ * @property-read mixed $event_user_count
+ * @property-read mixed $importance_label
+ * @property-read mixed $response_term
+ * @property-read mixed $status_name
+ * @property-read mixed $target_user_name
+ * @property-read mixed $template_title
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read \App\Models\EventTemplate $template
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class Event extends Milestone
 {
     //
