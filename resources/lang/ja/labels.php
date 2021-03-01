@@ -414,4 +414,5 @@ return [
   'school_grade_reports' => '成績詳細',
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
+  'school_grade_type' => '成績タイプ',
 ];

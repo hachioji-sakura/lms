@@ -23,6 +23,7 @@ class SchoolGrade extends Milestone
     "title",
     "student_id",
     "grade",
+    'type',
     "semester_no",
     "remark",
     "s3_alias",
@@ -61,6 +62,10 @@ public function getSemesterNameAttribute(){
   }
   //dd($grade_name);
   return $semester_name;
+}
+
+public function getTypeNameAttribute(){
+  return  config('attribute.school_grade_type')[$this->type];
 }
 
 public function getSchoolGradeReportPointsAttribute(){
@@ -133,18 +138,20 @@ public function getSchoolGradeReportPointsAttribute(){
       $item->save();
     }
 
-    $subjects = $form["subject"];
-    $report_points = $form["report_point"];
+    if(isset($form['subject']) && isset($form['report_point'])){
+      $subjects = $form["subject"];
+      $report_points = $form["report_point"];
 
-    $is_null = false;
-    if(count(array_unique($subjects)) == 1 && array_unique($subjects)[0] === null){
-      $is_null = true;
-    }
+      $is_null = false;
+      if(count(array_unique($subjects)) == 1 && array_unique($subjects)[0] === null){
+        $is_null = true;
+      }
 
-    if($is_null == false){
-      $item->school_grade_reports()->delete();
-      foreach($subjects as $i => $subject){
-        $item->school_grade_reports()->updateOrCreate(["subject_id" => $subject],["report_point" => $report_points[$i]]);
+      if($is_null == false){
+        $item->school_grade_reports()->delete();
+        foreach($subjects as $i => $subject){
+          $item->school_grade_reports()->updateOrCreate(["subject_id" => $subject],["report_point" => $report_points[$i]]);
+        }
       }
     }
 

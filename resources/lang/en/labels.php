@@ -410,5 +410,6 @@ return [
   'semester' => 'Semester',
   'school_grade_reports' => 'School Grade by subjects',
   'skype_name' => 'Skype Name',
-  'skype_name_about' => 'Click here if you don't know how to check your Skype name',
+  'skype_name_about' => 'Click here if you don not know how to check your Skype name',
+  'school_grade_type' => 'School Grade Type',
 ];
