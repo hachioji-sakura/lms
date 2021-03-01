@@ -11,11 +11,11 @@
         @endforeach
       </select>
     </div>
-    <div class="col-3 text-center">
+    <div class="col-3 text-center stage-10">
       <select name="report_point[]" width="100%" class="form-control">
-        @for($i=1;$i<=10;$i++)
-        <option value="{{$i}}" {{$_edit == true && isset($report) &&  $report->report_point == $i ? "selected" : ''}} >{{$i}}</option>
-        @endfor
+        @foreach(config('attribute.school_grade_type_points')[$item->type] as $key => $value)
+          <option value="{{$key}}" {{$_edit == true && isset($report) &&  $report->report_point == $key ? "selected" : ''}} >{{$value}}</option>
+        @endforeach
       </select>
     </div>
   </div>

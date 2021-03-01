@@ -34,6 +34,10 @@ class SchoolGradeReport extends Model
       return $this->subject->name;
     }
 
+    public function getReportPointNameAttribute(){
+      return config('attribute.school_grade_type_points')[$this->school_grade->type][$this->report_point];
+    }
+
     public function dispose(){
       $this->delete();
     }

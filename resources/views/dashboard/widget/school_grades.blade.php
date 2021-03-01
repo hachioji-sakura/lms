@@ -45,7 +45,7 @@
               @foreach($subjects as $id => $name)
               <td >
                 @if(!empty($school_grade->school_grade_reports->where('subject_id',$id)->first()))
-                  {{$school_grade->school_grade_reports->where('subject_id',$id)->first()->report_point}}
+                  {{$school_grade->school_grade_reports->where('subject_id',$id)->first()->report_point_name}}
                 @else
                 -
                 @endif

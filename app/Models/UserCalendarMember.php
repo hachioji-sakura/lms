@@ -18,6 +18,44 @@ use App\User;
 use App\Models\Traits\Common;
 use View;
 use DB;
+/**
+ * App\Models\UserCalendarMember
+ *
+ * @property int $id
+ * @property int $calendar_id カレンダーID
+ * @property int $user_id 対象ユーザーID
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel / 休み: rest / 出席 : presence / 欠席 : absence
+ * @property int $place_floor_sheat_id 座席ID
+ * @property int $schedule_id 事務システムのカレンダーID
+ * @property string|null $rest_contact_date 休み連絡日
+ * @property string|null $exchange_limit_date 振替対象期限
+ * @property string|null $remark 備考
+ * @property int|null $exchanged_member_id 代講元ID
+ * @property string $access_key アクセスキー
+ * @property string|null $rest_type
+ * @property string|null $rest_result 休み判定理由
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read UserCalendar $calendar
+ * @property-read User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $exchanged_calendars
+ * @property-read mixed $created_date
+ * @property-read mixed $status_name
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\PlaceFloorSheat $place_floor_sheat
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestStatuses($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestType($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchExchangeLimitDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchWord($word)
+ * @mixin \Eloquent
+ */
 class UserCalendarMember extends Model
 {
   use Common;
