@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\GeneralAttribute;
 use App\Models\Subject;
 use App\Models\Supplier;
 use App\Models\TextbookSubject;
@@ -119,12 +120,17 @@ class TextbookSeeder extends Seeder
       }
       //学年
       foreach($grades as $grade){
-        TextbookTag::create([
-          'textbook_id' => $textbook->id,
-          'tag_key' => 'grade',
-          'tag_value' => $grade,
-          'create_user_id' => 1,
-        ]);
+        $generalAttribute = GeneralAttribute::where('attribute_key','grade')
+                                            ->where('attribute_name',$grade)
+                                            ->first();
+        if(isset($generalAttribute)) {
+          TextbookTag::create([
+            'textbook_id' => $textbook->id,
+            'tag_key' => 'grade_no',
+            'tag_value' => $generalAttribute->id,
+            'create_user_id' => 1,
+          ]);
+        }
       }
     }
   }
