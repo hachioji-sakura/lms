@@ -174,6 +174,10 @@
             </li>
 
           </ul>
+          <a href="javascript:void(0)" page_form="dialog" page_title="hoge" page_url="/exams/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
+            <i class="fa fa-pen nav-icon"></i>
+            試験フォームじゃ
+          </a>
           <div class="tab-content">
             <div class="tab-pane active" id="tab_milestones">
               <div class="row">
