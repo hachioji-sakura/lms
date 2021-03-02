@@ -31,15 +31,7 @@ class LessonRequestCalendarController extends UserCalendarController
         'label' => __('labels.teachers'),
         'size' => 6,
       ],
-      'lesson' => [
-        'label' => __('labels.lesson'),
-        'size' => 6,
-      ],
-      'course' => [
-        'label' => __('labels.lesson_type'),
-        'size' => 6,
-      ],
-      'teaching_name' => [
+      'teaching_type_name' => [
         'label' => __('labels.lesson_name'),
         'size' => 6,
       ],
@@ -59,4 +51,5 @@ class LessonRequestCalendarController extends UserCalendarController
     $ret = array_merge($base_ret, $ret);
     return $ret;
   }
+
 }

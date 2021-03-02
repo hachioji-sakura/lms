@@ -906,11 +906,14 @@ EOT;
           return null;
         }
       }
-
+      $free_sheat = $this->place_floor->get_free_seat($this->start_time, $this->end_time);
+      $free_sheat_id = 0;
+      if($free_sheat != null) $free_sheat_id = $free_sheat->id;
       $member = UserCalendarMember::create([
           'calendar_id' => $this->id,
           'user_id' => $user_id,
           'status' => $status,
+          'place_floor_sheat_id' => $free_sheat_id,
           'create_user_id' => $create_user_id,
       ]);
       if($is_api===true){
@@ -1283,4 +1286,41 @@ EOT;
       $this->delete_user_cache($member->user_id);
     }
   }
+  public function registable_status(){
+    $ret = '';
+    //競合する予定があるかどうかチェック
+    $calendar = UserCalendar::searchDate($this->start_time, $this->end_time)
+      ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+      ->where('user_id', $this->user_id)->get();
+    if(isset($calendar)) $ret = 'calendar_is_conflict';
+
+    //座席チェックはあとで対応する
+    /*
+    $free_sheat = PlaceFloor::find($form['place_floor_id'])->get_free_seat();
+    if($free_sheat==null) return $this->error_response('座席が取れません');
+    */
+    if(isset($calendar)){
+      $ret = 'calendar_is_move_conflict';
+    }
+    else {
+      $calendar = UserCalendar::where('end_time', $this->start_time)
+          ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+          ->where('place_floor_id', '!=', $this->place_floor_id)
+          ->where('user_id', $this->user_id)->get();
+
+      if(isset($calendar)){
+        $ret = 'calendar_is_move_conflict';
+      }
+      else{
+        $calendar = UserCalendar::where('start_time', $this->end_time)
+            ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+            ->where('place_floor_id', '!=', $this->place_floor_id)
+            ->where('user_id', $this->user_id)->get();
+        if(isset($calendar)) $ret = 'calendar_is_move_conflict';
+      }
+    }
+
+    return "";
+  }
+
 }

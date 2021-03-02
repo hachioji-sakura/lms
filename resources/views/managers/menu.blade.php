@@ -6,8 +6,8 @@
   <div class="info">
     <a href="/{{$domain}}/{{$item->id}}/" class="d-block text-light">
       <ruby style="ruby-overhang: none">
-        <rb>{{$item->name}}</rb>
-        <rt>{{$item->kana}}</rt>
+        <rb>{{$item->full_name}}</rb>
+        <rt>{{$item->full_kana}}</rt>
       </ruby>
     </a>
   </div>

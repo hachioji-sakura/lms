@@ -45,10 +45,10 @@
                     </small>
                     @endif
                     <small class="badge badge-primary mt-1 mr-1">
-	                {{$item->gender}}
+	                {{$item->gender_name}}
                     </small>
                     <small class="badge badge-primary mt-1 mr-1">
-                      {{$item->grade}}
+                      {{$item->grade_name}}
                     </small>
                     @if(!empty($item->school_name))
                     <small class="badge badge-primary mt-1 mr-1">

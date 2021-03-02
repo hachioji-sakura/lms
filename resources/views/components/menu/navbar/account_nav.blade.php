@@ -2,7 +2,7 @@
 <li class="nav-item dropdown">
   <a class="nav-link" data-toggle="dropdown" href="#">
     <img src="{{$user->icon}}" class="img-size-32 mr-1 img-circle">
-    <span class="d-none d-sm-inline-block">{{$user->name}}</span>
+    <span class="d-none d-sm-inline-block">{{$user->full_name}}</span>
   </a>
   <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
     <a href="javascript:void(0);" class="dropdown-item">
@@ -10,7 +10,7 @@
         <img src="{{$user->icon}}" class="img-size-50 mr-3 img-circle">
         <div class="media-body">
           <h3 class="dropdown-item-title">
-            {{$user->name}}
+            {{$user->full_name}}
           </h3>
           <p class="text-sm">
             @if($user->role==="manager")

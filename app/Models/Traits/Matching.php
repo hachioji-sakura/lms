@@ -386,8 +386,11 @@ trait Matching
     if($lesson==1) $course_minutes = 60;
     //１０分ずらしで、授業時間分の範囲を配列に設定する
     $slot_unit_minutes = 10;
-    if($this->type=='season_lesson') $slot_unit_minutes = 30;
-
+    if($this->type=='season_lesson'){
+      $slot_unit_minutes = 30;
+      $course_minutes = intval($this->get_tag_value('season_lesson_course'));
+      if($course_minutes > 90) $coutse_minutes = 60;
+    }
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));
       if(strtotime($_end) > strtotime($trial_end_time)){
@@ -566,6 +569,22 @@ trait Matching
   public function charge_subject_attributes(){
     $attributes = GeneralAttribute::where('attribute_key', 'charge_subject')->get();
     return $attributes;
+  }
+  public function charge_subjects(){
+    $ret = [];
+    foreach($this->charge_subject_attributes() as $attribute){
+      $val = $this->get_tag_value($attribute->attribute_value.'_level');
+      if(!empty($val) && intval($val)>0){
+        $ret[$attribute->attribute_value] = $attribute->attribute_name;
+      }
+      else {
+        $val = $this->get_tag_value($attribute->attribute_value.'_day_count');
+        if(!empty($val) && intval($val)>0){
+          $ret[$attribute->attribute_value] = $attribute->attribute_name;
+        }
+      }
+    }
+    return $ret;
   }
   public function is_hope_exchange(){
     return $this->has_tag('regular_schedule_exchange', 'true');

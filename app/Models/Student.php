@@ -436,10 +436,16 @@ EOT;
     }
     return -1;
   }
-  public function getNameAttribute(){
+  public function getFullNameAttribute(){
     return $this->name();
   }
-  public function getGradeAttribute(){
+  public function getFullKanaAttribute(){
+    return $this->kana();
+  }
+  public function getGenderNameAttribute(){
+    return $this->gender();
+  }
+  public function getGradeNameAttribute(){
     return $this->grade();
   }
   public function getSchoolNameAttribute(){

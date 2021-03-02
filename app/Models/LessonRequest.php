@@ -104,12 +104,6 @@ class LessonRequest extends Model
     }
     return "(定義なし)";
   }
-  /*
-  public function trial_start_end_time($i){
-    $ret = $this->dateweek_format($this["trial_start_time".$i]).date(' H:i',  strtotime($this["trial_start_time".$i])).'～'.date(' H:i',  strtotime($this["trial_end_time".$i]));
-    return $ret;
-  }
-  */
   public function get_request_subject_count(){
     $subject_count = [];
     foreach($this->charge_subject_attributes() as $attribute){
@@ -273,7 +267,6 @@ class LessonRequest extends Model
         $fix_calendars = [];
         if(isset($calendar[$d]) && count($calendar[$d])>0) $fix_calendars = $this->fix_calendar($calendar[$d]);
         if(count($fix_calendars) > 0){
-          $fix_calendars = $this->fix_calendar($calendar[$d]);
           $has_fix_calendar = true;
           foreach($fix_calendars as $fix_calendar){
             echo "fix_calendar[id=".$fix_calendar->id."][".$fix_calendar->place_floor_id."]<br>";
@@ -300,6 +293,7 @@ class LessonRequest extends Model
     return true;
   }
   public function fix_calendar($calendars){
+    echo "------------fix_calendar[".count($calendars)."]----------------------";
     $course_minutes = $this->get_tag_value('season_lesson_course');
     $ret = [];
     $t = 0;
@@ -329,8 +323,10 @@ class LessonRequest extends Model
     }
     return $ret;
   }
+  public function getStudentNameAttribute(){
+    return $this->student->name();
+  }
   public function set_training_calendar($fix_calendars){
-    echo "------------set_training_calendar[".count($fix_calendars)."]----------------------";
     $course_minutes = $this->get_tag_value('season_lesson_course');
     //演習時間は、トータル5時間（300分）- 授業時間
     $training_minutes = 300 - intval($course_minutes);
@@ -345,36 +341,47 @@ class LessonRequest extends Model
       'subject_code' => '',
       'status' => 'fix',
     ];
-    $_start_time = strtotime($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->from_time_slot);
-    $_end_time = strtotime($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->to_time_slot);
+    $_start_time = ($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->from_time_slot);
+    $_end_time = ($fix_calendars[0]->lesson_request_date->day.' '.$fix_calendars[0]->lesson_request_date->to_time_slot);
+    echo "------------set_training_calendar[".count($fix_calendars)."][".$_start_time."][".$_end_time."]----------------------<br>";
+
     //①上の時間チェック(from = 要望の開始時刻　、　to = 講習コマの開始時刻）
-    $_from = $_start_time;
-    $_to = strtotime($fix_calendars[0]->start_time);
-    $_minutes = intval($_to-$_from / 60);
+    $_from = $_start_time.':00';
+    $_to = $fix_calendars[0]->start_time;
+    $_minutes = strtotime($_to) - strtotime($_from);
+
     if($_minutes > $training_minutes){
       //空きが多過ぎる場合の調整
-      $_from = strtotime('-'.$training_minutes.'minutes '.date('Y-m-d H:i:s', $_to));
-      $_minutes = intval($_to-$_from / 60);
+      $_from = date('Y-m-d H:i:s', strtotime('-'.$training_minutes.' minutes '.$_to));
     }
+    if(strtotime($_from) < strtotime($_start_time)) $_from = $_start_time;
+    $_minutes = (strtotime($_to) - strtotime($_from))/60;
+    echo "[".$_from."][".$_to."][".$_minutes."][".$training_minutes."]<br>";
     if($_minutes > 30){
-      $create_form['start_time'] = date('Y-m-d H:i:s', $_from);
-      $create_form['end_time'] = date('Y-m-d H:i:s', $_to);
+      $create_form['start_time'] = $_from;
+      $create_form['end_time'] = $_to;
       echo "create before / start_time=[".$create_form['start_time']."]end_time=[".$create_form['end_time']."]<br>";
       $ret[] = LessonRequestCalendar::create($create_form);
+      $training_minutes -= $_minutes;
     }
     //②下の時間チェック(from = 講習の終了時刻　、　to = 要望の終了時刻）
     $create_form['parent_lesson_request_calendar_id'] = $fix_calendars[count($fix_calendars)-1]->id;
-    $_from = strtotime($fix_calendars[count($fix_calendars)-1]->start_time);
-    $_to = $_end_time;
-    $_minutes = intval($_to-$_from / 60);
+
+    $_from = $fix_calendars[count($fix_calendars)-1]->end_time;
+    $_to = $_end_time.':00';
+    $_minutes = (strtotime($_to) - strtotime($_from))/60;
+    echo "[".$_from."][".$_to."][".$_minutes."][".$training_minutes."]<br>";
     if($_minutes > $training_minutes){
       //空きが多過ぎる場合の調整
-      $_to = strtotime('+'.$training_minutes.'minutes '.date('Y-m-d H:i:s', $_from));
-      $_minutes = intval($_to-$_from / 60);
+      $_to = date('Y-m-d H:i:s', strtotime('+'.$training_minutes.' minutes '.$_from));
     }
+    if(strtotime($_end_time) < strtotime($_to)) $_to = $_end_time;
+    $_minutes = (strtotime($_to) - strtotime($_from))/60;
+    echo "[".$_from."][".$_to."][".$_minutes."][".$training_minutes."]<br>";
+
     if($_minutes > 30){
-      $create_form['start_time'] = date('Y-m-d H:i:s', $_from);
-      $create_form['end_time'] = date('Y-m-d H:i:s', $_to);
+      $create_form['start_time'] = $_from;
+      $create_form['end_time'] = $_to;
       echo "create after / start_time=[".$create_form['start_time']."]end_time=[".$create_form['end_time']."]<br>";
       $ret[] = LessonRequestCalendar::create($create_form);
     }
@@ -1023,10 +1030,5 @@ TODO:このロジックは再度検討
       }
     }
     return $ret;
-  }
-  public function is_unfixed(){
-    if($this->status=='fix') return false;
-    if($this->status=='complete') return false;
-    return true;
   }
 }

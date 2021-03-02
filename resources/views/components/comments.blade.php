@@ -9,7 +9,7 @@
             <?php $__c++; ?>
             <div class="direct-chat-msg p-1 {{$comment->target_user_id == $comment->create_user_id ? 'right' : ''}}">
               <div class="direct-chat-infos clearfix">
-                <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
+                <span class="direct-chat-name float-left">{{$comment->create_user->details()->full_name}}</span>
                 <span class="direct-chat-timestamp float-right">{{$comment["created_date"]}}</span>
               </div>
               <img class="direct-chat-img img-sm mr-1" src="{{$comment->create_user->details()->icon}}" alt="User Image">

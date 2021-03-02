@@ -11,8 +11,8 @@
     <a href="/{{$domain}}/{{$item->id}}" >
     <h4 class="widget-user-username">
         <ruby style="ruby-overhang: none">
-          <rb>{{$item->name}}</rb>
-          <rt>{{$item->kana}}</rt>
+          <rb>{{$item->full_name}}</rb>
+          <rt>{{$item->full_kana}}</rt>
           {{$courtesy}}
         </ruby>
     </h4>

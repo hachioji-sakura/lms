@@ -120,7 +120,7 @@
               @if($member->user->details()->role==="student")
               <tr class="">
                 <th class="p-1 pl-2">
-                  {{$member->user->details()->name}}</th>
+                  {{$member->user->details()->full_name}}</th>
                 <td class="p-1 text-sm text-center">
                   @if($member->status!="fix" && $member->status!="presence" && $member->status!="absence")
                     <i class="fa fa-times mr-1"></i>{{$member->status_name()}}

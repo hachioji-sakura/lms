@@ -41,42 +41,27 @@
                   <div id="{{date('Ymd', strtotime($calendar->date))}}" class="collapse show">
                 @endif
                 <div class="row pl-3 p-1 border-bottom  ">
-                  <div class="col-12">
+                  <div class="col-8">
                     <span class="float-left">
                       <input class="form-check-input icheck flat-red day_check" type="checkbox" name="selected_lesson_request_calendar_ids[]" value="{{$calendar->id}}"  checked="checked"/>
-                      <a href="javascript:void(0);" title="{{$calendar->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}" role="button" class="">
-                        {{$calendar->id}}
-                      </a>
-                      <span class="mr-2">
-                        <small title="{{$calendar->id}}" class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
-                          {{$calendar->status_name}}
-                        </small>
-                      </span>
-                      <span class="mr-2">
-                        <i class="fa fa-clock"></i>{{$calendar->timezone}}
-                      </span>
-                      <span class="mr-2">
-                        <i class="fa fa-map-marker"></i>{{$calendar->place_floor_name}}
-                      </span>
-                      <a href="/students/{{$calendar->student_id}}" target="_blank" >
+                      <a href="javascript:void(0);" title="{{$calendar->id}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$calendar->id}}" role="button" class="">
                         <span class="mr-2">
-                          <i class="fa fa-user-graduate"></i>
-                          {{$calendar->student_name}}
+                          <small title="{{$calendar->id}}" class="badge badge-{{config('status_style')[$calendar->status]}} mt-1 mr-1">
+                            {{$calendar->status_name}}
+                          </small>
+                        </span>
+                        <span class="mr-2">
+                          <i class="fa fa-clock"></i>{{$calendar->timezone}}
                         </span>
                       </a>
                       <span class="mr-2">
-                        <small class="badge badge-success mt-1 mr-1">
-                          <i class="fa fa-map-marker mr-1"></i>{{$calendar->place_floor_name}}
-                        </small>
+                        <a href="/students/{{$calendar->student_id}}" target="_blank" >
+                          <i class="fa fa-user-graduate"></i>
+                          {{$calendar->student_name}}
+                        </a>
                       </span>
-                      <span class="mr-2">
-                        <small class="badge badge-primary mt-1 mr-1">
-                          {{$calendar->subject}}
-                        </small>
-                      </span>
-                      <br>
                     </span>
-                    <span class="float-right">
+                    <span class="float-left">
                       <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$calendar->id}}/edit" role="button" class="btn btn-default btn-sm ml-1">
                         <i class="fa fa-edit"></i>
                       </a>
@@ -85,13 +70,40 @@
                       </a>
                     </span>
                   </div>
+                  <div class="col-4">
+                    <div class="row">
+                    <span><i class="fa fa-dumbbell mr-1"></i>演習予定</span><br>
+                    @foreach($calendar->traing_calendars as $traing_calendar)
+                    <div class="col-12">
+                      <span class="float-left">
+                        <span class="mr-2">
+                          <i class="fa fa-clock"></i>{{$traing_calendar->timezone}}
+                        </span>
+                        <span class="mr-2">
+                          <small title="{{$calendar->id}}" class="badge badge-{{config('status_style')[$traing_calendar->teaching_type]}} mt-1 mr-1">
+                            {{$traing_calendar->teaching_type_name}}
+                          </small>
+                        </span>
+                      </span>
+                      <span class="float-left">
+                        <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$traing_calendar->id}}/edit" role="button" class="btn btn-default btn-sm ml-1">
+                          <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="javascript:void(0);" page_title="{{__('labels.schedule_delete')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$traing_calendar->id}}?action=delete" role="button" class="btn btn-default btn-sm ml-1">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                      </span>
+                    </div>
+                    @endforeach
+                    </div>
+                  </div>
                   <div class="col-12">
-                    <a href="/teachers/{{$calendar->user->teacher->id}}" target = "_blank">
                     <span class="mr-2">
-                      <i class="fa fa-user-tie"></i>
-                      {{$calendar->user->teacher->name()}}
+                      <a href="/teachers/{{$calendar->user->teacher->id}}" target = "_blank">
+                        <i class="fa fa-user-tie"></i>
+                        {{$calendar->user->teacher->name()}}
+                      </a>
                     </span>
-                    </a>
                     @if($calendar->is_charge_teacher()==false)
                     <span class="mr-2">
                       <small class="badge badge-warning mt-1 mr-1">
@@ -99,6 +111,11 @@
                       </small>
                     </span>
                     @endif
+                    <span class="mr-2">
+                      <small class="badge badge-success mt-1 mr-1">
+                        <i class="fa fa-map-marker mr-1"></i>{{$calendar->place_floor_name}}
+                      </small>
+                    </span>
                     @if($calendar->is_teacher_place_enabled()==false)
                     <span class="mr-2">
                       <small class="badge badge-danger mt-1 mr-1">
@@ -106,6 +123,11 @@
                       </small>
                     </span>
                     @endif
+                    <span class="mr-2">
+                      <small class="badge badge-primary mt-1 mr-1">
+                        {{$calendar->subject}}
+                      </small>
+                    </span>
                     @if(!empty($calendar->matching_result))
                     <span class="mr-2">
                       <small class="badge badge-primary mt-1 mr-1">
@@ -113,6 +135,7 @@
                       </small>
                     </span>
                     @endif
+
                   </div>
                 </div>
                 <?php

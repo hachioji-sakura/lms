@@ -52,7 +52,7 @@
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="lesson[]" value="1" />
     <input type="hidden" class="grade" name="grade" value="{{$item->grade(true)}}" />
-    <input type="hidden" name="grade_name" value="{{$item->grade}}" />
+    <input type="hidden" name="grade_name" value="{{$item->grade_name}}" />
     <input type="hidden" name="type" value="season_lesson" />
     <input type="hidden" name="event_user_id" value="{{$event_user_id}}" />
     <input type="hidden" name="access_key" value="{{$access_key}}" />

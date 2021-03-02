@@ -884,7 +884,7 @@ class LessonRequestController extends UserCalendarController
     return $this->save_redirect($res,$param,__('messages.info_deleted'));
   }
   public function save_matching(Request $request,$event_id){
-    set_time_limit(1200);
+    set_time_limit(3600);
 
     $param = $this->get_param($request);
     $event = Event::find($event_id);

@@ -60,6 +60,10 @@ class LessonRequestCalendar extends UserCalendar
   public function getStudentNameAttribute(){
     return $this->student->name;
   }
+  public function getTeacherNameAttribute(){
+    if(!isset($this->user->teacher)) return "";
+    return $this->user->teacher->name;
+  }
   public function subject(){
     $d = GeneralAttribute::where('attribute_key', 'charge_subject')->where('attribute_value', $this->subject_code)->first();
     if(!isset($d)) return "";

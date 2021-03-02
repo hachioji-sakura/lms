@@ -1,4 +1,5 @@
 <?php
+$checked = 'checked';
 $checked = '';
 ?>
 @section('title')
@@ -42,7 +43,7 @@ $checked = '';
           @foreach($items as $item)
           <div class="row p-1 bd-gray hr-1">
             <div class="col-8 mt-1">
-              @if($item->is_unfixed()==true)
+              @if($item->status!='complete')
               <input class="form-check-input icheck flat-red mr-2" type="checkbox" name="selected_lesson_request_ids[]" value="{{$item->id}}"
                {{$checked}}
               />
@@ -53,8 +54,8 @@ $checked = '';
                   {{$item->status_name()}}
                 </small>
                 <i class="fa fa-user mr-1"></i>
-                {{$item->student->name}} 様
-                （{{$item->student->grade}}）<br>
+                {{$item->student->full_name}} 様
+                （{{$item->student->grade_name}}）<br>
               </span>
               </a>
             </div>
@@ -132,7 +133,7 @@ $checked = '';
               <a href="/teachers/{{$teacher->id}}" target = "_blank">
               <span class="text-xs ml-1">
                 <i class="fa fa-user-tie mr-1"></i>
-                {{$teacher->name}}
+                {{$teacher->full_name}}
               </span>
               </a>
               @endforeach

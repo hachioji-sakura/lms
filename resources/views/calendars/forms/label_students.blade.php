@@ -17,7 +17,7 @@
     @elseif($member->status=='rest' || $member->status=='lecture_cancel')
     <i class="fa fa-user-times" title="{{$member->exchange_limit_date}}"></i>
     @endif
-    {{$member->user->details('students')->name}}
+    {{$member->user->details('students')->full_name}}
     @if($status_visible==true)
       @if(isset($user) && ($user->role=="teacher" || $user->role=="manager") && $member->is_rest_status()==true && !empty(trim($member->get_rest_result())))
       ({{$member->get_rest_result()}})

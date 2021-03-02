@@ -247,6 +247,7 @@ trait Common
     return $query->whereHas('tags', function($query) use ($tags) {
         $query = $query->where(function($query)use($tags){
           foreach($tags as $tag){
+
             $query = $query->orWhere(function($query)use($tag){
               if(!empty($tag["tag_key"]) && !empty($tag["tag_value"])){
                 $query->where('tag_key', $tag["tag_key"])->where('tag_value', $tag["tag_value"]);
