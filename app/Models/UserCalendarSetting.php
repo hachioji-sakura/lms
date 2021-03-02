@@ -12,6 +12,81 @@ use DB;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\UserCalendarSetting
+ *
+ * @property int $id
+ * @property int $trial_id 設定に使った体験申し込み
+ * @property int $user_id 主催者 / 基本的に講師
+ * @property string $status 新規登録:new / 確定:fix / 講師確認:confirm
+ * @property int $place_floor_id 場所フロアID
+ * @property string $schedule_method スケジュール登録方法：week=毎週 / month=毎月
+ * @property int $lesson_week_count schedule_method=week / 第何週を指定するときに1以上をセットする
+ * @property string $lesson_week schedule_method=week / 曜日
+ * @property int $lesson_day schedule_method=month / 日にち指定の場合利用する
+ * @property int $end_of_month schedule_method=month / 月末の場合=true
+ * @property string $from_time_slot 開始時分
+ * @property string $to_time_slot 終了時分
+ * @property string|null $enable_start_date 設定有効開始日
+ * @property string|null $enable_end_date 設定有効終了日
+ * @property int|null $lecture_id レクチャーID
+ * @property int $course_minutes 授業時間
+ * @property string|null $work 作業内容
+ * @property string|null $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read User $create_user
+ * @property-read UserCalendar $exchanged_calendar
+ * @property-read mixed $calendar_count
+ * @property-read mixed $course
+ * @property-read mixed $created_date
+ * @property-read mixed $date
+ * @property-read mixed $datetime
+ * @property-read mixed $dateweek
+ * @property-read mixed $lesson
+ * @property-read mixed $place_floor_name
+ * @property-read mixed $repeat_setting_name
+ * @property-read mixed $schedule_type_name
+ * @property-read mixed $status_name
+ * @property-read mixed $student_name
+ * @property-read mixed $subject
+ * @property-read mixed $teaching_type_name
+ * @property-read mixed $timezone
+ * @property-read mixed $updated_date
+ * @property-read mixed $user_name
+ * @property-read mixed $work_name
+ * @property-read \App\Models\Lecture|null $lecture
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMemberSetting[] $members
+ * @property-read \App\Models\PlaceFloor $place_floor
+ * @property-read UserCalendarSetting $setting
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarTagSetting[] $tags
+ * @property-read \App\Models\Trial $trial
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting enable()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findExchangeTarget($user_id = 0, $lesson = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findPlaces($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findTeachingType($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findTrialStudent($trial_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findUser($user_id, $deactive_status = 'invalid')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findWeeks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findWorks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting hiddenFilter()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting orderByWeek()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar sortStarttime($sort)
+ * @mixin \Eloquent
+ */
 class UserCalendarSetting extends UserCalendar
 {
   use Common;

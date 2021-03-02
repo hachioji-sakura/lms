@@ -14,6 +14,59 @@ use Illuminate\Support\Facades\Auth;
 use View;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\Ask
+ *
+ * @property int $id
+ * @property string $title 件名
+ * @property string $body 内容
+ * @property string $type 種別
+ * @property int $parent_ask_id 親依頼ID
+ * @property string $status ステータス
+ * @property string|null $from_time_slot 開始時分
+ * @property string|null $to_time_slot 終了時分
+ * @property string|null $start_date 開始日
+ * @property string|null $end_date 終了日
+ * @property string $target_model 更新対象model
+ * @property int $target_model_id 更新対象model.id
+ * @property int $charge_user_id 担当ユーザーID
+ * @property int $target_user_id 対象ユーザーID
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User $charge_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AskComment[] $comments
+ * @property-read User $create_user
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $importance_label
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read Ask $parent_ask
+ * @property-read User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask chargeUser($user_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask findTargetModel($target_model, $target_model_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask findUser($user_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask rangeDate($from_date, $to_date = null, $field = 'start_time')
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask rangeEndDate($from_date, $to_date = null, $field = 'start_time')
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask sortEnddate($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask user($user_id)
+ * @mixin \Eloquent
+ */
 class Ask extends Milestone
 {
   use WebCache;
