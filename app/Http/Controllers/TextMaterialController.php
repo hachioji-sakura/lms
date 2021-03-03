@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TextMaterial;
+use App\User;
+use App\Models\Curriculum;
+use App\Models\Subject;
 
 class TextMaterialController extends MilestoneController
 {
@@ -11,6 +14,45 @@ class TextMaterialController extends MilestoneController
     public $table = 'text_materials';
     public function model(){
       return TextMaterial::query();
+    }
+    /**
+     * 共通パラメータ取得
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id　（this.domain.model.id)
+     * @return json
+     */
+    public function get_param(Request $request, $id=null){
+      $user = $this->login_details($request);
+      if(!isset($user)) {
+        abort(403);
+      }
+      $ret = $this->get_common_param($request);
+      $target_user_id = 0;
+      if($request->has('target_user_id')){
+        $target_user_id = $request->get('target_user_id');
+      }
+      if(is_numeric($id) && $id > 0){
+        $item = $this->model()->where('id','=',$id)->first();
+        if(isset($item['create_user_id']) && $this->is_student($user->role) &&
+          $item['create_user_id'] !== $user->user_id){
+            //生徒は自分の起票したものしか編集できない
+            abort(404);
+        }
+        $ret['item'] = $item;
+        $target_user_id = $item->target_user_id;
+      }
+      $ret['target_user_id'] = $target_user_id;
+
+      if($target_user_id > 0){
+        $target_user = User::find($target_user_id);
+        $lessons = collect($target_user->get_tags('lesson'));
+        $ret['lessons'] = $lessons;
+        $ret['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
+      }
+      $ret['curriculums'] = Curriculum::all();
+      $ret['subjects'] = Subject::all();
+      return $ret;
     }
     /**
      * 詳細画面表示
