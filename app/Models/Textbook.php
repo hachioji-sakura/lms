@@ -12,6 +12,35 @@ class Textbook extends Model
       'name' => 'required'
   );
 
+  public function getGrade(){
+    $textbookTags = $this->textbook_tag;
+    $grades = '';
+    if($textbookTags->isEmpty()){
+      return '';
+    }else {
+     foreach($textbookTags as $textbookTag){
+       if($textbookTag->tag_key === 'grade_no'){
+         $grade = GeneralAttribute::find($textbookTag->tag_value);
+         $grades = $grades.$grade->attribute_name.',';
+       }
+     }
+      return $grades;
+    }
+  }
+
+  public function getSubjectName(){
+    $subjects = '';
+    foreach($this->textbook_subject as $textbookSubject){
+      if(isset($textbookSubject->subject->name)) {
+        $subjects = $subjects . $textbookSubject->subject->name . ',';
+      }
+    }
+    if($subjects !== ''){
+      return mb_substr($subjects, 0, -1);
+    }
+    return $subjects;
+  }
+
   public function textbook_tag(){
     return $this->hasMany('App\Models\TextbookTag');
   }

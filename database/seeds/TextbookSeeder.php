@@ -79,14 +79,14 @@ class TextbookSeeder extends Seeder
       $tewatashiPrice3 = $datum[0]->tewatashi_price3;
       $publisherPrice = $datum[0]->publisher_price;
       foreach ($datum as $value) {
-        if (isset($value->subject)) $items['subjects'][] = $value->subject;
-        if (isset($value->grade)) $items['grades'][] = $value->grade;
+        if (isset($value->subject)) $items[$key]['subjects'][] = $value->subject;
+        if (isset($value->grade)) $items[$key]['grades'][] = $value->grade;
         $publisher = Publisher::where('name', $value->publisher_name)->first();
         $supplier = Supplier::where('name', $value->supplier_name)->first();
       }
+      if (isset($items[$key]['subjects'])) $subjects = array_unique($items[$key]['subjects']);
+      if (isset($items[$key]['grades'])) $grades = array_unique($items[$key]['grades']);
 
-      if (isset($items['subjects'])) $subjects = array_unique($items['subjects']);
-      if (isset($items['grades'])) $grades = array_unique($items['grades']);
       //教材
       $textbook = Textbook::create([
         'name' => $datum[0]->name,

@@ -19,6 +19,6 @@ class TextbookTag extends Model
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function textbook(){
-    return $this->belongsTo('App\Textbook','id','textbook_id' );
+    return $this->belongsTo('App\Textbook','textbook_id','id' );
   }
 }
