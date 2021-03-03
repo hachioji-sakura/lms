@@ -109,14 +109,13 @@
       </div>
     </div>
 
-    @if(isset($_edit) && $_edit == true)
     <div class="row">
       <div class="col-12">
         <label>{{__('labels.school_grade_reports')}}</label>
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
         <button class="btn btn-sm btn-primary add" type="button"><i class="fa fa-plus"></i>{{__('labels.add')}}</button>
       </div>
-      @if($item->school_grade_reports->count() > 0)
+      @if($_edit == true && $item->school_grade_reports->count() > 0)
         @foreach($item->school_grade_reports as $report)
           @include("school_grades.add_report")
         @endforeach
@@ -124,7 +123,6 @@
         @include("school_grades.add_report")
       @endif
     </div>
-    @endif
 
     <div class="row mt-3">
       <div class="col-12 col-md-6 mb-1">
@@ -150,16 +148,28 @@
   </form>
 </div>
 <script>
+$("input[type=radio][name=type]").on("ifChecked",function(){
+  var type = $(this).val();
+  var data = @json(config('attribute.school_grade_type_points'));
+  console.log(data[type]);
+
+  $('select[name="report_point[]"] option').remove();
+
+  $.each(data[type], function(index, value){
+    $('select[name="report_point[]"]').append("<option value="+index+">"+value+"</option>");
+  });
+
+});
 $("button.add").on("click",function(){
-  $clone = $("div.report_point:first").clone(true);
+  $clone = $("div.report:first").clone(true);
 
   $clone.find("span").remove();
   $clone.find("select").select2({width:"100%",ariahidden:false});
-  $clone.insertAfter($("div.report_point:last"));
+  $clone.insertAfter($("div.report:last"));
   base.pageSettinged('school_grades_create');
 });
 $("button.delete").on("click",function(){
-  if($('select[name="subject[]"]').length > 1 && $(this).parent().parent().attr("class") != "report_point"){
+  if($('select[name="subject[]"]').length > 1 && $(this).parent().parent().attr("class") != "report"){
     $(this).parent().parent().parent().remove();
   }
 });

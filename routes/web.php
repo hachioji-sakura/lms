@@ -62,7 +62,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('school_grades','SchoolGradeController');
   Route::resource('school_grade_reports','SchoolGradeReportController');
 
-
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
   Route::put('comments/{id}/checked','CommentController@checked');
