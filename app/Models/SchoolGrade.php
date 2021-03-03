@@ -138,21 +138,15 @@ public function getSchoolGradeReportPointsAttribute(){
       $item->save();
     }
 
-    if(isset($form['subject']) && isset($form['report_point'])){
-      $subjects = $form["subject"];
-      $report_points = $form["report_point"];
+//    if(isset($form['subject']) && isset($form['report_point'])){
+    if( isset($form['reports']) ){
+      $subjects = $form['reports'];
 
-      $is_null = false;
-      if(count(array_unique($subjects)) == 1 && array_unique($subjects)[0] === null){
-        $is_null = true;
+      $item->school_grade_reports()->delete();
+      foreach($subjects as $key => $value){
+        $item->school_grade_reports()->updateOrCreate(["subject_id" => $key],["report_point" => $value]);
       }
 
-      if($is_null == false){
-        $item->school_grade_reports()->delete();
-        foreach($subjects as $i => $subject){
-          $item->school_grade_reports()->updateOrCreate(["subject_id" => $subject],["report_point" => $report_points[$i]]);
-        }
-      }
     }
 
     return $item;

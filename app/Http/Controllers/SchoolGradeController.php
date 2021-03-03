@@ -206,9 +206,11 @@ class SchoolGradeController extends MilestoneController
     $param = $this->get_param($request, $id);
     $grades = GeneralAttribute::findKey('grade')->pluck('attribute_name','attribute_value');
     $subjects = Subject::all()->pluck('name','id');
+    $report_type_point = config('attribute.school_grade_type_points')[$param['item']['type']];
     return view($this->domain.'.create', [
       '_edit' => true,
       'grades' => $grades,
+      'report_type_point' => $report_type_point,
       'subjects' => $subjects,
     ])->with($param);
   }
