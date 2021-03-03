@@ -12,9 +12,9 @@ class TextbookSubject extends Model
 
   );
   public function textbook(){
-    return $this->belongsTo('App\Models\Textbook','id','textbook_id');
+    return $this->belongsTo('App\Models\Textbook','textbook_id','id')->withDefault();
   }
   public function subject(){
-    return $this->belongsTo('App\Models\Textbook','id','subject_id');
+    return $this->belongsTo('App\Models\Subject','subject_id','id')->withDefault();
   }
 }
