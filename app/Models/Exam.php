@@ -14,20 +14,30 @@ class Exam extends SchoolGrade
 
     protected $fillable = [
       "name",
+      'type',
       "student_id",
+      "grade",
+      "semester_no",
       "remark",
     ];
     protected $attributes = [
       'create_user_id' => 1,
     ];
 
+    public function scopeSearch($query, $request){
+      if($request->has('search_grade')){
+        $query->grades($request->get('search_grade'));
+      }
+      if($request->has('order_by')){
+        $query->orderBy($request->get('order_by'),'asc');
+      }else{
+        $query->orderBy('semester_no','desc');
+      }
+      return $query;
+    }
+
     public function add($form){
       $this->fill($form);
       $this->save();
-
-      $this->exam_results()->createMany([
-        ["subject_id" => 3,"taken_date" => date('Y-m-d',strtotime('now')),"point" => 90],
-        ["subject_id" => 4,"taken_date" => date('Y-m-d',strtotime('now')),"point" => 80],
-      ]);
     }
 }

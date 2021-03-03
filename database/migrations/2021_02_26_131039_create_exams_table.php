@@ -16,7 +16,10 @@ class CreateExamsTable extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->increments('id');
             $table->string("name")->coment('テスト名');
+            $table->string("type")->comment('テストタイプ');
             $table->integer('student_id')->nullable(false)->index('index_student_id')->comment('生徒ID');
+            $table->string('semester_no')->comment('学期No');
+            $table->string('grade')->comment('学年');
             $table->string('remark',10000)->nullable(true)->comment('備考');
             $table->integer('create_user_id')->comment('起票者');
             $table->timestamps();

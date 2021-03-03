@@ -15,15 +15,10 @@ class ExamController extends SchoolGradeController
     }
     public function _store(Request $request)
     {
-      dd($request->all());
       $res = $this->transaction($request, function() use ($request){
         $item = new Exam;
         $item = $item->add($request->all());
-        if($request->hasFile('upload_file')){
-          if ($request->file('upload_file')->isValid([])) {
-            $item->file_upload($request->file('upload_file'));
-          }
-        }
+        
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;

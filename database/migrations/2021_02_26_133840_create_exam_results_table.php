@@ -20,7 +20,7 @@ class CreateExamResultsTable extends Migration
             $table->integer('deviation')->nullable(true)->comment('偏差値');
             $table->integer('point')->comment('得点');
             $table->integer('max_point')->comment('満点');
-            $table->date('taken_date')->comment('実施日');
+            $table->date('taken_date')->nullable(true)->comment('実施日');
             $table->integer('exam_resultable_id')->comment('試験結果リレーションID');
             $table->string('exam_resultable_type')->comment('試験結果リレーションタイプ');
             $table->integer('create_user_id')->comment('起票者');

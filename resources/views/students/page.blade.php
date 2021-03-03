@@ -172,12 +172,15 @@
                 </small>
               </a>
             </li>
-
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.exams' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/exams?search_grade[]={{$item->get_tag_value('grade')}}">
+                <small>
+                  <i class="fa fa-clipboard"></i>
+                  {{__(('labels.exams'))}}
+                </small>
+              </a>
+            </li>
           </ul>
-          <a href="javascript:void(0)" page_form="dialog" page_title="hoge" page_url="/exams/create?student_id={{$item->id}}" title="{{__('labels.add_button')}}" role="button" class="btn btn-tool">
-            <i class="fa fa-pen nav-icon"></i>
-            試験フォームじゃ
-          </a>
           <div class="tab-content">
             <div class="tab-pane active" id="tab_milestones">
               <div class="row">

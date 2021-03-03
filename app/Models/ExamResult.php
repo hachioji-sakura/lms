@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ExamResult extends Model
+class ExamResult extends SchoolGradeReport
 {
     //
     public function exam_resultable(){
@@ -17,6 +17,9 @@ class ExamResult extends Model
 
     protected $fillable = [
       "subject_id",
+      "average_point",
+      "deviation",
+      "max_point",
       "taken_date",
       "point",
     ];
@@ -24,4 +27,16 @@ class ExamResult extends Model
     protected $attributes =[
       "create_user_id" => 1,
     ];
+
+    public function getPointPerMaxAttribute(){
+      return $this->point."/".$this->max_point;
+    }
+
+    public function add($form){
+      $this->fill($form);
+      $exam = Exam::find($form['exam_id']);
+      $exam->exam_results()->save($this);
+
+      return $this;
+    }
 }
