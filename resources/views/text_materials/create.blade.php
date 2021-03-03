@@ -7,6 +7,12 @@
   @endif
   @csrf
   <input type="text" name="dummy" style="display:none;" / >
+  <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+  <input type="hidden" name="lesson_count" value="{{$lessons->count()}}">
+  <input type="hidden" name="has_english_lesson" value="{{$has_english_lesson}}">
+
+  @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'item' => (isset($item) ? $item : null)]) @endcomponent
+
     <div class="row">
       <div class="col-12">
         <div class="form-group">

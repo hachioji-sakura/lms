@@ -13,12 +13,9 @@ class AddTargetUserIdTextMaterials extends Migration
      */
     public function up()
     {
-        Scheme::table('teachers', function (Blueprint $table){
-            $table->integer('target_user_id')->index('index_add_target_user_id')->comment('対象者');
-        }
-
-        )
-
+      Schema::table('text_materials', function (Blueprint $table) {
+        $table->integer('target_user_id')->after('publiced_at')->index('index_add_target_user_id')->comment('対象者');
+      });
     }
 
     /**

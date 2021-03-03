@@ -8,7 +8,7 @@
 
 <div class=row>
   <div class="col-md-12">
-    <a href="javascript:void(0);" page_title="教材登録" page_form="dialog" page_url="/text_materials/create" class="btn btn-block btn-primary btn-lg">教材登録</a>
+    <a href="javascript:void(0);" page_title="教材登録" page_form="dialog" page_url="/text_materials/create?target_user_id={{$item->user_id}}" class="btn btn-block btn-primary btn-lg">教材登録</a>
   </div>
 </div>
 

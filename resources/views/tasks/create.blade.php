@@ -8,6 +8,8 @@
     @endif
       @csrf
       <input type="hidden" name="target_user_id" value="{{$target_student->user_id}}">
+      <input type="hidden" name="has_english_lesson" value="{{$has_english_lesson}}">
+      <input type="hidden" name="lesson_count" value="{{$lessons->count()}}">
       <input type="hidden" name="grade" value="{{$target_student->get_tag_value('grade')}}">
       <div class="row">
         <div class="col-12">
@@ -32,29 +34,7 @@
         </div>
       </div>
 
-      <div class="row mt-2">
-        <div class="col-12 mb-2">
-          <label>{{__('labels.subjects')}}</label>
-          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          <select name="subject_id" id="select_subject" width="100%" class="form-control select2">
-            <option value=" ">{{__('labels.selectable')}}</option>
-            @foreach($subjects as $subject)
-            <option value="{{$subject->id}}"
-            @if(!empty($item) && $_edit)
-              {{$item->curriculums->count() >0 && $item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
-            @endif
-            >
-            {{$subject->name}}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-12" id="curriculums">
-
-        </div>
-        <div class="col-12" id="new_curriculums">
-
-        </div>
-      </div>
+      @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'item' => (isset($item) ? $item : null)]) @endcomponent
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.tasks_remarks')}}</label>
@@ -178,65 +158,8 @@
   <script>
 
   $(function(){
-    var grade = $('input[name="grade"]').val();
-    if( grade == "" ){
-      var school = 'none';
-    }else{
-      var school = grade.match(/^./)[0];
-    }
-    var lesson = "{{$has_english_lesson}}";
-    var lesson_count = {{$lessons->count()}}
-    if( lesson == true && lesson_count == 1){
-      $('select#select_subject option').each(function(){
-        if($(this).text().match("選択") != null ){
-          return true;
-        }else if(lesson == true && $(this).text().match("英会話") != null){
-          return true;
-        }else{
-          $(this).remove();
-        }
-      });
-    }else{
-      $('select#select_subject option').each(function(){
-        if($(this).text().match("選択") != null ){
-          return true;
-        }else if(lesson == true && $(this).text().match("英会話") != null){
-          return true;
-        }else if(school == "e" && $(this).text().match("小学") == null){
-          $(this).remove();
-        }else if(school == "j" && $(this).text().match("中学") == null){
-          $(this).remove();
-        }else if(school == "h" &&  ($(this).text().match("中学") != null   || $(this).text().match("小学") != null ||$(this).text().match("英会話") != null )){
-          $(this).remove();
-        }else{
-          //当てはまらなければ残す
-          return true;
-        }
-      });
-    }
-
-    @if($_edit && $item->curriculums->count() > 0)
-    $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val()
-    +"&task_id={{$item->id}}", function(){
-      base.pageSettinged('create_tasks');
+    $('#clear_title').on('click',function(e){
+      $('#title').val("");
     });
-    @endif
   });
-
-  $("#select_subject").on('change', function(e){
-    if(this.value == ' '){
-      console.log(this.value);
-      $("#curriculums").empty();
-    }else{
-      $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val(),function(){
-        base.pageSettinged('create_tasks');
-      });
-    }
-  });
-
-  $('#clear_title').on('click',function(e){
-    $('#title').val("");
-  });
-
-
   </script>
