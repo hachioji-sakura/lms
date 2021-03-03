@@ -409,4 +409,10 @@ return [
   'workable_classroom' => '勤務可能な教室',
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法',
+  'textbook_name' => 'タイトル',
+  'explain' => '詳細',
+  'publisher_name' => '出版社',
+  'supplier_name' => '発注先',
+  'difficulty' => '難易度',
+  'textbooks' => 'テキスト'
 ];

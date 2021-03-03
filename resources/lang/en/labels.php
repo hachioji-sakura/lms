@@ -409,4 +409,10 @@ return [
   'workable_classroom' => 'Workable ClassRoom',
   'skype_name' => 'Skype Name',
   'skype_name_about' => 'What is my Skype ID?',
+  'textbook_name' => 'title',
+  'explain' => 'detail',
+  'publisher_name' => 'publisher',
+  'supplier_name' => 'supplier',
+  'difficulty' => 'difficulty',
+  'textbooks' => 'textbook'
 ];
