@@ -104,7 +104,7 @@ class TeacherController extends StudentController
     if($this->domain=='managers' && $this->is_manager($user->role)!=true){
       $view = 'setting_menu';
     }
-    $text_materials = TextMaterial::where('create_user_id', $param['item']->user_id)->get();
+    $text_materials = TextMaterial::where('target_user_id', $param['item']->user_id)->get();
     if($request->has('view')){
       switch ($request->get('view')){
         case "setting_menu":
