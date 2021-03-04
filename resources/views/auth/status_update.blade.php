@@ -17,11 +17,28 @@
     @component('components.page_item', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
     @endcomponent
   @endif
-  <form method="POST" action="/{{$domain}}/{{$item['id']}}/{{$action}}">
+  <form method="POST" action="/{{$domain}}/{{$item->id}}/{{$action}}">
     @method('PUT')
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
+      @if($action=='retirement')
+      <div class="col-12">
+        <label for="start_date" class="w-100">
+          {{__('labels.unsubscribe')}}{{__('labels.day')}}
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        </label>
+        <div class="input-group">
+          <input type="text" name="unsubscribe_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"
+          @if(isset($item) && !empty($item->unsubscribe_date))
+          value = "{{date('Y/m/d', strtotime($item->unsubscribe_date))}}"
+          @endif
+          >
+        </div>
+      </div>
+      @endif
+    </div>
+    <div class="row mt-2">
       {{-- 共通form用のボタン --}}
       <div class="col-12 col-md-6 my-1">
           <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_{{$action}}" confirm="{{$title}}ステータスに更新しますか？">
