@@ -15,6 +15,8 @@ class AddTargetUserIdTextMaterials extends Migration
     {
       Schema::table('text_materials', function (Blueprint $table) {
         $table->integer('target_user_id')->after('publiced_at')->index('index_add_target_user_id')->comment('対象者');
+        $table->string('s3_alias')->before('s3_url')->nullable(true)->default('')->comment('ファイル名');
+
       });
     }
 
@@ -25,6 +27,7 @@ class AddTargetUserIdTextMaterials extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('text_materials');
+      $table->dropColumn('target_user_id');
+      $table->dropColumn('s3_alias');
     }
 }

@@ -186,12 +186,14 @@ class TextMaterialController extends MilestoneController
       $user = $this->login_details($request);
       $form = [];
       $form['create_user_id'] = $user->user_id;
+      $form['target_user_id'] = $request->get('target_user_id');
       $form['publiced_at'] = $request->get('publiced_at');
       $form['description'] = $request->get('description');
+      $form['name'] = $request->get('name');
       $form['create_user_id'] = $user->user_id;
       if($request->hasFile('upload_file')){
         $request_file = $request->file('upload_file');
-        $form['name'] = $request_file->getClientOriginalName();
+        $form['s3_alias'] = $request_file->getClientOriginalName();
         $form['type'] = $request_file->guessClientExtension();
         $form['size'] = $request_file->getClientSize();
       }
