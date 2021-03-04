@@ -63,9 +63,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('school_grade_reports','SchoolGradeReportController');
 
   Route::resource('exams','ExamController');
-  Route::post('exams/create','ExamController@store');
-
-  Route::resource('exam_results','ExamResultController');
+  Route::post('exams/create','ExamController@store');  Route::resource('exam_results','ExamResultController');
 
 
   Route::get('comments/{id}/publiced','CommentController@publiced_page');

@@ -109,22 +109,13 @@
       </div>
     </div>
 
-    @if(isset($_edit) && $_edit == true)
     <div class="row">
       <div class="col-12">
         <label>{{__('labels.school_grade_reports')}}</label>
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <button class="btn btn-sm btn-primary add" type="button"><i class="fa fa-plus"></i>{{__('labels.add')}}</button>
       </div>
-      @if($item->school_grade_reports->count() > 0)
-        @foreach($item->school_grade_reports as $report)
-          @include("school_grades.add_report")
-        @endforeach
-      @else
-        @include("school_grades.add_report")
-      @endif
+      @include("school_grades.add_report")
     </div>
-    @endif
 
     <div class="row mt-3">
       <div class="col-12 col-md-6 mb-1">
@@ -150,17 +141,41 @@
   </form>
 </div>
 <script>
-$("button.add").on("click",function(){
-  $clone = $("div.report_point:first").clone(true);
+$("input[type=radio][name=type]").on("ifChecked",function(){
+  var type = $(this).val();
+  var data = @json(config('attribute.school_grade_type_points'));
+  console.log(data[type]);
 
-  $clone.find("span").remove();
-  $clone.find("select").select2({width:"100%",ariahidden:false});
-  $clone.insertAfter($("div.report_point:last"));
-  base.pageSettinged('school_grades_create');
+  $('select[name="report_point"] option').remove();
+
+  $.each(data[type], function(index, value){
+    $('select[name="report_point"]').append("<option value="+index+">"+value+"</option>");
+  });
+  $('div.reports').children().remove();
+
 });
-$("button.delete").on("click",function(){
-  if($('select[name="subject[]"]').length > 1 && $(this).parent().parent().attr("class") != "report_point"){
-    $(this).parent().parent().parent().remove();
+$("button.add").on("click",function(){
+  var subject = $('select[name="subject"] option:selected');
+  var report = $('select[name="report_point"] option:selected');
+  if(subject.val() != " "){
+    var subject_id = subject.val();
+    var subject_name = subject.text();
+    var report_point = report.val();
+    var report_point_name = report.text();
+    console.log(report_point_name);
+    var data = [
+      '<div class="col-6">',
+        '<label>'+subject_name+':'+report_point_name+'</label>',
+        '<input type="hidden" name="reports['+subject_id+']" value="'+report_point+'">',
+        '<button type="button" class="btn btn-default btn-sm float-right delete"><i class="fa fa-times"></i></button>',
+      '</div>',
+    ].join('');
+
+    $('div.reports').append(data);
   }
+});
+$('body').on('click','.delete',function(){
+  console.log("hoge");
+  $(this).parent().remove();
 });
 </script>
