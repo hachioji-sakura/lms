@@ -14,7 +14,8 @@
   <div class="col-12">
     <div class="form-group">
       <label for="parent_interview">
-        保護者様が体験授業当日に入会等の説明を希望しますか
+        体験授業当日に保護者様へ入会等の説明を行っております。<br>
+        希望しますか？
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
       <div class="input-group">
