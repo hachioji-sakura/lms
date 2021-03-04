@@ -26,9 +26,8 @@
   </div>
   <div class="card-body">
     <ul class="products-list product-list-in-card pl-2 pr-2" id="exams_list">
-
     @if($exams->count() > 0)
-        @if(count($subjects) > 0 )
+      @if(count($subjects) > 0 )
         <div style="overflow-x:scroll;">
           <table class="table table-hover">
             <thead>
@@ -44,7 +43,7 @@
             <tbody>
               @foreach($exams as $exam)
               <tr>
-                <td >{{$exam->name}}</td>
+                <td >{{$exam->full_title}}</td>
                 @foreach($subjects as $id => $name)
                 <td >
                   @if(!empty($exam->exam_results->where('subject_id',$id)->first()))
@@ -70,10 +69,10 @@
         </h5>
       @endif
       @foreach($exams as $exam)
-        <div class="row">
+        <div class="row mt-2">
           <div class="col-12">
             <h5>
-              <label>{{$exam->name}}</label>
+              <label>{{$exam->full_title}}</label>
               <a class="btn btn-primary btn-sm  mr-1 my-1" href="javascript:void(0);" page_form="dialog" page_url="/exam_results/create?exam_id={{$exam->id}}" page_title="{{__('labels.exams')}}{{__('labels.add')}}">
                   <i class="fa fa-plus nav-icon"></i>
               </a>
@@ -82,8 +81,10 @@
               </a>
             </h5>
           </div>
-          @component('components.list',['items' => $exam->exam_results, 'fields' => $exam_fields, 'domain' => 'exam_results','domain_name' => __('labels.exam_results')])
-          @endcomponent
+          <div class="col-12" style="overflow-x:scroll;">
+            @component('components.list',['items' => $exam->exam_results, 'fields' => $exam_fields, 'domain' => 'exam_results','domain_name' => __('labels.exam_results')])
+            @endcomponent
+          </div>
         </div>
       @endforeach
     @else

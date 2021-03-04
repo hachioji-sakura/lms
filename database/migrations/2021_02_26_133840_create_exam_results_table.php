@@ -23,6 +23,8 @@ class CreateExamResultsTable extends Migration
             $table->date('taken_date')->nullable(true)->comment('実施日');
             $table->integer('exam_resultable_id')->comment('試験結果リレーションID');
             $table->string('exam_resultable_type')->comment('試験結果リレーションタイプ');
+            $table->string('s3_url')->nullable(true)->comment('S3URL');
+            $table->string('s3_alias')->nullable(true)->comment('S3エイリアス');
             $table->integer('create_user_id')->comment('起票者');
             $table->timestamps();
         });

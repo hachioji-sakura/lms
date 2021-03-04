@@ -468,7 +468,7 @@ class StudentController extends UserController
   public function get_exam_fields(){
     return [
       'subject_name' => [
-        'label' => __('labels.name'),
+        'label' => __('labels.title'),
       ],
       'point_per_max' => [
         'label' => __('labels.point'),
@@ -481,6 +481,9 @@ class StudentController extends UserController
       ],
       's3_alias' => [
         'label' => __('labels.file'),
+        'link' => function($row){
+          return $row->s3_url;
+        },
       ],
       'buttons' => [
         'label' => '操作',

@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SchoolGradeReport extends Model
+class SchoolGradeReport extends Milestone
 {
+    protected $table = "school_grade_reports";
     //
     protected $fillable = [
       "school_grade_id",

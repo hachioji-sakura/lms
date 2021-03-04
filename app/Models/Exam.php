@@ -24,6 +24,10 @@ class Exam extends SchoolGrade
       'create_user_id' => 1,
     ];
 
+    public function getFullTitleAttribute(){
+      return $this->semester_name.":".$this->name;
+    }
+
     public function scopeSearch($query, $request){
       if($request->has('search_grade')){
         $query->grades($request->get('search_grade'));
@@ -31,7 +35,7 @@ class Exam extends SchoolGrade
       if($request->has('order_by')){
         $query->orderBy($request->get('order_by'),'asc');
       }else{
-        $query->orderBy('semester_no','desc');
+        $query->orderBy('semester_no','asc');
       }
       return $query;
     }

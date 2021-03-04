@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Common;
 
 class ExamResult extends SchoolGradeReport
 {
+  use Common;
+  protected $table = "exam_results";
     //
     public function exam_resultable(){
       return $this->morphTo();
@@ -22,6 +25,8 @@ class ExamResult extends SchoolGradeReport
       "max_point",
       "taken_date",
       "point",
+      "s3_url",
+      "s3_alias",
     ];
 
     protected $attributes =[
@@ -35,7 +40,13 @@ class ExamResult extends SchoolGradeReport
     public function add($form){
       $this->fill($form);
       $exam = Exam::find($form['exam_id']);
-      $exam->exam_results()->save($this);
+      $exam_results = $exam->exam_results()->where('subject_id',$form['subject_id'])->get();
+
+      if($exam_results->count() > 0){
+        $exam_results->first()->fill($form)->save();
+      }else{
+        $exam->exam_results()->save($this);
+      }
 
       return $this;
     }

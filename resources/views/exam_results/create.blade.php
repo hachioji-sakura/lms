@@ -39,7 +39,7 @@
           <input type="text" name="average_point" class="form-control" placeholder="平均点" inputtype="numeric" value="{{$_edit == true ? $item->average_point : ''}}">
         </div>
         <div class="col-12 col-md-6 mb-2">
-          <label>{{__('labels.diviation')}}</label>
+          <label>{{__('labels.deviation')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           <input type="text" name="deviation" class="form-control" placeholder="偏差値" inputtype="numeric" value="{{$_edit == true ? $item->deviation : ''}}">
         </div>

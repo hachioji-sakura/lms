@@ -415,4 +415,9 @@ return [
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
   'school_grade_type' => '成績タイプ',
+  'point' => '得点',
+  'deviation' => '偏差値',
+  'average_point' => '平均点',
+  'exam_results' => '試験結果',
+  'exams' => '試験', 
 ];

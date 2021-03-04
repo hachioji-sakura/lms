@@ -13,9 +13,9 @@
     @endif
     <div class="row mb-2">
       <div class="col-12 mb-2">
-        <label>{{__('labels.name')}}</label>
+        <label>{{__('labels.title')}}</label>
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <input type="text" name="name" class="form-control" placeholder="例:○○中学校　△学年　中間考査" required="true">
+        <input type="text" name="name" class="form-control" placeholder="例:○○中学校　△学年　中間考査" value="{{$_edit == true ? $item->name : ''}}" required="true">
       </div>
       <div class="col-12 col-md-6 mb-2">
         <label>{{__('labels.grade')}}</label>
