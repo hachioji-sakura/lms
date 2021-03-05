@@ -16,6 +16,39 @@ use App\Models\TuitionMaster;
 use App\Models\Agreement;
 use App\Models\AgreementStatement;
 
+/**
+ * App\Models\UserCalendarMemberSetting
+ *
+ * @property int $id
+ * @property int $user_calendar_setting_id カレンダー設定ID
+ * @property int $user_id 参加者設定
+ * @property string $status ステータス/ new=新規登録 fix=有効 cancel=無効
+ * @property string|null $remark 備考
+ * @property string $access_key アクセスキー
+ * @property int $create_user_id 作成ユーザーID
+ * @property int $setting_id_org 事務システム側のID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\UserCalendar $calendar
+ * @property-read User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendar[] $exchanged_calendars
+ * @property-read mixed $created_date
+ * @property-read mixed $status_name
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\PlaceFloorSheat $place_floor_sheat
+ * @property-read UserCalendarSetting $setting
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMemberSetting fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestStatuses($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestType($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMemberSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMemberSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMemberSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchExchangeLimitDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMemberSetting searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchWord($word)
+ * @mixin \Eloquent
+ */
 class UserCalendarMemberSetting extends UserCalendarMember
 {
   use Common;

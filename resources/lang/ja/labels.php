@@ -16,7 +16,7 @@ return [
   'signup' =>     'アカウント登録',
   'login'             => 'ログイン',
   'manual'             => 'マニュアル',
-  'faqs'             => 'FAQ',
+  'faqs'             => 'よくあるご質問(FAQ)',
   'icons'             => 'アイコン変更',
   'to_login'             => 'ログインへ',
   'account_setting' => 'アカウント設定',
@@ -416,4 +416,6 @@ return [
   'workable_classroom' => '勤務可能な教室',
   'send_approval' => '承認依頼を送信',
   'out_of_date' => '期限切れ',
+  'skype_name' => 'Skype名',
+  'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
 ];

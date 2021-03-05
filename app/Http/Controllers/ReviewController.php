@@ -17,14 +17,14 @@ class ReviewController extends MilestoneController
     return view('tasks.review')->with($param);
   }
 
-  public function update_form(request){
+  public function update_form($request){
     $form = [
       'body' =>$request->get('body'),
     ];
     return $form;
   }
 
-  public function destroy(){
+  public function destroy(Request $request, $id){
 
   }
 }

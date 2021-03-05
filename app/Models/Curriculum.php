@@ -7,6 +7,43 @@ use App\Models\Traits\Scopes;
 use App\Models\Traits\Common;
 
 
+/**
+ * App\Models\Curriculum
+ *
+ * @property int $id
+ * @property string $name 単元名
+ * @property string|null $remarks 備考
+ * @property int|null $sort_no ソートナンバー
+ * @property int $create_user_id 登録ユーザー
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $importance_label
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subjects
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum search($request)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum searchBySubjectId($subject_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class Curriculum extends Milestone
 {
     //

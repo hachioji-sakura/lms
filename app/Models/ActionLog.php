@@ -8,6 +8,37 @@ use Illuminate\Session\SessionManager;
 use App\Http\Controllers\Controller;
 use App\Models\Traits\Common;
 use Illuminate\Support\Facades\Session;
+/**
+ * App\Models\ActionLog
+ *
+ * @property int $id
+ * @property string $server_name SERVER_NAME
+ * @property string $server_ip SERVER_ADDR
+ * @property string $method REQUEST_METHOD
+ * @property string $client_ip REMOTE ADDRESS
+ * @property string $session_id SESSION_ID
+ * @property int $login_user_id login_user_id
+ * @property string $user_agent HTTP USER AGENT
+ * @property string $language HTTP ACCEPT LANGUAGE
+ * @property string $url REQUEST_URI
+ * @property string $referer HTTP REFERER
+ * @property string $post_param post変数
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $created_date
+ * @property-read mixed $login_user_name
+ * @property-read mixed $status_name
+ * @property-read mixed $updated_date
+ * @property-read \App\User $login_user
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog findMethods($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|ActionLog searchWord($word)
+ * @mixin \Eloquent
+ */
 class ActionLog extends Model
 {
   use Common;

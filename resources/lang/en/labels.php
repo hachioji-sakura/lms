@@ -420,4 +420,6 @@ return [
   'workable_classroom' => 'Workable ClassRoom',
   'send_approval' => 'Send Approval Request',
   'out_of_date' => 'Out of Date',
+  'skype_name' => 'Skype Name',
+  'skype_name_about' => 'Click here if you do not know how to check your Skype name',
 ];

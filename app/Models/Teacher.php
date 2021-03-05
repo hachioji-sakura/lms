@@ -10,6 +10,64 @@ use App\Models\ChargeStudent;
 //他
 use App\Models\GeneralAttribute;
 
+/**
+ * App\Models\Teacher
+ *
+ * @property int $id
+ * @property int $user_id ユーザーID
+ * @property string $status ステータス/　trial=体験 / regular=入会 / recess=休会 / unsubscribe=退会
+ * @property string $name_first 姓
+ * @property string $name_last 名
+ * @property string $kana_first 姓カナ
+ * @property string $kana_last 名カナ
+ * @property int $gender 性別：1=男性 , 2=女性, 0=未設定
+ * @property string|null $birth_day 生年月日
+ * @property string|null $entry_date 入社日
+ * @property string|null $recess_start_date 休会開始日
+ * @property string|null $recess_end_date 休会終了日
+ * @property string|null $unsubscribe_date 退会日
+ * @property string|null $phone_no 生年月日
+ * @property string|null $post_no
+ * @property string|null $address 住所
+ * @property string|null $bank_no 銀行番号
+ * @property string|null $bank_branch_no 銀行支店番号
+ * @property string|null $bank_account_type 口座種別
+ * @property string|null $bank_account_no 銀行口座番号
+ * @property string|null $bank_account_name 銀行口座名義
+ * @property int $create_user_id 作成者
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|ChargeStudent[] $chargeStudents
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $create_task
+ * @property-read mixed $created_date
+ * @property-read mixed $kana
+ * @property-read mixed $name
+ * @property-read mixed $updated_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentRelation[] $relations
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Milestone[] $target_milestone
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $target_task
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Trial[] $trials
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tuition[] $tuitions
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher chargeSubject($subjects)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher findChargeStudent($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher findChargeTeachers($student_ids)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findChild($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findEmail($word, $or = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher findParent($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTag($tag_key, $tag_value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTags($tag_key, $tag_values)
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Teacher query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchSubjects($subjects)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchWord($word)
+ * @mixin \Eloquent
+ */
 class Teacher extends Student
 {
   protected $table = 'common.teachers';
@@ -175,7 +233,7 @@ EOT;
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
     }
-    $tag_names = ['piano_level', 'english_teacher', 'schedule_remark'];
+    $tag_names = ['piano_level', 'english_teacher', 'schedule_remark', "skype_name"];
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name])){
         //設定があれば差し替え

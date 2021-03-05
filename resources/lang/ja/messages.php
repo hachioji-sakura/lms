@@ -163,4 +163,5 @@ return [
   "info_season_lesson_week_time" => "春期・夏期・冬期の講習、土日講習については、別途勤務可能な日時の確認を行います。\nその際、上記の設定の曜日・時間帯は勤務可能として連絡を行います。",
   "info_unsubscribe_for_teacher1" => ":student_name様は、下記の日付にて退会予定となります。",
   "info_unsubscribe_for_teacher2" => "振替授業については、退会予定日までに行うように、\n授業の登録をお願いいたします。",
+  "error_skype_name_not_found" => "オンライン授業の場合、Skype名の設定が必要です。\n勤務設定から、Skype名の設定をお願いいたします。",
 ];

@@ -4,6 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\GeneralAttribute
+ *
+ * @property int $id
+ * @property string $attribute_key 属性キー
+ * @property string $attribute_value 属性値
+ * @property string $attribute_name 属性名
+ * @property int $sort_no 並び順
+ * @property string|null $parent_attribute_key 親属性キー
+ * @property string|null $parent_attribute_value 親属性値
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute course($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute findId($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute findKey($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute findKeyValue($key, $val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute findVal($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute lesson($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute query()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute subject($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute week($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeneralAttribute work($val)
+ * @mixin \Eloquent
+ */
 class GeneralAttribute  extends Model
 {
   protected $table = 'common.general_attributes';

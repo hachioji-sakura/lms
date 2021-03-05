@@ -40,6 +40,7 @@
 <div class="row">
   @component('students.forms.lesson', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes, 'prefix'=>'', 'title'=> __('labels.charge_lesson')]) @endcomponent
   @component('students.forms.lesson_place', ['title'=>__('labels.workable_classroom'), '_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes]) @endcomponent
+  @component('teachers.forms.skype_name', ['_edit'=>$_edit, 'item'=>$item->user, 'attributes' => $attributes]) @endcomponent
   @component('students.forms.work_time', ['_edit'=>$_edit, 'item'=>$item->user, 'prefix'=> 'lesson', 'attributes' => $attributes, 'title' => __('labels.lesson_week_time')]) @endcomponent
 </div>
 <div class="row">

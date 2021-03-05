@@ -24,6 +24,45 @@ use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 
 use Hash;
+/**
+ * App\User
+ *
+ * @property int $id
+ * @property string $name ユーザー名
+ * @property string $email メールアドレス（ログインキー）
+ * @property string|null $email_verified_at
+ * @property int $status 0:新規　, 1:仮 , 9:削除
+ * @property string $locale
+ * @property int $image_id アイコン
+ * @property string $password パスワード
+ * @property string $access_key アクセスキー
+ * @property string|null $remember_token
+ * @property string|null $verification_code
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarMemberSetting[] $calendar_member_settings
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMember[] $calendar_members
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarSetting[] $calendar_settings
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read \Illuminate\Database\Eloquent\Collection|Comment[] $create_comments
+ * @property-read mixed $created_date
+ * @property-read mixed $updated_date
+ * @property-read Image $image
+ * @property-read Manager|null $manager
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read Student|null $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|Comment[] $target_comments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Milestone[] $target_milestones
+ * @property-read Teacher|null $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder|User fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|User tag($tagkey, $tagvalue)
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use Common;

@@ -11,6 +11,40 @@ use App\Models\UserCalendar;
 use App\Models\Ask;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\Trial
+ *
+ * @property int $id
+ * @property int $student_parent_id 保護者ID
+ * @property int $student_id 生徒ID
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel
+ * @property string|null $schedule_start_hope_date 授業開始希望日
+ * @property string|null $trial_start_time1 体験希望日時（第１希望）
+ * @property string|null $trial_end_time1 体験希望日時（第１希望）
+ * @property string|null $trial_start_time2 体験希望日時（第２希望）
+ * @property string|null $trial_end_time2 体験希望日時（第２希望）
+ * @property string $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $trial_start_time3 体験希望日時（第３希望）
+ * @property string|null $trial_end_time3 体験希望日時（第３希望）
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read mixed $created_date
+ * @property-read mixed $updated_date
+ * @property-read StudentParent $parent
+ * @property-read \App\Models\Student $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrialTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarSetting[] $user_calendar_settings
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial searchWord($word)
+ * @mixin \Eloquent
+ */
 class Trial extends Model
 {
   use Common;

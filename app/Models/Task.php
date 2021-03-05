@@ -8,6 +8,59 @@ use DB;
 use App\Models\Traits\Scopes;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\Task
+ *
+ * @property int $id
+ * @property string $title 概要
+ * @property string|null $body
+ * @property int|null $milestone_id
+ * @property string $type
+ * @property string $status
+ * @property int $target_user_id
+ * @property int $create_user_id
+ * @property int|null $stars
+ * @property string|null $priority
+ * @property string|null $s3_url
+ * @property string|null $s3_alias
+ * @property string|null $start_schedule
+ * @property string|null $start_date
+ * @property string|null $end_schedule
+ * @property string|null $end_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Curriculum[] $curriculums
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $full_title
+ * @property-read mixed $importance_label
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\Milestone|null $milestones
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TaskComment[] $task_comments
+ * @property-read \Illuminate\Database\Eloquent\Collection|TaskReview[] $task_reviews
+ * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Task activeTasks($statuses)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task reviewEvaluation($evaluation)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task search($request)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class Task extends Milestone
 {
     //

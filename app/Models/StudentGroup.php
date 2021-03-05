@@ -4,6 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\StudentGroupMember;
+/**
+ * App\Models\StudentGroup
+ *
+ * @property int $id
+ * @property int $teacher_id 担当講師
+ * @property string $title 生徒グループ名
+ * @property string $remark 生徒グループ補足
+ * @property string $type 関係性:group or family
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|StudentGroupMember[] $members
+ * @property-read \App\Models\Teacher $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|StudentGroup query()
+ * @mixin \Eloquent
+ */
 class StudentGroup extends Model
 {
   protected $pagenation_line = 20;

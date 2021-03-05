@@ -40,6 +40,14 @@
                 </small>
               @endif
             @endif
+          @elseif($key==='teacher_name')
+          <label for="{{$key}}" class="w-100">
+            {{$field['label']}}
+          </label>
+            @if($user->role=='manager') <a href="/teachers/{{$item->user->teacher->id}}" target="_blank"> @endif
+            {{$item[$key]}}
+            @if($item->is_online()==true && $item->user->has_tag('skype_name')==true)({{__('labels.skype_name')}}:{{$item->user->get_tag_value('skype_name')}})@endif
+            @if($user->role=='manager') </a> @endif
           @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
             <label for="{{$key}}" class="w-100">
               {{$field['label']}}
@@ -146,6 +154,18 @@
     <form method="POST" action="/{{$domain}}/{{$item['id']}}/status_update/new">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
+    @if($item->is_online()==true && empty($item->user->teacher->get_tag_value('skype_name')))
+    <div class="row">
+      <div class="col-12 mb-1">
+        <div class="form-group">
+          <input class="form-check-input icheck flat-red" type="checkbox" id="skype_name_check" name="skype_name_check" value="1" required="true">
+          <label class="form-check-label" for="skype_name_check">
+            <i class="fa fa-exclamation-triangle mr-1"></i>講師のSkype名が設定されていないことを確認しました
+          </label>
+        </div>
+      </div>
+    </div>
+    @endif
     <div class="row">
       @method('PUT')
       <div class="col-12 col-md-6 mb-1">
