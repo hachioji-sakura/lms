@@ -27,6 +27,7 @@ class CreateAgreementsTable extends Migration
           $table->string('status')->comment('ステータス');
           $table->integer('student_parent_id')->comment('契約者ID')->index('student_parent_id_status');
           $table->integer('create_user_id')->comment('起票者');
+          $table->string('remark')->nullable(true)->comment('備考');
           $table->timestamps();
         });
     }

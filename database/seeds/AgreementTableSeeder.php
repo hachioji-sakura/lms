@@ -38,6 +38,7 @@ class AgreementTableSeeder extends Seeder
       foreach($target_users as $user){
         $agreement = new Agreement;
         $member_setting = $user->calendar_member_settings()->first();
+        /*
         $student = Student::where("user_id",$user->id)->first();
         $ret = $this->get_agreement_data_source($student->name);
         $form = [
@@ -64,9 +65,8 @@ class AgreementTableSeeder extends Seeder
           $forms = $forms->toArray();
           $agreement->agreement_statements()->createMany($forms);
         }
+        */
 
-
-        /* カレンダーメンバーから契約を起こすときに使った
         //既存の物を現状のロジックで契約追加
         $new_agreement = $agreement->add_from_member_setting($member_setting->id);
 
@@ -89,7 +89,9 @@ class AgreementTableSeeder extends Seeder
           $entry_fee = 0;
         }
         $new_agreement->entry_fee = $entry_fee;
-        $new_agreement->status = "new";
+        $new_agreement->status = "commit";//承認状態で登録
+        $new_agreement->start_date = date('Y-m-d H:i:s');
+        $new_agreement->remark = "enforce registered";
         $new_agreement->save();
 
         //明細のターン
@@ -109,7 +111,6 @@ class AgreementTableSeeder extends Seeder
           $statement->tuition = $fee;
           $statement->save();
         }
-        */
       }
     }
 
@@ -131,9 +132,7 @@ class AgreementTableSeeder extends Seeder
           }
         }
         $st = $statement->first();
-        if(empty($st)){
-          dd($st,$statement,$fields,$student);
-        }
+
         $st->tuition = $fields["tuition"];
         $st->save();
       }
