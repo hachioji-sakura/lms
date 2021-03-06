@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'item' => (isset($item) ? $item : null)]) @endcomponent
+      @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.tasks_remarks')}}</label>

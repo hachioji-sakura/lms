@@ -8,6 +8,8 @@ use App\Models\Manager;
 use App\Models\Student;
 use App\Models\UserCalendar;
 use App\Models\TextMaterial;
+use App\Models\Subject;
+use App\Models\Curriculum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App;
@@ -104,7 +106,6 @@ class TeacherController extends StudentController
     if($this->domain=='managers' && $this->is_manager($user->role)!=true){
       $view = 'setting_menu';
     }
-    $text_materials = TextMaterial::where('target_user_id', $param['item']->user_id)->get();
     if($request->has('view')){
       switch ($request->get('view')){
         case "setting_menu":
@@ -112,14 +113,15 @@ class TeacherController extends StudentController
           break;
         case "text_materials":
           $view = $request->get('view');
+          $param['subjects'] = Subject::all();
+          $param['text_materials'] = $param['item']->get_text_materials($request->all());
+          $param['curriculums'] = Curriculum::all();
           break;
       }
     }
+    if($view=='home')  $param['charge_students'] = $this->get_students($request, $id);
     $param['view'] = $view;
-    return view($this->domain.'.page.'.$view, [
-      'charge_students'=>$this->get_students($request, $id),
-      'text_materials' => $text_materials,
-    ])->with($param);
+    return view($this->domain.'.page.'.$view, [])->with($param);
   }
   /**
   * Display the specified resource.

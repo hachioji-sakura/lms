@@ -54,6 +54,13 @@ class User extends Authenticatable
     public function student(){
       return $this->hasOne('App\Models\Student');
     }
+    public function text_materials(){
+      return $this->hasMany('App\Models\TextMaterial', 'target_user_id');
+    }
+    public function shared_text_materials()
+    {
+        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable');
+    }
     public function teacher(){
       return $this->hasOne('App\Models\Teacher');
     }

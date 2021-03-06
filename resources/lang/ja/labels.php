@@ -308,6 +308,7 @@ return [
   'important_check' => '重要事項について確認しました',
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',
+  'public' => '公開',
 
   'sep_year' => '年',
   'sep_month' => '月',
@@ -409,4 +410,5 @@ return [
   'workable_classroom' => '勤務可能な教室',
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
+  'share' => '共有',
 ];

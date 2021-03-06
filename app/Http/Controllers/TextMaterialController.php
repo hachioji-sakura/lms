@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TextMaterial;
 use App\User;
+use App\Models\Teacher;
 use App\Models\Curriculum;
 use App\Models\Subject;
 
@@ -65,32 +66,24 @@ class TextMaterialController extends MilestoneController
       $param = $this->get_param($request, $id);
 
       $fields = [
-        'name' => [
-          'label' => '保存ファイル名',
-        ],
         'description' => [
           'label' => '説明',
         ],
-        'type' => [
-          'label' => 'mimetype',
-        ],
-        'size' => [
-          'label' => 'ファイルサイズ',
-        ],
-        'type' => [
-          'label' => 'mimetype',
-        ],
         's3_url' => [
-          'label' => 'S3ダウンロードURL',
+          'label' => 'ダウンロード',
+          'size' => 6,
+        ],
+        'type' => [
+          'label' => 'mimetype',
+          'size' => 6,
         ],
         'create_user_name' => [
           'label' => '登録者',
+          'size' => 6,
         ],
         'created_date' => [
           'label' => '登録日',
-        ],
-        'updated_date' => [
-          'label' => '更新日',
+          'size' => 6,
         ],
       ];
 
@@ -187,7 +180,7 @@ class TextMaterialController extends MilestoneController
       $form = [];
       $form['create_user_id'] = $user->user_id;
       $form['target_user_id'] = $request->get('target_user_id');
-      $form['publiced_at'] = $request->get('publiced_at');
+      $form['publiced_at'] = "9999-12-31";
       $form['description'] = $request->get('description');
       $form['name'] = $request->get('name');
       $form['create_user_id'] = $user->user_id;
@@ -197,6 +190,12 @@ class TextMaterialController extends MilestoneController
         $form['type'] = $request_file->guessClientExtension();
         $form['size'] = $request_file->getClientSize();
       }
+      if($request->has('is_public')){
+        if(intval($request->get('is_public'))==1){
+          $form['publiced_at'] = date('Y-m-d');
+        }
+      }
+
       return $form;
     }
     /**
@@ -217,8 +216,8 @@ class TextMaterialController extends MilestoneController
     {
       $form = $request->all();
       //保存時にパラメータをチェック
-      if(empty($form['publiced_at'])){
-        return $this->bad_request('リクエストエラー', '公開日='.$form['publiced_at']);
+      if(empty($form['name'])){
+        return $this->bad_request('リクエストエラー', '名称='.$form['name']);
       }
       return $this->api_response(200, '', '');
     }
@@ -242,6 +241,9 @@ class TextMaterialController extends MilestoneController
        $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.text_material_folder'));
        $form['s3_url'] = $s3['url'];
        $text_material->fill($form)->save();
+       if($request->has('curriculum_ids')){
+         $text_material->curriculums()->sync($request->get('curriculum_ids'));
+       }
        return $this->api_response(200, '', '', $text_material);
      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
@@ -254,15 +256,55 @@ class TextMaterialController extends MilestoneController
       }
       $res =  $this->transaction($request, function() use ($request, $id){
         $form = $this->create_form($request);
-        $text_material = TextMaterial::find($id)->first();
+        $text_material = TextMaterial::find($id);
         if($request->hasFile('upload_file')){
           $this->s3_delete($text_material->s3_url);
           $s3 = $this->s3_upload($request->file('upload_file'), config('aws_s3.text_material_folder'));
           $form['s3_url'] = $s3['url'];
         }
         $text_material->fill($form)->save();
+        if($request->has('curriculum_ids')){
+          $text_material->curriculums()->sync($request->get('curriculum_ids'));
+        }
         return $this->api_response(200, '', '', $text_material);
       }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
+    }
+    /**
+     * 詳細画面表示
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function shared_page(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $teachers = Teacher::where('status', 'regular')->where('user_id', '!=', $param['item']->target_user_id);
+      if($this->is_manager($param['user']->role)){
+      }
+      else if($this->is_teacher($param['user']->role)){
+        $tags = $param['user']->get_tags('lesson');
+        if($tags == null) abort(403);
+        $teachers = $teachers->searchTags($tags);
+      }
+      else {
+        abort(403);
+      }
+      $param['teachers'] = $teachers->get();
+      return view($this->domain.'.shared', [])
+        ->with($param);
+    }
+    public function shared(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+
+      $res =  $this->transaction($request, function() use ($request, $id){
+        $text_material = TextMaterial::find($id);
+        if($request->has('shared_user_ids')){
+          $text_material->shared_users()->sync($request->get('shared_user_ids'));
+        }
+        return $this->api_response(200, '', '', $text_material);
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, '更新しました。');
     }
 }

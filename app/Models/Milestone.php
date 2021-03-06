@@ -7,10 +7,12 @@ use App\Models\GeneralAttribute;
 use App\User;
 use App\Http\Controllers\Controller;
 use App\Models\Traits\Common;
+use App\Models\Traits\File;
 
 class Milestone extends Model
 {
   use Common;
+  use File;
   protected $connection = 'mysql';
   protected $table = 'lms.milestones';
   protected $guarded = array('id');

@@ -1134,4 +1134,27 @@ EOT;
                     ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
     return $c;
   }
+
+  public function get_text_materials($search_form){
+    $t1 = $this->user->shared_text_materials();
+    $t2 = $this->user->text_materials();
+    if(!empty($search_form['is_publiced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
+    if(!empty($search_form['search_curriculum'])){
+      $t1->searchCurriculums($search_form['search_curriculum']);
+      $t2->searchCurriculums($search_form['search_curriculum']);
+    }
+    if(!empty($search_form['search_keyword'])){
+      $t1->searchWord($search_form['search_keyword']);
+      $t2->searchWord($search_form['search_keyword']);
+    }
+    $t1 = $t1->get();
+    $t2 = $t2->get();
+    if(count($t1)>0 && count($t2)>0) return array_merge($t1, $t2);
+    if(count($t1)>0) return $t1;
+    if(count($t2)>0) return $t2;
+    return [];
+  }
 }

@@ -27,7 +27,9 @@ class AddTargetUserIdTextMaterials extends Migration
      */
     public function down()
     {
-      $table->dropColumn('target_user_id');
-      $table->dropColumn('s3_alias');
+      Schema::table('text_materials', function (Blueprint $table) {
+        $table->dropColumn('target_user_id');
+        $table->dropColumn('s3_alias');
+      });
     }
 }

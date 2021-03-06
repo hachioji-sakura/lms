@@ -6,22 +6,20 @@
   @else
   <form id="edit" method="POST" action="/{{$domain}}" enctype="multipart/form-data">
   @endif
-  @csrf
-  <input type="text" name="dummy" style="display:none;" / >
-  <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
-  <input type="hidden" name="lesson_count" value="{{$lessons->count()}}">
-  <input type="hidden" name="has_english_lesson" value="{{$has_english_lesson}}">
-
-  @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'item' => (isset($item) ? $item : null)]) @endcomponent
+    @csrf
+    <input type="text" name="dummy" style="display:none;" / >
+    <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+    <input type="hidden" name="lesson_count" value="{{$lessons->count()}}">
+    <input type="hidden" name="has_english_lesson" value="{{$has_english_lesson}}">
 
     <div class="row">
-      <div class="col-12">
+      <div class="col-8">
         <div class="form-group">
           <label for="title" class="w-100">
             教材名
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
-          <input type="text" name="name" class="form-control" required="true" maxlength=50
+          <input type="text" name="name" class="form-control" required="true" maxlength=20
           @if(isset($_edit) && $_edit==true)
            value="{{$item->name}}" placeholder="(変更前) {{$item->name}}">
           @else
@@ -29,17 +27,29 @@
           @endif
         </div>
       </div>
+      <div class="col-4">
+        <label for="title" class="w-100">
+          公開する
+        </label>
+        <label class="mx-2">
+          <input type="checkbox" value="1" name="is_public" class="icheck flat-red"
+          @if($_edit==true && $item->is_publiced()==true)
+          checked
+          @endif
+          >{{__('labels.public')}}
+        </label>
+      </div>
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">
             説明
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
-          <textarea type="text" name="description" class="form-control"  maxlength=1000
+          <textarea type="text" name="description" class="form-control"  maxlength=100
           @if(isset($_edit) && $_edit==true)
             placeholder="(変更前) {{$item->description}}" >{{$item->description}}</textarea>
           @else
-            placeholder="1000文字まで" ></textarea>
+            placeholder="100文字まで" ></textarea>
           @endif
         </div>
       </div>
@@ -79,32 +89,8 @@
           @endif
         </div>
       </div>
-      <div class="col-12">
-        <div class="form-group">
-          <label for="publiced_at" class="w-100">
-            {{__('labels.publiced_at')}}
-            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          </label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-            </div>
-            <input type="text" id="publiced_at" name="publiced_at" class="form-control float-left" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
-            @if(isset($_edit) && $_edit==true && isset($item) && isset($item['publiced_at']) && $item['publiced_at']!='9999-12-31')
-              value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
-            @elseif(isset($item) && isset($item['publiced_at']) && $item['publiced_at']!='9999-12-31')
-              value="{{date('Y/m/d', strtotime($item['publiced_at']))}}"
-            @else
-              value = "{{date('Y/m/d')}}"
-            @endif
-            @if(!(isset($_edit) && $_edit==true))
-            minvalue="{{date('Y/m/d')}}"
-            @endif
-            >
-          </div>
-        </div>
-      </div>
     </div>
+    @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain,  'item' => (isset($item) ? $item : null)]) @endcomponent
 
     <div class="row">
       <div class="col-12 col-md-6 mb-1">
