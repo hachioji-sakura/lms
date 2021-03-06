@@ -11,6 +11,7 @@ use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
 use App\Models\Task;
+use App\Models\TextMaterial;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
 use DB;
@@ -1137,7 +1138,7 @@ EOT;
 
   public function get_text_materials($search_form){
     $t1 = $this->user->shared_text_materials();
-    $t2 = $this->user->text_materials();
+    $t2 = TextMaterial::where('target_user_id', $this->user_id)->orWhere('publiced_at', '<=', date('Y-m-d'));
     if(!empty($search_form['is_publiced_only'])){
       $t1->where('publiced_at', '<=', date('Y-m-d'));
       $t2->where('publiced_at', '<=', date('Y-m-d'));
@@ -1152,9 +1153,15 @@ EOT;
     }
     $t1 = $t1->get();
     $t2 = $t2->get();
-    if(count($t1)>0 && count($t2)>0) return array_merge($t1, $t2);
-    if(count($t1)>0) return $t1;
-    if(count($t2)>0) return $t2;
+    if(count($t1)>0 && count($t2)>0) {
+      return $t1->concat($t2);
+    }
+    else if(count($t1)>0){
+      return $t1;
+    }
+    else if(count($t2)>0){
+      return $t2;
+    }
     return [];
   }
 }
