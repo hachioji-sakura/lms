@@ -51,6 +51,11 @@ class TextMaterialController extends MilestoneController
         $ret['lessons'] = $lessons;
         $ret['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
       }
+      else {
+        if($this->is_manager($ret['user']->role)){
+          $ret['teachers'] = Teacher::where('status', 'regular')->get();
+        }
+      }
       $ret['curriculums'] = Curriculum::all();
       $ret['subjects'] = Subject::all();
       return $ret;
@@ -75,6 +80,10 @@ class TextMaterialController extends MilestoneController
         ],
         'type' => [
           'label' => 'mimetype',
+          'size' => 6,
+        ],
+        'target_user_name' => [
+          'label' => '担当者',
           'size' => 6,
         ],
         'create_user_name' => [
@@ -117,18 +126,25 @@ class TextMaterialController extends MilestoneController
           },
           'target' => '__blank',
         ],
-        'publiced_date' => [
-          'label' => '公開日',
+        'is_publiced_label' => [
+          'label' => '公開',
         ],
-        'create_user_name' => [
-          'label' => '登録者',
+        'target_user_name' => [
+          'label' => '担当者',
         ],
         'created_date' => [
           'label' => '登録日',
         ],
         'buttons' => [
           'label' => '操作',
-          'button' => ['edit', 'delete']
+          'button' => [
+            "to_calendar" => [
+              "method" => "shared",
+              "label" => "共有設定",
+              "style" => "warning",
+            ],
+            'edit', 'delete'
+          ]
         ],
       ];
 

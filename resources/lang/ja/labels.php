@@ -309,6 +309,8 @@ return [
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',
   'public' => '公開',
+  'unpublic' => '非公開',
+  'to_public' => '公開する',
 
   'sep_year' => '年',
   'sep_month' => '月',

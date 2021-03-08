@@ -88,29 +88,7 @@
             </div>
             --}}
             <div class="row my-2">
-              <div class="col-12">
-                <a href="{{$text_material->s3_url}}" target="_blank" role="button" class="btn btn-info btn-sm float-left mr-1">
-                  <i class="fa fa-cloud-download-alt"></i>
-                </a>
-                @if($text_material->is_publiced()==false)
-                <a href="javascript:void(0);" page_title="{{__('labels.text_materials')}}{{__('labels.share')}}" page_form="dialog" page_url="/text_materials/{{$text_material->id}}/shared?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn
-                  @if($text_material->shared_users()->count()>0)
-                  btn-warning
-                  @else
-                  btn-secondary
-                  @endif
-                  btn-sm float-left mr-1">
-                  <i class="fa fa-share-alt-square"></i>
-                </a>
-                @endif
-
-                <a href="javascript:void(0);" page_title="{{__('labels.text_materials')}}{{__('labels.edit')}}" page_form="dialog" page_url="/text_materials/{{$text_material->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-right mr-1">
-                  <i class="fa fa-edit"></i>
-                </a>
-                <a href="javascript:void(0);" page_title="{{__('labels.text_materials')}}{{__('labels.delete')}}" page_form="dialog" page_url="/text_materials/{{$text_material->id}}?origin={{$domain}}&item_id={{$item->id}}&action=delete" role="button" class="btn btn-default btn-sm float-right mr-1">
-                  <i class="fa fa-trash"></i>
-                </a>
-              </div>
+              @component('text_materials.forms.buttons', ['text_material' => $text_material, 'item' => $item, 'domain' => $domain]) @endcomponent
             </div>
             <div class="row my-2">
               <div class="col-12">
@@ -133,38 +111,7 @@
       </div>
     </div>
   </div>
-  @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
-  @slot("search_form")
-  <input type="hidden" name="view" value="{{$view}}">
-  @component('tasks.components.search_subjects', ['_edit' => false, 'subjects' => $subjects, 'domain' => $domain,  'item' => (isset($item) ? $item : null)]) @endcomponent
-
-  <div class="col-12 mb-2">
-    <div class="form-group">
-      <label for="search_keyword" class="w-100">
-        {{__('labels.search_keyword')}}
-      </label>
-      <input type="text" name="search_keyword" class="form-control" placeholder="{{__('labels.search_keyword')}}"
-      @if(isset($filter['search_keyword']))
-      value="{{$filter['search_keyword']}}"
-      @endif
-      >
-    </div>
-  </div>
-  <div class="col-12 mb-2">
-    <div class="form-group">
-      <label for="is_asc" class="w-100">
-        {{__('labels.other')}}
-      </label>
-      <label class="mx-2">
-        <input type="checkbox" value="1" name="is_publiced_only" class="icheck flat-green"
-        @if(isset($filter['comment_filter']['is_publiced_only']) && $filter['comment_filter']['is_publiced_only']==1)
-        checked
-        @endif
-        >{{__('labels.public')}}
-      </label>
-    </div>
-  </div>
-  @endslot
+  @component('text_materials.forms.filter', ['view' => $view, 'filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'subjects' => $subjects])
   @endcomponent
 </div>
 @endsection

@@ -274,7 +274,7 @@ trait Common
     if(!isset($this->publiced_at)) return false;
     if(empty($this->publiced_at)) return false;
     if($this->publiced_at=='9999-12-31') return false;
-    if(strtotime($this->publiced_at) <= strtotime('now')) return true;
+    if(strtotime($this->publiced_at.' 00:00:00') <= strtotime('now')) return true;
     return false;
   }
 }
