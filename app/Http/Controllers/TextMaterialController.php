@@ -28,10 +28,16 @@ class TextMaterialController extends MilestoneController
       if(!isset($user)) {
         abort(403);
       }
+      if($this->is_student_or_parent($user->role)) {
+        abort(403);
+      }
       $ret = $this->get_common_param($request);
       $target_user_id = 0;
       if($request->has('target_user_id')){
         $target_user_id = $request->get('target_user_id');
+      }
+      else if($this->is_teacher($user->role)){
+        abort(403);
       }
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
