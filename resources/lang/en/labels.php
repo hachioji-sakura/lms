@@ -309,6 +309,8 @@ return [
   'faq_button' => 'FAQ Add',
   'publiced_at' => 'Publiced At',
   'public' => 'public',
+  'unpublic' => 'unpublic',
+  'to_public' => 'to public',
 
   'sep_year' => '/',
   'sep_month' => '/',

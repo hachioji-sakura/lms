@@ -28,10 +28,16 @@ class TextMaterialController extends MilestoneController
       if(!isset($user)) {
         abort(403);
       }
+      if($this->is_student_or_parent($user->role)) {
+        abort(403);
+      }
       $ret = $this->get_common_param($request);
       $target_user_id = 0;
       if($request->has('target_user_id')){
         $target_user_id = $request->get('target_user_id');
+      }
+      else if($this->is_teacher($user->role)){
+        abort(403);
       }
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
@@ -50,6 +56,11 @@ class TextMaterialController extends MilestoneController
         $lessons = collect($target_user->get_tags('lesson'));
         $ret['lessons'] = $lessons;
         $ret['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
+      }
+      else {
+        if($this->is_manager($ret['user']->role)){
+          $ret['teachers'] = Teacher::where('status', 'regular')->get();
+        }
       }
       $ret['curriculums'] = Curriculum::all();
       $ret['subjects'] = Subject::all();
@@ -75,6 +86,10 @@ class TextMaterialController extends MilestoneController
         ],
         'type' => [
           'label' => 'mimetype',
+          'size' => 6,
+        ],
+        'target_user_name' => [
+          'label' => '担当者',
           'size' => 6,
         ],
         'create_user_name' => [
@@ -117,18 +132,25 @@ class TextMaterialController extends MilestoneController
           },
           'target' => '__blank',
         ],
-        'publiced_date' => [
-          'label' => '公開日',
+        'is_publiced_label' => [
+          'label' => '公開',
         ],
-        'create_user_name' => [
-          'label' => '登録者',
+        'target_user_name' => [
+          'label' => '担当者',
         ],
         'created_date' => [
           'label' => '登録日',
         ],
         'buttons' => [
           'label' => '操作',
-          'button' => ['edit', 'delete']
+          'button' => [
+            "to_calendar" => [
+              "method" => "shared",
+              "label" => "共有設定",
+              "style" => "warning",
+            ],
+            'edit', 'delete'
+          ]
         ],
       ];
 

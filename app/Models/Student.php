@@ -1190,6 +1190,10 @@ EOT;
       $t1->where('publiced_at', '<=', date('Y-m-d'));
       $t2->where('publiced_at', '<=', date('Y-m-d'));
     }
+    if(!empty($search_form['is_unpubliced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
     if(!empty($search_form['search_curriculum'])){
       $t1->searchCurriculums($search_form['search_curriculum']);
       $t2->searchCurriculums($search_form['search_curriculum']);

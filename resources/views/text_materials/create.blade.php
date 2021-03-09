@@ -8,14 +8,10 @@
   @endif
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
-    <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
-    <input type="hidden" name="lesson_count" value="{{$lessons->count()}}">
-    <input type="hidden" name="has_english_lesson" value="{{$has_english_lesson}}">
-
     <div class="row">
       <div class="col-8">
         <div class="form-group">
-          <label for="title" class="w-100">
+          <label for="name" class="w-100">
             教材名
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           </label>
@@ -29,7 +25,7 @@
       </div>
       <div class="col-4">
         <label for="title" class="w-100">
-          公開する
+          {{__('labels.to_public')}}
         </label>
         <label class="mx-2">
           <input type="checkbox" value="1" name="is_public" class="icheck flat-red"
@@ -42,7 +38,7 @@
       <div class="col-12">
         <div class="form-group">
           <label for="body" class="w-100">
-            説明
+            {{__('labels.description')}}
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           </label>
           <textarea type="text" name="description" class="form-control"  maxlength=100
@@ -89,6 +85,37 @@
           @endif
         </div>
       </div>
+      @if(empty($target_user_id))
+      <div class="col-12">
+        <div class="form-group">
+          <label for="title" class="w-100">
+            対象
+            {{__('labels.teachers')}}
+          </label>
+          <select name="target_user_id" class="form-control select2"  required="true" width=100%  >
+            <option value="">{{__('labels.selectable')}}</option>
+            @foreach($teachers as $teacher)
+               <option
+               value="{{ $teacher->user_id }}"
+               @if(!empty($item))
+                 {{ $item->target_user_id=$teacher->user_id  ? "selected" : "" }}
+               @endif
+               >{{$teacher->name()}}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+      @else
+      <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="charge_user" class="w-100">
+            {{__('labels.charge_user')}}
+          </label>
+          {{$item->target_user->teacher->name()}}
+        </div>
+      </div>
+      @endif
     </div>
     @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain,  'item' => (isset($item) ? $item : null)]) @endcomponent
 
