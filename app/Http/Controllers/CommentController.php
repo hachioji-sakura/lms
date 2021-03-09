@@ -129,7 +129,9 @@ class CommentController extends MilestoneController
       }
       $form['type'] = $request->get('type');
       $form['title'] = $request->get('title');
-      $form['importance'] = $request->get('importance');
+      if($request->has('importance')){
+        $form['importance'] = $request->get('importance');
+      }
       $form['body'] = $request->get('body');
       return $form;
     }
