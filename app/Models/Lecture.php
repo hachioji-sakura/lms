@@ -6,6 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ChargeStudent;
 use App\Models\GeneralAttribute;
 
+/**
+ * App\Models\Lecture
+ *
+ * @property int $id
+ * @property string $lesson レッスン
+ * @property string $course コース
+ * @property string $subject 科目
+ * @property int $lecture_id_org 移行用レクチャID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Lecture findChargeLesson($teacher_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Lecture findChargeStudentLesson($teacher_id, $student_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Lecture newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Lecture newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Lecture query()
+ * @mixin \Eloquent
+ */
 class Lecture extends Model
 {
   protected $table = 'lms.lectures';

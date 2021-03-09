@@ -4,6 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\PlaceFloorSheat
+ *
+ * @property int $id
+ * @property int $place_floor_id フロアID
+ * @property string $name 席名
+ * @property int $sort_no 表示順
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarMember[] $calendar_members
+ * @property-read \App\Models\PlaceFloor $floor
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloorSheat newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloorSheat newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloorSheat query()
+ * @mixin \Eloquent
+ */
 class PlaceFloorSheat extends Model
 {
   protected $table = 'common.place_floor_sheats';

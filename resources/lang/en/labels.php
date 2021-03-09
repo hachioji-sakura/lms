@@ -308,6 +308,9 @@ return [
   'important_check' => 'I confirmed about important matter',
   'faq_button' => 'FAQ Add',
   'publiced_at' => 'Publiced At',
+  'public' => 'public',
+  'unpublic' => 'unpublic',
+  'to_public' => 'to public',
 
   'sep_year' => '/',
   'sep_month' => '/',
@@ -409,4 +412,5 @@ return [
   'workable_classroom' => 'Workable ClassRoom',
   'skype_name' => 'Skype Name',
   'skype_name_about' => 'Click here if you do not know how to check your Skype name',
+  'share' => 'Share',
 ];

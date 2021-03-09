@@ -11,10 +11,58 @@ use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
 use App\Models\Task;
+use App\Models\TextMaterial;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
 use DB;
 
+/**
+ * App\Models\Student
+ *
+ * @property int $id
+ * @property int $user_id ユーザーID
+ * @property string $status ステータス/　trial=体験 / regular=入会 / recess=休会 / unsubscribe=退会
+ * @property string $name_first 姓
+ * @property string $name_last 名
+ * @property string $kana_first 姓カナ
+ * @property string $kana_last 名カナ
+ * @property int $gender 性別：1=男性 , 2=女性, 0=未設定
+ * @property string|null $birth_day
+ * @property string|null $entry_date 入社日
+ * @property string|null $recess_start_date 休会開始日
+ * @property string|null $recess_end_date 休会終了日
+ * @property string|null $unsubscribe_date 退会日
+ * @property int $create_user_id 作成者
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ChargeStudent[] $chargeStudents
+ * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $create_task
+ * @property-read mixed $created_date
+ * @property-read mixed $kana
+ * @property-read mixed $name
+ * @property-read mixed $updated_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|StudentRelation[] $relations
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Milestone[] $target_milestone
+ * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $target_task
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Trial[] $trials
+ * @property-read \Illuminate\Database\Eloquent\Collection|Tuition[] $tuitions
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Student fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findChargeStudent($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findChild($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findEmail($word, $or = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTag($tag_key, $tag_value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTags($tag_key, $tag_values)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchSubjects($subjects)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchWord($word)
+ * @mixin \Eloquent
+ */
 class Student extends Model
 {
   use Common;
@@ -1133,5 +1181,38 @@ EOT;
                     ->where('start_time', '>', $s)
                     ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
     return $c;
+  }
+
+  public function get_text_materials($search_form){
+    $t1 = $this->user->shared_text_materials();
+    $t2 = TextMaterial::where('target_user_id', $this->user_id)->orWhere('publiced_at', '<=', date('Y-m-d'));
+    if(!empty($search_form['is_publiced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
+    if(!empty($search_form['is_unpubliced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
+    if(!empty($search_form['search_curriculum'])){
+      $t1->searchCurriculums($search_form['search_curriculum']);
+      $t2->searchCurriculums($search_form['search_curriculum']);
+    }
+    if(!empty($search_form['search_keyword'])){
+      $t1->searchWord($search_form['search_keyword']);
+      $t2->searchWord($search_form['search_keyword']);
+    }
+    $t1 = $t1->get();
+    $t2 = $t2->get();
+    if(count($t1)>0 && count($t2)>0) {
+      return $t1->concat($t2);
+    }
+    else if(count($t1)>0){
+      return $t1;
+    }
+    else if(count($t2)>0){
+      return $t2;
+    }
+    return [];
   }
 }

@@ -18,6 +18,71 @@ use DB;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\UserCalendar
+ *
+ * @property int $id
+ * @property string|null $start_time 開始日時
+ * @property string|null $end_time 終了日時
+ * @property int $user_calendar_setting_id カレンダー設定ID
+ * @property int $trial_id 体験授業予定id
+ * @property int $user_id 主催者 / 基本的に講師
+ * @property int $lecture_id レクチャーID
+ * @property string $teaching_type 授業予定タイプ：trial=体験、exchange=振替、regular=通常、add=追加、season=期間講習, trainng=演習
+ * @property int $course_minutes 授業時間
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel / 休み: rest / 出席 : presence / 欠席 : absence
+ * @property int $place_floor_id 場所フロアID
+ * @property string|null $checked_at 月次確認日付
+ * @property int $exchanged_calendar_id 振替元カレンダーID
+ * @property string $work 職務種別
+ * @property string $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User $create_user
+ * @property-read UserCalendar $exchanged_calendar
+ * @property-read mixed $course
+ * @property-read mixed $created_date
+ * @property-read mixed $date
+ * @property-read mixed $datetime
+ * @property-read mixed $dateweek
+ * @property-read mixed $lesson
+ * @property-read mixed $place_floor_name
+ * @property-read mixed $schedule_type_name
+ * @property-read mixed $status_name
+ * @property-read mixed $student_name
+ * @property-read mixed $subject
+ * @property-read mixed $teaching_type_name
+ * @property-read mixed $timezone
+ * @property-read mixed $updated_date
+ * @property-read mixed $user_name
+ * @property-read mixed $work_name
+ * @property-read Lecture $lecture
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMember[] $members
+ * @property-read PlaceFloor $place_floor
+ * @property-read \App\Models\UserCalendarSetting $setting
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarTag[] $tags
+ * @property-read Trial $trial
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findExchangeTarget($user_id = 0, $lesson = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findPlaces($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findTeachingType($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findUser($user_id, $deactive_status = 'invalid')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findWorks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar hiddenFilter()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar sortStarttime($sort)
+ * @mixin \Eloquent
+ */
 class UserCalendar extends Model
 {
   use Common;
@@ -1268,16 +1333,28 @@ EOT;
   }
 
   //TODO 事務システムリプレース後は不要
-    public function unk_schedule_update($schedule_ids, $teacher_id){
-      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
-        'teacher_id' => $teacher_id,
-      ]);
-    }
+  public function unk_schedule_update($schedule_ids, $teacher_id){
+    DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+      'teacher_id' => $teacher_id,
+    ]);
+  }
 
   public function cache_delete(){
     $this->delete_user_cache($this->user_id);
     foreach($this->members as $member){
       $this->delete_user_cache($member->user_id);
     }
+  }
+
+  public function is_first_place(){
+    $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
+    $c = self::where('user_id', $this->user_id)
+                    ->whereIn('place_floor_id', $place_floor_ids)
+                    ->where('id', '!=', $this->id)
+                    ->whereIn('status', ['fix', 'presence'])->first();
+    if($c==null){
+      return true;
+    }
+    return false;
   }
 }
