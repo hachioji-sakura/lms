@@ -8,6 +8,7 @@
   @endif
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
+    <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
     <div class="row">
       <div class="col-8">
         <div class="form-group">
@@ -105,8 +106,7 @@
           </select>
         </div>
       </div>
-      @else
-      <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+      @elseif(isset($item))
       <div class="col-12">
         <div class="form-group">
           <label for="charge_user" class="w-100">
