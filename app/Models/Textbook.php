@@ -12,6 +12,22 @@ class Textbook extends Model
       'name' => 'required'
   );
 
+  public function getGradeAttributes(){
+    $textbookTags = $this->textbook_tag;
+    $grades = [];
+    if($textbookTags->isEmpty()){
+      return '';
+    }else {
+      foreach($textbookTags as $textbookTag){
+        if($textbookTag->tag_key === 'grade_no'){
+          $grades[] = GeneralAttribute::find($textbookTag->tag_value);
+
+        }
+      }
+      return $grades;
+    }
+  }
+
   public function getGrade(){
     $textbookTags = $this->textbook_tag;
     $grades = '';
@@ -27,7 +43,7 @@ class Textbook extends Model
       return $grades;
     }
   }
-
+  //todo MVC的に
   public function getSubjectName(){
     $subjects = '';
     foreach($this->textbook_subject as $textbookSubject){
@@ -39,6 +55,33 @@ class Textbook extends Model
       return mb_substr($subjects, 0, -1);
     }
     return $subjects;
+  }
+
+  public function getPrices(){
+    $key = 'tag_key';
+    $val = '_price';
+    $filtered = $this->textbook_tag->filter(function ($record) use ($key, $val) {
+      return strpos($record[$key], $val) !== false;
+    });
+    return $filtered;
+  }
+
+  public function details($user_id=0){
+    //TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
+    $item = $this;
+    $item['teaching_name'] = 'test';
+
+
+    return $item;
+  }
+  public function is_season_lesson(){
+//    if($this->work==10 || $this->work==11) return true;
+    return false;
+  }
+
+  public function is_online(){
+//    if($this->work==10 || $this->work==11) return true;
+    return false;
   }
 
   public function textbook_tag(){

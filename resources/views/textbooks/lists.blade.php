@@ -39,7 +39,7 @@
           <a href="/{{$domain}}?search_status[]=new&search_status[]=confirm" class="nav-link
         @if(isset($filter['calendar_filter']['search_status']) && in_array('new', $filter['calendar_filter']['search_status'])==true && in_array('confirm', $filter['calendar_filter']['search_status'])==true)
             active
-@endif
+        @endif
             ">
             <i class="fa fa-exclamation-triangle nav-icon"></i>未確定
           </a>

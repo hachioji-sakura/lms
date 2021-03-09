@@ -14,6 +14,10 @@ class TextbookTag extends Model
       'tag_value' => 'required'
   );
 
+  public function scopePrices($query)
+  {
+    return $query->where('tag_key','LIKE' ,'_price');
+  }
 
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');

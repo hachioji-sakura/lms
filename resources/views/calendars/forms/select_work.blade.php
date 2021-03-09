@@ -8,13 +8,13 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fa fa-wrench"></i></span>
       </div>
-      <select name='work' class="form-control" required="true" onChange="work_change()">
-        @foreach($attributes['work'] as $index=>$name)
-        @if(intval($index)>5) @continue @endif
-        <option value="{{ $index }}" @if($item['work']==$index) selected @endif>{{$name}}
-        </option>
-        @endforeach
-      </select>
+{{--      <select name='work' class="form-control" required="true" onChange="work_change()">--}}
+{{--        @foreach($attributes['work'] as $index=>$name)--}}
+{{--        @if(intval($index)>5) @continue @endif--}}
+{{--        <option value="{{ $index }}" @if($item['work']==$index) selected @endif>{{$name}}--}}
+{{--        </option>--}}
+{{--        @endforeach--}}
+{{--      </select>--}}
     </div>
   </div>
 </div>

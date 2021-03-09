@@ -414,5 +414,5 @@ return [
   'publisher_name' => '出版社',
   'supplier_name' => '発注先',
   'difficulty' => '難易度',
-  'textbooks' => 'テキスト'
+  'textbooks' => 'テキスト',
 ];

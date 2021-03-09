@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GeneralAttribute;
+use App\Models\Publisher;
 use App\Models\Student;
+use App\Models\Subject;
+use App\Models\Supplier;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\Textbook;
@@ -61,6 +65,8 @@ class TextbookController extends MilestoneController
         $user = $user->details();
         $ret['user'] = $user;
       }
+
+
       if(isset($user)){
         if($this->is_manager($user->role)!=true){
           if($item->is_access($user->user_id)!=true){
@@ -194,62 +200,13 @@ class TextbookController extends MilestoneController
     foreach($items as $item){
       $item->publisher_name = $item->publisher->name;
       $item->supplier_name = $item->supplier->name;
+      $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
       $item->subject = $item->getSubjectName();
       $item->grade = $item->getGrade();
     }
 
     return ["items" => $items, "fields" => $fields];
   }
-
-    /**
-     * 検索～一覧
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return [Collection, field]
-     */
-//    public function search(Request $request)
-//    {
-//      $items = $this->model();
-//      $user = $this->login_details($request);
-//      if($this->is_manager_or_teacher($user->role)!==true){
-//        //生徒の場合は所有しているものを表示する
-//      }
-//
-//      $items = $this->_search_scope($request, $items);
-//      $items = $this->_search_pagenation($request, $items);
-//
-//      $items = $this->_search_sort($request, $items);
-//      $items = $items->get();
-//      if(isset($items)){
-//        foreach($items as $item){
-//          $chapter = $item->chapters;
-//          if(isset($item->publisher)){
-//            $item->kana = '出版：'.$item->publisher->name;
-//          }
-//          else {
-//            $item->kana = '出版：不明';
-//          }
-//          $icon = asset('svg/folder_in_file.svg');
-//          if($item->image && !empty($item->image->s3_url)){
-//            $icon = $item->image->s3_url;
-//          }
-//          $item->icon = $icon;
-//          $item->chapter_count = count($chapter);
-//        }
-//      }
-//      $fields = [
-//        'id' => [
-//          'label' => 'ID',
-//        ],
-//        'name' => [
-//          'label' => 'タイトル',
-//          'link' => 'show',
-//        ],
-//      ];
-//      return ['items' => $items->toArray(), 'fields' => $fields];
-//    }
-
-
 
     /**
      * フィルタリングロジック
@@ -278,6 +235,53 @@ class TextbookController extends MilestoneController
 
       return $items;
     }
+
+  /**
+   * Show the forms for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Request $request, $id)
+  {
+    $textbook = Textbook::where('id', $id)->first();
+    if(isset($textbook)) {
+      $param = $this->get_param($request, $id);
+      $param['teachers'] = [];
+      $param['textbook'] = $textbook;
+      $param['publishers'] = Publisher::get();
+      $param['suppliers'] = Supplier::get();
+      $param['subjects'] = Subject::get();
+      $param['grades'] = GeneralAttribute::findKey('grade')->get();
+
+      $textbookPrices = $textbook->getPrices();
+      $param['textbookPrices']=[];
+      if(!empty($textbookPrices)) {
+        foreach ($textbookPrices as $textbookPrice) {
+          $param['textbookPrices'][$textbookPrice->tag_key] = $textbookPrice->tag_value;
+        }
+      }
+
+
+      foreach($textbook->textbook_subject as $textbookSubject){
+        $param['textbookSubjects'][] = $textbookSubject->subject->name;
+      }
+
+      $textbookGrades = $textbook->getGradeAttributes();
+      $param['textbookGrades']=[];
+        if(!empty($textbookGrades)) {
+        foreach($textbookGrades as $textbookGrade) {
+          $param['textbookGrades'][] = $textbookGrade->attribute_name;
+        }
+      }
+
+    }else{
+      abort('404');
+    }
+    return view($this->domain.'.create', [
+      '_edit' => true])
+      ->with($param);
+  }
 
 
 
