@@ -206,6 +206,18 @@
       </div>
     </div>
     @endif
+    @if($item->is_first_place()==true)
+    <div class="row">
+      <div class="col-12 mb-1">
+      <div class="form-group">
+        <input class="form-check-input icheck flat-red" type="checkbox" id="first_place_check" name="first_place_check" value="1" required="true">
+        <label class="form-check-label" for="first_place_check">
+          <i class="fa fa-exclamation-triangle mr-1"></i>{{$item->place_floor->place->name()}}の鍵を持っていることを確認しました
+        </label>
+      </div>
+    </div>
+    </div>
+    @endif
     <div class="row">
       @method('PUT')
       <div class="col-12 col-md-6 mb-1">

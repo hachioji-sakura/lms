@@ -1333,16 +1333,28 @@ EOT;
   }
 
   //TODO 事務システムリプレース後は不要
-    public function unk_schedule_update($schedule_ids, $teacher_id){
-      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
-        'teacher_id' => $teacher_id,
-      ]);
-    }
+  public function unk_schedule_update($schedule_ids, $teacher_id){
+    DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+      'teacher_id' => $teacher_id,
+    ]);
+  }
 
   public function cache_delete(){
     $this->delete_user_cache($this->user_id);
     foreach($this->members as $member){
       $this->delete_user_cache($member->user_id);
     }
+  }
+
+  public function is_first_place(){
+    $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
+    $c = self::where('user_id', $this->user_id)
+                    ->whereIn('place_floor_id', $place_floor_ids)
+                    ->where('id', '!=', $this->id)
+                    ->whereIn('status', ['fix', 'presence'])->first();
+    if($c==null){
+      return true;
+    }
+    return false;
   }
 }
