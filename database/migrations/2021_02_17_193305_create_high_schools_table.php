@@ -30,7 +30,6 @@ class CreateHighSchoolsTable extends Migration
             $table->boolean('part_time_credit')->comment('定時単位制');
             $table->boolean('part_time_credit_night_only')->comment('定時単位制夜間');
             $table->boolean('online_school')->comment('通信制');
-            $table->text('comment')->nullable()->comment('コメント');
             $table->timestamps();
 
             // インデックス
