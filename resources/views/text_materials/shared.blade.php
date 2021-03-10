@@ -15,9 +15,7 @@
             @foreach($teachers as $teacher)
                <option
                value="{{ $teacher->user_id }}"
-               @if(!empty($item))
-                 {{$item->target_user_id == $teacher->user_id  ? "selected" : "" }}
-               @endif
+               {{$item->shared_users->count() >0 && $item->shared_users->contains($teacher->user_id)  ? "selected" : "" }}
                >{{$teacher->name()}}</option>
             @endforeach
           </select>
