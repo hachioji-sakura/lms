@@ -19,9 +19,7 @@ class UserController extends Controller
   public $domain = "users";
 
   protected $pagenation_line = 20;
-  public function __construct()
-  {
-  }
+
   protected function attributes()
   {
     $user = $this->login_details(new Request());
