@@ -105,7 +105,7 @@ class HighSchoolSeeder extends Seeder
             $attributes = [];
             $attributes['id'] = $index + 1;
             $attributes['school_id'] = $index + 1;
-            $attributes['post_number'] = $csv_row['郵便番号'];
+            $attributes['post_number'] = str_replace(PHP_EOL, '', $csv_row['郵便番号']);
             $attributes['address'] = $csv_row['住所'];
             $attributes['phone_number'] = $csv_row['電話番号'];
             $attributes['fax_number'] = $csv_row['ＦＡＸ番号'];
@@ -116,7 +116,6 @@ class HighSchoolSeeder extends Seeder
             $attributes['part_time_credit'] = $csv_row['定時制（単位制・昼夜間）'] === '○';
             $attributes['part_time_credit_night_only'] = $csv_row['定時制（単位制・夜間）'] === '○';
             $attributes['online_school'] = $csv_row['通信制'] === '○';
-            $attributes['comment'] = '';
             $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $high_school_attributes[] = $attributes;
