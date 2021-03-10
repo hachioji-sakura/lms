@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Exam;
+use App\Models\GeneralAttribute;
+use App\Models\Subject;
 
 class ExamController extends SchoolGradeController
 {
@@ -18,10 +20,22 @@ class ExamController extends SchoolGradeController
       $res = $this->transaction($request, function() use ($request){
         $item = new Exam;
         $item = $item->add($request->all());
-        
+
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
+     }
+
+     public function edit(Request $request, $id)
+     {
+       $param = $this->get_param($request, $id);
+       $grades = GeneralAttribute::findKey('grade')->pluck('attribute_name','attribute_value');
+       $subjects = Subject::all()->pluck('name','id');
+       return view($this->domain.'.create', [
+         '_edit' => true,
+         'grades' => $grades,
+         'subjects' => $subjects,
+       ])->with($param);
      }
 /*
     public function index(Request $request){
