@@ -89,7 +89,7 @@ class AgreementTableSeeder extends Seeder
           $entry_fee = 0;
         }
         $new_agreement->entry_fee = $entry_fee;
-        $new_agreement->status = "commit";//承認状態で登録
+        $new_agreement->status = "dummy";//中間ステータスで登録
         $new_agreement->start_date = date('Y-m-d H:i:s');
         $new_agreement->remark = "enforce registered";
         $new_agreement->save();
