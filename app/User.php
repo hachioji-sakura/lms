@@ -98,7 +98,7 @@ class User extends Authenticatable
     }
     public function shared_text_materials()
     {
-        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable');
+        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable')->withTimestamps();
     }
     public function teacher(){
       return $this->hasOne('App\Models\Teacher');
