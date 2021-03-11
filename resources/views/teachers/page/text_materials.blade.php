@@ -34,7 +34,7 @@
           <li class="col-lg-4 col-md-4 col-12" accesskey="" target="">
             <div class="row">
               <div class="col-12 text-center">
-                <a href="javascript:void(0);" page_title="{{__('labels.text_materials')}}" page_form="dialog" page_url="/text_materials/{{$text_material->id}}" class="product-title">
+                <a href="{{$text_material->s3_url}}" target="_blank" class="product-title">
                   <img
                     @if($text_material->is_movie()==true)
                     src="/svg/movie.svg"
@@ -53,7 +53,7 @@
             </div>
             <div class="row my-2">
               <div class="col-12 text-lg text-center">
-                <a href="javascript:void(0);" page_title="{{$text_material->name}}" page_form="dialog" page_url="/text_materials/{{$text_material->id}}" class="product-title">
+                <a href="{{$text_material->s3_url}}" target="_blank" class="product-title">
                   {{ str_limit($text_material->name, 42, '...') }}
                 </a>
                 @if($text_material->is_publiced()==true)
