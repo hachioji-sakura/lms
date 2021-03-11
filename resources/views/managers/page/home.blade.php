@@ -128,6 +128,19 @@
           </div>
           </a>
         </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
+          <a href="/text_materials">
+          <div class="info-box">
+            <span class="info-box-icon bg-info">
+              <i class="fa fa-book"></i>
+            </span>
+            <div class="info-box-content text-dark">
+              <b class="info-box-text text-lg">教材管理</b>
+              <span class="text-sm">教材の登録、編集、削除</span>
+            </div>
+          </div>
+          </a>
+        </div>
       </div>
   	</div>
   </section>
