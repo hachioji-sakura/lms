@@ -12,10 +12,17 @@
       <input type="hidden" name="student_id" value="{{$student_id}}">
     @endif
     <div class="row mb-2">
-      <div class="col-12 mb-2">
-        <label>{{__('labels.title')}}</label>
+      <div class="col-12  mb-2">
+        <label>{{__('labels.type')}}</label>
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <input type="text" name="name" class="form-control" placeholder="例:○○中学校　△学年　中間考査" value="{{$_edit == true ? $item->name : ''}}" required="true">
+        <select name="type" id="select_type" width="100%" class="form-control select2">
+          @foreach(config('attribute.exam_type') as $key => $name)
+          <option value="{{$key}}"
+            {{$_edit == true && $item->type == $key ? "selected" : ""}}
+          >
+          {{$name}}</option>
+          @endforeach
+        </select>
       </div>
       <div class="col-12 col-md-6 mb-2">
         <label>{{__('labels.grade')}}</label>
@@ -34,8 +41,8 @@
           @endforeach
         </select>
         @endif
-
       </div>
+
       <div class="col-12 col-md-6 mb-2">
         <label>{{__('labels.semester')}}</label>
         @if(isset($item) && $_edit == true)
@@ -57,18 +64,7 @@
       </div>
     </div>
 
-    <div class="col-12 col-md-6 mb-2">
-      <label>{{__('labels.type')}}</label>
-      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-      <select name="type" id="select_type" width="100%" class="form-control select2">
-        @foreach(config('attribute.exam_type') as $key => $name)
-        <option value="{{$key}}"
-          {{$_edit == true && $item->type == $key ? "selected" : ""}}
-        >
-        {{$name}}</option>
-        @endforeach
-      </select>
-    </div>
+
 
     <div class="row mt-3">
       <div class="col-12 col-md-6 mb-1">

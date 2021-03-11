@@ -419,5 +419,6 @@ return [
   'deviation' => '偏差値',
   'average_point' => '平均点',
   'exam_results' => '試験結果',
-  'exams' => '試験', 
+  'exams' => '試験',
+  'subject_count' => '科目数',
 ];

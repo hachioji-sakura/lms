@@ -34,7 +34,11 @@ class ExamResult extends SchoolGradeReport
     ];
 
     public function getPointPerMaxAttribute(){
-      return $this->point."/".$this->max_point;
+      $average = "-";
+      if(!empty($this->average_point)){
+        $average = $this->average_point;
+      }
+      return $this->point."/".$this->max_point."(".$average.")";
     }
 
     public function add($form){

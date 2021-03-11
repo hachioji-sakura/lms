@@ -23,6 +23,16 @@
         <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
           {{$button['label']}}
         </a>
+        @elseif($button === 'download')
+          @if(!empty($row->s3_url))
+          <a href="{{$row->s3_url}}" role="button" class="btn btn-info btn-sm float-left mr-1 my-1" target="_blank">
+            <i class="fa fa-cloud-download-alt"></i>
+          </a>
+          @endif
+        @else
+        <a class="btn btn-sm btn-{{$button['style']}} float-left ml-2 my-1" href="javascript:void(0);" page_form="dialog" page_url="{{$button['page_url']($row)}}" page_title="{{$button['title']}}">
+            <i class="fa fa-{{$button['icon']}} nav-icon"></i>
+        </a>
         @endif
       @endforeach
     @else

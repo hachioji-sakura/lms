@@ -16,8 +16,8 @@ class CreateExamResultsTable extends Migration
         Schema::create('exam_results', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('subject_id')->comment('科目ID');
-            $table->integer('average_point')->nullable(true)->comment('平均点');
-            $table->integer('deviation')->nullable(true)->comment('偏差値');
+            $table->float('average_point')->nullable(true)->comment('平均点');
+            $table->float('deviation')->nullable(true)->comment('偏差値');
             $table->integer('point')->comment('得点');
             $table->integer('max_point')->comment('満点');
             $table->date('taken_date')->nullable(true)->comment('実施日');

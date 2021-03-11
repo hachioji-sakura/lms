@@ -15,6 +15,35 @@ class ExamController extends SchoolGradeController
     public function model(){
       return Exam::query();
     }
+
+    public function show(Request $request, $id)
+    {
+      $param = $this->get_param($request, $id);
+      $fields = [
+        'subject_name' => [
+          'label' => __('labels.subjects'),
+          'blank' => true,
+          'link' => function($row){
+            if(empty($row->s3_url)){
+              return "";
+            }
+            return $row->s3_url;
+          }
+        ],
+        'point_per_max' => [
+          'label' => __('labels.point'),
+        ],
+        'deviation' => [
+          'label' => __('labels.deviation'),
+        ],
+      ];
+
+      return view($this->domain.'.page', [
+        'action' => $request->get('action'),
+        'fields'=>$fields])
+        ->with($param);
+    }
+
     public function _store(Request $request)
     {
       $res = $this->transaction($request, function() use ($request){

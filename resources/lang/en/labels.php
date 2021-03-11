@@ -416,5 +416,6 @@ return [
   'deviation' => 'Deviations',
   'average_point' => 'Average Points',
   'exam_results' => 'Exam Results',
-  'exams' => 'Exam', 
+  'exams' => 'Exam',
+  'subject_count' => 'Number of Subjects',
 ];

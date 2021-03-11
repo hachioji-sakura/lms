@@ -14,6 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Exam;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -441,6 +442,57 @@ class StudentController extends UserController
    ])->with($param);
   }
 
+  public function show_exam_result_page(Request $request, $id, $exam_id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exam_results";
+    $param['view'] = $view;
+    $exams = $item->exams;
+    $exam = $item->exams()->find($exam_id);
+    if(empty($exam)){
+      $exam_results = collect([]);
+    }else {
+      $exam_results = $exam->exam_results;
+    }
+
+    $exam_result_fields = $this->get_exam_result_fields();
+
+   return view($this->domain.'.'.$view, [
+    'item' => $item,
+    'exams' => $exams,
+    'exam' => $exam,
+    'exam_results' => $exam_results,
+    'exam_result_fields' => $exam_result_fields,
+   ])->with($param);
+  }
+
+  public function get_exam_result_fields(){
+    return [
+      'subject_name' => [
+        'label' => __('labels.subjects'),
+        'blank' => true,
+      ],
+      'point_per_max' => [
+        'label' => __('labels.point'),
+      ],
+      'deviation' => [
+        'label' => __('labels.deviation'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+            'download',
+            'edit',
+            'delete',
+          ],
+      ]
+    ];
+  }
+
   public function get_subjects($items, $from){
     switch($from){
       case "exam":
@@ -467,28 +519,37 @@ class StudentController extends UserController
 
   public function get_exam_fields(){
     return [
-      'subject_name' => [
+      'name' => [
         'label' => __('labels.title'),
-      ],
-      'point_per_max' => [
-        'label' => __('labels.point'),
-      ],
-      'deviation' => [
-        'label' => __('labels.deviation'),
-      ],
-      'average_point' => [
-        'label' => __('labels.average_point'),
-      ],
-      's3_alias' => [
-        'label' => __('labels.file'),
         'link' => function($row){
-          return $row->s3_url;
-        },
+          return '/students/'.$row->student_id.'/exams/'.$row->id;
+        }
+      ],
+      'grade_name' => [
+        'label' => __('labels.grade')
+      ],
+      'semester_name' => [
+        'label' => __('labels.semester'),
+      ],
+      'result_count' =>[
+        'label' => __('labels.subject_count'),
+      ],
+      'sum_point_per_max' => [
+        'label' => __('labels.point')."(".__('labels.average_point').")",
       ],
       'buttons' => [
         'label' => '操作',
         'button' => [
-          'edit','delete'
+          'edit',
+          'create_result' => [
+            'label' => '',
+            'style' =>  'primary',
+            'page_url' => function($row){
+              return '/exam_results/create?exam_id='.$row->id;
+            },
+            'icon' => 'plus',
+            'title' => __('labels.exams').__('labels.add'),
+          ]
         ],
       ],
     ];

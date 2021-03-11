@@ -24,8 +24,28 @@ class Exam extends SchoolGrade
       'create_user_id' => 1,
     ];
 
+    public function student(){
+      return $this->belongsTo('App\Models\Student','student_id');
+    }
+
     public function getFullTitleAttribute(){
       return $this->semester_name.":".$this->name;
+    }
+
+    public function getSumPointAttribute(){
+      return $this->exam_results->sum('point');
+    }
+
+    public function getSumMaxPointAttribute(){
+      return $this->exam_results->sum('max_point');
+    }
+
+    public function getSumPointPerMaxAttribute(){
+      return $this->sum_point."/".$this->sum_max_point;
+    }
+
+    public function getResultCountAttribute(){
+      return $this->exam_results->count();
     }
 
     public function scopeSearch($query, $request){
@@ -42,6 +62,7 @@ class Exam extends SchoolGrade
 
     public function add($form){
       $this->fill($form);
+      $this->name = config("attribute.exam_type")[$form['type']];
       $this->save();
     }
 }

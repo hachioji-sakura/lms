@@ -4,10 +4,10 @@
 @extends('students.page')
 @include($domain.'.menu')
 
-@include('dashboard.widget.exams')
+@include('dashboard.widget.exam_results')
 
 @section('sub_contents')
   <div class="col-12">
-    @yield('exams')
+    @yield('exam_results')
   </div>
 @endsection

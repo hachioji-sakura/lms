@@ -13,32 +13,35 @@
     @endif
     <div class="col-12 col-md-12 mb-1 report_point">
       <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-12 mb-2">
           <label>{{__('labels.subject')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <select name="subject_id" width="100%" class="form-control select2">
+          <select name="subject_id" width="100%" class="form-control select2" required="true">
             <option value=" ">{{__('labels.selectable')}}</option>
             @foreach($subjects as $key => $name)
             <option value="{{$key}}" {{$_edit == true && $item->subject_id == $key ? "selected" : ''}}>{{$name}}</option>
             @endforeach
           </select>
         </div>
-        <div class="col-12 col-md-3 mb-2">
+        <div class="col-12 mb-2">
           <label>{{__('labels.point')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <input type="text" name="point" class="form-control" placeholder="得点" required="true" inputtype="numeric" value="{{$_edit == true ? $item->point : ''}}">
+          <div class="row">
+            <div class="col-5">
+              <input type="text" name="point" class="form-control" placeholder="得点" required="true" inputtype="numeric" value="{{$_edit == true ? $item->point : ''}}">
+            </div>
+            <div class="col-1 text-center">/</div>
+            <div class="col-5">
+              <input type="text" name="max_point" class="form-control" placeholder="" required="true" inputtype="numeric" value="{{$_edit == true ? $item->max_point : '100'}}">
+            </div>
+          </div>
         </div>
-        <div class="col-12 col-md-3 mb-2">
-          <label>{{__('labels.max_point')}}</label>
-          <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-          <input type="text" name="max_point" class="form-control" placeholder="満点" required="true" inputtype="numeric" value="{{$_edit == true ? $item->max_point : ''}}">
-        </div>
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-6 mb-2">
           <label>{{__('labels.average_point')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           <input type="text" name="average_point" class="form-control" placeholder="平均点" inputtype="numeric" value="{{$_edit == true ? $item->average_point : ''}}">
         </div>
-        <div class="col-12 col-md-6 mb-2">
+        <div class="col-6 mb-2">
           <label>{{__('labels.deviation')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           <input type="text" name="deviation" class="form-control" placeholder="偏差値" inputtype="numeric" value="{{$_edit == true ? $item->deviation : ''}}">
