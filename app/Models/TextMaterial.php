@@ -60,10 +60,10 @@ class TextMaterial extends Milestone
     return $this->belongsTo('App\User', 'create_user_id');
   }
   public function shared_users(){
-    return $this->morphToMany('App\User', 'shared_userable');
+    return $this->morphToMany('App\User', 'shared_userable')->withTimestamps();
   }
   public function curriculums(){
-    return $this->morphToMany('App\Models\Curriculum', 'curriculumable');
+    return $this->morphToMany('App\Models\Curriculum', 'curriculumable')->withTimestamps();
   }
   public function getPublicedDateAttribute(){
     return $this->_date_label($this->publiced_at, 'Y年m月d日');
