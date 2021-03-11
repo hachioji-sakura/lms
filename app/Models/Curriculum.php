@@ -59,7 +59,7 @@ class Curriculum extends Milestone
 
     public function text_materials()
     {
-        return $this->morphedByMany('App\Models\TextMaterial', 'curriculumable');
+        return $this->morphedByMany('App\Models\TextMaterial', 'curriculumable')->withTimestamps();
     }
 
     public function details(){
