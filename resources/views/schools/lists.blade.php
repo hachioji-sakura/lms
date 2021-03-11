@@ -102,7 +102,7 @@
             <th>{{ $school_view_entity->localizeName('address') }}</th>
             <th style="width: 40%;">{{ $school_view_entity->localizeName('department_names') }}</th>
             <th>{{ $school_view_entity->localizeName('process') }}</th>
-            <th>{{ $school_view_entity->localizeName('control') }}</th>
+            <th style="width: 160px;">{{ $school_view_entity->localizeName('control') }}</th>
         </tr>
         @foreach($paginator as $high_school_entity)
           <tr>
