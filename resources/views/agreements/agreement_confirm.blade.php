@@ -1,6 +1,6 @@
 <div id="admission_mail">
   <form method="POST"  action="/{{$domain}}/{{$item->id}}/admission">
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => $input, 'agreement' => $agreement, 'active_tab' => 2]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $item, 'domain' => $domain, 'input' => true, 'agreement' => $item, 'active_tab' => 2]) @endcomponent
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
@@ -20,13 +20,13 @@
         --}}
     		<div class="row">
     			<div class="col-12 col-md-6 mb-1">
-    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="入会案内メールを送信しますか？"
-            @if($item->student->agreementsByStatuses(['new'])->count() == 0 )
+    				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="契約更新メールを送信しますか？"
+            @if($item->agreement_statements->count() == 0)
               disabled
             @endif
             >
-              <i class="fa fa-envelope mr-1"></i>
-              入会案内メールを送信する
+    					<i class="fa fa-envelope mr-1"></i>
+    					契約更新メールを送信する
     				</button>
     			</div>
     			<div class="col-12 col-md-6 mb-1">

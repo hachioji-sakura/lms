@@ -315,8 +315,7 @@ EOT;
   }
   public function get_access_member(){
     $ret = [];
-    $user = Auth::user();
-    if(!isset($user)) {
+    $user = Auth::user();    if(!isset($user)) {
       return $ret;
     }
     $user = $user->details();
@@ -1346,6 +1345,18 @@ EOT;
     }
   }
 
+
+  public function agreement_update($user_id){
+    $agreement_member =  UserCalendarMemberSetting::where('user_id',$user_id)->get();
+    if($agreement_member->count() > 0 ){
+      //設定が残るなら契約更新
+      Agreement::add_from_member_setting($agreement_member->first()->id);
+    }else{
+      //有効な設定がなければ契約無効化
+      $student_id = Student::where('user_id',$user_id)->first()->id;
+      Agreement::where('student_id',$student_id)->update(['end_date' => date('Y/m/d H:i:s')]);
+    }
+
   public function is_first_place(){
     $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
     $c = self::where('user_id', $this->user_id)
@@ -1356,5 +1367,6 @@ EOT;
       return true;
     }
     return false;
+
   }
 }

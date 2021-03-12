@@ -12,6 +12,9 @@ use App\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Tuition;
+use App\Models\TuitionMaster;
+use App\Models\Agreement;
+use App\Models\AgreementStatement;
 
 /**
  * App\Models\UserCalendarMemberSetting
@@ -70,10 +73,17 @@ class UserCalendarMemberSetting extends UserCalendarMember
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }
+  public function agreement_statements(){
+    return $this->belongsToMany('App\Models\AgreementStatement','common.user_calendar_member_setting_agreement_statement','user_calendar_member_setting_id','agreement_statement_id')->withTimestamps();
+  }
+
+  public function enable_agreement_statements(){
+    return $this->agreement_statements()->enable();
+  }
   public function dispose($login_user_id){
     $login_user = User::where('id', $login_user_id)->first();
     if(!isset($login_user)) return false;
-
+    $user_id = $this->user_id;
     $c = 0;
     foreach($this->setting->members as $member){
       if($member->id == $this->id) continue;
@@ -89,6 +99,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
     else {
       $this->delete();
     }
+    //契約処理
+    $this->agreement_update($this->user_id);
   }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;
@@ -268,6 +280,9 @@ class UserCalendarMemberSetting extends UserCalendarMember
     if($user->role!='student'){
       return null;
     }
+    if($this->agreement_statements->count() > 0){
+      return $this->agreement_statements->first()->tuition;
+    }
     $lesson = $this->setting->lesson(true);
     $course = $this->setting->course(true);
     $grade = $user->get_tag_value('grade');
@@ -300,7 +315,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
                 ->where('lesson_week_count', $lesson_week_count)
                 ->where('subject', $subject)->first();
     if(!isset($tuition)) return null;
-    return $tuition;
+    return $tuition->tuition;
   }
   static public function get_api_lesson_fee($lesson, $course, $course_minutes, $lesson_week_count, $grade, $is_juken=false, $teacher_id, $subject){
     $replace_course = config('replace.course');
@@ -410,85 +425,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
 
     return $res;
   }
-  public function set_api_lesson_fee($lesson_fee=null){
 
-    if($this->setting->is_teaching()!=true){
-      return null;
-    }
-    $user = $this->user->details();
-    if($user->role!='student'){
-      return null;
-    }
-
-    $lesson = $this->setting->lesson(true);
-    $course = $this->setting->course(true);
-    $grade = $user->get_tag_value('grade');
-    $course_minutes = $this->setting->course_minutes(true);
-    $jukensei_flag = 0;
-    if($user->is_juken()==true){
-      $jukensei_flag = 1;
-    }
-    //体験の場合、まだis_enable=trueの状況で、feeを確定することになる
-    $settings = $user->get_calendar_settings(["search_status"=>["new", "confirm", "fix"]]);
-    $lesson_week_count = 0;
-    foreach($settings as $setting){
-      if($lesson==$setting->lesson(true) &&
-        $course == $setting->course(true)){
-          if($lesson_week_count < 3) $lesson_week_count++;
-      }
-    }
-
-    $setting_details = $this->setting->details(1);
-    $teacher = $this->setting->user->details('teachers');
-    if($lesson_fee==null){
-      $res = $this->get_lesson_fee();
-      if($res==null){
-        return $this->error_response("get_api_lesson_fee is null");
-      }
-      if(!isset($res["status"]) || intval($res["status"]) != 200){
-        return $this->error_response("get_api_lesson_fee error");
-      }
-      $lesson_fee = $res['data']['lesson_fee'];
-    }
-    $subject = '';
-    if($this->setting->get_tag_value('lesson')==2 && $this->setting->has_tag('english_talk_lesson', 'chinese')==true){
-      $subject= $this->setting->get_tag_value('subject');
-    }
-    elseif($this->setting->get_tag_value('lesson')==4){
-      $subject= $this->setting->get_tag_value('kids_lesson');
-    }
-    $tuition = $this->get_tuition();
-
-    if($tuition == null){
-
-      Tuition::add([
-        'student_id' => $user->id,
-        'teacher_id' => $teacher->id,
-        'tuition' => $lesson_fee,
-        'title' => $setting_details['title'],
-        'remark' => '',
-        "lesson" => $lesson,
-        "course_type" => $course,
-        "course_minutes" => $course_minutes,
-        "grade" => $grade,
-        "lesson_week_count" => $lesson_week_count,
-        "subject" => $subject,
-        "create_user_id" => $this->setting->user_id,
-        "start_date" => '9999-12-31',
-        "end_date" => '9999-12-31',
-      ]);
-    }
-    else {
-
-      $tuition->update([
-        'title' => $setting_details['title'],
-        'tuition' => $lesson_fee,
-      ]);
-    }
-
-
-    return $this->api_response(200, '', '');
-  }
   //TODO : status_updateをcalendar_setting向けに最適帰化
   public function status_update($status, $remark, $login_user_id, $is_send_mail=true, $is_send_teacher_mail=true){
     $is_update = false;
@@ -517,6 +454,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
         break;
       case "confirm":
           $is_send_teacher_mail = false;
+        break;
+      case "fix":
+        if($this->user->details()->role == 'student'){
+          $agreement = Agreement::add_from_member_setting($this->id);
+        }
         break;
       }
     $this->update($update_form);
@@ -551,5 +493,31 @@ class UserCalendarMemberSetting extends UserCalendarMember
   }
   public function get_rest_result(){
     return "";
+  }
+
+  public function get_tuition_master(){
+    $setting = $this->setting->details();
+    //2020年4月1日以前のユーザーは0円で返す
+    if( strtotime($this->user->created_at) > strtotime("2020/04/01") ){
+      $user_created_date = date('Y/m/d',strtotime($this->user->created_at));
+      $tuition_master = TuitionMaster::where('lesson',$setting->lesson(true))
+                              ->where('grade',$this->user->details()->get_tag_value('grade'))
+                              ->where('course_type',$setting->get_tag_value('course_type'))
+                              ->where('course_minutes',$setting['course_minutes'])
+                              ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
+                              ->where('is_exam',$this->user->details()->is_juken())
+                              ->whereDate('start_date','<',$user_created_date)
+                              ->whereDate('end_date','>',$user_created_date)->get();
+      if($tuition_master->count() > 0){
+        $tuition = $tuition_master->first()->tuition;
+      }else{
+        //なかったら0円
+        $tuition = 0;
+      }
+      return $tuition;
+    }else{
+      //昔の人は0円
+      return 0;
+    }
   }
 }
