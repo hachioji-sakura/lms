@@ -57,6 +57,9 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_attributes/{select_key?}','GeneralAttributeController@api_index');
   Route::resource('attributes','GeneralAttributeController');
   Route::resource('milestones','MilestoneController');
+  Route::get('text_materials/{id}/shared','TextMaterialController@shared_page');
+  Route::put('text_materials/{id}/shared','TextMaterialController@shared');
+
   Route::resource('text_materials','TextMaterialController');
 
   Route::get('comments/{id}/publiced','CommentController@publiced_page');

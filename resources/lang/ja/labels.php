@@ -309,6 +309,9 @@ return [
   'agreement_check' => '上記の内容について確認しました',
   'faq_add' => 'FAQ登録',
   'publiced_at' => '公開日',
+  'public' => '公開',
+  'unpublic' => '非公開',
+  'to_public' => '公開する',
 
   'sep_year' => '年',
   'sep_month' => '月',
@@ -418,4 +421,5 @@ return [
   'out_of_date' => '期限切れ',
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
+  'share' => '共有',
 ];

@@ -309,6 +309,9 @@ return [
   'agreement_check' => 'I agree with above contents',
   'faq_button' => 'FAQ Add',
   'publiced_at' => 'Publiced At',
+  'public' => 'public',
+  'unpublic' => 'unpublic',
+  'to_public' => 'to public',
 
   'sep_year' => '/',
   'sep_month' => '/',
@@ -422,4 +425,5 @@ return [
   'out_of_date' => 'Out of Date',
   'skype_name' => 'Skype Name',
   'skype_name_about' => 'Click here if you do not know how to check your Skype name',
+  'share' => 'Share',
 ];

@@ -61,6 +61,10 @@ class Curriculum extends Milestone
       return $this->belongsToMany('App\Models\Task','task_curriculum','curriculum_id','task_id')->withTimestamps();
     }
 
+    public function text_materials()
+    {
+        return $this->morphedByMany('App\Models\TextMaterial', 'curriculumable')->withTimestamps();
+    }
 
     public function details(){
       $item = $this;

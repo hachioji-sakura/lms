@@ -66,12 +66,25 @@
         <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/trials?list=new">
           <div class="info-box">
-            <span class="info-box-icon bg-info">
-              <i class="fa fa-envelope-open-text"></i>
+            <span class="info-box-icon bg-danger">
+              <i class="fa fa-archway"></i>
             </span>
             <div class="info-box-content text-dark">
               <b class="info-box-text text-lg">体験申し込み</b>
               <span class="text-sm">体験申し込みの管理</span>
+            </div>
+          </div>
+          </a>
+        </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
+          <a href="/events">
+          <div class="info-box">
+            <span class="info-box-icon bg-danger">
+              <i class="fa fa-envelope-open-text"></i>
+            </span>
+            <div class="info-box-content text-dark">
+              <b class="info-box-text text-lg">イベント一覧</b>
+              <span class="text-sm">講習・模試等イベントの管理</span>
             </div>
           </div>
           </a>
@@ -145,6 +158,14 @@
                 @endif
               </b>
               <span class="text-sm">カレンダー設定変更に伴う未承認の契約</span>
+          <a href="/text_materials">
+          <div class="info-box">
+            <span class="info-box-icon bg-info">
+              <i class="fa fa-book"></i>
+            </span>
+            <div class="info-box-content text-dark">
+              <b class="info-box-text text-lg">教材管理</b>
+              <span class="text-sm">教材の登録、編集、削除</span>
             </div>
           </div>
           </a>
