@@ -7,6 +7,7 @@ use App\Models\Publisher;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Supplier;
+use App\Models\TextbookSubject;
 use App\Models\TextbookTag;
 use App\User;
 use Illuminate\Http\Request;
@@ -20,6 +21,76 @@ class TextbookController extends MilestoneController
     public function model(){
       return Textbook::query();
     }
+
+
+  /**
+   * 新規登録画面
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create(Request $request)
+  {
+    $param = $this->get_param($request);
+    $param['item'] = new Textbook();
+    $param['item']->work = "";
+    $param['textbook'] = new Textbook();
+    $param['publishers'] = Publisher::get();
+    $param['suppliers'] = Supplier::get();
+    $param['subjects'] = Subject::get();
+    $param['grades'] = GeneralAttribute::findKey('grade')->get();
+    $param['textbookSubjects']= [];
+    $param['textbookPrices']= [];
+    $param['textbookGrades']= [];
+
+    return view($this->domain.'.create',
+      [ 'error_message' => '', '_edit' => false])
+      ->with($param);
+  }
+
+  /**
+   * 新規登録
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function store(Request $request)
+  {
+    dump('123');
+    $param = $this->get_param($request);
+    $res = $this->_store($request);
+    if(empty($res['message'])){
+      $message = '登録しました。';
+    }else{
+      $message = $res['message'];
+    }
+    //生徒詳細からもCALLされる
+    return $this->save_redirect($res, $param, $message);
+  }
+
+  /**
+   * 新規登録ロジック
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function _store(Request $request)
+  {
+
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+    $textbook = new Textbook();
+
+    return $this->transaction($request, function() use ($request, $textbook){
+      $user = $this->login_details($request);
+      $form = $request->all();
+      $form['create_user_id'] = $user->user_id;
+      $item = $textbook;
+      $item->textbook_create($form);
+
+      return $this->api_response(200, '', '', $item);
+    }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
+  }
+
   /**
    * 共通パラメータ取得
    *
@@ -28,6 +99,7 @@ class TextbookController extends MilestoneController
    * @return json
    */
   public function get_param(Request $request, $id=null){
+    //User取得
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
     $ret['remind'] = false;
@@ -243,7 +315,6 @@ class TextbookController extends MilestoneController
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  //todo 要リファクタリング
   public function edit(Request $request, $id)
   {
     $textbook = Textbook::where('id', $id)->first();
@@ -263,6 +334,7 @@ class TextbookController extends MilestoneController
           $param['textbookPrices'][$textbookPrice->tag_key] = $textbookPrice->tag_value;
         }
       }
+
       $param['textbookSubjects']=[];
       foreach($textbook->textbook_subject as $textbookSubject){
         $param['textbookSubjects'][] = $textbookSubject->subject->name;
@@ -318,6 +390,18 @@ class TextbookController extends MilestoneController
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
+  public function destroy(Request $request,$id)
+  {
+    try {
+      TextbookSubject::where('textbook_id', $id)->delete();
+      Textbook::where('id', $id)->delete();
+      TextbookTag::where('textbook_id', $id)->delete();
+    }catch(\Exception $e){
+      return redirect('/textbooks');
+    }
+    return redirect('/textbooks');
+  }
+
   /**
    * データ更新時のパラメータチェック
    *
@@ -327,24 +411,5 @@ class TextbookController extends MilestoneController
   {
     //保存時にパラメータをチェック
     return $this->api_response(200, '', '');
-  }
-
-
-  public function delete(Request $request)
-  {
-    // リクエスト
-    $high_school_id = $request->id;
-
-    // 基盤として最低限必要な要素を用意
-    $param = $this->get_common_param($request);
-
-    // 削除処理
-    $res = $this->transaction($request, function () use ($high_school_id) {
-      $this->high_school_entity_repository->deleteByHighSchoolId($high_school_id);
-
-      return $this->api_response();
-    }, __('labels.delete_complete'), __FILE__, __FUNCTION__, __LINE__);
-
-    return $this->save_redirect($res, $param, __('labels.delete_complete'));
   }
 }

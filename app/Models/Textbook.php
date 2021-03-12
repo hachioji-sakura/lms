@@ -65,15 +65,15 @@ class Textbook extends Model
     });
     return $filtered;
   }
-//
-//  public function details($user_id=0){
-//    //TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
-//    $item = $this;
-//    $item['teaching_name'] = 'test';
-//    return $item;
-//  }
 
-  public function textbook_update($form){
+  public function details($user_id=0){
+    //TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
+    $item = $this;
+    $item['teaching_name'] = 'test';
+    return $item;
+  }
+
+  public function textbook_create($form){
     //lms.textbooks
     $update_field = [
       'name' => "",
@@ -89,7 +89,8 @@ class Textbook extends Model
         $update_form[$key] = $form[$key];
       }
     }
-    $this->update($update_form);
+    $this->create($update_form);
+
     TextbookSubject::clearSubjects($this->id);
     if(isset($form['subject'])) {
       TextbookSubject::setSubjects($this->id, $form['subject']);
@@ -97,7 +98,7 @@ class Textbook extends Model
 
     $tag_names = ['grade_no'];
     foreach($tag_names as $tag_name){
-        TextbookTag::clearTags($this->id, $tag_name);
+      TextbookTag::clearTags($this->id, $tag_name);
     }
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
@@ -107,7 +108,7 @@ class Textbook extends Model
 
     $tag_names = ['teika_price','selling_price','amazon_price','publisher_price','other_price'];
     foreach($tag_names as $tag_name){
-        TextbookTag::clearTags($this->id, $tag_name);
+      TextbookTag::clearTags($this->id, $tag_name);
     }
     foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && !empty($form[$tag_name])){
@@ -127,6 +128,60 @@ class Textbook extends Model
 
 
 
+  }
+
+  public function textbook_update($form)
+  {
+    //lms.textbooks
+    $update_field = [
+      'name' => "",
+      'explain' => "",
+      'difficulty' => "",
+      'publisher_id' => "",
+      'supplier_id' => "",
+      'create_user_id' => "",
+    ];
+    $update_form = [];
+    foreach ($update_field as $key => $val) {
+      if (array_key_exists($key, $form)) {
+        $update_form[$key] = $form[$key];
+      }
+    }
+    $this->update($update_form);
+
+    TextbookSubject::clearSubjects($this->id);
+    if (isset($form['subject'])) {
+      TextbookSubject::setSubjects($this->id, $form['subject']);
+    }
+
+    $tag_names = ['grade_no'];
+    foreach ($tag_names as $tag_name) {
+      TextbookTag::clearTags($this->id, $tag_name);
+    }
+    foreach ($tag_names as $tag_name) {
+      if (isset($form[$tag_name]) && count($form[$tag_name]) > 0) {
+        TextbookTag::setTags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+    }
+
+    $tag_names = ['teika_price', 'selling_price', 'amazon_price', 'publisher_price', 'other_price'];
+    foreach ($tag_names as $tag_name) {
+      TextbookTag::clearTags($this->id, $tag_name);
+    }
+    foreach ($tag_names as $tag_name) {
+      if (isset($form[$tag_name]) && !empty($form[$tag_name])) {
+        TextbookTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+      }
+    }
+//
+//    $tag_names = ['schedule_remark'];
+//    foreach($tag_names as $tag_name){
+//      if(empty($form[$tag_name])) $form[$tag_name] = '';
+//      TextbookTag::setTag($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
+//    }
+//    if(!empty($form['locale'])){
+//      $this->user->update(['locale' => $form['locale']]);
+//    }
   }
 
 

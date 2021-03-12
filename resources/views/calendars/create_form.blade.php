@@ -10,7 +10,7 @@
       </div>
     </div>
     @endif
-    @if($_edit==true && $item->is_season_lesson()==true)
+    @if($_edit == true && $item->is_season_lesson()==true)
     {{-- 期間講習予定編集時の警告表示 --}}
     <div class="col-12">
       <div class="alert alert-danger text-sm pr-2 schedule_type schedule_type_class">

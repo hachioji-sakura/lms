@@ -1,14 +1,19 @@
 @if(isset($textbook))
-  <div class="col-6">
+  <div class="col-12 col-md-6">
     <div class="form-group">
-      <label for="start_date" class="w-100">
-        {{__('labels.textbooks')}}
+      <label for="field1">
+        テキスト名　
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
       </label>
-      <a alt="teacher_name" href="/teachers/{{$textbook->id}}" target="_blank">
-        <i class="fas fa-book mr-1"></i>
-        {{$textbook->name}}
-      </a>
+      <input type="text" id="name" name="name" class="form-control" placeholder="例：サンプルテキスト"
+             @if($_edit == true)
+             value="{{$textbook->name}}"
+
+             @endif
+             required>
+      @if($_edit == true)
       <input type="hidden" name="textbook" value="{{$textbook->id}}" alt="{{$textbook->name}}" />
+      @endif
     </div>
   </div>
 @endif
