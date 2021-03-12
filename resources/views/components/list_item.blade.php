@@ -3,26 +3,37 @@
     <td>
     @if($key==="buttons")
       @foreach($field["button"] as $button)
-        @if($button==="edit")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
-          <i class="fa fa-edit"></i>
-        </a>
-        @elseif($button==="delete")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
-          <i class="fa fa-trash"></i>
-        </a>
-        @elseif(isset($button['method']))
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/{{$button['method']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
-        @elseif(isset($button['action']))
-        <a href="javascript:void(0);" page_title="{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action={{$button['action']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
-        @elseif(isset($button['link']))
-        <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
+        @if( (isset($button['type']) && $button['type']($row)) || !isset($button['type']) )
+          @if($button==="edit")
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
+            <i class="fa fa-edit"></i>
+          </a>
+          @elseif($button==="delete")
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
+            <i class="fa fa-trash"></i>
+          </a>
+          @elseif(isset($button['method']))
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/{{$button['method']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @elseif(isset($button['action']))
+          <a href="javascript:void(0);" page_title="{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action={{$button['action']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @elseif(isset($button['link']))
+          <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @endif
         @endif
       @endforeach
     @else

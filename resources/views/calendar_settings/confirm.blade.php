@@ -24,22 +24,32 @@
           @csrf
           <input type="text" name="dummy" style="display:none;" / >
           @method('PUT')
-        @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
-          <div class="col-12 mb-1" >
-            <input type="hidden" name="is_all_student" value="1" />
-            @if($item->is_online()==true && $item->user->has_tag('skype_name')!=true)
-            <div class="col-12">
-              <div class="alert alert-danger text-sm">
-                <i class="icon fa fa-exclamation-triangle"></i>{!!nl2br(__('messages.error_skype_name_not_found'))!!}
-              </div>
+          <input type="hidden" name="is_all_student" value="1" />
+          @if($item->is_first_place()==true)
+          <div class="col-12">
+            <div class="form-group">
+              <input class="form-check-input icheck flat-red" type="checkbox" id="first_place_check" name="first_place_check" value="1" required="true">
+              <label class="form-check-label" for="first_place_check">
+                <i class="fa fa-exclamation-triangle mr-1"></i>{{$item->place_floor->place->name()}}の鍵を持っていることを確認しました
+              </label>
             </div>
-            @else
+          </div>
+          @endif
+          @component('calendars.forms.to_status_form', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+          @if($item->is_online()==true && $item->user->has_tag('skype_name')!=true)
+          <div class="col-12">
+            <div class="alert alert-danger text-sm">
+              <i class="icon fa fa-exclamation-triangle"></i>{!!nl2br(__('messages.error_skype_name_not_found'))!!}
+            </div>
+          </div>
+          @else
+          <div class="col-12 mb-1" >
             <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
                 <i class="fa fa-check mr-1"></i>
                 {{__('labels.schedule_to_confirm')}}
             </button>
-            @endif
           </div>
+          @endif
       </form>
     </div>
     @endif
@@ -69,18 +79,7 @@
     </div>
     @endif
 
-    <div class="col-12 col-lg-6 mb-1" id="{{$domain}}_action">
-      <form method="POST" action="/calendar_settings/{{$item['id']}}">
-        @csrf
-        <input type="text" name="dummy" style="display:none;" / >
-        @method('DELETE')
-        <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="{{$domain}}_action" confirm="{{__('messages.confirm_delete')}}">
-          <i class="fa fa-trash-alt mr-1"></i>
-          {{__('labels.schedule_delete')}}
-        </button>
-      </form>
-    </div>
-    <div class="col-12 col-lg-6 mb-1">
+    <div class="col-12 mb-1">
       <button type="reset" class="btn btn-secondary btn-block">
           {{__('labels.close_button')}}
       </button>

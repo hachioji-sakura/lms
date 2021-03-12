@@ -43,8 +43,7 @@ class UserController extends Controller
     $attributes['ask_type'] = [
       'new_schedule' => '通塾スケジュールの追加',
       'change_schedule' => '通塾スケジュールの変更',
-      'study_request' => '授業に関するご要望',
-      'other_request' => 'その他',
+      'delete_schedule' => '通塾スケジュールの削除',
     ];
 
     return $attributes;
@@ -89,6 +88,8 @@ class UserController extends Controller
     }
     $ret['filter'] = [
       'comment_filter' => [
+        'is_publiced_only' => $request->is_publiced_only,
+        'is_unpubliced_only' => $request->is_unpubliced_only,
         'is_checked_only' => $request->is_checked_only,
         'is_unchecked_only' => $request->is_unchecked_only,
         'search_comment_type'=>$request->search_comment_type,
@@ -100,6 +101,7 @@ class UserController extends Controller
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
         'search_subject' => $request->search_subject,
+        'search_curriculum' => $request->search_curriculum,
         'post_no' => $request->post_no,
         'place_id' => $request->place_id,
       ],
