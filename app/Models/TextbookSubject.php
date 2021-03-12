@@ -11,6 +11,22 @@ class TextbookSubject extends Model
   public static $rules = array(
 
   );
+  public static function clearSubjects($textbook_id){
+    TextbookSubject::where('textbook_id', $textbook_id)
+      ->delete();
+  }
+
+  public static function setSubjects($textbook_id,$subjects){
+    TextbookSubject::where('textbook_id',$textbook_id)
+      ->delete();
+    foreach($subjects as $subject)
+    $item = TextbookSubject::create([
+      'textbook_id' => $textbook_id,
+      'subject_id' => $subject,
+    ]);
+    return $item;
+  }
+
   public function textbook(){
     return $this->belongsTo('App\Models\Textbook','textbook_id','id')->withDefault();
   }

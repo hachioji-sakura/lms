@@ -4,7 +4,7 @@
       {{__('labels.explain')}}
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
-    <textarea type="text" id="body" name="remark" class="form-control">
+    <textarea type="text" id="body" name="explain" class="form-control">
       @if($_edit==true)
         {{$textbook->explain}}
       @endif

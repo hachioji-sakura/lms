@@ -1,6 +1,6 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="teacher_character" class="w-100">
+    <label for="subject" class="w-100">
       テキストに当てはまる学年を選択してください
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>

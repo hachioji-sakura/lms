@@ -7,6 +7,7 @@ use App\Models\Publisher;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Supplier;
+use App\Models\TextbookTag;
 use App\User;
 use Illuminate\Http\Request;
 use App\Models\Textbook;
@@ -242,6 +243,7 @@ class TextbookController extends MilestoneController
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
+  //todo 要リファクタリング
   public function edit(Request $request, $id)
   {
     $textbook = Textbook::where('id', $id)->first();
@@ -261,8 +263,7 @@ class TextbookController extends MilestoneController
           $param['textbookPrices'][$textbookPrice->tag_key] = $textbookPrice->tag_value;
         }
       }
-
-
+      $param['textbookSubjects']=[];
       foreach($textbook->textbook_subject as $textbookSubject){
         $param['textbookSubjects'][] = $textbookSubject->subject->name;
       }
@@ -274,7 +275,6 @@ class TextbookController extends MilestoneController
           $param['textbookGrades'][] = $textbookGrade->attribute_name;
         }
       }
-
     }else{
       abort('404');
     }
@@ -284,5 +284,67 @@ class TextbookController extends MilestoneController
   }
 
 
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function update(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $res = $this->_update($request, $id);
 
+    return $this->save_redirect($res, $param, '更新しました。');
+  }
+
+  public function _update(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+
+    return $this->transaction($request, function() use ($request, $id){
+      $user = $this->login_details($request);
+      $form = $request->all();
+      $form['create_user_id'] = $user->user_id;
+      $item = $this->model()->where('id',$id)->first();
+      $item->textbook_update($form);
+
+      return $this->api_response(200, '', '', $item);
+    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
+  }
+
+  /**
+   * データ更新時のパラメータチェック
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function save_validate(Request $request)
+  {
+    //保存時にパラメータをチェック
+    return $this->api_response(200, '', '');
+  }
+
+
+  public function delete(Request $request)
+  {
+    // リクエスト
+    $high_school_id = $request->id;
+
+    // 基盤として最低限必要な要素を用意
+    $param = $this->get_common_param($request);
+
+    // 削除処理
+    $res = $this->transaction($request, function () use ($high_school_id) {
+      $this->high_school_entity_repository->deleteByHighSchoolId($high_school_id);
+
+      return $this->api_response();
+    }, __('labels.delete_complete'), __FILE__, __FUNCTION__, __LINE__);
+
+    return $this->save_redirect($res, $param, __('labels.delete_complete'));
+  }
 }

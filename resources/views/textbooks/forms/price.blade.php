@@ -5,7 +5,7 @@
         {{$value}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-    <input type="text" id="name_last" name="{{$value}}" class="form-control" placeholder="例 : 1500" required="true" inputtype="zenkaku"
+    <input type="text" id="name_last" name="{{$key}}" class="form-control" placeholder="例 : 1500"
       @if(!empty($textbookPrices[$key]))
        value="{{$textbookPrices[$key]}}"
       @endif

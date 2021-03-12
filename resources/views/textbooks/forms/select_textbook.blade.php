@@ -8,7 +8,7 @@
         <i class="fas fa-book mr-1"></i>
         {{$textbook->name}}
       </a>
-      <input type="hidden" name="teacher_id" value="{{$textbook->id}}" alt="{{$textbook->name}}" />
+      <input type="hidden" name="textbook" value="{{$textbook->id}}" alt="{{$textbook->name}}" />
     </div>
   </div>
 @endif
