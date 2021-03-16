@@ -102,13 +102,11 @@ class AgreementTableSeeder extends Seeder
           $old_fee = $old_tbl_fee->where('member_no',$student_no)
                       ->where('lesson_id',$statement->lesson_id)
                       ->where('teacher_id',$teacher_id)->sortByDesc('insert_timestamp');
-          //なかったら0
+          //なかったら最新
           if($old_fee->count() > 0){
             $fee = $old_fee->first()->fee;
-          }else{
-            $fee = 0;
+            $statement->tuition = $fee;
           }
-          $statement->tuition = $fee;
           $statement->save();
         }
       }

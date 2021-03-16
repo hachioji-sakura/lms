@@ -15,6 +15,7 @@ use App\Models\Tuition;
 use App\Models\TuitionMaster;
 use App\Models\Agreement;
 use App\Models\AgreementStatement;
+use DB;
 
 /**
  * App\Models\UserCalendarMemberSetting
@@ -507,7 +508,7 @@ class UserCalendarMemberSetting extends UserCalendarMember
                               ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
                               ->where('is_exam',$this->user->details()->is_juken())
                               ->whereDate('start_date','<',$user_created_date)
-                              ->whereDate('end_date','>',$user_created_date)->get();
+                              ->whereDate(DB::raw('IFNULL(end_date,"9999/12/31")'),'>',$user_created_date)->get();
       if($tuition_master->count() > 0){
         $tuition = $tuition_master->first()->tuition;
       }else{

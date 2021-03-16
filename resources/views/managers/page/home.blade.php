@@ -158,6 +158,11 @@
                 @endif
               </b>
               <span class="text-sm">カレンダー設定変更に伴う未承認の契約</span>
+            </div>
+          </div>
+          </a>
+        </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/text_materials">
           <div class="info-box">
             <span class="info-box-icon bg-info">
