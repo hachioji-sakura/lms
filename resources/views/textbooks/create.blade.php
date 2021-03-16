@@ -21,14 +21,6 @@
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
-            @if($item->work==9)
-            <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry">
-                {{__('labels.update_button')}}
-                <i class="fa fa-caret-right ml-1"></i>
-              </button>
-            </div>
-            @else
             <div class="col-12 mb-1">
               <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry"
                 @if(isset($_edit) && $_edit==true)
@@ -41,7 +33,6 @@
                 <i class="fa fa-caret-right ml-1"></i>
               </button>
             </div>
-            @endif
           </div>
         </div>
       </div>

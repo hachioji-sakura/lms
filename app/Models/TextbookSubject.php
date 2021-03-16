@@ -11,12 +11,12 @@ class TextbookSubject extends Model
   public static $rules = array(
 
   );
-  public static function clearSubjects($textbook_id){
+  public static function clear_subjects($textbook_id){
     TextbookSubject::where('textbook_id', $textbook_id)
       ->delete();
   }
 
-  public static function setSubjects($textbook_id,$subjects){
+  public static function set_subjects($textbook_id,$subjects){
     TextbookSubject::where('textbook_id',$textbook_id)
       ->delete();
     foreach($subjects as $subject)

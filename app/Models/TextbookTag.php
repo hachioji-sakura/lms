@@ -19,7 +19,7 @@ class TextbookTag extends Model
   }
 
   //1 key = 1 tagの場合利用する(上書き差し替え）
-  public static function setTag($textbook_id, $tag_key, $tag_value , $create_user_id){
+  public static function set_tag($textbook_id, $tag_key, $tag_value , $create_user_id){
     TextbookTag::where('textbook_id', $textbook_id)
       ->where('tag_key' , $tag_key)->delete();
     $item = TextbookTag::create([
@@ -31,7 +31,7 @@ class TextbookTag extends Model
     return $item;
   }
   //1 key = n tagの場合利用する(上書き差し替え）
-  public static function setTags($textbook_id, $tag_key, $tag_values, $create_user_id){
+  public static function set_tags($textbook_id, $tag_key, $tag_values, $create_user_id){
     TextbookTag::where('textbook_id', $textbook_id)
       ->where('tag_key' , $tag_key)->delete();
     foreach($tag_values as $tag_value){
@@ -44,7 +44,7 @@ class TextbookTag extends Model
     }
     return TextbookTag::where('textbook_id', $textbook_id)->where('tag_key', $tag_key)->get();
   }
-  public static function clearTags($textbook_id, $tag_key){
+  public static function clear_tags($textbook_id, $tag_key){
     TextbookTag::where('textbook_id', $textbook_id)
       ->where('tag_key' , $tag_key)->delete();
   }

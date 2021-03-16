@@ -22,39 +22,26 @@ class TextbookController extends MilestoneController
       return Textbook::query();
     }
 
-
   /**
-   * 新規登録画面
+   * テキスト新規登録画面
    *
    * @return \Illuminate\Http\Response
    */
   public function create(Request $request)
   {
     $param = $this->get_param($request);
-    $param['item'] = new Textbook();
-    $param['item']->work = "";
-    $param['textbook'] = new Textbook();
-    $param['publishers'] = Publisher::get();
-    $param['suppliers'] = Supplier::get();
-    $param['subjects'] = Subject::get();
-    $param['grades'] = GeneralAttribute::findKey('grade')->get();
-    $param['textbookSubjects']= [];
-    $param['textbookPrices']= [];
-    $param['textbookGrades']= [];
-
     return view($this->domain.'.create',
       [ 'error_message' => '', '_edit' => false])
       ->with($param);
   }
 
   /**
-   * 新規登録
+   * テキスト新規登録
    *
    * @return \Illuminate\Http\Response
    */
   public function store(Request $request)
   {
-    dump('123');
     $param = $this->get_param($request);
     $res = $this->_store($request);
     if(empty($res['message'])){
@@ -62,7 +49,6 @@ class TextbookController extends MilestoneController
     }else{
       $message = $res['message'];
     }
-    //生徒詳細からもCALLされる
     return $this->save_redirect($res, $param, $message);
   }
 
@@ -73,19 +59,16 @@ class TextbookController extends MilestoneController
    */
   public function _store(Request $request)
   {
-
     $res = $this->save_validate($request);
     if(!$this->is_success_response($res)){
       return $res;
     }
-    $textbook = new Textbook();
-
-    return $this->transaction($request, function() use ($request, $textbook){
+    return $this->transaction($request, function() use ($request){
       $user = $this->login_details($request);
       $form = $request->all();
       $form['create_user_id'] = $user->user_id;
-      $item = $textbook;
-      $item->textbook_create($form);
+      $item = new Textbook();
+      $item->store_textbook($form);
 
       return $this->api_response(200, '', '', $item);
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -94,7 +77,7 @@ class TextbookController extends MilestoneController
   /**
    * 共通パラメータ取得
    *
-   * @param  \Illuminate\Http\Request  $request
+   * @param Request $request
    * @param  int  $id　（this.domain.model.id)
    * @return json
    */
@@ -112,15 +95,7 @@ class TextbookController extends MilestoneController
     if($request->has('access_key')){
       $ret['token'] = $request->get('access_key');
     }
-    if($request->has('rest_reason')){
-      $ret['rest_reason'] = $request->get('rest_reason');
-    }
-    if($request->has('cancel_reason')){
-      $ret['cancel_reason'] = $request->get('cancel_reason');
-    }
-    if($request->has('user_calendar_setting_id')){
-      $ret['user_calendar_setting_id'] = $request->get('user_calendar_setting_id');
-    }
+
     if(is_numeric($id) && $id > 0){
       $user_id = -1;
       if($request->has('user')){
@@ -169,21 +144,18 @@ class TextbookController extends MilestoneController
         }
       }
     }
-//dump($ret);
+    $ret['item']['publishers'] = Publisher::get();
+    $ret['item']['suppliers'] = Supplier::get();
+    $ret['item']['subjects'] = Subject::get();
+    $ret['item']['grades'] = GeneralAttribute::findKey('grade')->get();
     return $ret;
   }
-    public function examination_textbook(Request $request){
-      $param = $this->get_param($request);
-      $param['domain'] = "examinations";
-      $_table = $this->search($request);
-      return view('examinations.textbooks',   $_table)
-        ->with($param);
-    }
 
   public function index(Request $request)
   {
     $user = $this->login_details($request);
 
+    //todo route(edit update)のアクセス権限
     if(!isset($user)) abort(403);
     if($this->is_manager($user->role)!=true) abort(403);
 
@@ -217,11 +189,7 @@ class TextbookController extends MilestoneController
     ]);
 
     $param = $this->get_param($request);
-//paramのほうにfilter ありました。
-    //get_common_param
     $_table = $this->search($request);
-
-
 
     return view($this->domain.'.lists', $_table)
       ->with($param);
@@ -234,9 +202,9 @@ class TextbookController extends MilestoneController
     if(!isset($user)) return $this->forbidden();
     if($this->is_manager($user->role)!=true) return $this->forbidden();
     $items = $this->model();
+    //検索条件
     $items = $this->_search_scope($request, $items);
     $items = $items->paginate($param['_line']);
-//    $items = $items->orderBy($request->_sort, $request->_sort_order)->paginate($param['_line']);
 
     $fields = [
       'name' => [
@@ -249,7 +217,6 @@ class TextbookController extends MilestoneController
       'difficulty' => [
         'label' => __('labels.difficulty'),
       ],
-
       'publisher_name'=> [
         "label" => __('labels.publisher_name'),
       ],
@@ -284,7 +251,7 @@ class TextbookController extends MilestoneController
     /**
      * フィルタリングロジック
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  Collection $items
      * @return Collection
      */
@@ -306,6 +273,32 @@ class TextbookController extends MilestoneController
         });
       }
 
+//      $forms = $request->all();
+//      //todo difficulty = 0　が常に含まれる。
+//      $scopes = ['publisher_id','supplier_id','difficulty'];
+//      foreach($scopes as $scope){
+//        if(isset($forms[$scope])){
+//          $items = $items->where($scope,$forms[$scope]);
+//        }
+//      }
+
+      if(isset($forms['subject'])){
+        foreach($forms['subject'] as $subject){
+          $items = $items->whereHas('textbook_subject', function($q) use ($subject){
+            $q->where('subject_id',$subject );
+          });
+        }
+      }
+
+      if(isset($forms['grade_no'])){
+        foreach($forms['grade_no'] as $grade_no){
+          $items = $items->whereHas('textbook_tag', function($q) use ($grade_no){
+            $q->where('tag_value',$grade_no );
+          });
+        }
+      }
+
+      $grades = GeneralAttribute::findKey('grade')->get();
       return $items;
     }
 
@@ -359,7 +352,7 @@ class TextbookController extends MilestoneController
   /**
    * Update the specified resource in storage.
    *
-   * @param  \Illuminate\Http\Request  $request
+   * @param Request $request
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
