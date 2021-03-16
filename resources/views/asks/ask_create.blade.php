@@ -1,4 +1,4 @@
-<div class="direct-chat-msg">
+<div class="direct-chat-msg" id="ask_create">
   @if(isset($_edit) && $_edit==true)
     <form id="edit" method="POST" action="/{{$domain}}/{{$item->id}}/ask/{{$ask->id}}">
       @method('PUT')
@@ -8,13 +8,25 @@
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="charge_user_id" value="1" / >
+    @if(isset($ask_type))
+    <input type="hidden" name="type" value="{{$ask_type}}">
+    @endif
+    @if(isset($target_model))
+    <input type="hidden" name="target_model" value="{{$target_model}}">
+    @endif
+    @if(isset($target_model_id))
+    <input type="hidden" name="target_model_id" value="{{$target_model_id}}">
+    @endif
+    @if(isset($target_user_id))
+    <input type="hidden" name="target_user_id" value="{{$target_user_id}}">
+    @endif
     <div id="ask_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           <div class="col-12">
             <div class="form-group">
               <label class="w-100">
-                依頼種別
+                依頼概要
                 @if(!isset($_edit) || $_edit==false)
                 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                 @endif
@@ -24,7 +36,7 @@
               @else
                 @foreach($attributes['ask_type'] as $index => $name)
                 <label class="mx-2" for="rest_type_1">
-                  <input type="radio" value="{{$index}}" name="type" class="icheck flat-green" required="true">
+                  <input type="checkbox" value="{{$name}}" name="title[]" class="icheck flat-green" required="true">
                   {{$name}}
                 </label>
                 @endforeach
@@ -71,12 +83,12 @@
         </div>
         <div class="carousel-item" id="confirm_form">
           <div class="row">
-            <div class="col-12 font-weight-bold" >依頼種別</div>
+            <div class="col-12 font-weight-bold" >依頼概要</div>
             <div class="col-12 p-3">
               @if(isset($_edit) && $_edit==true)
                 {{$ask->type_name()}}
               @else
-              <span id="type_name"></span>
+              <span id="title[]_name"></span>
               @endif
             </div>
             <div class="col-12 font-weight-bold" >内容</div>
@@ -90,7 +102,7 @@
               </a>
             </div>
             <div class="col-12 mb-1">
-                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="students_create"
+                <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="ask_create"
                   @if(isset($_edit) && $_edit==true)
                   confirm="{{__('messages.confirm_update')}}">
                     {{__('labels.update_button')}}
@@ -110,18 +122,6 @@
 <script>
 
 $(function(){
-  var form_data = null;
-  base.pageSettinged("ask_entry", form_data);
-  $('#ask_entry').carousel({ interval : false});
-  //submit
-  $("button.btn-submit").on('click', function(e){
-    e.preventDefault();
-    if(front.validateFormValue('ask_entry .carousel-item.active')){
-      $(this).prop("disabled",true);
-      $("#edit").submit();
-    }
-  });
-
   //次へ
   $('.carousel-item .btn-next').on('click', function(e){
     var form_data = front.getFormValue('ask_entry');
@@ -149,7 +149,7 @@ $(function(){
   //確認画面用のパラメータ調整
   function form_data_adjust(form_data){
     console.log(form_data);
-    var _names = ["type"];
+    var _names = ["title[]"];
     $.each(_names, function(index, value) {
       form_data[value+"_name"] = "";
       if(form_data[value+'']){

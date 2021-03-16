@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Models\Trial;
 use App\Models\Tuition;
 use App\Models\StudentParent;
+use App\Models\Student;
 use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
+use App\Models\AgreementStatement;
 
 use DB;
 use View;
@@ -684,12 +688,20 @@ class TrialController extends UserCalendarController
    public function admission_mail(Request $request, $id){
      $access_key = '';
      $trial = Trial::where('id', $id)->first();
+     $agreement = $trial->student->agreementsByStatuses(['new','commit'])->first();
+     if($agreement->status == 'new'){
+       $input = true;
+     }else{
+       $input = false;
+     }
      if(!isset($trial)) abort(404);
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
+       'agreement' => $agreement,
+       'input' => $input,
      ];
 
      return view($this->domain.'.admission_mail',
@@ -700,25 +712,21 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
-    $res = $this->transaction($request, function() use ($request, $id){
-
-      $trial = Trial::where('id', $id)->first();
-      //受講料初期設定
-      foreach($trial->get_calendar_settings() as $setting){
-        if($request->has($setting->id.'_tuition')){
-          $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->where('user_id', $trial->student->user_id)->first();
-          $member->set_api_lesson_fee(intval($request->get($setting->id.'_tuition')));
+    $res = $this->transaction($request, function() use ($request, $id,$param, $access_key){
+      //料金が変更されていたら更新
+      foreach($request->get('agreement_statements') as $statement_id => $value){
+        $statement = AgreementStatement::find($statement_id);
+        if(isset($statement) && $statement->tuition != $value['tuition']){
+          $statement->tuition = $value['tuition'];
+          $statement->save();
         }
       }
-      return $this->api_response(200, '', '', $trial);
+      $trial = Trial::find($id);//details()後だとupdate通らない
+      $agreement = Agreement::find($request->get('agreements')['id']);
+      $ask = $agreement->agreement_ask($param['user']->user_id, $access_key, 'agreement');
+      $trial->update(['status' => 'entry_guidanced']);
+      return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-    if($this->is_success_response($res)){
-      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-        $trial = Trial::where('id', $id)->first();
-        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
-        return $this->api_response(200, '', '', $ask);
-      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
-    }
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
   public function show_cancel_page(Request $request, $id){

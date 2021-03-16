@@ -14,6 +14,7 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Agreement;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -943,6 +944,12 @@ class StudentController extends UserController
          $form['search_status'] = ['new', 'commit', 'cancel'];
        }
        break;
+      case "agreement_update":
+        $form['search_type'] = ['agreement_update'];
+        if(!isset($form['search_status'])){
+          $form['search_status'] = ['new'];
+        }
+        break;
    }
 
    if(!isset($form['search_type'])){
@@ -1031,11 +1038,13 @@ class StudentController extends UserController
    $result = '';
    $param = $this->get_param($request, $id);
    $param['fields'] = [];
-   $param['_edit'] = true;
+   $param['_edit'] = false;
    $param['student'] = $param['item'];
+   $param['agreement'] =$param['item']->enable_agreements_by_type('normal')->first();
    return view($this->domain.'.agreement',$param);
 
  }
+
 
   /**
    * Show the form for editing the specified resource.
@@ -1183,6 +1192,18 @@ class StudentController extends UserController
   public function ask_create_page(Request $request, $id){
     $param = $this->get_param($request, $id);
 
+    if($request->has('target_model')){
+      $param['target_model'] = $request->get('target_model');
+    }
+    if($request->has('target_model_id')){
+      $param['target_model_id'] = $request->get('target_model_id');
+    }
+    if($request->has('type')){
+      $param['ask_type'] = $request->get('type');
+    }
+    if($request->has('target_user_id')){
+      $param['target_user_id'] = $request->get('target_user_id');
+    }
     return view('asks.ask_create',['_edit' => false])
       ->with($param);
   }
@@ -1191,7 +1212,15 @@ class StudentController extends UserController
     $form = $request->all();
     $res = $this->transaction($request, function() use ($request, $param){
       $form = $request->all();
-      $form["target_user_id"] = $param["item"]->user_id;
+      $_t = '';
+      foreach($request->get('title') as $title){
+         $_t .= $title .' / ';
+      }
+      $_t = rtrim($_t,' / ');
+      $form['title'] = $_t;
+      if( !$request->has('target_user_id')){
+        $form["target_user_id"] = $param["item"]->user_id;
+      }
       $form["create_user_id"] = $param["user"]->user_id;
       $item = Ask::add($form);
       return $this->api_response(200, '', '', $item);
@@ -1477,6 +1506,18 @@ class StudentController extends UserController
       return $this->api_response(200, '', '', $item);
     }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+  }
+  public function get_agreements($form, $status, $is_count_only = false){
+    $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+    $count = (new Agreement())->get_user_cache($cache_key, $form['user_id']);
+    if($count != null && $is_count_only==true) return $count;
+
+    $agreements = Agreement::findStatuses($status);
+    if($is_count_only == true){
+      return $agreements->count();
+    }else{
+      return $agreements;
+    }
   }
 
 }

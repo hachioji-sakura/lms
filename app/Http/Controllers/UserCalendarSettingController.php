@@ -15,6 +15,8 @@ use App\Models\UserCalendar;
 use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
+use App\Models\AgreementStatement;
 use DB;
 use View;
 
@@ -664,6 +666,9 @@ class UserCalendarSettingController extends UserCalendarController
         return $this->api_response(200, '', '', $setting);
       }, '更新', __FILE__, __FUNCTION__, __LINE__ );
     }
+
+
+
     /**
      * 新規登録
      *
@@ -691,7 +696,7 @@ class UserCalendarSettingController extends UserCalendarController
           //生徒をカレンダーメンバーに追加
           if(!empty($form['students'])){
             foreach($form['students'] as $student){
-              $setting->memberAdd($student->user_id, $form['create_user_id']);
+               $setting->memberAdd($student->user_id, $form['create_user_id']);
             }
           }
           $setting = $res["data"]->details();

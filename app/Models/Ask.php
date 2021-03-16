@@ -82,6 +82,11 @@ class Ask extends Milestone
   public function comments(){
     return $this->hasMany('App\Models\AskComment');
   }
+
+  public function getStatusNameAttribute(){
+    return config('attribute.ask_status')[$this->status];
+  }
+
   public function scopeRangeDate($query, $from_date, $to_date=null, $field='start_time')
   {
     //日付検索
@@ -322,10 +327,19 @@ EOT;
         $target_model_data->hope_to_join($is_commit, $form);
         break;
       case "agreement":
-        $ret = true;
         $is_complete = true;
-        //Trial->agreement()を実行
-        $target_model_data->agreement($is_commit);
+        $this->get_target_model_data()->student->regular();
+      case "agreement_confirm":
+        $ret = true;
+        //agreementを更新
+        $agreement = $this->get_target_model_data();
+        $old_agreements = $agreement->student->enable_agreements_by_type('normal');
+        if($old_agreements->count() > 0){
+          $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
+        }
+        $agreement->start_date =  date('Y/m/d H:i:s');
+        $agreement->status = 'commit';
+        $agreement->save();
         break;
       case "rest_cancel":
         $ret = true;
@@ -363,6 +377,7 @@ EOT;
     switch($this->type){
       case "hope_to_join":
       case "agreement":
+      case "agreement_confirm":
       case "recess":
       case "unsubscribe":
         $param['target_model'] = $target_model_data;
@@ -433,11 +448,9 @@ EOT;
   }
   public function charge_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
-    if (!View::exists('emails.'.$template.'_text')) {
+	if (!View::exists('emails.'.$template.'_text')) {
       return false;
-    }
-
-    if($this->charge_user_id==1) return false;
+    }    if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
 
     $title = $this->get_mail_title();
@@ -531,7 +544,10 @@ EOT;
       case 'user_calendars':
         $ret = UserCalendar::where('id', $this->target_model_id)->first();
         break;
-    }
+      case 'agreements':
+      case 'agreement_confirm':
+        $ret = Agreement::where('id', $this->target_model_id)->first();
+        break;    }
     return $ret;
   }
   public function is_access($user_id){

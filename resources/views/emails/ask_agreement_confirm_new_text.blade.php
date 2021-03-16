@@ -1,11 +1,13 @@
 @include('emails.common')
 {{$user_name}} 様
-@component('asks.forms.agreement_policy', []) @endcomponent
-1, 2, 3, 4, 5をご了承していただけますならば、
-以下のURLからご入会登録をお願いいたします。
+
+ご依頼の通塾スケジュール等の変更に伴って、ご契約内容が変更になります。
+
+ご契約内容をご確認の上ご了承頂けるようであれば、下記URLより
+ホームページにアクセスしてご承認のほどよろしくお願いいたします。
 
 …………………………………………………………………………………………
-入会登録画面
+契約変更承認画面
 {{config('app.url')}}/asks/{{$ask->id}}/agreement?key={{$target_model->student_parent->user->access_key}}
 …………………………………………………………………………………………
 ご契約内容

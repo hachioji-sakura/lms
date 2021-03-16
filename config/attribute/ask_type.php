@@ -12,5 +12,7 @@ return array(
   'schedule_add' => '授業追加依頼',
   'schedule_change' => '授業変更依頼',
   'request_other' => 'その他',
+  'agreement_update' => '契約更新依頼',
+  'agreement_confirm' => '契約承認依頼',
 );
 ?>
