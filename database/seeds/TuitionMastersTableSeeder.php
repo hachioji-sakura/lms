@@ -74,6 +74,9 @@ EOT;
         $all_grades = GeneralAttribute::findKey('grade');
         $grades = '';
         switch ($old_fee->lesson_grade){
+          case 0:
+            $grades = $all_grades->get();
+            break;
           case 1:
             $grades = $all_grades->where('attribute_value','like',"k%")->get();
             break;
@@ -115,6 +118,7 @@ EOT;
             'updated_at' => date('Y/m/d H:i:s'),
           ];
         }
+
         $fee_master = new TuitionMaster;
         $res = $fee_master->insert($form);
       }
