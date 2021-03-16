@@ -125,30 +125,48 @@ class AskController extends MilestoneController
 
   public function index(Request $request)
   {
-    if(!$request->has('_origin')){
-      $request->merge([
-        '_origin' => $this->domain,
-      ]);
-    }
-    if(!$request->has('_line')){
-      $request->merge([
-        '_line' => $this->pagenation_line,
-      ]);
-    }
-    if(!$request->has('_page')){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-    else if($request->get('_page')==0){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
     $param = $this->get_param($request);
     $_table = $this->search($request);
-    return view($this->domain.'.lists', $_table)
-      ->with($param);
+    $param['items'] = $_table['items'];
+    $param['fields'] = [
+      'title' => [
+        'label' => '概要',
+        'link' => 'show',
+      ],
+      'target_user_name' => [
+        'label' => '対象者',
+        'link' => function($row){
+          return $row->target_user->details()->domain."/".$row->target_user->details()->id;
+        }
+      ],
+      'status_name' => [
+        'label' => 'ステータス',
+      ],
+      'type_name' =>[
+        'label' => '依頼種別',
+      ],
+      'body' => [
+        'label' => '内容'
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'commit' => [
+            'label' => '完了にする',
+            'style' => 'danger',
+            'method' => 'status_update/commit',
+            'type' => function($row){
+                if($row->status == 'new'){
+                  return true;
+                }else{
+                  return false;
+                }
+              }
+          ],
+        ],
+      ],
+    ];
+    return view($this->domain.'.lists')->with($param);
   }
   /**
    * ステータス更新ページ
@@ -231,6 +249,7 @@ class AskController extends MilestoneController
     switch($param['item']->type){
       case "hope_to_join":
       case "agreement":
+      case "agreement_confirm":
         $message = "";
         break;
     }
@@ -371,12 +390,11 @@ class AskController extends MilestoneController
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
 
      $param['fields'] = $this->show_fields($param['item']->type);
-     $param['trial'] = $param['item']->get_target_model_data();
-     $param['access_key'] = $param['trial']->parent->user->access_key;
+     $param['agreement'] = $param['item']->get_target_model_data();
+     $param['access_key'] = $param['agreement']->student_parent->user->access_key;
      $param['action'] = '';
      $param['fields'] = [];
-     $param['student'] = $param['trial']->student;
-
+     $param['student'] = $param['agreement']->student;
      return view('asks.agreement', [])->with($param);
    }
 

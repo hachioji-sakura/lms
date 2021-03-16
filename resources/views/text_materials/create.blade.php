@@ -117,7 +117,7 @@
       </div>
       @endif
     </div>
-    @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain,  'item' => (isset($item) ? $item : null)]) @endcomponent
+    @component('text_materials.forms.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain,  'item' => (isset($item) ? $item : null)]) @endcomponent
 
     <div class="row">
       <div class="col-12 col-md-6 mb-1">

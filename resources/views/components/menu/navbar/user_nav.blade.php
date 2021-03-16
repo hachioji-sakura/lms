@@ -88,7 +88,10 @@
       <a href="/comments" class="dropdown-item">{{__('labels.comments_list')}}</a>
       <a href="/milestones" class="dropdown-item">{{__('labels.milestones_list')}}</a>
       --}}
+
+      <a href="/agreements?search_status=commit&search_enable=1" class="dropdown-item">{{__('labels.agreements').__('labels.list')}}</a>
       <a href="/events" class="dropdown-item">{{__('labels.events_list')}}</a>
+      <a href="/text_materials" class="dropdown-item">{{__('labels.text_materials')}}</a>
       <a href="/maillogs?search_status[]=sended" class="dropdown-item">{{__('labels.maillogs')}}</a>
       <a href="/actionlogs" class="dropdown-item">{{__('labels.actionlogs')}}</a>
       <a href="/attributes?select_key=keys" class="dropdown-item">{{__('labels.attributes_list')}}</a>

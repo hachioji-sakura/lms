@@ -98,13 +98,16 @@ class User extends Authenticatable
     }
     public function shared_text_materials()
     {
-        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable');
+        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable')->withTimestamps();
     }
     public function teacher(){
       return $this->hasOne('App\Models\Teacher');
     }
     public function manager(){
       return $this->hasOne('App\Models\Manager');
+    }
+    public function student_parent(){
+      return $this->hasOne('App\Models\StudentParent');
     }
     public function image(){
       return $this->belongsTo('App\Models\Image');
@@ -127,11 +130,16 @@ class User extends Authenticatable
     public function calendar_settings(){
       return $this->hasMany('App\Models\UserCalendarSetting');
     }
+
     public function calendar_members(){
       return $this->hasMany('App\Models\UserCalendarMember');
     }
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
+    }
+    public function enable_calendar_member_settings(){
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy']);
     }
     /**
      * パスワードリセット通知の送信
