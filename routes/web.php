@@ -407,14 +407,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
 
   // 学校関連
-  Route::get('schools', 'SchoolController@index');
-  Route::get('schools/delete_confirmation', 'SchoolController@deleteConfirmation');
-  Route::get('schools/create_form', 'SchoolController@createForm');
-  Route::get('schools/detail', 'SchoolController@detail');
-  Route::get('schools/edit', 'SchoolController@pageEdit');
+  Route::resource('schools', 'SchoolController');
+  Route::get('schools/{id}/delete_confirmation', 'SchoolController@deleteConfirmation');
   Route::post('schools/delete/{id}', 'SchoolController@delete');
   Route::post('schools/page_edit/{id}', 'SchoolController@pageEditRun');
-  Route::post('schools/create', 'SchoolController@create');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

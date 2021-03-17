@@ -97,7 +97,7 @@ class SchoolController extends MilestoneController
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function createForm(Request $request)
+    public function create(Request $request)
     {
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
@@ -119,11 +119,11 @@ class SchoolController extends MilestoneController
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
-        
+
         // 登録処理
         $res = $this->transaction($request, function () use ($request) {
             $name = $request->name;
@@ -160,12 +160,12 @@ class SchoolController extends MilestoneController
      * ページ詳細
      *
      * @param \Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function detail(Request $request)
+    public function show(Request $request, $id)
     {
-        // リクエスト
-        $high_school_id = $request->id;
+        $high_school_id = $id;
         
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
@@ -185,12 +185,13 @@ class SchoolController extends MilestoneController
      * ページ編集
      *
      * @param \Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
-    public function pageEdit(Request $request)
+    public function edit(Request $request, $id)
     {
         // リクエスト
-        $high_school_id = $request->id;
+        $high_school_id = $id;
     
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);

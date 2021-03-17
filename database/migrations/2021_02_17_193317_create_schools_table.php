@@ -25,7 +25,7 @@ class CreateSchoolsTable extends Migration
             $table->timestamps();
 
             // インデックス
-            $table->unique('name');
+            $table->index('name');
         });
     }
 

@@ -1,7 +1,7 @@
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{__('labels.school_page_high_school')}}{{__('labels.add')}}" page_form="dialog" page_url="/{{$domain}}/create_form" class="nav-link">
+    <a href="javascript:void(0);" page_title="{{__('labels.school_page_high_school')}}{{__('labels.add')}}" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{__('labels.school_page_high_school')}}{{__('labels.add')}}
     </a>
   </li>
@@ -119,9 +119,9 @@
                 {!! $high_school_entity->process() !!}
               </td>
               <td>
-                @include('schools.component.button.detail_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/detail?id='.$high_school_entity->highSchoolId()])
-                @include('schools.component.button.edit_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/edit?id='.$high_school_entity->highSchoolId()])
-                @include('schools.component.button.delete_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/delete_confirmation?id='.$high_school_entity->highSchoolId()])
+                @include('schools.component.button.detail_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/'.$high_school_entity->highSchoolId()])
+                @include('schools.component.button.edit_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/'.$high_school_entity->highSchoolId().'/edit'])
+                @include('schools.component.button.delete_button',['page_title' => $school_view_entity->pageTitle(), 'page_url' => $domain . '/'. $high_school_entity->highSchoolId().'/delete_confirmation'])
               </td>
           </tr>
         @endforeach

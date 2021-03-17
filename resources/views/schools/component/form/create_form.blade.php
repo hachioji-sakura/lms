@@ -1,5 +1,5 @@
 <div id="{{$domain}}_create">
-  <form method="POST" action="/{{$domain}}/create">
+  <form method="POST" action="/{{$domain}}">
     @csrf
     <div class="row">
       <div class="col-12 col-md-6 my-1">
@@ -20,14 +20,14 @@
       </div>
       <div class="col-12 col-md-6 my-1">
         <h6>{{ $school_view_entity->localizeName('process') }}</h6>
-        <select multiple="" name="process[]" class="form-control" style="margin-bottom: 15px;">
+        <select multiple="" name="process[]" class="form-control" style="margin-bottom: 15px;" required>
           @foreach($school_view_entity->processList() as $key_name => $process_name)
               <option value={{ $key_name }}>{{ $process_name }}</option>
           @endforeach
         </select>
 
         <h6>{{ $school_view_entity->localizeName('department_names') }}</h6>
-        <select multiple="" name="department_ids[]" class="form-control" style="margin-bottom: 15px;">
+        <select multiple="" name="department_ids[]" class="form-control" style="margin-bottom: 15px;" required>
           @foreach($department_list as $id => $department_name)
               <option value={{ $id }}>{{ $department_name }}</option>
           @endforeach
