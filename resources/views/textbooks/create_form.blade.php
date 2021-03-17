@@ -8,6 +8,7 @@
       @component('textbooks.forms.subject', ['subjects' => $item['subjects'],'textbook_subjects' => $textbook_subjects??null]); @endcomponent
       @component('textbooks.forms.grade', ['grades' => $item['grades'],'textbook_grades' => $textbook_grades??null]); @endcomponent
       @component('textbooks.forms.price', ['textbook_prices'=> $textbook_prices??null]); @endcomponent
+        @component('textbooks.forms.explain', [ 'textbook' => $textbook ]); @endcomponent
     @else
     {{-- create --}}
       @component('textbooks.forms.select_textbook'); @endcomponent
