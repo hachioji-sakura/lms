@@ -74,6 +74,353 @@ class TextbookController extends MilestoneController
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
+  public function index(Request $request)
+  {
+    $user = $this->login_details($request);
+    if(!isset($user)) abort(403);
+    if($this->is_manager($user->role)!=true) abort(403);
+
+    if(!$request->has('_origin')){
+      $request->merge([
+        '_origin' => $this->domain,
+      ]);
+    }
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+//    $sort = 'asc';
+//    if($request->has('is_desc') && $request->get('is_desc')==1){
+//      $sort = 'desc';
+//    }
+//    $request->merge([
+//      '_sort' => 'start_time',
+//      '_sort_order' => $sort,
+//    ]);
+
+    $param = $this->get_param($request);
+    $_table = $this->search($request);
+
+    return view($this->domain.'.lists', $_table)
+      ->with($param);
+  }
+
+  public function search(Request $request)
+  {
+    $param = $this->get_param($request);
+    $user = $this->login_details($request);
+    if(!isset($user)) return $this->forbidden();
+    if($this->is_manager($user->role)!=true) return $this->forbidden();
+    $items = $this->model();
+    //検索条件
+    $items = $this->_search_scope($request, $items);
+    $items = $items->paginate($param['_line']);
+
+    $fields = [
+      'name' => [
+        'label' => __('labels.textbook_name'),
+      ],
+      'explain' => [
+        'label' => __('labels.explain'),
+      ],
+      'difficulty' => [
+        'label' => __('labels.difficulty'),
+      ],
+      'publisher_name'=> [
+        "label" => __('labels.publisher_name'),
+      ],
+      'supplier_name' => [
+        'label' => __('labels.supplier_name'),
+      ],
+      'subject' => [
+        'label' => __('labels.subject'),
+      ],
+      'grade' => [
+        'label' => __('labels.grade'),
+      ],
+      'buttons' => [
+        'label' => __('labels.control'),
+        'button' => [
+          'edit',
+          'delete']
+      ]
+    ];
+
+    foreach($items as $item){
+      $item->publisher_name = $item->publisher->name;
+      $item->supplier_name = $item->supplier->name;
+      $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
+
+      $subjects = $item->get_subjects();
+      $subject_names = '';
+      $item->subject= '';
+      if(!empty($subjects) && $subjects!==[] ){
+        foreach($subjects as $subject) {
+          $subject_names = $subject_names . $subject->name . ',';
+        }
+        $item->subject = mb_substr($subject_names, 0, -1);
+      }
+
+      $grades = $item->get_grades();
+      $grade_names = '';
+      if(isset($grades)){
+        foreach($grades as $grade){
+          $grade_names = $grade_names . $grade->attribute_name . ',';
+        }
+        $item->grade = mb_substr($grade_names, 0, -1);
+      }
+    }
+    return ["items" => $items, "fields" => $fields];
+  }
+
+  /**
+   * フィルタリングロジック
+   *
+   * @param Request $request
+   * @param  Collection $items
+   * @return Collection
+   */
+  public function _search_scope(Request $request, $items)
+  {
+    //ID 検索
+    if(isset($request->id)){
+      $items = $items->where('id',$request->id);
+    }
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      $items = $items->where(function($items)use($search_words){
+        foreach($search_words as $_search_word){
+          if(empty($_search_word)) continue;
+          $_like = '%'.$_search_word.'%';
+          $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
+        }
+      });
+    }
+
+    $forms = $request->all();
+    $scopes = ['publisher_id','supplier_id','difficulty'];
+    foreach($scopes as $scope){
+      if(isset($forms[$scope])){
+        $items = $items->where($scope,$forms[$scope]);
+      }
+    }
+
+    if(isset($forms['subject'])){
+      foreach($forms['subject'] as $subject){
+        $items = $items->whereHas('textbook_subject', function($q) use ($subject){
+          $q->where('subject_id',$subject );
+        });
+      }
+    }
+
+    if(isset($forms['grade_no'])){
+      foreach($forms['grade_no'] as $grade_no){
+        $items = $items->whereHas('textbook_tag', function($q) use ($grade_no){
+          $q->where('tag_value',$grade_no );
+        });
+      }
+    }
+
+    $grades = GeneralAttribute::findKey('grade')->get();
+    return $items;
+  }
+
+  /**
+   * テキスト編集画面表示.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Request $request, $id)
+  {
+    $textbook = Textbook::where('id', $id)->first();
+    if(isset($textbook)) {
+      $param = $this->get_param($request, $id);
+      $param['textbook'] = $textbook;
+
+      $textbook_prices = $textbook->get_prices();
+      $param['textbook_prices']=[];
+      if(!empty($textbook_prices)) {
+        foreach ($textbook_prices as $textbook_price) {
+          $param['textbook_prices'][$textbook_price->tag_key] = $textbook_price->tag_value;
+        }
+      }
+
+      $param['textbook_subjects']=[];
+      foreach($textbook->textbook_subject as $textbookSubject){
+        $param['textbook_subjects'][] = $textbookSubject->subject->name;
+      }
+
+      $textbook_grades = $textbook->get_grades();
+      $param['textbook_grades']=[];
+        if(!empty($textbook_grades)) {
+        foreach($textbook_grades as $textbookGrade) {
+          $param['textbook_grades'][] = $textbookGrade->attribute_name;
+        }
+      }
+    }else{
+      abort('404');
+    }
+    return view($this->domain.'.create', [
+      '_edit' => true])
+      ->with($param);
+  }
+
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param Request $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function update(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $res = $this->_update($request, $id);
+
+    return $this->save_redirect($res, $param, '更新しました。');
+  }
+
+  public function _update(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $res = $this->save_validate($request);
+    if(!$this->is_success_response($res)){
+      return $res;
+    }
+
+    return $this->transaction($request, function() use ($request, $id){
+      $user = $this->login_details($request);
+      $form = $request->all();
+      $form['create_user_id'] = $user->user_id;
+      $item = $this->model()->where('id',$id)->first();
+      $item->update_textbook($form);
+
+      return $this->api_response(200, '', '', $item);
+    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
+  }
+
+  /**
+   * 詳細画面表示
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function show(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+    $fields = $this->show_fields($param['item']->type);
+    $form = $request->all();
+    $form['fields'] = $fields;
+
+    $item = Textbook::find($id);
+    $item->publisher_name = $item->publisher->name;
+    $item->supplier_name = $item->supplier->name;
+    $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
+
+    $subjects = $item->get_subjects();
+    $subject_names = '';
+    if(isset($subjects)){
+      foreach($subjects as $subject) {
+        $subject_names = $subject_names . $subject->name . ',';
+      }
+      $item->subject = mb_substr($subject_names, 0, -1);
+    }
+
+    $grades = $item->get_grades();
+    $grade_names = '';
+    if(isset($grades)){
+      foreach($grades as $grade){
+        $grade_names = $grade_names . $grade->attribute_name . ',';
+      }
+      $item->grade = mb_substr($grade_names, 0, -1);
+    }
+
+    $param['item'] =$item;
+
+    if($request->has('api')) {
+      return $this->api_response(200, '', '', $param['item']);
+    }
+    return view('textbooks.page', $form)
+      ->with($param);
+  }
+
+  /**
+   * 詳細画面表示のデータ取得
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function show_fields($type=''){
+    $fields = [
+      'name' => [
+        'label' => __('labels.textbook_name'),
+      ],
+      'explain' => [
+        'label' => __('labels.explain'),
+      ],
+      'difficulty' => [
+        'label' => __('labels.difficulty'),
+      ],
+      'publisher_name'=> [
+        "label" => __('labels.publisher_name'),
+      ],
+      'supplier_name' => [
+        'label' => __('labels.supplier_name'),
+      ],
+      'subject' => [
+        'label' => __('labels.subject'),
+      ],
+      'grade' => [
+        'label' => __('labels.grade'),
+      ],
+    ];
+
+    return $fields;
+  }
+
+
+  /**
+   * テキスト削除
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy(Request $request, $id)
+  {
+    $param = $this->get_param($request, $id);
+
+    $res = $this->_delete($request, $id);
+
+    return $this->save_redirect($res, $param, '削除が完了しました');
+  }
+
+  public function _delete(Request $request, $id)
+  {
+    $form = $request->all();
+    $res = $this->transaction($request, function() use ($request, $form, $id){
+      $item = $this->model()->where('id',$id)->first();
+      $item->dispose();
+      return $this->api_response(200, '', '', $item);
+    }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
+    return $res;
+  }
+
+
+
+
   /**
    * 共通パラメータ取得
    *
@@ -144,255 +491,15 @@ class TextbookController extends MilestoneController
         }
       }
     }
+    if(isset($id)){
+      $ret['item']['textbook'] = Textbook::find($id);
+      $ret['item']['publisher'] = $ret['item']['textbook']->publisher;
+    }
     $ret['item']['publishers'] = Publisher::get();
     $ret['item']['suppliers'] = Supplier::get();
     $ret['item']['subjects'] = Subject::get();
     $ret['item']['grades'] = GeneralAttribute::findKey('grade')->get();
     return $ret;
-  }
-
-  public function index(Request $request)
-  {
-    $user = $this->login_details($request);
-
-    //todo route(edit update)のアクセス権限
-    if(!isset($user)) abort(403);
-    if($this->is_manager($user->role)!=true) abort(403);
-
-    if(!$request->has('_origin')){
-      $request->merge([
-        '_origin' => $this->domain,
-      ]);
-    }
-    if(!$request->has('_line')){
-      $request->merge([
-        '_line' => $this->pagenation_line,
-      ]);
-    }
-    if(!$request->has('_page')){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-    else if($request->get('_page')==0){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-    $sort = 'asc';
-    if($request->has('is_desc') && $request->get('is_desc')==1){
-      $sort = 'desc';
-    }
-    $request->merge([
-      '_sort' => 'start_time',
-      '_sort_order' => $sort,
-    ]);
-
-    $param = $this->get_param($request);
-    $_table = $this->search($request);
-
-    return view($this->domain.'.lists', $_table)
-      ->with($param);
-  }
-
-  public function search(Request $request)
-  {
-    $param = $this->get_param($request);
-    $user = $this->login_details($request);
-    if(!isset($user)) return $this->forbidden();
-    if($this->is_manager($user->role)!=true) return $this->forbidden();
-    $items = $this->model();
-    //検索条件
-    $items = $this->_search_scope($request, $items);
-    $items = $items->paginate($param['_line']);
-
-    $fields = [
-      'name' => [
-        'label' => __('labels.textbook_name'),
-        'link' => "show",
-      ],
-      'explain' => [
-        'label' => __('labels.explain'),
-      ],
-      'difficulty' => [
-        'label' => __('labels.difficulty'),
-      ],
-      'publisher_name'=> [
-        "label" => __('labels.publisher_name'),
-      ],
-      'supplier_name' => [
-        'label' => __('labels.supplier_name'),
-      ],
-      'subject' => [
-        'label' => __('labels.subject'),
-      ],
-      'grade' => [
-        'label' => __('labels.grade'),
-      ],
-      'buttons' => [
-        'label' => __('labels.control'),
-        'button' => [
-          'edit',
-          'delete']
-      ]
-    ];
-
-    foreach($items as $item){
-      $item->publisher_name = $item->publisher->name;
-      $item->supplier_name = $item->supplier->name;
-      $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
-      $item->subject = $item->getSubjectName();
-      $item->grade = $item->getGrade();
-    }
-
-    return ["items" => $items, "fields" => $fields];
-  }
-
-    /**
-     * フィルタリングロジック
-     *
-     * @param Request $request
-     * @param  Collection $items
-     * @return Collection
-     */
-    public function _search_scope(Request $request, $items)
-    {
-      //ID 検索
-      if(isset($request->id)){
-        $items = $items->where('id',$request->id);
-      }
-      //検索ワード
-      if(isset($request->search_word)){
-        $search_words = explode(' ', $request->search_word);
-        $items = $items->where(function($items)use($search_words){
-          foreach($search_words as $_search_word){
-            if(empty($_search_word)) continue;
-            $_like = '%'.$_search_word.'%';
-            $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
-          }
-        });
-      }
-
-//      $forms = $request->all();
-//      //todo difficulty = 0　が常に含まれる。
-//      $scopes = ['publisher_id','supplier_id','difficulty'];
-//      foreach($scopes as $scope){
-//        if(isset($forms[$scope])){
-//          $items = $items->where($scope,$forms[$scope]);
-//        }
-//      }
-
-      if(isset($forms['subject'])){
-        foreach($forms['subject'] as $subject){
-          $items = $items->whereHas('textbook_subject', function($q) use ($subject){
-            $q->where('subject_id',$subject );
-          });
-        }
-      }
-
-      if(isset($forms['grade_no'])){
-        foreach($forms['grade_no'] as $grade_no){
-          $items = $items->whereHas('textbook_tag', function($q) use ($grade_no){
-            $q->where('tag_value',$grade_no );
-          });
-        }
-      }
-
-      $grades = GeneralAttribute::findKey('grade')->get();
-      return $items;
-    }
-
-  /**
-   * Show the forms for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function edit(Request $request, $id)
-  {
-    $textbook = Textbook::where('id', $id)->first();
-    if(isset($textbook)) {
-      $param = $this->get_param($request, $id);
-      $param['teachers'] = [];
-      $param['textbook'] = $textbook;
-      $param['publishers'] = Publisher::get();
-      $param['suppliers'] = Supplier::get();
-      $param['subjects'] = Subject::get();
-      $param['grades'] = GeneralAttribute::findKey('grade')->get();
-
-      $textbookPrices = $textbook->getPrices();
-      $param['textbookPrices']=[];
-      if(!empty($textbookPrices)) {
-        foreach ($textbookPrices as $textbookPrice) {
-          $param['textbookPrices'][$textbookPrice->tag_key] = $textbookPrice->tag_value;
-        }
-      }
-
-      $param['textbookSubjects']=[];
-      foreach($textbook->textbook_subject as $textbookSubject){
-        $param['textbookSubjects'][] = $textbookSubject->subject->name;
-      }
-
-      $textbookGrades = $textbook->getGradeAttributes();
-      $param['textbookGrades']=[];
-        if(!empty($textbookGrades)) {
-        foreach($textbookGrades as $textbookGrade) {
-          $param['textbookGrades'][] = $textbookGrade->attribute_name;
-        }
-      }
-    }else{
-      abort('404');
-    }
-    return view($this->domain.'.create', [
-      '_edit' => true])
-      ->with($param);
-  }
-
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param Request $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $res = $this->_update($request, $id);
-
-    return $this->save_redirect($res, $param, '更新しました。');
-  }
-
-  public function _update(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $res = $this->save_validate($request);
-    if(!$this->is_success_response($res)){
-      return $res;
-    }
-
-    return $this->transaction($request, function() use ($request, $id){
-      $user = $this->login_details($request);
-      $form = $request->all();
-      $form['create_user_id'] = $user->user_id;
-      $item = $this->model()->where('id',$id)->first();
-      $item->textbook_update($form);
-
-      return $this->api_response(200, '', '', $item);
-    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
-  }
-
-  public function destroy(Request $request,$id)
-  {
-    try {
-      TextbookSubject::where('textbook_id', $id)->delete();
-      Textbook::where('id', $id)->delete();
-      TextbookTag::where('textbook_id', $id)->delete();
-    }catch(\Exception $e){
-      return redirect('/textbooks');
-    }
-    return redirect('/textbooks');
   }
 
   /**

@@ -68,16 +68,17 @@ class TextbookSeeder extends Seeder
     }
 
     $items = [];
-    $grades = [];
-    $subjects =[];
     foreach($data as $key => $datum) {
       $level = $datum[0]->level;
       $explain = $datum[0]->explain;
       $teikaPrice = $datum[0]->teika_price;
-      $tewatashiPrice1 = $datum[0]->tewatashi_price1;
-      $tewatashiPrice2 = $datum[0]->tewatashi_price2;
-      $tewatashiPrice3 = $datum[0]->tewatashi_price3;
-      $publisherPrice = $datum[0]->publisher_price;
+      $tewatashi_price1 = $datum[0]->tewatashi_price1;
+      $tewatashi_price2 = $datum[0]->tewatashi_price2;
+      $tewatashi_price3 = $datum[0]->tewatashi_price3;
+      $publisher_price = $datum[0]->publisher_price;
+
+      $subjects =[];
+      $grades = [];
       foreach ($datum as $value) {
         if (isset($value->subject)) $items[$key]['subjects'][] = $value->subject;
         if (isset($value->grade)) $items[$key]['grades'][] = $value->grade;
@@ -90,44 +91,47 @@ class TextbookSeeder extends Seeder
       //教材
       $textbook = Textbook::create([
         'name' => $datum[0]->name,
-        'explain' => $explain ?? '',
-        'difficulty' => $level??null,
+        'explain' => $explain??'',
+        'difficulty' => $level??0,
         'publisher_id' => $publisher->id ?? null,
         'supplier_id' => $supplier->id ?? null,
         'create_user_id' => 1,
       ]);
       if(!empty($teikaPrice)) $this->create_price_tag($textbook->id,'teika_price',$teikaPrice);
-      if(!empty($tewatashiPrice1)) $this->create_price_tag($textbook->id,'selling_price',$tewatashiPrice1);
-      if(!empty($tewatashiPrice2)) $this->create_price_tag($textbook->id,'amazon_price',$tewatashiPrice2);
-      if(!empty($tewatashiPrice3)) $this->create_price_tag($textbook->id,'other_price',$tewatashiPrice3);
-      if(!empty($publisherPrice)) $this->create_price_tag($textbook->id,'publisher_price',$publisherPrice);
+      if(!empty($tewatashi_price1)) $this->create_price_tag($textbook->id,'selling_price',$tewatashi_price1);
+      if(!empty($tewatashi_price2)) $this->create_price_tag($textbook->id,'amazon_price',$tewatashi_price2);
+      if(!empty($tewatashi_price3)) $this->create_price_tag($textbook->id,'other_price',$tewatashi_price3);
+      if(!empty($publisher_price)) $this->create_price_tag($textbook->id,'publisher_price',$publisher_price);
       //教科
+
+      // textbookSeederでやった場合は登録されるけど、migrate seedしたときはダメ。
       foreach($subjects as $subject){
-        $subjectEloquent = Subject::where('name','=',$subject)->first();
-        if(!isset($subjectEloquent)){
-          $maxSubjectId = Subject::max('id');
+        $subject_eloquent = Subject::where('name','=',$subject)->first();
+
+        if(!isset($subject_eloquent)){
+          $max_subject_id = Subject::max('id');
           Subject::create([
             'name' => $subject,
-            'sort_no' => $maxSubjectId + 1,
+            'sort_no' =>  1,
             'create_user_id' => 1,
           ]);
         }
-        $subjectModel = Subject::where('name', '=', $subject)->first();
+        $subject_model = Subject::where('name', '=', $subject)->first();
         TextbookSubject::create([
           'textbook_id' => $textbook->id,
-          'subject_id' => $subjectModel->id,
+          'subject_id' => $subject_model->id,
         ]);
       }
-      //学年
+
       foreach($grades as $grade){
-        $generalAttribute = GeneralAttribute::where('attribute_key','grade')
+        $general_attribute = GeneralAttribute::where('attribute_key','grade')
                                             ->where('attribute_name',$grade)
                                             ->first();
-        if(isset($generalAttribute)) {
+        if(isset($general_attribute)) {
           TextbookTag::create([
             'textbook_id' => $textbook->id,
             'tag_key' => 'grade_no',
-            'tag_value' => $generalAttribute->id,
+            'tag_value' => $general_attribute->id,
             'create_user_id' => 1,
           ]);
         }
@@ -137,13 +141,13 @@ class TextbookSeeder extends Seeder
 
   /**
    * 教科と教材のリレーション登録
-   * @param int $textbookId
+   * @param int $textbook_id
    * @param string $key
    * @param int $value
    */
-  private function create_price_tag($textbookId,$key,$value){
+  private function create_price_tag($textbook_id,$key,$value){
     TextbookTag::create([
-      'textbook_id' => $textbookId,
+      'textbook_id' => $textbook_id,
       'tag_key' => $key,
       'tag_value' =>$value,
       'create_user_id' => 1,

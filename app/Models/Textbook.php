@@ -12,52 +12,32 @@ class Textbook extends Model
       'name' => 'required'
   );
 
-  public function getGradeAttributes(){
+  public function get_grades(){
     $textbookTags = $this->textbook_tag;
     $grades = [];
-    if($textbookTags->isEmpty()){
-      return '';
-    }else {
+    if(!$textbookTags->isEmpty()){
       foreach($textbookTags as $textbookTag){
         if($textbookTag->tag_key === 'grade_no'){
           $grades[] = GeneralAttribute::find($textbookTag->tag_value);
-
         }
       }
       return $grades;
     }
   }
 
-  public function getGrade(){
-    $textbookTags = $this->textbook_tag;
-    $grades = '';
-    if($textbookTags->isEmpty()){
-      return '';
-    }else {
-     foreach($textbookTags as $textbookTag){
-       if($textbookTag->tag_key === 'grade_no'){
-         $grade = GeneralAttribute::find($textbookTag->tag_value);
-         $grades = $grades.$grade->attribute_name.',';
-       }
-     }
-      return $grades;
-    }
-  }
-  //todo MVC的に
-  public function getSubjectName(){
-    $subjects = '';
-    foreach($this->textbook_subject as $textbookSubject){
-      if(isset($textbookSubject->subject->name)) {
-        $subjects = $subjects . $textbookSubject->subject->name . ',';
+  public function get_subjects(){
+    $textbook_subjects = TextbookSubject::where('textbook_id',$this->id)->get();
+    $subjects = [];
+    if(isset($textbook_subjects)){
+      foreach( $textbook_subjects as $textbook_subject){
+        $subjects[] = $textbook_subject->subject;
       }
-    }
-    if($subjects !== ''){
-      return mb_substr($subjects, 0, -1);
     }
     return $subjects;
   }
 
-  public function getPrices(){
+
+  public function get_prices(){
     $key = 'tag_key';
     $val = '_price';
     $filtered = $this->textbook_tag->filter(function ($record) use ($key, $val) {
@@ -67,9 +47,7 @@ class Textbook extends Model
   }
 
   public function details($user_id=0){
-    //TODO deitalsにて、状態最適化ロジックが入っている問題がある↓
     $item = $this;
-    $item['teaching_name'] = 'test';
     return $item;
   }
 
@@ -121,9 +99,8 @@ class Textbook extends Model
     }
   }
 
-  public function textbook_update($form)
+  public function update_textbook($form)
   {
-    //lms.textbooks
     $update_field = [
       'name' => "",
       'explain' => "",
@@ -166,33 +143,10 @@ class Textbook extends Model
     }
   }
 
-  public function scopeSearch($query, $request){
-    if( $request->has('search_subject_id') && is_numeric( $request->get('search_subject_id'))){
-      $search_subject_id = $request->get('search_subject_id');
-      $query = $query->searchBySubjectId($search_subject_id);
-    }
-
-    if($request->has('search_word')){
-      $query = $query->searchWord($request->get('search_word'));
-    }
-    return $query;
-  }
-  public function change($form, $file=null, $is_file_delete = false){
-//    $s3_url = '';
-//    $_form = $this->file_upload($file);
-//    $form['s3_url'] = $_form['s3_url'];
-//    $form['s3_alias'] = $_form['s3_alias'];
-//    if($is_file_delete == true){
-//      $form['s3_url'] = "";
-//      $form['s3_alias'] = "";
-//    }
-//    if($is_file_delete==true){
-//      //削除指示がある、もしくは、更新する場合、S3から削除
-//      $this->s3_delete($this->s3_url);
-//    }
-    dump($form);
-    $this->update($form);
-    return $this;
+  public function dispose(){
+    TextbookSubject::where('textbook_id', $this->id)->delete();
+    TextbookTag::where('textbook_id', $this->id)->delete();
+    $this->delete();
   }
 
   public function textbook_tag(){

@@ -7,7 +7,7 @@
     @foreach($subjects as $subject)
     <label class="mx-2">
     <input type="checkbox" value="{{ $subject->id }}" name="subject[]" class="icheck flat-green"
-     @if(isset($textbookSubjects) && in_array($subject->name,$textbookSubjects,true))
+     @if(isset($textbook_subjects) && in_array($subject->name,$textbook_subjects,true))
      checked
      @endif>
       {{$subject->name}}

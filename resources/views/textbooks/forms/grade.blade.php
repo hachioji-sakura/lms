@@ -8,7 +8,7 @@
     @foreach($grades as $grade)
       <label class="mx-2">
         <input type="checkbox" value="{{ $grade->id }}" name="grade_no[]" class="icheck flat-green"
-               @if(isset($textbookGrades) && in_array($grade->attribute_name,$textbookGrades,true))
+               @if(isset($textbook_grades) && in_array($grade->attribute_name,$textbook_grades,true))
                checked
           @endif>
         {{$grade->attribute_name}}

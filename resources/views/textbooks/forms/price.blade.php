@@ -5,9 +5,9 @@
         {{__('labels.'.$key)}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-    <input type="text" id="name_last" name="{{$key}}" class="form-control" placeholder="1500" inputtype="number"
-      @if(isset($textbookPrices[$key]))
-       value="{{$textbookPrices[$key]}}"
+    <input type="text" id="name_last" name="{{$key}}" class="form-control" inputtype="number"
+      @if(isset($textbook_prices[$key]))
+       value="{{$textbook_prices[$key]}}"
       @endif
     >
   </div>
