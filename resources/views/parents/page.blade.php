@@ -154,7 +154,7 @@
                         <a href="javascript:void(0);"
                         page_title="体験申込状況" page_form="dialog"
                         page_url="/trials/{{$charge_student->student->trials[0]->id}}/dialog?student_parent_id={{$item->id}}"
-                        role="button" class="btn btn-primary btn-sm btn-flat btn-block">
+                        role="button" class="btn btn-outline-primary btn-sm btn-flat btn-block">
                           <i class="fa fa-check-circle mr-1"></i>
                           体験申込状況
                         </a>
@@ -181,12 +181,19 @@
                         @endif
                         </a>
                       </div>
-                      {{-- TODO　既存生徒の表示が不安定なので、まだコメントアウト
+                      {{--TODO:契約データが正しくなるまで非表示
+                      @if($charge_student->student->enable_agreements_by_type('normal')->count() > 0)
                       <div class="col-6 float-left mt-1">
-                        <a title="生徒情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
+                        <a title="契約情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$charge_student->id}}/agreement" role="button" class="btn btn-default btn-sm btn-flat btn-block">
                           <i class="fa fa-address-card mr-1"></i>ご契約内容
                         </a>
                       </div>
+                      <div class="col-6 float-left mt-1">
+                          <a href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_agreements_by_type('normal')->first()->id}}&target_user_id={{$charge_student->student->user_id}}" class="btn btn-default btn-sm btn-flat btn-block">
+                            <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
+                          </a>
+                        </div>
+                      @endif
                       --}}
                       {{--
                       <div class="col-6 float-left mt-1">

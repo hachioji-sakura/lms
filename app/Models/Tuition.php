@@ -4,6 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Tuition
+ *
+ * @property int $id
+ * @property int $student_id 生徒ID
+ * @property int $teacher_id 講師ID
+ * @property int $tuition 受講料
+ * @property string $title 受講料名
+ * @property string $lesson レッスン
+ * @property string $course_type 授業形態
+ * @property int $course_minutes 授業時間
+ * @property string $subject 科目
+ * @property string $grade 学年
+ * @property int $lesson_week_count 通塾回数
+ * @property string|null $start_date 受講料適用開始日
+ * @property string|null $end_date 受講料適用終了日
+ * @property string $remark 受講料　詳細
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read \App\Models\Student $student
+ * @property-read \App\Models\Teacher $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder|Tuition newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Tuition newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Tuition query()
+ * @mixin \Eloquent
+ */
 class Tuition extends Model
 {
   protected $connection = 'mysql';

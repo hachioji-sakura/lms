@@ -4,6 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Holiday
+ *
+ * @property int $id
+ * @property string $date 日付
+ * @property string $remark 説明
+ * @property int $is_public_holiday 国民の休日の場合=1
+ * @property int $is_private_holiday 塾の休日の場合=1
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Holiday isPublicPrivate($is_public = true, $is_private = true)
+ * @method static \Illuminate\Database\Eloquent\Builder|Holiday newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Holiday newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Holiday query()
+ * @mixin \Eloquent
+ */
 class Holiday extends Model
 {
   protected $table = 'common.holidays';

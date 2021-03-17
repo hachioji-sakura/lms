@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,9 +14,7 @@ class ChangeImageIdTextbooks extends Migration
      */
     public function up()
     {
-        Schema::table('textbooks', function (Blueprint $table) {
-          $table->integer('image_id')->default(0)->change();
-        });
+        DB::statement("ALTER TABLE `textbooks` CHANGE COLUMN `image_id` `image_id` INT NOT NULL DEFAULT 0 COMMENT '本の写真など' AFTER `url`;");
     }
 
     /**

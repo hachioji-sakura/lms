@@ -3,11 +3,52 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Scopes;
+use App\Models\Traits\Common;
 
 
+/**
+ * App\Models\Curriculum
+ *
+ * @property int $id
+ * @property string $name 単元名
+ * @property string|null $remarks 備考
+ * @property int|null $sort_no ソートナンバー
+ * @property int $create_user_id 登録ユーザー
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $importance_label
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subjects
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum search($request)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum searchBySubjectId($subject_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Curriculum searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class Curriculum extends Milestone
 {
     //
+    use Scopes;
+    use Common;
     protected $connection = 'mysql';
     protected $table = 'lms.curriculums';
     protected $guarded = array('id');
@@ -20,6 +61,10 @@ class Curriculum extends Milestone
       return $this->belongsToMany('App\Models\Task','task_curriculum','curriculum_id','task_id')->withTimestamps();
     }
 
+    public function text_materials()
+    {
+        return $this->morphedByMany('App\Models\TextMaterial', 'curriculumable')->withTimestamps();
+    }
 
     public function details(){
       $item = $this;
@@ -42,23 +87,6 @@ class Curriculum extends Milestone
       return $this;
     }
 
-    public function scopeSearchBySubjectId($query,$subject_id){
-      return $query->whereHas('subjects', function($query) use ($subject_id) {
-          $query->where('subjects.id', $subject_id);
-      });
-    }
-
-    public function scopeSearch($query, $request){
-      if( $request->has('search_subject_id') && is_numeric( $request->get('search_subject_id'))){
-        $search_subject_id = $request->get('search_subject_id');
-        $query = $query->searchBySubjectId($search_subject_id);
-      }
-
-      if($request->has('search_word')){
-        $query = $query->searchWord($request->get('search_word'));
-      }
-      return $query;
-    }
 
     public function scopeSearchWord($query, $word){
       $search_words = $this->get_search_word_array($word);
