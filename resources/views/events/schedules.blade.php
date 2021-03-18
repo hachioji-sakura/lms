@@ -55,11 +55,20 @@
                         </span>
                       </a>
                       <span class="mr-2">
-                        <a href="/students/{{$calendar->student_id}}" target="_blank" >
+                        <a href="/students/{{$calendar->student->id}}" target="_blank" >
                           <i class="fa fa-user-graduate"></i>
-                          {{$calendar->student_name}}
+                          {{$calendar->student->full_name}}
                         </a>
                       </span>
+                      @if(count($calendar->conflict_user_calendars())>0)
+                      <span class="mr-2">
+                        <small class="badge badge-warning mt-1 mr-1">
+                        @if($calendar->lesson_request->has_tag('regular_schedule_exchange', 'true'))
+                            通常授業振替
+                        @endif
+                        </small>
+                      </span>
+                      @endif
                     </span>
                     <span class="float-left">
                       <a href="javascript:void(0);" page_title="{{__('labels.schedule_edit')}}" page_form="dialog" page_url="/lesson_request_calendars/{{$calendar->id}}/edit" role="button" class="btn btn-default btn-sm ml-1">

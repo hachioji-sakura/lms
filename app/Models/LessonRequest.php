@@ -20,6 +20,7 @@ class LessonRequest extends Model
   use Common;
   use Matching;
   protected $table = 'lms.lesson_requests';
+  protected $debug = true;
   protected $guarded = array('id');
   public static $rules = array(
   );
@@ -175,13 +176,14 @@ class LessonRequest extends Model
     return $status;
   }
   public function add_matching_calendar_for_place($place_id=0){
+    //担当講師で先にマッチング処理
     $charge_teachers = $this->student->get_current_charge_teachers();
     $res = $this->_add_matching_calendar_for_place($charge_teachers, $place_id);
     $status = $this->set_status();
     if($status != 'fix' && $status != 'complete'){
+      //担当講師以外でマッチング処理
       $charge_teachers = $this->candidate_teachers(0, 1);
       if(count($charge_teachers) >0){
-        echo "2回戦！！<br>";
         $res = $this->_add_matching_calendar_for_place($charge_teachers[1], $place_id);
       }
     }
@@ -243,7 +245,16 @@ class LessonRequest extends Model
       echo "Que[".$i."][".$subject_code."]<br>\n";
     }
     $date_time_list = $this->get_time_list(1);
-
+    $regular_calendar_dates = [];
+    /*TODO
+    通常授業は、lesson_request_calendars > user_calendarsのinsert時に、cancel扱いにする
+    if($this->has_tag('regular_schedule_exchange', 'true')){
+      $calendars = $this->event->get_regular_calendars($this->student->user_id);
+      foreach($calendars as $calendar){
+        $regular_calendar_dates[] = date('Y-m-d', strtotime($calendar->start_time));
+      }
+    }
+    */
     $i=0;
     while(count($que) > 0){
       //queを参照＞担当講師決定
@@ -256,44 +267,68 @@ class LessonRequest extends Model
       echo "<br>";
       $teacher = $subject_teacher_set[$subject_code];
       echo "●que pop[subject=".$subject_code."][講師id=".$teacher->id."]<br>\n";
-      $has_fix_calendar = false;
-      foreach($date_time_list as $d => $time_list){
-        $already_calendar = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete', 'prohibit'])
-                            ->rangeDate($d.' 00:00:00', $d.' 23:59:59')->first();
-        if(isset($already_calendar)) continue;    //すでにその日に予定が入っている場合はスルー
-        echo "候補予定[".$d."]を探索<br>\n";
-        $this->create_request_calendar(1, $time_list, $teacher->id, $d, $place_id, $subject_code);
-        $calendar = $this->request_calendar_review($teacher->id, $d, $subject_code);
-        $fix_calendars = [];
-        if(isset($calendar[$d]) && count($calendar[$d])>0) $fix_calendars = $this->fix_calendar($calendar[$d]);
-        if(count($fix_calendars) > 0){
-          $has_fix_calendar = true;
-          foreach($fix_calendars as $fix_calendar){
-            echo "fix_calendar[id=".$fix_calendar->id."][".$fix_calendar->place_floor_id."]<br>";
-            for($p=0;$p<count($que);$p++){
-              echo "fix_calendar check[id=".$que[$p]."][".$fix_calendar->subject_code."]<br>";
-              if($que[$p]==$fix_calendar->subject_code){
-                array_splice($que, $p, 1);
-                break;
-              }
+      $fix_calendars = [];
+      $fix_calendar_date = "";
+      /*TODO
+      通常授業は、lesson_request_calendars > user_calendarsのinsert時に、cancel扱いにする
+      if($this->has_tag('regular_schedule_exchange', 'true')){
+        echo "〇通常授業振替対象を優先して探索<br>\n";
+        foreach($regular_calendar_dates as $d){
+          if(!isset($date_time_list[$d])) continue;
+          $fix_calendars = $this->pop_calendar($d, $date_time_list[$d], $teacher->id, $place_id, $subject_code);
+          if(count($fix_calendars) > 0) {
+            $fix_calendar_date = $d;
+            break;
+          }
+        }
+      }
+      */
+      if(count($fix_calendars) < 1){
+        echo "〇申込希望日時の範囲で探索<br>\n";
+        foreach($date_time_list as $d => $time_list){
+          $fix_calendars = $this->pop_calendar($d, $time_list, $teacher->id, $place_id, $subject_code);
+          if(count($fix_calendars) > 0) {
+            $fix_calendar_date = $d;
+            break;
+          }
+        }
+      }
+      if(count($fix_calendars) > 0){
+        foreach($fix_calendars as $fix_calendar){
+          echo "fix_calendar[id=".$fix_calendar->id."][".$fix_calendar->place_floor_id."]<br>";
+          for($p=0;$p<count($que);$p++){
+            echo "fix_calendar check[id=".$que[$p]."][".$fix_calendar->subject_code."]<br>";
+            if($que[$p]==$fix_calendar->subject_code){
+              array_splice($que, $p, 1);
+              break;
             }
           }
         }
-        else {
-          echo "候補予定なし<br>\n";
+        if(isset($date_time_list[$fix_calendar_date])){
+          unset($date_time_list[$fix_calendar_date]);
         }
-        if($has_fix_calendar == true ) break;
       }
-      if($has_fix_calendar == false){
+      else {
         //fiｘ予定が作れないケース
         array_shift($que);
       }
     }
-
     return true;
   }
+  public function pop_calendar($d, $time_list, $teacher_id, $place_id, $subject_code){
+    $already_calendar = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete', 'prohibit'])
+                        ->rangeDate($d.' 00:00:00', $d.' 23:59:59')->first();
+    if(isset($already_calendar)) return [];
+    echo "候補予定[".$d."]を探索<br>\n";
+    $this->create_request_calendar(1, $time_list, $teacher_id, $d, $place_id, $subject_code);
+    $calendar = $this->request_calendar_review($teacher_id, $d, $subject_code);
+    $fix_calendars = [];
+    if(isset($calendar[$d]) && count($calendar[$d])>0) $fix_calendars = $this->fix_calendar($calendar[$d]);
+    echo "fix_calendars_count=[".count($fix_calendars)."]<br>\n";
+    return $fix_calendars;
+  }
   public function fix_calendar($calendars){
-    echo "------------fix_calendar[".count($calendars)."]----------------------";
+    echo "------------fix_calendar[".count($calendars)."]----------------------\n<br>";
     $course_minutes = $this->get_tag_value('season_lesson_course');
     $ret = [];
     $t = 0;

@@ -271,4 +271,13 @@ class Event extends Milestone
       if($this->lesson_requests[0]->type=='season_lesson') return true;
       return false;
     }
+    public function get_regular_calendars($user_id){
+      $calendars = UserCalendar::findUser($user_id)
+                      ->findStatuses(['fix'])
+                      ->where('teaching_type', 'regular')
+                      ->rangeDate($this->event_from_date, $this->event_to_date)
+                      ->orderBy('start_time')
+                      ->get();
+      return $calendars;
+    }
 }

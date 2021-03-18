@@ -267,7 +267,6 @@ class EventController extends MilestoneController
      $view = "calendar";
      $param['view'] = $view;
      return view($this->domain.'.'.$view, [
-       'item' => $item,
      ])->with($param);
    }
    public function schedule_lists(Request $request, $id){

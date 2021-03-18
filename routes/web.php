@@ -41,6 +41,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('logout','Auth\LoginController@logout');
 
   Route::resource('lesson_requests','LessonRequestController');
+  Route::get('api_lesson_request_calendars','LessonRequestCalendarController@api_index');
   Route::resource('lesson_request_calendars','LessonRequestCalendarController');
 
   Route::resource('places','PlaceController');

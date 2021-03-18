@@ -48,7 +48,7 @@ $checked = '';
                {{$checked}}
               />
               @endif
-              <a href="/students/{{$item->student_id}}" target = "_blank">
+              <a href="/students/{{$item->student->id}}" target = "_blank">
               <span class="text-xs ml-1">
                 <small class="badge badge-{{config('status_style')[$item->status]}} p-1 mr-1">
                   {{$item->status_name()}}
@@ -66,6 +66,12 @@ $checked = '';
               <span class="text-xs">
                   {{$item->get_tag_name('season_lesson_course')}}
               </span>
+              @if($item->has_tag('regular_schedule_exchange', 'true'))
+              <small class="badge badge-danger p-1 mr-1">
+                <i class="fa fa-excahnge"></i>
+                通常授業振替えあり
+              </small>
+              @endif
               <br>
               <table class="table-bordered my-2">
               <?php

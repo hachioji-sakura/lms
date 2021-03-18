@@ -389,7 +389,7 @@ trait Matching
     if($this->type=='season_lesson'){
       $slot_unit_minutes = 30;
       $course_minutes = intval($this->get_tag_value('season_lesson_course'));
-      if($course_minutes > 90) $coutse_minutes = 60;
+      if($course_minutes > 90) $course_minutes = 60;
     }
     while(1){
       $_end = date("Y-m-d H:i:s", strtotime("+".$course_minutes." minute ".$_start));

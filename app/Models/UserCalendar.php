@@ -30,6 +30,7 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  protected $appends = ['start', 'end', 'status_name', 'created_date', 'updated_date'];
   public $register_mail_template = 'calendar_new';
   public $delete_mail_template = 'calendar_delete';
   public function register_mail_title(){
@@ -168,12 +169,7 @@ EOT;
   }
   public function scopeFindPlaces($query, $vals, $is_not=false)
   {
-    $place_floors = PlaceFloor::whereIn('place_id', $vals)->get();
-    $ids = [];
-    foreach($place_floors as $place_floor){
-      $ids[] = $place_floor->id;
-    }
-    return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
+    return $this->scopeFieldWhereIn($query, 'place_floor_id', PlaceFloor::whereIn('place_id', $vals)->pluck('id'), $is_not);
   }
   public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
@@ -552,6 +548,12 @@ EOT;
   public function datetime(){
     return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
+  public function getStartAttribute(){
+    return $this->start_time;
+  }
+  public function getEndAttribute(){
+    return $this->end_time;
+  }
   public function getTimezoneAttribute(){
     return $this->timezone();
   }
@@ -590,6 +592,12 @@ EOT;
   }
   public function getScheduleTypeNameAttribute(){
     return $this->schedule_type_name();
+  }
+  public function getStartHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->start_time));
+  }
+  public function getEndHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->end_time));
   }
   public function getStudentNameAttribute(){
     $student_name = "";

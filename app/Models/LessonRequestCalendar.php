@@ -16,8 +16,7 @@ class LessonRequestCalendar extends UserCalendar
       'start_time' => 'required',
       'end_time' => 'required'
   );
-  protected $appends = ['work', 'create_user_name', 'target_user_name', 'created_date', 'updated_date'];
-
+  protected $appends = ['start', 'end', 'start_hour_minute', 'end_hour_minute', 'student_name', 'user_name', 'place_floor_name', 'status_name', 'created_date', 'updated_date'];
   public function lesson_request_date(){
     return $this->belongsTo('App\Models\LessonRequestDate');
   }
@@ -35,9 +34,6 @@ class LessonRequestCalendar extends UserCalendar
   }
   public function next_calendar(){
     return $this->belongsTo('App\Models\UserCalendar', 'next_calendar_id');
-  }
-  public function getDurationAttribute(){
-    return date('H:i', strtotime($this->start_time)).'～'.date('H:i', strtotime($this->end_time));
   }
   public function scopeSearchLessonRequest($query, $lesson_request_id){
     if(empty($lesson_request_id)) return $query;
@@ -57,12 +53,24 @@ class LessonRequestCalendar extends UserCalendar
   public function tags(){
     return $this->hasMany('App\Models\LessonRequestCalendarTag');
   }
-  public function getStudentNameAttribute(){
-    return $this->student->name;
-  }
   public function getTeacherNameAttribute(){
     if(!isset($this->user->teacher)) return "";
     return $this->user->teacher->name;
+  }
+  public function getDurationAttribute(){
+    return date('H:i', strtotime($this->start_time)).'～'.date('H:i', strtotime($this->end_time));
+  }
+  public function getStudentNameAttribute(){
+    return $this->student->full_name;
+  }
+  public function getPlaceFloorNameAttribute(){
+    return $this->place_floor->name;
+  }
+  public function getStartHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->start_time));
+  }
+  public function getEndHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->end_time));
   }
   public function subject(){
     $d = GeneralAttribute::where('attribute_key', 'charge_subject')->where('attribute_value', $this->subject_code)->first();
@@ -90,5 +98,13 @@ class LessonRequestCalendar extends UserCalendar
     $enable_places = $this->user->teacher->enable_places('season_lesson');
     if(isset($enable_places[$this->place_floor->place->id])) return true;
     return false;
+  }
+  public function conflict_user_calendars(){
+    $d = date('Y-m-d', strtotime($this->start_time));
+    $c = UserCalendar::findUser($this->student->user_id)
+            ->rangeDate($d.' 00:00:00', $d.' 23:59:59')
+            ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel', 'new', 'dummy', 'confirm'])
+            ->get();
+    return $c;
   }
 }
