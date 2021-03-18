@@ -213,12 +213,13 @@ class SchoolController extends MilestoneController
      * 指定のデータを削除する
      *
      * @param \Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function delete(Request $request)
+    public function destroy(Request $request, $id)
     {
         // リクエスト
-        $high_school_id = $request->id;
+        $high_school_id = $id;
         
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
@@ -237,12 +238,13 @@ class SchoolController extends MilestoneController
      * 指定のデータを変更する
      *
      * @param \Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function pageEditRun(Request $request)
+    public function update(Request $request, $id)
     {
         // リクエスト
-        $high_school_id = $request->id;
+        $high_school_id = $id;
         
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);

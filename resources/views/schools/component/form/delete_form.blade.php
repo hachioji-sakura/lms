@@ -1,5 +1,6 @@
 <div id="{{$domain}}_delete">
-  <form method="POST" action="/{{$domain}}/delete/{{ $id }}">
+  <form method="POST" action="/{{$domain}}/{{ $id }}">
+    @method('DELETE')
     @csrf
     <input type="text" name="dummy" style="display:none;"/>
     <div class="row">

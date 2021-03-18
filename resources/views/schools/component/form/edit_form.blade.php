@@ -1,5 +1,6 @@
 <div id="{{$domain}}_edit">
-  <form method="POST" action="/{{$domain}}/page_edit/{{ $high_school_entity->highSchoolId() }}">
+  <form method="POST" action="/{{$domain}}/{{ $high_school_entity->highSchoolId() }}">
+    @method('PUT')
     @csrf
     <div class="row">
       <div class="col-12 col-md-6 my-1">
