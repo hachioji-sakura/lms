@@ -71,6 +71,14 @@ class Textbook extends Model
     return $filtered;
   }
 
+  public function getSupplierNameAttribute(){
+    return $this->supplier->name;
+  }
+
+  public function getPublisherNameAttribute(){
+    return $this->publisher->name;
+  }
+
   public function details($user_id=0){
     $item = $this;
     return $item;

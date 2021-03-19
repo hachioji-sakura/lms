@@ -116,10 +116,7 @@ class TextbookController extends MilestoneController
     ];
 
     foreach($items as $item){
-      $item->publisher_name = $item->publisher->name;
-      $item->supplier_name = $item->supplier->name;
       $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
-
       $subjects = $item->get_subjects();
       $subject_names = '';
       $item->subject= '';
@@ -284,8 +281,6 @@ class TextbookController extends MilestoneController
     $form['fields'] = $fields;
 
     $item = Textbook::find($id);
-    $item->publisher_name = $item->publisher->name;
-    $item->supplier_name = $item->supplier->name;
     $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
 
     $subjects = $item->get_subjects();
