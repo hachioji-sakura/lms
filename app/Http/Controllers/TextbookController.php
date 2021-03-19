@@ -74,48 +74,6 @@ class TextbookController extends MilestoneController
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
-  public function index(Request $request)
-  {
-    $user = $this->login_details($request);
-    if(!isset($user)) abort(403);
-    if($this->is_manager($user->role)!=true) abort(403);
-
-    if(!$request->has('_origin')){
-      $request->merge([
-        '_origin' => $this->domain,
-      ]);
-    }
-    if(!$request->has('_line')){
-      $request->merge([
-        '_line' => $this->pagenation_line,
-      ]);
-    }
-    if(!$request->has('_page')){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-    else if($request->get('_page')==0){
-      $request->merge([
-        '_page' => 1,
-      ]);
-    }
-//    $sort = 'asc';
-//    if($request->has('is_desc') && $request->get('is_desc')==1){
-//      $sort = 'desc';
-//    }
-//    $request->merge([
-//      '_sort' => 'start_time',
-//      '_sort_order' => $sort,
-//    ]);
-
-    $param = $this->get_param($request);
-    $_table = $this->search($request);
-
-    return view($this->domain.'.lists', $_table)
-      ->with($param);
-  }
-
   public function search(Request $request)
   {
     $param = $this->get_param($request);
