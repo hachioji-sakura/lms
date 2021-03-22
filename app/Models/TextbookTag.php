@@ -65,9 +65,6 @@ class TextbookTag extends Model
       ->where('tag_key' , $tag_key)->delete();
   }
 
-
-
-
   public function create_user(){
     return $this->belongsTo('App\User', 'create_user_id');
   }

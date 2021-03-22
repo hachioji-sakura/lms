@@ -101,10 +101,10 @@ class TextbookController extends MilestoneController
       'supplier_name' => [
         'label' => __('labels.supplier_name'),
       ],
-      'subject' => [
+      'subject_list' => [
         'label' => __('labels.subject'),
       ],
-      'grade' => [
+      'grade_list' => [
         'label' => __('labels.grade'),
       ],
       'buttons' => [
@@ -117,24 +117,6 @@ class TextbookController extends MilestoneController
 
     foreach($items as $item){
       $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
-      $subjects = $item->get_subjects();
-      $subject_names = '';
-      $item->subject= '';
-      if(!empty($subjects) && $subjects!==[] ){
-        foreach($subjects as $subject) {
-          $subject_names = $subject_names . $subject->name . ',';
-        }
-        $item->subject = mb_substr($subject_names, 0, -1);
-      }
-
-      $grades = $item->get_grades();
-      $grade_names = '';
-      if(isset($grades)){
-        foreach($grades as $grade){
-          $grade_names = $grade_names . $grade->attribute_name . ',';
-        }
-        $item->grade = mb_substr($grade_names, 0, -1);
-      }
     }
     return ["items" => $items, "fields" => $fields];
   }

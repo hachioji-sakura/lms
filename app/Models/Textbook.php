@@ -37,30 +37,20 @@ class Textbook extends Model
       'name' => 'required'
   );
 
-  public function get_grades(){
-    $textbookTags = $this->textbook_tag;
-    $grades = [];
-    if(!$textbookTags->isEmpty()){
-      foreach($textbookTags as $textbookTag){
-        if($textbookTag->tag_key === 'grade_no'){
-          $grades[] = GeneralAttribute::find($textbookTag->tag_value);
+  public function getGradeListAttribute()
+  {
+    $gradeList = [];
+    if (isset($this->textbook_tag)) {
+      $grades = $this->textbook_tag->where('tag_key', 'grade_no');
+      if (!$grades->isEmpty()) {
+        foreach ($grades as $grade) {
+          $generalAttribute = GeneralAttribute::find($grade->tag_value);
+          $gradeList[] = $generalAttribute->attribute_name;
         }
       }
-      return $grades;
     }
+    return $gradeList;
   }
-
-  public function get_subjects(){
-    $textbook_subjects = TextbookSubject::where('textbook_id',$this->id)->get();
-    $subjects = [];
-    if(isset($textbook_subjects)){
-      foreach( $textbook_subjects as $textbook_subject){
-        $subjects[] = $textbook_subject->subject;
-      }
-    }
-    return $subjects;
-  }
-
 
   public function get_prices(){
     $key = 'tag_key';
@@ -69,6 +59,12 @@ class Textbook extends Model
       return strpos($record[$key], $val) !== false;
     });
     return $filtered;
+  }
+
+  public function getSubjectListAttribute(){
+    $subject_names = [];
+    $subject_names = $this->subjects->pluck('name')->toArray();
+    return $subject_names;
   }
 
   public function getSupplierNameAttribute(){
@@ -185,8 +181,8 @@ class Textbook extends Model
   public function textbook_tag(){
     return $this->hasMany('App\Models\TextbookTag','textbook_id','id');
   }
-  public function textbook_subject(){
-    return $this->hasMany('App\Models\TextbookSubject','textbook_id','id');
+  public function subjects(){
+    return $this->belongsToMany('App\Models\Subject','textbook_subjects');
   }
   public function publisher(){
     return $this->belongsTo('App\Models\Publisher','publisher_id','id')->withDefault();
