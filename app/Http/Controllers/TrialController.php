@@ -688,12 +688,19 @@ class TrialController extends UserCalendarController
    public function admission_mail(Request $request, $id){
      $access_key = '';
      $trial = Trial::where('id', $id)->first();
-     $agreement = $trial->student->agreementsByStatuses(['new','commit'])->first();
-     if($agreement->status == 'new'){
-       $input = true;
+     $agreements = $trial->student->agreementsByStatuses(['new','commit']);
+     if($agreements->count() > 0){
+       $agreement = $agreements->first();
+       if($agreement->status == 'new'){
+         $input = true;
+       }else{
+         $input = false;
+       }
      }else{
+       $agreement = null;
        $input = false;
      }
+
      if(!isset($trial)) abort(404);
      $param = [
        'item' => $trial->details(),

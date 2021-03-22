@@ -79,7 +79,16 @@ class AgreementController extends MilestoneController
                       return false;
                     }
                   }
-              ]
+              ],
+              'edit' => [
+                'type' => function($row){
+                  if($row->status == "dummy"){
+                    return true;
+                  }else{
+                    return false;
+                  }
+                }
+              ],
             ],
           ],
         ];
@@ -104,8 +113,27 @@ class AgreementController extends MilestoneController
     {
         //
         $param = $this->get_param($request,$id);
+        $param['input'] = false;
         return view($this->domain.'.details')->with($param);
     }
+
+    public function edit(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['input'] = true;
+      $param['_edit'] = true;
+      return view($this->domain.'.details')->with($param);
+    }
+
+    public function _update($request, $id){
+
+      $res = $this->transaction($request, function() use ($request,$id){
+        $item = $this->model()->find($id);
+        $item->change($request);
+        return $this->api_response(200, '', '', $item);
+      },'更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+    }
+
 
     public function ask_page(Request $request, $id, $method){
       $param = $this->get_param($request,$id);
