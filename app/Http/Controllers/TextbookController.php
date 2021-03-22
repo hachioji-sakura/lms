@@ -228,9 +228,7 @@ class TextbookController extends MilestoneController
     $form = $request->all();
     $form['fields'] = $fields;
 
-    $item = Textbook::find($id);
-    $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
-    $param['item'] =$item;
+    $param['item']->difficulty = config('attribute.difficulty')[$param['item']->difficulty]??'';
 
     if($request->has('api')) {
       return $this->api_response(200, '', '', $param['item']);
