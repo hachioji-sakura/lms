@@ -186,13 +186,7 @@ class TextbookController extends MilestoneController
     $textbook =  $param['item']['textbook'];
     if(isset($textbook)) {
       $param['textbook'] = $textbook;
-      $textbook_prices = $textbook->get_prices();
-      $param['textbook_prices']=[];
-      if(!empty($textbook_prices)) {
-        foreach ($textbook_prices as $textbook_price) {
-          $param['textbook_prices'][$textbook_price->tag_key] = $textbook_price->tag_value;
-        }
-      }
+      $param['textbook_prices'] = $textbook->prices;
       $param['textbook_subjects'] = $textbook->subject_list;
       $param['textbook_grades'] =$textbook->grade_list;
     }else{

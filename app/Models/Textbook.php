@@ -52,13 +52,16 @@ class Textbook extends Model
     return $gradeList;
   }
 
-  public function get_prices(){
-    $key = 'tag_key';
-    $val = '_price';
-    $filtered = $this->textbook_tag->filter(function ($record) use ($key, $val) {
-      return strpos($record[$key], $val) !== false;
-    });
-    return $filtered;
+
+  public function getPricesAttribute(){
+    $priceTags = $this->textbook_tag()->where('tag_key','like','%_price')->get();
+    $prices = [];
+    if(!$priceTags->isEmpty()) {
+      foreach ($priceTags as $priceTag) {
+        $prices[$priceTag->tag_key] = $priceTag->tag_value;
+      }
+    }
+    return $prices;
   }
 
   public function getSubjectListAttribute(){
