@@ -194,19 +194,8 @@ class TextbookController extends MilestoneController
           $param['textbook_prices'][$textbook_price->tag_key] = $textbook_price->tag_value;
         }
       }
-
-      $param['textbook_subjects']=[];
-      foreach($textbook->textbook_subject as $textbookSubject){
-        $param['textbook_subjects'][] = $textbookSubject->subject->name;
-      }
-
-      $textbook_grades = $textbook->get_grades();
-      $param['textbook_grades']=[];
-        if(!empty($textbook_grades)) {
-        foreach($textbook_grades as $textbookGrade) {
-          $param['textbook_grades'][] = $textbookGrade->attribute_name;
-        }
-      }
+      $param['textbook_subjects'] = $textbook->subject_list;
+      $param['textbook_grades'] =$textbook->grade_list;
     }else{
       abort('404');
     }
@@ -264,25 +253,6 @@ class TextbookController extends MilestoneController
 
     $item = Textbook::find($id);
     $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
-
-    $subjects = $item->get_subjects();
-    $subject_names = '';
-    if(isset($subjects)){
-      foreach($subjects as $subject) {
-        $subject_names = $subject_names . $subject->name . ',';
-      }
-      $item->subject = mb_substr($subject_names, 0, -1);
-    }
-
-    $grades = $item->get_grades();
-    $grade_names = '';
-    if(isset($grades)){
-      foreach($grades as $grade){
-        $grade_names = $grade_names . $grade->attribute_name . ',';
-      }
-      $item->grade = mb_substr($grade_names, 0, -1);
-    }
-
     $param['item'] =$item;
 
     if($request->has('api')) {
@@ -315,10 +285,10 @@ class TextbookController extends MilestoneController
       'supplier_name' => [
         'label' => __('labels.supplier_name'),
       ],
-      'subject' => [
+      'subject_list' => [
         'label' => __('labels.subject'),
       ],
-      'grade' => [
+      'grade_list' => [
         'label' => __('labels.grade'),
       ],
     ];
