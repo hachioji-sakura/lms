@@ -197,21 +197,6 @@ class TextbookController extends MilestoneController
       ->with($param);
   }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param Request $request
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $res = $this->_update($request, $id);
-
-    return $this->save_redirect($res, $param, '更新しました。');
-  }
-
   public function _update(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
