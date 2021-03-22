@@ -147,6 +147,9 @@ class Textbook extends Model
         $update_form[$key] = $form[$key];
       }
     }
+    if(empty($form['explain'])){
+      $update_form['explain'] = '';
+    }
     $this->update($update_form);
 
     TextbookSubject::clear_subjects($this->id);
