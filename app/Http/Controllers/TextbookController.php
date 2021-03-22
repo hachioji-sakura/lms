@@ -230,9 +230,6 @@ class TextbookController extends MilestoneController
 
     $param['item']->difficulty = config('attribute.difficulty')[$param['item']->difficulty]??'';
 
-    if($request->has('api')) {
-      return $this->api_response(200, '', '', $param['item']);
-    }
     return view('textbooks.page', $form)
       ->with($param);
   }
