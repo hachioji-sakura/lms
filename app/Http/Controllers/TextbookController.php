@@ -182,11 +182,10 @@ class TextbookController extends MilestoneController
    */
   public function edit(Request $request, $id)
   {
-    $textbook = Textbook::find($id);
+    $param = $this->get_param($request, $id);
+    $textbook =  $param['item']['textbook'];
     if(isset($textbook)) {
-      $param = $this->get_param($request, $id);
       $param['textbook'] = $textbook;
-
       $textbook_prices = $textbook->get_prices();
       $param['textbook_prices']=[];
       if(!empty($textbook_prices)) {
