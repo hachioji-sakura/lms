@@ -227,7 +227,7 @@ class TextbookController extends MilestoneController
     $fields = $this->show_fields($param['item']->type);
     $form = $request->all();
     $form['fields'] = $fields;
-
+    $param['item']= Textbook::find($id);
     $param['item']->difficulty = config('attribute.difficulty')[$param['item']->difficulty]??'';
 
     return view('textbooks.page', $form)
