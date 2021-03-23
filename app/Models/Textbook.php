@@ -78,11 +78,6 @@ class Textbook extends Model
     return $this->publisher->name;
   }
 
-  public function details($user_id=0){
-    $item = $this;
-    return $item;
-  }
-
   public function store_textbook($form){
     $update_field = [
       'name' => "",

@@ -287,7 +287,7 @@ class TextbookController extends MilestoneController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-    //User取得
+
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
     $ret['remind'] = false;
@@ -306,8 +306,9 @@ class TextbookController extends MilestoneController
       if($request->has('user')){
         $user_id = $request->get('user');
       }
-      $item = $this->model()->where('id',$id)->first();
-      if(!isset($item)){
+      $ret['item'] = $this->model()->where('id',$id)->first();
+
+      if(!isset( $ret['item'])){
         abort(404, 'ページがみつかりません(1)');
       }
       if($user_id>0){
@@ -319,34 +320,15 @@ class TextbookController extends MilestoneController
         $ret['user'] = $user;
       }
 
-
       if(isset($user)){
         if($this->is_manager($user->role)!=true){
-          if($item->is_access($user->user_id)!=true){
+          if($user->is_access($user->user_id)!=true){
             abort(403, 'このページにはアクセスできません(1)'.$user->role);
           }
         }
       }
       else {
         abort(403, 'このページにはアクセスできません(2)');
-      }
-
-      if($this->is_manager_or_teacher($user->role)){
-        //講師・事務の場合、すべての生徒名を表示する(details(user_id=1)）
-        $ret['item'] = $item->details(1);
-      }
-      else {
-        //それ以外は、自分に関連するもの（親子）のみ表示する
-        $ret['item'] = $item->details($user->user_id);
-      }
-      if($request->has('student_id') && gettype($request->get('student_id'))!='array'){
-        $student = Student::where('id', $request->get('student_id'))->first();
-        if(isset($student)){
-          $ret['item']->own_member = $ret['item']->get_member($student->user_id);
-          $ret['item']["status"] = $ret['item']->own_member->status;
-          $ret['item']["status_name"] = $ret['item']->own_member->status_name();
-          $ret['item']["student_name"] = $student->name();
-        }
       }
     }
     if(isset($id)){
