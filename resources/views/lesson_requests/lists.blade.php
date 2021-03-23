@@ -1,6 +1,5 @@
 <?php
 $checked = 'checked';
-$checked = '';
 ?>
 @section('title')
   {{$domain_name}}一覧
@@ -69,7 +68,7 @@ $checked = '';
               @if($item->has_tag('regular_schedule_exchange', 'true'))
               <small class="badge badge-danger p-1 mr-1">
                 <i class="fa fa-excahnge"></i>
-                通常授業振替えあり
+                通常授業振替
               </small>
               @endif
               <br>
@@ -267,7 +266,7 @@ $checked = '';
       </li>
       <li class="nav-item">
         <a href="/events/{{$event->id}}/lesson_requests?list=confirm" class="nav-link @if($list=="confirm") active @endif">
-          <i class="fa fa-exclamation-triangle nav-icon"></i>
+          <i class="fa fa-calendar-alt nav-icon"></i>
           <p>
             調整中
             @if($confirm_count > 0)
@@ -289,7 +288,7 @@ $checked = '';
       </li>
       <li class="nav-item">
         <a href="/events/{{$event->id}}/lesson_requests?list=cancel" class="nav-link @if($list=="cancel") active @endif">
-          <i class="fa fa-calendar-plus nav-icon"></i>
+          <i class="fa fa-ban nav-icon"></i>
           <p>
             申込キャンセル
             @if($cancel_count > 0)

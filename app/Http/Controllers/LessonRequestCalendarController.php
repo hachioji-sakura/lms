@@ -120,6 +120,14 @@ class LessonRequestCalendarController extends UserCalendarController
       else $_param = explode(',', $form['search_place'].',');
       $items = $items->findPlaces($_param);
     }
+
+    if(isset($form['teaching_type'])){
+      $_param = "";
+      if(gettype($form['teaching_type']) == "array") $_param  = $form['teaching_type'];
+      else $_param = explode(',', $form['teaching_type'].',');
+      $items = $items->findTeachingType($_param);
+    }
+
     //講師ID
     if(isset($form['teacher_id'])){
       $teacher = Teacher::where('id',$form['teacher_id'])->first();
@@ -166,5 +174,8 @@ class LessonRequestCalendarController extends UserCalendarController
     }
 
     return $items;
+  }
+  public function complete_calendars(Request $request){
+    return "fuga";
   }
 }

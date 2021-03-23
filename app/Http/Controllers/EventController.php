@@ -283,7 +283,6 @@ class EventController extends MilestoneController
      foreach(['fix', 'complete'] as $index => $status){
        $param[$status."_schedule_count"] = $param['item']->get_calendar_count(['search_status' => $status]);
      }
-
      $filter = ['search_status' => 'fix'];
      if($request->has('lesson_request_id')){
        $filter['lesson_request_id'] = $request->get('lesson_request_id');
@@ -301,8 +300,5 @@ class EventController extends MilestoneController
      //echo strtotime('now')-$s;
      return view($this->domain.'.'.$view, [
      ])->with($param);
-   }
-   public function schedule_lists_commit(Request $request, $id){
-     return "fuga";
    }
 }

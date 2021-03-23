@@ -20,7 +20,7 @@ class LessonRequestCalendar extends UserCalendar
   public function lesson_request_date(){
     return $this->belongsTo('App\Models\LessonRequestDate');
   }
-  public function traing_calendars(){
+  public function training_calendars(){
     return $this->hasMany('App\Models\LessonRequestCalendar', 'parent_lesson_request_calendar_id');
   }
   public function lesson_request(){
@@ -101,9 +101,10 @@ class LessonRequestCalendar extends UserCalendar
   }
   public function conflict_user_calendars(){
     $d = date('Y-m-d', strtotime($this->start_time));
-    $c = UserCalendar::findUser($this->student->user_id)
+    $c = (new UserCalendar)->findUser($this->student->user_id)
             ->rangeDate($d.' 00:00:00', $d.' 23:59:59')
             ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel', 'new', 'dummy', 'confirm'])
+            ->searchTags(['tag_key'=>'lesson', 'tag_value'=>"1"])
             ->get();
     return $c;
   }

@@ -42,6 +42,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::resource('lesson_requests','LessonRequestController');
   Route::get('api_lesson_request_calendars','LessonRequestCalendarController@api_index');
+  Route::put('events/{event_id}/lesson_request_calendars/complete', 'LessonRequestCalendarController@complete_calendars');
   Route::resource('lesson_request_calendars','LessonRequestCalendarController');
 
   Route::resource('places','PlaceController');
@@ -53,7 +54,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
   Route::get('events/{id}/schedules', 'EventController@schedule_lists');
   Route::get('events/{id}/calendar', 'EventController@calendar');
-  Route::put('events/{id}/schedules', 'EventController@schedule_lists_commit');
 
 
   Route::get('events/{id}/to_inform','EventController@to_inform_page');

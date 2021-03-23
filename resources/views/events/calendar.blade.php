@@ -176,7 +176,7 @@
         if(result['status']===200){
           var events = result['data'];
           console.log(events);
-          if(util.isFunction(callback))callback(events);
+          if(util.isFunction(callback)) callback(events);
         }
       },
       function(xhr, st, err) {
@@ -188,260 +188,256 @@
     return;
   }
 
-  $(function () {
-    /* initialize the calendar
-     -----------------------------------------------------------------*/
-    //Date for the calendar events (dummy data)
-    var date = new Date()
-    /*
-    var d    = date.getDate(),
-        m    = date.getMonth(),
-        y    = date.getFullYear();
-    var current_hours = date.getHours() - 5;
-    var current_minutes = date.getMinutes();
-    */
-    var first_scroll_time = "15:00:00";
-    @if(isset($id) && $id >0)
-    var id= "calendar{{$id}}";
-    @else
-    var id= "calendar";
-    @endif
+$(function () {
+  /* initialize the calendar
+   -----------------------------------------------------------------*/
+  //Date for the calendar events (dummy data)
+  var date = new Date()
+  /*
+  var d    = date.getDate(),
+      m    = date.getMonth(),
+      y    = date.getFullYear();
+  var current_hours = date.getHours() - 5;
+  var current_minutes = date.getMinutes();
+  */
+  var first_scroll_time = "15:00:00";
+  @if(isset($id) && $id >0)
+  var id= "calendar{{$id}}";
+  @else
+  var id= "calendar";
+  @endif
 
-    var _defaultView = "agendaWeek";
-    @if(isset($mode) && $mode==="day")
-     _defaultView = "agendaDay";
-    @elseif(isset($mode) && $mode==="week")
-    @else
-    if(screen.width < 768) {
-      _defaultView = "agendaDay";
-    }
-    @endif
+  var _defaultView = "agendaWeek";
+  @if(isset($mode) && $mode==="day")
+   _defaultView = "agendaDay";
+  @elseif(isset($mode) && $mode==="week")
+  @else
+  if(screen.width < 768) {
+    _defaultView = "agendaDay";
+  }
+  @endif
 
-    @if($domain=='managers' || $domain=='teachers')
-    var _right_button = "month,agendaWeek,agendaDay,filter next";
-    @else
-    var _right_button = "month,agendaWeek,agendaDay next";
-    @endif
+  var _right_button = "month,agendaWeek,agendaDay,filter next";
 
 
-    var calendar_option = {
-      customButtons:{
-          filter:{
-              text: '<i class="fa fa-filter text-sm"></i>',
-              click:function(){
-                $('#filter_form').modal('show');
-              }
-          }
-      },
-      header    : {
-        @if(isset($mode) && $mode==="day")
-          left  : '',
-          center: '',
-          right : ''
-        @elseif(isset($mode) && $mode==="week")
-          left  : '',
-          center: 'title',
-          right : ''
-        @else
-          left  : 'prev today',
-          center: 'title',
-          right : _right_button
-        @endif
-      },
-      columnFormat: {
-        month: 'ddd', // 月
-        week: 'D[\n(]ddd[)]', // 7(月)
-        day: 'D[\n(]ddd[)]' // 7(月)
-      },
-      // タイトルの書式
-      titleFormat: {
-        month: 'YYYY/M',
-        week: "YYYY/M",
-        day: ' M/D[(]ddd[)]',
-      },
-      //week: 'M月 D日',
-      // ボタン文字列
-      buttonText: {
-          prev:     '＜',
-          next:     '＞',
-          prevYear: '{{__('labels.calendar_button_prev_year')}}',
-          nextYear: '{{__('labels.calendar_button_next_year')}}',
-          today:    '{{__('labels.calendar_button_today')}}',
-          month:    '{{__('labels.calendar_button_month')}}',
-          week:     '{{__('labels.calendar_button_week')}}',
-          day:      '{{__('labels.calendar_button_day')}}'
-      },
-      nowIndicator : true,
-      editable  : false,
-      droppable : false, // this allows things to be dropped onto the calendar !!!
-      dayClick: function(date, allDay, jsEvent, view) {
-        $calendar.fullCalendar('gotoDate', date);
-        //$calendar.fullCalendar('select',date,date);
-      },
-      eventClick: function(event, jsEvent, view) {
-        $calendar.fullCalendar('unselect');
-        if(event.id<0){
-          event_create(event.start, event.end, jsEvent, view);
-          return false;
+  var calendar_option = {
+    customButtons:{
+        filter:{
+            text: '<i class="fa fa-filter text-sm"></i>',
+            click:function(){
+              $('#filter_form').modal('show');
+            }
         }
-        if(event.work==5 || event.work==11){
-          //演習の場合は操作不要
-          base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/lesson_request_calendars/"+event.id);
-        }
-        else {
-          switch(event.total_status){
-            case "new":
-              base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/lesson_request_calendars/"+event.id+"/status_update/confirm");
-              break;
-            case "confirm":
-              //生徒へ再送
-              base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/lesson_request_calendars/"+event.id+"/status_update/remind");
-              break;
-            case "fix":
-              if(event.is_passed==true){
-                //過ぎていたら出欠
-                base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/lesson_request_calendars/"+event.id+"/status_update/presence");
-              }
-              else{
-                //過ぎていないなら休み取り消し
-                base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/lesson_request_calendars/"+event.id+"/status_update/lecture_cancel");
-              }
-              break;
-            case "absence":
-            case "presence":
-              base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/lesson_request_calendars/"+event.id+"/status_update/presence");
-              break;
-            case "rest":
-            case "cancel":
-            default:
-              base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/lesson_request_calendars/"+event.id);
-              break;
-          }
-        }
-      },
-      eventDrop: function(event, delta, revertFunc) {
-        console.log(event.title + " was dropped on " + event.start.format());s
-      },
-      // 選択可
-      @if($user->role=='manager')
-      selectable: true,
-      select: function(start, end, jsEvent, view , resource){
-        event_create(start, end, jsEvent, view , resource);
-      },
-      @endif
-      allDaySlot: false,
-      //allDayText:'終日',
-      axisFormat: 'H(:mm)',
-      defaultDate : '{{$item->event_from_date}}',
-      defaultView: _defaultView,
-      scrollTime: first_scroll_time,
-      // 最小時間
-      @if(isset($minHour) && $minHour>0)
-        @if($minHour>15)
-          minTime: "15:00:00",
-        @else
-          minTime: "10:00:00",
-        @endif
+    },
+    header    : {
+      @if(isset($mode) && $mode==="day")
+        left  : '',
+        center: '',
+        right : ''
+      @elseif(isset($mode) && $mode==="week")
+        left  : '',
+        center: 'title',
+        right : ''
       @else
-        minTime: "08:00:00",
+        left  : 'prev today',
+        center: 'title',
+        right : _right_button
       @endif
-      // 最大時間
-      @if(isset($maxHour) && $maxHour>0)
-        @if($maxHour>20)
-          maxTime: "23:00:00",
-        @else
-          maxTime: "21:00:00",
-        @endif
-      @else
-        maxTime: "22:00:00",
-      @endif
-      // 月名称
-      monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-      // 月略称
-      monthNamesShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-      // 曜日名称
-      dayNames: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜'],
-      // 曜日略称
-      dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
-      // 選択時にプレースホルダーを描画
-      selectHelper: true,
-      // 自動選択解除
-      unselectAuto: true,
-      // 自動選択解除対象外の要素
-      unselectCancel: '',
-      eventRender: function(event, element) {
-        console.log('event');
-        if(!event['schedule_type_code']){
-          event['schedule_type_code'] = "new";
-        }
-        var title = "{{__('labels.schedule_add')}}";
-        var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
-        var view_mode = $('input[name="view_mode"]:checked').val();
-        if(view_mode=='students'){
-          user_name = event['user_name'];
-        }
-        title = event['student_name']+remark;
-        event_render(event, element, title, view_mode);
-      },
-      events: function(start, end, timezone, callback) {
-        start = start.format('YYYY-MM-DD');
-        end = end.format('YYYY-MM-DD');
-        /*
-        start_time = start_time.replace_all('-','');
-        end_time = end_time.replace_all('-','');
-        */
-        $('input[name="from_date"]').val(start);
-        $('input[name="to_date"]').val(end);
-
-        set_calendar(callback);
-        var view = this.getView();
-        var setting = {
-          'start' : view.start.format('YYYY-MM-DD'),
-          'end' : view.end.format('YYYY-MM-DD'),
-          'type' : view.type
-        };
-        var q = util.convJsonToQueryString(setting);
-        var url = location.pathname+"?"+q;
-        if(_is_history===false){
-          //履歴からの表示でなければ、履歴に追加
-          history.pushState(setting, null, url);
-        }
-        _is_history = false;
-      },
-    };
-    //URLパラメータより表示パラメータを取得（日付とview.type)
-    var setting = util.convQueryStringToJson();
-    if(!util.isEmpty(setting)){
-      if(!util.isEmpty(setting.start)) calendar_option["defaultDate"] = setting.start;
-      if(!util.isEmpty(setting.type)) calendar_option["defaultView"] = setting.type;
-    }
-
-    $calendar = $('#'+id).fullCalendar(calendar_option);
-
-    // 動的にオプションを変更する
-    $calendar.fullCalendar('option', 'height', 'auto');
-    @if(isset($mode) && $mode==="day")
-    $('.fc-toolbar').hide();
-    @endif
-    window.onpopstate=function(e){
-      //prev , nowなどの操作後にhistory.backした際の表示
-      _is_history = true;
-      var setting = e.state;
-      if(setting){
-        if(setting.type) {
-          $calendar.fullCalendar("changeView", setting.type);
-        }
-        if(setting.start){
-          $calendar.fullCalendar('gotoDate', setting.start);
-        }
+    },
+    columnFormat: {
+      month: 'ddd', // 月
+      week: 'D[\n(]ddd[)]', // 7(月)
+      day: 'D[\n(]ddd[)]' // 7(月)
+    },
+    // タイトルの書式
+    titleFormat: {
+      month: 'YYYY/M',
+      week: "YYYY/M",
+      day: ' M/D[(]ddd[)]',
+    },
+    //week: 'M月 D日',
+    // ボタン文字列
+    buttonText: {
+        prev:     '＜',
+        next:     '＞',
+        prevYear: '{{__('labels.calendar_button_prev_year')}}',
+        nextYear: '{{__('labels.calendar_button_next_year')}}',
+        today:    '{{__('labels.calendar_button_today')}}',
+        month:    '{{__('labels.calendar_button_month')}}',
+        week:     '{{__('labels.calendar_button_week')}}',
+        day:      '{{__('labels.calendar_button_day')}}'
+    },
+    nowIndicator : true,
+    editable  : false,
+    droppable : false, // this allows things to be dropped onto the calendar !!!
+    dayClick: function(date, allDay, jsEvent, view) {
+      $calendar.fullCalendar('gotoDate', date);
+      //$calendar.fullCalendar('select',date,date);
+    },
+    eventClick: function(event, jsEvent, view) {
+      $calendar.fullCalendar('unselect');
+      if(event.id<0){
+        event_create(event.start, event.end, jsEvent, view);
+        return false;
+      }
+      if(event.work==5 || event.work==11){
+        //演習の場合は操作不要
+        base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/lesson_request_calendars/"+event.id);
       }
       else {
-        //設定なし＝初期表示
-        $calendar.fullCalendar("changeView", "agendaWeek");
-        $calendar.fullCalendar('gotoDate', util.nowDate());
+        switch(event.total_status){
+          case "new":
+            base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/lesson_request_calendars/"+event.id+"/status_update/confirm");
+            break;
+          case "confirm":
+            //生徒へ再送
+            base.showPage('dialog', "subDialog", "{{__('labels.schedule_remind')}}", "/lesson_request_calendars/"+event.id+"/status_update/remind");
+            break;
+          case "fix":
+            if(event.is_passed==true){
+              //過ぎていたら出欠
+              base.showPage('dialog', "subDialog", "{{__('labels.schedule_presence')}}", "/lesson_request_calendars/"+event.id+"/status_update/presence");
+            }
+            else{
+              //過ぎていないなら休み取り消し
+              base.showPage('dialog', "subDialog", "{{__('labels.ask_lecture_cancel')}}", "/lesson_request_calendars/"+event.id+"/status_update/lecture_cancel");
+            }
+            break;
+          case "absence":
+          case "presence":
+            base.showPage('dialog', "subDialog", "{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}", "/lesson_request_calendars/"+event.id+"/status_update/presence");
+            break;
+          case "rest":
+          case "cancel":
+          default:
+            base.showPage('dialog', "subDialog", "{{__('labels.schedule_details')}}", "/lesson_request_calendars/"+event.id);
+            break;
+        }
       }
-    };
-    var _is_history = false;
+    },
+    eventDrop: function(event, delta, revertFunc) {
+      console.log(event.title + " was dropped on " + event.start.format());s
+    },
+    // 選択可
+    @if($user->role=='manager')
+    selectable: true,
+    select: function(start, end, jsEvent, view , resource){
+      event_create(start, end, jsEvent, view , resource);
+    },
+    @endif
+    allDaySlot: false,
+    //allDayText:'終日',
+    axisFormat: 'H(:mm)',
+    defaultDate : '{{$item->event_from_date}}',
+    defaultView: _defaultView,
+    scrollTime: first_scroll_time,
+    // 最小時間
+    @if(isset($minHour) && $minHour>0)
+      @if($minHour>15)
+        minTime: "15:00:00",
+      @else
+        minTime: "10:00:00",
+      @endif
+    @else
+      minTime: "08:00:00",
+    @endif
+    // 最大時間
+    @if(isset($maxHour) && $maxHour>0)
+      @if($maxHour>20)
+        maxTime: "23:00:00",
+      @else
+        maxTime: "21:00:00",
+      @endif
+    @else
+      maxTime: "22:00:00",
+    @endif
+    // 月名称
+    monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    // 月略称
+    monthNamesShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    // 曜日名称
+    dayNames: ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜'],
+    // 曜日略称
+    dayNamesShort: ['日', '月', '火', '水', '木', '金', '土'],
+    // 選択時にプレースホルダーを描画
+    selectHelper: true,
+    // 自動選択解除
+    unselectAuto: true,
+    // 自動選択解除対象外の要素
+    unselectCancel: '',
+    eventRender: function(event, element) {
+      console.log('event');
+      if(!event['schedule_type_code']){
+        event['schedule_type_code'] = "new";
+      }
+      var title = "{{__('labels.schedule_add')}}";
+      var remark = '('+event['place_floor_name']+')<br>'+event['start_hour_minute']+'-'+event['end_hour_minute'];
+      var view_mode = $('input[name="view_mode"]:checked').val();
+      if(view_mode=='students'){
+        user_name = event['user_name'];
+      }
+      title = event['student_name']+remark;
+      event_render(event, element, title, view_mode);
+    },
+    events: function(start, end, timezone, callback) {
+      start = start.format('YYYY-MM-DD');
+      end = end.format('YYYY-MM-DD');
+      /*
+      start_time = start_time.replace_all('-','');
+      end_time = end_time.replace_all('-','');
+      */
+      $('input[name="from_date"]').val(start);
+      $('input[name="to_date"]').val(end);
+
+      set_calendar(callback);
+      var view = this.getView();
+      var setting = {
+        'start' : view.start.format('YYYY-MM-DD'),
+        'end' : view.end.format('YYYY-MM-DD'),
+        'type' : view.type
+      };
+      var q = util.convJsonToQueryString(setting);
+      var url = location.pathname+"?"+q;
+      if(_is_history===false){
+        //履歴からの表示でなければ、履歴に追加
+        history.pushState(setting, null, url);
+      }
+      _is_history = false;
+    },
+  };
+  //URLパラメータより表示パラメータを取得（日付とview.type)
+  var setting = util.convQueryStringToJson();
+  if(!util.isEmpty(setting)){
+    if(!util.isEmpty(setting.start)) calendar_option["defaultDate"] = setting.start;
+    if(!util.isEmpty(setting.type)) calendar_option["defaultView"] = setting.type;
+  }
+
+  $calendar = $('#'+id).fullCalendar(calendar_option);
+
+  // 動的にオプションを変更する
+  $calendar.fullCalendar('option', 'height', 'auto');
+  @if(isset($mode) && $mode==="day")
+  $('.fc-toolbar').hide();
+  @endif
+  window.onpopstate=function(e){
+    //prev , nowなどの操作後にhistory.backした際の表示
+    _is_history = true;
+    var setting = e.state;
+    if(setting){
+      if(setting.type) {
+        $calendar.fullCalendar("changeView", setting.type);
+      }
+      if(setting.start){
+        $calendar.fullCalendar('gotoDate', setting.start);
+      }
+    }
+    else {
+      //設定なし＝初期表示
+      $calendar.fullCalendar("changeView", "agendaWeek");
+      $calendar.fullCalendar('gotoDate', util.nowDate());
+    }
+  };
+  var _is_history = false;
 });
 </script>
 
@@ -460,51 +456,8 @@
         <input name="to_date" type="hidden" value="">
         <input name="user_id" type="hidden" value="{{$item->user_id}}">
         <div class="row p-2" id="filter_form_item">
-          @component('calendars.filter', ['domain' => $domain, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter' => $filter, 'is_list' => false])
+          @component('lesson_request_calendars.filter', ['domain' => $domain, 'attributes'=>$attributes, 'user'=>$user, 'item' => $item, 'filter' => $filter, 'is_list' => false])
           @endcomponent
-
-          <div class="col-12 col-md-6 mb-2">
-            <div class="form-group">
-              <label for="label_setting" class="w-100">
-                {{__('labels.label_setting')}}
-              </label>
-              <label class="mx-2">
-                <input type="radio" value="students" name="view_mode" class="icheck flat-green"
-                @if((isset($filter['calendar_filter']['view_mode']) && filter['calendar_filter']['view_mode']=='students') || $domain=='students')
-                  checked
-                @endif
-                >{{__('labels.teacher_name_display')}}
-              </label>
-              <label class="mx-2">
-                <input type="radio" value="teachers" name="view_mode" class="icheck flat-green"
-                @if((isset($filter['calendar_filter']['view_mode']) && filter['calendar_filter']['view_mode']!='students') || $domain!='students')
-                  checked
-                @endif
-                >{{__('labels.student_name_display')}}
-              </label>
-            </div>
-          </div>
-          <div class="col-12 col-md-6 mb-2">
-            <div class="form-group">
-              <label for="target_data" class="w-100">
-                {{__('labels.target_data')}}
-              </label>
-              <label class="mx-2">
-              <input type="radio" value="0" name="is_all_data" class="icheck flat-green"
-              @if(!(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1))
-                checked
-              @endif
-              >{{__('labels.user_only')}}
-              </label>
-              <label class="mx-2">
-              <input type="radio" value="1" name="is_all_data" class="icheck flat-red"
-              @if(isset($filter['calendar_filter']['is_all_data']) && $filter['calendar_filter']['is_all_data']==1)
-                checked
-              @endif
-              >{{__('labels.all')}}
-              </label>
-            </div>
-          </div>
         </div>
         <div class="row">
           <div class="col-12 mt-2 text-right">
