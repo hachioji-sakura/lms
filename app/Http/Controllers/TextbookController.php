@@ -268,22 +268,6 @@ class TextbookController extends MilestoneController
     return $fields;
   }
 
-
-  /**
-   * テキスト削除
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-
-    $res = $this->_delete($request, $id);
-
-    return $this->save_redirect($res, $param, '削除が完了しました');
-  }
-
   public function _delete(Request $request, $id)
   {
     $form = $request->all();
@@ -294,9 +278,6 @@ class TextbookController extends MilestoneController
     }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
-
-
-
 
   /**
    * 共通パラメータ取得
