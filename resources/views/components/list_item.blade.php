@@ -2,9 +2,9 @@
   @foreach($fields as $key => $field)
     <td>
     @if($key==="buttons")
-      @foreach($field["button"] as $button)
+      @foreach($field["button"] as $key => $button)
         @if( (isset($button['type']) && $button['type']($row)) || !isset($button['type']) )
-          @if($button==="edit")
+          @if($button==="edit" || $key === "edit")
           <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
             <i class="fa fa-edit"></i>
           </a>

@@ -247,4 +247,14 @@ class Agreement extends Model
          return false;
        }
     }
+
+    public function change($request){
+      $this->fill($request->agreements);
+      $this->save();
+      foreach($this->agreement_statements as $statement){
+        $statement->fill($request->agreement_statements[$statement->id]);
+        $statement->save();
+      }
+      return $this;
+    }
 }
