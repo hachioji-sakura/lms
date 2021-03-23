@@ -692,13 +692,13 @@ class TrialController extends UserCalendarController
      if($agreements->count() > 0){
        $agreement = $agreements->first();
        if($agreement->status == 'new'){
-         $input = true;
+         $is_money_edit = true;
        }else{
-         $input = false;
+         $is_money_edit = false;
        }
      }else{
        $agreement = null;
-       $input = false;
+       $is_money_edit = false;
      }
 
      if(!isset($trial)) abort(404);
@@ -708,7 +708,7 @@ class TrialController extends UserCalendarController
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
        'agreement' => $agreement,
-       'input' => $input,
+       'is_money_edit' => $is_money_edit,
      ];
 
      return view($this->domain.'.admission_mail',

@@ -38,7 +38,7 @@
 	          <div class="col-6 p-2">週{{$agreement->agreement_statements->where('lesson_id',$i)->first()->lesson_week_count}}回</div>
 					@endfor
 					<div class="col-12 bd-b bd-gray"></div>
-					@if(isset($input) && $input == true && !empty($agreement))
+					@if(isset($is_money_edit) && $is_money_edit == true && !empty($agreement))
 					<div class="col-6 p-2 font-weight-bold" >入会金</div>
 					<div class="col-6 p-2">
 						<input name="agreements[entry_fee]" class="form-control w-50 float-left" value="{{$agreement->entry_fee}}" inputtype="numeric"><span class="ml-2 float-left mt-2">円(税込み)</span>
@@ -112,7 +112,7 @@
 									・担当講師：{{$statement->teacher_name}}
 								</div>
 							<div class="col-12 p-2 pl-4" >
-									@if(isset($input) && $input==true)
+									@if(isset($is_money_edit) && $is_money_edit==true)
 										<div class="form-group">
 											<label for="tuition" class="w-100">
 												受講料

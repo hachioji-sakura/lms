@@ -24,7 +24,7 @@
       </div>
     </div>
   @endif
-    @component('students.forms.agreement', ['item' => $item->student, 'domain' => $domain, 'input' => $is_money_edit,  'agreement' => $item, 'user'=>$user]) @endcomponent
+    @component('students.forms.agreement', ['item' => $item->student, 'domain' => $domain, 'is_money_edit' => $is_money_edit,  'agreement' => $item, 'user'=>$user]) @endcomponent
   @if(isset($_edit) && $_edit == true)
     <div class="row">
       <div class="col-12 col-md-6 mb-1">
