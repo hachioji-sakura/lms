@@ -18,7 +18,7 @@
     @method('PUT')
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="key" value="{{$access_key}}" />
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'agreement' => $agreement, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'agreement' => $agreement, 'domain' => $domain, 'is_money_edit'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
