@@ -124,7 +124,7 @@ class AgreementController extends MilestoneController
       return view($this->domain.'.details')->with($param);
     }
 
-    public function _update($request, $id){
+    public function _update(Request $request, $id){
 
       $res = $this->transaction($request, function() use ($request,$id){
         $item = $this->model()->find($id);
