@@ -95,11 +95,11 @@ class AskController extends MilestoneController
     $ret = $this->get_common_param($request, false);
     if(!isset($user)) {
       if($request->has('key') && $this->is_enable_token($ret['access_key'])){
-        $user = User::where('access_key', $ret['access_key'])->first();
-        if(!isset($user)){
+        $ask = $this->model()->where('access_key', $ret['access_key'])->first();
+        if(!isset($ask)){
           abort(404);
         }
-        $user = $user->details();
+        $user = $ask->target_user->details();
         $ret['user'] = $user;
       }
       else {
@@ -391,9 +391,10 @@ class AskController extends MilestoneController
 
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['agreement'] = $param['item']->get_target_model_data();
-     $param['access_key'] = $param['agreement']->student_parent->user->access_key;
+     $param['access_key'] = $param['item']->access_key;
      $param['action'] = '';
      $param['fields'] = [];
+     $param['is_money_edit'] = false;
      $param['student'] = $param['agreement']->student;
      return view('asks.agreement', [])->with($param);
    }
