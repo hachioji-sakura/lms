@@ -209,7 +209,7 @@ class TextbookController extends MilestoneController
       $user = $this->login_details($request);
       $form = $request->all();
       $form['create_user_id'] = $user->user_id;
-      $param['item']->update_textbook($form);
+      $param['item']['textbook']->update_textbook($form);
 
       return $this->api_response(200, '', '', $param['item']);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -367,7 +367,10 @@ class TextbookController extends MilestoneController
    */
   public function save_validate(Request $request)
   {
-    //保存時にパラメータをチェック
+    $form = $request->all();
+    if(empty($form['name']) || empty($form['difficulty'])){
+      return $this->bad_request('リクエストエラー', '名前='.$form['name'].'難易度='.$form['difficulty']);
+    }
     return $this->api_response(200, '', '');
   }
 }
