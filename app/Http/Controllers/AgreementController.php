@@ -113,13 +113,13 @@ class AgreementController extends MilestoneController
     {
         //
         $param = $this->get_param($request,$id);
-        $param['input'] = false;
+        $param['is_money_edit'] = false;
         return view($this->domain.'.details')->with($param);
     }
 
     public function edit(Request $request, $id){
       $param = $this->get_param($request,$id);
-      $param['input'] = true;
+      $param['is_money_edit'] = true;
       $param['_edit'] = true;
       return view($this->domain.'.details')->with($param);
     }
