@@ -88,40 +88,24 @@ class Textbook extends Model
       'create_user_id' => "",
     ];
     $update_form = [];
-    foreach($update_field as $key => $val){
-      if(array_key_exists($key, $form)){
+    foreach ($update_field as $key => $val) {
+      if (array_key_exists($key, $form)) {
         $update_form[$key] = $form[$key];
       }
     }
-    if(empty($form['explain'])){
-      $update_form['explain'] = '';
-    }
+
     $textbook = $this->create($update_form);
-
-    TextbookSubject::clear_subjects($textbook->id);
-    if(isset($form['subject'])) {
-      TextbookSubject::set_subjects($textbook->id, $form['subject']);
+    $textbook->subjects()->attach($form['subjects']);
+    foreach($form['grade_no'] as $grade_no){
+      $textbook->textbook_tag()
+        ->create(['tag_key' => 'grade_no','tag_value' => $grade_no,'create_user_id' => $form['create_user_id']]);
     }
 
-    $tag_names = ['grade_no'];
-    foreach($tag_names as $tag_name){
-      TextbookTag::clear_tags($textbook->id, $tag_name);
-    }
-    foreach($tag_names as $tag_name){
-      if(isset($form[$tag_name]) && count($form[$tag_name])>0){
-        TextbookTag::set_tags($textbook->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-    }
-
-    $price_attributes = config('attribute.price');
-    if(isset($price_attributes)) {
-      foreach($price_attributes as $key => $value){
-        TextbookTag::clear_tags($textbook->id, $key);
-      }
-      foreach($price_attributes as $key => $value){
-        if(isset($form[$key]) && !empty($form[$key])){
-          TextbookTag::set_tag($textbook->id, $key, $form[$key], $form['create_user_id']);
-        }
+    $tag_names = ['teika_price', 'selling_price', 'amazon_price', 'publisher_price', 'other_price'];
+    foreach ($tag_names as $tag_name) {
+      if (isset($form[$tag_name]) && !empty($form[$tag_name])) {
+        $textbook->textbook_tag()
+          ->create(['tag_key' => $tag_name,'tag_value' => $form[$tag_name],'create_user_id' => $form['create_user_id']]);
       }
     }
   }

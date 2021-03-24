@@ -47,12 +47,9 @@ class TextbookController extends MilestoneController
       return $res;
     }
     return $this->transaction($request, function() use ($request){
-      $user = $this->login_details($request);
-      $form = $request->all();
-      $form['create_user_id'] = $user->user_id;
+      $form = $this->create_form($request);
       $item = new Textbook();
       $item->store_textbook($form);
-
       return $this->api_response(200, '', '', $item);
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
@@ -193,7 +190,6 @@ class TextbookController extends MilestoneController
       $form = $this->create_form($request);
       $form['create_user_id'] = $user->user_id;
       $param['item']['textbook']->update_textbook($form);
-
       return $this->api_response(200, '', '', $param['item']);
     }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
