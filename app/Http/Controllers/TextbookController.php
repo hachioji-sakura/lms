@@ -36,23 +36,6 @@ class TextbookController extends MilestoneController
   }
 
   /**
-   * テキスト新規登録
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    $param = $this->get_param($request);
-    $res = $this->_store($request);
-    if(empty($res['message'])){
-      $message = '登録しました。';
-    }else{
-      $message = $res['message'];
-    }
-    return $this->save_redirect($res, $param, $message);
-  }
-
-  /**
    * 新規登録ロジック
    *
    * @return \Illuminate\Http\Response
