@@ -379,7 +379,7 @@ class AskController extends MilestoneController
      if(!isset($param['item'])) abort(404, 'ページがみつかりません(32)');
      $param['fields'] = $this->show_fields($param['item']->type);
      $param['trial'] = $param['item']->get_target_model_data();
-     $param['access_key'] = $param['trial']->parent->user->access_key;
+     $param['access_key'] = $param['item']->access_key;;
      $param['action'] = '';
      return view('asks.hope_to_join', [])->with($param);
    }
