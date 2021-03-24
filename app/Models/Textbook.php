@@ -156,7 +156,7 @@ class Textbook extends Model
     return $this->hasMany('App\Models\TextbookTag','textbook_id','id');
   }
   public function subjects(){
-    return $this->belongsToMany('App\Models\Subject','textbook_subjects');
+    return $this->belongsToMany('App\Models\Subject','textbook_subjects')->withTimestamps();
   }
   public function publisher(){
     return $this->belongsTo('App\Models\Publisher','publisher_id','id')->withDefault();
