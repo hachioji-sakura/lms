@@ -207,7 +207,7 @@ class TextbookController extends MilestoneController
 
     return $this->transaction($request, function() use ($request, $param){
       $user = $this->login_details($request);
-      $form = $request->all();
+      $form = $this->create_form($request);
       $form['create_user_id'] = $user->user_id;
       $param['item']['textbook']->update_textbook($form);
 
@@ -287,7 +287,6 @@ class TextbookController extends MilestoneController
    * @return json
    */
   public function get_param(Request $request, $id=null){
-
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
     $ret['remind'] = false;
@@ -342,6 +341,25 @@ class TextbookController extends MilestoneController
     return $ret;
   }
 
+  public function create_form(Request $request)
+  {
+    $user = $this->login_details($request);
+    $form['name'] = $request->get('name');
+    $form['explain'] = $request->get('explain')??'';
+    $form['difficulty'] = $request->get('difficulty')??0;
+    $form['publisher_id'] = $request->get('publisher_id');
+    $form['supplier_id'] = $request->get('supplier_id');
+    $form['subjects'] = $request->get('subject')??[];
+    $form['grade_no'] = $request->get('grade_no')??[];
+    $form['teika_price'] = $request->get('teika_price');
+    $form['selling_price'] = $request->get('selling_price');
+    $form['amazon_price'] = $request->get('amazon_price');
+    $form['publisher_price'] = $request->get('publisher_price');
+    $form['other_price'] = $request->get('other_price');
+    $form['create_user_id'] = $user->id;
+    return $form;
+  }
+
   /**
    * データ更新時のパラメータチェック
    *
@@ -350,8 +368,8 @@ class TextbookController extends MilestoneController
   public function save_validate(Request $request)
   {
     $form = $request->all();
-    if(empty($form['name']) || empty($form['difficulty'])){
-      return $this->bad_request('リクエストエラー', '名前='.$form['name'].'難易度='.$form['difficulty']);
+    if(empty($form['name'])){
+      return $this->bad_request('リクエストエラー', '名前='.$form['name']);
     }
     return $this->api_response(200, '', '');
   }

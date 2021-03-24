@@ -142,40 +142,29 @@ class Textbook extends Model
         $update_form[$key] = $form[$key];
       }
     }
-    if(empty($form['explain'])){
-      $update_form['explain'] = '';
-    }
+
     $this->update($update_form);
+    $this->subjects()->sync($form['subjects']);
 
-    TextbookSubject::clear_subjects($this->id);
-    if (isset($form['subject'])) {
-      TextbookSubject::set_subjects($this->id, $form['subject']);
-    }
+    $this->textbook_tag()->delete();
 
-    $tag_names = ['grade_no'];
-    foreach ($tag_names as $tag_name) {
-      TextbookTag::clear_tags($this->id, $tag_name);
-    }
-    foreach ($tag_names as $tag_name) {
-      if (isset($form[$tag_name]) && count($form[$tag_name]) > 0) {
-        TextbookTag::set_tags($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
+    foreach($form['grade_no'] as $grade_no){
+      $this->textbook_tag()
+           ->create(['tag_key' => 'grade_no','tag_value' => $grade_no,'create_user_id' => $form['create_user_id']]);
     }
 
     $tag_names = ['teika_price', 'selling_price', 'amazon_price', 'publisher_price', 'other_price'];
     foreach ($tag_names as $tag_name) {
-      TextbookTag::clear_tags($this->id, $tag_name);
-    }
-    foreach ($tag_names as $tag_name) {
       if (isset($form[$tag_name]) && !empty($form[$tag_name])) {
-        TextbookTag::set_tag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
+        $this->textbook_tag()
+             ->create(['tag_key' => $tag_name,'tag_value' => $form[$tag_name],'create_user_id' => $form['create_user_id']]);
       }
     }
   }
 
   public function dispose(){
-    TextbookSubject::where('textbook_id', $this->id)->delete();
-    TextbookTag::where('textbook_id', $this->id)->delete();
+    $this->subjects()->detach();
+    $this->textbook_tag()->delete();
     $this->delete();
   }
 
