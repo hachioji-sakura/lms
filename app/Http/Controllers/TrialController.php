@@ -226,11 +226,12 @@ class TrialController extends UserCalendarController
     $count = $items->count();
 
     $request->merge([
-      '_sort' => 'created_at'
+      '_sort' => 'created_at',
+      '_sort_order' => 'desc'
     ]);
-    if($request->get('is_desc')==1){
+    if($request->get('is_asc')==1){
       $request->merge([
-        '_sort_order' => 'desc',
+        '_sort_order' => 'asc',
       ]);
     }
     $items = $this->_search_sort($request, $items);
