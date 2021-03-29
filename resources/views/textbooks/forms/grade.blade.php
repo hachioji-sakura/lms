@@ -4,9 +4,8 @@
       {{__('messages.choose_grades')}}
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
-
     @foreach($grades as $grade)
-      <label class="mx-2">
+      <label class="select-2">
         <input type="checkbox" value="{{ $grade->attribute_value }}" name="grade_no[]" class="icheck flat-green"
                @if(isset($textbook_grades) && in_array($grade->attribute_name,$textbook_grades,true))
                checked
