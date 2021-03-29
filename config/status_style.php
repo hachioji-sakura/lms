@@ -37,5 +37,6 @@ return array(
   'free' => 'success',
   'training' => 'secondary',
   'season' => 'info',
+  'schedule_commit' => 'success',
   );
 ?>

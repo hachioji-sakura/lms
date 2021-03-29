@@ -115,9 +115,9 @@ class LessonRequest extends Model
     }
     return $subject_count;
   }
-  public function get_calendar_subject_count(){
+  public function get_calendar_subject_count($statuses){
     $calendar_subject_count = [];
-    $calendars = $this->lesson_request_calendars()->whereIn('status', ['fix', 'complete'])->get();
+    $calendars = $this->lesson_request_calendars()->whereIn('status', $statuses)->get();
     foreach($calendars as $calendar){
       if(!isset($calendar_subject_count[$calendar->subject_code])){
         $calendar_subject_count[$calendar->subject_code]=0;
@@ -141,12 +141,13 @@ class LessonRequest extends Model
   }
   public function set_status(){
     $subject_count = $this->get_request_subject_count();
-    $set_calendar_subject_count = $this->get_calendar_subject_count();
+    $set_calendar_subject_count = $this->get_calendar_subject_count(['fix', 'complete']);
+    $comp_calendar_subject_count = $this->get_calendar_subject_count(['complete']);
     $status = 'new';
     if(count($set_calendar_subject_count)>0) $status = 'confirm';
     $fix_calendar_subject_count = $this->get_user_calendar_subject_count();
     $is_fixed = true;
-    $is_complete = true;
+    $is_schedule_commit = true;
 
     foreach($subject_count as $subject_code => $c){
       if(!isset($set_calendar_subject_count[$subject_code])){
@@ -154,19 +155,17 @@ class LessonRequest extends Model
         $is_fixed = false;
       }
       else if($c > $set_calendar_subject_count[$subject_code]){
-        //要望科目数＞登録授業科目数
+        //要望科目数＞仮登録授業科目数
         $is_fixed = false;
       }
-      if(!isset($fix_calendar_subject_count[$subject_code])){
-        $is_complete = false;
+      if(!isset($comp_calendar_subject_count[$subject_code]) || $c > $comp_calendar_subject_count[$subject_code]){
+        //要望科目数＞本登録授業科目数
+        $is_schedule_commit = false;
       }
-      else if($c > $fix_calendar_subject_count[$subject_code]){
-        //要望科目数＞登録授業科目数
-        $is_complete = false;
-      }
+
     }
-    if($is_complete==true){
-      $status = 'complete';
+    if($is_schedule_commit==true){
+      $status = 'schedule_commit';
     }
     else if($is_fixed==true){
       $status = 'fix';

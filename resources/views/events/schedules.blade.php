@@ -4,7 +4,7 @@
 @extends('dashboard.common')
 @section('contents')
 <section class="content">
-  <form id="lesson_request_calendars_post"  method="POST" action='/events/{{$item->id}}/lesson_request_calendars/complete' >
+  <form id="lesson_request_calendars_confirm"  method="POST" action='/events/{{$item->id}}/lesson_request_calendars/complete' >
     @csrf
     @method('PUT')
     <input type="text" name="dummy" style="display:none;" / >
@@ -201,9 +201,9 @@
                       選択した仮確定予定を確定させますか？
                       <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
                     </label>
-                    <div class="input-group">
+                    <div class="input-group" id="checked_at_type_form">
                       <div class="form-check">
-                          <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_fix" value="fix" required="true" >
+                          <input class="form-check-input icheck flat-green" type="radio" name="checked_at_type" id="checked_at_type_fix" value="fix" required="true"  validate="select_id_check();">
                           <label class="form-check-label" for="checked_at_type_fix">
                               {{__('labels.yes')}}
                           </label>
@@ -217,6 +217,21 @@
                     </div>
                   </div>
                 </div>
+                <script>
+                function select_id_check(){
+                  var _is_scceuss = false;
+                  $("input[name='selected_lesson_request_calendar_ids[]']:checked").each(function(index, value){
+                    var val = $(this).val();
+                    if(val!=1){
+                      _is_scceuss = true;
+                    }
+                  });
+                  if(!_is_scceuss){
+                    front.showValidateError('#checked_at_type_form', '更新対象をつ以上選択してください');
+                  }
+                  return _is_scceuss;
+                }
+                </script>
                 <div class="col-12 mb-1">
                   <button type="button" class="btn btn-submit btn-info btn-block">
                     <i class="fa fa-check mr-1"></i>
@@ -237,7 +252,7 @@
         e.preventDefault();
         if(front.validateFormValue('lesson_request_calendars_confirm')){
           $(this).prop("disabled",true);
-          $("#lesson_request_calendars_post").submit();
+          $("#lesson_request_calendars_confirm").submit();
         }
       });
     });
@@ -285,7 +300,7 @@
           予定仮確定
           <p>
           @if($fix_schedule_count>0)
-            <span class="badge calendar-plus right">{{$fix_schedule_count}}</span>
+            <span class="badge badge-primary right">{{$fix_schedule_count}}</span>
           @endif
           </p>
         </a>
@@ -296,7 +311,7 @@
           予定確定済み
           <p>
           @if($complete_schedule_count>0)
-            <span class="badge badge-primary right">{{$complete_schedule_count}}</span>
+            <span class="badge badge-success right">{{$complete_schedule_count}}</span>
           @endif
           </p>
         </a>

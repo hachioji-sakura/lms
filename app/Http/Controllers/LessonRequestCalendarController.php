@@ -176,6 +176,21 @@ class LessonRequestCalendarController extends UserCalendarController
     return $items;
   }
   public function complete_calendars(Request $request){
-    return "fuga";
+    $param = $this->get_param($request);
+    if(!$request->has('selected_lesson_request_calendar_ids')){
+      abort(200);
+    }
+    $selected_lesson_request_calendar_ids = $request->get('selected_lesson_request_calendar_ids');
+    if(count($selected_lesson_request_calendar_ids)<1){
+      abort(200);
+    }
+
+    $res = $this->transaction($request, function() use ($selected_lesson_request_calendar_ids){
+      LessonRequestCalendar::whereIn('id', $selected_lesson_request_calendar_ids)->update(['status'=>'complete']);
+      LessonRequestCalendar::whereIn('parent_lesson_request_calendar_id', $selected_lesson_request_calendar_ids)->update(['status'=>'complete']);
+      return $this->api_response(200, '', '');
+    }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
+
+    return $this->save_redirect($res, [], '');
   }
 }

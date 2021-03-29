@@ -251,7 +251,7 @@ class LessonRequestController extends UserCalendarController
       if(isset($ret['user']) && $this->is_manager($ret['user']->role)!=true){
         abort(403);
       }
-      $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
+      $lists = ['cancel', 'new', 'fix', 'confirm', 'schedule_commit',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
         if($request->has('event_id')){

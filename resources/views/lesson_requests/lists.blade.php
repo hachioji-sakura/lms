@@ -75,7 +75,8 @@ $checked = 'checked';
               <table class="table-bordered my-2">
               <?php
                 $request_subject_count = $item->get_request_subject_count();
-                $calendar_subject_count = $item->get_calendar_subject_count();
+                $fix_calendar_subject_count = $item->get_calendar_subject_count(['fix']);
+                $comp_calendar_subject_count = $item->get_calendar_subject_count(['complete']);
                 $user_calendar_subject_count = $item->get_user_calendar_subject_count();
               ?>
               <tr class="bg-gray text-center">
@@ -88,7 +89,7 @@ $checked = 'checked';
                 @endforeach
               </tr>
               <tr>
-                <th class="text-center p-1 bg-gray">希望数</th>
+                <th class="text-center p-1 bg-gray">希望</th>
                 @foreach($item->charge_subject_attributes() as $attribute)
                 @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
                 <td class="text-center p-1">
@@ -101,16 +102,18 @@ $checked = 'checked';
                 @endforeach
               </tr>
               <tr>
-                <th class="text-center p-1 bg-gray">仮登録数</th>
+                <th class="text-center p-1 bg-gray">仮確定</th>
                 @foreach($item->charge_subject_attributes() as $attribute)
                 @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
                 <td class="text-center p-1
-                @if(!isset($calendar_subject_count[$attribute->attribute_value]) || $calendar_subject_count[$attribute->attribute_value] < $request_subject_count[$attribute->attribute_value])
-                  bg-danger
+                @if(isset($fix_calendar_subject_count[$attribute->attribute_value]) &&
+                  $fix_calendar_subject_count[$attribute->attribute_value] == $request_subject_count[$attribute->attribute_value]
+                  )
+                  bg-info
                 @endif
                 ">
-                @if(isset($calendar_subject_count[$attribute->attribute_value]))
-                {{$calendar_subject_count[$attribute->attribute_value]}}
+                @if(isset($fix_calendar_subject_count[$attribute->attribute_value]))
+                {{$fix_calendar_subject_count[$attribute->attribute_value]}}
                 @else
                 0
                 @endif
@@ -118,6 +121,22 @@ $checked = 'checked';
                 @endforeach
               </tr>
               <tr>
+                <th class="text-center p-1 bg-gray">確定</th>
+                @foreach($item->charge_subject_attributes() as $attribute)
+                @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
+                <td class="text-center p-1
+                @if(isset($comp_calendar_subject_count[$attribute->attribute_value]) && $comp_calendar_subject_count[$attribute->attribute_value] == $request_subject_count[$attribute->attribute_value])
+                  bg-success
+                @endif
+                ">
+                @if(isset($comp_calendar_subject_count[$attribute->attribute_value]))
+                {{$comp_calendar_subject_count[$attribute->attribute_value]}}
+                @else
+                0
+                @endif
+                </td>
+                @endforeach
+              </tr>              <tr>
                 <th class="text-center p-1 bg-gray">登録数</th>
                 @foreach($item->charge_subject_attributes() as $attribute)
                 @if(!isset($request_subject_count[$attribute->attribute_value])) @continue @endif
@@ -268,7 +287,7 @@ $checked = 'checked';
         <a href="/events/{{$event->id}}/lesson_requests?list=confirm" class="nav-link @if($list=="confirm") active @endif">
           <i class="fa fa-calendar-alt nav-icon"></i>
           <p>
-            調整中
+            授業調整中
             @if($confirm_count > 0)
             <span class="badge badge-warning right">{{$confirm_count}}</span>
             @endif
@@ -279,9 +298,20 @@ $checked = 'checked';
         <a href="/events/{{$event->id}}/lesson_requests?list=fix" class="nav-link @if($list=="fix") active @endif">
           <i class="fa fa-calendar-plus nav-icon"></i>
           <p>
-            予定確定
+            授業仮確定
             @if($fix_count > 0)
             <span class="badge badge-primary right">{{$fix_count}}</span>
+            @endif
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/events/{{$event->id}}/lesson_requests?list=schedule_commit" class="nav-link @if($list=="schedule_commit") active @endif">
+          <i class="fa fa-calendar-plus nav-icon"></i>
+          <p>
+            授業確定
+            @if($schedule_commit_count > 0)
+            <span class="badge badge-success right">{{$schedule_commit_count}}</span>
             @endif
           </p>
         </a>
