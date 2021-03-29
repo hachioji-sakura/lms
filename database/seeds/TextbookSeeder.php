@@ -28,7 +28,61 @@ class TextbookSeeder extends Seeder
     DB::table('textbook_subjects')->truncate();
 
     //出版社
-    $publishers = config('publisher');
+    $publishers= array(
+      1 => [
+        'name' => '日本教材出版',
+        'url' => 'https://www.nihonkyouzai.jp',
+      ],
+      2 => [
+        'name' => '育伸社',
+        'url' => 'https://www.ikushin.co.jp/',
+      ],
+      3 => [
+        'name' => '好学出版',
+        'url' => 'http://www.kogaku-pub.com/',
+      ],
+      4 => [
+        'name' => '教育開発出版',
+        'url' => 'https://www.kyo-kai.co.jp/',
+      ],
+      5 => [
+        'name' => '学書',
+        'url' => 'https://www.gakusho.com/',
+      ],
+      6 => [
+        'name' => 'エデュケーショナル ネットワーク',
+        'url' => 'https://www.edu-network.jp/',
+      ],
+      7 => [
+        'name' => '四谷大塚',
+        'url' => 'https://www.yotsuyaotsuka.com/',
+      ],
+      8 => [
+        'name' => '進学研究会',
+        'url' => 'https://www.shinken.co.jp/',
+      ],
+      9 => [
+        'name' => '旺文社',
+        'url' => 'https://www.obunsha.co.jp/',
+      ],
+      10 => [
+        'name' => '代々木ライブラリー ',
+        'url' => 'https://www.yozemi-sateline.ac/library/',
+      ],
+      11 => [
+        'name' => '学研',
+        'url' => 'https://hon.gakken.jp/',
+      ],
+      12 => [
+        'name' => '学研プラス',
+        'url' => 'https://gakken-plus.co.jp/',
+      ],
+      13 => [
+        'name' => '日本英語検定協会',
+        'url' => 'https://www.eiken.or.jp/',
+      ],
+    );
+
     foreach($publishers as $publisher){
       Publisher::create([
         'name' => $publisher['name'],
@@ -38,7 +92,56 @@ class TextbookSeeder extends Seeder
     }
 
     //発注先
-    $suppliers = config('supplier');
+    $suppliers = array(
+      1 => [
+        'name' => '日本教材出版',
+        'url' => 'https://www.nihonkyouzai.jp',
+      ],
+      2 => [
+        'name' => '育伸社',
+        'url' => 'https://www.ikushin.co.jp/',
+      ],
+      3 => [
+        'name' => 'amazon',
+        'url' => 'https://www.amazon.co.jp/',
+      ],
+      4 => [
+        'name' => '教育開発出版',
+        'url' => 'https://www.kyo-kai.co.jp/',
+      ],
+      5 => [
+        'name' => '四谷大塚',
+        'url' => 'https://www.yotsuyaotsuka.com/',
+      ],
+      6 => [
+        'name' => '暁出版',
+        'url' => 'https://www.akatsuki-shuppan.co.jp/',
+      ],
+      7 => [
+        'name' => '楽天',
+        'url' => 'https://www.rakuten.co.jp/',
+      ],
+      8 => [
+        'name' => '進学研究会',
+        'url' => 'https://www.shinken.co.jp/',
+      ],
+      9 => [
+        'name' => 'エデュケーショナル ネットワーク',
+        'url' => 'https://www.edu-network.jp/',
+      ],
+      10 => [
+        'name' => 'ELTBOOKS',
+        'url' => 'https://www.eltbooks.com/home.php',
+      ],
+      11 => [
+        'name' => 'くまざわ書店 ',
+        'url' => 'https://www.kumabook.com/',
+      ],
+      12 => [
+        'name' => '日本英語検定協会',
+        'url' => 'https://www.eiken.or.jp/',
+      ],
+    );
     foreach($suppliers as $supplier){
       Supplier::create([
         'name' => $supplier['name'],
@@ -46,6 +149,7 @@ class TextbookSeeder extends Seeder
         'create_user_id' => 1,
       ]);
     }
+
     //教材 (sakura-api)
     $ctx = stream_context_create(array(
       "http" => array(
@@ -71,13 +175,13 @@ class TextbookSeeder extends Seeder
     foreach($data as $key => $datum) {
       $level = $datum[0]->level;
       $explain = $datum[0]->explain;
-      $teikaPrice = $datum[0]->teika_price;
+      $teika_price = $datum[0]->teika_price;
       $tewatashi_price1 = $datum[0]->tewatashi_price1;
       $tewatashi_price2 = $datum[0]->tewatashi_price2;
       $tewatashi_price3 = $datum[0]->tewatashi_price3;
       $publisher_price = $datum[0]->publisher_price;
 
-      $subjects =[];
+      $subjects = [];
       $grades = [];
       foreach ($datum as $value) {
         if (isset($value->subject)) $items[$key]['subjects'][] = $value->subject;
@@ -85,7 +189,14 @@ class TextbookSeeder extends Seeder
         $publisher = Publisher::where('name', $value->publisher_name)->first();
         $supplier = Supplier::where('name', $value->supplier_name)->first();
       }
-      if (isset($items[$key]['subjects'])) $subjects = array_unique($items[$key]['subjects']);
+      $remark = '';
+      if (isset($items[$key]['subjects'])){
+        $subjects = array_unique($items[$key]['subjects']);
+        foreach($subjects as $subject){
+          $remark =  $remark.$subject.',';
+        }
+        $remark = mb_substr($remark, 0, -1);
+      }
       if (isset($items[$key]['grades'])) $grades = array_unique($items[$key]['grades']);
 
       //教材
@@ -96,33 +207,40 @@ class TextbookSeeder extends Seeder
         'publisher_id' => $publisher->id ?? null,
         'supplier_id' => $supplier->id ?? null,
         'create_user_id' => 1,
+        'remarks' => $remark,
       ]);
-      if(!empty($teikaPrice)) $this->create_price_tag($textbook->id,'teika_price',$teikaPrice);
-      if(!empty($tewatashi_price1)) $this->create_price_tag($textbook->id,'selling_price',$tewatashi_price1);
-      if(!empty($tewatashi_price2)) $this->create_price_tag($textbook->id,'amazon_price',$tewatashi_price2);
-      if(!empty($tewatashi_price3)) $this->create_price_tag($textbook->id,'other_price',$tewatashi_price3);
-      if(!empty($publisher_price)) $this->create_price_tag($textbook->id,'publisher_price',$publisher_price);
-      //教科
-
-      // textbookSeederでやった場合は登録されるけど、migrate seedしたときはダメ。
-      foreach($subjects as $subject){
-        $subject_eloquent = Subject::where('name','=',$subject)->first();
-
-        if(!isset($subject_eloquent)){
-          $max_subject_id = Subject::max('id');
-          Subject::create([
-            'name' => $subject,
-            'sort_no' =>  1,
-            'create_user_id' => 1,
-          ]);
+      if(!empty($teikaPrice)) {
+        $textbook->textbook_tag()->create([
+          'tag_key' => 'teika_price',
+          'tag_value' => $teika_price,
+          'create_user_id' => 1]);
         }
-        $subject_model = Subject::where('name', '=', $subject)->first();
-        TextbookSubject::create([
-          'textbook_id' => $textbook->id,
-          'subject_id' => $subject_model->id,
-        ]);
+      if(!empty($tewatashi_price1)) {
+        $textbook->textbook_tag()->create([
+          'tag_key' => 'selling_price',
+          'tag_value' => $tewatashi_price1,
+          'create_user_id' => 1]);
+      }
+      if(!empty($tewatashi_price2)) {
+        $textbook->textbook_tag()->create([
+          'tag_key' => 'amazon_price',
+          'tag_value' => $tewatashi_price2,
+          'create_user_id' => 1]);
+      }
+      if(!empty($tewatashi_price3)) {
+        $textbook->textbook_tag()->create([
+          'tag_key' => 'other_price',
+          'tag_value' => $tewatashi_price3,
+          'create_user_id' => 1]);
+      }
+      if(!empty($publisher_price)) {
+        $textbook->textbook_tag()->create([
+          'tag_key' => 'publisher_price',
+          'tag_value' => $publisher_price,
+          'create_user_id' => 1]);
       }
 
+      //教科
       foreach($grades as $grade){
         $general_attribute = GeneralAttribute::where('attribute_key','grade')
                                             ->where('attribute_name',$grade)
@@ -137,20 +255,5 @@ class TextbookSeeder extends Seeder
         }
       }
     }
-  }
-
-  /**
-   * 教科と教材のリレーション登録
-   * @param int $textbook_id
-   * @param string $key
-   * @param int $value
-   */
-  private function create_price_tag($textbook_id,$key,$value){
-    TextbookTag::create([
-      'textbook_id' => $textbook_id,
-      'tag_key' => $key,
-      'tag_value' =>$value,
-      'create_user_id' => 1,
-    ]);
   }
 }
