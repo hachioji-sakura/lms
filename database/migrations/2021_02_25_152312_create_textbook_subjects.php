@@ -17,8 +17,6 @@ class CreateTextbookSubjects extends Migration
       $table->increments('id');
       $table->integer('subject_id')->index('index_subject_id')->comment('教科ID');
       $table->integer('textbook_id')->index('index_event_id')->comment('教材ID');
-//        $table->foreign('subject_id')->references('subject_id')->on('subjects')->onDelete('cascade');
-//        $table->foreign('textbook_id')->references('textbook_id')->on('textbooks')->onDelete('cascade');
       $table->timestamps();
     });
   }
