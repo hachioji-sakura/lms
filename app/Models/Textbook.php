@@ -44,8 +44,7 @@ class Textbook extends Model
       $grades = $this->textbook_tag->where('tag_key', 'grade_no');
       if (!$grades->isEmpty()) {
         foreach ($grades as $grade) {
-          $generalAttribute = GeneralAttribute::find($grade->tag_value);
-          $gradeList[] = $generalAttribute->attribute_name;
+          $gradeList[] = config('grade')[$grade->tag_value]??'';
         }
       }
     }

@@ -249,7 +249,7 @@ class TextbookSeeder extends Seeder
           TextbookTag::create([
             'textbook_id' => $textbook->id,
             'tag_key' => 'grade_no',
-            'tag_value' => $general_attribute->id,
+            'tag_value' => $general_attribute->attribute_value,
             'create_user_id' => 1,
           ]);
         }
