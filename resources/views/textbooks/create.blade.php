@@ -1,4 +1,4 @@
-<div id="calendars_entry" class="direct-chat-msg">
+<div id="textbook" class="direct-chat-msg">
   @include('textbooks.create_form')
   @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
@@ -10,19 +10,13 @@
     @if(isset($origin))
       <input type="hidden" value="{{$origin}}" name="origin" />
     @endif
-    @if(isset($student_id))
-      <input type="hidden" value="{{$student_id}}" name="student_id" />
-    @endif
-    @if(isset($manager_id))
-      <input type="hidden" value="{{$manager_id}}" name="manager_id" />
-    @endif
     <div class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('first_form')
           <div class="row">
             <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="calendars_entry"
+              <button type="button" class="btn btn-submit btn-primary btn-block" accesskey="textbook"
                 @if(isset($_edit) && $_edit==true)
                 confirm="{{__('messages.confirm_update')}}">
                 {{__('labels.update_button')}}
