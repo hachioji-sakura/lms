@@ -164,4 +164,6 @@ return [
   "info_unsubscribe_for_teacher1" => ":student_name様は、下記の日付にて退会予定となります。",
   "info_unsubscribe_for_teacher2" => "振替授業については、退会予定日までに行うように、\n授業の登録をお願いいたします。",
   "error_skype_name_not_found" => "オンライン授業の場合、Skype名の設定が必要です。\n勤務設定から、Skype名の設定をお願いいたします。",
+  'choose_subjects' => 'テキストに当てはまる教科を選択してください',
+  'choose_grades' => 'テキストに当てはまる学年を選択してください ',
 ];

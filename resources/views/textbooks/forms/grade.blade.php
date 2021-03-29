@@ -1,7 +1,7 @@
 <div class="col-12">
   <div class="form-group">
     <label for="teacher_character" class="w-100">
-      {{__('labels.choose_grades')}}
+      {{__('messages.choose_grades')}}
       <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
     </label>
 

@@ -432,8 +432,6 @@ return [
   'supplier_name' => 'supplier',
   'difficulty' => 'difficulty',
   'textbooks' => 'textbook',
-  'choose_subjects' => 'choose subjects for textbook',
-  'choose_grades' => 'choose grades for textbook',
   'teika_price' =>'list price',
   'selling_price' =>'selling price',
   'amazon_price' =>'amazon price',

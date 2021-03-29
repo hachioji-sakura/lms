@@ -150,6 +150,7 @@ return [
  'task_status_progress' => 'A status of this task is updated to [progress]',
  'task_status_done' => 'A status of this task is updated to [done]',
  'task_reviewed' => 'Reviewed',
+
  'task_body_placeholder' => 'ex. We tried new idiom. So, I think go ahead to next curriculum. ',
  'warning_schedule_add' => 'This additional class requires an additional tuition fee and must be approved by the parent.',
  'warning_season_lesson_edit' => "When editing a period course schedule, it is necessary to make settings so that the instructor in charge of the exercise will not be absent.\n(The instructor cannot change the date, time and place)",
@@ -164,4 +165,6 @@ return [
  "info_unsubscribe_for_teacher1" => ":student_name will be unsubscribe on the following dates.",
  "info_unsubscribe_for_teacher2" => "About exchange lessons, make sure to do it by the scheduled unsubscribe date.\nPlease register for the exchange lesson.",
  "error_skype_name_not_found" => "For online classes, you need to set a Skype Name.\nPlease set the Skype Name from the work settings.",
- ];
+ 'choose_subjects' => 'choose subjects for textbook',
+ 'choose_grades' => 'choose grades for textbook',
+  ];

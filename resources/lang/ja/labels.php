@@ -429,8 +429,6 @@ return [
   'supplier_name' => '発注先',
   'difficulty' => '難易度',
   'textbooks' => 'テキスト',
-  'choose_subjects' => 'テキストに当てはまる教科を選択してください',
-  'choose_grades' => 'テキストに当てはまる学年を選択してください ',
   'teika_price' => '定価',
   'selling_price' => '教材販売価格',
   'amazon_price' => 'amazon価格',
