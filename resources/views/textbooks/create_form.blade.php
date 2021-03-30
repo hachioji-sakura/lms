@@ -5,8 +5,8 @@
       @component('textbooks.forms.select_publisher', ['textbook' => $textbook, 'publishers' => $item['publishers']]); @endcomponent
       @component('textbooks.forms.select_supplier', [ 'textbook'=> $textbook, 'suppliers' => $item['suppliers'] ]); @endcomponent
       @component('textbooks.forms.select_difficulty', ['textbook'=> $textbook ]); @endcomponent
-      @component('textbooks.forms.subject', ['subjects' => $item['subjects'],'textbook_subjects' => $textbook_subjects??null]); @endcomponent
-      @component('textbooks.forms.grade', ['grades' => $item['grades'],'textbook_grades' => $textbook_grades??null]); @endcomponent
+      @component('textbooks.forms.subject', ['subjects' => $item['subjects'],'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
+      @component('textbooks.forms.grade', ['grades' => $item['grades'],'textbook_grades' => $textbook->grade_list??null]); @endcomponent
       @component('textbooks.forms.price', ['textbook_prices'=> $textbook_prices??null]); @endcomponent
         @component('textbooks.forms.explain', [ 'textbook' => $textbook ]); @endcomponent
     @else
