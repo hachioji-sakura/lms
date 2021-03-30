@@ -9,9 +9,6 @@
      value="{{$textbook->name}}"
      @endif
      required>
-    @if(isset($textbook))
-    <input type="hidden" name="textbook" value="{{$textbook->id}}" alt="{{$textbook->name}}" />
-    @endif
   </div>
 </div>
 
