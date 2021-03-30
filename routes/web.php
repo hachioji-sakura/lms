@@ -156,7 +156,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('lectures','LectureController');
 
 
-  //Route::resource('publisher','PublisherController');
+  Route::resource('publisher','PublisherController');
   Route::resource('textbooks','TextbookController');
 
   Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
