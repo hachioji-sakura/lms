@@ -117,40 +117,25 @@ class TextbookController extends MilestoneController
     //検索ワード
     if(isset($request->search_word)){
       $search_words = explode(' ', $request->search_word);
-      $items = $items->where(function($items)use($search_words){
-        foreach($search_words as $_search_word){
-          if(empty($_search_word)) continue;
-          $_like = '%'.$_search_word.'%';
-          $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
-        }
-      });
+      $items = $items->searchWord($search_words);
+
+    }
+    if(isset($request->search_keyword)){
+      $search_keyword = explode(' ', $request->search_keyword);
+      $items = $items->searchWord($search_keyword);
     }
 
     $forms = $request->all();
     $scopes = ['publisher_id','supplier_id','difficulty'];
-    foreach($scopes as $scope){
-      if(isset($forms[$scope])){
-        $items = $items->where($scope,$forms[$scope]);
-      }
-    }
+    $items = $items->search($scopes,$forms);
 
     if(isset($forms['subject'])){
-      foreach($forms['subject'] as $subject){
-        $items = $items->whereHas('textbook_subject', function($q) use ($subject){
-          $q->where('subject_id',$subject );
-        });
-      }
+      $items = $items->searchSubject($forms['subject']);
     }
 
     if(isset($forms['grade_no'])){
-      foreach($forms['grade_no'] as $grade_no){
-        $items = $items->whereHas('textbook_tag', function($q) use ($grade_no){
-          $q->where('tag_value',$grade_no );
-        });
-      }
+      $items = $items->searchGrade($forms['grade_no']);
     }
-
-    $grades = GeneralAttribute::findKey('grade')->get();
     return $items;
   }
 

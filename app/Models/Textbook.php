@@ -37,6 +37,44 @@ class Textbook extends Model
       'name' => 'required'
   );
 
+  public function scopeSearchWord($query, $search_words){
+    $query = $query->where(function($items)use($search_words){
+      foreach($search_words as $_search_word){
+        if(empty($_search_word)) continue;
+        $_like = '%'.$_search_word.'%';
+        $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
+      }
+    });
+    return $query;
+  }
+
+  public function scopeSearch($query,$scopes,$forms){
+    foreach($scopes as $scope){
+      if(isset($forms[$scope])){
+        $query = $query->where($scope,$forms[$scope]);
+      }
+    }
+    return $query;
+  }
+
+  public function scopeSearchSubject($query,$subjects){
+    foreach($subjects as $subject){
+      $query = $query->whereHas('subjects', function($q) use ($subject){
+        $q->where('subject_id',$subject );
+      });
+    }
+    return $query;
+  }
+
+  public function scopeSearchGrade($query,$grades){
+    foreach($grades as $grade){
+      $query = $query->whereHas('textbook_tag', function($q) use ($grade){
+         $q->where('tag_value',$grade );
+     });
+    }
+    return $query;
+  }
+
   public function getGradeListAttribute()
   {
     $gradeList = [];
@@ -50,7 +88,6 @@ class Textbook extends Model
     }
     return $gradeList;
   }
-
 
   public function getPricesAttribute(){
     $priceTags = $this->textbook_tag()->where('tag_key','like','%_price')->get();
