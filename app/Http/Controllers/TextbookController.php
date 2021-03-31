@@ -294,7 +294,6 @@ class TextbookController extends MilestoneController
     }
     if(isset($id)){
       $ret['item']['textbook'] = Textbook::find($id);
-      $ret['item']['publisher'] = $ret['item']['textbook']->publisher;
     }
     $ret['item']['publishers'] = Publisher::get();
     $ret['item']['suppliers'] = Supplier::get();
