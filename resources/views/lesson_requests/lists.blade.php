@@ -62,6 +62,30 @@ $checked = 'checked';
               <span class="text-sm float-right">申込日:{{$item->dateweek_format($item->created_at)}}</span>
             </div>
             <div class="col-12 mt-1 pl-5">
+              担当講師:
+              @foreach($item->student->get_current_charge_teachers() as $teacher)
+              <a href="/teachers/{{$teacher->id}}" target = "_blank">
+              <span class="text-xs ml-1">
+                <i class="fa fa-user-tie mr-1"></i>
+                {{$teacher->full_name}}
+              </span>
+              </a>
+              @endforeach
+              <small class="badge badge-info p-1 mr-1">
+                <i class="fa fa-clock"></i>
+                {{$item->get_tag_value('season_lesson_course')}}分
+              </small>
+              @foreach($item->get_tags('lesson_place') as $tag)
+              <span class="text-xs">
+                <small class="badge badge-success p-1 mr-1">
+                  <i class="fa fa-map-marker mr-1"></i>
+                  {{$tag->name()}}
+                </small>
+              </span>
+              @endforeach
+            </div>
+
+            <div class="col-12 mt-1 pl-5">
               <span class="text-xs">
                   {{$item->get_tag_name('season_lesson_course')}}
               </span>
@@ -151,29 +175,6 @@ $checked = 'checked';
               </tr>
               </table>
             </div>
-            <div class="col-12 mt-1 pl-5">
-              担当講師:
-              @foreach($item->student->get_current_charge_teachers() as $teacher)
-              <a href="/teachers/{{$teacher->id}}" target = "_blank">
-              <span class="text-xs ml-1">
-                <i class="fa fa-user-tie mr-1"></i>
-                {{$teacher->full_name}}
-              </span>
-              </a>
-              @endforeach
-              <small class="badge badge-info p-1 mr-1">
-                <i class="fa fa-clock"></i>
-                {{$item->get_tag_value('season_lesson_course')}}分
-              </small>
-              @foreach($item->get_tags('lesson_place') as $tag)
-              <span class="text-xs">
-                <small class="badge badge-success p-1 mr-1">
-                  <i class="fa fa-map-marker mr-1"></i>
-                  {{$tag->name()}}
-                </small>
-              </span>
-              @endforeach
-            </div>
             <div class="col-12 text-sm">
               @component('lesson_requests.season_lesson.forms.list_buttons', ['item' => $item, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'event' => $event]) @endcomponent
             </div>
@@ -185,7 +186,6 @@ $checked = 'checked';
           </div>
         @endif
       </div>
-      @if($event->is_season_lesson()==true)
       <div class="card-footer">
         <div class="row">
           <div class="col-12 mb-2 bg-warning p-4">
@@ -206,6 +206,7 @@ $checked = 'checked';
         base.pageSettinged("matching_form", null);
         $("#matching_form button.btn-submit").on('click', function(e){
           e.preventDefault();
+
           var _confirm = $(this).attr("confirm");
           if(!util.isEmpty(_confirm)){
             if(!confirm(_confirm)) return false;
@@ -215,12 +216,7 @@ $checked = 'checked';
           }
         });
       });
-      function important_checked(){
-        var ret = $('input[name="important_check"]').prop('checked');
-        $("button.btn-submit").prop("disabled",!ret);
-      }
       </script>
-      @endif
       </form>
     </div>
   </div>

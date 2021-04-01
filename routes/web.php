@@ -40,6 +40,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::get('lesson_requests/{id}/estimate', 'LessonRequestController@estimate_page');
+  Route::post('lesson_requests/{id}/estimate', 'LessonRequestController@send_estimate');
   Route::resource('lesson_requests','LessonRequestController');
   Route::get('api_lesson_request_calendars','LessonRequestCalendarController@api_index');
   Route::put('events/{event_id}/lesson_request_calendars/complete', 'LessonRequestCalendarController@complete_calendars');

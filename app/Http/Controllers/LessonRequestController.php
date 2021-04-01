@@ -914,4 +914,22 @@ class LessonRequestController extends UserCalendarController
     }, '申し込みをキャンセルにしました', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
+  public function estimate_page(Request $request, $id){
+    $param = $this->get_param($request,$id);
+    $param['calendars'] = $param['item']->lesson_request_calendars()
+        ->where('status', 'complete')
+        ->orderBy('start_time')->get();
+    return view('lesson_requests.season_lesson.estimate')->with($param);
+  }
+  public function save_estimate(Request $request,$id){
+    $param = $this->get_param($request,$id);
+    $res = $this->transaction($request, function() use ($request, $id, $param){
+      $trial = $this->model()->where('id', $id)->first();
+      $trial->update(['status'=>'cancel']);
+      return $this->api_response(200, '', '', $trial);
+    }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
+
+    return $this->save_redirect($res,$param,__('messages.info_deleted'));
+  }
+
 }

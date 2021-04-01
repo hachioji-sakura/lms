@@ -142,6 +142,7 @@ class LessonRequest extends Model
   public function set_status(){
     $subject_count = $this->get_request_subject_count();
     $set_calendar_subject_count = $this->get_calendar_subject_count(['fix', 'complete']);
+    $fix_calendar_subject_count = $this->get_calendar_subject_count(['fix']);
     $comp_calendar_subject_count = $this->get_calendar_subject_count(['complete']);
     $status = 'new';
     if(count($set_calendar_subject_count)>0) $status = 'confirm';
@@ -164,7 +165,7 @@ class LessonRequest extends Model
       }
 
     }
-    if($is_schedule_commit==true){
+    if($is_schedule_commit==true && $fix_calendar_subject_count==[]){
       $status = 'schedule_commit';
     }
     else if($is_fixed==true){
