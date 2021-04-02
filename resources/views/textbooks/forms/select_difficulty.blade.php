@@ -14,7 +14,7 @@
         </option>
         @foreach(config('attribute.difficulty') as $key => $value)
           <option value="{{$key}}"
-          @if(isset($textbook->difficulty) && $textbook->difficulty == $key)
+          @if(isset($textbook) && $textbook->difficulty == $key)
             selected
           @endif>
           {{$value}}

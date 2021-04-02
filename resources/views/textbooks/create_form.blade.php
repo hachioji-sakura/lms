@@ -1,24 +1,34 @@
 @section('first_form')
   <div class="row">
-    @if($_edit)
-      @component('textbooks.forms.select_textbook', [ 'textbook' => $textbook ]); @endcomponent
-      @component('textbooks.forms.select_publisher', ['textbook' => $textbook, 'publishers' => $item['publishers']]); @endcomponent
-      @component('textbooks.forms.select_supplier', [ 'textbook'=> $textbook, 'suppliers' => $item['suppliers'] ]); @endcomponent
-      @component('textbooks.forms.select_difficulty', ['textbook'=> $textbook ]); @endcomponent
-      @component('textbooks.forms.subject', ['subjects' => $item['subjects'],'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
-      @component('textbooks.forms.grade', ['grades' => $item['grades'],'textbook_grades' => $textbook->grade_list??null]); @endcomponent
-      @component('textbooks.forms.price', ['textbook_prices'=> $textbook_prices??null]); @endcomponent
-        @component('textbooks.forms.explain', [ 'textbook' => $textbook ]); @endcomponent
-    @else
-    {{-- create --}}
-      @component('textbooks.forms.select_textbook'); @endcomponent
-      @component('textbooks.forms.select_publisher', ['publishers' => $item['publishers']]); @endcomponent
-      @component('textbooks.forms.select_supplier', ['suppliers' =>  $item['suppliers'] ]); @endcomponent
-      @component('textbooks.forms.select_difficulty'); @endcomponent
-      @component('textbooks.forms.subject', ['subjects' => $item['subjects']]); @endcomponent
-      @component('textbooks.forms.grade', ['grades' => $item['grades']]); @endcomponent
-      @component('textbooks.forms.price'); @endcomponent
-      @component('textbooks.forms.explain'); @endcomponent
-    @endif
+    <div class="form-group ml-2">
+      <label for="field1">
+        {{__('labels.textbook_name')}}
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+      </label>
+      <input type="text" id="name" name="name" class="form-control" placeholder="例：１、２年の総合復習１"
+             @if(isset($textbook))
+             value="{{$textbook->name}}"
+             @endif
+             required>
+    </div>
+    @component('textbooks.forms.select_publisher', ['_edit'=>$_edit,'textbook' => $textbook??null, 'publishers' => $item['publishers']]); @endcomponent
+    @component('textbooks.forms.select_supplier', ['_edit'=>$_edit, 'textbook'=> $textbook??null, 'suppliers' => $item['suppliers'] ]); @endcomponent
+    @component('textbooks.forms.select_difficulty', ['_edit'=>$_edit,'textbook' => $textbook??null]); @endcomponent
+    @component('textbooks.forms.subject', ['_edit'=>$_edit,'textbook'=> $textbook??null,'subjects' => $item['subjects'],'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
+    @component('textbooks.forms.grade', ['_edit'=>$_edit,'grades' => $item['grades'],'textbook_grades' => $textbook->grade_list??null]); @endcomponent
+    @component('textbooks.forms.price', ['_edit'=>$_edit,'textbook_prices'=> $textbook_prices??null]); @endcomponent
+    <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
+      <div class="form-group">
+        <label for="remark" class="w-100">
+          {{__('labels.explain')}}
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        </label>
+        <textarea type="text" id="explain" name="explain" class="form-control" placeholder="" required="true">
+      @if(isset($textbook))
+        {{$textbook->explain}}
+      @endif
+     </textarea>
+      </div>
+    </div>
   </div>
 @endsection
