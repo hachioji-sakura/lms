@@ -68,6 +68,7 @@ class TextbookController extends MilestoneController
     $fields = [
       'name' => [
         'label' => __('labels.textbook_name'),
+        'link' => 'show',
       ],
       'explain' => [
         'label' => __('labels.explain'),
