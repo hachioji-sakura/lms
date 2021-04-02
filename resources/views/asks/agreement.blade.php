@@ -1,6 +1,10 @@
 @extends('layouts.simplepage')
 @section('title')
+  @if($item->type == 'agreement')
   入会のご案内
+  @elseif($item->type == 'agreement_confirm')
+  契約変更のご案内
+  @endif
 @endsection
 @section('title_header')
 <ol class="step">
@@ -8,17 +12,18 @@
 </ol>
 @endsection
 @section('content')
-@if($item->status=='new')
+@if($item->status=='new' )
 <div id="admission_mail">
   <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
     @method('PUT')
     <input type="text" name="dummy" style="display:none;" / >
     <input type="hidden" name="key" value="{{$access_key}}" />
-    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $trial, 'domain' => $domain, 'input'=>false, 'active_tab' => 1]) @endcomponent
+    @component('trials.forms.admission_schedule', [ 'attributes' => $attributes, 'prefix'=>'', 'item' => $agreement, 'agreement' => $agreement, 'domain' => $domain, 'is_money_edit'=>false, 'active_tab' => 1]) @endcomponent
     @csrf
 	<input type="text" name="dummy" style="display:none;" / >
     <section class="content-header">
     	<div class="container-fluid">
+        @if($item->type == 'agreement')
         <div class="row">
           <div class="col-12 mt-2 mb-1">
             <div class="form-group">
@@ -33,22 +38,48 @@
             </div>
           </div>
         </div>
-    		<div class="row">
+        @endif
+        <div class="row">
           <div class="col-12 mt-2 mb-1">
             <div class="form-group">
               <input class="form-check-input icheck flat-green" type="checkbox" id="important_check" name="important_check" value="1" required="true" onChange="important_checked()">
               <label class="form-check-label" for="important_check">
-                {{__('labels.important_check')}}
+                {{__('labels.agreement_check')}}
               </label>
             </div>
           </div>
-          <div class="col-12 mb-1">
-              <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled="disabled">
-                <i class="fa fa-check mr-1"></i>
-                上記の内容について了承しました
-              </button>
+          <div class="col-12 mb-1" id="commit_form">
+            <form method="POST" action="/asks/{{$item['id']}}/status_update/commit">
+              @csrf
+              <input type="text" name="dummy" style="display:none;" / >
+              @method('PUT')
+              <div class="col-12 mb-1">
+                <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="commit_form" disabled="disabled">
+                  <i class="fa fa-check mr-1"></i>
+                  {{__('labels.send_button')}}
+                </button>
+              </div>
             </form>
           </div>
+          <script>
+          $(function(){
+            base.pageSettinged("commit_form", null);
+            //submit
+            $("#commit_form button.btn-submit").on('click', function(e){
+              e.preventDefault();
+              if(front.validateFormValue('commit_form')){
+                $(this).prop("disabled",true);
+                $("#commit_form form").submit();
+              }
+            });
+            $("body").on("ifChecked", "#important_check", function(e){
+              $("#commit_form button.btn-submit").prop("disabled",false);
+            });
+            $("body").on("ifUnchecked", "#important_check", function(e){
+              $("#commit_form button.btn-submit").prop("disabled",true);
+            });
+          });
+          </script>
     		</div>
     	</div>
     </section>
@@ -74,9 +105,13 @@ function important_checked(){
 }
 </script>
 @elseif($item->status=='commit')
-  @if($trial->parent->user->status==0)
+  @if($agreement->student_parent->user->status==0)
   <h4 class="bg-success p-3 text-sm">
+    @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
+    @elseif($item->type == 'agreement_confirm')
+    ご契約内容は下記の通りとなります。<br>
+    @endif
   </h4>
   @else
   <h4 class="bg-success p-3 text-sm">
@@ -92,10 +127,10 @@ function important_checked(){
       </a>
     </div>
   @endif
-  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user]) @endcomponent
+  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_agreements_by_type('normal')->first()]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
-      @if(isset($user) && $user->id == $trial->student_parent_id)
+      @if(isset($user) && $user->id == $agreement->student_parent_id)
       <a class="btn btn-block btn-secondary" href="/" >
         <i class="fa fa-arrow-right mr-1"></i>
         {{__('labels.top')}}へ

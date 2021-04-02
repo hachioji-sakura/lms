@@ -424,7 +424,11 @@ EOT;
     if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
-
+    foreach($this->members as $member){
+      if($member->user->details()->role == 'student'){
+        $user_id = $member->user_id;
+      }
+    }
     //事務システム側を先に削除
     $this->cache_delete();
     $this->office_system_api("DELETE");
@@ -436,7 +440,10 @@ EOT;
       $calendar->dispose();
     }
     */
+    //契約処理
+    $this->agreement_update($user_id);
     $this->delete();
+
   }
   public function change($form){
     $old_item = $this->replicate();
@@ -544,6 +551,7 @@ EOT;
       }
     }
 
+
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark='', $is_api=true){
@@ -563,7 +571,6 @@ EOT;
           'create_user_id' => $create_user_id,
       ]);
 
-      $member->set_api_lesson_fee();
       if($is_api===true){
         //事務システムにも登録
         $member->office_system_api("POST");
@@ -908,7 +915,7 @@ EOT;
   public function get_tuition($user_id){
     $member = $this->members->where('user_id', $user_id)->first();
     $tuition = $member->get_tuition();
-    if(isset($tuition)) return $tuition->tuition;
+    if(isset($tuition)) return $tuition;
     return null;
   }
   public function is_passed(){

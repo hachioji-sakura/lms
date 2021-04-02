@@ -7,6 +7,9 @@ use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\Student;
 use App\Models\UserCalendar;
+use App\Models\TextMaterial;
+use App\Models\Subject;
+use App\Models\Curriculum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App;
@@ -92,7 +95,6 @@ class TeacherController extends StudentController
   */
   public function show(Request $request, $id)
   {
-
     $param = $this->get_param($request, $id);
     if($request->has('api')){
       $model = $this->model()->where('id',$id)->first();
@@ -109,12 +111,17 @@ class TeacherController extends StudentController
         case "setting_menu":
           $view = $request->get('view');
           break;
+        case "text_materials":
+          $view = $request->get('view');
+          $param['subjects'] = Subject::all();
+          $param['text_materials'] = $param['item']->get_text_materials($request->all());
+          $param['curriculums'] = Curriculum::all();
+          break;
       }
     }
+    if($view=='home')  $param['charge_students'] = $this->get_students($request, $id);
     $param['view'] = $view;
-    return view($this->domain.'.page.'.$view, [
-      'charge_students'=>$this->get_students($request, $id),
-    ])->with($param);
+    return view($this->domain.'.page.'.$view, [])->with($param);
   }
   /**
   * Display the specified resource.
