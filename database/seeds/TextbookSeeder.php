@@ -210,31 +210,31 @@ class TextbookSeeder extends Seeder
         'remarks' => $remark,
       ]);
       if(!empty($teikaPrice)) {
-        $textbook->textbook_tag()->create([
+        $textbook->textbook_tags()->create([
           'tag_key' => 'teika_price',
           'tag_value' => $teika_price,
           'create_user_id' => 1]);
         }
       if(!empty($tewatashi_price1)) {
-        $textbook->textbook_tag()->create([
+        $textbook->textbook_tags()->create([
           'tag_key' => 'selling_price',
           'tag_value' => $tewatashi_price1,
           'create_user_id' => 1]);
       }
       if(!empty($tewatashi_price2)) {
-        $textbook->textbook_tag()->create([
+        $textbook->textbook_tags()->create([
           'tag_key' => 'amazon_price',
           'tag_value' => $tewatashi_price2,
           'create_user_id' => 1]);
       }
       if(!empty($tewatashi_price3)) {
-        $textbook->textbook_tag()->create([
+        $textbook->textbook_tags()->create([
           'tag_key' => 'other_price',
           'tag_value' => $tewatashi_price3,
           'create_user_id' => 1]);
       }
       if(!empty($publisher_price)) {
-        $textbook->textbook_tag()->create([
+        $textbook->textbook_tags()->create([
           'tag_key' => 'publisher_price',
           'tag_value' => $publisher_price,
           'create_user_id' => 1]);

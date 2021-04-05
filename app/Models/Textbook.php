@@ -68,7 +68,7 @@ class Textbook extends Model
 
   public function scopeSearchGrade($query,$grades){
     foreach($grades as $grade){
-      $query = $query->whereHas('textbook_tag', function($q) use ($grade){
+      $query = $query->whereHas('textbook_tags', function($q) use ($grade){
          $q->where('tag_value',$grade );
      });
     }
@@ -78,8 +78,8 @@ class Textbook extends Model
   public function getGradeListAttribute()
   {
     $gradeList = [];
-    if (isset($this->textbook_tag)) {
-      $grades = $this->textbook_tag->where('tag_key', 'grade_no');
+    if (isset($this->textbook_tags)) {
+      $grades = $this->textbook_tags->where('tag_key', 'grade_no');
       if (!$grades->isEmpty()) {
         foreach ($grades as $grade) {
           $gradeList[] = config('grade')[$grade->tag_value]??'';
@@ -90,7 +90,7 @@ class Textbook extends Model
   }
 
   public function getPricesAttribute(){
-    $priceTags = $this->textbook_tag()->where('tag_key','like','%_price')->get();
+    $priceTags = $this->textbook_tags()->where('tag_key','like','%_price')->get();
     $prices = [];
     if(!$priceTags->isEmpty()) {
       foreach ($priceTags as $priceTag) {
@@ -133,14 +133,14 @@ class Textbook extends Model
     $textbook = $this->create($update_form);
     $textbook->subjects()->attach($form['subjects']);
     foreach($form['grade_no'] as $grade_no){
-      $textbook->textbook_tag()
+      $textbook->textbook_tags()
         ->create(['tag_key' => 'grade_no','tag_value' => $grade_no,'create_user_id' => $form['create_user_id']]);
     }
 
     $tag_names = ['teika_price', 'selling_price', 'amazon_price', 'publisher_price', 'other_price'];
     foreach ($tag_names as $tag_name) {
       if (isset($form[$tag_name]) && !empty($form[$tag_name])) {
-        $textbook->textbook_tag()
+        $textbook->textbook_tags()
           ->create(['tag_key' => $tag_name,'tag_value' => $form[$tag_name],'create_user_id' => $form['create_user_id']]);
       }
     }
@@ -166,17 +166,17 @@ class Textbook extends Model
     $this->update($update_form);
     $this->subjects()->sync($form['subjects']);
 
-    $this->textbook_tag()->delete();
+    $this->textbook_tags()->delete();
 
     foreach($form['grade_no'] as $grade_no){
-      $this->textbook_tag()
+      $this->textbook_tags()
            ->create(['tag_key' => 'grade_no','tag_value' => $grade_no,'create_user_id' => $form['create_user_id']]);
     }
 
     $tag_names = ['teika_price', 'selling_price', 'amazon_price', 'publisher_price', 'other_price'];
     foreach ($tag_names as $tag_name) {
       if (isset($form[$tag_name]) && !empty($form[$tag_name])) {
-        $this->textbook_tag()
+        $this->textbook_tags()
              ->create(['tag_key' => $tag_name,'tag_value' => $form[$tag_name],'create_user_id' => $form['create_user_id']]);
       }
     }
@@ -184,7 +184,7 @@ class Textbook extends Model
 
   public function dispose(){
     $this->subjects()->detach();
-    $this->textbook_tag()->delete();
+    $this->textbook_tags()->delete();
     $this->delete();
   }
 
