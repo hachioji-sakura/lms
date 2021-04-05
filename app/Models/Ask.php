@@ -184,6 +184,9 @@ EOT;
     if(!isset($form['body'])){
       $form['body'] = '';
     }
+    if(!isset($form['access_key'])){
+      $form['access_key'] = '';
+    }
     if( $form['type'] == "teacher_change"){
       $emp_ask = new Ask;
       $emp_ask->target_user_id = $form['target_user_id'];
@@ -221,6 +224,7 @@ EOT;
       'status' => $form['status'],
       'title' => $form['title'],
       'body' => $form['body'],
+      'access_key' => $form['access_key'],
       'from_time_slot' => $form['from_time_slot'],
       'to_time_slot' => $form['to_time_slot'],
       'target_model' => $form['target_model'],

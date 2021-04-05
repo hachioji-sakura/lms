@@ -164,6 +164,15 @@
                 </small>
               </a>
             </li>
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.school_grades' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/school_grades?search_grade[]={{$item->get_tag_value('grade')}}">
+                <small>
+                  <i class="fa fa-chart-line"></i>
+                  {{__(('labels.school_grades'))}}
+                </small>
+              </a>
+            </li>
+
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab_milestones">

@@ -133,15 +133,15 @@
   </div>
   <div class="col-12 col-md-4">
     <div class="form-group">
-      <label for="is_desc_1" class="w-100">
+      <label for="is_asc_1" class="w-100">
         {{__('labels.sort_no')}}
       </label>
       <label class="mx-2">
-      <input type="checkbox" value="1" name="is_desc" id="is_desc_1" class="icheck flat-green"
-      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
+      <input type="checkbox" value="1" name="is_asc" id="is_asc_1" class="icheck flat-green"
+      @if(isset($filter['sort']['is_asc']) && $filter['sort']['is_asc']==true)
         checked
       @endif
-      >{{__('labels.date')}} {{__('labels.desc')}}
+      >{{__('labels.date')}} {{__('labels.asc')}}
       </label>
     </div>
   </div>
