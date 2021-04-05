@@ -188,7 +188,7 @@ class Textbook extends Model
     $this->delete();
   }
 
-  public function textbook_tag(){
+  public function textbook_tags(){
     return $this->hasMany('App\Models\TextbookTag','textbook_id','id');
   }
   public function subjects(){
