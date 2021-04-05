@@ -248,7 +248,7 @@ class TextbookSeeder extends Seeder
         if(isset($general_attribute)) {
           TextbookTag::create([
             'textbook_id' => $textbook->id,
-            'tag_key' => 'grade_no',
+            'tag_key' => 'grade',
             'tag_value' => $general_attribute->attribute_value,
             'create_user_id' => 1,
           ]);
