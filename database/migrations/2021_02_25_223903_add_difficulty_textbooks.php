@@ -13,9 +13,9 @@ class AddDifficultyTextbooks extends Migration
      */
     public function up()
     {
-        Schema::table('textbooks', function (Blueprint $table) {
-          $table->integer('difficulty')->after('explain')->default(0)->comment('10 => 簡単, 20 => 普通, 30 => 難しい');
-        });
+      Schema::table('textbooks', function (Blueprint $table) {
+        $table->string('difficulty')->nullable(false)->default('')->comment('難易度')->change();
+      });
     }
 
     /**
