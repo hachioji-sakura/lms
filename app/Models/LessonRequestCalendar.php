@@ -54,8 +54,9 @@ class LessonRequestCalendar extends UserCalendar
     return $this->hasMany('App\Models\LessonRequestCalendarTag');
   }
   public function getTeacherNameAttribute(){
+    if(!isset($this->user)) return "";
     if(!isset($this->user->teacher)) return "";
-    return $this->user->teacher->name;
+    return $this->user->teacher->name();
   }
   public function getDurationAttribute(){
     return date('H:i', strtotime($this->start_time)).'～'.date('H:i', strtotime($this->end_time));

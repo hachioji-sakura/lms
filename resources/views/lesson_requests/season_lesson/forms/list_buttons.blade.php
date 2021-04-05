@@ -1,7 +1,7 @@
 <div class="row mt-2">
 
   <div class="col-6 text-left">
-    <a href="javascript:void(0);" page_title="申し込み編集" page_form="dialog" page_url="/lesson_requests/{{$item->id}}/estimate" class="mr-1 btn btn-sm btn-success ">
+    <a href="javascript:void(0);" page_title="見積書送信" page_form="dialog" page_url="/lesson_requests/{{$item->id}}/estimate" class="mr-1 btn btn-sm btn-success ">
       <i class="fa fa-envelope"></i>
       見積書送信
     </a>

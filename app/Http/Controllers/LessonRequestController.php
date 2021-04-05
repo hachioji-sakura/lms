@@ -919,7 +919,15 @@ class LessonRequestController extends UserCalendarController
     $param['calendars'] = $param['item']->lesson_request_calendars()
         ->where('status', 'complete')
         ->orderBy('start_time')->get();
-    return view('lesson_requests.season_lesson.estimate')->with($param);
+    $view = 'lesson_requests.season_lesson.estimate_tuition';
+    if($request->has('tuition')){
+      $view = 'lesson_requests.season_lesson.estimate';
+      $param['tuition'] = $request->get('tuition');
+    }
+    if($request->has('tuition')){
+      $param['training_tuition'] = $request->get('training_tuition');
+    }
+    return view($view)->with($param);
   }
   public function save_estimate(Request $request,$id){
     $param = $this->get_param($request,$id);
