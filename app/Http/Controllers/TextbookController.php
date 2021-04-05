@@ -134,8 +134,8 @@ class TextbookController extends MilestoneController
       $items = $items->searchSubject($forms['subject']);
     }
 
-    if(isset($forms['grade_no'])){
-      $items = $items->searchGrade($forms['grade_no']);
+    if(isset($forms['grade'])){
+      $items = $items->searchGrade($forms['grade']);
     }
     return $items;
   }
@@ -312,7 +312,7 @@ class TextbookController extends MilestoneController
     $form['publisher_id'] = $request->get('publisher_id');
     $form['supplier_id'] = $request->get('supplier_id');
     $form['subjects'] = $request->get('subject')??[];
-    $form['grade_no'] = $request->get('grade_no')??[];
+    $form['grade'] = $request->get('grade')??[];
     $form['teika_price'] = $request->get('teika_price');
     $form['selling_price'] = $request->get('selling_price');
     $form['amazon_price'] = $request->get('amazon_price');
