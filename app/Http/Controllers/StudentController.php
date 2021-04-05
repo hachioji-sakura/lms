@@ -392,6 +392,64 @@ class StudentController extends UserController
      ])->with($param);
   }
 
+  public function show_school_grade_page(Request $request, $id)
+  {
+    $init = $this->init_show_page
+    ($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.school_grades";
+    $param['view'] = $view;
+    $school_grades = $item->school_grades()->search($request)->get();
+    $grades = $item->school_grades->pluck('grade_name','grade')->unique()->sort();
+    $subjects = $this->get_subjects_from_school_grades($school_grades);
+    $school_grade_fields = $this->get_school_grade_fields();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'school_grades' => $school_grades,
+    'grades' => $grades,
+    'subjects' => $subjects,
+    'school_grade_fields' => $school_grade_fields
+   ])->with($param);
+  }
+
+  public function get_subjects_from_school_grades($school_grades){
+    $subs = $school_grades->map(function($item){
+      return $item->school_grade_reports->pluck('subject_id','subject_name');
+    });
+    $subjects = collect([]);
+    foreach($subs as $sub){
+      $subjects = $subjects->merge($sub);
+    }
+    //TODO:subject_id順は変わるかも
+    return array_flip($subjects->sort()->toArray());
+  }
+
+  public function get_school_grade_fields(){
+    return [
+      'semester_name' => [
+        'label' => __('labels.semester')
+      ],
+      's3_alias' => [
+        'label' => __('labels.file'),
+        'link' => function($row){
+          return $row->s3_url;
+        },
+        'blank' => true,
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'edit'
+        ],
+      ],
+    ];
+  }
+
 
   public function emergency_lecture_cancel(Request $request, $id)
   {
