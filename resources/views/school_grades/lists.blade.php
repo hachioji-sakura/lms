@@ -1,6 +1,7 @@
 @section('title')
-イベント一覧
+{{__('labels.school_grades_list')}}
 @endsection
+
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
@@ -65,14 +66,9 @@
     @endslot
   @endcomponent
 @endsection
+
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-  <li class="nav-item hr-1">
-    <a href="/event_templates" class="nav-link">
-      <i class="fa fa-calendar-alt nav-icon"></i>{{__('labels.event_templates')}}一覧
-    </a>
-  </li>
-
   <li class="nav-item hr-1">
     <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
@@ -88,24 +84,15 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach(config('attribute.event_status') as $index => $name)
+      @foreach($attributes['milestone_type'] as $index => $name)
       <li class="nav-item">
-         <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
-           <i class="fa fa-list-alt nav-icon"></i>
-           <p>
-             {{$name}}
-             @if($counts[$index] > 0)
-             <span class="badge badge-{{config('status_style')[$index]}} right">{{$counts[$index]}}</span>
-             @endif
-           </p>
+         <a href="/{{$domain}}?search_type={{$index}}" class="nav-link @if(isset($search_type) && $index===$search_type) active @endif">
+           <i class="fa fa-list-alt nav-icon"></i>{{$name}}
          </a>
        </li>
        @endforeach
     </ul>
   </li>
-
-
-
 </ul>
 @endsection
 

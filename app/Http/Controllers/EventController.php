@@ -21,7 +21,12 @@ class EventController extends MilestoneController
     if($ret['user']->role!='manager') abort(403);
     $templates = EventTemplate::all();
     $ret['templates'] = $templates;
-    if(!$request->has('search_status')) $ret['search_status'] = 'new,progress';
+    if(!$request->has('search_status')) $ret['search_status'] = 'progress';
+    $counts = [];
+    foreach(config('attribute.event_status') as $index => $name){
+      $counts[$index] = Event::findStatuses($index)->count();
+    }
+    $ret['counts'] = $counts;
     return $ret;
   }
   /**

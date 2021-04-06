@@ -1333,7 +1333,6 @@ class Trial extends Model
     //保護者にアクセスキーを設定
     \Log::warning("hope_to_join_ask");
 
-    $this->parent->user->update(['access_key' => $access_key]);
     //すでにある場合は一度削除
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'hope_to_join')->delete();
@@ -1342,6 +1341,7 @@ class Trial extends Model
       "type" => "hope_to_join",
       "end_date" => date("Y-m-d", strtotime("30 day")),
       "body" => "",
+      "access_key" => $access_key,
       "target_model" => "trials",
       "target_model_id" => $this->id,
       "create_user_id" => $create_user_id,
