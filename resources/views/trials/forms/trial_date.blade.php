@@ -33,6 +33,12 @@
            value="{{date('Y/m/d', strtotime($item["trial_start_time".$i]))}}"
           @else
            minvalue="{{date('Y/m/d', strtotime('+3 day'))}}"
+           @if($i>1)
+           not_equal="trial_date{{$i-1}}"
+           @else
+           not_equal="trial_date3"
+           @endif
+           not_equal_error="同一日の指定はできません"
           @endif
           >
         </div>
