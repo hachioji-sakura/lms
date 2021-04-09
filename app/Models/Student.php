@@ -229,6 +229,12 @@ class Student extends Model
     return $this->hasMany('App\Models\SchoolGrade', 'student_id');
   }
 
+  /**
+  * リレーション　テスト
+  */
+  public function exams(){
+    return $this->hasMany('App\Models\Exam','student_id');
+  }
 
   /**
    * 体験申し込み
