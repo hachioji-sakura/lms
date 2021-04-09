@@ -57,6 +57,9 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_attributes/{select_key?}','GeneralAttributeController@api_index');
   Route::resource('attributes','GeneralAttributeController');
   Route::resource('milestones','MilestoneController');
+  Route::get('text_materials/{id}/shared','TextMaterialController@shared_page');
+  Route::put('text_materials/{id}/shared','TextMaterialController@shared');
+
   Route::resource('text_materials','TextMaterialController');
 
   Route::resource('school_grades','SchoolGradeController');
@@ -406,6 +409,13 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::resource('subjects','SubjectController');
   Route::get('subjects/{id}/delete', 'SubjectController@delete');
+
+  Route::post('agreements/{id}/admission','AgreementController@admission_mail_send');
+  Route::resource('agreements', 'AgreementController');
+  Route::get('agreements/{id}/delete', 'AgreementController@delete');
+  Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
+  Route::resource('agreement_statements', 'AgreementStatementController');
+  Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

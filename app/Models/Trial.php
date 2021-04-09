@@ -85,6 +85,10 @@ class Trial extends Model
   public function student(){
     return $this->belongsTo('App\Models\Student', 'student_id');
   }
+
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement', 'trial_id');
+  }
   /**
    *　スコープ：ステータス
    */
@@ -191,14 +195,14 @@ class Trial extends Model
     return $ret;
   }
   public function entry_contact_send_date(){
-      return $this->get_ask_created_date('hope_to_join');
+      return $this->get_ask_created_date('hope_to_join','trials');
   }
   public function entry_guidanced_send_date(){
-      return $this->get_ask_created_date('agreement');
+      return $this->get_ask_created_date('agreement','agreements');
   }
-  public function get_ask_created_date($type){
+  public function get_ask_created_date($type,$target_model = 'trials'){
     $a = Ask::where('type', $type)
-      ->where('target_model', 'trials')
+      ->where('target_model', $target_model)
       ->where('target_model_id', $this->id)
       ->first();
       if(!isset($a)) return "-";
@@ -1329,7 +1333,6 @@ class Trial extends Model
     //保護者にアクセスキーを設定
     \Log::warning("hope_to_join_ask");
 
-    $this->parent->user->update(['access_key' => $access_key]);
     //すでにある場合は一度削除
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'hope_to_join')->delete();
@@ -1338,6 +1341,7 @@ class Trial extends Model
       "type" => "hope_to_join",
       "end_date" => date("Y-m-d", strtotime("30 day")),
       "body" => "",
+      "access_key" => $access_key,
       "target_model" => "trials",
       "target_model_id" => $this->id,
       "create_user_id" => $create_user_id,
@@ -1407,7 +1411,7 @@ class Trial extends Model
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
-
+//askのtarget_modelはagreementsに変更
     $ask = Ask::add([
       "type" => "agreement",
       "end_date" => date("Y-m-d", strtotime("30 day")),
@@ -1435,6 +1439,7 @@ class Trial extends Model
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
   }
+
   public function write_comment($type){
     $remark = $this->remark_full();
 

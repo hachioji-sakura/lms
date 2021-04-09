@@ -1,1 +1,1 @@
-@component('students.forms.agreement', ['item' => $item->student, 'fields' => null, 'domain' => $domain, 'input' => $input, 'active_tab' => $active_tab]) @endcomponent
+@component('students.forms.agreement', ['item' => $item->student, 'fields' => null, 'domain' => $domain, 'is_money_edit' => $is_money_edit, 'active_tab' => $active_tab, 'agreement' => $agreement]) @endcomponent

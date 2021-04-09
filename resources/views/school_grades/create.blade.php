@@ -177,5 +177,6 @@ $("button.add").on("click",function(){
 $('body').on('click','.delete',function(){
   console.log("hoge");
   $(this).parent().remove();
+
 });
 </script>

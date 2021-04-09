@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\TaskReview;
 use DB;
-
+use App\Models\Traits\Scopes;
+use App\Models\Traits\Common;
 
 /**
  * App\Models\Task
@@ -63,6 +64,8 @@ use DB;
 class Task extends Milestone
 {
     //
+    use Common;
+    use Scopes;
     protected $connection = 'mysql';
     protected $table = 'lms.tasks';
     protected $guarded = array('id');
@@ -74,14 +77,9 @@ class Task extends Milestone
         'create_user_id' => 'required',
     );
 
-    public function scopeActiveTasks($query, $statuses){
-      return $query->whereIn('status',$statuses);
-    }
-
     public function getFullTitleAttribute(){
       return $this->body.$this->title;
     }
-
 
     public function task_comments(){
       return $this->hasMany('App\Models\TaskComment','task_id')->orderBy('created_at','desc');
@@ -103,41 +101,17 @@ class Task extends Milestone
       return $this->belogsToMany('App\Models\Textbook');
     }
 
-    public function scopeSearch($query,$request){
-      $search_status = $request->query('search_status','active');
-      $search_type = $request->get('search_type');
-      if($search_status == 'active'){
-        if($search_type == "homework"){
-          $statuses = ['new','progress'];
-        }elseif($search_type == "class_record"){
-          $statuses = ["done"];
-        }else{
-          $statuses = ['new','progress','done'];
+
+    public function scopeSearchWord($query, $word){
+      $search_words = $this->get_search_word_array($word);
+      $query = $query->where(function($query)use($search_words){
+        foreach($search_words as $_search_word){
+          $_like = '%'.$_search_word.'%';
+          $query = $query->orWhere('body','like', $_like)
+            ->orWhere('title','like', $_like);
         }
-        $query = $query->activeTasks($statuses);
-      }else{
-        $query = $query->findStatuses($search_status);
-      }
-      if($request->has('search_word')){
-        $query = $query->searchWord($request->get('search_word'));
-      }
-      if($request->has('search_type')){
-        $query = $query->findTypes($request->get('search_type'));
-      }
-      if(!empty($request->get('search_evaluation'))){
-        $query = $query->reviewEvaluation($request->get('search_evaluation'));
-      }
-      if(!empty($request->get('search_from_date')) || !empty($request->get('search_to_date'))){
-        $query = $query->rangeDate($request->get('search_from_date'),$request->get('search_to_date'));
-      }
-
-      return $query;
-    }
-
-    public function scopeReviewEvaluation($query, $evaluation){
-      return $query->whereHas('task_reviews', function($query) use ($evaluation) {
-          $query->whereIn('evaluation',$evaluation);
       });
+      return $query;
     }
 
     public function change($form, $file=null, $is_file_delete = false, $curriculum_ids = null){
