@@ -479,7 +479,7 @@ class StudentController extends UserController
         'blank' => true,
       ],
       'point_per_max' => [
-        'label' => __('labels.point'),
+        'label' => __('labels.point')."(".__('labels.average_point').")",
       ],
       'deviation' => [
         'label' => __('labels.deviation'),
@@ -537,7 +537,7 @@ class StudentController extends UserController
         'label' => __('labels.subject_count'),
       ],
       'sum_point_per_max' => [
-        'label' => __('labels.point')."(".__('labels.average_point').")",
+        'label' => __('labels.point'),
       ],
       'buttons' => [
         'label' => '操作',
