@@ -432,11 +432,9 @@ return [
   'supplier_name' => 'supplier',
   'difficulty' => 'difficulty',
   'textbooks' => 'textbook',
-  'prices' => [
-    'teika_price' =>'list price',
-    'selling_price' =>'selling price',
-    'amazon_price' =>'amazon price',
-    'publisher_price' =>'publisher price',
-    'other_price' => 'other',
-  ],
+  'teika_price' =>'list price',
+  'selling_price' =>'selling price',
+  'amazon_price' =>'amazon price',
+  'publisher_price' =>'publisher price',
+  'other_price' => 'other',
 ];

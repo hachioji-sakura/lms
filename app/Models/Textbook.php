@@ -48,15 +48,6 @@ class Textbook extends Model
     return $query;
   }
 
-  public function scopeSearch($query,$scopes,$forms){
-    foreach($scopes as $scope){
-      if(isset($forms[$scope])){
-        $query = $query->where($scope,$forms[$scope]);
-      }
-    }
-    return $query;
-  }
-
   public function scopeSearchSubject($query,$subjects){
     foreach($subjects as $subject){
       $query = $query->whereHas('subjects', function($q) use ($subject){
@@ -102,7 +93,7 @@ class Textbook extends Model
 
   public function getSubjectListAttribute(){
     $subject_names = [];
-    $subject_names = $this->subjects->pluck('name')->toArray();
+    $subject_names = $this->subjects()->pluck('name')->toArray();
     return $subject_names;
   }
 
@@ -149,23 +140,22 @@ class Textbook extends Model
   public function update_textbook($form)
   {
     $update_field = [
-      'name' => "",
-      'explain' => "",
-      'difficulty' => "",
-      'publisher_id' => "",
-      'supplier_id' => "",
-      'create_user_id' => "",
+    'name' => "",
+    'explain' => "",
+    'difficulty' => "",
+    'publisher_id' => "",
+    'supplier_id' => "",
+    'create_user_id' => "",
     ];
+
     $update_form = [];
     foreach ($update_field as $key => $val) {
       if (array_key_exists($key, $form)) {
         $update_form[$key] = $form[$key];
       }
     }
-
     $this->update($update_form);
     $this->subjects()->sync($form['subjects']);
-
     $this->textbook_tags()->delete();
 
     foreach($form['grade'] as $grade){

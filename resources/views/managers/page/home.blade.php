@@ -179,7 +179,7 @@
           <a href="/textbooks">
             <div class="info-box">
             <span class="info-box-icon bg-info">
-              <i class="fa fa-book"></i>
+              <i class="fa fa-book-open"></i>
             </span>
               <div class="info-box-content text-dark">
                 <b class="info-box-text text-lg">テキスト管理</b>

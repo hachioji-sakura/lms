@@ -128,7 +128,12 @@ class TextbookController extends MilestoneController
 
     $forms = $request->all();
     $scopes = ['publisher_id','supplier_id','difficulty'];
-    $items = $items->search($scopes,$forms);
+
+    foreach($scopes as $scope){
+      if(isset($forms[$scope])){
+        $items = $items->where($scope,$forms[$scope]);
+      }
+    }
 
     if(isset($forms['subject'])){
       $items = $items->searchSubject($forms['subject']);
@@ -149,12 +154,12 @@ class TextbookController extends MilestoneController
   public function edit(Request $request, $id)
   {
     $param = $this->get_param($request, $id);
-    $textbook =  $param['item']['textbook'];
+    $textbook =  $param['item'];
     if(isset($textbook)) {
       $param['textbook'] = $textbook;
       $param['textbook_prices'] = $textbook->prices;
       $param['textbook_subjects'] = $textbook->subject_list;
-      $param['textbook_grades'] =$textbook->grade_list;
+      $param['textbook_grades'] = $textbook->grade_list;
     }else{
       abort('404');
     }
@@ -165,17 +170,16 @@ class TextbookController extends MilestoneController
 
   public function _update(Request $request, $id)
   {
-    $param = $this->get_param($request, $id);
     $res = $this->save_validate($request);
     if(!$this->is_success_response($res)){
       return $res;
     }
-
-    return $this->transaction($request, function() use ($request, $param){
+    $textbook = $this->model()->find($id);
+    return $this->transaction($request, function() use ($request, $textbook){
       $form = $this->create_form($request);
-      $param['item']['textbook']->update_textbook($form);
-      return $this->api_response(200, '', '', $param['item']);
-    }, $param['domain_name'].'情報更新', __FILE__, __FUNCTION__, __LINE__ );
+      $textbook->update_textbook($form);
+      return $this->api_response(200, '', '', $textbook);
+    }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
   /**
@@ -190,7 +194,7 @@ class TextbookController extends MilestoneController
     $fields = $this->show_fields($param['item']->type);
     $form = $request->all();
     $form['fields'] = $fields;
-    $item= $param['item']['textbook'];
+    $item= $param['item'];
     $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
 
     return view('textbooks.page', $form)
@@ -268,7 +272,7 @@ class TextbookController extends MilestoneController
       if($request->has('user')){
         $user_id = $request->get('user');
       }
-      $ret['item'] = $this->model()->where('id',$id)->first();
+      $ret['item'] = $this->model()->find($id);
 
       if(!isset( $ret['item'])){
         abort(404, 'ページがみつかりません(1)');
@@ -294,12 +298,19 @@ class TextbookController extends MilestoneController
       }
     }
     if(isset($id)){
-      $ret['item']['textbook'] = Textbook::find($id);
+      $ret['item'] = Textbook::find($id);
     }
     $ret['item']['publishers'] = Publisher::get();
     $ret['item']['suppliers'] = Supplier::get();
     $ret['item']['subjects'] = Subject::get();
     $ret['item']['grades'] = GeneralAttribute::findKey('grade')->get();
+    $ret['prices']= [
+      'teika_price' => __('labels.teika_price'),
+      'selling_price' => __('labels.selling_price'),
+      'amazon_price' => __('labels.amazon_price'),
+      'publisher_price' => __('labels.publisher_price'),
+      'other_price' => __('labels.other_price'),
+    ];
     return $ret;
   }
 
