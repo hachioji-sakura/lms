@@ -416,6 +416,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
   Route::resource('agreement_statements', 'AgreementStatementController');
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
+
+  Route::resource('orders','OrderController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');
