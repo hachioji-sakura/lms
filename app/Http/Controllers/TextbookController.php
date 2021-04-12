@@ -97,7 +97,7 @@ class TextbookController extends MilestoneController
     ];
 
     foreach($items as $item){
-      $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
+      $item->difficulty = __('labels.'.$item->difficulty)??'';
     }
     return ["items" => $items, "fields" => $fields];
   }
@@ -195,7 +195,7 @@ class TextbookController extends MilestoneController
     $form = $request->all();
     $form['fields'] = $fields;
     $item= $param['item'];
-    $item->difficulty = config('attribute.difficulty')[$item->difficulty]??'';
+    $item->difficulty = $param['item'][$item->difficulty]??'';
 
     return view('textbooks.page', $form)
       ->with($param);
@@ -311,6 +311,12 @@ class TextbookController extends MilestoneController
       'publisher_price' => __('labels.publisher_price'),
       'other_price' => __('labels.other_price'),
     ];
+    $ret['item']['difficulty']= [
+      'easy' => __('labels.easy'),
+      'normal' => __('labels.normal'),
+      'difficult' => __('labels.difficult'),
+    ];
+
     return $ret;
   }
 

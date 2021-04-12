@@ -12,12 +12,12 @@
         <option value="">
           {{__('labels.selectable')}}
         </option>
-        @foreach(config('attribute.difficulty') as $key => $value)
+        @foreach($difficulty as $key => $value)
           <option value="{{$key}}"
           @if(isset($textbook) && $textbook->difficulty == $key)
             selected
           @endif>
-          {{$value}}
+           {{__('labels.'.$key)}}
           </option>
         @endforeach
       </select>

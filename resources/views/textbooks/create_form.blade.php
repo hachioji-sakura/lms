@@ -13,7 +13,7 @@
     </div>
     @component('textbooks.select_form',['_edit'=>$_edit, 'item'=> $textbook??null, 'target_item' => 'publisher', 'collection' => $item['publishers'] ]) @endcomponent
     @component('textbooks.select_form',['_edit'=>$_edit, 'item'=> $textbook??null, 'target_item' => 'supplier', 'collection' => $item['suppliers'] ]) @endcomponent
-    @component('textbooks.forms.select_difficulty', ['_edit'=>$_edit,'textbook' => $textbook??null]); @endcomponent
+    @component('textbooks.forms.select_difficulty', ['_edit'=> $_edit,'textbook' => $textbook??null, 'difficulty' => $item['difficulty']]); @endcomponent
     @component('textbooks.forms.subject', ['_edit'=>$_edit,'textbook'=> $textbook??null,'subjects' => $item['subjects'],'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
     @component('textbooks.forms.grade', ['_edit'=>$_edit,'grades' => $item['grades'],'textbook_grades' => $textbook->grade_list??null]); @endcomponent
     @component('textbooks.forms.price', ['_edit'=>$_edit,'textbook_prices'=> $textbook_prices??null, 'prices' => $prices??null]); @endcomponent

@@ -17,7 +17,7 @@
   @component('textbooks.forms.select_supplier', ['suppliers'=> $item['suppliers']]); @endcomponent
 </div>
 <div class="col-6 mb-2">
-  @component('textbooks.forms.select_difficulty', []); @endcomponent
+  @component('textbooks.forms.select_difficulty',['difficulty' => $item['difficulty']]); @endcomponent
 </div>
 <div class="col-12 mb-2">
   @component('textbooks.forms.subject', ['subjects' => $item['subjects']]); @endcomponent
