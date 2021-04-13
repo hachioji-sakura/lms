@@ -233,7 +233,7 @@ class Agreement extends Model
         //最初の判定でずれがあったら更新する
         $is_update = true;
       }
-/*　昔のユーザーが毎回未承認になる
+
       //金額のチェック
       $sum_tuition = 0;
       foreach($statement_form as $sf){
@@ -242,7 +242,7 @@ class Agreement extends Model
       if($sum_tuition != $this->agreement_statements->sum('tuition')){
         $is_update = true;
       }
-*/
+
       return $is_update;
     }
 
