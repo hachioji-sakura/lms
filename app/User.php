@@ -22,6 +22,7 @@ use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
+use DB;
 
 use Hash;
 /**
@@ -138,8 +139,11 @@ class User extends Authenticatable
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
     public function enable_calendar_member_settings(){
+      //キャンセルとダミーでない有効期間内のメンバー設定
       return $this->calendar_member_settings()->whereNotIn('status',
-      ['cancel','dummy']);
+      ['cancel','dummy'])->whereHas('setting',function($query){
+        return $query->enable();
+      });
     }
     /**
      * パスワードリセット通知の送信
