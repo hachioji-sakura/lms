@@ -151,10 +151,10 @@ class Agreement extends Model
       ];
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
-      $members = $member->user->calendar_member_settings;
+      $members = $member->user->enable_calendar_member_settings;
       $settings = $members->map(function($item,$key){
         return $item->setting;
-      })->whereNotIn('status',['cancel']);
+      });
       foreach($settings as $st){
         $mb = $st->members->where('user_id',$member->user_id)->first();
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
@@ -233,6 +233,16 @@ class Agreement extends Model
         //最初の判定でずれがあったら更新する
         $is_update = true;
       }
+/*　昔のユーザーが毎回未承認になる
+      //金額のチェック
+      $sum_tuition = 0;
+      foreach($statement_form as $sf){
+        $sum_tuition += $sf->tuition;
+      }
+      if($sum_tuition != $this->agreement_statements->sum('tuition')){
+        $is_update = true;
+      }
+*/
       return $is_update;
     }
 
