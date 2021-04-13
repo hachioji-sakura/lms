@@ -115,6 +115,9 @@
           </div>
           </a>
         </div>
+      </div>
+
+      <div class="row">
         <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/curriculums">
           <div class="info-box">
@@ -132,7 +135,7 @@
           <a href="/schools">
           <div class="info-box">
             <span class="info-box-icon bg-info">
-              <i class="fa fa-sitemap"></i>
+              <i class="fa fa-school"></i>
             </span>
             <div class="info-box-content text-dark">
               <b class="info-box-text text-lg">学校登録</b>
@@ -171,6 +174,11 @@
                 @endif
               </b>
               <span class="text-sm">カレンダー設定変更に伴う未承認の契約</span>
+            </div>
+          </div>
+          </a>
+        </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/text_materials">
           <div class="info-box">
             <span class="info-box-icon bg-info">
@@ -184,6 +192,8 @@
           </a>
         </div>
       </div>
+
+
   	</div>
   </section>
   @endif

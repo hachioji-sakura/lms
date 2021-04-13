@@ -138,6 +138,7 @@ return [
   'edit' => 'Edit',
   'select' => 'Select',
   'cancel' => 'Cancel',
+  'schools' => 'School',
 
   'check' => 'Check',
   'top' => 'Top',

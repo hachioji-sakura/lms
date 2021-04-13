@@ -138,7 +138,8 @@ return [
   'edit' => '変更',
   'select' => '選択',
   'cancel' => 'キャンセル',
-
+  'schools' => '学校',
+  
   'check' => '確認',
   'top' => 'トップ',
   'exchange' => '振替',
@@ -423,7 +424,7 @@ return [
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
   'share' => '共有',
-  
+
   // 学校ページに関するもの
   'school_page_header_high_school_id' => '高等学校ID',
   'school_page_header_post_number' => '郵便番号',
