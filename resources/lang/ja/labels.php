@@ -436,4 +436,6 @@ return [
   'skype_name' => 'Skype名',
   'skype_name_about' => 'Skype名の確認方法がわからない場合、こちらをクリック',
   'share' => '共有',
+  'ordered' => '注文済',
+  'recieved' => '納品済',
 ];

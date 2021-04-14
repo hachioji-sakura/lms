@@ -437,4 +437,6 @@ return [
   'skype_name' => 'Skype Name',
   'skype_name_about' => 'Click here if you do not know how to check your Skype name',
   'share' => 'Share',
+  'ordered' => 'ordered',
+  'recieved' => 'recieved',
 ];

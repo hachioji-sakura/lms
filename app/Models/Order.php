@@ -51,4 +51,26 @@ class Order extends Model
     public function ordered_user(){
       return $this->belongsTo('App\User','ordered_user_id');
     }
+
+    public function getStatusNameAttribute(){
+      return config('attribute.order_status')[$this->status];
+    }
+
+    public function getTypeNameAttribute(){
+      return config('attribute.order_type')[$this->type];
+    }
+
+    public function getTargetUserNameAttribute(){
+      return $this->target_user->details()->name();
+    }
+
+    public function getOrderedUserNameAttribute(){
+      return $this->ordered_user->details()->name();
+    }
+
+    public function status_update($status){
+      $this->status = $status;
+      $this->save();
+      return $this;
+    }
 }
