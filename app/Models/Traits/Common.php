@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
 use App\Models\MailLog;
+use App\Models\Student;
+use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
 
 trait Common
 {
@@ -276,5 +279,18 @@ trait Common
     if($this->publiced_at=='9999-12-31') return false;
     if(strtotime($this->publiced_at.' 00:00:00') <= strtotime('now')) return true;
     return false;
+  }
+
+  public function agreement_update($user_id)
+  {
+      $agreement_member = UserCalendarMemberSetting::where('user_id', $user_id)->get();
+      if ($agreement_member->count() > 0) {
+          //設定が残るなら契約更新
+          Agreement::add_from_member_setting($agreement_member->first()->id);
+      } else {
+          //有効な設定がなければ契約無効化
+          $student_id = Student::where('user_id', $user_id)->first()->id;
+          Agreement::where('student_id', $student_id)->update(['end_date' => date('Y/m/d H:i:s')]);
+      }
   }
 }
