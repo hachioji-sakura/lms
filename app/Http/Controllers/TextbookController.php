@@ -73,7 +73,7 @@ class TextbookController extends MilestoneController
       'explain' => [
         'label' => __('labels.explain'),
       ],
-      'difficulty' => [
+      'difficulty_name' => [
         'label' => __('labels.difficulty'),
       ],
       'publisher_name'=> [
@@ -96,9 +96,6 @@ class TextbookController extends MilestoneController
       ]
     ];
 
-    foreach($items as $item){
-      $item->difficulty = __('labels.'.$item->difficulty)??'';
-    }
     return ["items" => $items, "fields" => $fields];
   }
 

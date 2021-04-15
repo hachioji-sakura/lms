@@ -105,6 +105,10 @@ class Textbook extends Model
     return $this->publisher->name;
   }
 
+  public function getDifficultyNameAttribute(){
+    return config('attribute.difficulty')[$this->difficulty]??'-';
+  }
+
   public function store_textbook($form){
     $update_field = [
       'name' => "",
