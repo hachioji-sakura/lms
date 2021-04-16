@@ -166,4 +166,7 @@ return [
   "info_unsubscribe_for_teacher2" => "振替授業については、退会予定日までに行うように、\n授業の登録をお願いいたします。",
   "error_skype_name_not_found" => "オンライン授業の場合、Skype名の設定が必要です。\n勤務設定から、Skype名の設定をお願いいたします。",
   "status_update_confirm" => ":statusに更新しますか？",
+  "delete_confirm" => "削除しますか？",
+  'orders_title_placeholder' => "例：iワーク 数学 中2　等",
+  'orders_description' => 'テキストなどを発注する',
 ];

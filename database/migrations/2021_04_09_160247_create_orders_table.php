@@ -26,7 +26,7 @@ class CreateOrdersTable extends Migration
             $table->integer('place_id')->nullable(true)->comment('場所ID');
             $table->string('orderable_type')->nullable(true)->comment('発注リレーションモデル');
             $table->integer('orderable_id')->nullable(true)->comment('発注リレーションID');
-            $table->string('remark',10000)->nullable(true)->comment('備考');
+            $table->string('remarks',10000)->nullable(true)->comment('備考');
             $table->timestamps();
         });
     }

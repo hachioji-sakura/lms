@@ -175,6 +175,21 @@
           </div>
           </a>
         </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
+          <a class="" href="/orders" >
+          <div class="info-box">
+            <span class="info-box-icon bg-success">
+              <i class="fa fa-shopping-cart"></i>
+            </span>
+            <div class="info-box-content text-dark">
+              <b class="info-box-text text-lg">
+                {{__('labels.orders')}}{{__('labels.list')}}
+              </b>
+              <span class="text-sm">{{__('messages.orders_description')}}</span>
+            </div>
+          </div>
+          </a>
+        </div>
       </div>
   	</div>
   </section>

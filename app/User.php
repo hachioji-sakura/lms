@@ -141,6 +141,10 @@ class User extends Authenticatable
       return $this->calendar_member_settings()->whereNotIn('status',
       ['cancel','dummy']);
     }
+
+    public function ordered_orders(){
+      return $this->hasMany('App\Models\Order','ordered_user_id');
+    }
     /**
      * パスワードリセット通知の送信
      *

@@ -117,6 +117,21 @@ class OrderController extends MilestoneController
        return view($this->domain.'.status_update')->with($param);
      }
 
+     public function delete_page(Request $request, $id){
+       $param = $this->get_param($request,$id);
+       $param['fields'] = $this->get_show_fields();
+       return view($this->domain.".delete")->with($param);
+     }
+
+     public function  _delete(Request $request, $id){
+       $res = $this->transaction($request, function() use ($request, $id){
+         $item = $this->model()->find($id);
+         $item->dispose();
+         return $this->api_response(200, '', '', $item);
+       }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
+       return $res;
+     }
+
      public function status_update(Request $request ,$id ,$status){
        $param = $this->get_param($request,$id);
        $res =  $this->transaction($request, function() use ($id,$status){

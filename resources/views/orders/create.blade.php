@@ -78,13 +78,12 @@
         </select>
       </div>
       <div class="col-12 mt-2">
-        <label>{{__('labels.remarks')}}</label>
+        <label>{{__('labels.remark')}}</label>
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
         <div class="input-group mb-3">
-          <textarea name="remark" class="form-control" placeholder="{{__('messages.orders_remark_placeholder')}}"  maxlength=1000 >{{$_edit ? $item->remark : ''}}</textarea>
+          <textarea name="remarks" class="form-control" maxlength=1000 >{{$_edit ? $item->remark : ''}}</textarea>
         </div>
       </div>
-
     </div>
     <div class="row mt-2">
       <div class="col-12">

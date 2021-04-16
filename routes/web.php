@@ -417,10 +417,15 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('agreement_statements', 'AgreementStatementController');
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
 
-
-  Route::resource('orders','OrderController');
   Route::get('orders/{id}/status_update/{status}','OrderController@status_update_page');
   Route::put('orders/{id}/status_update/{status}','OrderController@status_update');
+  Route::get('orders/{id}/delete','OrderController@delete_page');
+  Route::resource('orders','OrderController');
+  Route::get('teachers/{id}/orders','TeacherController@order_page');
+  Route::get('managers/{id}/orders','ManagerController@order_page');
+
+
+
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

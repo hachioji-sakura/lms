@@ -439,4 +439,9 @@ return [
   'share' => 'Share',
   'ordered' => 'ordered',
   'recieved' => 'recieved',
+  'ordered_user' => 'Ordered user',
+  'orders' => 'Orders',
+  'order_item_type' => 'Order Item Type',
+  'amount' => 'Amount',
+  'unit_price' => 'Unit price',
 ];

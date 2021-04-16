@@ -438,4 +438,9 @@ return [
   'share' => '共有',
   'ordered' => '注文済',
   'recieved' => '納品済',
+  'ordered_user' => '発注者',
+  'orders' => '発注',
+  'order_item_type' => '発注品種別',
+  'amount' => '数量',
+  'unit_price' => '単価',
 ];

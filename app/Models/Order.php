@@ -33,7 +33,7 @@ class Order extends Model
       "place_id",
       "orderable_id",
       "orderable_type",
-      "remark",
+      "remarks",
     ];
 
     public function place(){
@@ -72,5 +72,10 @@ class Order extends Model
       $this->status = $status;
       $this->save();
       return $this;
+    }
+
+    public function dispose(){
+      $this->delete();
+      return null;
     }
 }
