@@ -42,14 +42,15 @@ $(function(){
     //subDialog側にformが残っているとsubmitされる対策
     $("#subDialog .modal-dialog").remove();
     $(this).prop("disabled",true);
-    $("#filter_form forms.filter").submit();
+    $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=button]").on('click', function(e){
+    console.log('filter_search');
     $("input[name=_page]").val("1");
     //subDialog側にformが残っているとsubmitされる対策
     $("#subDialog .modal-dialog").remove();
     $(this).prop("disabled",true);
-    $("#filter_form forms.filter").submit();
+    $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=reset]").on('click', function(e){
     e.preventDefault();

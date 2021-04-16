@@ -297,10 +297,10 @@ class TextbookController extends MilestoneController
     if(isset($id)){
       $ret['item'] = Textbook::find($id);
     }
-    $ret['item']['publishers'] = Publisher::get();
-    $ret['item']['suppliers'] = Supplier::get();
-    $ret['item']['subjects'] = Subject::get();
-    $ret['item']['grades'] = GeneralAttribute::findKey('grade')->get();
+    $ret['publishers'] = Publisher::get();
+    $ret['suppliers'] = Supplier::get();
+    $ret['subjects'] = Subject::get();
+    $ret['grades'] = GeneralAttribute::findKey('grade')->get();
     $ret['prices']= [
       'teika_price' => __('labels.teika_price'),
       'selling_price' => __('labels.selling_price'),
@@ -308,11 +308,7 @@ class TextbookController extends MilestoneController
       'publisher_price' => __('labels.publisher_price'),
       'other_price' => __('labels.other_price'),
     ];
-    $ret['item']['difficulty']= [
-      'easy' => __('labels.easy'),
-      'normal' => __('labels.normal'),
-      'difficult' => __('labels.difficult'),
-    ];
+
 
     return $ret;
   }
