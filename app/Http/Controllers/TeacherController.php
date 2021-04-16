@@ -568,7 +568,6 @@ class TeacherController extends StudentController
     }
 
     public function order_page(Request $request, $id){
-      //TODO:ルーティング、Userのリレーション
       $param = $this->get_param($request,$id);
       $param['fields'] = $this->get_order_list_fields();
       $param['items'] = $param['item']->user->ordered_orders()->paginate();;
