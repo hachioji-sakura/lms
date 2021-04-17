@@ -408,7 +408,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   // 学校関連
   Route::resource('schools', 'SchoolController');
-  Route::get('schools/{id}/delete_confirmation', 'SchoolController@deleteConfirmation');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');
