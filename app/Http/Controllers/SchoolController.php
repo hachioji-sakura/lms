@@ -101,7 +101,7 @@ class SchoolController extends MilestoneController
      * 高等学校情報追加
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
     {
@@ -267,7 +267,7 @@ class SchoolController extends MilestoneController
      * Modelによるページネーションは負荷的に懸念があるため、Entity用のものを生成する
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Domain\School\HighSchoolEntity[] $high_school_entities
+     * @param array $items
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     protected function getPaginator(Request $request, array $items): LengthAwarePaginator
