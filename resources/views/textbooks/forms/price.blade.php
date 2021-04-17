@@ -1,6 +1,6 @@
 @foreach($prices as $key=>$value)
 
-  <div class="col-6 col-md-6">
+  <div class="col-12 col-md-6">
   <div class="form-group">
       <label for="price" class="w-100">
         {{$value}}
