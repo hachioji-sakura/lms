@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateHighSchoolDepartmentsTable
+ * Class CreateSchoolDepartmentsTable
  */
-class CreateHighSchoolDepartmentsTable extends Migration
+class CreateSchoolDepartmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,16 +16,16 @@ class CreateHighSchoolDepartmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('high_school_departments', function (Blueprint $table) {
+        Schema::create('school_departments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('high_school_id')->unsigned()->comment('高等学校ID');
+            $table->string('school_type')->comment('学校タイプ');
+            $table->integer('school_type_id')->unsigned()->comment('学校タイプに関連するID');
             $table->integer('department_id')->unsigned()->comment('学科ID');
             $table->timestamps();
 
             // インデックス
-            $table->index('high_school_id');
-            $table->index('department_id');
-            $table->unique(['high_school_id','department_id']);
+            $table->index(['school_type', 'school_type_id']);
+            $table->unique( ['school_type', 'school_type_id', 'department_id'], 'school_departments_unique');
         });
     }
 
@@ -36,6 +36,6 @@ class CreateHighSchoolDepartmentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('high_school_departments');
+        Schema::dropIfExists('school_departments');
     }
 }

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class HighSchoolDepartment
+ * Class SchoolDepartment
  *
  * @package App\Models
  */
-class HighSchoolDepartment extends Model
+class SchoolDepartment extends Model
 {
     //
 }
