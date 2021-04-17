@@ -13,11 +13,6 @@ use LogicException;
 class SchoolViewEntity extends BaseEntity
 {
     /**
-     * @var string
-     */
-    protected $page_title = '';
-    
-    /**
      * ページタイトル
      *
      * @return string
@@ -82,5 +77,84 @@ class SchoolViewEntity extends BaseEntity
             default:
                 throw new LogicException('キーが誤っています');
         }
+    }
+    
+    /**
+     * 学校情報の基本情報
+     *
+     * @return array[]
+     */
+    public function fieldForIndex(): array
+    {
+        return [
+            'name'         => [
+                'label' => $this->localizeName('name'),
+                'link'  => 'show',
+            ],
+            'address'      => [
+                'label' => $this->localizeName('address'),
+            ],
+            'phone_number' => [
+                'label' => $this->localizeName('phone_number'),
+            ],
+            'process'      => [
+                'label' => $this->localizeName('process'),
+            ],
+            'buttons'      => [
+                'label'  => $this->localizeName('control'),
+                'button' => ['edit', 'delete']
+            ],
+        ];
+    }
+    
+    /**
+     * 学校情報の詳細情報
+     *
+     * @return array[]
+     */
+    public function fieldForShow(): array
+    {
+        return [
+            'name'             => [
+                'label' => $this->localizeName('name'),
+                'size'  => 6,
+            ],
+            'name_kana'        => [
+                'label' => $this->localizeName('name_kana'),
+                'size'  => 6,
+            ],
+            'post_number'      => [
+                'label' => $this->localizeName('post_number'),
+                'size'  => 6,
+            ],
+            'address'          => [
+                'label' => $this->localizeName('address'),
+                'size'  => 6,
+            ],
+            'phone_number'     => [
+                'label' => $this->localizeName('phone_number'),
+                'size'  => 6,
+            ],
+            'fax_number'       => [
+                'label' => $this->localizeName('fax_number'),
+                'size'  => 6,
+            ],
+            'process'          => [
+                'label' => $this->localizeName('process'),
+                'size'  => 6,
+            ],
+            'url'              => [
+                'label' => $this->localizeName('url'),
+                'size'  => 6,
+            ],
+            'department_names' => [
+                'label' => $this->localizeName('department_names'),
+                'size'  => 6,
+            ],
+            'access'           => [
+                'label' => $this->localizeName('access'),
+                'size'  => 6,
+            ],
+        ];
     }
 }

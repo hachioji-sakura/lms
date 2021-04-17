@@ -132,7 +132,7 @@
           <a href="/schools">
           <div class="info-box">
             <span class="info-box-icon bg-info">
-              <i class="fa fa-sitemap"></i>
+              <i class="fa fa-school"></i>
             </span>
             <div class="info-box-content text-dark">
               <b class="info-box-text text-lg">学校登録</b>

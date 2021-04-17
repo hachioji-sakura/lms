@@ -5,8 +5,8 @@ namespace App\Domain\School\Repository;
 use App\Domain\School\HighSchoolEntity;
 use App\Models\Department;
 use App\Models\HighSchool;
-use App\Models\HighSchoolDepartment;
 use App\Models\School;
+use App\Models\SchoolDepartment;
 use DB;
 use LogicException;
 
@@ -32,10 +32,10 @@ class HighSchoolEntityRepository
         if ($this->departments) {
             return collect($this->departments)->pluck('department', 'id')->all();
         }
-    
+        
         $builder_department = new Department();
         $this->departments = $builder_department->newQuery()->get()->keyBy('id')->all();
-    
+        
         return collect($this->departments)->pluck('department', 'id')->all();
     }
     
@@ -88,42 +88,6 @@ class HighSchoolEntityRepository
     }
     
     /**
-     * Entityを生成する
-     *
-     * @param \App\Models\HighSchool[] $high_schools
-     * @return array
-     */
-    protected function make(array $high_schools): array
-    {
-        $builder_high_school_department = new HighSchoolDepartment();
-        $high_school_departments = $builder_high_school_department->newQuery()->get()->groupBy('high_school_id', true)->all();
-        
-        $builder_school = new School();
-        $schools = $builder_school->newQuery()->get()->keyBy('id')->all();
-        
-        $high_school_entities = [];
-        foreach ($high_schools as $high_school) {
-            $department_names = [];
-            $department_ids = [];
-            $high_school_departments_filtered = $high_school_departments[$high_school->id];
-            foreach ($high_school_departments_filtered as $high_school_department) {
-                $department = $this->findDepartmentById($high_school_department->department_id);
-                $department_ids[] = $department->id;
-                $department_names[] = $department->department;
-            }
-            
-            $high_school_entities[$high_school->id] = new HighSchoolEntity(
-                collect($high_school)->toArray(),
-                collect($schools[$high_school->school_id])->toArray(),
-                $department_ids,
-                $department_names
-            );
-        }
-        
-        return $high_school_entities;
-    }
-    
-    /**
      * 学校情報を取得する
      *
      * @param int $high_school_id 高等学校ID
@@ -133,12 +97,12 @@ class HighSchoolEntityRepository
     {
         $builder_high_school = new HighSchool();
         $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
-    
+        
         if (empty($high_school)) {
             return null;
         }
         $high_school_entities = $this->make([$high_school]);
-    
+        
         return reset($high_school_entities);
     }
     
@@ -162,7 +126,16 @@ class HighSchoolEntityRepository
     /**
      * 学校情報を作成する
      *
-     * @param int $high_school_id
+     * @param $name
+     * @param $name_kana
+     * @param $post_number
+     * @param $address
+     * @param $phone_number
+     * @param $fax_number
+     * @param $url
+     * @param $process
+     * @param $department_ids
+     * @param $access
      */
     public function create(
         $name,
@@ -201,16 +174,17 @@ class HighSchoolEntityRepository
         $builder_high_school->save();
         
         // 学科
-        $high_school_department_attributes_for_insert = [];
+        $school_department_attributes_for_insert = [];
         foreach ($department_ids as $department_id) {
             $attributes = [];
-            $attributes['high_school_id'] = $builder_high_school->id;
+            $attributes['school_type'] = 'high_school';
+            $attributes['school_type_id'] = $builder_high_school->id;
             $attributes['department_id'] = $department_id;
             $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
-            $high_school_department_attributes_for_insert[] = $attributes;
+            $school_department_attributes_for_insert[] = $attributes;
         }
-        DB::table('high_school_departments')->insert($high_school_department_attributes_for_insert);
+        DB::table('school_departments')->insert($school_department_attributes_for_insert);
     }
     
     /**
@@ -225,8 +199,11 @@ class HighSchoolEntityRepository
         $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
         $builder_high_school->newQuery()->where('id', $high_school_id)->delete();
         
-        $builder_high_school_department = new HighSchoolDepartment();
-        $builder_high_school_department->newQuery()->where('high_school_id', $high_school_id)->delete();
+        $builder_high_school_department = new SchoolDepartment();
+        $builder_high_school_department->newQuery()
+            ->where('school_type', 'high_school')
+            ->where('school_type_id', $high_school_id)
+            ->delete();
         
         $builder_school = new School();
         $builder_school->newQuery()->where('id', $high_school->school_id)->delete();
@@ -257,20 +234,21 @@ class HighSchoolEntityRepository
         
         // 学科についてはすべて一旦消す ⇒ 作成するという処理とする（変更があった時のみ処理する）
         if ($high_school_entity->departmentIdsChanged()) {
-            $builder_high_school_department = new HighSchoolDepartment();
+            $builder_high_school_department = new SchoolDepartment();
             $builder_high_school_department->newQuery()->where('high_school_id', $high_school_entity->highSchoolId())->delete();
             
-            $high_school_department_attributes_for_insert = [];
+            $school_department_attributes_for_insert = [];
             $department_ids = $high_school_entity->departmentIds();
             foreach ($department_ids as $department_id) {
                 $attributes = [];
-                $attributes['high_school_id'] = $high_school_entity->highSchoolId();
+                $attributes['school_type'] = 'high_school';
+                $attributes['school_type_id'] = $high_school_entity->highSchoolId();
                 $attributes['department_id'] = $department_id;
                 $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
                 $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
-                $high_school_department_attributes_for_insert[] = $attributes;
+                $school_department_attributes_for_insert[] = $attributes;
             }
-            DB::table('high_school_departments')->insert($high_school_department_attributes_for_insert);
+            DB::table('school_departments')->insert($school_department_attributes_for_insert);
         }
         
         // 学校関連
@@ -280,6 +258,43 @@ class HighSchoolEntityRepository
         $school->name_kana = $high_school_entity->nameKana();
         $school->url = $high_school_entity->url();
         $school->save();
+    }
+    
+    /**
+     * Entityを生成する
+     *
+     * @param  \App\Models\HighSchool[]  $high_schools
+     * @return array
+     */
+    protected function make(array $high_schools): array
+    {
+        $builder_school_department = new SchoolDepartment();
+        $school_departments = $builder_school_department->newQuery()->where('school_type', 'high_school')->get()->groupBy('school_type_id',
+            true)->all();
+        
+        $builder_school = new School();
+        $schools = $builder_school->newQuery()->get()->keyBy('id')->all();
+        
+        $high_school_entities = [];
+        foreach ($high_schools as $high_school) {
+            $department_names = [];
+            $department_ids = [];
+            $school_departments_filtered = $school_departments[$high_school->id];
+            foreach ($school_departments_filtered as $school_department) {
+                $department = $this->findDepartmentById($school_department->department_id);
+                $department_ids[] = $department->id;
+                $department_names[] = $department->department;
+            }
+            
+            $high_school_entities[$high_school->id] = new HighSchoolEntity(
+                collect($high_school)->toArray(),
+                collect($schools[$high_school->school_id])->toArray(),
+                $department_ids,
+                $department_names
+            );
+        }
+        
+        return $high_school_entities;
     }
     
     /**

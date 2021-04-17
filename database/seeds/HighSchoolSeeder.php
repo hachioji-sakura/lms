@@ -83,6 +83,12 @@ class HighSchoolSeeder extends Seeder
      */
     public function run(): void
     {
+        // 何度でも実行できるように事前削除する
+        DB::table('departments')->truncate();
+        DB::table('schools')->truncate();
+        DB::table('high_schools')->truncate();
+        DB::table('school_departments')->truncate();
+        
         $department_attributes = $this->initialize();
         $csv_rows = CSVReader::readWithKeyByUrl($this->url);
         
@@ -126,7 +132,8 @@ class HighSchoolSeeder extends Seeder
                     continue;
                 }
                 $attributes = [];
-                $attributes['high_school_id'] = $index + 1;
+                $attributes['school_type'] = 'high_school';
+                $attributes['school_type_id'] = $index + 1;
                 $attributes['department_id'] = $department_attributes[$department_name]['id'];
                 $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
                 $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
@@ -134,7 +141,7 @@ class HighSchoolSeeder extends Seeder
             }
         }
         
-
+        
         // マルチインサート
         $school_attributes_chunk = collect($school_attributes)->chunk(256)->toArray();
         foreach ($school_attributes_chunk as $school_attributes_for_insert) {
@@ -146,7 +153,7 @@ class HighSchoolSeeder extends Seeder
         }
         $high_school_department_attributes_chunk = collect($high_school_department_attributes)->chunk(256)->toArray();
         foreach ($high_school_department_attributes_chunk as $high_school_department_attributes_for_insert) {
-            DB::table('high_school_departments')->insert($high_school_department_attributes_for_insert);
+            DB::table('school_departments')->insert($high_school_department_attributes_for_insert);
         }
     }
     

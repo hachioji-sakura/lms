@@ -56,38 +56,22 @@ class SchoolController extends MilestoneController
             $high_school_entities = $this->high_school_entity_repository->getByProcess($request->process);
         }
         $school_view_entity = new SchoolViewEntity();
-        $paginator = $this->getPaginator($request, $high_school_entities);
-    
-        return view('schools.lists', [
-            'paginator'            => $paginator,
-            'school_view_entity'   => $school_view_entity,
-            'high_school_entities' => $high_school_entities,
-            'domain'               => $this->domain,
-        ])->with($param);
-    }
-    
-    /**
-     * 削除確認ページ
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
-     */
-    public function deleteConfirmation(Request $request)
-    {
-        // リクエスト
-        $high_school_id = $request->id;
         
-        // 基盤として最低限必要な要素を用意
-        $param = $this->get_common_param($request);
-    
-        // 表示情報
-        $school_view_entity = new SchoolViewEntity();
-        $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
-    
-        return view('schools.delete_confirmation', [
-            'school_view_entity' => $school_view_entity,
-            'high_school_entity' => $high_school_entity,
-            'domain'             => $this->domain,
+        // blade側が配列前提のため変換する
+        $items = [];
+        foreach ($high_school_entities as $high_school_entity) {
+            $attribute = $high_school_entity->getAttributes();
+            $attribute['id'] = $high_school_entity->highSchoolId();
+            $attribute['process'] = $high_school_entity->process();
+            $items[] = $attribute;
+        }
+        $paginator = $this->getPaginator($request, $items);
+        
+        return view('schools.lists', [
+            'items'                => $paginator,
+            'fields'               => $school_view_entity->fieldForIndex(),
+            'domain'               => $this->domain,
+            'is_not_filter_button' => true,
         ])->with($param);
     }
     
@@ -174,10 +158,16 @@ class SchoolController extends MilestoneController
         $school_view_entity = new SchoolViewEntity();
         $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
         
+        // blade側が配列前提のため変換する
+        $attributes = $high_school_entity->getAttributes();
+        $attributes['id'] = $high_school_entity->highSchoolId();
+        $attributes['process'] = $high_school_entity->process();
         return view('schools.detail', [
             'school_view_entity' => $school_view_entity,
-            'high_school_entity' => $high_school_entity,
+            'item'               => $attributes,
+            'fields'             => $school_view_entity->fieldForShow(),
             'domain'             => $this->domain,
+            'action'             => $param['action'] ?? null,
         ])->with($param);
     }
     
@@ -192,15 +182,15 @@ class SchoolController extends MilestoneController
     {
         // リクエスト
         $high_school_id = $id;
-    
+        
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
-    
+        
         // 表示情報
         $school_view_entity = new SchoolViewEntity();
         $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
         $department_list = $this->high_school_entity_repository->getDepartmentList();
-    
+        
         return view('schools.component.form.edit_form', [
             'school_view_entity' => $school_view_entity,
             'high_school_entity' => $high_school_entity,
@@ -212,7 +202,7 @@ class SchoolController extends MilestoneController
     /**
      * 指定のデータを削除する
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param $id
      * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -227,7 +217,7 @@ class SchoolController extends MilestoneController
         // 削除処理
         $res = $this->transaction($request, function () use ($high_school_id) {
             $this->high_school_entity_repository->deleteByHighSchoolId($high_school_id);
-        
+            
             return $this->api_response();
         }, __('labels.delete_complete'), __FILE__, __FUNCTION__, __LINE__);
         
@@ -252,22 +242,22 @@ class SchoolController extends MilestoneController
         // 更新処理
         $res = $this->transaction($request, function () use ($high_school_id, $request) {
             $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
-            $high_school_entity->changeName($request->name);
-            $high_school_entity->changeNameKana($request->name_kana);
-            $high_school_entity->changePostNumber($request->post_number);
-            $high_school_entity->changeAddress($request->address);
-            $high_school_entity->changePhoneNumber($request->phone_number);
-            $high_school_entity->changeFaxNumber($request->fax_number);
-            $high_school_entity->changeURL($request->url);
-            $high_school_entity->changeProcess($request->process);
+            $high_school_entity->changeName((string)$request->name);
+            $high_school_entity->changeNameKana((string)$request->name_kana);
+            $high_school_entity->changePostNumber((string)$request->post_number);
+            $high_school_entity->changeAddress((string)$request->address);
+            $high_school_entity->changePhoneNumber((string)$request->phone_number);
+            $high_school_entity->changeFaxNumber((string)$request->fax_number);
+            $high_school_entity->changeURL((string)$request->url);
+            $high_school_entity->changeProcess((array)$request->process);
             $department_ids = array_map('intval', $request->department_ids);
             $high_school_entity->changeDepartment($department_ids);
-            $high_school_entity->changeAccess($request->access);
+            $high_school_entity->changeAccess((string)$request->access);
             $this->high_school_entity_repository->save($high_school_entity);
-    
+            
             return $this->api_response();
         }, __('labels.update_complete'), __FILE__, __FUNCTION__, __LINE__);
-    
+        
         return $this->save_redirect($res, $param, __('labels.update_complete'));
     }
     
@@ -280,12 +270,12 @@ class SchoolController extends MilestoneController
      * @param \App\Domain\School\HighSchoolEntity[] $high_school_entities
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    protected function getPaginator(Request $request, array $high_school_entities): LengthAwarePaginator
+    protected function getPaginator(Request $request, array $items): LengthAwarePaginator
     {
         $page_number = $request->page ?? 1;
         $per_page = 25;
-        $page_slice = collect($high_school_entities)->forPage($page_number, $per_page);
+        $page_slice = collect($items)->forPage($page_number, $per_page);
         
-        return new LengthAwarePaginator($page_slice, count($high_school_entities), $per_page, $page_number, ['path' => $request->url()]);
+        return new LengthAwarePaginator($page_slice, count($items), $per_page, $page_number, ['path' => $request->url()]);
     }
 }

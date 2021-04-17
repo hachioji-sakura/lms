@@ -3,36 +3,47 @@
     @csrf
     <div class="row">
       <div class="col-12 col-md-6 my-1">
-        <h6>{{ $school_view_entity->localizeName('name') }}</h6>
-        <p><input id="text" name="name" type="text" class="form-control" required></p>
-        <h6>{{ $school_view_entity->localizeName('name_kana') }}</h6>
-        <p><input id="text" name="name_kana" type="text" class="form-control" required></p>
-        <h6>{{ $school_view_entity->localizeName('post_number') }}</h6>
-        <p><input id="text" name="post_number" type="text" class="form-control"></p>
-        <h6>{{ $school_view_entity->localizeName('address') }}</h6>
-        <p><input id="text" name="address" type="text" class="form-control"></p>
-        <h6>{{ $school_view_entity->localizeName('phone_number') }}</h6>
-        <p><input id="text" name="phone_number" type="text" class="form-control" }}></p>
-        <h6>{{ $school_view_entity->localizeName('fax_number') }}</h6>
-        <p><input id="text" name="fax_number" type="text" class="form-control"></p>
-        <h6>{{ $school_view_entity->localizeName('url') }}</h6>
-        <p><input id="text" name="url" type="text" class="form-control"></p>
+        <label>{{$school_view_entity->localizeName('name')}}</label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <input type="text" class="form-control" name="name" required="true" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('name_kana')}}</label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <input type="text" class="form-control" name="name_kana" required="true" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('post_number')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <input type="text" class="form-control" name="post_number" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('address')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <input type="text" class="form-control" name="address" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('phone_number')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <input type="text" class="form-control" name="phone_number" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('fax_number')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <input type="text" class="form-control" name="fax_number" style="margin-bottom: 15px;">
+        <label>{{$school_view_entity->localizeName('url')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+        <input type="text" class="form-control" name="url" style="margin-bottom: 15px;">
       </div>
+
       <div class="col-12 col-md-6 my-1">
-        <h6>{{ $school_view_entity->localizeName('process') }}</h6>
+        <label>{{$school_view_entity->localizeName('process')}}</label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         <select multiple="" name="process[]" class="form-control" style="margin-bottom: 15px;" required>
           @foreach($school_view_entity->processList() as $key_name => $process_name)
               <option value={{ $key_name }}>{{ $process_name }}</option>
           @endforeach
         </select>
 
-        <h6>{{ $school_view_entity->localizeName('department_names') }}</h6>
+        <label>{{$school_view_entity->localizeName('department_names')}}</label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         <select multiple="" name="department_ids[]" class="form-control" style="margin-bottom: 15px;" required>
           @foreach($department_list as $id => $department_name)
               <option value={{ $id }}>{{ $department_name }}</option>
           @endforeach
         </select>
-        <h6>{{ $school_view_entity->localizeName('access') }}</h6>
+        <label>{{$school_view_entity->localizeName('access')}}</label>
+         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
         <textarea name="access" class="form-control" rows="5"></textarea>
       </div>
     </div>

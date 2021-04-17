@@ -429,6 +429,7 @@ return [
   'share' => 'Share',
 
   // 学校ページに関するもの
+  'schools' => 'School',
   'school_page_header_high_school_id' => 'High School Id',
   'school_page_header_post_number' => 'Post Number',
   'school_page_header_address' => 'Address',

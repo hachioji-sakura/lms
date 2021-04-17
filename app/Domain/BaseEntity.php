@@ -13,6 +13,21 @@ use LogicException;
 abstract class BaseEntity
 {
     /**
+     * プロパティを配列に変換する
+     *
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        $data = [];
+        foreach ($this as $key => $value) {
+            $data[$key] = $value;
+        }
+        
+        return $data;
+    }
+    
+    /**
      * 宣言されていないメソッドを呼び出した場合
      *
      * @param string $name コールしようとしたメソッドの名称
