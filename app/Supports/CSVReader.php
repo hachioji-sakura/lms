@@ -58,7 +58,7 @@ class CSVReader
         
         // Windowsの場合は Shift_JIS、Unix系は UTF-8で処理
         if ($is_win) {
-            setlocale(LC_ALL, 'Japanese_Japan.932');
+            setlocale(LC_CTYPE, 'C');
         } else {
             setlocale(LC_ALL, 'ja_JP.UTF-8');
             $str = mb_convert_encoding($str, 'utf-8', 'UTF-8, sjis-win');
@@ -72,7 +72,7 @@ class CSVReader
             // windows の場合はSJIS-win → UTF-8 変換
             $result[] = $is_win
                 ? array_map(function ($val) {
-                    return mb_convert_encoding($val, 'UTF-8', 'SJIS-win');
+                    return mb_convert_encoding($val, 'UTF-8', 'UTF-8', 'SJIS-win');
                 }, $row)
                 : $row;
         }
