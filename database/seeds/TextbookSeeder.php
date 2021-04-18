@@ -203,7 +203,7 @@ class TextbookSeeder extends Seeder
       $textbook = Textbook::create([
         'name' => $datum[0]->name,
         'explain' => $explain??'',
-        'difficulty' => $level??0,
+        'difficulty' => $level??'other',
         'publisher_id' => $publisher->id ?? null,
         'supplier_id' => $supplier->id ?? null,
         'create_user_id' => 1,

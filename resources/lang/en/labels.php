@@ -436,5 +436,5 @@ return [
   'selling_price' =>'selling price',
   'amazon_price' =>'amazon price',
   'publisher_price' =>'publisher price',
-  'other_price' => 'other',
+  'other_price' => 'other price',
 ];

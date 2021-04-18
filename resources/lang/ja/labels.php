@@ -433,8 +433,5 @@ return [
   'selling_price' => '教材販売価格',
   'amazon_price' => 'amazon価格',
   'publisher_price' => '出版社請求価格',
-  'other_price' => 'その他',
-  'easy' => '簡単',
-  'normal' => '普通',
-  'difficult' => '難しい'
+  'other_price' => 'その他価格'
 ];

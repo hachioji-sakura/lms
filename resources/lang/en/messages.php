@@ -165,6 +165,4 @@ return [
  "info_unsubscribe_for_teacher1" => ":student_name will be unsubscribe on the following dates.",
  "info_unsubscribe_for_teacher2" => "About exchange lessons, make sure to do it by the scheduled unsubscribe date.\nPlease register for the exchange lesson.",
  "error_skype_name_not_found" => "For online classes, you need to set a Skype Name.\nPlease set the Skype Name from the work settings.",
- 'choose_subjects' => 'choose subjects for textbook',
- 'choose_grades' => 'choose grades for textbook',
   ];
