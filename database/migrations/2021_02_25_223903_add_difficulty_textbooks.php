@@ -14,7 +14,7 @@ class AddDifficultyTextbooks extends Migration
     public function up()
     {
       Schema::table('textbooks', function (Blueprint $table) {
-        $table->string('difficulty')->nullable(false)->default('')->comment('難易度')->change();
+        $table->string('difficulty')->nullable(false)->default('')->comment('難易度')->after('explain');
       });
     }
 
