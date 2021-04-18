@@ -6,119 +6,11 @@
 
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
-    <div class="col-12 col-md-6">
-      <div class="form-group">
-        <label for='search_publisher_id' class="w-100">
-          {{__('labels.publisher_name')}}
-        </label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-search-plus"></i></span>
-          </div>
-          <select name='search_publisher_id' class="form-control select2" width="80%">
-            <option value="">
-              {{__('labels.selectable')}}
-            </option>
-            @foreach($publishers as $publisher)
-            <option value="{{ $publisher->id }}"
-              @if(request()->search_publisher_id == $publisher->id)
-              selected
-              @endif>
-              {{$publisher->name}}
-            </option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6">
-      <div class="form-group">
-        <label for='search_supplier_id' class="w-100">
-          {{__('labels.supplier_name')}}
-        </label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-search-plus"></i></span>
-          </div>
-          <select name='search_supplier_id' class="form-control select2" width="80%">
-            <option value="">
-              {{__('labels.selectable')}}
-            </option>
-            @foreach($suppliers as $supplier)
-            <option value="{{ $supplier->id }}"
-              @if(request()->search_supplier_id == $supplier->id)
-              selected
-              @endif>
-              {{$supplier->name}}
-            </option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6">
-      <div class="form-group">
-        <label for='search_difficulty' class="w-100">
-          {{__('labels.difficulty')}}
-        </label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-search-plus"></i></span>
-          </div>
-          <select
-            name='search_difficulty'
-            class="form-control select2" width="80%">
-            <option value="">
-              {{__('labels.selectable')}}
-            </option>
-            @foreach(config('attribute.difficulty') as $key => $value)
-              <option value="{{$key}}"
-              @if(request()->search_difficulty == $key)
-                selected
-              @endif>
-               {{$value}}
-              </option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="form-group">
-        <label for="search_subjects" class="w-100">
-          {{__('labels.subjects')}}
-        </label>
-        <select name="search_subjects[]" class="w-100 form-control select2" width="100%" multiple="multiple" >
-          @foreach($subjects as $subject)
-            <option value="{{$subject->id}}"
-              @if(isset(request()->search_subjects) && in_array($subject->id, request()->search_subjects,true))
-               selected
-              @endif>
-              {{$subject->name}}
-            </option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="form-group">
-        <label for="search_grade" class="w-100">
-          {{__('labels.grade')}}
-        </label>
-        <div class="col-6">
-          <select name="search_grade[]" class="w-100 form-control select2" width=100% multiple="multiple" >
-            @foreach($grades as $grade)
-              <option value="{{$grade->attribute_value}}"
-                @if(isset(request()->search_grade) && in_array($grade->attribute_name, request()->search_grade,true))
-                  selected
-                @endif>
-                {{$grade->attribute_name}}
-              </option>
-            @endforeach
-          </select>
-        </div>
-      </div>
-    </div>
+    @component('textbooks.forms.subject', ['prefix'=>'search_','textbook'=> $textbook??null,'subjects' => $subjects,'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
+    @component('textbooks.forms.grade', ['prefix'=>'search_','grades' => $grades,'textbook_grades' => $textbook->grade_list??null]); @endcomponent
+    @component('textbooks.forms.select_difficulty', ['prefix'=>'search_','textbook' => $textbook??null ]); @endcomponent
+    @component('textbooks.forms.select_publisher', ['prefix'=>'search_','textbook'=> $textbook??null,'publishers' => $publishers]); @endcomponent
+    @component('textbooks.forms.select_supplier', ['prefix'=>'search_','textbook'=> $textbook??null,'suppliers' => $suppliers]); @endcomponent
     <div class="col-12 mb-2">
       <div class="form-group">
       <label for="search_keyword" class="w-100">
@@ -129,10 +21,8 @@
       >
       </div>
     </div>
-
     @endslot
   @endcomponent
-
 @endsection
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">

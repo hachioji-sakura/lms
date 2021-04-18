@@ -108,6 +108,7 @@ class TextbookController extends MilestoneController
    */
   public function _search_scope(Request $request, $items)
   {
+    $prefix = 'search_';
     //ID 検索
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
@@ -127,17 +128,17 @@ class TextbookController extends MilestoneController
     $scopes = ['publisher_id','supplier_id','difficulty'];
 
     foreach($scopes as $scope){
-      if(isset($forms[$scope])){
-        $items = $items->where($scope,$forms[$scope]);
+      if(isset($forms[$prefix.$scope])){
+        $items = $items->where($scope,$forms[$prefix.$scope]);
       }
     }
 
-    if(isset($forms['subject'])){
-      $items = $items->searchSubject($forms['subject']);
+    if(isset($forms['search_subject'])){
+      $items = $items->searchSubject($forms['search_subject']);
     }
 
-    if(isset($forms['grade'])){
-      $items = $items->searchGrade($forms['grade']);
+    if(isset($forms['search_grade'])){
+      $items = $items->searchGrade($forms['search_grade']);
     }
     return $items;
   }
@@ -180,25 +181,6 @@ class TextbookController extends MilestoneController
   }
 
   /**
-   * 詳細画面表示
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Request $request, $id)
-  {
-    $param = $this->get_param($request, $id);
-    $fields = $this->show_fields($param['item']->type);
-    $form = $request->all();
-    $form['fields'] = $fields;
-    $item= $param['item'];
-    $item->difficulty = $param['item'][$item->difficulty]??'';
-
-    return view('textbooks.page', $form)
-      ->with($param);
-  }
-
-  /**
    * 詳細画面表示のデータ取得
    *
    * @param  int  $id
@@ -212,7 +194,7 @@ class TextbookController extends MilestoneController
       'explain' => [
         'label' => __('labels.explain'),
       ],
-      'difficulty' => [
+      'difficulty_name' => [
         'label' => __('labels.difficulty'),
       ],
       'publisher_name'=> [

@@ -1,15 +1,21 @@
 <div class="col-12">
   <div class="form-group">
-    <label for="teacher_character" class="w-100">
-      {{__('labels.subject')}}
-      <span class="right badge badge-secondary">{{__('labels.optional')}}</span>
+    <label for="{{$prefix}}subject" class="w-100">
+      {{__('labels.subjects')}}
+      @if($prefix !=='search_')
+        <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      @endif
     </label>
-    <select name="subject[]" class="form-control select2 w-100" width="100%" multiple="multiple" >
+    <select id="{{$prefix}}subject" name="{{$prefix}}subject[]" class="w-100 form-control select2" width="100%" multiple="multiple" >
       @foreach($subjects as $subject)
         <option value="{{$subject->id}}"
+          @if(isset(request()->search_subject) && in_array($subject->id, request()->search_subject,false))
+          selected
+          @endif
           @if(isset($textbook_subjects) && in_array($subject->name,$textbook_subjects,true))
-           selected
-          @endif>
+          selected
+          @endif
+        >
           {{$subject->name}}
         </option>
       @endforeach
