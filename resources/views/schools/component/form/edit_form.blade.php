@@ -9,22 +9,22 @@
         <input type="text" class="form-control" name="name" placeholder="{{$school_view_entity->localizeName('name')}}" required="true" value="{{  $high_school_entity->name() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('name_kana')}}</label>
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <input type="text" class="form-control" name="name_kana" placeholder="{{$school_view_entity->localizeName('name')}}" required="true" value="{{  $high_school_entity->nameKana() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="name_kana" placeholder="{{$school_view_entity->localizeName('name_kana')}}" required="true" value="{{  $high_school_entity->nameKana() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('post_number')}}</label>
          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <input type="text" class="form-control" name="post_number" placeholder="{{$school_view_entity->localizeName('name')}}" value="{{  $high_school_entity->postNumber() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="post_number" placeholder="{{$school_view_entity->localizeName('post_number')}}" value="{{  $high_school_entity->postNumber() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('address')}}</label>
          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <input type="text" class="form-control" name="address" placeholder="{{$school_view_entity->localizeName('name')}}" value="{{  $high_school_entity->address() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="address" placeholder="{{$school_view_entity->localizeName('address')}}" value="{{  $high_school_entity->address() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('phone_number')}}</label>
          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <input type="text" class="form-control" name="phone_number" placeholder="{{$school_view_entity->localizeName('name')}}" value="{{  $high_school_entity->phoneNumber() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="phone_number" placeholder="{{$school_view_entity->localizeName('phone_number')}}" value="{{  $high_school_entity->phoneNumber() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('fax_number')}}</label>
          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <input type="text" class="form-control" name="fax_number" placeholder="{{$school_view_entity->localizeName('name')}}" value="{{  $high_school_entity->faxNumber() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="fax_number" placeholder="{{$school_view_entity->localizeName('fax_number')}}" value="{{  $high_school_entity->faxNumber() }}" style="margin-bottom: 15px;">
         <label>{{$school_view_entity->localizeName('url')}}</label>
          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-        <input type="text" class="form-control" name="url" placeholder="{{$school_view_entity->localizeName('name')}}" value="{{  $high_school_entity->url() }}" style="margin-bottom: 15px;">
+        <input type="text" class="form-control" name="url" placeholder="{{$school_view_entity->localizeName('url')}}" value="{{  $high_school_entity->url() }}" style="margin-bottom: 15px;">
       </div>
 
       <div class="col-12 col-md-6 my-1">
