@@ -129,6 +129,19 @@
           </a>
         </div>
         <div class="col-12 col-lg-4 col-md-6 mb-1">
+          <a href="/schools">
+          <div class="info-box">
+            <span class="info-box-icon bg-info">
+              <i class="fa fa-school"></i>
+            </span>
+            <div class="info-box-content text-dark">
+              <b class="info-box-text text-lg">学校登録</b>
+              <span class="text-sm">学校の登録、編集、削除</span>
+            </div>
+          </div>
+          </a>
+        </div>
+        <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/asks?search_type[]=agreement_update&search_status[]=new">
           <div class="info-box">
             <span class="info-box-icon bg-info">
