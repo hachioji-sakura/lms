@@ -160,7 +160,7 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
+       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date >= ?)
       )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
@@ -440,8 +440,10 @@ EOT;
       $calendar->dispose();
     }
     */
-    //契約処理
-    $this->agreement_update($user_id);
+    if(isset($user_id) && $this->is_teaching()==true){
+      //契約処理
+      $this->agreement_update($user_id);
+    }
     $this->delete();
 
   }

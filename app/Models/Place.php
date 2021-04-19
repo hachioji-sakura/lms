@@ -90,4 +90,8 @@ class Place extends Model
     PlaceFloor::where('place_id', $this->id)->delete();
     $this->delete();
   }
+
+  public function scopeHasPhoneNo($query){
+    return $query->where('phone_no','<>','');
+  }
 }

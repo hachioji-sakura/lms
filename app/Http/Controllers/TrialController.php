@@ -226,11 +226,12 @@ class TrialController extends UserCalendarController
     $count = $items->count();
 
     $request->merge([
-      '_sort' => 'created_at'
+      '_sort' => 'created_at',
+      '_sort_order' => 'desc'
     ]);
-    if($request->get('is_desc')==1){
+    if($request->get('is_asc')==1){
       $request->merge([
-        '_sort_order' => 'desc',
+        '_sort_order' => 'asc',
       ]);
     }
     $items = $this->_search_sort($request, $items);
@@ -688,12 +689,19 @@ class TrialController extends UserCalendarController
    public function admission_mail(Request $request, $id){
      $access_key = '';
      $trial = Trial::where('id', $id)->first();
-     $agreement = $trial->student->agreementsByStatuses(['new','commit'])->first();
-     if($agreement->status == 'new'){
-       $input = true;
+     $agreements = $trial->student->agreementsByStatuses(['new','commit']);
+     if($agreements->count() > 0){
+       $agreement = $agreements->first();
+       if($agreement->status == 'new'){
+         $is_money_edit = true;
+       }else{
+         $is_money_edit = false;
+       }
      }else{
-       $input = false;
+       $agreement = null;
+       $is_money_edit = false;
      }
+
      if(!isset($trial)) abort(404);
      $param = [
        'item' => $trial->details(),
@@ -701,7 +709,7 @@ class TrialController extends UserCalendarController
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
        'agreement' => $agreement,
-       'input' => $input,
+       'is_money_edit' => $is_money_edit,
      ];
 
      return view($this->domain.'.admission_mail',

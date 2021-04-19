@@ -14,7 +14,9 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Exam;
 use App\Models\Agreement;
+
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -390,6 +392,190 @@ class StudentController extends UserController
        'item' => $item,
        'tasks' => $tasks,
      ])->with($param);
+  }
+
+  public function show_school_grade_page(Request $request, $id)
+  {
+    $init = $this->init_show_page
+    ($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.school_grades";
+    $param['view'] = $view;
+    $school_grades = $item->school_grades()->search($request)->get();
+    $grades = $item->school_grades->pluck('grade_name','grade')->unique()->sort();
+    $subjects = $this->get_subjects($school_grades,"school_grade");
+    $school_grade_fields = $this->get_school_grade_fields();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'school_grades' => $school_grades,
+    'grades' => $grades,
+    'subjects' => $subjects,
+    'school_grade_fields' => $school_grade_fields
+   ])->with($param);
+  }
+
+  public function show_exam_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exams";
+    $param['view'] = $view;
+    $exams = $item->exams()->search($request)->get();
+    $select_exams = $item->exams->pluck('name','id')->unique()->sort();
+    $subjects = $this->get_subjects($exams,"exam");
+    $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
+    $exam_fields = $this->get_exam_fields();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'exams' => $exams,
+    'grades' => $grades,
+    'subjects' => $subjects,
+    'exam_fields' => $exam_fields,
+   ])->with($param);
+  }
+
+  public function show_exam_result_page(Request $request, $id, $exam_id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exam_results";
+    $param['view'] = $view;
+    $exams = $item->exams;
+    $exam = $item->exams()->find($exam_id);
+    if(empty($exam)){
+      $exam_results = collect([]);
+    }else {
+      $exam_results = $exam->exam_results;
+    }
+
+    $exam_result_fields = $this->get_exam_result_fields();
+
+   return view($this->domain.'.'.$view, [
+    'item' => $item,
+    'exams' => $exams,
+    'exam' => $exam,
+    'exam_results' => $exam_results,
+    'exam_result_fields' => $exam_result_fields,
+   ])->with($param);
+  }
+
+  public function get_exam_result_fields(){
+    return [
+      'subject_name' => [
+        'label' => __('labels.subjects'),
+        'blank' => true,
+      ],
+      'point_per_max' => [
+        'label' => __('labels.point')."(".__('labels.average_point').")",
+      ],
+      'deviation' => [
+        'label' => __('labels.deviation'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+            'download',
+            'edit',
+            'delete',
+          ],
+      ]
+    ];
+  }
+
+  public function get_subjects($items, $from){
+    switch($from){
+      case "exam":
+        $subs = $items->map(function($item){
+          return $item->exam_results->pluck('subject_id','subject_name');
+        });
+        break;
+      case "school_grade":
+        $subs = $items->map(function($item){
+          return $item->school_grade_reports->pluck('subject_id','subject_name');
+        });
+        break;
+      default:
+        $subs = null;
+        break;
+    }
+    $subjects = collect([]);
+    foreach($subs as $sub){
+      $subjects = $subjects->merge($sub);
+    }
+    //TODO:subject_id順は変わるかも
+    return array_flip($subjects->sort()->toArray());
+  }
+
+  public function get_exam_fields(){
+    return [
+      'name' => [
+        'label' => __('labels.title'),
+        'link' => function($row){
+          return '/students/'.$row->student_id.'/exams/'.$row->id;
+        }
+      ],
+      'grade_name' => [
+        'label' => __('labels.grade')
+      ],
+      'semester_name' => [
+        'label' => __('labels.semester'),
+      ],
+      'result_count' =>[
+        'label' => __('labels.subject_count'),
+      ],
+      'sum_point_per_max' => [
+        'label' => __('labels.point'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'edit',
+          'create_result' => [
+            'label' => '',
+            'style' =>  'primary',
+            'page_url' => function($row){
+              return '/exam_results/create?exam_id='.$row->id;
+            },
+            'icon' => 'plus',
+            'title' => __('labels.exams').__('labels.add'),
+          ]
+        ],
+      ],
+    ];
+  }
+
+  public function get_school_grade_fields(){
+    return [
+      'semester_name' => [
+        'label' => __('labels.semester')
+      ],
+      's3_alias' => [
+        'label' => __('labels.file'),
+        'link' => function($row){
+          return $row->s3_url;
+        },
+        'blank' => true,
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'edit'
+        ],
+      ],
+    ];
   }
 
 

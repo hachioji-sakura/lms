@@ -223,6 +223,20 @@ class Student extends Model
     return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
   /**
+   *　リレーション：成績関係
+   */
+  public function school_grades(){
+    return $this->hasMany('App\Models\SchoolGrade', 'student_id');
+  }
+
+  /**
+  * リレーション　テスト
+  */
+  public function exams(){
+    return $this->hasMany('App\Models\Exam','student_id');
+  }
+
+  /**
    * 体験申し込み
   */
   public function trials()

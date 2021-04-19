@@ -101,8 +101,18 @@
 @endsection
 @section('page_footer')
 <dt>
-    <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-app bg-danger">
+    <a title="教室連絡先" href="javascript:void(0);" page_title="教室連絡先" page_form="dialog" page_url="/places/phone_list" class="btn btn-app bg-warning">
+      <i class="fa fa-phone mr-1"></i>教室連絡先
+    </a>
+</dt>
+<dt>
+    <a href="/{{$domain}}/{{$item->id}}/messages" class="btn btn-app bg-primary">
       <i class="fa fa-envelope mr-1"></i>メッセージ一覧
+    </a>
+</dt>
+<dt>
+    <a href="/faqs" class="btn btn-app bg-success">
+      <i class="fa fa-question-circle mr-1"></i>FAQ
     </a>
 </dt>
 @endsection
