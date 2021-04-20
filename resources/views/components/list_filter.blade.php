@@ -45,6 +45,7 @@ $(function(){
     $("#filter_form form.filter").submit();
   });
   $("button[accesskey='filter_search'][type=button]").on('click', function(e){
+    console.log('filter_search');
     $("input[name=_page]").val("1");
     //subDialog側にformが残っているとsubmitされる対策
     $("#subDialog .modal-dialog").remove();
@@ -53,7 +54,7 @@ $(function(){
   });
   $("button[accesskey='filter_search'][type=reset]").on('click', function(e){
     e.preventDefault();
-    $("#filter_form form select option").attr('selected', false);
+    $("#filter_form forms select option").attr('selected', false);
     front.clearFormValue('filter_form');
     $("input[name=_page]").val("1");
   });

@@ -53,6 +53,10 @@ class Subject extends Milestone
       return $this->belongsToMany('App\Models\Curriculum','curriculum_subject','subject_id','curriculum_id')->withTimestamps();
     }
 
+    public function textbooks(){
+      return $this->belongsToMany('App\Models\Textbook','textbook_subjects');
+    }
+
     public function details(){
       $item = $this;
       $item["created_date"] = $this->created_at_label();
