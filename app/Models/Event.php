@@ -142,11 +142,11 @@ class Event extends Milestone
     public function status_update(){
       if($this->status=='cancel' || $this->status=='closed') return;
       $status = $this->status;
-      if(strtotime(date('now')) > strtotime($this->event_from_date)){
+      if(strtotime(date('Y-m-d H:i:s')) > strtotime($this->event_from_date." 00:00:00")){
         //開催日（開始）経過
         $status = 'progress';
       }
-      if(strtotime(date('now')) > strtotime($this->event_to_date)){
+      if(strtotime(date('Y-m-d H:i:s')) > strtotime($this->event_to_date." 00:00:00")){
         //開催日（終了）経過
         $status = 'closed';
       }

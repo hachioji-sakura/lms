@@ -211,4 +211,22 @@ class PlaceController extends MilestoneController
      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
    }
+
+   public function phone_list(Request $request){
+     $param = $this->get_param($request);
+     $param['items'] = $this->model()->hasPhoneNo()->get();
+     $param['fields'] = $this->get_phone_fields();
+     return view($this->domain.'.phone_list')->with($param);
+   }
+
+   public function get_phone_fields(){
+     return [
+       "name" => [
+         'label' => '教室名',
+       ],
+       "phone_no" => [
+         'label' => '電話番号',
+       ],
+     ];
+   }
 }

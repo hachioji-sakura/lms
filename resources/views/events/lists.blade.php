@@ -88,17 +88,16 @@
       </p>
     </a>
     <ul class="nav nav-treeview">
-      @foreach($attributes['event_status'] as $index => $name)
-      @if($index=='new') @continue @endif
-      @if($index=='progress')
-      <?php
-        $index='new,progress';
-        $name='実施中(予定含む)';
-        ?>
-      @endif
+      @foreach(config('attribute.event_status') as $index => $name)
       <li class="nav-item">
          <a href="/{{$domain}}?search_status={{$index}}" class="nav-link @if(isset($filter['search_status']) && $index===$filter['search_status']) active @endif">
-           <i class="fa fa-list-alt nav-icon"></i>{{$name}}
+           <i class="fa fa-list-alt nav-icon"></i>
+           <p>
+             {{$name}}
+             @if($counts[$index] > 0)
+             <span class="badge badge-{{config('status_style')[$index]}} right">{{$counts[$index]}}</span>
+             @endif
+           </p>
          </a>
        </li>
        @endforeach

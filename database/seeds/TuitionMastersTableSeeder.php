@@ -40,6 +40,8 @@ class TuitionMastersTableSeeder extends Seeder
         //2020/4時点で有効なマスターのみ抽出して救う
         $where_raw = <<<EOT
               lesson_fee != 0
+              and
+              jyukensei_flag = 0
               and (
                   date (concat(start_month, "/01")) >= date ("2020/02/01")
                   or (
@@ -73,24 +75,30 @@ EOT;
       foreach($old_fees as $old_fee){
         $all_grades = GeneralAttribute::findKey('grade');
         $grades = '';
-        switch ($old_fee->lesson_grade){
-          case 0:
-            $grades = $all_grades->get();
-            break;
-          case 1:
-            $grades = $all_grades->where('attribute_value','like',"k%")->get();
-            break;
-          case 2:
-          case 5:
-            $grades = $all_grades->where('attribute_value','like',"e%")->get();
-            break;
-          case 8:
-            $grades = $all_grades->where('attribute_value','like',"j%")->get();
-            break;
-          case 11:
-            $grades = $all_grades->where('attribute_value','like',"h%")->get();
-            break;
+        if($old_fee->lesson_id == 1){
+          switch ($old_fee->lesson_grade){
+            case 0:
+              $grades = $all_grades->get();
+              break;
+            case 1:
+              $grades = $all_grades->where('attribute_value','like',"k%")->get();
+              break;
+            case 2:
+            case 5:
+              $grades = $all_grades->where('attribute_value','like',"e%")->get();
+              break;
+            case 8:
+              $grades = $all_grades->where('attribute_value','like',"j%")->get();
+              break;
+            case 11:
+              $grades = $all_grades->where('attribute_value','like',"h%")->get();
+              break;
+          }
+        }else{
+          //塾じゃなければ全学年作る
+          $grades = $all_grades->get();
         }
+
         if(empty($grades)){
           continue;
         }
@@ -101,7 +109,7 @@ EOT;
         }
         $form = [];
         foreach($grades as $grade){
-          $form[] = [
+          $common_form = [
             'title' => config('attribute.lesson')[$old_fee->lesson_id].'/'.$course_types[$old_fee->course_id].'/'.$grade->attribute_value.'/'.$old_fee->lesson_length.'m/週'.$old_fee->lesson_count.'回',
             'grade' => $grade->attribute_value,
             'tuition' => $old_fee->lesson_fee,
@@ -117,6 +125,9 @@ EOT;
             'created_at' => date('Y/m/d H:i:s'),
             'updated_at' => date('Y/m/d H:i:s'),
           ];
+          $form[] = $common_form;
+          $common_form['is_exam'] = 1;
+          $form[] = $common_form;
         }
 
         $fee_master = new TuitionMaster;

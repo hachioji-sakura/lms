@@ -38,11 +38,11 @@ class Textbook extends Model
   );
 
   public function scopeSearchWord($query, $search_words){
-    $query = $query->where(function($items)use($search_words){
+    $query = $query->where(function($query)use($search_words){
       foreach($search_words as $_search_word){
         if(empty($_search_word)) continue;
         $_like = '%'.$_search_word.'%';
-        $items->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
+        $query->orWhere('name','like',$_like)->orWhere('explain','like',$_like);
       }
     });
     return $query;

@@ -28,11 +28,17 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
           </div>
-          <input type="text" name="trial_date{{$i}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d')}}"
+          <input type="text" name="trial_date{{$i}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d', strtotime('+3 day'))}}"
           @if($_edit===true)
            value="{{date('Y/m/d', strtotime($item["trial_start_time".$i]))}}"
           @else
-           minvalue="{{date('Y/m/d')}}"
+           minvalue="{{date('Y/m/d', strtotime('+3 day'))}}"
+           @if($i>1)
+           not_equal="trial_date{{$i-1}}"
+           @else
+           not_equal="trial_date3"
+           @endif
+           not_equal_error="同一日の指定はできません"
           @endif
           >
         </div>

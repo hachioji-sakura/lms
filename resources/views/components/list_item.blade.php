@@ -2,9 +2,9 @@
   @foreach($fields as $key => $field)
     <td>
     @if($key==="buttons")
-      @foreach($field["button"] as $button)
+      @foreach($field["button"] as $key => $button)
         @if( (isset($button['type']) && $button['type']($row)) || !isset($button['type']) )
-          @if($button==="edit")
+          @if($button==="edit" || $key === "edit")
           <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
             <i class="fa fa-edit"></i>
           </a>
@@ -33,6 +33,12 @@
             @endif
             {{$button['label']}}
           </a>
+          @elseif($button === 'download')
+            @if(!empty($row->s3_url))
+              <a href="{{$row->s3_url}}" role="button" class="btn btn-info btn-sm float-left mr-1 my-1" target="_blank">
+                <i class="fa fa-cloud-download-alt"></i>
+              </a>
+            @endif
           @endif
         @endif
       @endforeach
@@ -50,6 +56,9 @@
           @else
             href="{{$field['link']($row)}}"
           @endif
+        @endif
+        @if(isset($field['blank']) && $field['blank'] == true)
+          target=_blank
         @endif
         >
       @endif
