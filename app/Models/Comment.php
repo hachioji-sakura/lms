@@ -55,13 +55,14 @@ class Comment extends Milestone
   protected $table = 'lms.comments';
   protected $guarded = array('id');
 
+
   public static $rules = array(
       'title' => 'required',
       'body' => 'required',
       'type' => 'required'
   );
   protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'importance_label', 'publiced_date', 'created_date', 'updated_date'];
-  
+
   public function getTypeNameAttribute(){
     $ret = $this->attribute_name('comment_type', $this->type);
     if(!empty($ret)) return $ret;
@@ -110,6 +111,11 @@ EOT;
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
   }
+
+  public function scopeMemo($query){
+    return $query->findTypes(['memo']);
+  }
+
 
   public function comment_checks(){
     return $this->hasMany('App\Models\CommentCheck');

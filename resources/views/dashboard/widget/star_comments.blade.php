@@ -5,10 +5,14 @@
       <h3 class="card-title">
         <i class="fa fa-thumbtack mr-1"></i>
         {{__('labels.star')}}
-        @if($domain!="students")
-        {{__('labels.announcements')}}
+        @if($view == "page.memos")
+          {{__('labels.memos')}}
         @else
-        {{__('labels.comments')}}
+          @if($domain!="students")
+          {{__('labels.announcements')}}
+          @else
+          {{__('labels.comments')}}
+          @endif
         @endif
       </h3>
       <div class="card-tools">
@@ -90,15 +94,21 @@
   <div class="card direct-chat">
     <div class="card-header">
       <h3 class="card-title">
-        <i class="fa fa-comment-dots mr-1"></i>
-        @if($domain!="students")
-        {{__('labels.announcements')}}
+        @if($view == "page.memos")
+          <i class="fa fa-info-circle mr-1"></i>
+          {{__('labels.memos')}}
         @else
-        {{__('labels.comments')}}
+          <i class="fa fa-comment-dots mr-1"></i>
+          @if($domain!="students")
+          {{__('labels.announcements')}}
+          @else
+          {{__('labels.comments')}}
+          @endif
         @endif
       </h3>
       <div class="card-tools">
-        <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
+        <a class="btn btn-tool" href="javascript:void(0);" page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}@if($view == "page.memos")&is_memo=true @endif
+          " page_title="@if($view == 'page.memos'){{__('labels.memos').__('labels.add_button')}}  @else{{__('labels.comment_add')}} @endif">
             <i class="fa fa-pen nav-icon"></i>
         </a>
         <a class="btn btn-tool" data-toggle="modal" data-target="#filter_form" id="filter_button">
