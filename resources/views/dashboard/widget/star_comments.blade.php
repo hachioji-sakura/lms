@@ -95,7 +95,7 @@
     <div class="card-header">
       <h3 class="card-title">
         @if($view == "page.memos")
-          <i class="fa fa-info-circle mr-1"></i>
+          <i class="fa fa-id-card mr-1"></i>
           {{__('labels.memos')}}
         @else
           <i class="fa fa-comment-dots mr-1"></i>

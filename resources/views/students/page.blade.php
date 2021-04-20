@@ -168,7 +168,7 @@
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.memos' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/memos">
                 <small>
-                  <i class="fa fa-info-circle"></i>
+                  <i class="fa fa-id-card"></i>
                   {{__(('labels.memos'))}}
                 </small>
               </a>

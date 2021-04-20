@@ -477,5 +477,5 @@ return [
   'school_page_side_menu_part_time_credit_night_only' => '定時単位制夜間',
   'school_page_side_menu_part_online_school' => '通信制',
 
-  'memos' => '共有情報',
+  'memos' => 'メモ',
 ];
