@@ -11,9 +11,7 @@
         id="{{$prefix}}difficulty"
         name="{{$prefix}}difficulty"
         class="form-control select2" width="100%">
-        <option value="">
-          {{__('labels.selectable')}}
-        </option>
+        <option value=" ">{{__('labels.selectable')}}</option>
         @foreach(config('attribute.difficulty') as $key => $value)
           <option value="{{$key}}"
             @if(request()->search_difficulty == $key)
@@ -29,4 +27,3 @@
     </div>
   </div>
 </div>
-

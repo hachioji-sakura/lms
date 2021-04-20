@@ -26,7 +26,7 @@
           {{__('labels.explain')}}
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
         </label>
-        <textarea type="text" id="explain" name="explain" class="form-control" placeholder="" required="true">@if($_edit==true && isset($textbook)){{$textbook->explain}}@endif</textarea>
+        <textarea type="text" id="explain" name="explain" class="form-control" placeholder="">@if($_edit==true && isset($textbook)){{$textbook->explain}}@endif</textarea>
       </div>
     </div>
   </div>

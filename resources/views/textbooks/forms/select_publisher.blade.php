@@ -8,9 +8,7 @@
     </label>
     <div class="input-group">
       <select name="{{$prefix}}publisher_id" class="form-control select2" width="100%">
-        <option value="">
-          {{__('labels.selectable')}}
-        </option>
+        <option value=" ">{{__('labels.selectable')}}</option>
         @foreach($publishers as $publisher)
           <option value="{{ $publisher->id }}"
             @if(request()->search_publisher_id == $publisher->id)
