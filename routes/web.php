@@ -38,6 +38,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::get('places/phone_list','PlaceController@phone_list');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
@@ -416,6 +417,9 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
   Route::resource('agreement_statements', 'AgreementStatementController');
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
+
+  // 学校関連
+  Route::resource('schools', 'SchoolController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');
