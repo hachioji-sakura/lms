@@ -7,7 +7,43 @@
 @section('contents')
 <section class="content">
   <div class="row">
-    <div class="col-12">
+    <div class="col-md-4">
+      <div class="sticky-top mb-3">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">
+              FAQ {{__('labels.group')}}
+            </h4>
+          </div>
+          <div class="card-body">
+            <!-- the events -->
+            <div id="row">
+              @foreach($attributes['faq_type'] as $index => $name)
+               @if($index=="teacher")
+                 @if(!isset($user) || ($user->role!=="teacher" && $user->role!=="manager"))
+                   @continue
+                 @endif
+               @elseif($index=="manager")
+                 @if(!isset($user) || $user->role!=="manager")
+                   @continue
+                 @endif
+               @endif
+               <div class="col-12 text-sm">
+               <a href="/{{$domain}}?search_type={{$index}}" class="btn btn-sm btn-block text-left p-2
+               @if($index===request()->search_type) btn-outline-info @else btn-default @endif
+               ">
+                    <i class="fa fa-chevron-circle-right"></i>
+                    {{$name}}
+                </a>
+              </div>
+              @endforeach
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">
