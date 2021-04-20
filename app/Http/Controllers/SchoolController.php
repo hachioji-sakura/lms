@@ -6,6 +6,7 @@ use App\Domain\School\Repository\HighSchoolEntityRepository;
 use App\Domain\School\SchoolViewEntity;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 /**
  * Class SchoolController
@@ -66,10 +67,15 @@ class SchoolController extends MilestoneController
             $items[] = $attribute;
         }
         $paginator = $this->getPaginator($request, $items);
+        $processes = [];
+        foreach($school_view_entity->processList() as $key => $value){
+          $processes[Str::snake($key)] = $value;
+        }
 
         return view('schools.lists', [
             'items'                => $paginator,
             'fields'               => $school_view_entity->fieldForIndex(),
+            'processes'           => $processes,
             'domain'               => $this->domain,
         ])->with($param);
     }
