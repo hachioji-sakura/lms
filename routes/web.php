@@ -163,10 +163,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_course','LectureController@api_index');
   Route::resource('lectures','LectureController');
 
-  /*
+
   Route::resource('publisher','PublisherController');
   Route::resource('textbooks','TextbookController');
-  */
+
   Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
   Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
   Route::get('teachers/{id}/students','TeacherController@get_charge_students');
