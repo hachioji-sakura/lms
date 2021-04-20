@@ -1,6 +1,6 @@
 @section('list_pager')
 <div class="card-title text-sm">
-  {{$items->appends(Request::query())->links('components.paginate')}}
+  {{$items->appends(Request::query())->links('components.paginate', [ ])}}
 </div>
 @endsection
 
