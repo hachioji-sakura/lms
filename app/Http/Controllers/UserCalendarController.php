@@ -1342,7 +1342,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
         if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',

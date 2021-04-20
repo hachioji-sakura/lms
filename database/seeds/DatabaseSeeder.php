@@ -14,12 +14,12 @@ class DatabaseSeeder extends Seeder
         $this->call(GeneralAttributesSeeder::class);
         $this->call(PlaceSeeder::class);
         $this->call(ImagesTableSeeder::class);
-        $this->call(TextbookSeeder::class);
         $this->call(ManagersTableSeeder::class);
         $this->call(UserCalendarSeeder::class);
         $this->call(StudentGroupSeeder::class);
         $this->call(FaqSeeder::class);
         $this->call(SubjectTableSeeder::class);
+        $this->call(TextbookSeeder::class);
         $this->call(CurriculumTableSeeder::class);
     }
 }
