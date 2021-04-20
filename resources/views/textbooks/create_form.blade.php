@@ -16,8 +16,8 @@
     @component('textbooks.forms.subject', ['prefix'=>'','textbook'=> $textbook??null,'subjects' => $subjects,'textbook_subjects' => $textbook->subject_list??null]); @endcomponent
     @component('textbooks.forms.grade', ['prefix'=>'','grades' => $grades,'textbook_grades' => $textbook->grade_list??null]); @endcomponent
     @component('textbooks.forms.select_difficulty', ['prefix'=>'','textbook' => $textbook??null ]); @endcomponent
-    @component('textbooks.select_form', ['prefix'=>'','textbook'=> $textbook??null,'collection' => $publishers, 'target_item' =>'supplier']); @endcomponent
-    @component('textbooks.select_form', ['prefix'=>'','textbook'=> $textbook??null,'collection' => $suppliers ,'target_item' =>'publisher']); @endcomponent
+    @component('textbooks.forms.select_publisher', ['prefix'=>'','publishers' => $publishers, 'textbook' => $textbook??null ]); @endcomponent
+    @component('textbooks.forms.select_supplier', ['prefix'=>'','suppliers' => $suppliers, 'textbook' => $textbook??null ]); @endcomponent
     @component('textbooks.forms.price', ['_edit'=>$_edit,'textbook_prices'=> $textbook_prices??null, 'prices' => $prices??null]); @endcomponent
 
     <div class="col-12 schedule_type schedule_type_office_work schedule_type_other">
