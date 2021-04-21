@@ -102,6 +102,6 @@ class Place extends Model
   }
 
   public function scopeHasPhoneNo($query){
-    return $query->enable()->where('phone_no','<>','');
+    return $query->where('phone_no','<>','');
   }
 }
