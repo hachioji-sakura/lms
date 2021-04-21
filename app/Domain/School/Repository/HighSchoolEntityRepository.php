@@ -21,7 +21,7 @@ class HighSchoolEntityRepository
      * @var array
      */
     protected $departments;
-    
+
     /**
      * 学科リストを取得する
      *
@@ -32,13 +32,13 @@ class HighSchoolEntityRepository
         if ($this->departments) {
             return collect($this->departments)->pluck('department', 'id')->all();
         }
-        
+
         $builder_department = new Department();
         $this->departments = $builder_department->newQuery()->get()->keyBy('id')->all();
-        
+
         return collect($this->departments)->pluck('department', 'id')->all();
     }
-    
+
     /**
      * 学校情報を取得する（過程による絞り込み）
      *
@@ -49,10 +49,10 @@ class HighSchoolEntityRepository
     {
         $builder_high_school = new HighSchool();
         $high_schools = $builder_high_school->newQuery()->where($process, true)->get()->all();
-        
+
         return $this->make($high_schools);
     }
-    
+
     /**
      * 学校情報を取得する
      *
@@ -65,10 +65,10 @@ class HighSchoolEntityRepository
     {
         $builder_high_school = new HighSchool();
         $high_schools = $builder_high_school->newQuery()->get()->all();
-        
+
         return $this->make($high_schools);
     }
-    
+
     /**
      * 学校情報を取得する（キーワード検索用：学校名の部分一致のみ対応）
      *
@@ -80,13 +80,13 @@ class HighSchoolEntityRepository
         $builder_school = new School();
         $schools = $builder_school->newQuery()->where('name', 'Like', "%$search_word%")->get()->all();
         $school_ids = collect($schools)->pluck('id')->all();
-        
+
         $builder_high_school = new HighSchool();
         $high_schools = $builder_high_school->newQuery()->whereIn('school_id', $school_ids)->get()->all();
-        
+
         return $this->make($high_schools);
     }
-    
+
     /**
      * 学校情報を取得する
      *
@@ -97,15 +97,15 @@ class HighSchoolEntityRepository
     {
         $builder_high_school = new HighSchool();
         $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
-        
+
         if (empty($high_school)) {
             return null;
         }
         $high_school_entities = $this->make([$high_school]);
-        
+
         return reset($high_school_entities);
     }
-    
+
     /**
      * 学校情報を取得する（取得失敗時例外発生）
      *
@@ -115,14 +115,14 @@ class HighSchoolEntityRepository
     public function findOrFail(int $high_school_id): HighSchoolEntity
     {
         $entity = $this->find($high_school_id);
-        
+
         if ($entity === null) {
             throw new LogicException('高等学校情報を取得できませんでした。 high_school_id:'.$high_school_id);
         }
-        
+
         return $entity;
     }
-    
+
     /**
      * 学校情報を作成する
      *
@@ -156,7 +156,7 @@ class HighSchoolEntityRepository
         $builder_school->name_kana = $name_kana;
         $builder_school->url = $url;
         $builder_school->save();
-        
+
         // 高等学校情報
         $builder_high_school = new HighSchool();
         $builder_high_school->school_id = $builder_school->id;
@@ -172,7 +172,7 @@ class HighSchoolEntityRepository
         $builder_high_school->part_time_credit_night_only = in_array('partTimeCreditNightOnly', $process, true);
         $builder_high_school->online_school = in_array('onlineSchool', $process, true);
         $builder_high_school->save();
-        
+
         // 学科
         $school_department_attributes_for_insert = [];
         foreach ($department_ids as $department_id) {
@@ -186,7 +186,7 @@ class HighSchoolEntityRepository
         }
         DB::table('school_departments')->insert($school_department_attributes_for_insert);
     }
-    
+
     /**
      * 指定IDの学校情報を削除する
      *
@@ -198,17 +198,17 @@ class HighSchoolEntityRepository
         $builder_high_school = new HighSchool();
         $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
         $builder_high_school->newQuery()->where('id', $high_school_id)->delete();
-        
+
         $builder_high_school_department = new SchoolDepartment();
         $builder_high_school_department->newQuery()
             ->where('school_type', 'high_school')
             ->where('school_type_id', $high_school_id)
             ->delete();
-        
+
         $builder_school = new School();
         $builder_school->newQuery()->where('id', $high_school->school_id)->delete();
     }
-    
+
     /**
      * 学校情報を保存する
      *
@@ -231,12 +231,12 @@ class HighSchoolEntityRepository
         $high_school->part_time_credit_night_only = $high_school_entity->partTimeCreditNightOnly();
         $high_school->online_school = $high_school_entity->onlineSchool();
         $high_school->save();
-        
+
         // 学科についてはすべて一旦消す ⇒ 作成するという処理とする（変更があった時のみ処理する）
         if ($high_school_entity->departmentIdsChanged()) {
             $builder_high_school_department = new SchoolDepartment();
-            $builder_high_school_department->newQuery()->where('high_school_id', $high_school_entity->highSchoolId())->delete();
-            
+            $builder_high_school_department->newQuery()->where('department_id', $high_school_entity->highSchoolId())->delete();
+
             $school_department_attributes_for_insert = [];
             $department_ids = $high_school_entity->departmentIds();
             foreach ($department_ids as $department_id) {
@@ -250,7 +250,7 @@ class HighSchoolEntityRepository
             }
             DB::table('school_departments')->insert($school_department_attributes_for_insert);
         }
-        
+
         // 学校関連
         $builder_school = new School();
         $school = $builder_school->newQuery()->where('id', $high_school->school_id)->get()->first();
@@ -259,7 +259,7 @@ class HighSchoolEntityRepository
         $school->url = $high_school_entity->url();
         $school->save();
     }
-    
+
     /**
      * Entityを生成する
      *
@@ -271,10 +271,10 @@ class HighSchoolEntityRepository
         $builder_school_department = new SchoolDepartment();
         $school_departments = $builder_school_department->newQuery()->where('school_type', 'high_school')->get()->groupBy('school_type_id',
             true)->all();
-        
+
         $builder_school = new School();
         $schools = $builder_school->newQuery()->get()->keyBy('id')->all();
-        
+
         $high_school_entities = [];
         foreach ($high_schools as $high_school) {
             $department_names = [];
@@ -285,7 +285,7 @@ class HighSchoolEntityRepository
                 $department_ids[] = $department->id;
                 $department_names[] = $department->department;
             }
-            
+
             $high_school_entities[$high_school->id] = new HighSchoolEntity(
                 collect($high_school)->toArray(),
                 collect($schools[$high_school->school_id])->toArray(),
@@ -293,10 +293,10 @@ class HighSchoolEntityRepository
                 $department_names
             );
         }
-        
+
         return $high_school_entities;
     }
-    
+
     /**
      * 学科名を取得する
      *
@@ -308,10 +308,10 @@ class HighSchoolEntityRepository
         if ($this->departments) {
             return $this->departments[$id];
         }
-        
+
         $builder_department = new Department();
         $this->departments = $builder_department->newQuery()->get()->keyBy('id')->all();
-        
+
         return $this->departments[$id];
     }
 }
