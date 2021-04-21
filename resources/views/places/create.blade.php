@@ -11,6 +11,22 @@ if(!isset($item)) $item = null;
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     <div class="row">
+      <div class="col-12">
+        <label>
+          {{__('labels.status')}}
+        </label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <div class="input-group">
+          @foreach(config('attribute.place_status') as $key => $value)
+          <div class="form-check">
+            <label class="form-check-label" for="type_{{$key}}">
+              <input class="frm-check-input icheck flat-green" type="radio" name="status" id="type_{{$key}}" value="{{$key}}" required="true" {{$_edit && $item->status == $key ? 'checked': ''}}>
+              {{$value}}
+            </label>
+          </div>
+          @endforeach
+        </div>
+      </div>
       <div class="col-6">
         <div class="form-group">
           <label for="name" class="w-100">
