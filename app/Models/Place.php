@@ -68,6 +68,11 @@ class Place extends Model
     if($this->is_use()==true) return '使用中';
     return '未使用';
   }
+
+  public function getStatusNameAttribute(){
+    return config('attribute.place_status')[$this->status];
+  }
+
   public function scopeSearchWord($query, $word){
     $search_words = $this->get_search_word_array($word);
     $query = $query->where(function($query)use($search_words){
@@ -80,6 +85,11 @@ class Place extends Model
     });
     return $query;
   }
+
+  public function scopeEnable($query){
+    return $query->where('status','enabled');
+  }
+
   public function dispose(){
     if($this->is_use()==true){
       return $this->error_response('このデータはカレンダーにて使用されており削除できません');
