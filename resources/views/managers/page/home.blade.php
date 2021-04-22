@@ -83,7 +83,7 @@
               <i class="fa fa-envelope-open-text"></i>
             </span>
               <div class="info-box-content text-dark">
-                <b class="info-box-text text-lg">イベント一覧</b>
+                <b class="info-box-text text-lg">{{__('labels.events')}}{{__('labels.list')}}</b>
                 <span class="text-sm">講習・模試等イベントの管理</span>
               </div>
             </div>
@@ -158,7 +158,7 @@
               <i class="fa fa-sitemap"></i>
             </span>
             <div class="info-box-content text-dark">
-              <b class="info-box-text text-lg">単元管理</b>
+              <b class="info-box-text text-lg">{{__('labels.curriculums')}}{{__('labels.list')}}</b>
               <span class="text-sm">単元の登録、編集、削除</span>
             </div>
           </div>
@@ -171,7 +171,7 @@
               <i class="fa fa-school"></i>
             </span>
             <div class="info-box-content text-dark">
-              <b class="info-box-text text-lg">学校登録</b>
+              <b class="info-box-text text-lg">{{__('labels.schools')}}</b>
               <span class="text-sm">学校の登録、編集、削除</span>
             </div>
           </div>
@@ -184,7 +184,7 @@
               <i class="fa fa-pencil-ruler"></i>
             </span>
               <div class="info-box-content text-dark">
-                <b class="info-box-text text-lg">教材管理</b>
+                <b class="info-box-text text-lg">{{__('labels.text_materials')}}</b>
                 <span class="text-sm">教材の登録、編集、削除</span>
             </div>
           </div>
@@ -197,7 +197,7 @@
               <i class="fa fa-book"></i>
             </span>
               <div class="info-box-content text-dark">
-                <b class="info-box-text text-lg">テキスト管理</b>
+                <b class="info-box-text text-lg">{{__('labels.textbooks')}}{{__('labels.list')}}</b>
                 <span class="text-sm">テキストの登録、編集、削除</span>
               </div>
             </div>
