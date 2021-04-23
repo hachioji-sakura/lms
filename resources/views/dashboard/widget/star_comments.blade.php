@@ -156,10 +156,10 @@
             <span class="float-right mr-1">
               @if($user->role=="manager" || $comment->create_user_id == $user->user_id)
               {{-- 起票者 or 管理者のみ 操作可能 --}}
-              <a href="javascript:void(0);" page_title="コメント編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
+              <a href="javascript:void(0);" page_title="@if($view == "page.memos") メモ@else  コメント@endif編集" page_form="dialog" page_url="/comments/{{$comment->id}}/edit?origin={{$domain}}&item_id={{$item->id}}@if($view == "page.memos")&is_memo=true @endif" role="button" class="btn btn-default btn-sm float-left mr-1">
                 <i class="fa fa-edit"></i>
               </a>
-              <a href="javascript:void(0);" page_title="コメント削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
+              <a href="javascript:void(0);" page_title="@if($view == "page.memos") メモ@else  コメント@endif削除" page_form="dialog" page_url="/comments/{{$comment->id}}?action=delete&domain={{$domain}}&item_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1">
                 <i class="fa fa-trash"></i>
               </a>
               @endif
