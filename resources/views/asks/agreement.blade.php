@@ -121,7 +121,7 @@ function important_checked(){
     <br>
   </h4>
     <div class="col-12 mb-1" id="commit_form">
-      <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$access_key}}">
+      <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$item->target_user->access_key}}">
         <i class="fa fa-sign-in-alt mr-1"></i>
         ユーザー登録画面
       </a>

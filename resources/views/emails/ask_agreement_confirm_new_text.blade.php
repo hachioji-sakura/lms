@@ -8,7 +8,7 @@
 
 …………………………………………………………………………………………
 契約変更承認画面
-{{config('app.url')}}/asks/{{$ask->id}}/agreement?key={{$target_model->student_parent->user->access_key}}
+{{config('app.url')}}/asks/{{$ask->id}}/agreement?key={{$ask->access_key}}
 …………………………………………………………………………………………
 ご契約内容
 ■基本契約内容
