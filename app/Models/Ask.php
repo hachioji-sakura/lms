@@ -446,7 +446,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->target_user->details()["name"];
-    $param["access_key"] = $this->target_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = true;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
@@ -465,7 +465,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->charge_user->details()["name"];
-    $param["access_key"] = $this->charge_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = false;
 
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
