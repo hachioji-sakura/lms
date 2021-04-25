@@ -98,9 +98,8 @@ class Task extends Milestone
     }
 
     public function textbooks(){
-      return $this->belogsToMany('App\Models\Textbook');
+      return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
     }
-
 
     public function scopeSearchWord($query, $word){
       $search_words = $this->get_search_word_array($word);
