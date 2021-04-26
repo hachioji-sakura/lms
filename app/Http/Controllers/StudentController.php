@@ -374,6 +374,36 @@ class StudentController extends UserController
    ])->with($param);
   }
 
+  public function show_memo_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.memos";
+    $param['view'] = $view;
+    if($param['user']->details()->role == "student") abort('403');
+
+   //コメントデータ取得
+   $form = $request->all();
+   $comments = $model->get_comments($form, true);
+   $star_comments = $model->get_comments(['is_star' => true], true);
+   /*
+   $comments = $model->target_comments;
+   if($this->is_teacher($user->role)){
+     //講師の場合、公開されたコメントのみ閲覧可能
+     $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
+   }
+   $comments = $comments->sortByDesc('created_at');
+   */
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'comments'=>$comments,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+  }
+
   public function show_task_page(Request $request, $id)
   {
     $init = $this->init_show_page($request,$id);
