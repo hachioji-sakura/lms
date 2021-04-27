@@ -115,7 +115,7 @@
 			if(typeof val == "number" && val==0) return false;
 			if(typeof val=="object" && val.length) return false;
 			if(val==undefined) return true;
-			if(val=="") return true;
+			if(val.trim()=="") return true;
 			return false;
 		},
 		/**
