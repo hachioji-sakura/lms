@@ -93,8 +93,6 @@ class Comment extends Milestone
     foreach($_types as $index => $val){
       $types[] = $index;
     }
-    $types[] = 'trial';
-    $types[] = 'entry';
     return $this->scopeFindTypes($query, $types);
   }
   public function scopeChecked($query, $user_id)
@@ -113,9 +111,19 @@ EOT;
   }
 
   public function scopeMemo($query){
-    return $query->findTypes(['memo']);
+    return $query->findTypes(['memo', 'trial', 'entry']);
   }
-
+  public function scopeComment($query){
+    $_types = config('attribute.comment_type');
+    $types = [];
+    foreach($_types as $index => $val){
+      if($index == 'memo') continue;
+      if($index == 'trial') continue;
+      if($index == 'entry') continue;
+      $types[] = $index;
+    }
+    return $this->scopeFindTypes($query, $types);
+  }
 
   public function comment_checks(){
     return $this->hasMany('App\Models\CommentCheck');

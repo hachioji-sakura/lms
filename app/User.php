@@ -455,9 +455,8 @@ EOT;
       if($only_memo == true){
         $comments = $comments->memo();
       }else{
-        $comments = $comments->whereNotIn('type',['memo'])->findTypes($comment_types);
+        $comments = $comments->comment();
       }
-      $comments = $comments->findDefaultTypes($u->domain);
 
       if($is_star==true){
         $comments = $comments->where('importance', '>', 0);
