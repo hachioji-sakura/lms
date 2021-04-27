@@ -1638,7 +1638,7 @@ class StudentController extends UserController
   }
 
   public function task_search($request, $id){
-    $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
+    $tasks = Task::findTargetUser($id)->visible()->search($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
   public function retirement_page(Request $request, $id)
