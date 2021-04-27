@@ -269,6 +269,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/tuitions','StudentController@tuitions');
   Route::get('students/{id}/announcements','StudentController@show');
   Route::get('students/{id}/comments','StudentController@show_comment_page');
+  Route::get('students/{id}/memos','StudentController@show_memo_page');
   Route::get('students/{id}/milestones','StudentController@show_milestone_page');
   Route::get('students/{id}/tasks','StudentController@show_task_page');
   Route::get('students/{id}/school_grades','StudentController@show_school_grade_page');
