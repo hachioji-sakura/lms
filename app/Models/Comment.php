@@ -55,13 +55,14 @@ class Comment extends Milestone
   protected $table = 'lms.comments';
   protected $guarded = array('id');
 
+
   public static $rules = array(
       'title' => 'required',
       'body' => 'required',
       'type' => 'required'
   );
   protected $appends = ['type_name', 'create_user_name', 'target_user_name', 'importance_label', 'publiced_date', 'created_date', 'updated_date'];
-  
+
   public function getTypeNameAttribute(){
     $ret = $this->attribute_name('comment_type', $this->type);
     if(!empty($ret)) return $ret;
@@ -92,8 +93,6 @@ class Comment extends Milestone
     foreach($_types as $index => $val){
       $types[] = $index;
     }
-    $types[] = 'trial';
-    $types[] = 'entry';
     return $this->scopeFindTypes($query, $types);
   }
   public function scopeChecked($query, $user_id)
@@ -109,6 +108,21 @@ EOT;
       id not in (select comment_id from lms.comment_checks where check_user_id = ? and is_checked=1)
 EOT;
     return $query->whereRaw($where_raw,[$user_id]);
+  }
+
+  public function scopeMemo($query){
+    return $query->findTypes(['memo', 'trial', 'entry']);
+  }
+  public function scopeComment($query){
+    $_types = config('attribute.comment_type');
+    $types = [];
+    foreach($_types as $index => $val){
+      if($index == 'memo') continue;
+      if($index == 'trial') continue;
+      if($index == 'entry') continue;
+      $types[] = $index;
+    }
+    return $this->scopeFindTypes($query, $types);
   }
 
   public function comment_checks(){

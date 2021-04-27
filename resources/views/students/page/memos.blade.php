@@ -1,0 +1,1 @@
+@extends($domain.'.page.comments')

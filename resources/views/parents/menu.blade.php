@@ -23,11 +23,13 @@
             <i class="fa fa-user-cog nav-icon"></i>{{__('labels.users')}}{{__('labels.setting')}}
           </a>
         </li>
+        @if($item->is_hachiojisakura())
         <li class="nav-item">
           <a href="/{{$domain}}/{{$item->id}}/messages" class="nav-link">
             <i class="fa fa-envelope nav-icon"></i>{{__('labels.message')}}
           </a>
         </li>
+        @endif
         {{--
         <li class="nav-item">
           <a class="nav-link @if($view=="ask" || $view=="ask_details") active @endif" href="/parents/{{$item->id}}/ask"  >
@@ -56,7 +58,7 @@
             {{__('labels.details')}}
           </a>
         </li>
-        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial')
+        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial' && $item->is_hachiojisakura())
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
             <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
@@ -68,12 +70,13 @@
             <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
           </a>
         </li>
-        @endif
+        @elseif($item->is_hachiojisakura())
         <li class="nav-item">
           <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
             <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
           </a>
         </li>
+        @endif
         @endif
       </ul>
       <ul class="nav nav-treeview">
@@ -92,14 +95,17 @@
       </ul>
     </li>
     @endforeach
+    @if($item->is_hachiojisakura())
     <li class="nav-item">
       <a href="/faqs" class="nav-link">
         <i class="fa fa-question-circle nav-icon"></i>{{__('labels.faqs')}}
       </a>
     </li>
+    @endif
 </ul>
 @endsection
 @section('page_footer')
+@if($item->is_hachiojisakura())
 <dt>
     <a title="教室連絡先" href="javascript:void(0);" page_title="教室連絡先" page_form="dialog" page_url="/places/phone_list" class="btn btn-app bg-warning">
       <i class="fa fa-phone mr-1"></i>教室連絡先
@@ -115,4 +121,5 @@
       <i class="fa fa-question-circle mr-1"></i>FAQ
     </a>
 </dt>
+@endif
 @endsection

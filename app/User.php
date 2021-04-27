@@ -427,7 +427,7 @@ EOT;
       \Log::info("-----------------get_mail_address[$email]------------------");
       return $email;
     }
-    public function get_comments($form){
+    public function get_comments($form, $only_memo = false){
       $u = $this->details();
       $form['_sort'] ='created_at';
       $comment_types = [];
@@ -452,8 +452,11 @@ EOT;
         $comment_types = $form['search_comment_type'];
       }
       $comments = Comment::findTargetUser($this->id);
-      $comments = $comments->findTypes($comment_types);
-      $comments = $comments->findDefaultTypes($u->domain);
+      if($only_memo == true){
+        $comments = $comments->memo();
+      }else{
+        $comments = $comments->comment();
+      }
 
       if($is_star==true){
         $comments = $comments->where('importance', '>', 0);
