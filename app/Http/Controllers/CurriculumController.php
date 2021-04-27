@@ -64,24 +64,24 @@ class CurriculumController extends MilestoneController
      */
     public function _store(Request $request)
     {
-        //
-        $form = $this->create_form($request);
+      //
+      $form = $this->create_form($request);
 
-        //同一科目内で同一名称がつかないようにチェック
-        $subjects = Subject::find($request->get('subject_ids'));
-        $items = collect([]);
-        foreach($subjects as $subject){
-          $items[] = $subject->curriculums()->where('name', $request->get('name'))->count();
-        }
-        if($items->reject(function($item){return $item == 0;})->count() > 0){
-          return $this->error_response('すでに登録済みです');
-        }
-        $res = $this->transaction($request, function() use ($request, $form){
-          $item = $this->model()->create($form);
-          $item->subjects()->attach($request->get('subject_ids'));
-          return $this->api_response(200, '', '', $item);
-        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
-        return $res;
+      //同一科目内で同一名称がつかないようにチェック
+      $subjects = Subject::find($request->get('subject_ids'));
+      $items = collect([]);
+      foreach($subjects as $subject){
+        $items[] = $subject->curriculums()->where('name', $request->get('name'))->count();
+      }
+      if($items->reject(function($item){return $item == 0;})->count() > 0){
+        return $this->error_response('すでに登録済みです');
+      }
+      $res = $this->transaction($request, function() use ($request, $form){
+        $item = $this->model()->create($form);
+        $item->subjects()->attach($request->get('subject_ids'));
+        return $this->api_response(200, '', '', $item);
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 
     public function create_form(Request $request){
