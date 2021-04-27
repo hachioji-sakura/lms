@@ -114,6 +114,10 @@ class Task extends Milestone
       return $query;
     }
 
+    public function scopeVisible($query){
+      return $query->whereNotIn('status',['cancel']);
+    }
+
     public function change($form, $file=null, $is_file_delete = false, $curriculum_ids = null){
       $s3_url = '';
       $_form = $this->file_upload($file);
