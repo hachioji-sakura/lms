@@ -227,4 +227,13 @@ class StudentParent extends Teacher
 
     return $item;
   }
+  
+  public function is_hachiojisakura(){
+    foreach($this->relation() as $relation){
+      if ($relation->student->is_hachiojisakura()){
+          return true;
+      }
+    }
+    return false;
+  }
 }
