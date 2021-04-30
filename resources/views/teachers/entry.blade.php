@@ -9,16 +9,16 @@
   <h4 class="bg-success p-3 text-sm">
     @if($result==='success')
       仮登録完了メールを送信しました。<br>
-      送信したメールにて、24時間以内にユーザー登録を進めてください。<br>
+      送信したメールにて、20日以内にユーザー登録を進めてください。<br>
     @elseif($result==='already')
       仮登録中の情報が残っています。<br>
-      再送信したメールにて、24時間以内にユーザー登録を進めてください。
+      再送信したメールにて、20日以内にユーザー登録を進めてください。
     @elseif($result==='exist')
       このメールはユーザー登録が完了しています。
     @endif
   </h4>
 @else
-  <form method="POST"  action="/{{$domain}}/entry">    
+  <form method="POST"  action="/{{$domain}}/entry">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
     @yield('entry_form')

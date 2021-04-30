@@ -77,7 +77,7 @@ trait Common
     $this->update($form);
     return $res;
   }
-  public function create_token($limit_second=86400){
+  public function create_token($limit_second=1728000){
     $controller = new Controller;
     $res = $controller->create_token($limit_second);
     return $res;
