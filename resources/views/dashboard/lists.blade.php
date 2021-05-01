@@ -18,7 +18,7 @@
     </div>
   </div>
   <div class="card-body table-responsive p-0">
-    @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name])
+    @component('components.list', ['items' => $items, 'fields' => $fields, 'domain' => $domain, 'domain_name' => $domain_name, 'bulk_action' => $bulk_action])
     @endcomponent
   </div>
 </div>
