@@ -1364,6 +1364,9 @@ class UserCalendarController extends MilestoneController
         $param['item']['end_hours'] = intval($request->get('end_hours'));
         $param['item']['end_minutes'] = intval($request->get('end_minutes'));
       }
+      if($request->has('work')){
+        $param['item']->work = $request->get('work');
+      }
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
         ->with($param);
