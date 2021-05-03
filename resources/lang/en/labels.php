@@ -478,4 +478,5 @@ return [
   'school_page_side_menu_part_online_school' => 'Online School',
 
   'memos' => 'Teacher Memo',
+  'no_agreements' => 'No Agreements',
 ];
