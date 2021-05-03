@@ -1034,6 +1034,7 @@ EOT;
       $update_form['recess_end_date'] = null;
       $update_form['unsubscribe_date'] = null;
     }
+    $update_form['entry_date'] = date('Y/m/d');
     $this->update($update_form);
     //カレンダー設定を有効にする
     /*
