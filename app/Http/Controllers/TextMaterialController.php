@@ -99,7 +99,11 @@ class TextMaterialController extends MilestoneController
       $res =  $this->transaction($request, function() use ($request, $items){
         if($request->has('shared_user_ids')){
           $items->map(function($item) use($request){
-            return $item->shared_users()->attach($request->shared_user_ids);
+            if($request->method == "sync"){
+              return $item->shared_users()->sync($request->shared_user_ids);
+            }elseif($request->method == "attach"){
+              return $item->shared_users()->attach($request->shared_user_ids);
+            }
           });  
         }
         return $this->api_response(200, '', '', $items);
@@ -164,10 +168,10 @@ class TextMaterialController extends MilestoneController
         'id' => [
           'label' => 'ID',
           'link' => 'show',
-          'check_box' => true,
         ],
         'name' => [
           'label' => '資料名',
+          'check_box' => true,
           'link' => function($row){
             return $row->s3_url;
           },

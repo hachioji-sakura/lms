@@ -1,25 +1,15 @@
 @if(count($items) > 0)
-@if (isset($bulk_action['check_box']) && $bulk_action['check_box'] == true)
 
-@endif
 <table class="table table-hover">
   <tbody>
-      @if(isset($bulk_action['check_box']) && $bulk_action['check_box'] == true)
-        <th>
-          <input class="frm-check-input icheck flat-green" type="checkbox" id="all_check" >
-          <label class="form-check-label" for="all_check">
-            All
-          </label>
-          <a href="javascript:void(0)" page_form="dialog" page_title="{{$bulk_action['label']}}{{__('labels.confirm')}}" page_url="{{$bulk_action['url']}}?" title="{{$bulk_action['label']}}" role="button" class="btn btn-primary btn-sm bulk_action_button ml-2" style="display: none;">
-            <i class="fa fa-@isset($bulk_action['icon']){{$bulk_action['icon']}}@endisset  nav-icon"></i>
-            {{$bulk_action['label']}}
-          </a>
-          <input type="hidden" name="action_url" value="{{$bulk_action['url']}}?">
-        </th>
-      @endif
     <tr>
       @foreach($fields as $key => $field)
-        <th>{{$field['label']}}</th>
+        <th>
+          @if (isset($field['check_box']) && $field['check_box'] == true)
+            <input class="frm-check-input icheck flat-green" type="checkbox" id="all_check" >
+          @endif
+          {{$field['label']}}
+        </th>
       @endforeach
     </tr>
     @foreach($items as $i => $row)

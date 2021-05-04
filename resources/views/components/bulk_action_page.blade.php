@@ -13,7 +13,7 @@
         <div class="col-6">
           <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
             <i class="fa fa-times-circle mr-1"></i>
-            {{__('labels.back_button')}}
+            {{__('labels.close_button')}}
           </a>
         </div>
       </div>

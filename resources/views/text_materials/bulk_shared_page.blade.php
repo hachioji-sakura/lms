@@ -20,6 +20,21 @@
               @endforeach
             </select>
           </div>
+          <div class="col-12 mb-2">
+            <label>{{__('labels.share')}}{{__('labels.type')}}</label>
+            <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+            <div class="form-check">
+              <label class="form-check-label mr-2">
+                <input type="radio" class="form-check-input icheck flat-green" name="method" id="" value="sync" required=true>
+                {{__('labels.share')}}{{__('labels.teachers')}}{{__('labels.edit')}}
+              </label>
+              <label class="form-check-label">
+                <input type="radio" class="form-check-input icheck flat-green" name="method" id="" value="attach" required=true>
+                {{__('labels.share')}}{{__('labels.teachers')}}{{__('labels.add')}}
+              </label>
+            </div>
+          </div>
+
         @endif
     @endslot
 @endcomponent
