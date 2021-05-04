@@ -68,7 +68,7 @@ return [
   "mail_dear_teacher" => ":user_name 先生",
   "mail_dear_manager" => ":user_name さん",
   "mail_password_reset1" => "以下の URL よりパスワードの再発行を行って下さい。",
-  "info_url_limit" => "※URLの有効期限はお申込みから24時間以内となっています。",
+  "info_url_limit" => "※URLの有効期限はお申込みから20日以内となっています。",
   "confirm_ask_cancel" => "この依頼内容を差戻しますか？",
   "confirm_ask_commit" => "この依頼内容を承認しますか？",
   "confirm_ask_remind" => "この依頼内容を再送しますか？",

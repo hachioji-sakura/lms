@@ -176,12 +176,12 @@ class Controller extends BaseController
     }
     /**
      * 期限付きtokenの生成
-     * デフォルトの期限は、24時間
+     * デフォルトの期限は、20日
      * @param  int $limit_second
      * @param  int $key_length
      * @return string
      */
-    public function create_token($limit_second=86400, $key_length=32){
+    public function create_token($limit_second=1728000, $key_length=32){
       $key = str_random($key_length);
       $expire = time() + $limit_second;
       return $key.$expire;
