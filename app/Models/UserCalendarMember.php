@@ -205,7 +205,7 @@ class UserCalendarMember extends Model
     }
     $this->calendar->set_endtime_for_single_group();
     //ステータス別のメッセージ文言取得
-    $title = __('messages.mail_title_calendar_'.$status);
+    $title = $this->calendar->schedule_type_name().__('messages.mail_title_calendar_'.$status);
     $type = 'text';
     $template = 'calendar_'.$status;
 

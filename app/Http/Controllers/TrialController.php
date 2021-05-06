@@ -448,7 +448,7 @@ class TrialController extends UserCalendarController
        $res = $trial->trial_to_calendar($form);
        return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-     return $this->save_redirect($res, $param, "授業予定の確認連絡をしました。", $this->domain.'/'.$id);
+     return $this->save_redirect($res, $param, "予定の確認連絡をしました。", $this->domain.'/'.$id);
    }
    /**
     * 体験授業予定連絡通知メール送信

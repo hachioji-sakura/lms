@@ -34,7 +34,7 @@
 ({{__('labels.control')}}：{{$login_user["name"]}})
 @endif
 @if($send_to=='student')
-@if($item->trial_id > 0 && $item->has_tag('lesson', 1)==true)
+@if($item->trial_id > 0 && $item->has_tag('lesson', 1)==true && $item->is_teaching()==true)
 
 ■持ち物
 1. 教科書、学校で使用している問題集
