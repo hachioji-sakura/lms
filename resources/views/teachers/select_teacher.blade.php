@@ -22,7 +22,7 @@
           <input type="hidden" name="trial_id" value="{{$trial_id}}" >
           @endif
           @if(isset(request()->work) && request()->work>0)
-          <input type="text" name="work" value="{{request()->work}}" >
+          <input type="hidden" name="work" value="{{request()->work}}" >
           @endif
         </label>
         <select name="teacher_id" class="form-control select2"  width=100% required="true" >
