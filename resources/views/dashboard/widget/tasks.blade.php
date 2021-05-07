@@ -101,6 +101,8 @@
                         {{$curriculum->name}}
                       </small>
                     @endforeach
+                  @endif
+                  @if($item->textbooks->count() > 0)
                     @foreach($item->textbooks as $textbook)
                       <small class="badge badge-secondary">
                         <i class="fa fa-book"></i>
