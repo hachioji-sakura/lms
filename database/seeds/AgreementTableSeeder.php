@@ -23,19 +23,10 @@ class AgreementTableSeeder extends Seeder
         //すべて削除して
         $this->delete_dummy();
         //カレンダー設定から契約を作って料金を旧から入れて
-        $this->add_agreement();
-        //コミットにして開始する
-        $this->update_commit_enforced();
+        $this->_add_agreement();
       });
     }
 
-    public function update_commit_enforced(){
-      //強制登録は2020-01スタートとする
-      $target_ag = Agreement::where('status','commit')
-                            ->where('remark','enforce registered')
-                            ;
-      $target_ag->update(['start_date' => '2021-01-01']);
-    }
 
     public function delete_dummy(){
       //全部削除して入れなおす
@@ -45,18 +36,21 @@ class AgreementTableSeeder extends Seeder
       });
     }
 
-    public function add_agreement(){
+    public function _add_agreement($is_test = false){
       $target_users = User::has('enable_calendar_member_settings')->has('student')->get();
 
-      $old_tbl_fee = DB::table('hachiojisakura_management.tbl_fee')->get();
-      $old_tbl_member = DB::table('hachiojisakura_management.tbl_member')->get();
-      $old_entrance_fees = DB::table('hachiojisakura_management.tbl_entrance_fee')->get();
-      /*
-      //3月分
-      $old_tbl_fee = DB::table('hachiojisakura_management_202103.tbl_fee')->get();
-      $old_tbl_member = DB::table('hachiojisakura_management_202103.tbl_member')->get();
-      $old_entrance_fees = DB::table('hachiojisakura_management_202103.tbl_entrance_fee')->get();
-      */
+      if($is_test){
+        //メンテナンス用
+        //3月分
+        $old_tbl_fee = DB::table('hachiojisakura_management_202103.tbl_fee')->get();
+        $old_tbl_member = DB::table('hachiojisakura_management_202103.tbl_member')->get();
+        $old_entrance_fees = DB::table('hachiojisakura_management_202103.tbl_entrance_fee')->get();
+      }else{
+        $old_tbl_fee = DB::table('hachiojisakura_management.tbl_fee')->get();
+        $old_tbl_member = DB::table('hachiojisakura_management.tbl_member')->get();
+        $old_entrance_fees = DB::table('hachiojisakura_management.tbl_entrance_fee')->get();
+      }
+
       //体験生徒と職員を除く
       $target_users = $target_users->reject(function($item){
         return $item->id == 888 || $item->id == 890;
@@ -65,10 +59,6 @@ class AgreementTableSeeder extends Seeder
         $agreement = new Agreement;
         $member_setting = $user->calendar_member_settings()->first();
 
-        //承認済み契約があったら追加しない　ないと思うけど
-        if($user->student->enable_agreements_by_type('normal')->count() > 0){
-          continue;
-        }
         //既存の物を現状のロジックで契約追加
         $new_agreement = $agreement->add_from_member_setting($member_setting->id);
 
@@ -92,7 +82,7 @@ class AgreementTableSeeder extends Seeder
         }
         $new_agreement->entry_fee = $entry_fee;
         $new_agreement->status = "commit";//承認済みで登録
-        $new_agreement->start_date = "2021-03-01";
+        $new_agreement->start_date = "2000-01-01";
         $new_agreement->remark = "enforce registered";
         $new_agreement->save();
 

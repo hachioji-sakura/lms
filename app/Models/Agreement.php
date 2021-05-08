@@ -266,7 +266,9 @@ class Agreement extends Model
       }
       return $this;
     }
-
+    
+    //メンテナンス用のため通常は使用しない
+    //契約は削除しない
     public function dispose(){
       $this->agreement_statements->map(function($item){
         return $item->dispose();
