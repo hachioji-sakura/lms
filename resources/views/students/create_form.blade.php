@@ -59,13 +59,13 @@
     <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
   </label>
   <div class="input-group">
-    <input type="text" name="entry_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"
     @if(isset($item) && !empty($item->entry_date))
-    value = "{{date('Y/m/d', strtotime($item->entry_date))}}"
+    <label>{{$item->entry_date}}</label>
+    <input type="hidden" name="entry_date" value = "{{date('Y/m/d', strtotime($item->entry_date))}}">
     @else
-    value = "{{date('Y/m/d')}}"
+    <input type="text" name="entry_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"  value = "{{date('Y/m/d')}}">
     @endif
-    >
+
   </div>
 </div>
 @if(isset($item) && ($item->status=='unsubscribe' || !empty($item->unsubscribe_date)))
