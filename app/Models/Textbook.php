@@ -200,5 +200,8 @@ class Textbook extends Model
   public function image(){
     return $this->belongsTo('App\Models\Image');
   }
-
+  public function tasks()
+  {
+    return $this->morphedByMany('App\Models\Task', 'textbookable')->withTimestamps();
+  }
 }
