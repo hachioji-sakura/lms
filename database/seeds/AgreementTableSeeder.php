@@ -83,6 +83,10 @@ class AgreementTableSeeder extends Seeder
         $new_agreement->entry_fee = $entry_fee;
         $new_agreement->status = "commit";//承認済みで登録
         $new_agreement->start_date = "2000-01-01";
+        if($user->details()->status == "unsubscribe"){
+          //退会してたら終了日セット
+          $new_agreement->end_date = "2000-01-01";
+        }
         $new_agreement->remark = "enforce registered";
         $new_agreement->save();
 
