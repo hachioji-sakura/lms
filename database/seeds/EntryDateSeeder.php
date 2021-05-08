@@ -20,7 +20,7 @@ class EntryDateSeeder extends Seeder
     }
 
     public function update_entry_date($old_data){
-      $students = Student::findStatuses(['regular'])->get();
+      $students = Student::all();
       foreach($students as $student){
         $student_no = $student->user->get_tag('student_no')->tag_value;
         $target_old_data = $old_data->filter(function($item) use($student_no){

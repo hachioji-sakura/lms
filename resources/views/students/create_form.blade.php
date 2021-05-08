@@ -56,11 +56,13 @@
 <div class="col-6">
   <label for="start_date" class="w-100">
     {{__('labels.join')}}{{__('labels.day')}}
+    @if(!isset($item) || empty($item->entry_date))
     <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+    @endif
   </label>
   <div class="input-group">
     @if(isset($item) && !empty($item->entry_date))
-    <label>{{$item->entry_date}}</label>
+    <label>{{$item->dateweek_format($item->entry_date)}}</label>
     <input type="hidden" name="entry_date" value = "{{date('Y/m/d', strtotime($item->entry_date))}}">
     @else
     <input type="text" name="entry_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01"  value = "{{date('Y/m/d')}}">
