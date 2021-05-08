@@ -1265,7 +1265,9 @@ EOT;
       if($member->status=='cancel') continue;
       if($member->status=='fix' || $this->is_last_status($member->status)==true){
         $m = $member->user->details();
-        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+        if($m->is_active($this->start_time) == true) {
+          $active_students[] = $member;
+        }
       }
     }
     if(empty($end_time)) $end_time = $this->end_time;

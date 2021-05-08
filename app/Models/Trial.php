@@ -389,10 +389,12 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->write_comment('trial');
+    $remark = '';
+    if(isset($form['remark'])) $remark = $form['remark'];
+    $this->write_comment('trial', $remark);
     $this->student->profile_update($form);
   }
-  public function remark_full(){
+  public function remark_full($remark=''){
     $tagdata = $this->get_tagdata()['tagdata'];
     $ret = "";
     $is_other = false;
@@ -415,9 +417,10 @@ class Trial extends Model
         }
       }
     }
-    if(!empty($this->remark)){
+    if(empty($remark)) $remark = $this->remark;
+    if(!empty($remark)){
       $ret .= "■".__('labels.other')."\n";
-      $ret .= $this->remark;
+      $ret .= $remark;
     }
     return $ret;
   }
@@ -1396,7 +1399,9 @@ class Trial extends Model
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       $this->student->profile_update($form);
-      $this->write_comment('entry');
+      $remark = '';
+      if(isset($form['remark'])) $remark = $form['remark'];
+      $this->write_comment('entry', $remark);  
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
@@ -1440,8 +1445,8 @@ class Trial extends Model
     return $daydiff;
   }
 
-  public function write_comment($type){
-    $remark = $this->remark_full();
+  public function write_comment($type, $remark=''){
+    $remark = $this->remark_full($remark);
 
     $type_title = [
       "trial" => "体験申し込み時のご要望",
