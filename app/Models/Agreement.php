@@ -266,4 +266,11 @@ class Agreement extends Model
       }
       return $this;
     }
+
+    public function dispose(){
+      $this->agreement_statements->map(function($item){
+        return $item->dispose();
+      });
+      $this->delete();
+    }
 }

@@ -104,4 +104,9 @@ class AgreementStatement extends Model
         return null;
       }
     }
+
+    public function dispose(){
+      $this->user_calendar_member_settings()->detach();
+      $this->delete();
+    }
 }
