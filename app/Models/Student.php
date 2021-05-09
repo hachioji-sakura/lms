@@ -484,6 +484,24 @@ EOT;
     if($this->user->has_tag('student_type', 'fee_free')) return true;
     return false;
   }
+  
+  //TODO 退会・休会に関して履歴がない
+  public function is_active($date=''){
+    //指定日付の時にこのユーザーがactiveならばtrueを返す  
+    if(empty($date)) {
+      $date = date('Y-m-d');
+    }
+    else {
+      $date = date('Y-m-d', strtotime($date));
+    }
+    //退会日を以前ならactive（次の日からno active)
+    if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < strtotime($date)) return false;
+    //休会日の期間ならno active
+    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) &&  
+        strtotime($this->recess_start_date) <= strtotime($date) && strtotime($this->recess_end_date) >= strtotime($date)) return false;
+
+    return true;
+  }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();
     $parent_ids = [];
@@ -1034,6 +1052,7 @@ EOT;
       $update_form['recess_end_date'] = null;
       $update_form['unsubscribe_date'] = null;
     }
+    $update_form['entry_date'] = date('Y/m/d');
     $this->update($update_form);
     //カレンダー設定を有効にする
     /*
