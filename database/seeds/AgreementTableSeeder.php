@@ -21,14 +21,14 @@ class AgreementTableSeeder extends Seeder
 
       DB::transaction(function(){
         //すべて削除して
-        $this->delete_dummy();
+        $this->delete_all();
         //カレンダー設定から契約を作って料金を旧から入れて
         $this->_add_agreement();
       });
     }
 
 
-    public function delete_dummy(){
+    public function delete_all(){
       //全部削除して入れなおす
       $target_ag = Agreement::all();
       $target_ag->map(function($item){
@@ -94,14 +94,10 @@ class AgreementTableSeeder extends Seeder
         foreach($new_agreement->agreement_statements as $statement){
           $long_teacher_id = Teacher::find($statement->teacher_id)->user->get_tag_value('teacher_no');
           $teacher_id = preg_replace('/^10+([0-9]*)$/','$1',$long_teacher_id);
-          if($statement->course_type == "single"){
-            $course_id = 1;
-          }elseif($statement->course_type == "group"){
-            $course_id = 2;
-          }else{
-            //予想外のがきたら表示して落とす
-            dd($statement->course_type);
-            $course_id = 0;
+          $course_id = 0;
+          $_course_id = ["single" => 1, "group" => 2];
+          if(isset($_course_id[$statement->course_type])){
+            $course_id = $_course_id[$statement->course_type];
           }
           //講師と部門で料金をひっかける
           $old_fee = $old_tbl_fee->where('member_no',$student_no)
