@@ -322,7 +322,7 @@ class UserCalendarController extends MilestoneController
    */
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = $this->get_common_param($request);
+    $ret = $this->get_common_param($request, false);
     $ret['remind'] = false;
     $ret['token'] = false;
     $ret['is_exchange_add'] = false;
