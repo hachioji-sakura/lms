@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Ask;
 use App\Models\Agreement;
 use App\Models\AgreementStatement;
 use App\Models\UserCalendarMemberSetting;
@@ -20,23 +21,31 @@ class AgreementTableSeeder extends Seeder
         //
 
       DB::transaction(function(){
-        //すべて削除して
-        $this->delete_all();
-        //カレンダー設定から契約を作って料金を旧から入れて
-        $this->_add_agreement();
+        //ユーザーが確認中のもの以外を削除して
+        $ret = $this->target_delete();
+        //カレンダー設定から契約を作って料金を旧から入れる
+        $this->_add_agreement($ret['except_student_ids']);
       });
     }
 
 
-    public function delete_all(){
-      //全部削除して入れなおす
-      $target_ag = Agreement::all();
-      $target_ag->map(function($item){
+    public function target_delete(){
+      //commitのものはすべて削除
+      $commit_ag = Agreement::where('status','commit')->get();
+      $commit_ag->map(function($item){
         return $item->dispose();
       });
+      //askにnewがあるやつは削除しない
+      $ex_ag_ids =Ask::where('target_model','agreements')->where('status','new')->pluck('target_model_id');
+      $has_ask_ag = Agreement::whereNotIn('id',$ex_ag_ids)->get();
+      $has_ask_ag->map(function($item){
+        return $item->dispose();
+      });
+      $except_student_ids = Agreement::find($ex_ag_ids)->pluck('student_id');
+      return ['except_student_ids' => $except_student_ids ];
     }
 
-    public function _add_agreement($is_test = false){
+    public function _add_agreement($except_student_ids, $is_test = false){
       $target_users = User::has('enable_calendar_member_settings')->has('student')->get();
 
       if($is_test){
@@ -58,6 +67,11 @@ class AgreementTableSeeder extends Seeder
       foreach($target_users as $user){
         $agreement = new Agreement;
         $member_setting = $user->calendar_member_settings()->first();
+
+        //のこした契約の人は更新しない
+        if($except_student_ids->contains($user->student->id)){
+          continue;
+        }
 
         //既存の物を現状のロジックで契約追加
         $new_agreement = $agreement->add_from_member_setting($member_setting->id);
