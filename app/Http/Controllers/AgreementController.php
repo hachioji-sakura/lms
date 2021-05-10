@@ -144,6 +144,10 @@ class AgreementController extends MilestoneController
       $param = $this->get_param($request, $id);
       $access_key = $this->create_token(2678400);
       $res = $this->transaction($request, function() use ($request,$param, $access_key){
+        $item = $param['item'];
+        $item->entry_fee = $request->agreements['entry_fee'];
+        $item->monthly_fee = $request->agreements['monthly_fee'];
+        $item->save();
         //料金が変更されていたら更新
         foreach($request->get('agreement_statements') as $statement_id => $value){
           $statement = AgreementStatement::find($statement_id);
