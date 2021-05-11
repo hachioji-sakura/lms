@@ -160,7 +160,10 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date >= ?)
+       (
+         lms.user_calendar_settings.enable_end_date is null OR 
+        (lms.user_calendar_settings.enable_end_date >= ? and lms.user_calendar_settings.enable_start_date <= ?)
+       )
       )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);

@@ -498,6 +498,24 @@ class UserCalendarMemberSetting extends UserCalendarMember
 
   public function get_tuition_master(){
     $setting = $this->setting->details();
+    $agreements = $this->user->student->old_commit_agreements;
+    if($agreements->count() > 0){
+      $statement = $agreements->first()->agreement_statements()->where('lesson_id',$setting->lesson(true))
+                              ->where('grade',$this->user->details()->get_tag_value('grade'))
+                              ->where('course_type',$setting->get_tag_value('course_type'))
+                              ->where('course_minutes',$setting['course_minutes'])
+                              ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
+                              ->where('is_exam',$this->user->details()->is_juken())
+                              ->get();
+      if($statement->count() > 0 ){
+        $tuition = $statement->first()->tuition; 
+      }else{
+        $tuition = 0;
+      }
+      return $tuition;
+    }else{
+      $return = 0;
+    }
     //2020年4月1日以前のユーザーは0円で返す
     if( strtotime($this->user->created_at) > strtotime("2020/04/01") ){
       $user_created_date = date('Y/m/d',strtotime($this->user->created_at));

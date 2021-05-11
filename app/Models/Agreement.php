@@ -26,6 +26,9 @@ class Agreement extends Model
       'entry_fee',
       'monthly_fee',
       'entry_date',
+      'commit_date',
+      'start_date',
+      'end_date',
       'status',
       'student_parent_id',
       'create_user_id',
@@ -74,7 +77,9 @@ class Agreement extends Model
     }
 
     public function scopeEnable($query){
-      return $query->where('status','commit')->whereNull('end_date');
+      return $query->where('status','commit')
+                  ->where('start_date','>=',date('Y-m-d'))
+                  ->where('end_date','<=',date('Y-m-d'));
     }
 
     public function scopeEnableByType($query,$type){
@@ -137,12 +142,14 @@ class Agreement extends Model
     public static function add_from_member_setting($member_id){
       $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
-      $agreement = $member->user->details()->enable_agreements_by_type('normal')->first();
+      $agreement = $member->user->details()->old_commit_agreements->first();
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
         'entry_date' =>  date('Y/m/d H:i:s'),
+        'start_date' => date('Y/m/d',strtotime("first day of this month")),
+        'end_date' => date('Y/m/d', strtotime("last day of this month")),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),
@@ -172,7 +179,6 @@ class Agreement extends Model
         $statement_form[$setting_key] = new AgreementStatement($form);
         $member_ids[$setting_key][] = $mb->id;
       }
-
       //契約変更の判定
       if(!empty($agreement)){
         $is_update = $agreement->is_same($statement_form);
@@ -180,23 +186,23 @@ class Agreement extends Model
         $is_update = true;
       }
 
+      //更新があればnew,更新がなければcommitで登録
       if($is_update == true){
         $new_agreement->status = 'new';
-        if(!empty($agreement)){
-          //既存の契約idを取得してparent_idへセット
-          $new_agreement->parent_agreement_id = $agreement->id;
-        }
-        $invalid_agreements = $member->user->details()->agreementsByStatuses(['new']);
-        if($invalid_agreements->count()){
-          //newのままの契約はキャンセルに
-          $invalid_agreements->update(['status' => 'cancel']);
-        }
-        $new_agreement->save();
-        $new_agreement->agreement_statements()->saveMany($statement_form);
-        foreach($statement_form as $key => $statement){
-          $ids = $member_ids[$key];
-          $statement->user_calendar_member_settings()->attach($ids);
-        }
+      }else{
+        $new_agreement->status = 'commit';
+        $new_agreement->commit_date = date('Y/m/d',strtotime("first day of this month"));
+      }
+      if(!empty($agreement)){
+        //既存の契約idを取得してparent_idへセット
+        $new_agreement->parent_agreement_id = $agreement->id;
+      }
+
+      $new_agreement->save();
+      $new_agreement->agreement_statements()->saveMany($statement_form);
+      foreach($statement_form as $key => $statement){
+        $ids = $member_ids[$key];
+        $statement->user_calendar_member_settings()->attach($ids);
       }
       return $new_agreement;
     }
