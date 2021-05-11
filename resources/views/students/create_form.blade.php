@@ -70,7 +70,7 @@
 </div>
 @if(isset($item) && ($item->status=='unsubscribe' || !empty($item->unsubscribe_date)))
 <div class="col-6">
-  <label for="start_date" class="w-100">
+  <label for="unsubscribe_date" class="w-100">
     {{__('labels.unsubscribe')}}{{__('labels.day')}}
     <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
   </label>

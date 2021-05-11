@@ -344,6 +344,7 @@ EOT;
         $agreement->start_date =  date('Y/m/d H:i:s');
         $agreement->status = 'commit';
         $agreement->save();
+        $agreement->student_parent->user->update(['access_key' => $this->create_token()]);
         break;
       case "rest_cancel":
         $ret = true;
@@ -551,7 +552,8 @@ EOT;
       case 'agreements':
       case 'agreement_confirm':
         $ret = Agreement::where('id', $this->target_model_id)->first();
-        break;    }
+        break;
+    }
     return $ret;
   }
   public function is_access($user_id){
