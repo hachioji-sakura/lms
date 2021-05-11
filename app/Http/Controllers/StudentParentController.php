@@ -306,6 +306,7 @@ class StudentParentController extends TeacherController
             'post_no' => $form['post_no'],
             'address' => $form['address'],
             'status' => $status,
+            'entry_date' => date('Y-m-d'),
           ]);
         }
         $user->set_password($form['password']);

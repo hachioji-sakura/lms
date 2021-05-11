@@ -13,6 +13,12 @@ if($user->role=="manager") $is_label = false;
       <div class="carousel-inner">
         <div class="carousel-item active">
           @yield('parent_form')
+          
+          @if($user->role=='manager')
+          <div class="row mb-2">
+            @yield('account_date_form')
+          </div>
+          @endif
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" data-dismiss="modal" role="button" class="btn btn-secondary btn-block float-left mr-1">
