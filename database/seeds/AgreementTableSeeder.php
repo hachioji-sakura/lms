@@ -30,18 +30,13 @@ class AgreementTableSeeder extends Seeder
 
 
     public function target_delete(){
-      //commitのものはすべて削除
-      $commit_ag = Agreement::where('status','commit')->get();
+      //commit,dummy,cancelのものはすべて削除
+      $commit_ag = Agreement::whereIn('status',['commit','dummy','cancel'])->get();
       $commit_ag->map(function($item){
         return $item->dispose();
       });
-      //askにnewがあるやつは削除しない
-      $ex_ag_ids =Ask::where('target_model','agreements')->where('status','new')->pluck('target_model_id');
-      $has_ask_ag = Agreement::whereNotIn('id',$ex_ag_ids)->get();
-      $has_ask_ag->map(function($item){
-        return $item->dispose();
-      });
-      $except_student_ids = Agreement::find($ex_ag_ids)->pluck('student_id');
+      //statusがnewのやつは削除しない
+      $except_student_ids = Agreement::where('status','new')->get()->pluck('student_id');
       return ['except_student_ids' => $except_student_ids ];
     }
 
