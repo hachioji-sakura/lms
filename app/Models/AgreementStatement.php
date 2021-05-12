@@ -104,4 +104,11 @@ class AgreementStatement extends Model
         return null;
       }
     }
+    
+    //メンテナンス用のため通常は使用しない
+    //契約は削除しない
+    public function dispose(){
+      $this->user_calendar_member_settings()->detach();
+      $this->delete();
+    }
 }
