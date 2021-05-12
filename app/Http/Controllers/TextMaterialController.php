@@ -165,10 +165,6 @@ class TextMaterialController extends MilestoneController
       $items = $items->paginate($param['_line']);
 
       $fields = [
-        'id' => [
-          'label' => 'ID',
-          'link' => 'show',
-        ],
         'name' => [
           'label' => '資料名',
           'check_box' => true,
@@ -193,6 +189,11 @@ class TextMaterialController extends MilestoneController
               "method" => "shared",
               "label" => "共有設定",
               "style" => "warning",
+            ],
+            "detail" => [
+              "method" => "",
+              "label" => "詳細",
+              "style" => "secondary",
             ],
             'edit', 'delete'
           ]
