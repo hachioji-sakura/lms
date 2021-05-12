@@ -147,11 +147,19 @@ class User extends Authenticatable
     }
     public function agreement_target_calendar_memeber_settings($date = null){
       if($date == null){
-         $date = date("Y-m-d",strtotime("last day of this month"));
+         $month_start_date = date("Y-m-d",strtotime("first day of this month"));
+         $month_end_date = date("Y-m-d",strtotime("last day of this month"));
+      }else{
+        $month_start_date = date('Y/m/d',strtotime("first day of ".$date));
+        $month_end_date = date('Y/m/d',strtotime("last day of ".$date));
       }
       return $this->calendar_member_settings()->whereNotIn('status',
-      ['cancel','dummy'])->whereHas('setting',function($query) use ($date){
-        return $query->where('enable_start_date','<=', $date);
+      ['cancel','dummy'])->whereHas('setting',function($query) use ($month_start_date,$month_end_date){
+        return $query->where('enable_start_date','<=',$month_end_date)
+                    ->where(function($query) use ($month_start_date,$month_end_date){
+                      return $query->where('enable_end_date','>=', $month_start_date)
+                                    ->orWhereNull('enable_end_date');
+                    });
       });
     }
     /**
