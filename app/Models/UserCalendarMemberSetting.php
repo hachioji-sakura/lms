@@ -100,8 +100,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
     else {
       $this->delete();
     }
-    //契約処理
-    $this->agreement_update($this->user_id);
   }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;
@@ -455,11 +453,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
         break;
       case "confirm":
           $is_send_teacher_mail = false;
-        break;
-      case "fix":
-        if($this->user->details()->role == 'student'){
-          $agreement = Agreement::add_from_member_setting($this->id);
-        }
         break;
       }
     $this->update($update_form);

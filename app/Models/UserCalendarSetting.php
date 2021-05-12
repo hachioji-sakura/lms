@@ -443,10 +443,6 @@ EOT;
       $calendar->dispose();
     }
     */
-    if(isset($user_id) && $this->is_teaching()==true){
-      //契約処理
-      $this->agreement_update($user_id);
-    }
     $this->delete();
 
   }
