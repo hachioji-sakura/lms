@@ -41,9 +41,14 @@ class MonthlyAgreementCreateCommand extends Command
     public function handle()
     {
       DB::transaction(function(){
-        $date = date('Y-m-d',strtotime($this->argument('year')."-".$this->argument('month')));
+        if(empty($this->argument('year')) || empty($this->argument('month')) ){
+          $date = date('Y-m-d');
+        }else{
+          $date = date('Y-m-d',strtotime($this->argument('year')."-".$this->argument('month')));
+        }
         $student_users = User::has('student')->get();
         $target_users = $student_users->filter(function($item) use($date){
+          //契約の対象になるカレンダー設定があるユーザ
           return $item->agreement_target_calendar_memeber_settings($date)->count() > 0;
         });
         //体験生徒と職員を除く
@@ -54,7 +59,7 @@ class MonthlyAgreementCreateCommand extends Command
             $agreement = new Agreement;
             $member_setting = $user->calendar_member_settings()->first();
             $new_agreement = $agreement->add_from_member_setting($member_setting->id,$date);
-            $new_agreement->remark = "Agreement of ".date('Y-m')." from batch.";
+            $new_agreement->remark = "Agreement of ".$date." from batch.";
             $new_agreement->save();
         }
 
