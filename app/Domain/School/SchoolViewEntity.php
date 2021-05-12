@@ -21,7 +21,7 @@ class SchoolViewEntity extends BaseEntity
     {
         return __('labels.school_page_header_title');
     }
-    
+
     /**
      * 過程一覧
      *
@@ -38,7 +38,7 @@ class SchoolViewEntity extends BaseEntity
             'onlineSchool'            => '通信制'
         ];
     }
-    
+
     /**
      * ローカライズ名を取得する
      *
@@ -78,7 +78,7 @@ class SchoolViewEntity extends BaseEntity
                 throw new LogicException('キーが誤っています');
         }
     }
-    
+
     /**
      * 学校情報の基本情報
      *
@@ -102,11 +102,19 @@ class SchoolViewEntity extends BaseEntity
             ],
             'buttons'      => [
                 'label'  => $this->localizeName('control'),
-                'button' => ['edit', 'delete']
+                'button' => [
+                      'transition' =>[
+                        'style' =>'outline-primary',
+                        'uri'  =>'/school_textbooks',
+                        'label' => '使用テキスト',
+                      ],
+                     'edit',
+                     'delete',
+                ]
             ],
         ];
     }
-    
+
     /**
      * 学校情報の詳細情報
      *
