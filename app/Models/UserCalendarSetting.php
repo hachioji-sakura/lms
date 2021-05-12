@@ -162,7 +162,7 @@ EOT;
       (
        (
          lms.user_calendar_settings.enable_end_date is null OR 
-        (lms.user_calendar_settings.enable_end_date >= ? and lms.user_calendar_settings.enable_start_date <= ?)
+         lms.user_calendar_settings.enable_end_date >= ? 
        )
       )
 EOT;

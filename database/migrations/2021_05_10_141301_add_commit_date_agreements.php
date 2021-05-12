@@ -15,7 +15,7 @@ class AddCommitDateAgreements extends Migration
     {
         Schema::connection('mysql_common')->table('agreements', function (Blueprint $table) {
             //
-            $table->date('commit_date')->after('entry_date')->nullable(true)->comment('承認日');
+            $table->datetime('commit_date')->after('entry_date')->nullable(true)->comment('承認日');
         });
     }
 

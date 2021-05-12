@@ -139,7 +139,12 @@ class Agreement extends Model
       return $this;
     }
 
-    public static function add_from_member_setting($member_id){
+    public static function add_from_member_setting($member_id, $date = null){
+      if($date == null){
+        $date = date('Y/m/d H:i:s');
+      }else{
+        $date = date('Y/m/d', strtotime($date));
+      }
       $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
       $agreement = $member->user->details()->old_commit_agreements->first();
@@ -147,9 +152,9 @@ class Agreement extends Model
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
-        'entry_date' =>  date('Y/m/d H:i:s'),
-        'start_date' => date('Y/m/d',strtotime("first day of this month")),
-        'end_date' => date('Y/m/d', strtotime("last day of this month")),
+        'entry_date' =>  $date,
+        'start_date' => date('Y/m/d',strtotime("first day of ".$date)),
+        'end_date' => date('Y/m/d', strtotime("last day of ".$date)),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),
@@ -158,7 +163,7 @@ class Agreement extends Model
       ];
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
-      $members = $member->user->enable_calendar_member_settings;
+      $members = $member->user->agreement_target_calendar_memeber_settings($date)->get();
       $settings = $members->map(function($item,$key){
         return $item->setting;
       });

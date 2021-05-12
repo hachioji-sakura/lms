@@ -145,6 +145,15 @@ class User extends Authenticatable
         return $query->enable();
       });
     }
+    public function agreement_target_calendar_memeber_settings($date = null){
+      if($date == null){
+         $date = date("Y-m-d",strtotime("last day of this month"));
+      }
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy'])->whereHas('setting',function($query) use ($date){
+        return $query->where('enable_start_date','<=', $date);
+      });
+    }
     /**
      * パスワードリセット通知の送信
      *
