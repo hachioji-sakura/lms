@@ -14,10 +14,10 @@ class MakeAprilAgreementSeeder extends Seeder
     public function run()
     {
         DB::transaction(function(){
+            //TODO:askがない奴はcommitにする処理を入れる
+            
+            Agreement::whereNull('start_date')->update(['start_date'=>"2021-04-01"]);
             Agreement::whereNull('end_date')->update(['end_date'=>"2021-04-30"]);
-            Agreement::all()->map(function($item){
-                return $item->update(['start_date'=>"2021-04-01"]);
-            });
         });
     }
 }
