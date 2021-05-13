@@ -158,12 +158,9 @@ EOT;
     return $this->scopeFieldWhereIn($query, 'lesson_week', $vals, $is_not);
   }
   public function scopeEnable($query){
-    $where_raw = <<<EOT
-      (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date >= ?)
-      )
-EOT;
-    return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
+    return $query->where(function($query){
+        $query->orWhere('enable_end_date', null)->orWhere('enable_end_date','>', date('Y-m-d'));
+      });
   }
   public function scopeSearchWord($query, $word)
   {
@@ -705,11 +702,12 @@ EOT;
     $is_enable = true;
     if($this->work!=9){
       $is_enable = false;
-      foreach($this->members as $member){
+      $students = $this->get_students();
+      foreach($students as $member){
         if($this->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
+        if(!isset($member->user->student)) continue;
+        if($member->user->student->status != 'regular' && $member->user->student->status != 'trial') continue;
         $is_enable = true;
-
         break;
       }
     }
@@ -925,5 +923,26 @@ EOT;
     $c = 0;
     if($d < 0) return false;
     return true;
+  }
+  public function auto_expired(){
+    $students = $this->get_students();
+    $is_enable = false;
+    $d = 0;
+    foreach($students as $member){
+      if(!isset($member->user->student)) continue;
+      if($member->user->student->status!='unsubscribe'){
+        //一人でも退会ではない場合、この設定は有効
+        $is_enable = true;
+        continue;
+      }
+      if(empty($member->user->student->unsubscribe_date)) continue;
+      if($d < strtotime($member->user->student->unsubscribe_date)) $d = strtotime($member->user->student->unsubscribe_date);
+    }
+    if($is_enable==false && $d > 0 && $this->end_enable_date != date('Y-m-d', $d)){
+      $this->update(['enable_end_date' => date('Y-m-d', $d)]);
+      $this->send_slack("全員退会によりこのカレンダー設定の有効期限を設定：id=".$this->id.'/enable_end_date='.date('Y-m-d', $d), 'warning', "auto_set_enable_end_date");
+      return true;
+    }
+    return false;
   }
 }

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Ask;
+use App\Models\UserCalendarSetting;
 use App\Http\Controllers\Controller;
 
 class DailyProcCommand extends Command
@@ -41,6 +42,7 @@ class DailyProcCommand extends Command
     {
       $date = $this->argument("date");
       $this->daily_proc($date);
+      $this->auto_calendar_settings_expired();
     }
     public function daily_proc($d='')
     {
@@ -87,50 +89,14 @@ class DailyProcCommand extends Command
           @$this->send_slack("failed[id=".$ask->id."][type=".$ask->type."]", 'warning', "daily_proc");
         }
       }
-      //休会キャンセルの処理
-      //$d = date("Y-m-d",strtotime("-1 day ".$d));
-      /*
-      $asks = Ask::where('status', 'cancel')->findTypes(['recess', 'unsubscribe'])
-        ->get();
-      foreach($asks as $ask){
-        //対象のモデルを取得
-        $target_model_data = $ask->get_target_model_data();
-        if($target_model_data==null) continue;
-        $result['asks'][] = $ask;
 
-        $this->info("ask cancel proc[id=".$ask->id."]");
-        if($ask->type=="recess"){
-          //休会（休職）
-          $ret = $target_model_data->recess_cancel();
-        }
-        else if($ask->type=="unsubscribe"){
-          //退会（退職）
-          $ret = $target_model_data->unsubscribe_cancel();
-        }
-
-        $ret = $target_model_data->recess_cancel();
-        if($ret!=null){
-          if(isset($ret['user_calendar_members'])){
-            //有効化されたカレンダー
-            $target_model_data['user_calendar_members'] = $ret['user_calendar_members'];
-          }
-          if(isset($ret['conflict_calendar_members'])){
-            //有効化したら競合したカレンダー
-            $target_model_data['conflict_calendar_members'] = $ret['conflict_calendar_members'];
-          }
-          $result[$ask->type][] = $target_model_data;
-          $ask->complete();
-          $this->info("success[id=".$ask->id."]");
-          @$this->send_slack("success[id=".$ask->id."][type=".$ask->type."]", 'warning', "daily_proc");
-        }
-        else {
-          //失敗
-          $this->info("failed[id=".$ask->id."]");
-          @$this->send_slack("failed[id=".$ask->id."][type=".$ask->type."]", 'warning', "daily_proc");
-        }
-      }
-      */
       return $result;
+   }
+   public function auto_calendar_settings_expired(){
+    $calendar_settings = UserCalendarSetting::where('status', 'fix')->get();
+    foreach($calendar_settings as $calendar_setting){
+      $calendar_setting->auto_expired();
+    }
    }
    protected function send_slack($message, $msg_type, $username=null, $channel=null) {
      $controller = new Controller;
