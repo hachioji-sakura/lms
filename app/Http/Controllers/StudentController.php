@@ -903,7 +903,7 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $filter = $param['filter']['calendar_filter'];
+   $filter = $request->all();
    $filter['list'] = '';
    if($request->has('list')){
      $filter['list'] = $request->get('list');
