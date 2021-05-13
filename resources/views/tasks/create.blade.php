@@ -65,7 +65,7 @@
       </div>
       <div class="collapse" id="setting_details">
         <div class="row mt-2 collpase" id="setting_details">
-          <div class="col-6">
+          <div class="col-12 col-md-6">
             <label>{{__('labels.milestones')}}</label>
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <select name="milestone_id" class="form-control select2" width="100%">
@@ -75,8 +75,19 @@
               @endforeach
             </select>
           </div>
+
+          <div class="col-12 col-md-6">
+            <label>{{__('labels.textbooks')}}</label>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
+              @foreach($textbooks as $textbook)
+                <option value="{{$textbook->id}}" {{$_edit && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
+              @endforeach
+            </select>
+          </div>
+
           @if($_edit)
-          <div class="col-6">
+          <div class="col-12 col-md-6">
             <label>{{__('labels.status')}}</label>
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             <select name="status" class="form-control select2" width="100%">

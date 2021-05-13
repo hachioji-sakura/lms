@@ -177,6 +177,8 @@ class StudentParent extends Teacher
       'post_no' => "",
       'address' => "",
       'status' => "",
+      'entry_date' => null,
+      'unsubscribe_date' => null,
     ];
     $update_form = [];
     foreach($update_fields as $key => $val){

@@ -40,60 +40,59 @@
       </ul>
     </li>
     @foreach($charge_students as $charge_student)
-    <li class="nav-item has-treeview menu-open">
-      <a href="#" class="nav-link">
-        <i class="fa fa-user-graduate nav-icon"></i>
-      <p>
-        <ruby style="ruby-overhang: none">
-          <rb>{{$charge_student->student->name()}}</rb>
-          <rt>{{$charge_student->student->kana()}}</rt>
-        </ruby>
-        <i class="right fa fa-angle-left"></i>
-      </p>
-      </a>
-      <ul class="nav nav-treeview">
-        <li class="nav-item">
-          <a class="nav-link" href="/parents/{{$item->id}}" >
-            <i class="fa fa-file nav-icon"></i>
-            {{__('labels.details')}}
-          </a>
-        </li>
-        @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial' && $item->is_hachiojisakura())
-        <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
-            <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
-          </a>
-        </li>
-        @if($charge_student->student->enable_agreements_by_type('normal')->count() > 0)
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_agreements_by_type('normal')->first()->id}}&target_user_id={{$charge_student->student->user_id}}" >
-            <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
-          </a>
-        </li>
-        @elseif($item->is_hachiojisakura())
-        <li class="nav-item">
-          <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
-            <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
-          </a>
-        </li>
-        @endif
-        @endif
-      </ul>
-      <ul class="nav nav-treeview">
-        {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。
-        <li class="nav-item">
-          <a class="nav-link" href="/{{$domain}}/{{$item->id}}/agreement" >
-            <i class="fa fa-file-invoice nav-icon"></i>ご契約情報
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
-            <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
-          </a>
-        </li>
-        --}}
-      </ul>
-    </li>
+      <li class="nav-item has-treeview menu-open">
+        <a href="#" class="nav-link">
+          <i class="fa fa-user-graduate nav-icon"></i>
+        <p>
+          <ruby style="ruby-overhang: none">
+            <rb>{{$charge_student->student->name()}}</rb>
+            <rt>{{$charge_student->student->kana()}}</rt>
+          </ruby>
+          <i class="right fa fa-angle-left"></i>
+        </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a class="nav-link" href="/parents/{{$item->id}}" >
+              <i class="fa fa-file nav-icon"></i>
+              {{__('labels.details')}}
+            </a>
+          </li>
+          @if($charge_student->student->is_hachiojisakura() && $charge_student->student->status!='trial')
+          <li class="nav-item">
+            <a class="nav-link" href="/students/{{$charge_student->student->id}}/recess" >
+              <i class="fa fa-pause-circle nav-icon"></i>{{__('labels.recess')}}{{__('labels.contact')}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/students/{{$charge_student->student->id}}/unsubscribe" >
+              <i class="fa fa-times-circle nav-icon"></i>{{__('labels.unsubscribe')}}{{__('labels.contact')}}
+            </a>
+          </li>
+          @if($charge_student->student->enable_agreements_by_type('normal')->count() > 0)
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0);" page_form="dialog" page_title="{{__('labels.agreement_update')}}" page_url="/{{$domain}}/{{$item->id}}/ask/create?type=agreement_update&target_model=agreements&target_model_id={{$charge_student->student->enable_agreements_by_type('normal')->first()->id}}&target_user_id={{$charge_student->student->user_id}}" >
+              <i class="fa fa-handshake nav-icon"></i>{{__('labels.agreement_update')}}
+            </a>
+          </li>
+          @endif
+          @endif
+        </ul>
+        <ul class="nav nav-treeview">
+          {{-- TODO 兄弟すべての申し込み内容を１ページで見たい場合に使う。
+          <li class="nav-item">
+            <a class="nav-link" href="/{{$domain}}/{{$item->id}}/agreement" >
+              <i class="fa fa-file-invoice nav-icon"></i>ご契約情報
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0);"  page_form="dialog" page_url="/comments/create?origin={{$domain}}&item_id={{$item->id}}" page_title="{{__('labels.comment_add')}}">
+              <i class="fa fa-comment-dots nav-icon"></i>{{__('labels.comment_add')}}
+            </a>
+          </li>
+          --}}
+        </ul>
+      </li>
     @endforeach
     @if($item->is_hachiojisakura())
     <li class="nav-item">

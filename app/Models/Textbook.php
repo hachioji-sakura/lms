@@ -206,5 +206,4 @@ class Textbook extends Model
   public function schools(){
     return $this->morphedByMany('App\Models\School', 'textbookable')->withTimestamps();
   }
-
 }
