@@ -940,7 +940,7 @@ class StudentController extends UserController
    $count = count($calendar_settings);
    (new UserCalendarSetting())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only == true) return $count;
-   if(isset($form['_page']) && isset($form['_line'])){
+   if(isset($form['_page']) && isset($form['_line']) && count($calendar_settings)>0){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
    }
    //echo $calendars->toSql()."<br>";
