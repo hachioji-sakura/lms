@@ -23,8 +23,9 @@
 ・授業時間：{{$statement->course_minutes_name}}
 ・校舎：{{$statement->user_calendar_member_settings->first()->setting->place_floor_name}}
 ・科目：@foreach($statement->user_calendar_member_settings->first()->setting->subject() as $subject) {{$subject}} @endforeach
-
-・開始日：{{$statement->user_calendar_member_settings->first()->setting->details()['schedule_start_date']}}
+{{--開始日はださなくてよいか？:入会
+・開始日：{{$statement->lesson_start_date}}
+--}}
 ・担当講師：{{$statement->teacher->details()->name()}}
 ・受講料： &yen; {{number_format($statement->tuition)}}
 

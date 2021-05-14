@@ -89,6 +89,13 @@ class AgreementStatement extends Model
       return $ret;
     }
 
+    public function getLessonStartDateAttribute(){
+      $date = $this->user_calendar_member_settings->map(function($item){
+        return $item->setting;
+      })->min('enable_start_date');
+      return $this->dateweek_format($date);
+    }
+
     public function is_already_registered($form){
       $already_data = AgreementStatement::where('student_id' , $form['student_id'])
       ->where('teacher_id' , $form['teacher_id'])

@@ -63,6 +63,18 @@ class Agreement extends Model
       return config('attribute.agreement_type')[$this->type];
     }
 
+    public function getFormatEntryDateAttribute(){
+      return $this->dateweek_format($this->entry_date);
+    }
+
+    public function getFormatStartDateAttribute(){
+      return $this->dateweek_format($this->start_date);
+    }
+    
+    public function getFormatEndDateAttribute(){
+      return $this->dateweek_format($this->end_date);
+    }
+
     public function getStatementSummaryAttribute(){
       $statements = $this->agreement_statements;
       $ret = [];
@@ -78,8 +90,8 @@ class Agreement extends Model
 
     public function scopeEnable($query){
       return $query->where('status','commit')
-                  ->where('start_date','>=',date('Y-m-d'))
-                  ->where('end_date','<=',date('Y-m-d'));
+                  ->where('start_date','<=',date('Y-m-d'))
+                  ->where('end_date','>=',date('Y-m-d'));
     }
 
     public function scopeEnableByType($query,$type){

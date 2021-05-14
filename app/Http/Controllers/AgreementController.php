@@ -37,13 +37,13 @@ class AgreementController extends MilestoneController
           'student_parent_name' => [
             'label' => '契約者氏名'
           ],
-          'entry_date' => [
+          'format_entry_date' => [
             'label' => '登録日',
           ],
-          'start_date' => [
-            'label' => '承認日',
+          'format_start_date' => [
+            'label' => '開始日',
           ],
-          'end_date' => [
+          'format_end_date' => [
             'label' => '終了日',
           ],
           /*
