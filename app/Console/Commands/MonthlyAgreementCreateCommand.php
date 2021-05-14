@@ -49,7 +49,7 @@ class MonthlyAgreementCreateCommand extends Command
         $student_users = User::has('student')->get();
         $target_users = $student_users->filter(function($item) use($date){
           //契約の対象になるカレンダー設定があるユーザ
-          return $item->agreement_target_calendar_memeber_settings($date)->count() > 0;
+          return $item->agreement_target_calendar_member_settings($date)->count() > 0;
         });
         //体験生徒と職員を除く
         $target_users = $target_users->reject(function($item){

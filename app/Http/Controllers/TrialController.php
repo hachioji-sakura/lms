@@ -689,27 +689,35 @@ class TrialController extends UserCalendarController
    public function admission_mail(Request $request, $id){
      $access_key = '';
      $trial = Trial::where('id', $id)->first();
-     $agreements = $trial->student->agreementsByStatuses(['new','commit']);
-     if($agreements->count() > 0){
-       $agreement = $agreements->first();
-       if($agreement->status == 'new'){
-         $is_money_edit = true;
-       }else{
-         $is_money_edit = false;
-       }
-     }else{
-       $agreement = null;
-       $is_money_edit = false;
-     }
-
+     $is_money_edit = true;
      if(!isset($trial)) abort(404);
+    $this_month = date('Y-m-d',strtotime('first day of this month'));
+    $next_month = date('Y-m-d',strtotime('first day of next month'));
+    //次月以降の予定で契約を作る
+    $members = $trial->student->user->agreement_target_calendar_member_settings($next_month);
+    if($members->count() >0 ){
+      $agreements = $trial->student->agreements()->where('status','dummy')->get();
+      DB::transaction(function() use($trial,$this_month,$next_month,$members){
+        $agreement = Agreement::add_from_member_setting($members->first()->id,$next_month);
+        $agreement->status = "dummy";
+
+        //今月の予定があるならば契約開始日を今月初に設定
+        $_members = $trial->student->user->agreement_target_calendar_member_settings($this_month);
+        if($_members->count()  > 0 ){
+          $agreement->start_date = $this_month;
+        }
+        $agreement->save();
+      });
+    }
+     $agreements = $trial->student->agreements()->where('status','dummy')->get();
+     
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
-       'agreement' => $agreement,
        'is_money_edit' => $is_money_edit,
+       'agreement' => $agreements->first(),
      ];
 
      return view($this->domain.'.admission_mail',
@@ -721,6 +729,11 @@ class TrialController extends UserCalendarController
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
     $res = $this->transaction($request, function() use ($request, $id,$param, $access_key){
+      $agreement = Agreement::find($request->agreements['id']);
+      $agreement->entry_fee = $request->agreements['entry_fee'];
+      $agreement->monthly_fee = $request->agreements['monthly_fee'];
+      $agreement->status = "new";
+      $agreement->save();
       //料金が変更されていたら更新
       foreach($request->get('agreement_statements') as $statement_id => $value){
         $statement = AgreementStatement::find($statement_id);

@@ -152,7 +152,7 @@ class Agreement extends Model
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
-        'entry_date' =>  $date,
+        'entry_date' => date('Y/m/d H:i:s'),
         'start_date' => date('Y/m/d',strtotime("first day of ".$date)),
         'end_date' => date('Y/m/d', strtotime("last day of ".$date)),
         'student_id' => $member->user->details()->id,
@@ -163,7 +163,7 @@ class Agreement extends Model
       ];
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
-      $members = $member->user->agreement_target_calendar_memeber_settings($date)->get();
+      $members = $member->user->agreement_target_calendar_member_settings($date)->get();
       $settings = $members->map(function($item,$key){
         return $item->setting;
       });
@@ -190,6 +190,12 @@ class Agreement extends Model
       }else{
         $is_update = true;
       }
+
+      //dummyを持ってたら消す
+      $dummy_ag = $member->user->student->agreements()->where('status','dummy')->get();
+      $dummy_ag->map(function($item){
+        return $item->dispose();
+      });
 
       //更新があればnew,更新がなければcommitで登録
       if($is_update == true){

@@ -3,7 +3,7 @@
     <div class="card-header d-flex p-0">
     <h4 class="card-title p-3 text-sm">
 			<i class="fa fa-file-signature"></i>
-			基本契約内容
+			基本契約内容({{date('Y年n月',strtotime($agreement->start_date))}}～)
     </h4>
     </div>
     <div class="card-body">
@@ -45,7 +45,7 @@
           </div>
 					<div class="col-6 p-2 font-weight-bold" >月会費</div>
           <div class="col-6 p-2">
-						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}"><span class="ml-2 float-left mt-2" inputtype="numeric">円(税込み)</span>
+						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}" inputtype="numeric"><span class="ml-2 float-left mt-2">円(税込み)</span>
           </div>
 					@else
 					<div class="col-6 p-2 font-weight-bold" >入会金</div>

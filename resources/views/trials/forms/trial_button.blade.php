@@ -28,10 +28,8 @@
 </a>
 @endif
 @if($item->status=='entry_hope' || $item->status=='entry_guidanced')
-  @if($item->student->agreementsByStatuses(['commit'])->count() == 0)
-  <a class="btn btn-sm btn-flat btn-success mt-1" role="button"  href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
-    <i class="fa fa-envelope mr-1"></i>入塾案内連絡
-  </a>
-  @endif
+<a class="btn btn-sm btn-flat btn-success mt-1" role="button"  href="javascript:void(0);" page_title="入塾案内連絡" page_form="dialog" page_url="/trials/{{$item["id"]}}/admission">
+  <i class="fa fa-envelope mr-1"></i>入塾案内連絡
+</a>
 @endif
 @endif

@@ -145,7 +145,7 @@ class User extends Authenticatable
         return $query->enable();
       });
     }
-    public function agreement_target_calendar_memeber_settings($date = null){
+    public function agreement_target_calendar_member_settings($date = null){
       if($date == null){
          $month_start_date = date("Y-m-d",strtotime("first day of this month"));
          $month_end_date = date("Y-m-d",strtotime("last day of this month"));
@@ -298,7 +298,7 @@ EOT;
     }
     public function get_enable_calendar_settings(){
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel','dummy'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
