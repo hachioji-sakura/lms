@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Agreement;
+use App\Models\Ask;
 
 class MakeAprilAgreementSeeder extends Seeder
 {
@@ -15,14 +16,14 @@ class MakeAprilAgreementSeeder extends Seeder
     {
         DB::transaction(function(){
             //体験フローの契約確認中のものを除いて、すべてをcommitに変更
-            $except_ids = Ask::where('type','agreement')->pluck('target_model_id');
-            Agreement::whereNotIn($except_ids)->where('status','new')->update(['status' => 'commit']);
+            $except_ids = Ask::where('type','agreement')->where('status','new')->where("target_model","agreements")->pluck('target_model_id');
+            Agreement::whereNotIn('id',$except_ids)->where('status','new')->update(['status' => 'commit']);
 
             //開始日がないなら4/1にセット
             Agreement::whereNull('start_date')->update(['start_date'=>"2021-04-01"]);
-            //存在する契約はすべて4月で終了するようにセット
+            //存在する契約はすべて前月で終了するようにセット
             Agreement::all()->map(function($item){
-                return $item->update(['end_date'=>"2021-04-30"]);
+                return $item->update(['end_date'=> date("Y-m-t",strtotime("-1 month"))]);
             });
         });
     }

@@ -25,7 +25,6 @@ class Agreement extends Model
       'parent_agreement_id',
       'entry_fee',
       'monthly_fee',
-      'entry_date',
       'commit_date',
       'start_date',
       'end_date',
@@ -63,9 +62,6 @@ class Agreement extends Model
       return config('attribute.agreement_type')[$this->type];
     }
 
-    public function getFormatEntryDateAttribute(){
-      return $this->dateweek_format($this->entry_date);
-    }
 
     public function getFormatStartDateAttribute(){
       return $this->dateweek_format($this->start_date);
@@ -88,10 +84,15 @@ class Agreement extends Model
       return $ret;
     }
 
-    public function scopeEnable($query){
+    public function scopeEnableByDate($query,$date = null){
+      if(empty($date)){
+        $target_date = date('Y-m-d'); 
+      }else{
+        $target_date = date('Y-m-d',strtotime($date));
+      }
       return $query->where('status','commit')
-                  ->where('start_date','<=',date('Y-m-d'))
-                  ->where('end_date','>=',date('Y-m-d'));
+                  ->where('start_date','<=',$date)
+                  ->where('end_date','>=',$date);
     }
 
     public function scopeEnableByType($query,$type){
@@ -152,21 +153,20 @@ class Agreement extends Model
     }
 
     public static function add_from_member_setting($member_id, $date = null){
-      if($date == null){
-        $date = date('Y/m/d H:i:s');
+      if(empty($date)){
+        $date = date('Y/m/d');
       }else{
         $date = date('Y/m/d', strtotime($date));
       }
       $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
-      $agreement = $member->user->details()->old_commit_agreements->first();
+      $agreement = $member->user->student->prev_agreements->first();
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
-        'entry_date' => date('Y/m/d H:i:s'),
-        'start_date' => date('Y/m/d',strtotime("first day of ".$date)),
-        'end_date' => date('Y/m/d', strtotime("last day of ".$date)),
+        'start_date' => date('Y/m/1',strtotime($date)),
+        'end_date' => date('Y/m/t', strtotime($date)),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),

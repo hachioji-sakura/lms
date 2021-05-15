@@ -93,7 +93,7 @@ class Student extends Model
     return $this->agreements()->enableByType($type);
   }  
   
-  public function old_commit_agreements(){
+  public function prev_agreements(){
     return $this->agreements()->where('status','commit')->orderby('start_date','desc');
   }
   
@@ -1201,7 +1201,7 @@ EOT;
   public function get_monthly_fee(){
     //契約時の自動計算用
     //契約を既に持っている場合はその値を返す
-    $agreements = $this->old_commit_agreements;
+    $agreements = $this->prev_agreements;
     if($agreements->count() > 0){
       $monthly_fee = $agreements->first()->monthly_fee;
     }else{
@@ -1238,7 +1238,7 @@ EOT;
   public function get_entry_fee(){
     //契約時の自動計算用
     //契約を持っていた場合はその値を取る
-    $agreements = $this->old_commit_agreements;
+    $agreements = $this->prev_agreements;
     if($agreements->count() > 0){
       $entry_fee = $agreements->first()->entry_fee;
     }else{
