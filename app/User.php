@@ -145,8 +145,8 @@ class User extends Authenticatable
         return $query->enable();
       });
     }
-    public function monthly_enable_calendar_settings($date = null){
-      //指定日付の時点で契約作成の対象となるuser_calendar_settingを取る
+    public function monthly_enable_calendar_member_settings($date = null){
+      //指定日付の時点で契約作成の対象となるuser_calendar_member_settingを取る
       if($date == null){
          $month_start_date = date("Y-m-1");
          $month_end_date = date("Y-m-t");
@@ -158,10 +158,16 @@ class User extends Authenticatable
       return $this->calendar_member_settings()->whereNotIn('status',
       ['cancel','dummy'])->whereHas('setting',function($query) use ($month_start_date,$month_end_date){
         return $query->searchRangeDate($month_start_date,$month_end_date);
-      })->get()->map(function($item){
+      });
+    }
+    
+    public function monthly_enable_calendar_settings($date = null){
+      //monthly_enable_calendar_member_settingsをもとにuser_calendar_settingsを返す
+      return $this->monthly_enable_calendar_member_settings($date)->get()->map(function($item){
         return $item->setting;
       });
     }
+
     /**
      * パスワードリセット通知の送信
      *

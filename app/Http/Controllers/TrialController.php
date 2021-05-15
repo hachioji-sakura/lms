@@ -694,7 +694,7 @@ class TrialController extends UserCalendarController
     $this_month_date = date('Y-m-1');
     $next_month_date = date('Y-m-1',strtotime('+1 month'));
     //次月以降の予定で契約を作る
-    $members = $trial->student->user->monthly_enable_calendar_settings($next_month_date);
+    $members = $trial->student->user->monthly_enable_calendar_member_settings($next_month_date);
     if($members->count() >0 ){
       $agreement = DB::transaction(function() use($trial,$this_month_date,$next_month_date,$members){
         $agreement = Agreement::add_from_member_setting($members->first()->id,$next_month_date);
