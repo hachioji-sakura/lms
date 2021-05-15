@@ -84,6 +84,11 @@ class Agreement extends Model
       return $ret;
     }
 
+    public function scopeEnable($query){
+      //絞り込みの表示用
+      return $query->enableByDate(date('Y-m-d'));
+    }
+
     public function scopeEnableByDate($query,$date = null){
       if(empty($date)){
         $target_date = date('Y-m-d'); 
