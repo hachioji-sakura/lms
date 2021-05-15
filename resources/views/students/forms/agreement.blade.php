@@ -3,7 +3,7 @@
     <div class="card-header d-flex p-0">
     <h4 class="card-title p-3 text-sm">
 			<i class="fa fa-file-signature"></i>
-			基本契約内容({{date('Y年n月',strtotime($agreement->start_date))}}～)
+			基本契約内容
     </h4>
     </div>
     <div class="card-body">

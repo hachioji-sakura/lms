@@ -32,4 +32,3 @@
   <i class="fa fa-envelope mr-1"></i>入塾案内連絡
 </a>
 @endif
-@endif
