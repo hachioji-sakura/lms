@@ -90,9 +90,10 @@ class AgreementStatement extends Model
     }
 
     public function getLessonStartDateAttribute(){
+      //契約明細が紐づくカレンダー設定から作られたカレンダーの中で一番開催が早い物
       $date = $this->user_calendar_member_settings->map(function($item){
-        return $item->setting;
-      })->min('enable_start_date');
+        return $item->setting->calendars->where('status','fix')->where('start_time',">=",date('Y-m-d H:i:s'))->min('start_time');
+      })->min();
       return $this->dateweek_format($date);
     }
 
