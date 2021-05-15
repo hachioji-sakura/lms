@@ -691,25 +691,24 @@ class TrialController extends UserCalendarController
      $trial = Trial::where('id', $id)->first();
      $is_money_edit = true;
      if(!isset($trial)) abort(404);
-    $this_month = date('Y-m-d',strtotime('first day of this month'));
-    $next_month = date('Y-m-d',strtotime('first day of next month'));
+    $this_month_date = date('Y-m-1');
+    $next_month_date = date('Y-m-1',strtotime('+1 month'));
     //次月以降の予定で契約を作る
-    $members = $trial->student->user->agreement_target_calendar_member_settings($next_month);
+    $members = $trial->student->user->monthly_enable_calendar_settings($next_month_date);
     if($members->count() >0 ){
-      $agreements = $trial->student->agreements()->where('status','dummy')->get();
-      DB::transaction(function() use($trial,$this_month,$next_month,$members){
-        $agreement = Agreement::add_from_member_setting($members->first()->id,$next_month);
+      $agreement = DB::transaction(function() use($trial,$this_month_date,$next_month_date,$members){
+        $agreement = Agreement::add_from_member_setting($members->first()->id,$next_month_date);
         $agreement->status = "dummy";
 
         //今月の予定があるならば契約開始日を今月初に設定
-        $_members = $trial->student->user->agreement_target_calendar_member_settings($this_month);
+        $_members = $trial->student->user->monthly_enable_calendar_settings($this_month_date);
         if($_members->count()  > 0 ){
-          $agreement->start_date = $this_month;
+          $agreement->start_date = $this_month_date;
         }
         $agreement->save();
+        return $agreement;
       });
     }
-     $agreements = $trial->student->agreements()->where('status','dummy')->get();
      
      $param = [
        'item' => $trial->details(),
@@ -717,7 +716,7 @@ class TrialController extends UserCalendarController
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
        'is_money_edit' => $is_money_edit,
-       'agreement' => $agreements->first(),
+       'agreement' => $agreement,
      ];
 
      return view($this->domain.'.admission_mail',

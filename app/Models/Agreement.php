@@ -175,10 +175,7 @@ class Agreement extends Model
       ];
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
-      $members = $member->user->agreement_target_calendar_member_settings($date)->get();
-      $settings = $members->map(function($item,$key){
-        return $item->setting;
-      });
+      $settings = $member->user->monthly_enable_calendar_settings($date);
       foreach($settings as $st){
         $mb = $st->members->where('user_id',$member->user_id)->first();
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
@@ -240,7 +237,7 @@ class Agreement extends Model
       //元の契約から見て新しい契約に漏れがないか
       foreach ($this->agreement_statements as $statement){
         foreach($statement_form as $key => $value){
-          if($statement->title == $key){
+          if($statement->statement_key == $key){
             $counter++;
           }
         }
@@ -250,7 +247,7 @@ class Agreement extends Model
         //新しい契約から見て元の契約にも取れがないか
         foreach($statement_form as $key => $value){
           foreach($this->agreement_statements as $statement){
-            if($key == $statement->title){
+            if($key == $statement->statement_key){
               $counter++;
             }
           }

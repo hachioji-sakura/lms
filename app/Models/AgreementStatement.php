@@ -97,6 +97,15 @@ class AgreementStatement extends Model
       return $this->dateweek_format($date);
     }
 
+    public function getStatementKeyAttribute(){
+      //同じかどうか比較するフィールド値の束
+      $works = [
+        'single' => '6',
+        'group' => '7',
+      ];
+      return $this->lesson_id.'_'.$works[$this->course_type].'_'.$this->course_minutes.'_'.$this->lesson_week_count.'_'.$this->teacher_id;
+    }
+
     public function is_already_registered($form){
       $already_data = AgreementStatement::where('student_id' , $form['student_id'])
       ->where('teacher_id' , $form['teacher_id'])
