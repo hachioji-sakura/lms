@@ -169,9 +169,9 @@ EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
 
-  public function scopeSearchRangeDate($query,$start_date,$end_date){
+  public function scopeSearchRangeDate($query,$from_date,$to_date){
     //有効期間が指定期間に含まれるもの
-    return $query->where('enable_start_date','<=',date('Y/m/d',strtotime($end_date)))->where(DB::raw('IFNULL(enable_end_date,"9999/12/31")'),'>=',date('Y/m/d',strtotime($start_date)));
+    return $query->where('enable_start_date','<=',date('Y/m/d',strtotime($to_date)))->where(DB::raw('IFNULL(enable_end_date,"9999/12/31")'),'>=',date('Y/m/d',strtotime($from_date)));
   }
 
   public function scopeSearchWord($query, $word)

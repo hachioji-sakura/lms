@@ -165,7 +165,7 @@ class Agreement extends Model
       }
       $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
-      $agreement = $member->user->student->prev_agreements->first();
+      
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
@@ -181,6 +181,7 @@ class Agreement extends Model
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
       $settings = $member->user->monthly_enable_calendar_settings($date);
+      $member_ids = [];
       foreach($settings as $st){
         $mb = $st->members->where('user_id',$member->user_id)->first();
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
@@ -196,6 +197,7 @@ class Agreement extends Model
           'is_exam' => $mb->user->details()->is_juken(),
         ];
         $statement_form[$setting_key] = new AgreementStatement($form);
+        if(!isset($member_ids[$setting_key])) $member_ids[$setting_key] = [];
         $member_ids[$setting_key][] = $mb->id;
       }
       //契約変更の判定
@@ -205,12 +207,6 @@ class Agreement extends Model
         $is_update = true;
       }
 
-      //dummyを持ってたら消す
-      $dummy_ag = $member->user->student->agreements()->where('status','dummy')->get();
-      $dummy_ag->map(function($item){
-        return $item->dispose();
-      });
-
       //更新があればnew,更新がなければcommitで登録
       if($is_update == true){
         $new_agreement->status = 'new';
@@ -218,6 +214,8 @@ class Agreement extends Model
         $new_agreement->status = 'commit';
         $new_agreement->commit_date = date('Y/m/d',strtotime("first day of this month"));
       }
+
+      $agreement = $member->user->student->prev_agreements->first();
       if(!empty($agreement)){
         //既存の契約idを取得してparent_idへセット
         $new_agreement->parent_agreement_id = $agreement->id;
@@ -226,8 +224,7 @@ class Agreement extends Model
       $new_agreement->save();
       $new_agreement->agreement_statements()->saveMany($statement_form);
       foreach($statement_form as $key => $statement){
-        $ids = $member_ids[$key];
-        $statement->user_calendar_member_settings()->attach($ids);
+        $statement->user_calendar_member_settings()->attach($member_ids[$key]);
       }
       return $new_agreement;
     }

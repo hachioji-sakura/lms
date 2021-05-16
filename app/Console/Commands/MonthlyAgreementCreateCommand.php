@@ -52,6 +52,7 @@ class MonthlyAgreementCreateCommand extends Command
           return $item->monthly_enable_calendar_settings($date)->count() > 0;
         });
         //体験生徒と職員を除く
+        //TODO:体験生徒、職員は不要なのでユーザー削除されたらロジックを削除する
         $target_users = $target_users->reject(function($item){
             return $item->id == 888 || $item->id == 890;
         });
