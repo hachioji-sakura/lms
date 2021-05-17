@@ -448,7 +448,10 @@ return [
   'amazon_price' => 'amazon価格',
   'publisher_price' => '出版社請求価格',
   'other_price' => 'その他価格',
-
+  'choice_schools' => '志望校',
+  'first_choice_school' => '第１志望校',
+  'second_choice_school' => '第２志望校',
+  'third_choice_school' => '第３志望校',
   // 学校ページに関するもの
   'schools' => '学校情報',
   'school_page_header_high_school_id' => '高等学校ID',
@@ -476,7 +479,6 @@ return [
   'school_page_side_menu_part_time_credit' => '定時単位制',
   'school_page_side_menu_part_time_credit_night_only' => '定時単位制夜間',
   'school_page_side_menu_part_online_school' => '通信制',
-
   'memos' => 'メモ',
   'bulk' => '一括',
   'school_textbooks' => '学校使用テキスト'

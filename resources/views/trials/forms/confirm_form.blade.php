@@ -209,6 +209,12 @@
   @isset($is_trial)
   <div class="col-6 p-3 font-weight-bold" >当塾をお知りになった方法は何でしょうか？</div>
   <div class="col-6 p-3"><span id="howto_name"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第１志望校</div>
+  <div class="col-6 p-3"><span id="choice_school1"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第２志望校</div>
+  <div class="col-6 p-3"><span id="choice_school2"></span></div>
+  <div class="col-6 p-3 font-weight-bold" >第３志望校</div>
+  <div class="col-6 p-3"><span id="choice_school3"></span></div>
   <div class="col-6 p-3 font-weight-bold howto_word_confirm collapse" >検索ワードをお答えください</div>
   <div class="col-6 p-3 howto_word_confirm collapse"><span id="howto_word"></span></div>
   @endif

@@ -379,7 +379,7 @@ class Trial extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'entry_milestone_word','howto_word', 'course_type', 'parent_interview'];
+      ,'entry_milestone_word','howto_word', 'course_type', 'parent_interview','choice_school1','choice_school2','choice_school3'];
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -422,6 +422,29 @@ class Trial extends Model
       $ret .= "■".__('labels.other')."\n";
       $ret .= $remark;
     }
+
+    if(!empty($tagdata['choice_school1'])){
+      foreach($tagdata['choice_school1'] as $value) {
+        $ret .= "■" . __('labels.first_choice_school') . "\n";
+        $ret .= $value."\n";;
+      }
+    }
+
+    if(!empty($tagdata['choice_school2'])){
+      foreach($tagdata['choice_school2'] as $value) {
+        $ret .= "■" . __('labels.second_choice_school') . "\n";
+        $ret .= $value."\n";
+      }
+    }
+
+    if(!empty($tagdata['choice_school3'])){
+      foreach($tagdata['choice_school3'] as $value) {
+        $ret .= "■" . __('labels.third_choice_school') . "\n";
+        $ret .= $value."\n";
+      }
+    }
+
+
     return $ret;
   }
   public function get_calendar(){
@@ -1401,7 +1424,7 @@ class Trial extends Model
       $this->student->profile_update($form);
       $remark = '';
       if(isset($form['remark'])) $remark = $form['remark'];
-      $this->write_comment('entry', $remark);  
+      $this->write_comment('entry', $remark);
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;

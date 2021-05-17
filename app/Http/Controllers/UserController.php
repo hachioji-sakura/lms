@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App;
+use App\Models\School;
 use App\User;
 use App\Models\Image;
 use App\Models\Student;
@@ -39,6 +40,9 @@ class UserController extends Controller
     }
     $places = Place::enable()->orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
+
+    $schools = School::get();
+    $attributes['schools'] = $schools;
 
     $attributes['ask_type'] = [
       'new_schedule' => '通塾スケジュールの追加',
