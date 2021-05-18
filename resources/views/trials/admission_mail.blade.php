@@ -21,7 +21,7 @@
     		<div class="row">
     			<div class="col-12 col-md-6 mb-1">
     				<button type="button" class="btn btn-submit btn-primary btn-block" accesskey="admission_mail" confirm="入会案内メールを送信しますか？"
-            @if($item->student->agreementsByStatuses(['new'])->count() == 0 )
+            @if($item->student->agreementsByStatuses(['dummy'])->count() == 0 )
               disabled
             @endif
             >

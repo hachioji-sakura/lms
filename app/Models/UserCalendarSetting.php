@@ -160,11 +160,20 @@ EOT;
   public function scopeEnable($query){
     $where_raw = <<<EOT
       (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date >= ?)
+       (
+         lms.user_calendar_settings.enable_end_date is null OR 
+         lms.user_calendar_settings.enable_end_date >= ? 
+       )
       )
 EOT;
     return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
   }
+
+  public function scopeSearchRangeDate($query,$from_date,$to_date){
+    //有効期間が指定期間に含まれるもの
+    return $query->where('enable_start_date','<=',date('Y/m/d',strtotime($to_date)))->where(DB::raw('IFNULL(enable_end_date,"9999/12/31")'),'>=',date('Y/m/d',strtotime($from_date)));
+  }
+
   public function scopeSearchWord($query, $word)
   {
     $search_words = $this->get_search_word_array($word);
@@ -440,10 +449,6 @@ EOT;
       $calendar->dispose();
     }
     */
-    if(isset($user_id) && $this->is_teaching()==true){
-      //契約処理
-      $this->agreement_update($user_id);
-    }
     $this->delete();
 
   }
