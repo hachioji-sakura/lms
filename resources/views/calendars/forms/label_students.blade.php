@@ -26,6 +26,9 @@
       @endif
     @endif
   @if($user->role=="manager" || $user->role=="teacher")
+    @if($member->user->student->status!='regular')
+      <small title="{{$item["id"]}}" class="badge badge-{{config('status_style')[$member->user->student->status]}} mt-1" title="{{$member->user->student->status}}">{{$member->user->student->status_name}}</small>
+    @endif
   </a>
   @else
   </span>

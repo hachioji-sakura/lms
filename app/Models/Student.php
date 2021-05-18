@@ -530,6 +530,9 @@ EOT;
   public function getKanaAttribute(){
     return $this->kana();
   }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
+  }
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
@@ -649,9 +652,11 @@ EOT;
       else $_param = explode(',', $filter["search_status"].',');
       $items = $items->findStatuses($_param);
     }
-    else {
+
+    if(!isset($filter["is_include_expired"])){
       $items = $items->enable();
     }
+
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
@@ -1196,7 +1201,6 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
-  
   //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
