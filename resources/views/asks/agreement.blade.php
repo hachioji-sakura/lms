@@ -110,7 +110,7 @@ function important_checked(){
     @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
     @elseif($item->type == 'agreement_confirm')
-    ご契約内容は下記の通りとなります。<br>
+    ご契約内容のご承認ありがとうございました。<br>
     @endif
   </h4>
   @else

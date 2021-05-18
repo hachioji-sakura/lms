@@ -45,7 +45,7 @@
           </div>
 					<div class="col-6 p-2 font-weight-bold" >月会費</div>
           <div class="col-6 p-2">
-						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}"><span class="ml-2 float-left mt-2" inputtype="numeric">円(税込み)</span>
+						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}" inputtype="numeric"><span class="ml-2 float-left mt-2">円(税込み)</span>
           </div>
 					@else
 					<div class="col-6 p-2 font-weight-bold" >入会金</div>
