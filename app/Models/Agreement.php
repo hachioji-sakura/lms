@@ -200,7 +200,9 @@ class Agreement extends Model
         if(!isset($member_ids[$setting_key])) $member_ids[$setting_key] = [];
         $member_ids[$setting_key][] = $mb->id;
       }
+      
       //契約変更の判定
+      $agreement = $member->user->student->prev_agreements->first();
       if(!empty($agreement)){
         $is_update = $agreement->is_same($statement_form);
       }else{
@@ -215,7 +217,6 @@ class Agreement extends Model
         $new_agreement->commit_date = date('Y/m/d',strtotime("first day of this month"));
       }
 
-      $agreement = $member->user->student->prev_agreements->first();
       if(!empty($agreement)){
         //既存の契約idを取得してparent_idへセット
         $new_agreement->parent_agreement_id = $agreement->id;
