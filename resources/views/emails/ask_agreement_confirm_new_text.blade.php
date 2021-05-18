@@ -16,7 +16,7 @@
 @foreach($target_model->agreement_statements as $statement)
 ・({{config('attribute.lesson')[$statement->lesson_id]}})通塾回数/週 :{{$statement->lesson_week_count}} 回
 @endforeach
-・入会金 : &yen; {{number_format($target_model->entry_fee)}}
+{{--契約変更依頼は入会金出さない--}}
 ・月会費 : &yen; {{number_format($target_model->monthly_fee)}}
 
 ■通塾内容
@@ -26,7 +26,7 @@
 ・校舎：{{$statement->user_calendar_member_settings->first()->setting->place_floor_name}}
 ・科目：@foreach($statement->user_calendar_member_settings->first()->setting->subject() as $subject) {{$subject}} @endforeach
 
-・開始日：{{$statement->user_calendar_member_settings->first()->setting->details()['schedule_start_date']}}
+・開始日：{{$statement->lesson_start_date}}
 ・担当講師：{{$statement->teacher->details()->name()}}
 ・受講料： &yen; {{number_format($statement->tuition)}}
 

@@ -91,7 +91,13 @@ class Student extends Model
 
   public function enable_agreements_by_type($type){
     return $this->agreements()->enableByType($type);
-  }  /**
+  }  
+  
+  public function prev_agreements(){
+    return $this->agreements()->where('status','commit')->orderby('start_date','desc');
+  }
+  
+  /**
    *　プロパティ：年齢
    */
   public function age(){
@@ -524,6 +530,9 @@ EOT;
   public function getKanaAttribute(){
     return $this->kana();
   }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
+  }
   public function get_charge_subject(){
     //担当科目を取得
     $subjects = [];
@@ -643,9 +652,11 @@ EOT;
       else $_param = explode(',', $filter["search_status"].',');
       $items = $items->findStatuses($_param);
     }
-    else {
+
+    if(!isset($filter["is_include_expired"])){
       $items = $items->enable();
     }
+
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
@@ -1190,42 +1201,51 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
-  
   //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
-    //契約後は契約参照
-    $user = $this->user;
-    if($user->has_tag('lesson',1)==true){
-      //塾
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
-      //英会話(中国語以外）
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
-      //幼児教室
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
-      //中国語
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
-      //そろばん
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',3)==true){
-      //ピアノ
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
-      // ダンス
-      $monthly_fee = 500;
+    //契約を既に持っている場合はその値を返す
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $monthly_fee = $agreements->first()->monthly_fee;
     }else{
-      $monthly_fee = 0;
+      $user = $this->user;
+      if($user->has_tag('lesson',1)==true){
+        //塾
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+        //英会話(中国語以外）
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        //幼児教室
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
+        //中国語
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+        //そろばん
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',3)==true){
+        //ピアノ
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+        // ダンス
+        $monthly_fee = 500;
+      }else{
+        $monthly_fee = 0;
+      }
+
     }
 
     return $monthly_fee;
   }
   public function get_entry_fee(){
     //契約時の自動計算用
-    //契約後は契約参照
+    //契約を持っていた場合はその値を取る
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $entry_fee = $agreements->first()->entry_fee;
+    }else{
       $user = $this->user;
       if($this->is_first_brother() == false){
         return 0;
@@ -1255,6 +1275,8 @@ EOT;
         //該当しない場合0円
         $entry_fee = 0;
       }
+    }
+
       return $entry_fee;
   }
 

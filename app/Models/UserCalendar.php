@@ -641,6 +641,9 @@ EOT;
   public function getLessonAttribute($user_id){
     return $this->lesson();
   }
+  public function getLessonIdAttribute(){
+    return $this->get_attribute('lesson',true);
+  }
   public function getWorkNameAttribute(){
     return $this->work();
   }

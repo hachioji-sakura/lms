@@ -159,6 +159,7 @@ return [
   'add_range' => 'Registration range',
   'upd_datetime' => 'Updated At',
   'timezone' => 'Timezone',
+  'display' => 'Display',
   'sort_no' => 'Display sort',
   'user_only' => 'User Only',
   'enabled_only' => 'Enabled Only',
@@ -357,6 +358,7 @@ return [
   'not_require_student_confirm' => 'Does not require student confirmation',
   'schedule_start_hope_date' => 'Schedule Start Preferred Date',
   'schedule_start_date' => 'Schedule Start Date',
+  'schedule_start_month' => 'Schedule Start Month',
   'schedule_end_date' => 'Schedule End Date',
   'verification_code' => 'Verification Code',
   'language' => 'Language',
@@ -478,4 +480,6 @@ return [
   'school_page_side_menu_part_online_school' => 'Online School',
 
   'memos' => 'Teacher Memo',
+  'bulk' => 'Bulk',
+  'is_include_expired' => 'include expired',
 ];

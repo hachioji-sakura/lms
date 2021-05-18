@@ -61,6 +61,7 @@
     @endif
   </label>
   <div class="input-group">
+    @if(isset($item) && !empty($item->entry_date))
     <label>{{$item->dateweek_format($item->entry_date)}}</label>
     <input type="hidden" name="entry_date" value = "{{date('Y/m/d', strtotime($item->entry_date))}}">
     @else
