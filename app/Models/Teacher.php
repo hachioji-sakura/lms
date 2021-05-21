@@ -275,16 +275,18 @@ EOT;
     $manager = null;
     if(isset($already_manager_id) && $already_manager_id > 0){
       $manager = Manager::where('id', $already_manager_id)->first();
-      //既存マネージャーのuserを削除ステータス
-      User::where('id', $manager->user_id)->update(['status' => 9]);
-      //既存マネージャーのuser_idを差し替え
-      $manager->update(['user_id'=>$this->user_id]);
-      $manager->profile_update($_create_form);
+      if(isset($manager)){
+        //既存マネージャーのuserを削除ステータス
+        if(isset($manager->user)) $manager->user->user_replacement($this->user_id);
+        //既存マネージャーのuser_idを差し替え
+        $manager->update(['user_id'=>$this->user_id]);
+        $manager->profile_update($_create_form);
+      }
     }
     else {
       $_create_form['user_id'] = $this->user_id;
       $manager = Manager::entry($_create_form);
-      $manager->profile_update($_create_form);
+      if(isset($manager)) $manager->profile_update($_create_form);
     }
     $this->user->update(['status' => 1,
                           'access_key' => $access_key
