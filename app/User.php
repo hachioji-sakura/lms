@@ -138,6 +138,9 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function event_user(){
+      return $this->hasMany('App\Models\EventUser');
+    }
     public function enable_calendar_member_settings(){
       //キャンセルとダミーでない有効期間内のメンバー設定
       return $this->calendar_member_settings()->whereNotIn('status',
@@ -512,5 +515,14 @@ EOT;
 
       $comments = $comments->get();
       return ["data" => $comments, 'count' => $count];
+    }
+    public function user_replacement($new_user_id){
+      $this->calendar_member_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_members()->update(['user_id' => $new_user_id]);
+      $this->calendars()->update(['user_id' => $new_user_id]);
+      $this->event_user()->update(['user_id' => $new_user_id]);
+      $this->tags()->update(['user_id' => $new_user_id]);
+      $this->update(['status' => 9]);
     }
 }
