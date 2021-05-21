@@ -124,7 +124,7 @@ return [
   "info_late_arrival_cancel" => "生徒様よりご連絡があり、\n以下の 授業予定の遅刻連絡をキャンセルするとのことです。",
   "confirm_remind_already_ask_data" => "この依頼は登録済みですが、再送しますか？",
   "confirm_ask_data" => "承認もしくは、差し戻し操作を行ってください。",
-  "error_user_calendar_settings_no_member" => "メンバー設定不備！",
+  "error_user_calendar_settings_not_during_enabel_date" => "有効期間中ではありません",
   "message_trial_candidate_date1" => "お申込みいただいた体験授業につきまして、\nご希望の日時にて、体験授業の予定を組むことができず、\n大変申し訳ございません。",
   "message_trial_candidate_date2" => "下記のURLより、追加の候補日時をお知らせいただきたく、\nお手数をおかけしますが、何卒宜しくお願い致します。",
   "confirm_schedule_commit" => "この予定に参加しますか？",

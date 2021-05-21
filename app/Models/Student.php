@@ -493,19 +493,9 @@ EOT;
   
   //TODO 退会・休会に関して履歴がない
   public function is_active($date=''){
-    //指定日付の時にこのユーザーがactiveならばtrueを返す  
-    if(empty($date)) {
-      $date = date('Y-m-d');
-    }
-    else {
-      $date = date('Y-m-d', strtotime($date));
-    }
     //退会日を以前ならactive（次の日からno active)
-    if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < strtotime($date)) return false;
-    //休会日の期間ならno active
-    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) &&  
-        strtotime($this->recess_start_date) <= strtotime($date) && strtotime($this->recess_end_date) >= strtotime($date)) return false;
-
+    $st = $this->get_status($date);
+    if($st=='unsubscribe' || $st=='recess') return false;
     return true;
   }
   public function get_brother(){
@@ -1347,5 +1337,16 @@ EOT;
     }
     return [];
   }
+  public function get_status($date=''){
+    if(empty($date)) $_d = strtotime('now');
+    else $_d = strtotime($date);
 
+    if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < $_d) return 'unsubscribe';
+    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) && 
+        strtotime($this->recess_start_date) <= $_d && strtotime($this->recess_end_date) >= $_d){
+      return 'recess';
+    }
+    if(!empty($this->entry_date) && strtotime($this->entry_date) <= $_d) return 'regular';
+    return 'trial';
+  }
 }
