@@ -28,6 +28,7 @@
         <i class="fa fa-user-tie mr-2"></i>
         {{$calendar['teacher_name']}}
         <br>
+        @if($calendar->is_teaching()==true)
         @foreach($calendar['subject'] as $subject)
         <span class="text-xs mx-2">
           <small class="badge badge-primary mt-1 mr-1">
@@ -35,6 +36,13 @@
           </small>
         </span>
         @endforeach
+        @else
+        <span class="text-xs mx-2">
+          <small class="badge badge-primary mt-1 mr-1">
+            {{$calendar->schedule_type_name}}
+          </small>
+        </span>
+        @endif
       </div>
       <div class="col-12 col-lg-4 col-md-4 text-sm mt-1">
         <a href="javascript:void(0);" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}?student_id={{$item->id}}" role="button" class="btn btn-default btn-sm float-left mr-1 w-100">
@@ -46,12 +54,21 @@
         @if($user->role!=="teacher" && $calendar->get_member($item->user_id)->status==="fix")
         --}}
         @if($user->role!=="teacher" && $calendar->get_member($item->user_id)->status==="fix" && $calendar["is_passed"]==false)
-        <a href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest?student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
-          <i class="fa fa-minus-circle mr-1"></i>休み連絡する
-          @if($user->role==="manager" || $user->role==="teacher")
-          (代理連絡）
+          @if($calendar->is_teaching()==true)
+          <a href="javascript:void(0);" page_title="休み連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/rest?student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
+            <i class="fa fa-minus-circle mr-1"></i>休み連絡する
+            @if($user->role==="manager" || $user->role==="teacher")
+            (代理連絡）
+            @endif
+          </a>
+          @else
+          <a href="javascript:void(0);" page_title="キャンセル連絡" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/cancel?student_id={{$item->id}}" role="button" class="btn btn-danger btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="fix") disabled @endif>
+            <i class="fa fa-minus-circle mr-1"></i>キャンセル連絡する
+            @if($user->role==="manager" || $user->role==="teacher")
+            (代理連絡）
+            @endif
+          </a>
           @endif
-        </a>
         @elseif($calendar->get_member($item->user_id)->status==="confirm")
         <a href="javascript:void(0);" page_title="予定確認" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}/status_update/fix?student_id={{$item->id}}" role="button" class="btn btn-primary btn-sm float-left mt-1 mr-1 w-100" @if($calendar["status"]!=="rest") disabled @endif>
           <i class="fa fa-check mr-1"></i>予定確認
