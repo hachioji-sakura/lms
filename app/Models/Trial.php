@@ -364,7 +364,9 @@ class Trial extends Model
     $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
     $tag_names[] ='entry_milestone'; //体験のみのタグ
-    $tag_names[] ='howto'; //体験のみのタグ
+    if(isset($form['howto'])){
+      $tag_names[] ='howto'; //体験のみのタグ
+    }
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
     foreach($lesson_weeks as $lesson_week=>$name){
@@ -1401,7 +1403,7 @@ class Trial extends Model
       $this->student->profile_update($form);
       $remark = '';
       if(isset($form['remark'])) $remark = $form['remark'];
-      $this->write_comment('entry', $remark);  
+      $this->write_comment('entry', $remark);
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
