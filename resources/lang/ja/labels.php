@@ -480,6 +480,6 @@ return [
   'school_page_side_menu_part_online_school' => '通信制',
   'memos' => 'メモ',
   'bulk' => '一括',
-  'school_textbooks' => '学校使用テキスト'
+  'school_textbooks' => '学校使用テキスト',
   'is_include_expired' => '期限切れ',
 ];
