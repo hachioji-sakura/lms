@@ -236,17 +236,8 @@ class UserCalendarMember extends Model
   public function is_recess_or_unsubscribe(){
     $u = $this->user->details();
     if($u->role=='student'){
-      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->recess_start_date) &&
-          strtotime($this->calendar->start_time) < strtotime($u->recess_end_date)){
-            return true;
-        }
-      }
-      if(!empty($u->unsubscribe_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->unsubscribe_date)){
-            return true;
-        }
-      }
+      $st = $u->get_status($this->calendar->start_time);
+      if($st=='unsubscribe' || $st=='recess') return true;
     }
     return false;
   }

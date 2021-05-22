@@ -700,21 +700,6 @@ EOT;
     }
     return true;
   }
-  public function has_enable_member(){
-    $is_enable = true;
-    if($this->work!=9){
-      $is_enable = false;
-      $students = $this->get_students();
-      foreach($students as $member){
-        if($this->user_id == $member->user_id) continue;
-        if(!isset($member->user->student)) continue;
-        if($member->user->student->status != 'regular' && $member->user->student->status != 'trial') continue;
-        $is_enable = true;
-        break;
-      }
-    }
-    return $is_enable;
-  }
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
@@ -789,10 +774,25 @@ EOT;
     }
     */
     if($this->work!=9){
-      $is_enable = $this->has_enable_member();
+      $is_enable = $this->is_enable($date);
       if($is_enable==false){
-        \Log::error("有効なメンバーがいない");
-        return $this->error_response("no_member", "有効なメンバーがいない(id=".$this->id.")");
+        \Log::error("add_calendar/id='.$this->id.'無効な設定");
+        return $this->error_response("disabled setting", "add_calendar/id='.$this->id.'無効な設定");
+      }
+      $is_enable=false;
+      $students = $this->get_students();
+      foreach($students as $member){
+        if($this->user_id == $member->user_id) continue;
+        if(!isset($member->user->student)) continue;
+        $_st = $member->user->student->get_status($date);
+        if($_st != 'unsubscribe') {
+          $is_enable=true;
+          break;
+        }
+      } 
+      if($is_enable==false){
+        \Log::error("この予定は全員退会しているため、作成する必要がない");
+        return $this->error_response("all unsubscribe setting", "add_calendar/id='.$this->id.'この予定は全員退会しているため、作成する必要がない");        
       }
     }
 
@@ -859,9 +859,14 @@ EOT;
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
-      if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
       //主催者以外を追加
-      $calendar->memberAdd($member->user_id, 1, $default_status);
+      $member = $calendar->memberAdd($member->user_id, 1, $default_status);
+      $_st = $member->user->student->get_status($date);
+      if($_st == 'unsubcribe' || $_st=='recess') {
+        $remark = __('labels.'.$_st).'のためキャンセル';
+        //通知なし、自動キャンセル更新(rootユーザー使用)
+        $member->status_update('cancel', $remark, 1, false, false);
+      }
     }
     if($default_status=='fix'){
       UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
@@ -932,7 +937,9 @@ EOT;
     $d = 0;
     foreach($students as $member){
       if(!isset($member->user->student)) continue;
-      if($member->user->student->status!='unsubscribe'){
+      //現在の生徒の状態を取得
+      $_st = $member->user->student->get_status();
+      if($_st!='unsubscribe'){
         //一人でも退会ではない場合、この設定は有効
         $is_enable = true;
         continue;

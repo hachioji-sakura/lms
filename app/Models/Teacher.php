@@ -72,6 +72,7 @@ class Teacher extends Student
 {
   protected $table = 'common.teachers';
   protected $guarded = array('id');
+  protected $status_key_name = 'attribute.teacher_status';
 
   public static $rules = array(
     'name_last' => 'required',
@@ -85,16 +86,6 @@ class Teacher extends Student
   public function chargeStudents(){
     return $this->hasMany('App\Models\ChargeStudent', 'teacher_id');
   }
-  public function status_name(){
-    $status_name = "";
-    if(app()->getLocale()=='en') return $this->status;
-
-    if(isset(config('attribute.teacher_status')[$this->status])){
-      $status_name = config('attribute.teacher_status')[$this->status];
-    }
-    return $status_name;
-  }
-
   public function scopeFindChargeStudent($query, $id)
   {
     $where_raw = <<<EOT
