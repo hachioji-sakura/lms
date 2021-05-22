@@ -68,6 +68,7 @@ class Student extends Model
   use Common;
   protected $table = 'common.students';
   protected $guarded = array('id');
+  protected $status_key_name = 'attribute.student_status';
   /**
    * 入力ルール
    */
@@ -194,12 +195,13 @@ class Student extends Model
   /**
    *　プロパティ：ステータス名
    */
-  public function status_name(){
-    $status_name = "";
-    if(app()->getLocale()=='en') return $this->status;
+  public function status_name($status=''){
+    if(empty($status)) $status = $this->status;
 
-    if(isset(config('attribute.student_status')[$this->status])){
-      $status_name = config('attribute.student_status')[$this->status];
+    $status_name = "";
+    if(app()->getLocale()=='en') return $status;
+    if(isset(config($this->status_key_name)[$status])){
+      $status_name = config($this->status_key_name)[$status];
     }
     return $status_name;
   }
@@ -1348,5 +1350,9 @@ EOT;
     }
     if(!empty($this->entry_date) && strtotime($this->entry_date) <= $_d) return 'regular';
     return 'trial';
+  }
+  public function get_status_name($date=''){
+    $_st = $this->get_status($date);
+    return $this->status_name($_st);
   }
 }
