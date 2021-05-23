@@ -46,7 +46,11 @@ class MonthlyAgreementCreateCommand extends Command
         }else{
           $date = date('Y-m-d',strtotime($this->argument('year')."-".$this->argument('month')));
         }
-        $student_users = User::has('student')->get();
+        //生徒を持っているユーザーの中で、体験でないもの
+        //体験の人は二か月先まで契約ができているので、作らなくてよい
+        $student_users = User::whereHas('student',function($query){
+          return $query->whereNotIn('status',["trial"]);
+        })->get();
         $target_users = $student_users->filter(function($item) use($date){
           //契約の対象になるカレンダー設定があるユーザ
           return $item->monthly_enable_calendar_settings($date)->count() > 0;
