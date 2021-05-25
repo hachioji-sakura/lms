@@ -1105,6 +1105,7 @@ EOT;
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_active()!=true) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -1121,6 +1122,7 @@ EOT;
     $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_active()!=true) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない
