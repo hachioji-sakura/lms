@@ -21,6 +21,9 @@ class PlaceController extends MilestoneController
         "label" => "英語名",
         'size' => 4
       ],
+      "status_name" => [
+        "label" => "ステータス"
+      ],
       "sort_no" => [
         "label" => "表示順",
         'size' => 2
@@ -66,6 +69,9 @@ class PlaceController extends MilestoneController
       "name_en" => [
         "label" => "英語名",
       ],
+      "status_name" => [
+        "label" => "ステータス"
+      ],
       "sort_no" => [
         "label" => "表示順",
       ],
@@ -100,6 +106,7 @@ class PlaceController extends MilestoneController
     $form['sort_no'] = $request->get('sort_no');
     $form['name'] = $request->get('name');
     $form['name_en'] = $request->get('name_en');
+    $form['status'] = $request->get('status');
     return $form;
   }
   /**
@@ -124,6 +131,7 @@ class PlaceController extends MilestoneController
     $form['sort_no'] = $request->get('sort_no');
     $form['name'] = $request->get('name');
     $form['name_en'] = $request->get('name_en');
+    $form['status'] = $request->get('status');
     return $form;
   }
   public function get_param(Request $request, $id=null){
@@ -210,5 +218,23 @@ class PlaceController extends MilestoneController
      $res = $this->transaction($request, function() use ($request, $form, $id){
      }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
      return $res;
+   }
+
+   public function phone_list(Request $request){
+     $param = parent::get_param($request);
+     $param['items'] = $this->model()->hasPhoneNo()->enable()->get();
+     $param['fields'] = $this->get_phone_fields();
+     return view($this->domain.'.phone_list')->with($param);
+   }
+
+   public function get_phone_fields(){
+     return [
+       "name" => [
+         'label' => '教室名',
+       ],
+       "phone_no" => [
+         'label' => '電話番号',
+       ],
+     ];
    }
 }

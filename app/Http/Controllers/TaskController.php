@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Textbook;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\TaskComment;
@@ -39,12 +40,12 @@ class TaskController extends MilestoneController
      */
     public function create(Request $request)
     {
-        //
         $param = $this->get_param($request);
         $user = $this->login_details($request);
         $param['target_student'] = Student::where('id', $request->get('student_id'))->first();
         $param['curriculums'] = Curriculum::all();
         $param['subjects'] = Subject::all();
+        $param['textbooks'] = Textbook::all();
         $param['_edit'] = false;
         $param['task_type'] = $request->get('task_type');
         $lessons = collect($param['target_student']->get_tags('lesson'));
@@ -85,6 +86,9 @@ class TaskController extends MilestoneController
             if ($request->file('upload_file')->isValid([])) {
               $item->file_upload($request->file('upload_file'));
             }
+          }
+          if($request->has('textbook_ids')){
+            $item->textbooks()->sync($request->get('textbook_ids'));
           }
           return $this->api_response(200, '', '', $item);
         }, __('messages.info_add'), __FILE__, __FUNCTION__, __LINE__ );
@@ -199,6 +203,7 @@ class TaskController extends MilestoneController
         $param['task_type'] = $request->get('task_type');
         $param['curriculums'] = Curriculum::all();
         $param['subjects'] = Subject::all();
+        $param['textbooks'] = Textbook::all();
         $lessons = collect($param['target_student']->get_tags('lesson'));
         $param['lessons'] = $lessons;
         $param['has_english_lesson'] = $lessons->pluck('tag_value')->contains(2);
@@ -237,7 +242,7 @@ class TaskController extends MilestoneController
         if( !empty($request->get('new_curriculums')) ){
           $this->create_curriculum($request,$item);
         }
-
+        $item->textbooks()->sync($request->get('textbook_ids'));
         return $this->api_response(200, '', '', $item);
       }, __('messages.info_updated'), __FILE__, __FUNCTION__, __LINE__ );
       if($this->is_success_response($res) && $request->get('mail_send') == "yes"){
@@ -397,7 +402,6 @@ class TaskController extends MilestoneController
             $this->s3_delete($item['s3_url']);
           }
           */
-          $item->dispose();
           return $this->api_response(200, '', '', $item);
         }, '削除しました。', __FILE__, __FUNCTION__, __LINE__ );
         return $res;

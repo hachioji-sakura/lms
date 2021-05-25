@@ -100,7 +100,12 @@ class UserCalendar extends Model
   public function register_mail_title(){
     $trial = "";
     if($this->trial_id > 0){
-      $trial ='['. __('labels.trial_lesson').']';
+      if($this->is_teaching()==true){
+        $trial ='['. __('labels.trial_lesson').']';
+      }
+      else {
+        $trial ='['. $this->schedule_type_name().']';
+      }
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
     return __('messages.mail_title_until_today').$title;
@@ -524,13 +529,17 @@ EOT;
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
-    switch($this->status){
-      case "fix":
-        if($this->work==9) return "勤務予定";
-      case "absence":
-        if($this->work==9) return "欠勤";
-      case "presence":
-      if($this->work==9) return "出勤";
+
+    if($this->is_teaching()==false){
+      switch($this->status){
+        case "fix":
+          if($this->work==9) return "勤務予定";
+          else return $this->schedule_type_name().__('labels.task_schedule');
+        case "absence":
+          if($this->work==9) return "欠勤";
+        case "presence":
+        if($this->work==9) return "出勤";
+      }  
     }
     return $status_name;
   }
@@ -640,6 +649,9 @@ EOT;
   }
   public function getLessonAttribute($user_id){
     return $this->lesson();
+  }
+  public function getLessonIdAttribute(){
+    return $this->get_attribute('lesson',true);
   }
   public function getWorkNameAttribute(){
     return $this->work();
@@ -1265,7 +1277,9 @@ EOT;
       if($member->status=='cancel') continue;
       if($member->status=='fix' || $this->is_last_status($member->status)==true){
         $m = $member->user->details();
-        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+        if($m->is_active($this->start_time) == true) {
+          $active_students[] = $member;
+        }
       }
     }
     if(empty($end_time)) $end_time = $this->end_time;
@@ -1346,18 +1360,6 @@ EOT;
   }
 
 
-  public function agreement_update($user_id)
-  {
-      $agreement_member = UserCalendarMemberSetting::where('user_id', $user_id)->get();
-      if ($agreement_member->count() > 0) {
-          //設定が残るなら契約更新
-          Agreement::add_from_member_setting($agreement_member->first()->id);
-      } else {
-          //有効な設定がなければ契約無効化
-          $student_id = Student::where('user_id', $user_id)->first()->id;
-          Agreement::where('student_id', $student_id)->update(['end_date' => date('Y/m/d H:i:s')]);
-      }
-  }
   public function is_first_place(){
     $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
     $c = self::where('user_id', $this->user_id)

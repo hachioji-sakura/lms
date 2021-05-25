@@ -8,5 +8,5 @@
     {{ $actionText }}: <a href="{{ $actionUrl }}">{{ $actionUrl }}</a>
 </p>
 <p>
-    ※24時間以内にアクセスしてください
+    ※20日以内にアクセスしてください
 </p>

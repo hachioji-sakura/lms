@@ -33,10 +33,19 @@
             @endif
             {{$button['label']}}
           </a>
+          @elseif($button === 'download')
+            @if(!empty($row->s3_url))
+              <a href="{{$row->s3_url}}" role="button" class="btn btn-info btn-sm float-left mr-1 my-1" target="_blank">
+                <i class="fa fa-cloud-download-alt"></i>
+              </a>
+            @endif
           @endif
         @endif
       @endforeach
     @else
+      @if(isset($field['check_box']) === true)
+        <input class="frm-check-input icheck flat-green bulk_action_check" type="checkbox" name="list_check[]"  value="{{$row['id']}}" >
+      @endif
       @if(isset($field['link']))
         <a
         @if($field['link']==='show')

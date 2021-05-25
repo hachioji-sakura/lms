@@ -19,9 +19,7 @@ class UserController extends Controller
   public $domain = "users";
 
   protected $pagenation_line = 20;
-  public function __construct()
-  {
-  }
+
   protected function attributes()
   {
     $user = $this->login_details(new Request());
@@ -39,7 +37,7 @@ class UserController extends Controller
       }
       $attributes[$_attribute->attribute_key][$_attribute->attribute_value] = $_attribute->attribute_name;
     }
-    $places = Place::orderBy('sort_no', 'asc')->get();
+    $places = Place::enable()->orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
 
     $attributes['ask_type'] = [

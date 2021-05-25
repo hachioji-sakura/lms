@@ -100,8 +100,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
     else {
       $this->delete();
     }
-    //契約処理
-    $this->agreement_update($this->user_id);
   }
   public function office_system_api($method){
     if($this->setting_id_org == 0 && $method=="PUT") return null;;
@@ -256,19 +254,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $res;
   }
   public function is_recess_or_unsubscribe(){
+
     $u = $this->user->details();
     if($u->role=='student'){
-      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
-        if(strtotime($this->setting->enable_start_time) > strtotime($u->recess_start_date) &&
-          strtotime($this->setting->enable_start_time) < strtotime($u->recess_end_date)){
-            return true;
-        }
-      }
-      if(!empty($u->unsubscribe_date)){
-        if(strtotime($this->setting->enable_start_time) > strtotime($u->unsubscribe_date)){
-            return true;
-        }
-      }
+      $st = $u->get_status($this->setting->enable_start_time);
+      if($st=='unsubscribe' || $st=='recess') return true;
     }
     return false;
   }
@@ -456,11 +446,6 @@ class UserCalendarMemberSetting extends UserCalendarMember
       case "confirm":
           $is_send_teacher_mail = false;
         break;
-      case "fix":
-        if($this->user->details()->role == 'student'){
-          $agreement = Agreement::add_from_member_setting($this->id);
-        }
-        break;
       }
     $this->update($update_form);
     $param['token'] = $update_form['access_key'];
@@ -498,6 +483,23 @@ class UserCalendarMemberSetting extends UserCalendarMember
 
   public function get_tuition_master(){
     $setting = $this->setting->details();
+    //有効な契約を持っている場合はその料金を引き継ぐ
+    $agreements = $this->user->student->prev_agreements;
+    if($agreements->count() > 0){
+      $statement = $agreements->first()->agreement_statements()->where('lesson_id',$setting->lesson(true))
+                              ->where('grade',$this->user->details()->get_tag_value('grade'))
+                              ->where('course_type',$setting->get_tag_value('course_type'))
+                              ->where('course_minutes',$setting['course_minutes'])
+                              ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
+                              ->where('is_exam',$this->user->details()->is_juken())
+                              ->get();
+      //契約がある場合はその料金を返す
+      //契約がない場合は受講料マスタから取りに行く
+      if($statement->count() > 0 ){
+        $tuition = $statement->first()->tuition; 
+        return $tuition;
+      }
+    }
     //2020年4月1日以前のユーザーは0円で返す
     if( strtotime($this->user->created_at) > strtotime("2020/04/01") ){
       $user_created_date = date('Y/m/d',strtotime($this->user->created_at));
@@ -514,6 +516,8 @@ class UserCalendarMemberSetting extends UserCalendarMember
       }else{
         //なかったら0円
         $tuition = 0;
+        $attributes = "user_id".$this->user->id."/lesson:".$setting->lesson(true)."/grade:".$this->user->details()->get_tag_value('grade')."/course_type:".$setting->get_tag_value('course_type')."/course_minutes:".$setting['course_minutes']."/lesson_week_count:".$this->user->get_enable_calendar_setting_count($setting->lesson(true))."/is_exam:".$this->user->details()->is_juken();
+        $this->send_slack('受講料定義エラー:'.$attributes,'error','UserCalendarMemberSetting.get_tuition_master');
       }
       return $tuition;
     }else{

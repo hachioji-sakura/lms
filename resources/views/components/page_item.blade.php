@@ -27,6 +27,13 @@
               <a href="{{$item[$key] }}" class="product-title" target="_blank">
                 {{ $item['s3_alias'] }}
               </a>
+            @elseif($key==="url")
+              <label for="{{$key}}" class="w-100" >
+                {{$field['label']}}
+              </label>
+              <a href="{{$item[$key] }}" class="product-title" target="_blank">
+                {{ $item['url'] }}
+              </a>
             @elseif(isset($item[$key]) && gettype($item[$key])=='array')
               <label for="{{$key}}" class="w-100">
                 {{$field['label']}}

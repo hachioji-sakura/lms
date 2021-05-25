@@ -45,7 +45,7 @@
           </div>
 					<div class="col-6 p-2 font-weight-bold" >月会費</div>
           <div class="col-6 p-2">
-						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}"><span class="ml-2 float-left mt-2" inputtype="numeric">円(税込み)</span>
+						<input name="agreements[monthly_fee]" class="form-control w-50 float-left" value="{{$agreement->monthly_fee}}" inputtype="numeric"><span class="ml-2 float-left mt-2">円(税込み)</span>
           </div>
 					@else
 					<div class="col-6 p-2 font-weight-bold" >入会金</div>
@@ -119,7 +119,7 @@
 												 <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
 											</label>
 											<input type="text" id="{{$statement->id}}_tuition" name="agreement_statements[{{$statement->id}}][tuition]" class="form-control w-50 float-left tuition" required="true" maxlength=5 inputtype="numeric"
-											 minvalue="1000" value="{{$statement->tuition==0 ? '': $statement->tuition}}" placeholder="(受講料定義)  {{$statement->tuition==0 ?'見つかりませんでした。' : $statement->tition}}"
+											 " value="{{$statement->tuition==0 ? '': $statement->tuition}}" placeholder="(受講料定義)  {{$statement->tuition==0 ?'見つかりませんでした。' : $statement->tition}}"
 											>
 											<span class="ml-2 float-left mt-2">円 / 時間</span>
 										</div>

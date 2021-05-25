@@ -14,7 +14,9 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Exam;
 use App\Models\Agreement;
+
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -372,6 +374,36 @@ class StudentController extends UserController
    ])->with($param);
   }
 
+  public function show_memo_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.memos";
+    $param['view'] = $view;
+    if($param['user']->details()->role == "student") abort('403');
+
+   //コメントデータ取得
+   $form = $request->all();
+   $comments = $model->get_comments($form, true);
+   $star_comments = $model->get_comments(['is_star' => true], true);
+   /*
+   $comments = $model->target_comments;
+   if($this->is_teacher($user->role)){
+     //講師の場合、公開されたコメントのみ閲覧可能
+     $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
+   }
+   $comments = $comments->sortByDesc('created_at');
+   */
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'comments'=>$comments,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+  }
+
   public function show_task_page(Request $request, $id)
   {
     $init = $this->init_show_page($request,$id);
@@ -404,7 +436,7 @@ class StudentController extends UserController
     $param['view'] = $view;
     $school_grades = $item->school_grades()->search($request)->get();
     $grades = $item->school_grades->pluck('grade_name','grade')->unique()->sort();
-    $subjects = $this->get_subjects_from_school_grades($school_grades);
+    $subjects = $this->get_subjects($school_grades,"school_grade");
     $school_grade_fields = $this->get_school_grade_fields();
 
     //dd($school_grades);
@@ -417,16 +449,142 @@ class StudentController extends UserController
    ])->with($param);
   }
 
-  public function get_subjects_from_school_grades($school_grades){
-    $subs = $school_grades->map(function($item){
-      return $item->school_grade_reports->pluck('subject_id','subject_name');
-    });
+  public function show_exam_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exams";
+    $param['view'] = $view;
+    $exams = $item->exams()->search($request)->get();
+    $select_exams = $item->exams->pluck('name','id')->unique()->sort();
+    $subjects = $this->get_subjects($exams,"exam");
+    $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
+    $exam_fields = $this->get_exam_fields();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'exams' => $exams,
+    'grades' => $grades,
+    'subjects' => $subjects,
+    'exam_fields' => $exam_fields,
+   ])->with($param);
+  }
+
+  public function show_exam_result_page(Request $request, $id, $exam_id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exam_results";
+    $param['view'] = $view;
+    $exams = $item->exams;
+    $exam = $item->exams()->find($exam_id);
+    if(empty($exam)){
+      $exam_results = collect([]);
+    }else {
+      $exam_results = $exam->exam_results;
+    }
+
+    $exam_result_fields = $this->get_exam_result_fields();
+
+   return view($this->domain.'.'.$view, [
+    'item' => $item,
+    'exams' => $exams,
+    'exam' => $exam,
+    'exam_results' => $exam_results,
+    'exam_result_fields' => $exam_result_fields,
+   ])->with($param);
+  }
+
+  public function get_exam_result_fields(){
+    return [
+      'subject_name' => [
+        'label' => __('labels.subjects'),
+        'blank' => true,
+      ],
+      'point_per_max' => [
+        'label' => __('labels.point')."(".__('labels.average_point').")",
+      ],
+      'deviation' => [
+        'label' => __('labels.deviation'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+            'download',
+            'edit',
+            'delete',
+          ],
+      ]
+    ];
+  }
+
+  public function get_subjects($items, $from){
+    switch($from){
+      case "exam":
+        $subs = $items->map(function($item){
+          return $item->exam_results->pluck('subject_id','subject_name');
+        });
+        break;
+      case "school_grade":
+        $subs = $items->map(function($item){
+          return $item->school_grade_reports->pluck('subject_id','subject_name');
+        });
+        break;
+      default:
+        $subs = null;
+        break;
+    }
     $subjects = collect([]);
     foreach($subs as $sub){
       $subjects = $subjects->merge($sub);
     }
     //TODO:subject_id順は変わるかも
     return array_flip($subjects->sort()->toArray());
+  }
+
+  public function get_exam_fields(){
+    return [
+      'name' => [
+        'label' => __('labels.title'),
+        'link' => function($row){
+          return '/students/'.$row->student_id.'/exams/'.$row->id;
+        }
+      ],
+      'grade_name' => [
+        'label' => __('labels.grade')
+      ],
+      'semester_name' => [
+        'label' => __('labels.semester'),
+      ],
+      'result_count' =>[
+        'label' => __('labels.subject_count'),
+      ],
+      'sum_point_per_max' => [
+        'label' => __('labels.point'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'edit',
+          'create_result' => [
+            'label' => '',
+            'style' =>  'primary',
+            'page_url' => function($row){
+              return '/exam_results/create?exam_id='.$row->id;
+            },
+            'icon' => 'plus',
+            'title' => __('labels.exams').__('labels.add'),
+          ]
+        ],
+      ],
+    ];
   }
 
   public function get_school_grade_fields(){
@@ -745,7 +903,7 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $filter = $param['filter']['calendar_filter'];
+   $filter = $request->all();
    $filter['list'] = '';
    if($request->has('list')){
      $filter['list'] = $request->get('list');
@@ -782,15 +940,15 @@ class StudentController extends UserController
    $count = count($calendar_settings);
    (new UserCalendarSetting())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only == true) return $count;
-   if(isset($form['_page']) && isset($form['_line'])){
+   if(isset($form['_page']) && isset($form['_line']) && count($calendar_settings)>0){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
    }
    //echo $calendars->toSql()."<br>";
    if($this->domain=='students'){
      foreach($calendar_settings as $i=>$setting){
        $calendar_settings[$i] = $setting->details();
-       $calendar_settings[$i]->own_member = $setting[$i]->get_member($form['user_id']);
-       $calendar_settings[$i]->status = $setting[$i]->own_member->status;
+       $calendar_settings[$i]->own_member = $setting->get_member($form['user_id']);
+       $calendar_settings[$i]->status = $setting->own_member->status;
      }
    }
    return ["data" => $calendar_settings, 'count' => $count];
@@ -1480,7 +1638,7 @@ class StudentController extends UserController
   }
 
   public function task_search($request, $id){
-    $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
+    $tasks = Task::findTargetUser($id)->visible()->search($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
   public function retirement_page(Request $request, $id)

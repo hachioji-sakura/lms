@@ -76,8 +76,8 @@
               {{__('labels.additional_officer')}}
             </a>
           @endif
-          @if(!($domain=="managers" && $item->id===1) )
-            @if($item->status!='regular')
+          @if(!($domain=="managers" && $item->id===1))
+            @if($item->status!='regular' && $domain!="parents")
             <a class="btn my-1 btn-success btn-sm mr-1" href="javascript:void(0);" page_form="dialog" page_url="/{{$domain}}/{{$item->id}}/regular" page_title="アカウントステータス更新">
               <i class="fa fa-user-check mr-1"></i>
               @if($domain=='teachers' || $domain=='managers')

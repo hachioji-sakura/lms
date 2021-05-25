@@ -38,6 +38,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::get('places/phone_list','PlaceController@phone_list');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
@@ -59,11 +60,17 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('milestones','MilestoneController');
   Route::get('text_materials/{id}/shared','TextMaterialController@shared_page');
   Route::put('text_materials/{id}/shared','TextMaterialController@shared');
+  Route::get('text_materials/bulk_shared','TextMaterialController@bulk_shared_page');
+  Route::put('text_materials/bulk_shared','TextMaterialController@bulk_shared');
 
   Route::resource('text_materials','TextMaterialController');
 
   Route::resource('school_grades','SchoolGradeController');
   Route::resource('school_grade_reports','SchoolGradeReportController');
+
+  Route::resource('exams','ExamController');
+  Route::post('exams/create','ExamController@store');  Route::resource('exam_results','ExamResultController');
+
 
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
@@ -158,10 +165,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_course','LectureController@api_index');
   Route::resource('lectures','LectureController');
 
-  /*
+
   Route::resource('publisher','PublisherController');
   Route::resource('textbooks','TextbookController');
-  */
+
   Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
   Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
   Route::get('teachers/{id}/students','TeacherController@get_charge_students');
@@ -264,9 +271,12 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/tuitions','StudentController@tuitions');
   Route::get('students/{id}/announcements','StudentController@show');
   Route::get('students/{id}/comments','StudentController@show_comment_page');
+  Route::get('students/{id}/memos','StudentController@show_memo_page');
   Route::get('students/{id}/milestones','StudentController@show_milestone_page');
   Route::get('students/{id}/tasks','StudentController@show_task_page');
   Route::get('students/{id}/school_grades','StudentController@show_school_grade_page');
+  Route::get('students/{id}/exams','StudentController@show_exam_page');
+  Route::get('students/{id}/exams/{exam_id}','StudentController@show_exam_result_page');
 
 
 
@@ -410,6 +420,9 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
   Route::resource('agreement_statements', 'AgreementStatementController');
   Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
+
+  // 学校関連
+  Route::resource('schools', 'SchoolController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

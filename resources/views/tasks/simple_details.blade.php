@@ -70,6 +70,7 @@
           @foreach($item->curriculums as $curriculum)
             @foreach($curriculum->subjects as $subject)
             <small class="badge badge-primary">
+              <i class="fa fa-tag"></i>
               {{$subject->name}}
             </small>
             @endforeach
@@ -80,8 +81,20 @@
         <label>{{__('labels.curriculums')}}</label>
         <div class="form-group">
           @foreach($item->curriculums as $curriculum)
-          <small class="badge badge-primary">
+          <small class="badge badge-info">
+            <i class="fa fa-pencil-alt"></i>
             {{$curriculum->name}}
+          </small>
+          @endforeach
+        </div>
+      </div>
+      <div class="col-12">
+        <label>{{__('labels.textbooks')}}</label>
+        <div class="form-group">
+          @foreach($item->textbooks as $textbook)
+          <small class="badge badge-secondary">
+            <i class="fa fa-book"></i>
+            {{$textbook->name}}
           </small>
           @endforeach
         </div>

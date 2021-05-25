@@ -25,7 +25,9 @@ class Agreement extends Model
       'parent_agreement_id',
       'entry_fee',
       'monthly_fee',
-      'entry_date',
+      'commit_date',
+      'start_date',
+      'end_date',
       'status',
       'student_parent_id',
       'create_user_id',
@@ -60,6 +62,15 @@ class Agreement extends Model
       return config('attribute.agreement_type')[$this->type];
     }
 
+
+    public function getFormatStartDateAttribute(){
+      return $this->dateweek_format($this->start_date);
+    }
+    
+    public function getFormatEndDateAttribute(){
+      return $this->dateweek_format($this->end_date);
+    }
+
     public function getStatementSummaryAttribute(){
       $statements = $this->agreement_statements;
       $ret = [];
@@ -74,7 +85,19 @@ class Agreement extends Model
     }
 
     public function scopeEnable($query){
-      return $query->where('status','commit')->whereNull('end_date');
+      //絞り込みの表示用
+      return $query->enableByDate(date('Y-m-d'));
+    }
+
+    public function scopeEnableByDate($query,$date = null){
+      if(empty($date)){
+        $target_date = date('Y-m-d'); 
+      }else{
+        $target_date = date('Y-m-d',strtotime($date));
+      }
+      return $query->where('status','commit')
+                  ->where('start_date','<=',$date)
+                  ->where('end_date','>=',$date);
     }
 
     public function scopeEnableByType($query,$type){
@@ -134,15 +157,21 @@ class Agreement extends Model
       return $this;
     }
 
-    public static function add_from_member_setting($member_id){
+    public static function add_from_member_setting($member_id, $date = null){
+      if(empty($date)){
+        $date = date('Y/m/d');
+      }else{
+        $date = date('Y/m/d', strtotime($date));
+      }
       $member = UserCalendarMemberSetting::find($member_id);
       //基本契約の追加
-      $agreement = $member->user->details()->enable_agreements_by_type('normal')->first();
+      
       $setting = $member->setting->details();
       $agreement_form = [
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
-        'entry_date' =>  date('Y/m/d H:i:s'),
+        'start_date' => date('Y/m/1',strtotime($date)),
+        'end_date' => date('Y/m/t', strtotime($date)),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),
@@ -151,10 +180,8 @@ class Agreement extends Model
       ];
       $new_agreement = new Agreement($agreement_form);
       //契約明細の追加
-      $members = $member->user->calendar_member_settings;
-      $settings = $members->map(function($item,$key){
-        return $item->setting;
-      })->whereNotIn('status',['cancel']);
+      $settings = $member->user->monthly_enable_calendar_settings($date);
+      $member_ids = [];
       foreach($settings as $st){
         $mb = $st->members->where('user_id',$member->user_id)->first();
         $setting_key = $new_agreement->get_setting_key($st,$mb->user->get_enable_calendar_setting_count($st->lesson(true)));
@@ -170,33 +197,35 @@ class Agreement extends Model
           'is_exam' => $mb->user->details()->is_juken(),
         ];
         $statement_form[$setting_key] = new AgreementStatement($form);
+        if(!isset($member_ids[$setting_key])) $member_ids[$setting_key] = [];
         $member_ids[$setting_key][] = $mb->id;
       }
-
+      
       //契約変更の判定
+      $agreement = $member->user->student->prev_agreements->first();
       if(!empty($agreement)){
         $is_update = $agreement->is_same($statement_form);
       }else{
         $is_update = true;
       }
 
+      //更新があればnew,更新がなければcommitで登録
       if($is_update == true){
         $new_agreement->status = 'new';
-        if(!empty($agreement)){
-          //既存の契約idを取得してparent_idへセット
-          $new_agreement->parent_agreement_id = $agreement->id;
-        }
-        $invalid_agreements = $member->user->details()->agreementsByStatuses(['new']);
-        if($invalid_agreements->count()){
-          //newのままの契約はキャンセルに
-          $invalid_agreements->update(['status' => 'cancel']);
-        }
-        $new_agreement->save();
-        $new_agreement->agreement_statements()->saveMany($statement_form);
-        foreach($statement_form as $key => $statement){
-          $ids = $member_ids[$key];
-          $statement->user_calendar_member_settings()->attach($ids);
-        }
+      }else{
+        $new_agreement->status = 'commit';
+        $new_agreement->commit_date = date('Y/m/d',strtotime("first day of this month"));
+      }
+
+      if(!empty($agreement)){
+        //既存の契約idを取得してparent_idへセット
+        $new_agreement->parent_agreement_id = $agreement->id;
+      }
+
+      $new_agreement->save();
+      $new_agreement->agreement_statements()->saveMany($statement_form);
+      foreach($statement_form as $key => $statement){
+        $statement->user_calendar_member_settings()->attach($member_ids[$key]);
       }
       return $new_agreement;
     }
@@ -211,7 +240,7 @@ class Agreement extends Model
       //元の契約から見て新しい契約に漏れがないか
       foreach ($this->agreement_statements as $statement){
         foreach($statement_form as $key => $value){
-          if($statement->title == $key){
+          if($statement->statement_key == $key){
             $counter++;
           }
         }
@@ -221,7 +250,7 @@ class Agreement extends Model
         //新しい契約から見て元の契約にも取れがないか
         foreach($statement_form as $key => $value){
           foreach($this->agreement_statements as $statement){
-            if($key == $statement->title){
+            if($key == $statement->statement_key){
               $counter++;
             }
           }
@@ -233,6 +262,16 @@ class Agreement extends Model
         //最初の判定でずれがあったら更新する
         $is_update = true;
       }
+
+      //金額のチェック
+      $sum_tuition = 0;
+      foreach($statement_form as $sf){
+        $sum_tuition += $sf->tuition;
+      }
+      if($sum_tuition != $this->agreement_statements->sum('tuition')){
+        $is_update = true;
+      }
+
       return $is_update;
     }
 
@@ -255,5 +294,14 @@ class Agreement extends Model
         $statement->save();
       }
       return $this;
+    }
+    
+    //メンテナンス用のため通常は使用しない
+    //契約は削除しない
+    public function dispose(){
+      $this->agreement_statements->map(function($item){
+        return $item->dispose();
+      });
+      $this->delete();
     }
 }

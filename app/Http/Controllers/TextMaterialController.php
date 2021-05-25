@@ -16,6 +16,7 @@ class TextMaterialController extends MilestoneController
     public function model(){
       return TextMaterial::query();
     }
+
     /**
      * 共通パラメータ取得
      *
@@ -36,9 +37,7 @@ class TextMaterialController extends MilestoneController
       if($request->has('target_user_id')){
         $target_user_id = $request->get('target_user_id');
       }
-      else if($this->is_teacher($user->role)){
-        abort(403);
-      }
+
       if(is_numeric($id) && $id > 0){
         $item = $this->model()->where('id','=',$id)->first();
         if(isset($item['create_user_id']) && $this->is_student($user->role) &&
@@ -64,7 +63,52 @@ class TextMaterialController extends MilestoneController
       }
       $ret['curriculums'] = Curriculum::all();
       $ret['subjects'] = Subject::all();
+      $ret['shared_users'] = Teacher::where('status','regular')->get()
+                            ->map(function($item){
+                                      return $item->user;
+                                  });//今は有効な講師のみ
+        $ret['bulk_action'] = $this->get_bulk_action();
       return $ret;
+    }
+
+    public function get_bulk_action(){
+      return [
+        'check_box' => true,
+        'label' => __('labels.bulk').__('labels.share'),
+        'icon' => "share",
+        'url' => '/text_materials/bulk_shared',
+      ];
+    }
+
+    public function bulk_shared_page(Request $request){
+      $param = $this->get_param($request);
+      $param['action_url'] = "/".$this->domain."/bulk_shared";
+      if($request->has('list_check')){
+        $param['items'] = $this->model()->find($request->list_check);
+      }else{
+        $param['items'] = collect([]);
+      }
+
+      return view($this->domain.'.bulk_shared_page')->with($param);
+    }
+
+    public function bulk_shared(Request $request){
+      $param = $this->get_param($request);
+      $items = $this->model()->find($request->text_material_ids);
+
+      $res =  $this->transaction($request, function() use ($request, $items){
+        if($request->has('shared_user_ids')){
+          $items->map(function($item) use($request){
+            if($request->method == "sync"){
+              return $item->shared_users()->sync($request->shared_user_ids);
+            }elseif($request->method == "attach"){
+              return $item->shared_users()->attach($request->shared_user_ids);
+            }
+          });  
+        }
+        return $this->api_response(200, '', '', $items);
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $this->save_redirect($res, $param, '更新しました。');
     }
     /**
      * 詳細画面表示
@@ -121,12 +165,9 @@ class TextMaterialController extends MilestoneController
       $items = $items->paginate($param['_line']);
 
       $fields = [
-        'id' => [
-          'label' => 'ID',
-          'link' => 'show',
-        ],
         'name' => [
           'label' => '資料名',
+          'check_box' => true,
           'link' => function($row){
             return $row->s3_url;
           },
@@ -148,6 +189,11 @@ class TextMaterialController extends MilestoneController
               "method" => "shared",
               "label" => "共有設定",
               "style" => "warning",
+            ],
+            "detail" => [
+              "method" => "",
+              "label" => "詳細",
+              "style" => "secondary",
             ],
             'edit', 'delete'
           ]

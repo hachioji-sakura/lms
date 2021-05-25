@@ -10,7 +10,7 @@
       </div>
     </div>
     @endif
-    @if($_edit==true && $item->is_season_lesson()==true)
+    @if($_edit == true && $item->is_season_lesson()==true)
     {{-- 期間講習予定編集時の警告表示 --}}
     <div class="col-12">
       <div class="alert alert-danger text-sm pr-2 schedule_type schedule_type_class">
@@ -68,18 +68,20 @@
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @endif
-    @if(isset($lesson_id) && $lesson_id>1 && isset($item->trial_id) && $item->trial_id>0)
-    {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
-    <div class="col-12 schedule_type schedule_type_class mb-2">
-        <label for="course_minutes" class="w-100">
-          {{__('labels.lesson_time')}}
-        </label>
-        <input type="hidden" name="course_minutes" value="30">
-        <input type="hidden" name="course_minutes_name" value="{{$attributes['course_minutes'][30]}}">
-        <span>{{$attributes['course_minutes'][30]}} ({{__('labels.trial_lesson')}})</span>
-    </div>
-    @else
-      @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+    @if($item->is_teaching()==true)
+      @if(isset($lesson_id) && $lesson_id>1 &&  isset($item->trial_id) && $item->trial_id>0)
+      {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
+      <div class="col-12 schedule_type schedule_type_class mb-2">
+          <label for="course_minutes" class="w-100">
+            {{__('labels.lesson_time')}}
+          </label>
+          <input type="hidden" name="course_minutes" value="30">
+          <input type="hidden" name="course_minutes_name" value="{{$attributes['course_minutes'][30]}}">
+          <span>{{$attributes['course_minutes'][30]}} ({{__('labels.trial_lesson')}})</span>
+      </div>
+      @else
+        @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+      @endif
     @endif
   @else
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent

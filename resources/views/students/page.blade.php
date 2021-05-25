@@ -164,6 +164,16 @@
                 </small>
               </a>
             </li>
+            @if($user->details()->role != "student")
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.memos' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/memos">
+                <small>
+                  <i class="fa fa-id-card"></i>
+                  {{__(('labels.memos'))}}
+                </small>
+              </a>
+            </li>
+            @endif
             <li class="nav-item mr-1">
               <a class="nav-link btn btn-sm btn-default {{$view == 'page.school_grades' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/school_grades?search_grade[]={{$item->get_tag_value('grade')}}">
                 <small>
@@ -172,7 +182,14 @@
                 </small>
               </a>
             </li>
-
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.exams' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/exams?search_grade[]={{$item->get_tag_value('grade')}}">
+                <small>
+                  <i class="fa fa-clipboard"></i>
+                  {{__(('labels.exams'))}}
+                </small>
+              </a>
+            </li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab_milestones">

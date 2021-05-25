@@ -98,9 +98,8 @@ class Task extends Milestone
     }
 
     public function textbooks(){
-      return $this->belogsToMany('App\Models\Textbook');
+      return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
     }
-
 
     public function scopeSearchWord($query, $word){
       $search_words = $this->get_search_word_array($word);
@@ -112,6 +111,10 @@ class Task extends Milestone
         }
       });
       return $query;
+    }
+
+    public function scopeVisible($query){
+      return $query->whereNotIn('status',['cancel']);
     }
 
     public function change($form, $file=null, $is_file_delete = false, $curriculum_ids = null){

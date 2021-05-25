@@ -68,6 +68,7 @@ class Student extends Model
   use Common;
   protected $table = 'common.students';
   protected $guarded = array('id');
+  protected $status_key_name = 'attribute.student_status';
   /**
    * 入力ルール
    */
@@ -91,7 +92,13 @@ class Student extends Model
 
   public function enable_agreements_by_type($type){
     return $this->agreements()->enableByType($type);
-  }  /**
+  }  
+  
+  public function prev_agreements(){
+    return $this->agreements()->where('status','commit')->orderby('start_date','desc');
+  }
+  
+  /**
    *　プロパティ：年齢
    */
   public function age(){
@@ -188,12 +195,13 @@ class Student extends Model
   /**
    *　プロパティ：ステータス名
    */
-  public function status_name(){
-    $status_name = "";
-    if(app()->getLocale()=='en') return $this->status;
+  public function status_name($status=''){
+    if(empty($status)) $status = $this->status;
 
-    if(isset(config('attribute.student_status')[$this->status])){
-      $status_name = config('attribute.student_status')[$this->status];
+    $status_name = "";
+    if(app()->getLocale()=='en') return $status;
+    if(isset(config($this->status_key_name)[$status])){
+      $status_name = config($this->status_key_name)[$status];
     }
     return $status_name;
   }
@@ -229,6 +237,12 @@ class Student extends Model
     return $this->hasMany('App\Models\SchoolGrade', 'student_id');
   }
 
+  /**
+  * リレーション　テスト
+  */
+  public function exams(){
+    return $this->hasMany('App\Models\Exam','student_id');
+  }
 
   /**
    * 体験申し込み
@@ -478,6 +492,14 @@ EOT;
     if($this->user->has_tag('student_type', 'fee_free')) return true;
     return false;
   }
+  
+  //TODO 退会・休会に関して履歴がない
+  public function is_active($date=''){
+    //退会日を以前ならactive（次の日からno active)
+    $st = $this->get_status($date);
+    if($st=='unsubscribe' || $st=='recess') return false;
+    return true;
+  }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();
     $parent_ids = [];
@@ -499,6 +521,9 @@ EOT;
   }
   public function getKanaAttribute(){
     return $this->kana();
+  }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
   }
   public function get_charge_subject(){
     //担当科目を取得
@@ -619,9 +644,11 @@ EOT;
       else $_param = explode(',', $filter["search_status"].',');
       $items = $items->findStatuses($_param);
     }
-    else {
+
+    if(!isset($filter["is_include_expired"])){
       $items = $items->enable();
     }
+
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
@@ -1028,6 +1055,7 @@ EOT;
       $update_form['recess_end_date'] = null;
       $update_form['unsubscribe_date'] = null;
     }
+    $update_form['entry_date'] = date('Y/m/d');
     $this->update($update_form);
     //カレンダー設定を有効にする
     /*
@@ -1165,42 +1193,51 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
-  
   //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
-    //契約後は契約参照
-    $user = $this->user;
-    if($user->has_tag('lesson',1)==true){
-      //塾
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
-      //英会話(中国語以外）
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
-      //幼児教室
-      $monthly_fee = 2000;
-    }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
-      //中国語
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
-      //そろばん
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',3)==true){
-      //ピアノ
-      $monthly_fee = 1500;
-    }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
-      // ダンス
-      $monthly_fee = 500;
+    //契約を既に持っている場合はその値を返す
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $monthly_fee = $agreements->first()->monthly_fee;
     }else{
-      $monthly_fee = 0;
+      $user = $this->user;
+      if($user->has_tag('lesson',1)==true){
+        //塾
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+        //英会話(中国語以外）
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        //幼児教室
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
+        //中国語
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+        //そろばん
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',3)==true){
+        //ピアノ
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+        // ダンス
+        $monthly_fee = 500;
+      }else{
+        $monthly_fee = 0;
+      }
+
     }
 
     return $monthly_fee;
   }
   public function get_entry_fee(){
     //契約時の自動計算用
-    //契約後は契約参照
+    //契約を持っていた場合はその値を取る
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $entry_fee = $agreements->first()->entry_fee;
+    }else{
       $user = $this->user;
       if($this->is_first_brother() == false){
         return 0;
@@ -1230,6 +1267,8 @@ EOT;
         //該当しない場合0円
         $entry_fee = 0;
       }
+    }
+
       return $entry_fee;
   }
 
@@ -1300,5 +1339,20 @@ EOT;
     }
     return [];
   }
+  public function get_status($date=''){
+    if(empty($date)) $_d = strtotime('now');
+    else $_d = strtotime($date);
 
+    if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < $_d) return 'unsubscribe';
+    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) && 
+        strtotime($this->recess_start_date) <= $_d && strtotime($this->recess_end_date) >= $_d){
+      return 'recess';
+    }
+    if(!empty($this->entry_date) && strtotime($this->entry_date) <= $_d) return 'regular';
+    return 'trial';
+  }
+  public function get_status_name($date=''){
+    $_st = $this->get_status($date);
+    return $this->status_name($_st);
+  }
 }

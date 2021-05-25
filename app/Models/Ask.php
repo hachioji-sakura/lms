@@ -336,14 +336,12 @@ EOT;
       case "agreement_confirm":
         $ret = true;
         //agreementを更新
+
         $agreement = $this->get_target_model_data();
-        $old_agreements = $agreement->student->enable_agreements_by_type('normal');
-        if($old_agreements->count() > 0){
-          $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
-        }
-        $agreement->start_date =  date('Y/m/d H:i:s');
+        $agreement->commit_date =  date('Y/m/d H:i:s');
         $agreement->status = 'commit';
         $agreement->save();
+        $agreement->student_parent->user->update(['access_key' => $this->create_token()]);
         break;
       case "rest_cancel":
         $ret = true;
@@ -446,7 +444,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->target_user->details()["name"];
-    $param["access_key"] = $this->target_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = true;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
@@ -465,7 +463,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->charge_user->details()["name"];
-    $param["access_key"] = $this->charge_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = false;
 
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
@@ -551,7 +549,8 @@ EOT;
       case 'agreements':
       case 'agreement_confirm':
         $ret = Agreement::where('id', $this->target_model_id)->first();
-        break;    }
+        break;
+    }
     return $ret;
   }
   public function is_access($user_id){

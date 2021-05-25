@@ -1,7 +1,11 @@
 @include('emails.common')
 @if($send_to==='student')
 {{$user_name}} 様
-以下の授業予定を確定いたしました。
+@if($item->is_teaching()==true)
+以下の授業を確定いたしました。
+@else
+以下の予定を確定いたしました。
+@endif
 @elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user->name()])}}
 {{__('messages.info_calendar_fix')}}
@@ -10,9 +14,13 @@
 @component('emails.forms.calendar', ['item' => $item, 'send_to' => $send_to, 'login_user' => $login_user, 'notice', '']) @endcomponent
 …………………………………………………………………………………………
 @if($send_to==='student')
-授業をお休みする場合は、以下の画面よりご連絡ください。
+@if($item->is_teaching()==true)
+お休みする場合は、以下の画面よりご連絡ください。
 {{config('app.url')}}/calendars/{{$item['id']}}/status_update/rest?key={{$token}}&user={{$user->user_id}}
-
+@else
+キャンセルする場合は、以下の画面よりご連絡ください。
+{{config('app.url')}}/calendars/{{$item['id']}}/status_update/cancel?key={{$token}}&user={{$user->user_id}}
+@endif
 詳細のご確認については、以下の画面をご利用ください
 {{config('app.url')}}/calendars/{{$item['id']}}?user={{$user->user_id}}
 …………………………………………………………………………………………
