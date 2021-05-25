@@ -221,7 +221,7 @@ class UserCalendarMember extends Model
       //代理の場合
       $param['is_proxy'] = true;
     }
-    if($is_send_mail==true && $this->is_active()==true){
+    if($is_send_mail==true && $this->is_invalid()!=true){
       //このユーザーにメール送信
       \Log::warning("send_mail(".$title.")");
       $this->user->send_mail($title, $param, $type, $template);
@@ -816,9 +816,9 @@ class UserCalendarMember extends Model
     }
     return null;
   }
-  public function is_active(){
+  public function is_invalid(){
     //Todo status=cancelはcancel更新時にメールを送信する可能性があるので、is_active=trueにしておく
-    if($this->status=='invalid' || $this->status=='dummy') return false;
-    return true;
+    if($this->status=='invalid' || $this->status=='dummy') return true;
+    return false;
   }
 }
