@@ -17,9 +17,13 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-calendar mr-1"></i>体験授業予定
-            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar">
+            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item->id}}/to_calendar">
               <i class="fa fa-plus mr-1"></i>
               体験授業登録
+            </a>
+            <a role="button" class="btn btn-sm btn-flat btn-danger float-right mx-2" role="button"  href="javascript:void(0);" page_title="面談登録" page_form="dialog" page_url="/calendars/create?trial_id={{$item->id}}&work=3">
+              <i class="fa fa-user-friends mr-1"></i>
+              面談登録
             </a>
           </div>
           <div class="card-footer">
@@ -27,12 +31,12 @@
           </div>
           <div class="card-footer text-right">
             {{-- TODO : 実用化されるまでコメントアウト
-            <a class="btn btn-sm btn-flat btn-danger ml-2" role="button"  href="javascript:void(0);" page_title="希望日時変更をお願いする" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_candidate">
+            <a class="btn btn-sm btn-flat btn-danger ml-2" role="button"  href="javascript:void(0);" page_title="希望日時変更をお願いする" page_form="dialog" page_url="/trials/{{$item->id}}/ask_candidate">
               <i class="fa fa-envelope mr-1"></i>
               体験希望日時変更の依頼
             </a>
             --}}
-            <a class="btn btn-sm btn-flat btn-success ml-2" role="button"  href="javascript:void(0);" page_title="入会希望を受け取る連絡を出す" page_form="dialog" page_url="/trials/{{$item["id"]}}/ask_hope_to_join">
+            <a class="btn btn-sm btn-flat btn-success ml-2" role="button"  href="javascript:void(0);" page_title="入会希望を受け取る連絡を出す" page_form="dialog" page_url="/trials/{{$item->id}}/ask_hope_to_join">
               <i class="fa fa-envelope mr-1"></i>
               入会希望に関するご連絡
             </a>
@@ -43,7 +47,7 @@
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>通常授業設定
-            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item["id"]}}/to_calendar_setting">
+            <a role="button" class="btn btn-sm btn-flat btn-info float-right" href="/trials/{{$item->id}}/to_calendar_setting">
               <i class="fa fa-plus mr-1"></i>
               通常授業登録
             </a>

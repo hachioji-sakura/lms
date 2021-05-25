@@ -254,19 +254,11 @@ class UserCalendarMemberSetting extends UserCalendarMember
     return $res;
   }
   public function is_recess_or_unsubscribe(){
+
     $u = $this->user->details();
     if($u->role=='student'){
-      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
-        if(strtotime($this->setting->enable_start_time) > strtotime($u->recess_start_date) &&
-          strtotime($this->setting->enable_start_time) < strtotime($u->recess_end_date)){
-            return true;
-        }
-      }
-      if(!empty($u->unsubscribe_date)){
-        if(strtotime($this->setting->enable_start_time) > strtotime($u->unsubscribe_date)){
-            return true;
-        }
-      }
+      $st = $u->get_status($this->setting->enable_start_time);
+      if($st=='unsubscribe' || $st=='recess') return true;
     }
     return false;
   }
@@ -501,12 +493,12 @@ class UserCalendarMemberSetting extends UserCalendarMember
                               ->where('lesson_week_count',$this->user->get_enable_calendar_setting_count($setting->lesson(true)))
                               ->where('is_exam',$this->user->details()->is_juken())
                               ->get();
+      //契約がある場合はその料金を返す
+      //契約がない場合は受講料マスタから取りに行く
       if($statement->count() > 0 ){
         $tuition = $statement->first()->tuition; 
-      }else{
-        $tuition = 0;
+        return $tuition;
       }
-      return $tuition;
     }
     //2020年4月1日以前のユーザーは0円で返す
     if( strtotime($this->user->created_at) > strtotime("2020/04/01") ){

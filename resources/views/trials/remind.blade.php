@@ -1,6 +1,6 @@
 @component('trials.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain])
   @slot('page_message')
-  この授業予定の確認連絡をしますか？
+  この予定の確認連絡をしますか？
   @endslot
   @slot('forms')
   @method('PUT')
