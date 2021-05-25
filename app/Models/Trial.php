@@ -363,9 +363,11 @@ class Trial extends Model
     }
     $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
-    $tag_names[] ='entry_milestone'; //体験のみのタグ
-    if(isset($form['howto'])){
-      $tag_names[] ='howto'; //体験のみのタグ
+    $trial_tag_names = ['entry_milestone','howto']; //体験のみのタグ 1 key = n tag
+    foreach($trial_tag_names as $trial_tag_name){
+        if(isset($form[$trial_tag_name])) {
+            $tag_names[] = $trial_tag_name;
+        }
     }
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
@@ -381,7 +383,13 @@ class Trial extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'entry_milestone_word','howto_word', 'course_type', 'parent_interview'];
+    ,'course_type', 'parent_interview'];
+    $trial_tag_names = ['entry_milestone_word','howto_word']; //体験のみのタグ 1 key = 1tag
+    foreach($trial_tag_names as $trial_tag_name){
+      if(isset($form[$trial_tag_name])) {
+        $tag_names[] = $trial_tag_name;
+      }
+    }
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
