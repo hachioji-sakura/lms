@@ -79,7 +79,7 @@
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change" role="button" class="btn btn-danger btn-sm ml-1">
     <i class="fa fa-sync mr-1"></i>{{__('labels.ask_teacher_change')}}
   </a>
-  @else
+  @elseif($user->role==="manager")
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change?maintenance=true" role="button" class="btn btn-info btn-sm ml-1">
     <i class="fa fa-sync mr-1"></i>{{__('labels.teacher_change')}}
   </a>
