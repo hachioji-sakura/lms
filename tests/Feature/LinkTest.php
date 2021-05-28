@@ -61,7 +61,6 @@ class LinkTest extends TestCase
          "/calendars/48830",
          "/calendars/48830/edit",
          "/calendars/create",
-         "/calendars/create",
          "/calendar_settings",
          "/calendar_settings/create",
          "/calendar_settings/382",

@@ -1363,6 +1363,8 @@ class UserCalendarController extends MilestoneController
         $param['item']['end_minutes'] = intval($request->get('end_minutes'));
       }
       if($request->has('work')){
+        //体験面談の呼び出し側でしかworkをクエリ文字列にはセットしていない
+        //Todo work=3にて面談登録フォームとしているが、workの判定で本来やるべきではない
         $param['item']->work = $request->get('work');
       }
       return view($this->domain.'.create',
