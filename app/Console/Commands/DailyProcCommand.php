@@ -101,19 +101,29 @@ class DailyProcCommand extends Command
      //実行時の予定の前日に、体験授業で確認待ちで残っている予定
      $base_date = date('Y-m-d', strtotime('+1 day '.$d));
      $calendars = UserCalendar::where('trial_id', '>', 0)
-                    ->findStatuses(['new', 'confirm'])
+                    ->findStatuses(['new', 'confirm', 'dummy'])
+                    ->where('start_time', '>' ,$base_date.' 00:00:00')
                     ->where('start_time', '<' ,$base_date.' 23:59:59')
                     ->get();
      foreach($calendars as $calendar){
-       echo 'calendar[id='.$calendar->id."][status=".$calendar->status."]\n";
-       if($calendar->status=='confirm'){
-         foreach($calendar->get_students() as $member){
-           $member->status_update('cancel', '未確認のまま時間経過によりキャンセル', 1);
-         }
-       }
-       foreach($calendar->get_teachers() as $member){
-         $member->status_update('cancel', '未確認のまま時間経過によりキャンセル', 1);
-       }
+       switch($calendar->status){
+         case "dummy":
+          //dummyの場合、削除（通知はなし）
+          $calendar->dispose(1, false);
+          break;
+        case "confirm":
+          //confirmの場合、生徒をキャンセルにし、キャンセル通知する
+          foreach($calendar->get_students() as $member){
+            $member->status_update('cancel', '未確認のまま時間経過によりキャンセル', 1);
+          }
+          break;
+        case "new":
+          //confirmの場合、生徒をキャンセルにし、キャンセル通知する
+          foreach($calendar->get_teachers() as $member){
+            $member->status_update('cancel', '未確認のまま時間経過によりキャンセル', 1);
+          }
+          break;
+        }
      }
    }
    public function auto_calendar_settings_expired(){
