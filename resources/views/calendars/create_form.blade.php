@@ -70,9 +70,9 @@
       @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
       @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @endif
-    
-    @if($item->is_teaching()==true)
-      @if(isset($lesson_id) && $lesson_id>1 &&  isset($item->trial_id) && $item->trial_id>0)
+    @if(!isset($item->work) || $item->work!=3)
+      {{-- 面談以外 --}}
+      @if(isset($lesson_id) && $lesson_id>1 &&  isset($item->trial_id) && $item->trial_id>0 )
       {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
       <div class="col-12 schedule_type schedule_type_class mb-2">
           <label for="course_minutes" class="w-100">
