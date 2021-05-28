@@ -69,6 +69,7 @@ function teacher_selected(){
     if(lesson_id|0>0) _url +='&lesson_id='+lesson_id;
     if(trial_id|0>0) _url +='&trial_id='+trial_id;
     if(work|0>0) _url +='&work='+work;
+    console.log(_url);
     base.showPage("dialog", "subDialog", _title, _url);
   }
 }

@@ -1025,6 +1025,7 @@ EOT;
       case 10:
         return true;
     }
+    if($this->trial_id > 0 && empty($this->work)) return true;
     return false;
   }
   public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
@@ -1105,6 +1106,7 @@ EOT;
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -1121,6 +1123,7 @@ EOT;
     $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない
