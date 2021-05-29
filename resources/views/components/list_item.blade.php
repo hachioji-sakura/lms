@@ -40,7 +40,7 @@
               </a>
             @endif
           @endif
-          @if($key === "transition")
+          @if($key === "school_textbooks")
             <a href="{{$button['uri']}}?{{$domain}}_id={{$row['id']}}" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">{{$button['label']}}</a>
           @endif
         @endif

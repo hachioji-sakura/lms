@@ -103,7 +103,7 @@ class SchoolViewEntity extends BaseEntity
             'buttons'      => [
                 'label'  => $this->localizeName('control'),
                 'button' => [
-                      'transition' =>[
+                      'school_textbooks' =>[
                         'style' =>'outline-primary',
                         'uri'  =>'/school_textbooks',
                         'label' => '使用テキスト',
