@@ -236,17 +236,6 @@ class SchoolTextbookController extends MilestoneController
 
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
-    $ret['remind'] = false;
-    $ret['token'] = false;
-    $ret['is_exchange_add'] = false;
-    $ret['is_proxy'] = false;
-    if($request->has('is_proxy')){
-      $ret['is_proxy'] = true;
-    }
-    if($request->has('access_key')){
-      $ret['token'] = $request->get('access_key');
-    }
-
     if(!empty($school_id)){
       $user_id = -1;
 
