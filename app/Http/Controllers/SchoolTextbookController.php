@@ -220,7 +220,7 @@ class SchoolTextbookController extends MilestoneController
       $item = $this->model()->find($id);
       $item->dispose();
       return $this->api_response(200, '', '', $item);
-    }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
+    }, '削除しました', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
   }
 
