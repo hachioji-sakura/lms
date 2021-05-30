@@ -237,21 +237,6 @@ class SchoolTextbookController extends MilestoneController
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
     if(!empty($school_id)){
-      $user_id = -1;
-
-      if($request->has('user')){
-        $user_id = $request->get('user');
-      }
-
-      if($user_id>0){
-        $user = User::where('id', $user_id)->first();
-        if(!isset($user)){
-          abort(403, '有効期限が切れています(4)');
-        }
-        $user = $user->details();
-        $ret['user'] = $user;
-      }
-
       if(isset($user)){
         if($this->is_manager($user->role)!=true){
           if($user->is_access($user->user_id)!=true){
@@ -266,7 +251,6 @@ class SchoolTextbookController extends MilestoneController
       $ret['school'] = School::find($school_id);
       $ret['school_id'] = $school_id;
       $ret['school_textbooks'] = $ret['school']->textbooks();
-
     }
     if(!empty($textbook_id)){
       $ret['item'] = $this->model()->find($textbook_id);
