@@ -95,7 +95,7 @@ class SchoolSeeder extends Seeder
         DB::table('school_departments')->truncate();
 
         // 高等学校登録パターン1
-//        $this->highSchoolSeeder('https://www.kyoiku.metro.tokyo.lg.jp/static/high_school/js/data.csv');
+        $this->highSchoolSeeder('https://www.kyoiku.metro.tokyo.lg.jp/static/high_school/js/data.csv');
 
         // 学校の登録パターン2
         $attributes = [
@@ -148,6 +148,13 @@ class SchoolSeeder extends Seeder
                 'name_kana'   => '学校名(フリガナ)',
                 'csv_url'     => 'https://www.kyoiku.metro.tokyo.lg.jp/administration/statistics_and_research/list_of_public_school/files/report2020_csv/koutougakkou-ichiran-address.csv',
             ],
+            'kango'    => [
+                'id'          => '学校番号',
+                'school_type' => 'nursing_school',
+                'name'        => '学校名',
+                'name_kana'   => '学校名（フリガナ）',
+                'csv_url'     => storage_path('app/school/school.csv'),
+            ],
         ];
 
         // 各種学校情報を挿入
@@ -165,7 +172,7 @@ class SchoolSeeder extends Seeder
      */
     public function seeding(string $url, array $attribute): void
     {
-        $csv_rows = CSVReader::readWithKeyByUrl($url);
+        $csv_rows = CSVReader::readWithKeyByPath($url);
 
         $school_attributes = [];
         $high_school_attributes = [];
@@ -201,7 +208,7 @@ class SchoolSeeder extends Seeder
             $attributes['school_type'] = $attribute['school_type'];
             $attributes['name'] = $csv_row[$attribute['name']];
             $attributes['name_kana'] = $csv_row[$attribute['name_kana']];
-            $attributes['url'] = '';
+            $attributes['url'] = $csv_row['URL'] ?? '';
             $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $school_attributes[] = $attributes;
@@ -213,8 +220,8 @@ class SchoolSeeder extends Seeder
             $attributes['post_number'] = $csv_row['郵便番号'];
             $attributes['address'] = $csv_row['住所'];
             $attributes['phone_number'] = $csv_row['電話番号'];
-            $attributes['fax_number'] = '';
-            $attributes['access'] = '';
+            $attributes['fax_number'] = $csv_row['ＦＡＸ'] ?? '';
+            $attributes['access'] = $csv_row['交通機関'] ?? '';
             $attributes['full_day_grade'] = false;
             $attributes['full_day_credit'] = false;
             $attributes['part_time_grade_night_only'] = false;
@@ -232,10 +239,10 @@ class SchoolSeeder extends Seeder
             DB::table('schools')->insert($school_attributes_for_insert);
         }
 
-        //        $high_school_attributes_chunk = collect($high_school_attributes)->chunk(256)->toArray();
-//        foreach ($high_school_attributes_chunk as $high_school_attributes_for_insert) {
-//            DB::table('school_details')->insert($high_school_attributes_for_insert);
-//        }
+        $high_school_attributes_chunk = collect($high_school_attributes)->chunk(256)->toArray();
+        foreach ($high_school_attributes_chunk as $high_school_attributes_for_insert) {
+            DB::table('school_details')->insert($high_school_attributes_for_insert);
+        }
     }
 
     /**
@@ -246,14 +253,8 @@ class SchoolSeeder extends Seeder
      */
     public function highSchoolSeeder(string $url): void
     {
-        // 何度でも実行できるように事前削除する
-        DB::table('departments')->truncate();
-        DB::table('schools')->truncate();
-        DB::table('school_details')->truncate();
-        DB::table('school_departments')->truncate();
-
         $department_attributes = $this->initialize();
-        $csv_rows = CSVReader::readWithKeyByUrl($url);
+        $csv_rows = CSVReader::readWithKeyByPath($url);
 
         $school_attributes = [];
         $high_school_attributes = [];

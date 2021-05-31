@@ -12,18 +12,18 @@ use LogicException;
 class CSVReader
 {
     /**
-     * URL指定による外部サイトからのCSV読み取り
+     * パス指定（URLでも可能）によるCSV読み取り
      *
      * 1行目を配列のキーとして情報を取得することができます
      *
-     * @param string $url
+     * @param string  $path
      * @return array
      */
-    public function readWithKeyByUrl(string $url): array
+    public function readWithKeyByPath(string $path): array
     {
-        $csv = $this->readByUrl($url);
+        $csv = $this->readByUrl($path);
         if ((count($csv)) <= 1) {
-            throw new LogicException(sprintf('CSVの取得に失敗しました。URL : %s', $url));
+            throw new LogicException(sprintf('CSVの取得に失敗しました。URL : %s', $path));
         }
 
         $header_column_names = [];
@@ -46,14 +46,14 @@ class CSVReader
     }
 
     /**
-     * URL指定による外部サイトからのCSV読み取り
+     * パス指定（URLでも可能）によるCSV読み取り
      *
-     * @param string $url
+     * @param  string  $path
      * @return array
      */
-    public function readByUrl($url)
+    public function readByUrl($path)
     {
-        $str = file_get_contents($url);
+        $str = file_get_contents($path);
         $is_win = strpos(PHP_OS, 'WIN') === 0;
 
         // Windowsの場合は Shift_JIS、Unix系は UTF-8で処理
@@ -72,7 +72,7 @@ class CSVReader
             // windows の場合はSJIS-win → UTF-8 変換
             $result[] = $is_win
                 ? array_map(function ($val) {
-                    return mb_convert_encoding($val,  'utf-8', 'UTF-8, sjis-win');
+                    return mb_convert_encoding($val, 'utf-8', 'UTF-8, sjis-win');
                 }, $row)
                 : $row;
         }
