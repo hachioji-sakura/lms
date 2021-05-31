@@ -41,7 +41,7 @@ class SchoolTextbookController extends MilestoneController
       ]);
     }
 
-    $param = $this->get_param($request,null);
+    $param = $this->get_param($request);
     $user = $param['user'];
     if(!$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
@@ -210,9 +210,7 @@ class SchoolTextbookController extends MilestoneController
 
   public function _delete(Request $request, $id)
   {
-    $form = $request->all();
-
-    $res = $this->transaction($request, function() use ($request, $form, $id){
+    $res = $this->transaction($request, function() use ($request, $id){
       $item = $this->model()->find($id);
       $item->dispose();
       return $this->api_response(200, '', '', $item);
@@ -251,6 +249,8 @@ class SchoolTextbookController extends MilestoneController
       }
       $ret['school_id'] = $school_id;
       $ret['school_textbooks'] = $ret['school']->textbooks();
+    } elseif (empty($id) && empty($school_id)){
+        abort(400);
     }
 
     if(!empty($id)){
