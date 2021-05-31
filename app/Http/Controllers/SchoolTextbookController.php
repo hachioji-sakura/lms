@@ -40,9 +40,8 @@ class SchoolTextbookController extends MilestoneController
         '_page' => 1,
       ]);
     }
-    $school_id = $request->get('schools_id') ? $request->get('schools_id') : $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
 
+    $param = $this->get_param($request,null);
     $user = $param['user'];
     if(!$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
@@ -62,8 +61,7 @@ class SchoolTextbookController extends MilestoneController
    */
   public function create(Request $request)
   {
-    $school_id = $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
+    $param = $this->get_param($request);
     return view($this->domain.'.create',
       [ 'error_message' => '', '_edit' => false])
       ->with($param);
@@ -111,7 +109,7 @@ class SchoolTextbookController extends MilestoneController
     $form = $request->all();
     $form['fields'] = $fields;
     if($request->has('api')) return $this->api_response(200, '', '', $param['item']);
-    return view($this->domain.'.page', $form)
+    return view('components.page', $form)
       ->with($param);
   }
 
@@ -121,10 +119,8 @@ class SchoolTextbookController extends MilestoneController
     if(!isset($user)) return $this->forbidden();
     if($this->is_manager($user->role)!=true) return $this->forbidden();
 
-    $school_id = $request->get('schools_id') ? $request->get('schools_id') : $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
+    $param = $this->get_param($request);
     //検索条件
-
     $items = $this->_search_scope($request, $param['school_textbooks']);
     $items = $items->paginate($param['_line']);
 
@@ -232,28 +228,31 @@ class SchoolTextbookController extends MilestoneController
    * @param  $school_id
    * @return json
    */
-  public function get_param(Request $request, $id = null, $school_id = null){
+  public function get_param(Request $request, $id = null){
 
     $user = $this->login_details($request);
-    $ret = $this->get_common_param($request);
-    if(!empty($school_id)){
-      if(isset($user)){
-        if($this->is_manager($user->role)!=true){
+    if(isset($user)){
+      if($this->is_manager($user->role)!=true){
           if($user->is_access($user->user_id)!=true){
-            abort(403, 'このページにはアクセスできません(1)'.$user->role);
+              abort(403, 'このページにはアクセスできません(1)'.$user->role);
           }
-        }
       }
-      else {
-        abort(403, 'このページにはアクセスできません(2)');
-      }
+    }else{
+      abort(403, 'このページにはアクセスできません(2)');
+    }
 
+    $ret = $this->get_common_param($request);
+    $school_id = request()->schools_id ? request()->schools_id : request()->school_id;
+
+    if(!empty($school_id)){
       $ret['school'] = School::find($school_id);
+      if(!isset($ret['school'])){
+        abort(404, 'ページがみつかりません(1)');
+      }
       $ret['school_id'] = $school_id;
       $ret['school_textbooks'] = $ret['school']->textbooks();
-    }else{
-        abort(400);
     }
+
     if(!empty($id)){
       $ret['item'] = $this->model()->find($id);
       if(!isset($ret['item'])){
