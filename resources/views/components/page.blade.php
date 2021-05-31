@@ -39,7 +39,6 @@
     @endif
     @csrf
    <input type="text" name="dummy" style="display:none;" / >
-    @yield('domain_form')
   <div class="row">
     {{-- 共通form用のボタン --}}
     @if(isset($action) && $action=='delete')
