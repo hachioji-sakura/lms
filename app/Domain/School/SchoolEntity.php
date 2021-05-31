@@ -5,7 +5,7 @@ namespace App\Domain\School;
 use App\Domain\BaseEntity;
 
 /**
- * Class HighSchoolEntity
+ * Class SchoolEntity
  *
  * @method highSchoolId
  * @method postNumber
@@ -29,7 +29,7 @@ use App\Domain\BaseEntity;
  *
  * @package App\Domain\School
  */
-class HighSchoolEntity extends BaseEntity
+class SchoolEntity extends BaseEntity
 {
     /**
      * @var int

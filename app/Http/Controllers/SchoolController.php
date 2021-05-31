@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\School\Repository\HighSchoolEntityRepository;
+use App\Domain\School\Repository\SchoolEntityRepository;
 use App\Domain\School\SchoolViewEntity;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,17 +21,17 @@ class SchoolController extends MilestoneController
     public $domain = 'schools';
 
     /**
-     * @var \App\Domain\School\Repository\HighSchoolEntityRepository
+     * @var \App\Domain\School\Repository\SchoolEntityRepository
      */
     protected $high_school_entity_repository;
 
     /**
      * SchoolController constructor.
      *
-     * @param \App\Domain\School\Repository\HighSchoolEntityRepository $high_school_entity_repository
+     * @param \App\Domain\School\Repository\SchoolEntityRepository $high_school_entity_repository
      */
     public function __construct(
-        HighSchoolEntityRepository $high_school_entity_repository
+        SchoolEntityRepository $high_school_entity_repository
     ) {
         $this->high_school_entity_repository = $high_school_entity_repository;
     }

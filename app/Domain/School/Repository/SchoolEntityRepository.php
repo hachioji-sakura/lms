@@ -2,20 +2,20 @@
 
 namespace App\Domain\School\Repository;
 
-use App\Domain\School\HighSchoolEntity;
+use App\Domain\School\SchoolEntity;
 use App\Models\Department;
-use App\Models\HighSchool;
+use App\Models\SchoolDetail;
 use App\Models\School;
 use App\Models\SchoolDepartment;
 use DB;
 use LogicException;
 
 /**
- * Class HighSchoolEntityRepository
+ * Class SchoolEntityRepository
  *
  * @package App\Domain\Repository\School
  */
-class HighSchoolEntityRepository
+class SchoolEntityRepository
 {
     /**
      * @var array
@@ -43,14 +43,14 @@ class HighSchoolEntityRepository
      * 学校情報を取得する（過程による絞り込み）
      *
      * @param string $process
-     * @return \App\Domain\School\HighSchoolEntity[]
+     * @return \App\Domain\School\SchoolEntity[]
      */
     public function getByProcess(string $process): array
     {
-        $builder_high_school = new HighSchool();
-        $high_schools = $builder_high_school->newQuery()->where($process, true)->get()->all();
+        $builder_school_detail = new SchoolDetail();
+        $school_details = $builder_school_detail->newQuery()->where($process, true)->get()->all();
 
-        return $this->make($high_schools);
+        return $this->make($school_details);
     }
 
     /**
@@ -59,21 +59,21 @@ class HighSchoolEntityRepository
      * View側で切り替えやすいように表示する部分以外もまとめて取得する。
      * 高等学校の情報はそれほど多くはないため、全件取得とする。
      *
-     * @return \App\Domain\School\HighSchoolEntity[]
+     * @return \App\Domain\School\SchoolEntity[]
      */
     public function get(): array
     {
-        $builder_high_school = new HighSchool();
-        $high_schools = $builder_high_school->newQuery()->get()->all();
+        $builder_school_detail = new SchoolDetail();
+        $school_details = $builder_school_detail->newQuery()->get()->all();
 
-        return $this->make($high_schools);
+        return $this->make($school_details);
     }
 
     /**
      * 学校情報を取得する（キーワード検索用：学校名の部分一致のみ対応）
      *
      * @param string $search_word
-     * @return \App\Domain\School\HighSchoolEntity[]
+     * @return \App\Domain\School\SchoolEntity[]
      */
     public function getBySearchWord(string $search_word): array
     {
@@ -81,27 +81,27 @@ class HighSchoolEntityRepository
         $schools = $builder_school->newQuery()->where('name', 'Like', "%$search_word%")->get()->all();
         $school_ids = collect($schools)->pluck('id')->all();
 
-        $builder_high_school = new HighSchool();
-        $high_schools = $builder_high_school->newQuery()->whereIn('school_id', $school_ids)->get()->all();
+        $builder_school_detail = new SchoolDetail();
+        $school_details = $builder_school_detail->newQuery()->whereIn('school_id', $school_ids)->get()->all();
 
-        return $this->make($high_schools);
+        return $this->make($school_details);
     }
 
     /**
      * 学校情報を取得する
      *
      * @param int $high_school_id 高等学校ID
-     * @return \App\Domain\School\HighSchoolEntity|null
+     * @return \App\Domain\School\SchoolEntity|null
      */
-    public function find(int $high_school_id): ?HighSchoolEntity
+    public function find(int $high_school_id): ?SchoolEntity
     {
-        $builder_high_school = new HighSchool();
-        $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
+        $builder_school_detail = new SchoolDetail();
+        $school_detail = $builder_school_detail->newQuery()->where('id', $high_school_id)->get()->first();
 
-        if (empty($high_school)) {
+        if (empty($school_detail)) {
             return null;
         }
-        $high_school_entities = $this->make([$high_school]);
+        $high_school_entities = $this->make([$school_detail]);
 
         return reset($high_school_entities);
     }
@@ -110,9 +110,9 @@ class HighSchoolEntityRepository
      * 学校情報を取得する（取得失敗時例外発生）
      *
      * @param int $high_school_id 高等学校ID
-     * @return \App\Domain\School\HighSchoolEntity
+     * @return \App\Domain\School\SchoolEntity
      */
-    public function findOrFail(int $high_school_id): HighSchoolEntity
+    public function findOrFail(int $high_school_id): SchoolEntity
     {
         $entity = $this->find($high_school_id);
 
@@ -158,27 +158,27 @@ class HighSchoolEntityRepository
         $builder_school->save();
 
         // 高等学校情報
-        $builder_high_school = new HighSchool();
-        $builder_high_school->school_id = $builder_school->id;
-        $builder_high_school->post_number = $post_number;
-        $builder_high_school->address = $address;
-        $builder_high_school->phone_number = $phone_number;
-        $builder_high_school->fax_number = $fax_number;
-        $builder_high_school->access = $access;
-        $builder_high_school->full_day_grade = in_array('fullDayGrade', $process, true);
-        $builder_high_school->full_day_credit = in_array('fullDayCredit', $process, true);
-        $builder_high_school->part_time_grade_night_only = in_array('partTimeGradeNightOnly', $process, true);
-        $builder_high_school->part_time_credit = in_array('partTimeCredit', $process, true);
-        $builder_high_school->part_time_credit_night_only = in_array('partTimeCreditNightOnly', $process, true);
-        $builder_high_school->online_school = in_array('onlineSchool', $process, true);
-        $builder_high_school->save();
+        $builder_school_detail = new SchoolDetail();
+        $builder_school_detail->school_id = $builder_school->id;
+        $builder_school_detail->post_number = $post_number;
+        $builder_school_detail->address = $address;
+        $builder_school_detail->phone_number = $phone_number;
+        $builder_school_detail->fax_number = $fax_number;
+        $builder_school_detail->access = $access;
+        $builder_school_detail->full_day_grade = in_array('fullDayGrade', $process, true);
+        $builder_school_detail->full_day_credit = in_array('fullDayCredit', $process, true);
+        $builder_school_detail->part_time_grade_night_only = in_array('partTimeGradeNightOnly', $process, true);
+        $builder_school_detail->part_time_credit = in_array('partTimeCredit', $process, true);
+        $builder_school_detail->part_time_credit_night_only = in_array('partTimeCreditNightOnly', $process, true);
+        $builder_school_detail->online_school = in_array('onlineSchool', $process, true);
+        $builder_school_detail->save();
 
         // 学科
         $school_department_attributes_for_insert = [];
         foreach ($department_ids as $department_id) {
             $attributes = [];
             $attributes['school_type'] = 'high_school';
-            $attributes['school_type_id'] = $builder_high_school->id;
+            $attributes['school_type_id'] = $builder_school_detail->id;
             $attributes['department_id'] = $department_id;
             $attributes['created_at'] = date('Y-m-d H:i:s', LARAVEL_START);
             $attributes['updated_at'] = date('Y-m-d H:i:s', LARAVEL_START);
@@ -195,9 +195,9 @@ class HighSchoolEntityRepository
     public function deleteByHighSchoolId(int $high_school_id): void
     {
         // 現時点では学校と高校の関係性は1：1のものしかないため、高等学校の削除に合わせて学校も同時に削除を行う
-        $builder_high_school = new HighSchool();
-        $high_school = $builder_high_school->newQuery()->where('id', $high_school_id)->get()->first();
-        $builder_high_school->newQuery()->where('id', $high_school_id)->delete();
+        $builder_school_detail = new SchoolDetail();
+        $school_detail = $builder_school_detail->newQuery()->where('id', $high_school_id)->get()->first();
+        $builder_school_detail->newQuery()->where('id', $high_school_id)->delete();
 
         $builder_high_school_department = new SchoolDepartment();
         $builder_high_school_department->newQuery()
@@ -206,31 +206,31 @@ class HighSchoolEntityRepository
             ->delete();
 
         $builder_school = new School();
-        $builder_school->newQuery()->where('id', $high_school->school_id)->delete();
+        $builder_school->newQuery()->where('id', $school_detail->school_id)->delete();
     }
 
     /**
      * 学校情報を保存する
      *
-     * @param \App\Domain\School\HighSchoolEntity $high_school_entity
+     * @param \App\Domain\School\SchoolEntity $high_school_entity
      */
-    public function save(HighSchoolEntity $high_school_entity): void
+    public function save(SchoolEntity $high_school_entity): void
     {
         // 高等学校関連
-        $builder_high_school = new HighSchool();
-        $high_school = $builder_high_school->newQuery()->where('id', $high_school_entity->highSchoolId())->get()->first();
-        $high_school->post_number = $high_school_entity->postNumber();
-        $high_school->address = $high_school_entity->address();
-        $high_school->phone_number = $high_school_entity->phoneNumber();
-        $high_school->fax_number = $high_school_entity->faxNumber();
-        $high_school->access = $high_school_entity->access();
-        $high_school->full_day_grade = $high_school_entity->fullDayGrade();
-        $high_school->full_day_credit = $high_school_entity->fullDayCredit();
-        $high_school->part_time_grade_night_only = $high_school_entity->partTimeGradeNightOnly();
-        $high_school->part_time_credit = $high_school_entity->partTimeCredit();
-        $high_school->part_time_credit_night_only = $high_school_entity->partTimeCreditNightOnly();
-        $high_school->online_school = $high_school_entity->onlineSchool();
-        $high_school->save();
+        $builder_school_detail = new SchoolDetail();
+        $school_detail = $builder_school_detail->newQuery()->where('id', $high_school_entity->highSchoolId())->get()->first();
+        $school_detail->post_number = $high_school_entity->postNumber();
+        $school_detail->address = $high_school_entity->address();
+        $school_detail->phone_number = $high_school_entity->phoneNumber();
+        $school_detail->fax_number = $high_school_entity->faxNumber();
+        $school_detail->access = $high_school_entity->access();
+        $school_detail->full_day_grade = $high_school_entity->fullDayGrade();
+        $school_detail->full_day_credit = $high_school_entity->fullDayCredit();
+        $school_detail->part_time_grade_night_only = $high_school_entity->partTimeGradeNightOnly();
+        $school_detail->part_time_credit = $high_school_entity->partTimeCredit();
+        $school_detail->part_time_credit_night_only = $high_school_entity->partTimeCreditNightOnly();
+        $school_detail->online_school = $high_school_entity->onlineSchool();
+        $school_detail->save();
 
         // 学科についてはすべて一旦消す ⇒ 作成するという処理とする（変更があった時のみ処理する）
         if ($high_school_entity->departmentIdsChanged()) {
@@ -253,7 +253,7 @@ class HighSchoolEntityRepository
 
         // 学校関連
         $builder_school = new School();
-        $school = $builder_school->newQuery()->where('id', $high_school->school_id)->get()->first();
+        $school = $builder_school->newQuery()->where('id', $school_detail->school_id)->get()->first();
         $school->name = $high_school_entity->name();
         $school->name_kana = $high_school_entity->nameKana();
         $school->url = $high_school_entity->url();
@@ -263,10 +263,10 @@ class HighSchoolEntityRepository
     /**
      * Entityを生成する
      *
-     * @param  \App\Models\HighSchool[]  $high_schools
+     * @param  \App\Models\SchoolDetail[]  $school_details
      * @return array
      */
-    protected function make(array $high_schools): array
+    protected function make(array $school_details): array
     {
         $builder_school_department = new SchoolDepartment();
         $school_departments = $builder_school_department->newQuery()->where('school_type', 'high_school')->get()->groupBy('school_type_id',
@@ -276,19 +276,19 @@ class HighSchoolEntityRepository
         $schools = $builder_school->newQuery()->get()->keyBy('id')->all();
 
         $high_school_entities = [];
-        foreach ($high_schools as $high_school) {
+        foreach ($school_details as $school_detail) {
             $department_names = [];
             $department_ids = [];
-            $school_departments_filtered = $school_departments[$high_school->id];
+            $school_departments_filtered = $school_departments[$school_detail->id];
             foreach ($school_departments_filtered as $school_department) {
                 $department = $this->findDepartmentById($school_department->department_id);
                 $department_ids[] = $department->id;
                 $department_names[] = $department->department;
             }
 
-            $high_school_entities[$high_school->id] = new HighSchoolEntity(
-                collect($high_school)->toArray(),
-                collect($schools[$high_school->school_id])->toArray(),
+            $high_school_entities[$school_detail->id] = new SchoolEntity(
+                collect($school_detail)->toArray(),
+                collect($schools[$school_detail->school_id])->toArray(),
                 $department_ids,
                 $department_names
             );
