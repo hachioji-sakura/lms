@@ -228,11 +228,11 @@ class SchoolTextbookController extends MilestoneController
    * 共通パラメータ取得
    *
    * @param Request $request
-   * @param  $textbook_id
+   * @param  $id
    * @param  $school_id
    * @return json
    */
-  public function get_param(Request $request, $textbook_id = null, $school_id = null){
+  public function get_param(Request $request, $id = null, $school_id = null){
 
     $user = $this->login_details($request);
     $ret = $this->get_common_param($request);
@@ -251,9 +251,11 @@ class SchoolTextbookController extends MilestoneController
       $ret['school'] = School::find($school_id);
       $ret['school_id'] = $school_id;
       $ret['school_textbooks'] = $ret['school']->textbooks();
+    }else{
+        abort(400);
     }
-    if(!empty($textbook_id)){
-      $ret['item'] = $this->model()->find($textbook_id);
+    if(!empty($id)){
+      $ret['item'] = $this->model()->find($id);
       if(!isset($ret['item'])){
         abort(404, 'ページがみつかりません(1)');
       }
