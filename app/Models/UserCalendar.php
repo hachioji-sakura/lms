@@ -1025,6 +1025,7 @@ EOT;
       case 10:
         return true;
     }
+    if($this->trial_id > 0 && empty($this->work)) return true;
     return false;
   }
   public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
