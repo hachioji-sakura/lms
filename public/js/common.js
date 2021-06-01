@@ -335,7 +335,9 @@ function course_minutes_filter(name){
     //振替の場合は分割振替などがあるので、フィルタはなし
     return ;
   }
-  if($('input[name="trial_id"]').val()|0 > 0){
+  var is_calendar_settings = $('input[name="is_calendar_settings"]').val()|0;
+  var trial_id = $('input[name="trial_id"]').val()|0;
+  if(trial_id > 0 && is_calendar_settings== 0){
     $("label.course_minutes:contains('９０分')").hide();
     $("label.course_minutes:contains('１２０分')").hide();
   }
