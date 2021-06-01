@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Http\Request;
 use Illuminate\Console\Command;
 use App\Models\UserCalendarSetting;
 use App\Models\UserCalendar;
@@ -63,7 +62,6 @@ class CalendarSettingCommand extends Command
 
       $this->info('to_calendar('.$start_date.','.$end_date.','.$range_month.','.$week_count.','.$id.')');
       @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
-
       $settings = UserCalendarSetting::where('status', 'fix');
       if(!empty($id)){
         $settings = $settings->where('id', $id);
@@ -74,8 +72,7 @@ class CalendarSettingCommand extends Command
         return false;
       }
       $data = [];
-      $request = new Request();
-      $res = $this->transaction($request, function() use ($request, $settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
+      $res = $this->transaction(function() use ($settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
           $this->info($setting->id.':count='.count($dates));
@@ -123,9 +120,9 @@ class CalendarSettingCommand extends Command
       $res = $controller->send_slack($message, $msg_type, $username, $channel);
       return $res;
     }
-    protected function transaction($request, $callback, $logic_name, $__file, $__function, $__line){
+    protected function transaction($callback, $logic_name, $__file, $__function, $__line){
       $controller = new Controller;
-      $res = $controller->transaction($request, $callback, $logic_name, $__file, $__function, $__line);
+      $res = $controller->transaction(null, $callback, $logic_name, $__file, $__function, $__line);
       return $res;
     }
 }
