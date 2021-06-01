@@ -61,7 +61,7 @@ class CalendarSettingCommand extends Command
       if(empty($range_month)) $range_month=1;
 
       $this->info('to_calendar('.$start_date.','.$end_date.','.$range_month.','.$week_count.','.$id.')');
-      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "remind_trial_calendar");
+      @$this->send_slack("calendarsetting:to_calendar:start_date=".$start_date.":range_month=".$range_month.":end_date=".$end_date, 'warning', "CalendarSettingCommand");
       $settings = UserCalendarSetting::where('status', 'fix');
       if(!empty($id)){
         $settings = $settings->where('id', $id);
@@ -71,7 +71,6 @@ class CalendarSettingCommand extends Command
         $this->info('no settings');
         return false;
       }
-      $data = [];
       $res = $this->transaction(function() use ($settings,$start_date,$end_date,$range_month, $week_count, $view_mode){
         foreach($settings as $setting){
           $dates = $setting->get_add_calendar_date($start_date, $end_date, $range_month, $week_count);
@@ -93,7 +92,8 @@ class CalendarSettingCommand extends Command
                 $this->info($result["message"]."\n".$result["description"]);
                 if($result['message'] != 'already_registered' && $result['message'] != 'unsubscribe'){
                   $this->info("繰り返しスケジュール登録エラー:\n".$result["message"]."\n".$result["description"]);
-                  return false;
+                  @$this->send_slack("繰り返しスケジュール登録エラー:setting_id=".$setting->id."date=".date('Y-m-d', strtotime($date))."\n".$result["message"]."\n".$result["description"], 'error', "CalendarSettingCommand");
+                  //return $this->api_response(500, '繰り返しスケジュール登録エラー', $result["message"]."\n".$result["description"], $settings);
                 }
               }
             }
@@ -102,7 +102,7 @@ class CalendarSettingCommand extends Command
         return $this->api_response(200, '', '', $settings);
       }, '繰り返しスケジュール登録', __FILE__, __FUNCTION__, __LINE__ );
 
-      @$this->send_slack("calendarsetting:to_calendar:end", 'warning', "remind_trial_calendar");
+      @$this->send_slack("calendarsetting:to_calendar:end", 'warning', "CalendarSettingCommand");
       return true;
     }
     protected function api_response($status=200, $message="", $description="", $data=[]) {
