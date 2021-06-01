@@ -861,6 +861,7 @@ EOT;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
       //主催者以外を追加
       $member = $calendar->memberAdd($member->user_id, 1, $default_status);
+      if(!isset($member)) continue;
       $_st = $member->user->student->get_status($date);
       if($_st == 'unsubcribe' || $_st=='recess') {
         $remark = __('labels.'.$_st).'のためキャンセル';
