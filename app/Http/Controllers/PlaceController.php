@@ -222,7 +222,8 @@ class PlaceController extends MilestoneController
 
    public function phone_list(Request $request){
      $param = parent::get_param($request);
-     $param['items'] = $this->model()->hasPhoneNo()->enable()->get();
+     //floorを持っている所在地を電話番号リストに載せる
+     $param['items'] = $this->model()->hasPhoneNo()->enable()->has('floors')->get();
      $param['fields'] = $this->get_phone_fields();
      return view($this->domain.'.phone_list')->with($param);
    }
