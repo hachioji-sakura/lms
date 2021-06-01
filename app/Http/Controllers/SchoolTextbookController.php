@@ -138,12 +138,6 @@ class SchoolTextbookController extends MilestoneController
       'difficulty_name' => [
         'label' => __('labels.difficulty'),
       ],
-      'buttons' => [
-        'label' => __('labels.control'),
-        'button' => [
-          'delete'
-        ]
-      ]
     ];
 
     return ["items" => $items, "fields" => $fields];
@@ -208,16 +202,6 @@ class SchoolTextbookController extends MilestoneController
     return $fields;
   }
 
-  public function _delete(Request $request, $id)
-  {
-    $res = $this->transaction($request, function() use ($request, $id){
-      $item = $this->model()->find($id);
-      $item->dispose();
-      return $this->api_response(200, '', '', $item);
-    }, '削除しました', __FILE__, __FUNCTION__, __LINE__ );
-    return $res;
-  }
-
   /**
    * 共通パラメータ取得
    *
@@ -240,7 +224,8 @@ class SchoolTextbookController extends MilestoneController
     }
 
     $ret = $this->get_common_param($request);
-    $school_id = request()->schools_id ? request()->schools_id : request()->school_id;
+    $school_id = 0;
+    if($request->has('school_id')) $school_id = $request->school_id;
 
     if(!empty($school_id)){
       $ret['school'] = School::find($school_id);

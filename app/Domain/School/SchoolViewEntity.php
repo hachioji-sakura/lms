@@ -105,9 +105,11 @@ class SchoolViewEntity extends BaseEntity
                 'button' => [
                       'school_textbooks' =>[
                         'style' =>'outline-primary',
-                        'uri'  =>'/school_textbooks',
                         'label' => '使用テキスト',
-                      ],
+                        "link" => function($row){
+                            return "/school_textbooks?school_id=".$row['id'];
+                        }
+                    ],
                      'edit',
                      'delete',
                 ]

@@ -21,7 +21,7 @@
       >
       </div>
     </div>
-    <input type="hidden" name="school_id" value="{{request()->schools_id}}">
+    <input type="hidden" name="school_id" value="{{request()->school_id}}">
     @endslot
   @endcomponent
 
@@ -29,15 +29,15 @@
 @section('page_sidemenu')
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create?school_id={{request()->schools_id}}" class="nav-link">
+    <a href="javascript:void(0);" page_title="{{$domain_name}}登録" page_form="dialog" page_url="/{{$domain}}/create?school_id={{$school_id}}" class="nav-link">
       <i class="fa fa-plus nav-icon"></i>{{$domain_name}} {{__('labels.add')}}
     </a>
   </li>
 </ul>
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
   <li class="nav-item hr-1">
-    <a href="javascript:void(0);" page_title="{{__('labels.textbooks')}}登録" page_form="dialog" page_url="/textbooks/create" class="nav-link">
-      <i class="fa fa-plus nav-icon"></i>{{__('labels.textbooks')}} {{__('labels.add')}}
+    <a href="javascript:void(0);" page_title="{{__('labels.textbooks')}}登録" page_form="dialog" page_url="/textbooks/create?school_id={{$school_id}}" class="nav-link">
+      <i class="fa fa-folder-plus nav-icon"></i>{{__('labels.textbooks')}} {{__('labels.add')}}
     </a>
   </li>
 </ul>

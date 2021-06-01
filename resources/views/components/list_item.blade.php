@@ -27,7 +27,13 @@
             {{$button['label']}}
           </a>
           @elseif(isset($button['link']))
-          <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+          <a 
+            @if(gettype($button['link'])=='string')
+              href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}"
+            @else
+              href="{{$button['link']($row)}}"
+            @endif
+            role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
             @if(isset($button['icon']))
             <i class="fa fa-{{$button['icon']}} mr-1"></i>
             @endif
@@ -39,9 +45,6 @@
                 <i class="fa fa-cloud-download-alt"></i>
               </a>
             @endif
-          @endif
-          @if($key === "school_textbooks")
-            <a href="{{$button['uri']}}?{{$domain}}_id={{$row['id']}}" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">{{$button['label']}}</a>
           @endif
         @endif
       @endforeach
@@ -80,7 +83,7 @@
         @endforeach
       @else
         @empty($row[$key])
-          ー
+          ―
         @else
           {{str_limit($row[$key], 50, '...')}}
         @endempty
