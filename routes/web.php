@@ -423,6 +423,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   // 学校関連
   Route::resource('schools', 'SchoolController');
+  Route::resource('school_textbooks', 'SchoolTextbookController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');
