@@ -154,6 +154,7 @@
               <div class="col-12">
                 @component('tasks.components.buttons',[
                   'item' => $item,
+                  'student' => $student,
                   'is_footer' => false,
                 ])
                 @endcomponent

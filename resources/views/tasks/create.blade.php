@@ -1,8 +1,7 @@
-
-  <div id="create_tasks" class="form-group">
+ <div id="create_tasks" class="form-group">
     @if($_edit)
     <form method="POST" id="create_task_form" action="/tasks/{{$item->id}}" enctype="multipart/form-data">
-      @method('PUT')
+    @method('PUT')
     @else
     <form method="POST" action="/tasks" id="create_task_form" enctype="multipart/form-data">
     @endif
@@ -20,13 +19,13 @@
           <div class="input-group">
             <div class="form-check">
               <label class="form-check-label" for="type_class_record">
-                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{$_edit && $item->type == 'class_record' ? 'checked': ''}} checked>
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_class_record" value="class_record" required="true" {{isset($item) && $item->type == 'class_record' ? 'checked': ''}} checked>
                 {{__('labels.class_record')}}
               </label>
             </div>
             <div class="form-check">
               <label class="form-check-label" for="type_homework">
-                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{$_edit && $item->type == 'homework' ? 'checked': ''}}>
+                <input class="frm-check-input icheck flat-green" type="radio" name="type" id="type_homework" value="homework" required="true" {{isset($item) && $item->type == 'homework' ? 'checked': ''}}>
                 {{__('labels.homework')}}
               </label>
             </div>
@@ -34,13 +33,13 @@
         </div>
       </div>
 
-      @component('tasks.components.subjects', ['_edit' => $_edit, 'subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
+      @component('tasks.components.subjects', ['subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
       <div class="row mt-2">
         <div class="col-12">
           <label>{{__('labels.tasks_remarks')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
-            <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{$_edit ? $item->full_title : ''}}</textarea>
+            <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{isset($item) ? $item->full_title : ''}}</textarea>
           </div>
         </div>
       </div>
@@ -71,7 +70,7 @@
             <select name="milestone_id" class="form-control select2" width="100%">
               <option value=" ">{{__('labels.selectable')}}</option>
               @foreach($target_student->target_milestone as $milestone)
-                <option value="{{$milestone->id}}" {{$_edit && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
+                <option value="{{$milestone->id}}" {{isset($item) && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
               @endforeach
             </select>
           </div>
@@ -81,18 +80,18 @@
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
             <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
               @foreach($textbooks as $textbook)
-                <option value="{{$textbook->id}}" {{$_edit && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
+                <option value="{{$textbook->id}}" {{isset($item) && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
               @endforeach
             </select>
           </div>
 
-          @if($_edit)
+          @if(isset($item))
           <div class="col-12 col-md-6">
             <label>{{__('labels.status')}}</label>
             <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
             <select name="status" class="form-control select2" width="100%">
               @foreach(config('attribute.task_status') as $key => $value)
-                <option value="{{$key}}" {{$_edit && $key == $item->status ? 'selected ': ''}}>{{$value}}</option>
+                <option value="{{$key}}" {{isset($item) && $key == $item->status ? 'selected ': ''}}>{{$value}}</option>
               @endforeach
             </select>
           </div>
@@ -103,17 +102,17 @@
           <div class="col-6">
             <label>{{__('labels.start_schedule')}}</label>
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   placeholder=""  value="{{$_edit && !empty($item->start_schedule) ? date("Y/m/d", strtotime($item->start_schedule)) : ''}}">
+            <input type="text" name="start_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}"   placeholder=""  value="{{isset($item) && !empty($item->start_schedule) ? date("Y/m/d", strtotime($item->start_schedule)) : ''}}">
           </div>
           <div class="col-6">
             <label>{{__('labels.end_schedule')}}</label>
             <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <input type="text" name="end_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}" placeholder=""  value="{{$_edit && !empty($item->end_schedule) ?  date("Y/m/d", strtotime($item->end_schedule)) : "" }}">
+            <input type="text" name="end_schedule" class="form-control" uitype="datepicker" minvalue="{{date('Y/m/d')}}" placeholder=""  value="{{isset($item) && !empty($item->end_schedule) ?  date("Y/m/d", strtotime($item->end_schedule)) : "" }}">
           </div>
         </div>
         <div class="row mt-2">
           <div class="col-12">
-            @if(($_edit) && !empty($item['s3_url']))
+            @if(isset($item) && !empty($item['s3_url']))
             <label for="upload_file" class="w-100 upload_file">
               <a id="upload_file_link" href="{{$item['s3_url']}}" target="_blank" class="">{{$item['s3_alias']}}</a>
               <a href="javascript:void(0);" onClick="upload_file_clear();"class="btn btn-default btn-sm ml-1">

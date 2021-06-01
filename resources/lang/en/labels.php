@@ -482,4 +482,5 @@ return [
   'memos' => 'Teacher Memo',
   'bulk' => 'Bulk',
   'is_include_expired' => 'include expired',
+  'copy_button' => 'Copy Button',
 ];

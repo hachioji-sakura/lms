@@ -481,4 +481,5 @@ return [
   'memos' => 'メモ',
   'bulk' => '一括',
   'is_include_expired' => '期限切れ',
+  'copy_button' => 'コピーする',
 ];

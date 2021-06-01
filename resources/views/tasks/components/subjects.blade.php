@@ -6,7 +6,7 @@
       <option value=" ">{{__('labels.selectable')}}</option>
       @foreach($subjects as $subject)
       <option value="{{$subject->id}}"
-      @if(!empty($item) && $_edit)
+      @if(!empty($item))
         {{$item->curriculums->count() >0 && $item->curriculums->first()->subjects->contains($subject->id)  ? "selected" : "" }}
       @endif
       >
@@ -61,7 +61,7 @@ $(function(){
       }
     });
   }
-  @if($_edit && $item->curriculums->count() > 0)
+  @if(!empty($item) && $item->curriculums->count() > 0)
   $('#curriculums').load( "{{url('/curriculums/get_select_list')}}?subject_id="+$('select#select_subject').val()
   +"&task_id={{$item->id}}", function(){
     base.pageSettinged(form_id);
