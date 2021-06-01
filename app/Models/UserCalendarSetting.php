@@ -777,7 +777,7 @@ EOT;
       $is_enable = $this->is_enable($date);
       if($is_enable==false){
         \Log::error("add_calendar/id='.$this->id.'無効な設定");
-        return $this->error_response("disabled setting", "add_calendar/id='.$this->id.'無効な設定");
+        return $this->error_response("disabled setting", "add_calendar/id=".$this->id."無効な設定");
       }
       $is_enable=false;
       $students = $this->get_students();
@@ -792,7 +792,7 @@ EOT;
       } 
       if($is_enable==false){
         \Log::error("この予定は全員退会しているため、作成する必要がない");
-        return $this->error_response("all unsubscribe setting", "add_calendar/id='.$this->id.'この予定は全員退会しているため、作成する必要がない");        
+        return $this->error_response("all unsubscribe setting", "add_calendar/id=".$this->id."この予定は全員退会しているため、作成する必要がない");        
       }
     }
 
