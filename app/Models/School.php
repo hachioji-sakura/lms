@@ -11,11 +11,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class School extends Model
 {
-  protected $table = 'lms.schools';
-  protected $guarded = array('id');
-  public static $rules = array(
-
-  );
   public function textbooks(){
     return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
   }

@@ -54,18 +54,7 @@ class SchoolTextbookController extends MilestoneController
       ->with($param);
   }
 
-  /**
-   * 新規登録画面
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create(Request $request)
-  {
-    $param = $this->get_param($request);
-    return view($this->domain.'.create',
-      [ 'error_message' => '', '_edit' => false])
-      ->with($param);
-  }
+
 
   /**
    * 新規登録ロジック
@@ -86,32 +75,6 @@ class SchoolTextbookController extends MilestoneController
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
-  /**
-   * 詳細画面表示
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Request $request, $id)
-  {
-    $param = $this->get_param($request,$id);
-
-    $fields = $this->show_fields($param['item']->type);
-    if($this->is_manager_or_teacher($param['user']->role)===true){
-      //生徒以外の場合は、対象者も表示する
-      if(isset($param['item']['target_user_id'])){
-        $fields['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
-      }
-    }
-
-    $form = $request->all();
-    $form['fields'] = $fields;
-    if($request->has('api')) return $this->api_response(200, '', '', $param['item']);
-    return view('components.page', $form)
-      ->with($param);
-  }
 
   public function search(Request $request)
   {
