@@ -100,7 +100,12 @@ class UserCalendar extends Model
   public function register_mail_title(){
     $trial = "";
     if($this->trial_id > 0){
-      $trial ='['. __('labels.trial_lesson').']';
+      if($this->is_teaching()==true){
+        $trial ='['. __('labels.trial_lesson').']';
+      }
+      else {
+        $trial ='['. $this->schedule_type_name().']';
+      }
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
     return __('messages.mail_title_until_today').$title;
@@ -524,13 +529,17 @@ EOT;
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
-    switch($this->status){
-      case "fix":
-        if($this->work==9) return "勤務予定";
-      case "absence":
-        if($this->work==9) return "欠勤";
-      case "presence":
-      if($this->work==9) return "出勤";
+
+    if($this->is_teaching()==false){
+      switch($this->status){
+        case "fix":
+          if($this->work==9) return "勤務予定";
+          else return $this->schedule_type_name().__('labels.task_schedule');
+        case "absence":
+          if($this->work==9) return "欠勤";
+        case "presence":
+        if($this->work==9) return "出勤";
+      }  
     }
     return $status_name;
   }
@@ -640,6 +649,9 @@ EOT;
   }
   public function getLessonAttribute($user_id){
     return $this->lesson();
+  }
+  public function getLessonIdAttribute(){
+    return $this->get_attribute('lesson',true);
   }
   public function getWorkNameAttribute(){
     return $this->work();
@@ -1013,6 +1025,7 @@ EOT;
       case 10:
         return true;
     }
+    if($this->trial_id > 0 && empty($this->work)) return true;
     return false;
   }
   public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
@@ -1093,6 +1106,7 @@ EOT;
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -1109,6 +1123,7 @@ EOT;
     $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない

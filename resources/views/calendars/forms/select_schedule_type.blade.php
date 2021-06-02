@@ -1,5 +1,7 @@
-@if($item->trial_id > 0 || $item["exchanged_calendar_id"] > 0 || (isset($is_class_schedule) && $is_class_schedule==true))
+@if($item->is_teaching()==true && ($item->trial_id > 0 || $item["exchanged_calendar_id"] > 0 || (isset($is_class_schedule) && $is_class_schedule==true)))
 <input type="hidden" name="schedule_type" value="class" >
+@elseif($item->is_teaching()!=true && $item->trial_id > 0)
+<input type="hidden" name="schedule_type" value="other" >
 @elseif($_edit==true)
   @if($item->is_teaching()==true)
     <input type="hidden" name="schedule_type" value="class" >

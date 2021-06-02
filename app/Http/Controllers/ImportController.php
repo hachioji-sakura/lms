@@ -1342,13 +1342,6 @@ class ImportController extends UserController
         //参加者が同じ場合、この設定が通常授業設定確定
         if($is_member===true) {
           $setting_id = $setting->id;
-          /*
-          $add_calendar_date = $setting->get_add_calendar_date($start_date, "", 1);
-          if(isset($add_calendar_date[$item['ymd']]['already_calendars'])){
-            $setting_id = $setting->id;
-            break;
-          }
-          */
         }
       }
       \Log::warning("-------------setting_id=".$setting_id.'-------------');

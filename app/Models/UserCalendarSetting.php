@@ -158,13 +158,16 @@ EOT;
     return $this->scopeFieldWhereIn($query, 'lesson_week', $vals, $is_not);
   }
   public function scopeEnable($query){
-    $where_raw = <<<EOT
-      (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date >= ?)
-      )
-EOT;
-    return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
+    return $query->where(function($query){
+        $query->orWhere('enable_end_date', null)->orWhere('enable_end_date','>', date('Y-m-d'));
+      });
   }
+
+  public function scopeSearchRangeDate($query,$from_date,$to_date){
+    //有効期間が指定期間に含まれるもの
+    return $query->where('enable_start_date','<=',date('Y/m/d',strtotime($to_date)))->where(DB::raw('IFNULL(enable_end_date,"9999/12/31")'),'>=',date('Y/m/d',strtotime($from_date)));
+  }
+
   public function scopeSearchWord($query, $word)
   {
     $search_words = $this->get_search_word_array($word);
@@ -440,10 +443,6 @@ EOT;
       $calendar->dispose();
     }
     */
-    if(isset($user_id) && $this->is_teaching()==true){
-      //契約処理
-      $this->agreement_update($user_id);
-    }
     $this->delete();
 
   }
@@ -701,20 +700,6 @@ EOT;
     }
     return true;
   }
-  public function has_enable_member(){
-    $is_enable = true;
-    if($this->work!=9){
-      $is_enable = false;
-      foreach($this->members as $member){
-        if($this->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
-        $is_enable = true;
-
-        break;
-      }
-    }
-    return $is_enable;
-  }
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
@@ -789,10 +774,25 @@ EOT;
     }
     */
     if($this->work!=9){
-      $is_enable = $this->has_enable_member();
+      $is_enable = $this->is_enable($date);
       if($is_enable==false){
-        \Log::error("有効なメンバーがいない");
-        return $this->error_response("no_member", "有効なメンバーがいない(id=".$this->id.")");
+        \Log::error("add_calendar/id='.$this->id.'無効な設定");
+        return $this->error_response("disabled setting", "add_calendar/id='.$this->id.'無効な設定");
+      }
+      $is_enable=false;
+      $students = $this->get_students();
+      foreach($students as $member){
+        if($this->user_id == $member->user_id) continue;
+        if(!isset($member->user->student)) continue;
+        $_st = $member->user->student->get_status($date);
+        if($_st != 'unsubscribe') {
+          $is_enable=true;
+          break;
+        }
+      } 
+      if($is_enable==false){
+        \Log::error("この予定は全員退会しているため、作成する必要がない");
+        return $this->error_response("all unsubscribe setting", "add_calendar/id='.$this->id.'この予定は全員退会しているため、作成する必要がない");        
       }
     }
 
@@ -859,9 +859,14 @@ EOT;
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
-      if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
       //主催者以外を追加
-      $calendar->memberAdd($member->user_id, 1, $default_status);
+      $member = $calendar->memberAdd($member->user_id, 1, $default_status);
+      $_st = $member->user->student->get_status($date);
+      if($_st == 'unsubcribe' || $_st=='recess') {
+        $remark = __('labels.'.$_st).'のためキャンセル';
+        //通知なし、自動キャンセル更新(rootユーザー使用)
+        $member->status_update('cancel', $remark, 1, false, false);
+      }
     }
     if($default_status=='fix'){
       UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
@@ -925,5 +930,28 @@ EOT;
     $c = 0;
     if($d < 0) return false;
     return true;
+  }
+  public function auto_expired(){
+    $students = $this->get_students();
+    $is_enable = false;
+    $d = 0;
+    foreach($students as $member){
+      if(!isset($member->user->student)) continue;
+      //現在の生徒の状態を取得
+      $_st = $member->user->student->get_status();
+      if($_st!='unsubscribe'){
+        //一人でも退会ではない場合、この設定は有効
+        $is_enable = true;
+        continue;
+      }
+      if(empty($member->user->student->unsubscribe_date)) continue;
+      if($d < strtotime($member->user->student->unsubscribe_date)) $d = strtotime($member->user->student->unsubscribe_date);
+    }
+    if($is_enable==false && $d > 0 && $this->end_enable_date != date('Y-m-d', $d)){
+      $this->update(['enable_end_date' => date('Y-m-d', $d)]);
+      $this->send_slack("全員退会によりこのカレンダー設定の有効期限を設定：id=".$this->id.'/enable_end_date='.date('Y-m-d', $d), 'warning', "auto_set_enable_end_date");
+      return true;
+    }
+    return false;
   }
 }

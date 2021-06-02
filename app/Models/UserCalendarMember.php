@@ -205,7 +205,7 @@ class UserCalendarMember extends Model
     }
     $this->calendar->set_endtime_for_single_group();
     //ステータス別のメッセージ文言取得
-    $title = __('messages.mail_title_calendar_'.$status);
+    $title = $this->calendar->schedule_type_name().__('messages.mail_title_calendar_'.$status);
     $type = 'text';
     $template = 'calendar_'.$status;
 
@@ -221,7 +221,7 @@ class UserCalendarMember extends Model
       //代理の場合
       $param['is_proxy'] = true;
     }
-    if($is_send_mail==true){
+    if($is_send_mail==true && $this->is_invalid()!=true){
       //このユーザーにメール送信
       \Log::warning("send_mail(".$title.")");
       $this->user->send_mail($title, $param, $type, $template);
@@ -236,17 +236,8 @@ class UserCalendarMember extends Model
   public function is_recess_or_unsubscribe(){
     $u = $this->user->details();
     if($u->role=='student'){
-      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->recess_start_date) &&
-          strtotime($this->calendar->start_time) < strtotime($u->recess_end_date)){
-            return true;
-        }
-      }
-      if(!empty($u->unsubscribe_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->unsubscribe_date)){
-            return true;
-        }
-      }
+      $st = $u->get_status($this->calendar->start_time);
+      if($st=='unsubscribe' || $st=='recess') return true;
     }
     return false;
   }
@@ -824,5 +815,10 @@ class UserCalendarMember extends Model
       $rest_count++;
     }
     return null;
+  }
+  public function is_invalid(){
+    //Todo status=cancelはcancel更新時にメールを送信する可能性があるので、is_active=trueにしておく
+    if($this->status=='invalid' || $this->status=='dummy') return true;
+    return false;
   }
 }

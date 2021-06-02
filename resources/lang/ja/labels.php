@@ -159,6 +159,7 @@ return [
   'add_range' => '登録範囲',
   'upd_datetime' => '更新日時',
   'timezone' => '時間帯',
+  'display' => '表示',
   'sort_no' => '表示順',
   'user_only' => '対象者のみ',
   'enabled_only' => '有効のみ',
@@ -357,6 +358,7 @@ return [
   'not_require_student_confirm' => '生徒の確認を必要としない',
   'schedule_start_hope_date' => '授業開始希望日',
   'schedule_start_date' => '授業開始日',
+  'schedule_start_month' => '授業開始月',
   'schedule_end_date' => '授業終了日',
   'verification_code' => '認証コード',
   'language' => '言語',
@@ -481,5 +483,6 @@ return [
   'school_page_side_menu_part_online_school' => '通信制',
   'memos' => 'メモ',
   'bulk' => '一括',
-  'school_textbooks' => '学校使用テキスト'
+  'school_textbooks' => '学校使用テキスト',
+  'is_include_expired' => '期限切れ',
 ];

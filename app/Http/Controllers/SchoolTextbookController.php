@@ -40,9 +40,8 @@ class SchoolTextbookController extends MilestoneController
         '_page' => 1,
       ]);
     }
-    $school_id = $request->get('schools_id') ? $request->get('schools_id') : $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
 
+    $param = $this->get_param($request);
     $user = $param['user'];
     if(!$this->is_manager($user->role)){
       //事務以外 一覧表示は不可能
@@ -55,19 +54,7 @@ class SchoolTextbookController extends MilestoneController
       ->with($param);
   }
 
-  /**
-   * 新規登録画面
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create(Request $request)
-  {
-    $school_id = $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
-    return view($this->domain.'.create',
-      [ 'error_message' => '', '_edit' => false])
-      ->with($param);
-  }
+
 
   /**
    * 新規登録ロジック
@@ -88,32 +75,6 @@ class SchoolTextbookController extends MilestoneController
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
   }
 
-  /**
-   * 詳細画面表示
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Request $request, $id)
-  {
-    $param = $this->get_param($request,$id);
-
-    $fields = $this->show_fields($param['item']->type);
-    if($this->is_manager_or_teacher($param['user']->role)===true){
-      //生徒以外の場合は、対象者も表示する
-      if(isset($param['item']['target_user_id'])){
-        $fields['target_user_name'] = [
-          'label' => 'ユーザー',
-        ];
-      }
-    }
-
-    $form = $request->all();
-    $form['fields'] = $fields;
-    if($request->has('api')) return $this->api_response(200, '', '', $param['item']);
-    return view($this->domain.'.page', $form)
-      ->with($param);
-  }
 
   public function search(Request $request)
   {
@@ -121,10 +82,8 @@ class SchoolTextbookController extends MilestoneController
     if(!isset($user)) return $this->forbidden();
     if($this->is_manager($user->role)!=true) return $this->forbidden();
 
-    $school_id = $request->get('schools_id') ? $request->get('schools_id') : $request->get('school_id');
-    $param = $this->get_param($request,null,$school_id);
+    $param = $this->get_param($request);
     //検索条件
-
     $items = $this->_search_scope($request, $param['school_textbooks']);
     $items = $items->paginate($param['_line']);
 
@@ -142,12 +101,6 @@ class SchoolTextbookController extends MilestoneController
       'difficulty_name' => [
         'label' => __('labels.difficulty'),
       ],
-      'buttons' => [
-        'label' => __('labels.control'),
-        'button' => [
-          'delete'
-        ]
-      ]
     ];
 
     return ["items" => $items, "fields" => $fields];
@@ -212,75 +165,44 @@ class SchoolTextbookController extends MilestoneController
     return $fields;
   }
 
-  public function _delete(Request $request, $id)
-  {
-    $form = $request->all();
-
-    $res = $this->transaction($request, function() use ($request, $form, $id){
-      $item = $this->model()->find($id);
-      $item->dispose();
-      return $this->api_response(200, '', '', $item);
-    }, '依頼を取り消しました', __FILE__, __FUNCTION__, __LINE__ );
-    return $res;
-  }
-
   /**
    * 共通パラメータ取得
    *
    * @param Request $request
-   * @param  $textbook_id
+   * @param  $id
    * @param  $school_id
    * @return json
    */
-  public function get_param(Request $request, $textbook_id = null, $school_id = null){
+  public function get_param(Request $request, $id = null){
 
     $user = $this->login_details($request);
+    if(isset($user)){
+      if($this->is_manager($user->role)!=true){
+          if($user->is_access($user->user_id)!=true){
+              abort(403, 'このページにはアクセスできません(1)'.$user->role);
+          }
+      }
+    }else{
+      abort(403, 'このページにはアクセスできません(2)');
+    }
+
     $ret = $this->get_common_param($request);
-    $ret['remind'] = false;
-    $ret['token'] = false;
-    $ret['is_exchange_add'] = false;
-    $ret['is_proxy'] = false;
-    if($request->has('is_proxy')){
-      $ret['is_proxy'] = true;
-    }
-    if($request->has('access_key')){
-      $ret['token'] = $request->get('access_key');
-    }
+    $school_id = 0;
+    if($request->has('school_id')) $school_id = $request->school_id;
 
     if(!empty($school_id)){
-      $user_id = -1;
-
-      if($request->has('user')){
-        $user_id = $request->get('user');
-      }
-
-      if($user_id>0){
-        $user = User::where('id', $user_id)->first();
-        if(!isset($user)){
-          abort(403, '有効期限が切れています(4)');
-        }
-        $user = $user->details();
-        $ret['user'] = $user;
-      }
-
-      if(isset($user)){
-        if($this->is_manager($user->role)!=true){
-          if($user->is_access($user->user_id)!=true){
-            abort(403, 'このページにはアクセスできません(1)'.$user->role);
-          }
-        }
-      }
-      else {
-        abort(403, 'このページにはアクセスできません(2)');
-      }
-
       $ret['school'] = School::find($school_id);
+      if(!isset($ret['school'])){
+        abort(404, 'ページがみつかりません(1)');
+      }
       $ret['school_id'] = $school_id;
       $ret['school_textbooks'] = $ret['school']->textbooks();
-
+    } elseif (empty($id) && empty($school_id)){
+        abort(400);
     }
-    if(!empty($textbook_id)){
-      $ret['item'] = $this->model()->find($textbook_id);
+
+    if(!empty($id)){
+      $ret['item'] = $this->model()->find($id);
       if(!isset($ret['item'])){
         abort(404, 'ページがみつかりません(1)');
       }
