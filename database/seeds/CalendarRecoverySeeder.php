@@ -131,6 +131,8 @@ EOT;
 
         //2020.4-2020.5の振替期限は、2020-12-31
         $this->update_exchange_limit_date_20201231();
+        //2021.06.03 体験授業で振替期限がついているものをクリアする
+        $this->update_exchange_limit_date_clear();
 
         //schedule_onetime.subject_exprの補完 work=3（面談）,4（試験監督）,9（事務作業）以外
         $_sql = $sql." where o.subject_expr='0' and o.delflag!=1 and u.work not in(3,4,9,10,11)";
@@ -302,4 +304,13 @@ EOT;
         ]);
       }
     }
-}
+    public function update_exchange_limit_date_clear(){
+      DB::table('lms.user_calendar_members')->where('exchange_limit_date','!=', null)
+                                            ->whereRaw("calendar_id in (select id from user_calendars where trial_id>0)", [])
+                                            ->update([
+                                              'exchange_limit_date' => null
+                                            ]);
+      
+    }
+
+  }

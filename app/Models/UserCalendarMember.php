@@ -614,6 +614,10 @@ class UserCalendarMember extends Model
           }
           $is_update = true;
         }
+        //体験授業で、振替期限を設定しようとしていたらnullにする
+        if($this->calendar->trial_id > 0 && (!empty($update['exchange_limit_date']) || !empty($this->exchange_limit_date))){
+          $update['exchange_limit_date'] = null;
+        }
         //cancel_reasonは空になる可能性がある
         if($this->rest_result != $cancel_reason){
           //cancel_reason -> rest_result
