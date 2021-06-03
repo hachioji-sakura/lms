@@ -131,7 +131,7 @@
           通塾スケジュールにつきまして
         </div>
         @component('students.forms.lesson_week_count', ['_edit'=>true, 'item'=>$trial, 'attributes' => $attributes]) @endcomponent
-        @component('students.forms.course_minutes', ['_edit'=>true, 'item'=>$trial, '_teacher' => false, 'attributes' => $attributes]) @endcomponent
+        @component('students.forms.course_minutes', ['_edit'=>true, 'item'=>$trial, '_teacher' => false, 'attributes' => $attributes, 'is_calendar_settings'=> true]) @endcomponent
         @component('students.forms.work_time', ['_edit'=>true, 'item'=>$trial, 'prefix' => 'lesson', 'attributes' => $attributes, 'title' => 'ご希望の通塾曜日・時間帯']) @endcomponent
       </div>
       <div class="row">

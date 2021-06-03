@@ -523,6 +523,7 @@ class UserCalendarMember extends Model
           break;
       }
     }
+    if(empty($postdata['updateuser'])) $postdata['updateuser'] = 1;
 
     $message = "";
     foreach($postdata as $key => $val){
