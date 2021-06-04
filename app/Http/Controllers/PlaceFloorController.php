@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PlaceFloor;
 use App\Models\PlaceFloorSheat;
+use App\Models\Place;
 
 class PlaceFloorController extends PlaceController
 {
@@ -76,6 +77,14 @@ class PlaceFloorController extends PlaceController
         ],
     ];
     return $fields;
+  }
+
+  public function create(Request $request)
+  {
+      $param = $this->get_param($request);
+      $param['places'] = Place::all();
+      return view($this->domain.'.create',['_edit' => false])
+        ->with($param);
   }
   public function create_form(Request $request){
     $user = $this->login_details($request);
