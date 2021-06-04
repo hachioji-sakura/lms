@@ -971,10 +971,11 @@ EOT;
       if(isset($target_user)){
         //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
         $target_user = $target_user->details();
-        if($target_user->status=='recess'){
+        $user_status = $target_user->get_status($this->start_time);
+        if($user_status=='recess'){
           $status = 'cancel';
         }
-        if($target_user->status=='unsubscribe'){
+        if($user_status=='unsubscribe'){
           //退会時は登録しない
           return null;
         }
