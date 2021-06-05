@@ -5,7 +5,11 @@
   </label>
   <div class="input-group">
     <input type="text" name="enable_start_date" class="form-control float-left w-30" uitype="datepicker" placeholder="例：2000/01/01" required="true"
-    @if($_edit==false)
+    @if($_edit==false && $item->trial_id > 0)
+    {{-- 体験経由の場合当月1日以降から設定可能 --}}
+    minvalue="{{date("Y/m/01")}}"
+    @elseif($_edit==false)
+    {{--　新規登録の場合次月1日以降から設定可能 --}}
     minvalue="{{date("Y/m/01", strtotime('+1 month'))}}"
     @elseif($_edit==true)
     minvalue="{{$item->enable_start_date}}"
