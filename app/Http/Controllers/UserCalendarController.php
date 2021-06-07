@@ -571,6 +571,16 @@ class UserCalendarController extends MilestoneController
         "buttons" => [
           "label" => __('labels.control'),
           "button" => [
+            "member_create" => [
+              "method" => "members/create",
+              "label" => "メンバー追加",
+              "style" => "default",
+            ],  
+            "member_setting" => [
+              "method" => "members/setting",
+              "label" => "メンバー設定",
+              "style" => "default",
+            ],  
             "edit",
             "delete"]
         ]
@@ -1505,7 +1515,6 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->page_access_check($request, $id);
       //TODO work=7
-      if($param['item']["work"]!=7) abort(403);
       return view($this->domain.'.member_create', [])->with($param);
     }
     public function member_create(Request $request, $id)
