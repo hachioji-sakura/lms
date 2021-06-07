@@ -11,5 +11,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class School extends Model
 {
-    //
+    public function schoolDetail()
+    {
+        return $this->hasOne('App\Models\SchoolDetail');
+    }
+
+    public function address()
+    {
+        return $this->schoolDetail->address;
+    }
+
+    public function phoneNumber()
+    {
+        return $this->schoolDetail->phone_number;
+    }
 }

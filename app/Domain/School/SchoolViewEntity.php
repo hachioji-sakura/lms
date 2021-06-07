@@ -2,7 +2,6 @@
 
 namespace App\Domain\School;
 
-use App\Domain\BaseEntity;
 use LogicException;
 
 /**
@@ -10,7 +9,7 @@ use LogicException;
  *
  * @package App\Domain\School
  */
-class SchoolViewEntity extends BaseEntity
+class SchoolViewEntity
 {
     /**
      * ページタイトル
@@ -21,7 +20,7 @@ class SchoolViewEntity extends BaseEntity
     {
         return __('labels.school_page_header_title');
     }
-    
+
     /**
      * 過程一覧
      *
@@ -35,14 +34,14 @@ class SchoolViewEntity extends BaseEntity
             'partTimeGradeNightOnly'  => '定時制学年制夜間',
             'partTimeCredit'          => '定時単位制',
             'partTimeCreditNightOnly' => '定時単位夜間',
-            'onlineSchool'            => '通信制'
+            'onlineSchool'            => '通信制',
         ];
     }
-    
+
     /**
      * ローカライズ名を取得する
      *
-     * @param string $key_name
+     * @param  string  $key_name
      * @return string
      */
     public function localizeName(string $key_name): string
@@ -78,7 +77,7 @@ class SchoolViewEntity extends BaseEntity
                 throw new LogicException('キーが誤っています');
         }
     }
-    
+
     /**
      * 学校情報の基本情報
      *
@@ -97,16 +96,16 @@ class SchoolViewEntity extends BaseEntity
             'phone_number' => [
                 'label' => $this->localizeName('phone_number'),
             ],
-            'process'      => [
-                'label' => $this->localizeName('process'),
+            'school_type'  => [
+                'label' => '学校種別',
             ],
             'buttons'      => [
                 'label'  => $this->localizeName('control'),
-                'button' => ['edit', 'delete']
+                'button' => ['edit', 'delete'],
             ],
         ];
     }
-    
+
     /**
      * 学校情報の詳細情報
      *

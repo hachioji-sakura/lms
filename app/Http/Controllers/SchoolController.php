@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Domain\School\Repository\SchoolEntityRepository;
 use App\Domain\School\SchoolViewEntity;
+use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
 
 /**
  * Class SchoolController
@@ -28,7 +28,7 @@ class SchoolController extends MilestoneController
     /**
      * SchoolController constructor.
      *
-     * @param \App\Domain\School\Repository\SchoolEntityRepository $high_school_entity_repository
+     * @param  \App\Domain\School\Repository\SchoolEntityRepository  $high_school_entity_repository
      */
     public function __construct(
         SchoolEntityRepository $high_school_entity_repository
@@ -39,51 +39,73 @@ class SchoolController extends MilestoneController
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request)
     {
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
+        $page_number = $request->page ?? 1;
+        $per_page = 25;
         $search_word = $param['search_word'];
 
         // 対応するページに応じてGetする内容を分岐する
         if (!empty($search_word)) {
             $high_school_entities = $this->high_school_entity_repository->getBySearchWord($search_word);
-        } elseif (empty($request->process)) {
-            $high_school_entities = $this->high_school_entity_repository->get();
+        } elseif (empty($request->school_type)) {
+            $schools = School::offset(($page_number - 1) * $per_page)->limit($per_page)->get();
+            $total_count = School::get()->count();
         } else {
-            $high_school_entities = $this->high_school_entity_repository->getByProcess($request->process);
+            $schools = School::where('school_type', $request->school_type)->offset(($page_number - 1) * $per_page)->limit($per_page)->get();
+            $total_count = School::where('school_type', $request->school_type)->get()->count();
         }
         $school_view_entity = new SchoolViewEntity();
 
-        // blade側が配列前提のため変換する
         $items = [];
-        foreach ($high_school_entities as $high_school_entity) {
-            $attribute = $high_school_entity->getAttributes();
-            $attribute['id'] = $high_school_entity->highSchoolId();
-            $attribute['process'] = $high_school_entity->process();
-            $items[] = $attribute;
+        foreach ($schools as $school) {
+            $item = [];
+            $item['id'] = $school->id;
+            $item['name'] = $school->name;
+            $item['address'] = $school->address();
+            $item['phone_number'] = $school->phoneNumber();
+            $item['school_type'] = $this->getSchoolType($school->school_type);
+            $items[] = $item;
         }
-        $paginator = $this->getPaginator($request, $items);
-        $processes = [];
-        foreach($school_view_entity->processList() as $key => $value){
-          $processes[Str::snake($key)] = $value;
-        }
+        $items = new LengthAwarePaginator($items, $total_count, $per_page, $page_number, ['path' => $request->url()]);
 
         return view('schools.lists', [
-            'items'                => $paginator,
-            'fields'               => $school_view_entity->fieldForIndex(),
-            'processes'           => $processes,
-            'domain'               => $this->domain,
+            'items'     => $items,
+            'fields'    => $school_view_entity->fieldForIndex(),
+            'processes' => [],
+            'domain'    => $this->domain,
         ])->with($param);
+    }
+
+    private function getSchoolType(string $school_type)
+    {
+        switch ($school_type) {
+            case 'high_school':
+                return '高校';
+            case 'kindergarten':
+                return '幼稚園';
+            case 'elementary_school':
+                return '小学校';
+            case 'junior_high_school':
+                return '中学校';
+            case 'special_school':
+                return '特別学校';
+            case 'nursing_school':
+                return '看護学校';
+        }
+
+        return 'その他';
     }
 
     /**
      * 高等学校情報追加ページ
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function create(Request $request)
@@ -105,7 +127,7 @@ class SchoolController extends MilestoneController
     /**
      * 高等学校情報追加
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(Request $request)
@@ -148,7 +170,7 @@ class SchoolController extends MilestoneController
     /**
      * ページ詳細
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
@@ -179,7 +201,7 @@ class SchoolController extends MilestoneController
     /**
      * ページ編集
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
@@ -232,7 +254,7 @@ class SchoolController extends MilestoneController
     /**
      * 指定のデータを変更する
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param $id
      * @return \Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -247,17 +269,17 @@ class SchoolController extends MilestoneController
         // 更新処理
         $res = $this->transaction($request, function () use ($high_school_id, $request) {
             $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
-            $high_school_entity->changeName((string)$request->name);
-            $high_school_entity->changeNameKana((string)$request->name_kana);
-            $high_school_entity->changePostNumber((string)$request->post_number);
-            $high_school_entity->changeAddress((string)$request->address);
-            $high_school_entity->changePhoneNumber((string)$request->phone_number);
-            $high_school_entity->changeFaxNumber((string)$request->fax_number);
-            $high_school_entity->changeURL((string)$request->url);
-            $high_school_entity->changeProcess((array)$request->process);
+            $high_school_entity->changeName((string) $request->name);
+            $high_school_entity->changeNameKana((string) $request->name_kana);
+            $high_school_entity->changePostNumber((string) $request->post_number);
+            $high_school_entity->changeAddress((string) $request->address);
+            $high_school_entity->changePhoneNumber((string) $request->phone_number);
+            $high_school_entity->changeFaxNumber((string) $request->fax_number);
+            $high_school_entity->changeURL((string) $request->url);
+            $high_school_entity->changeProcess((array) $request->process);
             $department_ids = array_map('intval', $request->department_ids);
             $high_school_entity->changeDepartment($department_ids);
-            $high_school_entity->changeAccess((string)$request->access);
+            $high_school_entity->changeAccess((string) $request->access);
             $this->high_school_entity_repository->save($high_school_entity);
 
             return $this->api_response();
@@ -271,8 +293,8 @@ class SchoolController extends MilestoneController
      *
      * Modelによるページネーションは負荷的に懸念があるため、Entity用のものを生成する
      *
-     * @param \Illuminate\Http\Request $request
-     * @param array $items
+     * @param  \Illuminate\Http\Request  $request
+     * @param  array  $items
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     protected function getPaginator(Request $request, array $items): LengthAwarePaginator

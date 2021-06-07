@@ -8,6 +8,7 @@ use App\Models\SchoolDetail;
 use App\Models\School;
 use App\Models\SchoolDepartment;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 use LogicException;
 
 /**
@@ -40,15 +41,15 @@ class SchoolEntityRepository
     }
 
     /**
-     * 学校情報を取得する（過程による絞り込み）
+     * 学校情報を取得する（学校タイプによる絞り込み）
      *
-     * @param string $process
+     * @param string $school_type
      * @return \App\Domain\School\SchoolEntity[]
      */
-    public function getByProcess(string $process): array
+    public function getBySchoolType(string $school_type): array
     {
         $builder_school_detail = new SchoolDetail();
-        $school_details = $builder_school_detail->newQuery()->where($process, true)->get()->all();
+        $school_details = $builder_school_detail->newQuery()->where($school_type, true)->get()->all();
 
         return $this->make($school_details);
     }
@@ -57,16 +58,15 @@ class SchoolEntityRepository
      * 学校情報を取得する
      *
      * View側で切り替えやすいように表示する部分以外もまとめて取得する。
-     * 高等学校の情報はそれほど多くはないため、全件取得とする。
      *
      * @return \App\Domain\School\SchoolEntity[]
      */
     public function get(): array
     {
-        $builder_school_detail = new SchoolDetail();
-        $school_details = $builder_school_detail->newQuery()->get()->all();
+        $builder_school = new School();
+        $schools = $builder_school->newQuery()->get()->all();
 
-        return $this->make($school_details);
+        return $this->make($schools);
     }
 
     /**
@@ -263,32 +263,25 @@ class SchoolEntityRepository
     /**
      * Entityを生成する
      *
-     * @param  \App\Models\SchoolDetail[]  $school_details
+     * @param  \App\Models\School[]  $schools
      * @return array
      */
-    protected function make(array $school_details): array
+    protected function make(array $schools): array
     {
-        $builder_school_department = new SchoolDepartment();
-        $school_departments = $builder_school_department->newQuery()->where('school_type', 'high_school')->get()->groupBy('school_type_id',
-            true)->all();
-
-        $builder_school = new School();
-        $schools = $builder_school->newQuery()->get()->keyBy('id')->all();
-
         $high_school_entities = [];
-        foreach ($school_details as $school_detail) {
+        foreach ($schools as $school) {
             $department_names = [];
             $department_ids = [];
-            $school_departments_filtered = $school_departments[$school_detail->id];
+            $school_departments_filtered = $school_departments[$school_detail->id] ?? [];
             foreach ($school_departments_filtered as $school_department) {
                 $department = $this->findDepartmentById($school_department->department_id);
                 $department_ids[] = $department->id;
                 $department_names[] = $department->department;
             }
 
-            $high_school_entities[$school_detail->id] = new SchoolEntity(
-                collect($school_detail)->toArray(),
-                collect($schools[$school_detail->school_id])->toArray(),
+            $high_school_entities[$school->id] = new SchoolEntity(
+                [],
+                collect($school)->toArray(),
                 $department_ids,
                 $department_names
             );
