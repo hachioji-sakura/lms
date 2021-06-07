@@ -4,7 +4,7 @@
 @extends('students.page')
 @include($domain.'.menu')
 
-@include('dashboard.widget.tasks', ['tasks' => $tasks,'student' => $item])
+@include('dashboard.widget.tasks')
 
 @section('sub_contents')
     @yield('tasks')
