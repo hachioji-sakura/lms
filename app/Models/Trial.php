@@ -432,27 +432,16 @@ class Trial extends Model
       $ret .= "■".__('labels.other')."\n";
       $ret .= $remark;
     }
-
-    if(!empty($tagdata['choice_school1'])){
-      foreach($tagdata['choice_school1'] as $value) {
-        $ret .= "■" . __('labels.first_choice_school') . "\n";
-        $ret .= $value."\n";;
-      }
+    for($i=1;$i<4;$i++) {
+        if (!empty($tagdata['choice_school'.$i])) {
+            foreach ($tagdata['choice_school'.$i] as $value) {
+                $ret .= "■" . __('labels.choice_school_'.$i) . "\n";
+                $ret .= $value . "\n";;
+            }
+        }
     }
 
-    if(!empty($tagdata['choice_school2'])){
-      foreach($tagdata['choice_school2'] as $value) {
-        $ret .= "■" . __('labels.second_choice_school') . "\n";
-        $ret .= $value."\n";
-      }
-    }
 
-    if(!empty($tagdata['choice_school3'])){
-      foreach($tagdata['choice_school3'] as $value) {
-        $ret .= "■" . __('labels.third_choice_school') . "\n";
-        $ret .= $value."\n";
-      }
-    }
 
 
       return $ret;

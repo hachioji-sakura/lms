@@ -451,9 +451,9 @@ return [
   'publisher_price' => '出版社請求価格',
   'other_price' => 'その他価格',
   'choice_schools' => '志望校',
-  'first_choice_school' => '第１志望校',
-  'second_choice_school' => '第２志望校',
-  'third_choice_school' => '第３志望校',
+  'choice_school_1' => '第１志望校',
+  'choice_school_2' => '第２志望校',
+  'choice_school_3' => '第３志望校',
   // 学校ページに関するもの
   'schools' => '学校情報',
   'school_page_header_high_school_id' => '高等学校ID',
