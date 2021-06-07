@@ -48,7 +48,7 @@
     </a>
   @endif
   @if($item->status == "done")
-    <a href="javascript:void(0)" title="{{__('labels.copy_button')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/create?copy_id={{$item->id}}&student_id={{$student->id}}" class="btn btn-sm btn-outline-{{$is_footer ? 'app' : config('status_style')['copy']}} mr-1 mb-1" role="button">
+    <a href="javascript:void(0)" title="{{__('labels.copy_button')}}" page_form="dialog" page_title="{{$item->title}}" page_url="/tasks/create?copy_id={{$item->id}}&student_id={{$student->id}}" class="btn btn-sm btn-outline-{{$is_footer ? 'app' : 'primary'}} mr-1 mb-1" role="button">
       {{__('labels.copy_button')}}
     </a>
   @endif

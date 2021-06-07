@@ -34,6 +34,5 @@ return array(
   'progress' => 'primary',
   'reapply' => 'secondary',
   'dummy' => 'danger',
-  'copy' => 'primary'
   );
 ?>
