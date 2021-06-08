@@ -62,6 +62,41 @@
         </div>
         @endif
       </div>
+
+      <div class="col-12">
+          <div class="form-group">
+            <label for="body">
+              {{__('labels.file')}}
+            </label>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            @if(isset($_edit) && $_edit == true && !empty($item['s3_url']))
+            <label for="upload_file" class="w-100 upload_file">
+              <a id="upload_file_link" href="{{$item['s3_url']}}" target="_blank" class="">{{$item['s3_alias']}}</a>
+              <a href="javascript:void(0);" onClick="upload_file_clear();"class="btn btn-default btn-sm ml-1">
+                <i class="fa fa-times"></i>
+              </a>
+            </label>
+            <input type="hidden" name="upload_file_delete" value="0">
+            <input type="hidden" name="upload_file_name" value="{{$item['s3_alias']}}">
+            <script>
+            $("input[name='upload_file[]']").hide();
+            function upload_file_clear(){
+              console.log("update_file_clear");
+              $(".upload_file").hide();
+              $("input[name='upload_file_delete']").val(1);
+              $("input[name='upload_file']").show();
+            }
+            </script>
+            @endif
+            <input type="file" name="upload_file" class="form-control" placeholder="ファイル" >
+            @if ($errors->has('upload_file'))
+            <span class="invalid-feedback">
+            <strong>{{ $errors->first('upload_file') }}</strong>
+            </span>
+            @endif
+          </div>
+        </div>
+
     </div>
 
 
