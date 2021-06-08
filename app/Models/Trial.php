@@ -384,7 +384,14 @@ class Trial extends Model
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
       ,'course_type', 'parent_interview'];
-    $trial_tag_names = ['entry_milestone_word','howto_word','choice_school1','choice_school2','choice_school3']; //体験のみのタグ 1 key = 1tag
+    $trial_tag_names = ['entry_milestone_word','howto_word']; //体験のみのタグ 1 key = 1tag
+    for($i=1;$i<4;$i++) {
+      if($form['choice_school'.$i] == 'other'){
+        $form['choice_school'.$i] = $form['choice_school_other'.$i];
+      }
+      $trial_tag_names[] = 'choice_school'.$i;
+    }
+
     foreach($trial_tag_names as $trial_tag_name){
       if(isset($form[$trial_tag_name])) {
           $tag_names[] = $trial_tag_name;
