@@ -462,7 +462,6 @@ class StudentController extends UserController
     $select_exams = $item->exams->pluck('name','id')->unique()->sort();
     $subjects = $this->get_subjects($exams,"exam");
     $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
-    $exam_fields = $this->get_exam_fields();
 
     //dd($school_grades);
    return view($this->domain.'.'.$view, [
@@ -470,7 +469,6 @@ class StudentController extends UserController
     'exams' => $exams,
     'grades' => $grades,
     'subjects' => $subjects,
-    'exam_fields' => $exam_fields,
    ])->with($param);
   }
 
@@ -549,43 +547,6 @@ class StudentController extends UserController
     return array_flip($subjects->sort()->toArray());
   }
 
-  public function get_exam_fields(){
-    return [
-      'name' => [
-        'label' => __('labels.title'),
-        'link' => function($row){
-          return '/students/'.$row->student_id.'/exams/'.$row->id;
-        }
-      ],
-      'grade_name' => [
-        'label' => __('labels.grade')
-      ],
-      'semester_name' => [
-        'label' => __('labels.semester'),
-      ],
-      'result_count' =>[
-        'label' => __('labels.subject_count'),
-      ],
-      'sum_point_per_max' => [
-        'label' => __('labels.point'),
-      ],
-      'buttons' => [
-        'label' => '操作',
-        'button' => [
-          'edit',
-          'create_result' => [
-            'label' => '',
-            'style' =>  'primary',
-            'page_url' => function($row){
-              return '/exam_results/create?exam_id='.$row->id;
-            },
-            'icon' => 'plus',
-            'title' => __('labels.exams').__('labels.add'),
-          ]
-        ],
-      ],
-    ];
-  }
 
   public function get_school_grade_fields(){
     return [
