@@ -1,3 +1,6 @@
+@if(isset($is_calendar_settings) && $is_calendar_settings==true)
+<input type="hidden" name='is_calendar_settings' value=1 />
+@endif
 @if(isset($_teacher) && $_teacher===true && $_edit==true && $item["course_minutes"]>0)
 <div class="col-12 schedule_type schedule_type_class mb-2">
     <label for="course_minutes" class="w-100">

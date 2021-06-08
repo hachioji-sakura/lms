@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Common;
 
 class Exam extends SchoolGrade
 {
-    //
+    use Common;
     protected $table = 'lms.exams';
     public function exam_results(){
       return $this->morphMany('App\Models\ExamResult','exam_resultable');
@@ -19,6 +20,8 @@ class Exam extends SchoolGrade
       "grade",
       "semester_no",
       "remark",
+      "s3_url",
+      "s3_alias",
     ];
     protected $attributes = [
       'create_user_id' => 1,
@@ -64,5 +67,6 @@ class Exam extends SchoolGrade
       $this->fill($form);
       $this->name = config("attribute.exam_type")[$form['type']];
       $this->save();
+      return $this;
     }
 }

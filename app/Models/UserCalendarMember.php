@@ -523,6 +523,7 @@ class UserCalendarMember extends Model
           break;
       }
     }
+    if(empty($postdata['updateuser'])) $postdata['updateuser'] = 1;
 
     $message = "";
     foreach($postdata as $key => $val){
@@ -611,6 +612,11 @@ class UserCalendarMember extends Model
             //a1での更新の場合、振替期限をクリアする
             $update['exchange_limit_date'] = null;
           }
+          $is_update = true;
+        }
+        //体験授業で、振替期限を設定しようとしていたらnullにする
+        if($this->calendar->trial_id > 0 && (!empty($update['exchange_limit_date']) || !empty($this->exchange_limit_date))){
+          $update['exchange_limit_date'] = null;
           $is_update = true;
         }
         //cancel_reasonは空になる可能性がある
