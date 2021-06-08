@@ -386,7 +386,7 @@ class Trial extends Model
       ,'course_type', 'parent_interview'];
     $trial_tag_names = ['entry_milestone_word','howto_word']; //体験のみのタグ 1 key = 1tag
     for($i=1;$i<4;$i++) {
-      if($form['choice_school'.$i] == 'other'){
+      if(isset($form['choice_school'.$i]) && $form['choice_school'.$i] == 'other'){
         $form['choice_school'.$i] = $form['choice_school_other'.$i];
       }
       $trial_tag_names[] = 'choice_school'.$i;
