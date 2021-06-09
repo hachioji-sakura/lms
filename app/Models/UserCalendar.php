@@ -100,7 +100,12 @@ class UserCalendar extends Model
   public function register_mail_title(){
     $trial = "";
     if($this->trial_id > 0){
-      $trial ='['. __('labels.trial_lesson').']';
+      if($this->is_teaching()==true){
+        $trial ='['. __('labels.trial_lesson').']';
+      }
+      else {
+        $trial ='['. $this->schedule_type_name().']';
+      }
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
     return __('messages.mail_title_until_today').$title;
@@ -524,13 +529,17 @@ EOT;
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
-    switch($this->status){
-      case "fix":
-        if($this->work==9) return "勤務予定";
-      case "absence":
-        if($this->work==9) return "欠勤";
-      case "presence":
-      if($this->work==9) return "出勤";
+
+    if($this->is_teaching()==false){
+      switch($this->status){
+        case "fix":
+          if($this->work==9) return "勤務予定";
+          else return $this->schedule_type_name().__('labels.task_schedule');
+        case "absence":
+          if($this->work==9) return "欠勤";
+        case "presence":
+        if($this->work==9) return "出勤";
+      }  
     }
     return $status_name;
   }
@@ -640,6 +649,9 @@ EOT;
   }
   public function getLessonAttribute($user_id){
     return $this->lesson();
+  }
+  public function getLessonIdAttribute(){
+    return $this->get_attribute('lesson',true);
   }
   public function getWorkNameAttribute(){
     return $this->work();
@@ -959,10 +971,11 @@ EOT;
       if(isset($target_user)){
         //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
         $target_user = $target_user->details();
-        if($target_user->status=='recess'){
+        $user_status = $target_user->get_status($this->start_time);
+        if($user_status=='recess'){
           $status = 'cancel';
         }
-        if($target_user->status=='unsubscribe'){
+        if($user_status=='unsubscribe'){
           //退会時は登録しない
           return null;
         }
@@ -1013,6 +1026,7 @@ EOT;
       case 10:
         return true;
     }
+    if($this->trial_id > 0 && empty($this->work)) return true;
     return false;
   }
   public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
@@ -1093,6 +1107,7 @@ EOT;
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -1109,6 +1124,7 @@ EOT;
     $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない
@@ -1265,7 +1281,9 @@ EOT;
       if($member->status=='cancel') continue;
       if($member->status=='fix' || $this->is_last_status($member->status)==true){
         $m = $member->user->details();
-        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+        if($m->is_active($this->start_time) == true) {
+          $active_students[] = $member;
+        }
       }
     }
     if(empty($end_time)) $end_time = $this->end_time;

@@ -18,7 +18,7 @@ if(!isset($item)) $item = null;
             {{__('labels.places')}}
           </label>
           <select name="place_id" class="form-control select2"  width=100% required="true" >
-            @foreach($attributes['places'] as $place)
+            @foreach($places as $place)
                <option
                value="{{ $place->id }}"
                @if($_edit==false && isset($place_id) && $place_id == $place->id) selected @endif

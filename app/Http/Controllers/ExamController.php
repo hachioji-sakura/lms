@@ -49,7 +49,11 @@ class ExamController extends SchoolGradeController
       $res = $this->transaction($request, function() use ($request){
         $item = new Exam;
         $item = $item->add($request->all());
-
+        if($request->hasFile('upload_file')){
+          if ($request->file('upload_file')->isValid([])) {
+            $item->file_upload($request->file('upload_file'));
+          }
+        }
         return $this->api_response(200, '', '', $item);
       }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
       return $res;
@@ -66,7 +70,26 @@ class ExamController extends SchoolGradeController
          'subjects' => $subjects,
        ])->with($param);
      }
-/*
+
+     public function _update(Request $request, $id){
+      $res =  $this->transaction($request, function() use ($request, $id){
+        $item = $this->model()->where('id', $id)->first();
+        $item->fill($request->all());
+        $item->save();
+        if($request->has('upload_file_delete') && $request->get('upload_file_delete')==1){
+          $item->s3_delete($item->s3_url);
+        }
+        $file = null;
+        if($request->hasFile('upload_file')){
+          if ($request->file('upload_file')->isValid([])) {
+            $item->file_upload($request->file('upload_file'));
+          }
+        }
+        return $this->api_response(200, '', '', $item);
+      }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
+    }
+     /*
     public function index(Request $request){
       $param = $this->get_param($request);
       $param['items'] = $this->model()->all();

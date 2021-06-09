@@ -89,6 +89,23 @@ class AgreementStatement extends Model
       return $ret;
     }
 
+    public function getLessonStartDateAttribute(){
+      //契約明細が紐づくカレンダー設定から作られたカレンダーの中で一番開催が早い物
+      $date = $this->user_calendar_member_settings->map(function($item){
+        return $item->setting->calendars->where('status','fix')->where('start_time',">=",date('Y-m-d H:i:s'))->min('start_time');
+      })->min();
+      return $this->dateweek_format($date);
+    }
+
+    public function getStatementKeyAttribute(){
+      //同じかどうか比較するフィールド値の束
+      $works = [
+        'single' => '6',
+        'group' => '7',
+      ];
+      return $this->lesson_id.'_'.$works[$this->course_type].'_'.$this->course_minutes.'_'.$this->lesson_week_count.'_'.$this->teacher_id;
+    }
+
     public function is_already_registered($form){
       $already_data = AgreementStatement::where('student_id' , $form['student_id'])
       ->where('teacher_id' , $form['teacher_id'])
@@ -103,5 +120,12 @@ class AgreementStatement extends Model
         \Log::warning("tuition : already");
         return null;
       }
+    }
+    
+    //メンテナンス用のため通常は使用しない
+    //契約は削除しない
+    public function dispose(){
+      $this->user_calendar_member_settings()->detach();
+      $this->delete();
     }
 }

@@ -37,13 +37,13 @@ class AgreementController extends MilestoneController
           'student_parent_name' => [
             'label' => '契約者氏名'
           ],
-          'entry_date' => [
+          'format_entry_date' => [
             'label' => '登録日',
           ],
-          'start_date' => [
-            'label' => '承認日',
+          'format_start_date' => [
+            'label' => '開始日',
           ],
-          'end_date' => [
+          'format_end_date' => [
             'label' => '終了日',
           ],
           /*
@@ -144,6 +144,10 @@ class AgreementController extends MilestoneController
       $param = $this->get_param($request, $id);
       $access_key = $this->create_token(2678400);
       $res = $this->transaction($request, function() use ($request,$param, $access_key){
+        $item = $param['item'];
+        $item->entry_fee = $request->agreements['entry_fee'];
+        $item->monthly_fee = $request->agreements['monthly_fee'];
+        $item->save();
         //料金が変更されていたら更新
         foreach($request->get('agreement_statements') as $statement_id => $value){
           $statement = AgreementStatement::find($statement_id);

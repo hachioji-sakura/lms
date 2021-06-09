@@ -27,7 +27,13 @@
             {{$button['label']}}
           </a>
           @elseif(isset($button['link']))
-          <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+          <a 
+            @if(gettype($button['link'])=='string')
+              href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}"
+            @else
+              href="{{$button['link']($row)}}"
+            @endif
+            role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
             @if(isset($button['icon']))
             <i class="fa fa-{{$button['icon']}} mr-1"></i>
             @endif
@@ -43,6 +49,9 @@
         @endif
       @endforeach
     @else
+      @if(isset($field['check_box']) === true)
+        <input class="frm-check-input icheck flat-green bulk_action_check" type="checkbox" name="list_check[]"  value="{{$row['id']}}" >
+      @endif
       @if(isset($field['link']))
         <a
         @if($field['link']==='show')
@@ -74,7 +83,7 @@
         @endforeach
       @else
         @empty($row[$key])
-          ー
+          ―
         @else
           {{str_limit($row[$key], 50, '...')}}
         @endempty

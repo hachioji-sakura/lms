@@ -110,7 +110,7 @@ function important_checked(){
     @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
     @elseif($item->type == 'agreement_confirm')
-    ご契約内容は下記の通りとなります。<br>
+    ご契約内容のご承認ありがとうございました。<br>
     @endif
   </h4>
   @else
@@ -127,7 +127,6 @@ function important_checked(){
       </a>
     </div>
   @endif
-  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_agreements_by_type('normal')->first()]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
       @if(isset($user) && $user->id == $agreement->student_parent_id)

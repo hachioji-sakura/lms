@@ -62,6 +62,7 @@ class StudentParent extends Teacher
 {
   protected $table = 'common.student_parents';
   protected $guarded = array('id');
+  protected $status_key_name = 'attribute.student_status';
 
   public static $rules = array(
       'name_last' => 'required',
@@ -80,16 +81,6 @@ class StudentParent extends Teacher
   }
   public function get_agreements_by_status($status){
     return $this->hasMany('App\Models\Agreement','student_parent_id')->where('status',$status);
-  }
-
-  public function status_name(){
-    $status_name = "";
-    if(app()->getLocale()=='en') return $this->status;
-
-    if(isset(config('attribute.student_status')[$this->status])){
-      $status_name = config('attribute.student_status')[$this->status];
-    }
-    return $status_name;
   }
   public function name()
   {
@@ -177,6 +168,8 @@ class StudentParent extends Teacher
       'post_no' => "",
       'address' => "",
       'status' => "",
+      'entry_date' => null,
+      'unsubscribe_date' => null,
     ];
     $update_form = [];
     foreach($update_fields as $key => $val){

@@ -60,6 +60,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('milestones','MilestoneController');
   Route::get('text_materials/{id}/shared','TextMaterialController@shared_page');
   Route::put('text_materials/{id}/shared','TextMaterialController@shared');
+  Route::get('text_materials/bulk_shared','TextMaterialController@bulk_shared_page');
+  Route::put('text_materials/bulk_shared','TextMaterialController@bulk_shared');
 
   Route::resource('text_materials','TextMaterialController');
 
@@ -421,6 +423,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   // 学校関連
   Route::resource('schools', 'SchoolController');
+  Route::resource('school_textbooks', 'SchoolTextbookController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

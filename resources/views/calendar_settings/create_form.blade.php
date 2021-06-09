@@ -8,12 +8,15 @@
   @if($item->work!=9)
     @component('calendars.forms.select_teacher', ['_edit'=>$_edit, 'teachers'=>$teachers]); @endcomponent
     @component('calendars.forms.select_schedule_type', ['_edit'=>$_edit, 'item'=>$item, 'teachers'=>$teachers, 'is_class_schedule' => true]); @endcomponent
+    @if(isset($item->trial_id) && $item->trial_id>0)
+    <input type="hidden" name="trial_id" value="{{$item->trial_id}}" >
+    @endif
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher' => $teacher,'attributes' => $attributes]); @endcomponent
     @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendar_settings.forms.lesson_week', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent
     @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-    @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+    @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes, 'is_calendar_settings'=> true]) @endcomponent
   @else
     <input type="hidden" value="office_work" name="schedule_type" >
     @component('calendar_settings.forms.schedule_method', ['_edit'=>$_edit, 'item'=>$item, 'attributes' => $attributes, 'teacher' => $teacher]) @endcomponent

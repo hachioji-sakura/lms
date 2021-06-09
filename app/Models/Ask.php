@@ -336,14 +336,12 @@ EOT;
       case "agreement_confirm":
         $ret = true;
         //agreementを更新
+
         $agreement = $this->get_target_model_data();
-        $old_agreements = $agreement->student->enable_agreements_by_type('normal');
-        if($old_agreements->count() > 0){
-          $old_agreements->update(['end_date' => date('Y/m/d H:i:s')]);
-        }
-        $agreement->start_date =  date('Y/m/d H:i:s');
+        $agreement->commit_date =  date('Y/m/d H:i:s');
         $agreement->status = 'commit';
         $agreement->save();
+        $agreement->student_parent->user->update(['access_key' => $this->create_token()]);
         break;
       case "rest_cancel":
         $ret = true;
@@ -551,7 +549,8 @@ EOT;
       case 'agreements':
       case 'agreement_confirm':
         $ret = Agreement::where('id', $this->target_model_id)->first();
-        break;    }
+        break;
+    }
     return $ret;
   }
   public function is_access($user_id){

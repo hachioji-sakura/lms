@@ -138,6 +138,9 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function event_user(){
+      return $this->hasMany('App\Models\EventUser');
+    }
     public function enable_calendar_member_settings(){
       //キャンセルとダミーでない有効期間内のメンバー設定
       return $this->calendar_member_settings()->whereNotIn('status',
@@ -145,6 +148,29 @@ class User extends Authenticatable
         return $query->enable();
       });
     }
+    public function monthly_enable_calendar_member_settings($date = null){
+      //指定日付の時点で契約作成の対象となるuser_calendar_member_settingを取る
+      if($date == null){
+         $month_start_date = date("Y-m-1");
+         $month_end_date = date("Y-m-t");
+      }else{
+        $month_start_date = date('Y-m-1',strtotime($date));
+        $month_end_date = date('Y-m-t',strtotime($date));
+      }
+      //指定日付の月において、月内に有効期間が存在するレコード
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy'])->whereHas('setting',function($query) use ($month_start_date,$month_end_date){
+        return $query->searchRangeDate($month_start_date,$month_end_date);
+      });
+    }
+    
+    public function monthly_enable_calendar_settings($date = null){
+      //monthly_enable_calendar_member_settingsをもとにuser_calendar_settingsを返す
+      return $this->monthly_enable_calendar_member_settings($date)->get()->map(function($item){
+        return $item->setting;
+      });
+    }
+
     /**
      * パスワードリセット通知の送信
      *
@@ -280,8 +306,9 @@ EOT;
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
     }
     public function get_enable_calendar_settings(){
+      //TODO:Teacherモデルに移設したほうが良い
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel','dummy'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -488,5 +515,14 @@ EOT;
 
       $comments = $comments->get();
       return ["data" => $comments, 'count' => $count];
+    }
+    public function user_replacement($new_user_id){
+      $this->calendar_member_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_members()->update(['user_id' => $new_user_id]);
+      $this->calendars()->update(['user_id' => $new_user_id]);
+      $this->event_user()->update(['user_id' => $new_user_id]);
+      $this->tags()->update(['user_id' => $new_user_id]);
+      $this->update(['status' => 9]);
     }
 }
