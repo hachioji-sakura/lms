@@ -15,6 +15,28 @@ class CommentController extends MilestoneController
     public function model(){
       return Comment::query();
     }
+
+    public function create(Request $request)
+    {
+       $param = $this->get_param($request);
+       if($request->has('is_memo')){
+         $param['is_memo'] = true;
+       }
+       return view($this->domain.'.create',['_edit' => false])
+         ->with($param);
+     }
+
+     public function edit(Request $request, $id)
+     {
+       $param = $this->get_param($request, $id);
+       if($request->has('is_memo')){
+         $param['is_memo'] = true;
+       }
+       return view($this->domain.'.create', [
+         '_edit' => true])
+         ->with($param);
+     }
+
     /**
      * 検索～一覧
      *

@@ -22,6 +22,7 @@ use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
+use DB;
 
 use Hash;
 /**
@@ -137,14 +138,43 @@ class User extends Authenticatable
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function event_user(){
+      return $this->hasMany('App\Models\EventUser');
+    }
     public function enable_calendar_member_settings(){
+      //キャンセルとダミーでない有効期間内のメンバー設定
       return $this->calendar_member_settings()->whereNotIn('status',
-      ['cancel','dummy']);
+      ['cancel','dummy'])->whereHas('setting',function($query){
+        return $query->enable();
+      });
+    }
+    public function monthly_enable_calendar_member_settings($date = null){
+      //指定日付の時点で契約作成の対象となるuser_calendar_member_settingを取る
+      if($date == null){
+         $month_start_date = date("Y-m-1");
+         $month_end_date = date("Y-m-t");
+      }else{
+        $month_start_date = date('Y-m-1',strtotime($date));
+        $month_end_date = date('Y-m-t',strtotime($date));
+      }
+      //指定日付の月において、月内に有効期間が存在するレコード
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy'])->whereHas('setting',function($query) use ($month_start_date,$month_end_date){
+        return $query->searchRangeDate($month_start_date,$month_end_date);
+      });
+    }
+    
+    public function monthly_enable_calendar_settings($date = null){
+      //monthly_enable_calendar_member_settingsをもとにuser_calendar_settingsを返す
+      return $this->monthly_enable_calendar_member_settings($date)->get()->map(function($item){
+        return $item->setting;
+      });
     }
 
     public function ordered_orders(){
       return $this->hasMany('App\Models\Order','ordered_user_id');
     }
+
     /**
      * パスワードリセット通知の送信
      *
@@ -280,8 +310,9 @@ EOT;
       return $query->whereRaw($where_raw,[$tagkey, $tagvalue]);
     }
     public function get_enable_calendar_settings(){
+      //TODO:Teacherモデルに移設したほうが良い
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel'])
+      ->whereNotIn('status', ['cancel','dummy'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -427,7 +458,7 @@ EOT;
       \Log::info("-----------------get_mail_address[$email]------------------");
       return $email;
     }
-    public function get_comments($form){
+    public function get_comments($form, $only_memo = false){
       $u = $this->details();
       $form['_sort'] ='created_at';
       $comment_types = [];
@@ -452,8 +483,11 @@ EOT;
         $comment_types = $form['search_comment_type'];
       }
       $comments = Comment::findTargetUser($this->id);
-      $comments = $comments->findTypes($comment_types);
-      $comments = $comments->findDefaultTypes($u->domain);
+      if($only_memo == true){
+        $comments = $comments->memo();
+      }else{
+        $comments = $comments->comment();
+      }
 
       if($is_star==true){
         $comments = $comments->where('importance', '>', 0);
@@ -485,5 +519,14 @@ EOT;
 
       $comments = $comments->get();
       return ["data" => $comments, 'count' => $count];
+    }
+    public function user_replacement($new_user_id){
+      $this->calendar_member_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_members()->update(['user_id' => $new_user_id]);
+      $this->calendars()->update(['user_id' => $new_user_id]);
+      $this->event_user()->update(['user_id' => $new_user_id]);
+      $this->tags()->update(['user_id' => $new_user_id]);
+      $this->update(['status' => 9]);
     }
 }

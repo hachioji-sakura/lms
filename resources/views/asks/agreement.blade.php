@@ -110,7 +110,7 @@ function important_checked(){
     @if($item->type == 'agreement')
     ご入会のご連絡を頂き、大変感謝致します。<br>
     @elseif($item->type == 'agreement_confirm')
-    ご契約内容は下記の通りとなります。<br>
+    ご契約内容のご承認ありがとうございました。<br>
     @endif
   </h4>
   @else
@@ -121,13 +121,12 @@ function important_checked(){
     <br>
   </h4>
     <div class="col-12 mb-1" id="commit_form">
-      <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$access_key}}">
+      <a role="button" class="btn btn-submit btn-primary btn-block"  href="{{config('app.url')}}/register?key={{$item->target_user->access_key}}">
         <i class="fa fa-sign-in-alt mr-1"></i>
         ユーザー登録画面
       </a>
     </div>
   @endif
-  @component('students.forms.agreement', ['item' => $student, 'fields' => $fields, 'domain' => $domain, 'user'=>$user, 'agreement' => $student->enable_agreements_by_type('normal')->first()]) @endcomponent
   <div class="row">
     <div class="col-12 mb-1">
       @if(isset($user) && $user->id == $agreement->student_parent_id)

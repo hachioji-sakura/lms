@@ -361,6 +361,7 @@ class TeacherController extends StudentController
       }
       return $this->transaction(null, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
+        $form['entry_date'] = date('Y/m/d');
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);
         $user->set_password($form['password']);

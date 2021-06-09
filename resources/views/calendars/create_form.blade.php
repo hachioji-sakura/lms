@@ -10,7 +10,7 @@
       </div>
     </div>
     @endif
-    @if($_edit==true && $item->is_season_lesson()==true)
+    @if($_edit == true && $item->is_season_lesson()==true)
     {{-- 期間講習予定編集時の警告表示 --}}
     <div class="col-12">
       <div class="alert alert-danger text-sm pr-2 schedule_type schedule_type_class">
@@ -31,55 +31,60 @@
     @component('calendars.forms.select_lesson', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teachers[0]->user->details('teachers'),'attributes' => $attributes]); @endcomponent
     @endif
     @if($_edit==true && $item->is_season_lesson()==true && isset($teachers) && $user->role=='teacher')
-    <input type="hidden" name="start_time" value="{{date('Y/m/d H:i', strtotime($item->start_time))}}">
-    <input type="hidden" name="place_floor_id_name" value="{{$item->place_floor_name}}">
-    <div class="col-6">
-      <div class="form-group">
-        <label for="start_date" class="w-100">
-          {{__('labels.date')}}
-        </label>
-        <div class="input-group">
-          {{$item->date}}
+      {{-- 季節講習の予定を講師が編集した場合 --}}
+      <input type="hidden" name="start_time" value="{{date('Y/m/d H:i', strtotime($item->start_time))}}">
+      <input type="hidden" name="place_floor_id_name" value="{{$item->place_floor_name}}">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="start_date" class="w-100">
+            {{__('labels.date')}}
+          </label>
+          <div class="input-group">
+            {{$item->date}}
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        <label for="start_date" class="w-100">
-          {{__('labels.place')}}
-        </label>
-        <div class="input-group">
-          {{$item->place_floor_name}}@if($item->is_online()==true)/{{__('labels.online')}}@endif
+      <div class="col-6">
+        <div class="form-group">
+          <label for="start_date" class="w-100">
+            {{__('labels.place')}}
+          </label>
+          <div class="input-group">
+            {{$item->place_floor_name}}@if($item->is_online()==true)/{{__('labels.online')}}@endif
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-6">
-      <div class="form-group">
-        <label for="start_date" class="w-100">
-          {{__('labels.lesson_time')}}
-        </label>
-        <div class="input-group">
-          {{$item->timezone}}
+      <div class="col-6">
+        <div class="form-group">
+          <label for="start_date" class="w-100">
+            {{__('labels.lesson_time')}}
+          </label>
+          <div class="input-group">
+            {{$item->timezone}}
+          </div>
         </div>
       </div>
-    </div>
     @else
-    @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-    @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
-    @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+      {{-- 登録・編集共通フォーム部分 --}}
+      @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.select_place', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
+      @component('calendars.forms.select_time', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent
     @endif
-    @if(isset($lesson_id) && $lesson_id>1 && isset($item->trial_id) && $item->trial_id>0)
-    {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
-    <div class="col-12 schedule_type schedule_type_class mb-2">
-        <label for="course_minutes" class="w-100">
-          {{__('labels.lesson_time')}}
-        </label>
-        <input type="hidden" name="course_minutes" value="30">
-        <input type="hidden" name="course_minutes_name" value="{{$attributes['course_minutes'][30]}}">
-        <span>{{$attributes['course_minutes'][30]}} ({{__('labels.trial_lesson')}})</span>
-    </div>
-    @else
-      @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+    @if(!isset($item->work) || $item->work!=3)
+      {{-- 面談以外 --}}
+      @if(isset($lesson_id) && $lesson_id>1 &&  isset($item->trial_id) && $item->trial_id>0 )
+      {{-- 体験授業かつ、塾以外の場合は、授業時間は30分にする --}}
+      <div class="col-12 schedule_type schedule_type_class mb-2">
+          <label for="course_minutes" class="w-100">
+            {{__('labels.lesson_time')}}
+          </label>
+          <input type="hidden" name="course_minutes" value="30">
+          <input type="hidden" name="course_minutes_name" value="{{$attributes['course_minutes'][30]}}">
+          <span>{{$attributes['course_minutes'][30]}} ({{__('labels.trial_lesson')}})</span>
+      </div>
+      @else
+        @component('students.forms.course_minutes', ['_edit'=>$_edit, 'item'=>$item, '_teacher'=>true, 'attributes' => $attributes]) @endcomponent
+      @endif
     @endif
   @else
     @component('calendars.forms.select_date', ['_edit' => $_edit, 'item'=>$item, 'attributes' => $attributes]); @endcomponent

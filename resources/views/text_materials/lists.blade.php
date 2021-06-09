@@ -1,5 +1,5 @@
 @section('title')
-資料一覧
+{{$domain_name}}
 @endsection
 @section('list_filter')
 @component('text_materials.forms.filter', ['view' => '', 'filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes, 'subjects' => $subjects])

@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
 use App\Models\MailLog;
+use App\Models\Student;
+use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
 
 trait Common
 {
@@ -74,7 +77,7 @@ trait Common
     $this->update($form);
     return $res;
   }
-  public function create_token($limit_second=86400){
+  public function create_token($limit_second=1728000){
     $controller = new Controller;
     $res = $controller->create_token($limit_second);
     return $res;

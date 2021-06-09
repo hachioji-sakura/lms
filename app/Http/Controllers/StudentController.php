@@ -374,6 +374,36 @@ class StudentController extends UserController
    ])->with($param);
   }
 
+  public function show_memo_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.memos";
+    $param['view'] = $view;
+    if($param['user']->details()->role == "student") abort('403');
+
+   //コメントデータ取得
+   $form = $request->all();
+   $comments = $model->get_comments($form, true);
+   $star_comments = $model->get_comments(['is_star' => true], true);
+   /*
+   $comments = $model->target_comments;
+   if($this->is_teacher($user->role)){
+     //講師の場合、公開されたコメントのみ閲覧可能
+     $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
+   }
+   $comments = $comments->sortByDesc('created_at');
+   */
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'comments'=>$comments,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+  }
+
   public function show_task_page(Request $request, $id)
   {
     $init = $this->init_show_page($request,$id);
@@ -432,7 +462,6 @@ class StudentController extends UserController
     $select_exams = $item->exams->pluck('name','id')->unique()->sort();
     $subjects = $this->get_subjects($exams,"exam");
     $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
-    $exam_fields = $this->get_exam_fields();
 
     //dd($school_grades);
    return view($this->domain.'.'.$view, [
@@ -440,7 +469,6 @@ class StudentController extends UserController
     'exams' => $exams,
     'grades' => $grades,
     'subjects' => $subjects,
-    'exam_fields' => $exam_fields,
    ])->with($param);
   }
 
@@ -519,43 +547,6 @@ class StudentController extends UserController
     return array_flip($subjects->sort()->toArray());
   }
 
-  public function get_exam_fields(){
-    return [
-      'name' => [
-        'label' => __('labels.title'),
-        'link' => function($row){
-          return '/students/'.$row->student_id.'/exams/'.$row->id;
-        }
-      ],
-      'grade_name' => [
-        'label' => __('labels.grade')
-      ],
-      'semester_name' => [
-        'label' => __('labels.semester'),
-      ],
-      'result_count' =>[
-        'label' => __('labels.subject_count'),
-      ],
-      'sum_point_per_max' => [
-        'label' => __('labels.point'),
-      ],
-      'buttons' => [
-        'label' => '操作',
-        'button' => [
-          'edit',
-          'create_result' => [
-            'label' => '',
-            'style' =>  'primary',
-            'page_url' => function($row){
-              return '/exam_results/create?exam_id='.$row->id;
-            },
-            'icon' => 'plus',
-            'title' => __('labels.exams').__('labels.add'),
-          ]
-        ],
-      ],
-    ];
-  }
 
   public function get_school_grade_fields(){
     return [
@@ -873,7 +864,7 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $filter = $param['filter']['calendar_filter'];
+   $filter = $request->all();
    $filter['list'] = '';
    if($request->has('list')){
      $filter['list'] = $request->get('list');
@@ -910,15 +901,15 @@ class StudentController extends UserController
    $count = count($calendar_settings);
    (new UserCalendarSetting())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only == true) return $count;
-   if(isset($form['_page']) && isset($form['_line'])){
+   if(isset($form['_page']) && isset($form['_line']) && count($calendar_settings)>0){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
    }
    //echo $calendars->toSql()."<br>";
    if($this->domain=='students'){
      foreach($calendar_settings as $i=>$setting){
        $calendar_settings[$i] = $setting->details();
-       $calendar_settings[$i]->own_member = $setting[$i]->get_member($form['user_id']);
-       $calendar_settings[$i]->status = $setting[$i]->own_member->status;
+       $calendar_settings[$i]->own_member = $setting->get_member($form['user_id']);
+       $calendar_settings[$i]->status = $setting->own_member->status;
      }
    }
    return ["data" => $calendar_settings, 'count' => $count];
@@ -1608,7 +1599,7 @@ class StudentController extends UserController
   }
 
   public function task_search($request, $id){
-    $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
+    $tasks = Task::findTargetUser($id)->visible()->search($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
   public function retirement_page(Request $request, $id)

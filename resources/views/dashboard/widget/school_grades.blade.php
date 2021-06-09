@@ -7,6 +7,7 @@
     </h3>
     @if($grades->count() > 0)
     <select name="grades[]" width="100%" class="form-control" onChange="location.href=value;">
+      <option value=" ">{{__("labels.selectable")}}</option>
       @foreach($grades as $key => $name)
       <option value="/students/{{$item->id}}/school_grades?search_grade[]={{$key}}"
         @if(request()->has("search_grade") && in_array($key, request()->get("search_grade")))
@@ -84,4 +85,9 @@
     </ul>
   </div>
 </div>
+<script>
+$(function(){
+//    $('select[name="grades[]"]').change();
+});
+</script>
 @endsection

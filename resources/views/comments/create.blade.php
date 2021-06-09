@@ -22,6 +22,9 @@
   @if(isset($manager_id))
     <input type="hidden" value="{{$manager_id}}" name="manager_id" />
   @endif
+  @if(isset($is_memo) && $is_memo == true)
+  <input type="hidden" name="type" value="memo">
+  @else
     <div class="row">
       <div class="col-12">
         <div class="form-group">
@@ -41,6 +44,7 @@
         </div>
       </div>
     </div>
+    @endif  
     {{--
     <div class="row">
       <div class="col-12">

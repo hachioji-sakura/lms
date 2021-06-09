@@ -25,7 +25,7 @@
 
 $(function(){
   var grade = $('input[name="grade"]').val();
-  var form_id = $("form[method='POST']").parent().attr('id');
+  var form_id = $("form#create_task_form").attr('id');
   if( util.isEmpty(grade) ){
     var school = 'none';
   }else{

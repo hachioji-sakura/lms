@@ -10,8 +10,10 @@
           <a href="javascript:void(0);" title="{{$calendar["id"]}}" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/calendars/{{$calendar["id"]}}" >
           <i class="fa fa-clock mr-1"></i>
           {{$calendar["datetime"]}} /
+          @if($calendar->is_teaching()==true)
           {{$calendar['lesson']}} /
           {{$calendar['course']}} /
+          @endif
           {{$calendar['place_floor_name']}}
           </a>
         </span>
@@ -27,13 +29,19 @@
           </a>
         @endforeach
         </span>
-        @foreach($calendar['subject'] as $subject)
-        <span class="text-xs mx-2">
-          <small class="badge badge-primary mt-1 mr-1">
-            {{$subject}}
-          </small>
-        </span>
-        @endforeach
+        @if($calendar->is_teaching()==true)
+          @foreach($calendar['subject'] as $subject)
+          <span class="text-xs mx-2">
+            <small class="badge badge-primary mt-1 mr-1">
+              {{$subject}}
+            </small>
+          </span>
+          @endforeach
+        @else
+        <small class="badge badge-warning mx-1 text-sm">
+          <i class="fa fa-exclamation-triangle">{{$calendar->work_name}}</i>
+        </small>
+        @endif
         @if($calendar->is_online()==true)
         <small class="badge badge-info mx-1 text-sm">
           <i class="fa fa-globe">{{__('labels.online')}}</i>

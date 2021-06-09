@@ -26,15 +26,15 @@ class UserCalendarController extends MilestoneController
 
   public $status_update_message = [
           'new' => 'ダミーを解除しました',
-          'fix' => '授業予定を確認しました。',
-          'confirm' => '授業予定の確認連絡をしました。',
-          'cancel' => '授業予定をキャンセルしました。',
+          'fix' => '予定を確認しました。',
+          'confirm' => '予定の確認連絡をしました。',
+          'cancel' => '予定をキャンセルしました。',
           'rest' => '休み連絡をしました。',
           'rest_cancel' => '休み取り消し依頼連絡をしました。',
           'lecture_cancel' => '休講依頼連絡をしました。',
-          'presence' => '授業を出席に更新しました。',
-          'absence' => '授業を欠席に更新しました。',
-          'remind' => '授業予定の確認連絡をしました。',
+          'presence' => '予定を出席に更新しました。',
+          'absence' => '予定を欠席に更新しました。',
+          'remind' => '予定の確認連絡をしました。',
         ];
   public function page_title($item, $page_status){
     if($item->is_teaching()==true){
@@ -322,7 +322,7 @@ class UserCalendarController extends MilestoneController
    */
   public function get_param(Request $request, $id=null){
     $user = $this->login_details($request);
-    $ret = $this->get_common_param($request);
+    $ret = $this->get_common_param($request, false);
     $ret['remind'] = false;
     $ret['token'] = false;
     $ret['is_exchange_add'] = false;
@@ -571,6 +571,16 @@ class UserCalendarController extends MilestoneController
         "buttons" => [
           "label" => __('labels.control'),
           "button" => [
+            "member_create" => [
+              "method" => "members/create",
+              "label" => "メンバー追加",
+              "style" => "default",
+            ],  
+            "member_setting" => [
+              "method" => "members/setting",
+              "label" => "メンバー設定",
+              "style" => "default",
+            ],  
             "edit",
             "delete"]
         ]
@@ -895,16 +905,14 @@ class UserCalendarController extends MilestoneController
     public function force_cancel(Request $request, $id){
       $param = $this->get_param($request, $id);
       $res = $this->transaction($request, function() use ($request, $param, $id){
-        if($param['item']->status=='new' || $param['item']->status=='confirm'){
-          $remark = $param['item']->remark;
-          $param['notice'] = '';
-          if(!empty($request->get('cancel_reason'))){
-            $remark.="\nキャンセル理由[".$request->get('cancel_reason')."]";
-            $param['notice'] = "キャンセル理由[".$request->get('cancel_reason')."]";
-          }
-          UserCalendar::where('id', $id)->update(['status' => 'cancel', 'remark' => $remark]);
-          UserCalendarMember::where('calendar_id', $id)->update(['status' => 'cancel']);
+        $remark = $param['item']->remark;
+        $param['notice'] = '';
+        if(!empty($request->get('cancel_reason'))){
+          $remark.="\nキャンセル理由[".$request->get('cancel_reason')."]";
+          $param['notice'] = "キャンセル理由[".$request->get('cancel_reason')."]";
         }
+        UserCalendar::where('id', $id)->update(['status' => 'cancel', 'remark' => $remark]);
+        UserCalendarMember::where('calendar_id', $id)->update(['status' => 'cancel']);
         $title = __('messages.mail_title_calendar_cancel');
         $template = 'calendar_cancel';
         $param['item']->teacher_mail($title, $param, 'text', $template);
@@ -1342,7 +1350,6 @@ class UserCalendarController extends MilestoneController
           }
         }
       }
-
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
         if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
         return view('teachers.select_teacher',
@@ -1364,6 +1371,11 @@ class UserCalendarController extends MilestoneController
       if($request->has('end_date') && $request->has('end_hours') && $request->has('end_minutes')){
         $param['item']['end_hours'] = intval($request->get('end_hours'));
         $param['item']['end_minutes'] = intval($request->get('end_minutes'));
+      }
+      if($request->has('work')){
+        //体験面談の呼び出し側でしかworkをクエリ文字列にはセットしていない
+        //Todo work=3にて面談登録フォームとしているが、workの判定で本来やるべきではない
+        $param['item']->work = $request->get('work');
       }
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
@@ -1503,7 +1515,6 @@ class UserCalendarController extends MilestoneController
     {
       $param = $this->page_access_check($request, $id);
       //TODO work=7
-      if($param['item']["work"]!=7) abort(403);
       return view($this->domain.'.member_create', [])->with($param);
     }
     public function member_create(Request $request, $id)

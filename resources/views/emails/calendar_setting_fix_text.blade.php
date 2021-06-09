@@ -1,7 +1,11 @@
 @include('emails.common')
 @if($send_to==='student')
 {{$user_name}} 様
-以下の授業予定を確定いたしました。
+@if($item->is_teaching()==true)
+以下の授業を確定いたしました。
+@else
+以下の予定を確定いたしました。
+@endif
 @elseif($send_to==='teacher' || $send_to==='manager')
 {{__('messages.mail_dear_teacher', ['user_name' => $user->name()])}}
 {{__('messages.info_calendar_fix')}}
