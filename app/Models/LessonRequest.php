@@ -1066,4 +1066,7 @@ TODO:このロジックは再度検討
     }
     return $ret;
   }
+  public function estimate_send(){
+    
+  }
 }

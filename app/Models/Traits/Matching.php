@@ -897,4 +897,24 @@ trait Matching
     return $matching_result;
     //return ['matching_result' => $matching_result, 'free_place_floor' => $free_place_floor, 'conflict_calendar' => $conflict_calendar];
   }
+  public function ask_create($type, $created_status, $target_model="lesson_requests"){
+    $this->parent->user->update(['access_key' => $access_key]);
+    //すでにある場合は一度削除
+    Ask::where('target_model', $target_model)->where('target_model_id', $this->id)
+        ->where('status', 'new')->where('type', $type)->delete();
+
+    $ask = Ask::add([
+      "type" => $type,
+      "end_date" => date("Y-m-d", strtotime("30 day")),
+      "body" => "",
+      "target_model" => $target_model,
+      "target_model_id" => $this->id,
+      "create_user_id" => $create_user_id,
+      "target_user_id" => $this->parent->user_id,
+      "charge_user_id" => 1,
+    ]);
+    //ステータス：入会希望連絡済み
+    $this->update(['status' => $created_status]);
+    return $ask;
+  }
 }

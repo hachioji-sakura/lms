@@ -929,11 +929,11 @@ class LessonRequestController extends UserCalendarController
     }
     return view($view)->with($param);
   }
-  public function save_estimate(Request $request,$id){
+  public function send_estimate(Request $request, $id){
     $param = $this->get_param($request,$id);
     $res = $this->transaction($request, function() use ($request, $id, $param){
-      $trial = $this->model()->where('id', $id)->first();
-      $trial->update(['status'=>'cancel']);
+      $lesson_request = $this->model()->where('id', $id)->first();
+      $lesson_request->estimate_send();
       return $this->api_response(200, '', '', $trial);
     }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
 
