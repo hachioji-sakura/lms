@@ -25,4 +25,12 @@ class School extends Model
     {
         return $this->schoolDetail->phone_number;
     }
+
+  public function textbooks(){
+    return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
+  }
+
+  public function store_school_textbooks($form){
+    $this->textbooks()->sync($form['textbooks']);
+  }
 }

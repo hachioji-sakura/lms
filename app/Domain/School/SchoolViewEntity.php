@@ -2,6 +2,7 @@
 
 namespace App\Domain\School;
 
+use App\Domain\BaseEntity;
 use LogicException;
 
 /**
@@ -9,7 +10,7 @@ use LogicException;
  *
  * @package App\Domain\School
  */
-class SchoolViewEntity
+class SchoolViewEntity extends BaseEntity
 {
     /**
      * ページタイトル
@@ -34,14 +35,14 @@ class SchoolViewEntity
             'partTimeGradeNightOnly'  => '定時制学年制夜間',
             'partTimeCredit'          => '定時単位制',
             'partTimeCreditNightOnly' => '定時単位夜間',
-            'onlineSchool'            => '通信制',
+            'onlineSchool'            => '通信制'
         ];
     }
 
     /**
      * ローカライズ名を取得する
      *
-     * @param  string  $key_name
+     * @param string $key_name
      * @return string
      */
     public function localizeName(string $key_name): string
@@ -96,12 +97,22 @@ class SchoolViewEntity
             'phone_number' => [
                 'label' => $this->localizeName('phone_number'),
             ],
-            'school_type'  => [
-                'label' => '学校種別',
+            'process'      => [
+                'label' => $this->localizeName('process'),
             ],
             'buttons'      => [
                 'label'  => $this->localizeName('control'),
-                'button' => ['edit', 'delete'],
+                'button' => [
+                      'school_textbooks' =>[
+                        'style' =>'outline-primary',
+                        'label' => '使用テキスト',
+                        "link" => function($row){
+                            return "/school_textbooks?school_id=".$row['id'];
+                        }
+                    ],
+                     'edit',
+                     'delete',
+                ]
             ],
         ];
     }
