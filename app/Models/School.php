@@ -20,6 +20,26 @@ class School extends Model
     {
         return $this->schoolDetail->address;
     }
+    public function access()
+    {
+        return $this->schoolDetail->access;
+    }
+    public function postNumber()
+    {
+        return $this->schoolDetail->post_number;
+    }
+    public function faxNumber()
+    {
+        return $this->schoolDetail->fax_number;
+    }
+    public function process()
+    {
+        return $this->schoolDetail->process;
+    }
+    public function departmentNames()
+    {
+        return $this->schoolDetail->department_names;
+    }
 
     public function phoneNumber()
     {

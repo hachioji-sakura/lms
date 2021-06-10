@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\School\Repository\SchoolEntityRepository;
 use App\Domain\School\SchoolViewEntity;
 use App\Models\School;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -52,7 +53,9 @@ class SchoolController extends MilestoneController
 
         // 対応するページに応じてGetする内容を分岐する
         if (!empty($search_word)) {
-            $high_school_entities = $this->high_school_entity_repository->getBySearchWord($search_word);
+            $builder_school = new School();
+            $schools = $builder_school->newQuery()->where('name', 'Like', "%$search_word%")->get()->all();
+            $total_count = count($schools);
         } elseif (empty($request->school_type)) {
             $schools = School::offset(($page_number - 1) * $per_page)->limit($per_page)->get();
             $total_count = School::get()->count();
@@ -176,22 +179,30 @@ class SchoolController extends MilestoneController
      */
     public function show(Request $request, $id)
     {
-        $high_school_id = $id;
-
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
 
         // 表示情報
         $school_view_entity = new SchoolViewEntity();
-        $high_school_entity = $this->high_school_entity_repository->findOrFail($high_school_id);
 
         // blade側が配列前提のため変換する
-        $attributes = $high_school_entity->getAttributes();
-        $attributes['id'] = $high_school_entity->highSchoolId();
-        $attributes['process'] = $high_school_entity->process();
+        $school = School::find($id);
+        $item['id'] = $school->id;
+        $item['name'] = $school->name;
+        $item['name_kana'] = $school->name_kana ?? '';
+        $item['url'] = $school->url ?? '';
+        $item['phone_number'] = $school->phoneNumber() ?? '';
+        $item['access'] = $school->access() ?? '';
+        $item['post_number'] = $school->postNumber() ?? '';
+        $item['fax_number'] = $school->faxNumber() ?? '';
+        $item['address'] = $school->address() ?? '';
+        $item['process'] = $school->process() ?? '';
+        $item['department_names'] = $school->departmentNames() ?? '';
+        $item['school_type'] = $this->getSchoolType($school->school_type);
+
         return view('schools.detail', [
             'school_view_entity' => $school_view_entity,
-            'item'               => $attributes,
+            'item'               => $item,
             'fields'             => $school_view_entity->fieldForShow(),
             'domain'             => $this->domain,
             'action'             => $param['action'] ?? null,
