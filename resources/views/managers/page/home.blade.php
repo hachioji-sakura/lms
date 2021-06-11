@@ -203,6 +203,7 @@
             </div>
           </a>
         </div>
+        {{--TODO:発注はリーク
         <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a class="" href="/orders" >
           <div class="info-box">
@@ -218,6 +219,7 @@
           </div>
           </a>
         </div>
+        --}}
       </div>
   	</div>
   </section>
