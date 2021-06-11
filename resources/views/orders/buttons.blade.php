@@ -24,8 +24,8 @@
 </a>
 @endif
 @if($row->status == "recieved")
-<a href="javascript:void(0);" page_title="{{(__('messages.status_update_confirm',["status"  => config('attribute.order_status')['complete']]))}}" page_form="dialog" page_url="/orders/{{$row['id']}}/status_update/complete" role="button" class="btn btn-{{config('status_style')['complete']}} btn-sm float-left mr-1 my-1">
-  <i class="fa fa-{{config('attribute.order_status_icon')['compolete']}}"></i>
+<a href="javascript:void(0);" page_title="{{(__('messages.status_update_confirm',["status"  => config('attribute.order_status')['commit']]))}}" page_form="dialog" page_url="/orders/{{$row['id']}}/status_update/commit" role="button" class="btn btn-{{config('status_style')['commit']}} btn-sm float-left mr-1 my-1">
+  <i class="fa fa-{{config('attribute.order_status_icon')['commit']}}"></i>
   {{__('labels.complete')}}
 </a>
 @endif

@@ -4,7 +4,7 @@ return [
   'fix' => 'check',
   'ordered' => 'shopping-cart',
   'recieved' => 'hands',
-  'complete' => 'thumbs-up',
+  'commit' => 'thumbs-up',
   'cancel' => 'ban'
 ];
 
