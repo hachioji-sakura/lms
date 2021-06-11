@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Curriculum;
 use App\Models\Subject;
 use App\Models\Task;
+use App\Models\TextMaterial;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -32,6 +33,18 @@ class CurriculumController extends MilestoneController
         $param['search_subject_id'] = $request->get('search_subject_id');
         return view($this->domain.'.list')->with($param);
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function api_index(Request $request)
+    {
+        //
+        $param = $this->get_common_param($request, false);
+        $items = $this->model()->search($request)->get();
+        return $this->api_response(200, '', '', $items);
+    }
 
     public function create(Request $request){
 
@@ -51,24 +64,24 @@ class CurriculumController extends MilestoneController
      */
     public function _store(Request $request)
     {
-        //
+      //
+      $form = $this->create_form($request);
 
-        $form = $this->create_form($request);
-        $item = $this->model();
-        foreach($form as $key=>$val){
-          $item = $item->where($key,$val);
-        }
-        $item = $item->first();
-        if(isset($item)){
-          return $this->error_response('すでに登録済みです');
-        }
-
-        $res = $this->transaction($request, function() use ($request, $form){
-          $item = $this->model()->create($form);
-          $item->subjects()->attach($request->get('subject_ids'));
-          return $this->api_response(200, '', '', $item);
-        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
-        return $res;
+      //同一科目内で同一名称がつかないようにチェック
+      $subjects = Subject::find($request->get('subject_ids'));
+      $items = collect([]);
+      foreach($subjects as $subject){
+        $items[] = $subject->curriculums()->where('name', $request->get('name'))->count();
+      }
+      if($items->reject(function($item){return $item == 0;})->count() > 0){
+        return $this->error_response('すでに登録済みです');
+      }
+      $res = $this->transaction($request, function() use ($request, $form){
+        $item = $this->model()->create($form);
+        $item->subjects()->attach($request->get('subject_ids'));
+        return $this->api_response(200, '', '', $item);
+      }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
+      return $res;
     }
 
     public function create_form(Request $request){

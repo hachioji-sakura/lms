@@ -21,6 +21,9 @@
           @if(isset($trial_id) && $trial_id>0)
           <input type="hidden" name="trial_id" value="{{$trial_id}}" >
           @endif
+          @if(isset(request()->work) && request()->work>0)
+          <input type="hidden" name="work" value="{{request()->work}}" >
+          @endif
         </label>
         <select name="teacher_id" class="form-control select2"  width=100% required="true" >
           <option value="">{{__('labels.selectable')}}</option>
@@ -61,9 +64,12 @@ function teacher_selected(){
     var _url = '/{{$domain}}/create?teacher_id='+teacher_id;
     var lesson_id = $('input[name="lesson_id"]').val();
     var trial_id = $('input[name="trial_id"]').val();
+    var work = $('input[name="work"]').val();
     console.log(_url);
     if(lesson_id|0>0) _url +='&lesson_id='+lesson_id;
     if(trial_id|0>0) _url +='&trial_id='+trial_id;
+    if(work|0>0) _url +='&work='+work;
+    console.log(_url);
     base.showPage("dialog", "subDialog", _title, _url);
   }
 }

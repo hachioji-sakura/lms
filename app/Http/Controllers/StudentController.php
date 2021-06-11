@@ -14,6 +14,8 @@ use App\Models\Tuition;
 use App\Models\Comment;
 use App\Models\Message;
 use App\Models\Task;
+use App\Models\Exam;
+use App\Models\Agreement;
 use App\Models\Event;
 use App\Models\EventUser;
 use App\Models\LessonRequest;
@@ -170,6 +172,9 @@ class StudentController extends UserController
     }
     if(isset($request->search_lesson)){
       $items->hasTags('lesson', $request->search_lesson);
+    }
+    if(isset($request->search_subject)){
+      $items->searchSubjects($request->search_subject);
     }
 
     //ステータス
@@ -370,6 +375,36 @@ class StudentController extends UserController
    ])->with($param);
   }
 
+  public function show_memo_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+    $view = "page.memos";
+    $param['view'] = $view;
+    if($param['user']->details()->role == "student") abort('403');
+
+   //コメントデータ取得
+   $form = $request->all();
+   $comments = $model->get_comments($form, true);
+   $star_comments = $model->get_comments(['is_star' => true], true);
+   /*
+   $comments = $model->target_comments;
+   if($this->is_teacher($user->role)){
+     //講師の場合、公開されたコメントのみ閲覧可能
+     $comments = $comments->where('publiced_at', '<=' , Date('Y-m-d'));
+   }
+   $comments = $comments->sortByDesc('created_at');
+   */
+
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+     'comments'=>$comments,
+     'star_comments'=>$star_comments,
+   ])->with($param);
+  }
+
   public function show_task_page(Request $request, $id)
   {
     $init = $this->init_show_page($request,$id);
@@ -388,6 +423,151 @@ class StudentController extends UserController
        'item' => $item,
        'tasks' => $tasks,
      ])->with($param);
+  }
+
+  public function show_school_grade_page(Request $request, $id)
+  {
+    $init = $this->init_show_page
+    ($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.school_grades";
+    $param['view'] = $view;
+    $school_grades = $item->school_grades()->search($request)->get();
+    $grades = $item->school_grades->pluck('grade_name','grade')->unique()->sort();
+    $subjects = $this->get_subjects($school_grades,"school_grade");
+    $school_grade_fields = $this->get_school_grade_fields();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'school_grades' => $school_grades,
+    'grades' => $grades,
+    'subjects' => $subjects,
+    'school_grade_fields' => $school_grade_fields
+   ])->with($param);
+  }
+
+  public function show_exam_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exams";
+    $param['view'] = $view;
+    $exams = $item->exams()->search($request)->get();
+    $select_exams = $item->exams->pluck('name','id')->unique()->sort();
+    $subjects = $this->get_subjects($exams,"exam");
+    $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
+
+    //dd($school_grades);
+   return view($this->domain.'.'.$view, [
+     'item' => $item,
+    'exams' => $exams,
+    'grades' => $grades,
+    'subjects' => $subjects,
+   ])->with($param);
+  }
+
+  public function show_exam_result_page(Request $request, $id, $exam_id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.exam_results";
+    $param['view'] = $view;
+    $exams = $item->exams;
+    $exam = $item->exams()->find($exam_id);
+    if(empty($exam)){
+      $exam_results = collect([]);
+    }else {
+      $exam_results = $exam->exam_results;
+    }
+
+    $exam_result_fields = $this->get_exam_result_fields();
+
+   return view($this->domain.'.'.$view, [
+    'item' => $item,
+    'exams' => $exams,
+    'exam' => $exam,
+    'exam_results' => $exam_results,
+    'exam_result_fields' => $exam_result_fields,
+   ])->with($param);
+  }
+
+  public function get_exam_result_fields(){
+    return [
+      'subject_name' => [
+        'label' => __('labels.subjects'),
+        'blank' => true,
+      ],
+      'point_per_max' => [
+        'label' => __('labels.point')."(".__('labels.average_point').")",
+      ],
+      'deviation' => [
+        'label' => __('labels.deviation'),
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+            'download',
+            'edit',
+            'delete',
+          ],
+      ]
+    ];
+  }
+
+  public function get_subjects($items, $from){
+    switch($from){
+      case "exam":
+        $subs = $items->map(function($item){
+          return $item->exam_results->pluck('subject_id','subject_name');
+        });
+        break;
+      case "school_grade":
+        $subs = $items->map(function($item){
+          return $item->school_grade_reports->pluck('subject_id','subject_name');
+        });
+        break;
+      default:
+        $subs = null;
+        break;
+    }
+    $subjects = collect([]);
+    foreach($subs as $sub){
+      $subjects = $subjects->merge($sub);
+    }
+    //TODO:subject_id順は変わるかも
+    return array_flip($subjects->sort()->toArray());
+  }
+
+
+  public function get_school_grade_fields(){
+    return [
+      'semester_name' => [
+        'label' => __('labels.semester')
+      ],
+      's3_alias' => [
+        'label' => __('labels.file'),
+        'link' => function($row){
+          return $row->s3_url;
+        },
+        'blank' => true,
+      ],
+      'buttons' => [
+        'label' => '操作',
+        'button' => [
+          'edit'
+        ],
+      ],
+    ];
   }
 
 
@@ -685,7 +865,7 @@ class StudentController extends UserController
    $user = $param['user'];
    $view = "calendar_settings";
    $param['view'] = $view;
-   $filter = $param['filter']['calendar_filter'];
+   $filter = $request->all();
    $filter['list'] = '';
    if($request->has('list')){
      $filter['list'] = $request->get('list');
@@ -722,15 +902,15 @@ class StudentController extends UserController
    $count = count($calendar_settings);
    (new UserCalendarSetting())->put_user_cache($cache_key, $form['user_id'], $count);
    if($is_count_only == true) return $count;
-   if(isset($form['_page']) && isset($form['_line'])){
+   if(isset($form['_page']) && isset($form['_line']) && count($calendar_settings)>0){
      $calendar_settings = $calendar_settings->pagenation(intval($form['_page'])-1, $form['_line']);
    }
    //echo $calendars->toSql()."<br>";
    if($this->domain=='students'){
      foreach($calendar_settings as $i=>$setting){
        $calendar_settings[$i] = $setting->details();
-       $calendar_settings[$i]->own_member = $setting[$i]->get_member($form['user_id']);
-       $calendar_settings[$i]->status = $setting[$i]->own_member->status;
+       $calendar_settings[$i]->own_member = $setting->get_member($form['user_id']);
+       $calendar_settings[$i]->status = $setting->own_member->status;
      }
    }
    return ["data" => $calendar_settings, 'count' => $count];
@@ -942,6 +1122,12 @@ class StudentController extends UserController
          $form['search_status'] = ['new', 'commit', 'cancel'];
        }
        break;
+      case "agreement_update":
+        $form['search_type'] = ['agreement_update'];
+        if(!isset($form['search_status'])){
+          $form['search_status'] = ['new'];
+        }
+        break;
    }
 
    if(!isset($form['search_type'])){
@@ -1030,11 +1216,13 @@ class StudentController extends UserController
    $result = '';
    $param = $this->get_param($request, $id);
    $param['fields'] = [];
-   $param['_edit'] = true;
+   $param['_edit'] = false;
    $param['student'] = $param['item'];
+   $param['agreement'] =$param['item']->enable_agreements_by_type('normal')->first();
    return view($this->domain.'.agreement',$param);
 
  }
+
 
   /**
    * Show the form for editing the specified resource.
@@ -1182,6 +1370,18 @@ class StudentController extends UserController
   public function ask_create_page(Request $request, $id){
     $param = $this->get_param($request, $id);
 
+    if($request->has('target_model')){
+      $param['target_model'] = $request->get('target_model');
+    }
+    if($request->has('target_model_id')){
+      $param['target_model_id'] = $request->get('target_model_id');
+    }
+    if($request->has('type')){
+      $param['ask_type'] = $request->get('type');
+    }
+    if($request->has('target_user_id')){
+      $param['target_user_id'] = $request->get('target_user_id');
+    }
     return view('asks.ask_create',['_edit' => false])
       ->with($param);
   }
@@ -1190,7 +1390,15 @@ class StudentController extends UserController
     $form = $request->all();
     $res = $this->transaction($request, function() use ($request, $param){
       $form = $request->all();
-      $form["target_user_id"] = $param["item"]->user_id;
+      $_t = '';
+      foreach($request->get('title') as $title){
+         $_t .= $title .' / ';
+      }
+      $_t = rtrim($_t,' / ');
+      $form['title'] = $_t;
+      if( !$request->has('target_user_id')){
+        $form["target_user_id"] = $param["item"]->user_id;
+      }
       $form["create_user_id"] = $param["user"]->user_id;
       $item = Ask::add($form);
       return $this->api_response(200, '', '', $item);
@@ -1392,7 +1600,7 @@ class StudentController extends UserController
   }
 
   public function task_search($request, $id){
-    $tasks = Task::findTargetUser($id)->search($request,$id)->orderBy('created_at','desc');
+    $tasks = Task::findTargetUser($id)->visible()->search($request,$id)->orderBy('created_at','desc');
     return $tasks;
   }
   public function retirement_page(Request $request, $id)
@@ -1428,13 +1636,22 @@ class StudentController extends UserController
       $title = __('labels.unsubscribe');
     }
     $param = $this->get_param($request, $id);
-
-    $res = $this->transaction($request, function() use ($request, $id){
+    set_time_limit(1200);
+    $res = $this->transaction($request, function() use ($request, $id, $title){
       $form = $request->all();
-      $item = $this->model()->where('id', $id)->first()->unsubscribe();
-      return $this->api_response(200, '', '', $item);
-    }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
-    return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
+      $item = $this->model()->where('id', $id)->first();
+      if(!empty($form['unsubscribe_date'])){
+        $item->update(['unsubscribe_date'=>$form['unsubscribe_date']]);
+      }
+      $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$form['unsubscribe_date']));
+      $message = date('Y年m月d日', strtotime('+1 day '.$form['unsubscribe_date'])).'に'.$title.'する設定をしました';
+      if(strtotime($unsubscribe_date_tomorrow) <= strtotime(date('Y-m-d'))){
+        $message = $title.'に更新しました';
+        $item->unsubscribe();
+      }
+      return $this->api_response(200, $message, '', $item);
+    }, $title.'', __FILE__, __FUNCTION__, __LINE__ );
+    return $this->save_redirect($res, $param,$res['message']);
   }
   public function regular_page(Request $request, $id)
   {
@@ -1468,6 +1685,19 @@ class StudentController extends UserController
     }, $title.'ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
     return $this->save_redirect($res, $param, $title.'ステータスに更新しました');
   }
+  public function get_agreements($form, $status, $is_count_only = false){
+    $cache_key = $this->create_cache_key(__FUNCTION__.'_count', $form);
+    $count = (new Agreement())->get_user_cache($cache_key, $form['user_id']);
+    if($count != null && $is_count_only==true) return $count;
+
+    $agreements = Agreement::findStatuses($status);
+    if($is_count_only == true){
+      return $agreements->count();
+    }else{
+      return $agreements;
+    }
+  }
+
   public function season_lesson_page(Request $request, $id){
     $param = $this->get_common_param($request, false);
     $view = 'lesson_requests.season_lesson.create';
@@ -1510,7 +1740,6 @@ class StudentController extends UserController
         $param['is_already_data'] = true;
       }
     }
-
     $param['event_dates'] = $event->get_event_dates();
     $param['event'] = $event;
     return view($view, ['_edit' => false])

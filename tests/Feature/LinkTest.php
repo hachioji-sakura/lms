@@ -43,6 +43,7 @@ class LinkTest extends TestCase
          "/teachers/2/schedule",
          "/teachers/2?view=setting_menu",
          "/teachers/2/calendar_settings",
+         "/teachers/2?view=text_materials",
          "/managers/1/email_edit",
          "/managers/4",
          "/managers/4/calendar",
@@ -60,7 +61,6 @@ class LinkTest extends TestCase
          "/calendars/48830",
          "/calendars/48830/edit",
          "/calendars/create",
-         "/calendars/create",
          "/calendar_settings",
          "/calendar_settings/create",
          "/calendar_settings/382",
@@ -73,6 +73,8 @@ class LinkTest extends TestCase
          "/trials",
          "/trials/34",
          "/trials/34/to_calendar",
+         "/text_materials",
+         "/text_materials/create",
        ];
        //TODO  "/tasks/create", がエラーするので除外
 

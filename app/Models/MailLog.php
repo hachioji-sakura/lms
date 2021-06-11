@@ -11,6 +11,35 @@ use App\Mail\CommonNotification;
 use View;
 use App;
 use Mail;
+/**
+ * App\Models\MailLog
+ *
+ * @property int $id
+ * @property string $from_address From
+ * @property string $to_address To
+ * @property string $subject 件名
+ * @property string $body 内容
+ * @property string $template 使用テンプレート
+ * @property string $type text or html or slack
+ * @property string $locale 使用言語
+ * @property string|null $status 送信ステータス
+ * @property string|null $send_schedule 送信時間（予定）
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $created_date
+ * @property-read mixed $locale_name
+ * @property-read mixed $status_name
+ * @property-read mixed $updated_date
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog findTemplates($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|MailLog searchWord($word)
+ * @mixin \Eloquent
+ */
 class MailLog extends Model
 {
   use Common;

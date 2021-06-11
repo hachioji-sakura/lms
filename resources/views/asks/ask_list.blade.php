@@ -4,7 +4,6 @@
 @extends('dashboard.common')
 @include($domain.'.menu')
 
-
 @section('contents')
 <section class="content">
   <div class="row">

@@ -7,6 +7,9 @@ use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\Student;
 use App\Models\UserCalendar;
+use App\Models\TextMaterial;
+use App\Models\Subject;
+use App\Models\Curriculum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App;
@@ -108,12 +111,17 @@ class TeacherController extends StudentController
         case "setting_menu":
           $view = $request->get('view');
           break;
+        case "text_materials":
+          $view = $request->get('view');
+          $param['subjects'] = Subject::all();
+          $param['text_materials'] = $param['item']->get_text_materials($request->all());
+          $param['curriculums'] = Curriculum::all();
+          break;
       }
     }
+    if($view=='home')  $param['charge_students'] = $this->get_students($request, $id);
     $param['view'] = $view;
-    return view($this->domain.'.page.'.$view, [
-      'charge_students'=>$this->get_students($request, $id),
-    ])->with($param);
+    return view($this->domain.'.page.'.$view, [])->with($param);
   }
   /**
   * Display the specified resource.
@@ -153,6 +161,7 @@ class TeacherController extends StudentController
                     ->get();
         foreach($students as $student){
           foreach($calendars as $calendar){
+            if($calendar->status=='dummy') continue;
             if($calendar->is_member($student->user_id)){
               $student['current_calendar_start_time'] = $calendar['start_time'];
               $student['current_calendar'] = $calendar->details();
@@ -352,6 +361,7 @@ class TeacherController extends StudentController
       }
       return $this->transaction(null, function() use ($form, $user){
         $form['create_user_id'] = $user->id;
+        $form['entry_date'] = date('Y/m/d');
         $item = $this->model()->where('user_id', $user->id)->first();
         $item->profile_update($form);
         $user->set_password($form['password']);

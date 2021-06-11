@@ -22,8 +22,48 @@ use App\Models\UserCalendarMember;
 use App\Models\UserCalendarSetting;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
+use DB;
 
 use Hash;
+/**
+ * App\User
+ *
+ * @property int $id
+ * @property string $name ユーザー名
+ * @property string $email メールアドレス（ログインキー）
+ * @property string|null $email_verified_at
+ * @property int $status 0:新規　, 1:仮 , 9:削除
+ * @property string $locale
+ * @property int $image_id アイコン
+ * @property string $password パスワード
+ * @property string $access_key アクセスキー
+ * @property string|null $remember_token
+ * @property string|null $verification_code
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarMemberSetting[] $calendar_member_settings
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMember[] $calendar_members
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarSetting[] $calendar_settings
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read \Illuminate\Database\Eloquent\Collection|Comment[] $create_comments
+ * @property-read mixed $created_date
+ * @property-read mixed $updated_date
+ * @property-read Image $image
+ * @property-read Manager|null $manager
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read Student|null $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|Comment[] $target_comments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Milestone[] $target_milestones
+ * @property-read Teacher|null $teacher
+ * @method static \Illuminate\Database\Eloquent\Builder|User fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|User tag($tagkey, $tagvalue)
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use Common;
@@ -53,6 +93,13 @@ class User extends Authenticatable
 
     public function student(){
       return $this->hasOne('App\Models\Student');
+    }
+    public function text_materials(){
+      return $this->hasMany('App\Models\TextMaterial', 'target_user_id');
+    }
+    public function shared_text_materials()
+    {
+        return $this->morphedByMany('App\Models\TextMaterial', 'shared_userable')->withTimestamps();
     }
     public function teacher(){
       return $this->hasOne('App\Models\Teacher');
@@ -84,12 +131,46 @@ class User extends Authenticatable
     public function calendar_settings(){
       return $this->hasMany('App\Models\UserCalendarSetting');
     }
+
     public function calendar_members(){
       return $this->hasMany('App\Models\UserCalendarMember');
     }
     public function calendar_member_settings(){
       return $this->hasMany('App\Models\UserCalendarMemberSetting');
     }
+    public function event_user(){
+      return $this->hasMany('App\Models\EventUser');
+    }
+    public function enable_calendar_member_settings(){
+      //キャンセルとダミーでない有効期間内のメンバー設定
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy'])->whereHas('setting',function($query){
+        return $query->enable();
+      });
+    }
+    public function monthly_enable_calendar_member_settings($date = null){
+      //指定日付の時点で契約作成の対象となるuser_calendar_member_settingを取る
+      if($date == null){
+         $month_start_date = date("Y-m-1");
+         $month_end_date = date("Y-m-t");
+      }else{
+        $month_start_date = date('Y-m-1',strtotime($date));
+        $month_end_date = date('Y-m-t',strtotime($date));
+      }
+      //指定日付の月において、月内に有効期間が存在するレコード
+      return $this->calendar_member_settings()->whereNotIn('status',
+      ['cancel','dummy'])->whereHas('setting',function($query) use ($month_start_date,$month_end_date){
+        return $query->searchRangeDate($month_start_date,$month_end_date);
+      });
+    }
+    
+    public function monthly_enable_calendar_settings($date = null){
+      //monthly_enable_calendar_member_settingsをもとにuser_calendar_settingsを返す
+      return $this->monthly_enable_calendar_member_settings($date)->get()->map(function($item){
+        return $item->setting;
+      });
+    }
+
     public function enable_lesson_requests()
     {
       return $this->hasMany('App\Models\LessonRequest')->whereIn('status', ['new']);
@@ -98,11 +179,6 @@ class User extends Authenticatable
     {
       return $this->hasMany('App\Models\LessonRequest')->orderBy('id', 'desc');
     }
-    public function event_users()
-    {
-      return $this->hasMany('App\Models\EventUser');
-    }
-
     /**
      * パスワードリセット通知の送信
      *
@@ -239,8 +315,9 @@ EOT;
     }
     //そのUserの有効なカレンダーを取得（$ret[w][sun] = items形式で取得)
     public function get_enable_calendar_settings(){
+      //TODO:Teacherモデルに移設したほうが良い
       $items = UserCalendarSetting::findUser($this->id)
-      ->whereNotIn('status', ['cancel', 'dummy'])
+      ->whereNotIn('status', ['cancel','dummy'])
       ->orderByWeek('lesson_week', 'asc')
       ->orderBy('from_time_slot', 'asc')
       ->get();
@@ -387,7 +464,7 @@ EOT;
       \Log::info("-----------------get_mail_address[$email]------------------");
       return $email;
     }
-    public function get_comments($form){
+    public function get_comments($form, $only_memo = false){
       $u = $this->details();
       $form['_sort'] ='created_at';
       $comment_types = [];
@@ -412,8 +489,11 @@ EOT;
         $comment_types = $form['search_comment_type'];
       }
       $comments = Comment::findTargetUser($this->id);
-      $comments = $comments->findTypes($comment_types);
-      $comments = $comments->findDefaultTypes($u->domain);
+      if($only_memo == true){
+        $comments = $comments->memo();
+      }else{
+        $comments = $comments->comment();
+      }
 
       if($is_star==true){
         $comments = $comments->where('importance', '>', 0);
@@ -445,5 +525,14 @@ EOT;
 
       $comments = $comments->get();
       return ["data" => $comments, 'count' => $count];
+    }
+    public function user_replacement($new_user_id){
+      $this->calendar_member_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_settings()->update(['user_id' => $new_user_id]);
+      $this->calendar_members()->update(['user_id' => $new_user_id]);
+      $this->calendars()->update(['user_id' => $new_user_id]);
+      $this->event_user()->update(['user_id' => $new_user_id]);
+      $this->tags()->update(['user_id' => $new_user_id]);
+      $this->update(['status' => 9]);
     }
 }

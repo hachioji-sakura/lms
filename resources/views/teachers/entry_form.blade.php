@@ -4,10 +4,10 @@
   <h4 class="bg-success p-3 text-sm">
     @if($result==='success')
       仮登録完了メールを送信しました。<br>
-      送信したメールにて、24時間以内にユーザー登録を進めてください。<br>
+      送信したメールにて、20日以内にユーザー登録を進めてください。<br>
     @elseif($result==='already')
       仮登録中の情報が残っています。<br>
-      再送信したメールにて、24時間以内にユーザー登録を進めてください。
+      再送信したメールにて、20日以内にユーザー登録を進めてください。
     @elseif($result==='exist')
       このメールはユーザー登録が完了しています。
     @endif
@@ -19,7 +19,7 @@
     <div class="row">
       @component('students.forms.name', ['attributes' => $attributes, 'prefix'=>'']) @endcomponent
       @component('students.forms.email', [ 'attributes' => $attributes, 'prefix'=>'']) @endcomponent
-      @component('teachers.forms.select_locale')@endcomponent
+      @component('teachers.forms.select_locale', ['_edit'=>false])@endcomponent
     </div>
     <div class="col-12">
       <h6 class="text-sm p-2 pl-2 mb-4" >

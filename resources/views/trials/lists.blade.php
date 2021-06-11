@@ -64,10 +64,28 @@
                     @endforeach
                   </div>
                   <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
-                    @if($item->is_request_lesson_complete()==false)
-                      @foreach($item->request_dates->sortBy('sort_no') as $d)
-                      第{{$d->sort_no}}希望:{{$d->term}}</span><br>
-                      @endforeach
+
+                    @if($item->is_trial_lesson_complete()==false)
+                      第1希望:{{$item->trial_start_end_time(1)}}</span><br>
+                      第2希望:{{$item->trial_start_end_time(2)}}</span><br>
+                      第3希望:{{$item->trial_start_end_time(3)}}</span><br>
+                      <span class="text-xs">
+                        @if($item->has_tag('parent_interview', 'true')==true)
+                        <small class="badge badge-danger p-1 mr-1">
+                          <i class="fa fa-exclamation-triangle mr-1"></i>
+                          入会説明希望あり
+                        </small>
+                        @else
+                        <small class="badge badge-secondary p-1 mr-1">
+                          入会説明希望なし
+                        </small>
+                        @endif
+                      </span>
+{{--
+<br>
+第4希望:{{$item->trial_start_end_time(4)}}</span><br>
+第5希望:{{$item->trial_start_end_time(5)}}</span>
+--}}
                     @else
                       入会希望連絡: {{$item->entry_contact_send_date()}}</span><br>
                       授業開始希望日: {{$item->dateweek_format($item->schedule_start_hope_date)}}</span><br>
@@ -110,15 +128,15 @@
   </div>
   <div class="col-12 col-md-4">
     <div class="form-group">
-      <label for="is_desc_1" class="w-100">
+      <label for="is_asc_1" class="w-100">
         {{__('labels.sort_no')}}
       </label>
       <label class="mx-2">
-      <input type="checkbox" value="1" name="is_desc" id="is_desc_1" class="icheck flat-green"
-      @if(isset($filter['sort']['is_desc']) && $filter['sort']['is_desc']==true)
+      <input type="checkbox" value="1" name="is_asc" id="is_asc_1" class="icheck flat-green"
+      @if(isset($filter['sort']['is_asc']) && $filter['sort']['is_asc']==true)
         checked
       @endif
-      >{{__('labels.date')}} {{__('labels.desc')}}
+      >{{__('labels.date')}} {{__('labels.asc')}}
       </label>
     </div>
   </div>
@@ -231,9 +249,9 @@
         <a href="/{{$domain}}?list=entry_guidanced" class="nav-link @if($list=="entry_guidanced") active @endif">
           <i class="fa fa-file-export nav-icon"></i>
           <p>
-            入会案内連絡済
+            入会規約承諾待
             @if($entry_guidanced_count > 0)
-            <span class="badge badge-secondary right">{{$entry_guidanced_count}}</span>
+            <span class="badge badge-warning right">{{$entry_guidanced_count}}</span>
             @endif
           </p>
         </a>

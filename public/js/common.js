@@ -335,7 +335,9 @@ function course_minutes_filter(name){
     //振替の場合は分割振替などがあるので、フィルタはなし
     return ;
   }
-  if($('input[name="trial_id"]').val()|0 > 0){
+  var is_calendar_settings = $('input[name="is_calendar_settings"]').val()|0;
+  var trial_id = $('input[name="trial_id"]').val()|0;
+  if(trial_id > 0 && is_calendar_settings== 0){
     $("label.course_minutes:contains('９０分')").hide();
     $("label.course_minutes:contains('１２０分')").hide();
   }
@@ -446,6 +448,7 @@ function select_student_change(){
       grade_code = grade.substr(0,1);
       if(grade=='university') grade_code='h';
       if(grade=='adult') grade_code='h';
+      if(grade.match(/k/))  grade_code = 'e';
     }
     $("select[name='__charge_subject[]'] option[grade='"+grade_code+"']").each(function(){
       options[$(this).val()] = $(this).text();

@@ -14,7 +14,6 @@
 @if($send_to!=='student')
 ({{__('labels.status')}}：{{$item->status_name()}})
 @endif
---------------------------------------------
 （{{__('labels.details')}}）
 @if($item->is_teaching()==true)
 {{__('labels.teachers')}}：{{$item->user->details('teachers')->name()}}
@@ -31,7 +30,29 @@
 @endforeach
 @endif
 
---------------------------------------------
 @if($send_to!=='student' && (!isset($is_control) || $is_control==false))
 ({{__('labels.control')}}：{{$login_user["name"]}})
+@endif
+@if($send_to=='student')
+@if($item->trial_id > 0 && $item->has_tag('lesson', 1)==true && $item->is_teaching()==true)
+
+■持ち物
+1. 教科書、学校で使用している問題集
+2. 筆記用具
+3. ノート
+4. 過去の定期試験と模試
+@endif
+@if($item->is_online()==true && $item->user->has_tag('skype_name'))
+
+■オンライン授業について
+オンライン授業は、スカイプを利用いたします。
+スカイプがダウンロードされたパソコン・ダブレット・スマホで、講師のSkype名にてアカウントを検索していただけますと、
+担当講師と繋がります。
+
+※講師のSkype名{{$item->user->get_tag_value('skype_name')}}
+
+※Skype名にてアカウント登録の方法がご不明な場合は、以下をご確認ください
+https://support.skype.com/ja/faq/fa34807/skype-dexin-shiilian-luo-xian-wojian-tsukerufang-fa
+
+@endif
 @endif

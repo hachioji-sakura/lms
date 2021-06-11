@@ -12,9 +12,11 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Manager;
 use App\Models\StudentParent;
+use App\Models\Traits\Test;
 
 class TeacherTest extends TestCase
 {
+  use Test;
     /**
      * A basic feature test example.
      *

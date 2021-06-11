@@ -566,12 +566,19 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "3",
 		],
+		"memo" => [
+			"attribute_value" => "memo",
+			"attribute_name" => "共有情報",
+			"parent_attribute_key" => "",
+			"parent_attribute_value" => "",
+			"sort_no" => "4",
+		],
 		"other" => [
 			"attribute_value" => "other",
 			"attribute_name" => "その他",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
-			"sort_no" => "4",
+			"sort_no" => "5",
 		],
 	],
 	"course" => [

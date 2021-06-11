@@ -47,6 +47,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::put('events/{event_id}/lesson_request_calendars/complete', 'LessonRequestCalendarController@complete_calendars');
   Route::resource('lesson_request_calendars','LessonRequestCalendarController');
 
+  Route::get('places/phone_list','PlaceController@phone_list');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
@@ -72,7 +73,20 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_attributes/{select_key?}','GeneralAttributeController@api_index');
   Route::resource('attributes','GeneralAttributeController');
   Route::resource('milestones','MilestoneController');
+  Route::get('text_materials/{id}/shared','TextMaterialController@shared_page');
+  Route::put('text_materials/{id}/shared','TextMaterialController@shared');
+  Route::get('text_materials/bulk_shared','TextMaterialController@bulk_shared_page');
+  Route::put('text_materials/bulk_shared','TextMaterialController@bulk_shared');
+
   Route::resource('text_materials','TextMaterialController');
+
+  Route::resource('school_grades','SchoolGradeController');
+  Route::resource('school_grade_reports','SchoolGradeReportController');
+
+  Route::resource('exams','ExamController');
+  Route::post('exams/create','ExamController@store');
+  Route::resource('exam_results','ExamResultController');
+
 
   Route::get('comments/{id}/publiced','CommentController@publiced_page');
   Route::put('comments/{id}/publiced','CommentController@publiced');
@@ -167,10 +181,10 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('api_course','LectureController@api_index');
   Route::resource('lectures','LectureController');
 
-  /*
+
   Route::resource('publisher','PublisherController');
   Route::resource('textbooks','TextbookController');
-  */
+
   Route::get('teachers/{id}/to_manager','TeacherController@to_manager_page');
   Route::post('teachers/{id}/to_manager','TeacherController@to_manager');
   Route::get('teachers/{id}/students','TeacherController@get_charge_students');
@@ -273,8 +287,13 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/tuitions','StudentController@tuitions');
   Route::get('students/{id}/announcements','StudentController@show');
   Route::get('students/{id}/comments','StudentController@show_comment_page');
+  Route::get('students/{id}/memos','StudentController@show_memo_page');
   Route::get('students/{id}/milestones','StudentController@show_milestone_page');
   Route::get('students/{id}/tasks','StudentController@show_task_page');
+  Route::get('students/{id}/school_grades','StudentController@show_school_grade_page');
+  Route::get('students/{id}/exams','StudentController@show_exam_page');
+  Route::get('students/{id}/exams/{exam_id}','StudentController@show_exam_result_page');
+
 
 
   Route::get('teachers/{id}/calendar','TeacherController@calendar');
@@ -350,6 +369,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('asks/{ask_id}/agreement','AskController@agreement_page');
 
   Route::get('asks/{ask_id}/commit','AskController@commit_page');
+  Route::get('asks/{id}/edit_date','AskController@edit_date');
+
   Route::resource('asks','AskController');
 
 
@@ -408,6 +429,17 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::resource('subjects','SubjectController');
   Route::get('subjects/{id}/delete', 'SubjectController@delete');
+
+  Route::post('agreements/{id}/admission','AgreementController@admission_mail_send');
+  Route::resource('agreements', 'AgreementController');
+  Route::get('agreements/{id}/delete', 'AgreementController@delete');
+  Route::get('agreements/{id}/ask/{method}', 'AgreementController@ask_page');
+  Route::resource('agreement_statements', 'AgreementStatementController');
+  Route::get('agreement_statements/{id}/delete', 'AgreementStatementController@delete');
+
+  // 学校関連
+  Route::resource('schools', 'SchoolController');
+  Route::resource('school_textbooks', 'SchoolTextbookController');
 });
 Route::get('token_test/{key}','Controller@token_test');
 Route::get('test','Controller@test');

@@ -168,7 +168,7 @@ class MilestoneController extends UserController
         $items = $items->mydata($user->user_id);
       }
       $items = $this->_search_scope($request, $items);
-      $items = $items->paginate($param['_line']);
+      $items = $items->orderBy('id','desc')->paginate($param['_line']);
 
       $request->merge([
         '_sort_order' => 'desc',
@@ -248,7 +248,6 @@ class MilestoneController extends UserController
      */
    public function create(Request $request)
    {
-
       $param = $this->get_param($request);
       return view($this->domain.'.create',['_edit' => false])
         ->with($param);

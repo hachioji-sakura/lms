@@ -2,7 +2,7 @@
   @slot('page_message')
   @if($item->is_passed()==true)
     <div class="col-12 bg-danger p-2 mb-2">
-      <i class="fa fa-exclamation-triangle mr-1"></i>この予定は過ぎているため、操作はできません。
+      <i class="fa fa-exclamation-triangle mr-1"></i>{!!nl2br(__('messages.error_passed_calendar'))!!}
     </div>
   @else
     @if($user->role=="parent" || $user->role=="student")

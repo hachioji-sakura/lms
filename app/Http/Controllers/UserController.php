@@ -19,32 +19,31 @@ class UserController extends Controller
   public $domain = "users";
 
   protected $pagenation_line = 20;
-  public function __construct()
-  {
-  }
+
   protected function attributes()
   {
+    $user = $this->login_details(new Request());
+
     $attributes = [];
     $_attributes = GeneralAttribute::where('attribute_key', '!=', 'keys')
     ->orderBy('attribute_key', 'asc')
     ->orderBy('sort_no', 'asc')->get();
     foreach($_attributes as $_attribute){
       //TODO いつかGeneralAttributeですべて管理しきるほがよいかもしれない（is_visible : 画面で使うもの / is_editable : 更新してもよいもの）
-      if($_attribute->attribute_value=='dummy') continue;
+      if($_attribute->attribute_value=='dummy' && (!isset($user) || $this->is_manager($user->role)!=true)) continue;
 
       if(!isset($attributes[$_attribute->attribute_key])){
         $attributes[$_attribute->attribute_key] = [];
       }
       $attributes[$_attribute->attribute_key][$_attribute->attribute_value] = $_attribute->attribute_name;
     }
-    $places = Place::orderBy('sort_no', 'asc')->get();
+    $places = Place::enable()->has('floors')->orderBy('sort_no', 'asc')->get();
     $attributes['places'] = $places;
 
     $attributes['ask_type'] = [
       'new_schedule' => '通塾スケジュールの追加',
       'change_schedule' => '通塾スケジュールの変更',
-      'study_request' => '授業に関するご要望',
-      'other_request' => 'その他',
+      'delete_schedule' => '通塾スケジュールの削除',
     ];
 
     return $attributes;
@@ -89,6 +88,8 @@ class UserController extends Controller
     }
     $ret['filter'] = [
       'comment_filter' => [
+        'is_publiced_only' => $request->is_publiced_only,
+        'is_unpubliced_only' => $request->is_unpubliced_only,
         'is_checked_only' => $request->is_checked_only,
         'is_unchecked_only' => $request->is_unchecked_only,
         'search_comment_type'=>$request->search_comment_type,
@@ -99,6 +100,8 @@ class UserController extends Controller
       'user_filter' => [
         'search_grade' => $request->search_grade,
         'search_lesson' => $request->search_lesson,
+        'search_subject' => $request->search_subject,
+        'search_curriculum' => $request->search_curriculum,
         'post_no' => $request->post_no,
         'place_id' => $request->place_id,
       ],
@@ -112,6 +115,7 @@ class UserController extends Controller
         'is_all_data' => $request->is_all_data,
         'is_exchange' => $request->is_exchange,
         'teaching_type' => $request->teaching_type,
+        'search_is_online' => $request->search_is_online,
       ],
       'sort' => [
         'is_asc'=>$request->is_asc,

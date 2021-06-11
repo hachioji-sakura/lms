@@ -79,7 +79,7 @@
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.ask_teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change" role="button" class="btn btn-danger btn-sm ml-1">
     <i class="fa fa-sync mr-1"></i>{{__('labels.ask_teacher_change')}}
   </a>
-  @else
+  @elseif($user->role==="manager")
   <a title="{{$calendar["id"]}}" href="javascript:void(0);" page_title="{{__('labels.teacher_change')}}" page_form="dialog" page_url="/calendars/{{$calendar['id']}}/asks/teacher_change?maintenance=true" role="button" class="btn btn-info btn-sm ml-1">
     <i class="fa fa-sync mr-1"></i>{{__('labels.teacher_change')}}
   </a>
@@ -96,7 +96,7 @@
 </a>
 @endif
 
-@if(($calendar->status==="presence" || $calendar->status==="absence") && ($user->role==="manager" || ($user->role==="teacher" && $calendar->is_checked()==false)))
+@if(($calendar->status==="presence" || $calendar->status==="absence") && ($user->role==="manager" || ($user->role==="teacher" && ($calendar->trial_id>0 && $calendar->is_checked()==false))))
 {{-- 出欠変更 --}}
 <a title="{{$calendar->id}}" href="javascript:void(0);" page_title="{{__('labels.calendar_button_attendance')}}{{__('labels.edit')}}" page_form="dialog" page_url="/calendars/{{$calendar->id}}/status_update/presence?origin={{$domain}}&item_id={{$teacher->id}}&page=schedule" role="button" class="btn btn-warning btn-sm ml-1">
   <i class="fa fa-wrench" title="{{$calendar->status}}"></i>

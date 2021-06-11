@@ -43,7 +43,7 @@
                     </button>
                 </div>
                 <div class="col-6 mb-1">
-                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn btn-secondary btn-block float-left mr-1 btn-block">
                     <i class="fa fa-arrow-circle-left mr-1"></i>
                     キャンセル
                   </a>
@@ -55,20 +55,24 @@
                 {{-- TODO dummyを中継するので、通知を登録時にしなくてよい
                 @component('calendars.forms.mail_send_confirm', ['default_send_teacher' => true]); @endcomponent
                 --}}
+                @endif
+              </div>
+              @if(count($candidate_teachers[0]->trial) > 0)
+              <div class="row">
                 <div class="col-6 mb-1">
-                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">
+                  <a href="/{{$domain}}/{{$item->id}}" role="button" class="btn btn-secondary float-left mr-1 btn-block">
                     <i class="fa fa-arrow-circle-left mr-1"></i>
                     {{__('labels.cancel_button')}}
                   </a>
                 </div>
                 <div class="col-6 mb-1">
-                    <button type="button" class="btn btn-submit btn-primary btn-block">
-                      <i class="fa fa-check mr-1"></i>
-                      {{__('labels.add_button')}}
-                    </button>
+                  <button type="button" class="btn btn-submit btn-primary btn-block">
+                    <i class="fa fa-check mr-1"></i>
+                    {{__('labels.add_button')}}
+                  </button>
                 </div>
-                @endif
               </div>
+              @endif
             </div>
           </div>
 

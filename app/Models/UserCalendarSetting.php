@@ -12,6 +12,81 @@ use DB;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\UserCalendarSetting
+ *
+ * @property int $id
+ * @property int $trial_id 設定に使った体験申し込み
+ * @property int $user_id 主催者 / 基本的に講師
+ * @property string $status 新規登録:new / 確定:fix / 講師確認:confirm
+ * @property int $place_floor_id 場所フロアID
+ * @property string $schedule_method スケジュール登録方法：week=毎週 / month=毎月
+ * @property int $lesson_week_count schedule_method=week / 第何週を指定するときに1以上をセットする
+ * @property string $lesson_week schedule_method=week / 曜日
+ * @property int $lesson_day schedule_method=month / 日にち指定の場合利用する
+ * @property int $end_of_month schedule_method=month / 月末の場合=true
+ * @property string $from_time_slot 開始時分
+ * @property string $to_time_slot 終了時分
+ * @property string|null $enable_start_date 設定有効開始日
+ * @property string|null $enable_end_date 設定有効終了日
+ * @property int|null $lecture_id レクチャーID
+ * @property int $course_minutes 授業時間
+ * @property string|null $work 作業内容
+ * @property string|null $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read User $create_user
+ * @property-read UserCalendar $exchanged_calendar
+ * @property-read mixed $calendar_count
+ * @property-read mixed $course
+ * @property-read mixed $created_date
+ * @property-read mixed $date
+ * @property-read mixed $datetime
+ * @property-read mixed $dateweek
+ * @property-read mixed $lesson
+ * @property-read mixed $place_floor_name
+ * @property-read mixed $repeat_setting_name
+ * @property-read mixed $schedule_type_name
+ * @property-read mixed $status_name
+ * @property-read mixed $student_name
+ * @property-read mixed $subject
+ * @property-read mixed $teaching_type_name
+ * @property-read mixed $timezone
+ * @property-read mixed $updated_date
+ * @property-read mixed $user_name
+ * @property-read mixed $work_name
+ * @property-read \App\Models\Lecture|null $lecture
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMemberSetting[] $members
+ * @property-read \App\Models\PlaceFloor $place_floor
+ * @property-read UserCalendarSetting $setting
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarTagSetting[] $tags
+ * @property-read \App\Models\Trial $trial
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting enable()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findExchangeTarget($user_id = 0, $lesson = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findPlaces($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findTeachingType($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findTrialStudent($trial_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findUser($user_id, $deactive_status = 'invalid')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting findWeeks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findWorks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting hiddenFilter()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting orderByWeek()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarSetting searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar sortStarttime($sort)
+ * @mixin \Eloquent
+ */
 class UserCalendarSetting extends UserCalendar
 {
   use Common;
@@ -83,13 +158,16 @@ EOT;
     return $this->scopeFieldWhereIn($query, 'lesson_week', $vals, $is_not);
   }
   public function scopeEnable($query){
-    $where_raw = <<<EOT
-      (
-       (lms.user_calendar_settings.enable_end_date is null OR lms.user_calendar_settings.enable_end_date > ?)
-      )
-EOT;
-    return $query->whereRaw($where_raw,[date('Y-m-d'),date('Y-m-d')]);
+    return $query->where(function($query){
+        $query->orWhere('enable_end_date', null)->orWhere('enable_end_date','>', date('Y-m-d'));
+      });
   }
+
+  public function scopeSearchRangeDate($query,$from_date,$to_date){
+    //有効期間が指定期間に含まれるもの
+    return $query->where('enable_start_date','<=',date('Y/m/d',strtotime($to_date)))->where(DB::raw('IFNULL(enable_end_date,"9999/12/31")'),'>=',date('Y/m/d',strtotime($from_date)));
+  }
+
   public function scopeSearchWord($query, $word)
   {
     $search_words = $this->get_search_word_array($word);
@@ -349,7 +427,11 @@ EOT;
     if($this->status!='dummy' && $this->status!='new' && $is_send_mail==true){
       $this->delete_mail([], $login_user_id);
     }
-
+    foreach($this->members as $member){
+      if($member->user->details()->role == 'student'){
+        $user_id = $member->user_id;
+      }
+    }
     //事務システム側を先に削除
     $this->cache_delete();
     $this->office_system_api("DELETE");
@@ -362,6 +444,7 @@ EOT;
     }
     */
     $this->delete();
+
   }
   public function change($form){
     $old_item = $this->replicate();
@@ -428,6 +511,12 @@ EOT;
     }
     $this->cache_delete();
     UserCalendarSetting::where('id', $this->id)->update($data);
+
+    if($this->place_floor->place->is_home()==true){
+      //自宅の場合はオンラインタグを付与
+      $form['is_online'] = 'true';
+    }
+
     $tag_names = ['course_type', 'lesson', 'is_online'];
     foreach($tag_names as $tag_name){
       if(!empty($form[$tag_name])){
@@ -463,6 +552,7 @@ EOT;
       }
     }
 
+
     return $this;
   }
   public function memberAdd($user_id, $create_user_id, $remark='', $is_api=true){
@@ -482,7 +572,6 @@ EOT;
           'create_user_id' => $create_user_id,
       ]);
 
-      $member->set_api_lesson_fee();
       if($is_api===true){
         //事務システムにも登録
         $member->office_system_api("POST");
@@ -611,20 +700,6 @@ EOT;
     }
     return true;
   }
-  public function has_enable_member(){
-    $is_enable = true;
-    if($this->work!=9){
-      $is_enable = false;
-      foreach($this->members as $member){
-        if($this->user_id == $member->user_id) continue;
-        if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
-        $is_enable = true;
-
-        break;
-      }
-    }
-    return $is_enable;
-  }
   /**
    * 引数の値で登録時に競合する場合 trueを返す
    */
@@ -699,10 +774,25 @@ EOT;
     }
     */
     if($this->work!=9){
-      $is_enable = $this->has_enable_member();
+      $is_enable = $this->is_enable($date);
       if($is_enable==false){
-        \Log::error("有効なメンバーがいない");
-        return $this->error_response("no_member", "有効なメンバーがいない(id=".$this->id.")");
+        \Log::error("add_calendar/id='.$this->id.'無効な設定");
+        return $this->error_response("disabled setting", "add_calendar/id=".$this->id."無効な設定");
+      }
+      $is_enable=false;
+      $students = $this->get_students();
+      foreach($students as $member){
+        if($this->user_id == $member->user_id) continue;
+        if(!isset($member->user->student)) continue;
+        $_st = $member->user->student->get_status($date);
+        if($_st != 'unsubscribe') {
+          $is_enable=true;
+          break;
+        }
+      } 
+      if($is_enable==false){
+        \Log::error("この予定は全員退会しているため、作成する必要がない");
+        return $this->error_response("all unsubscribe setting", "add_calendar/id=".$this->id."この予定は全員退会しているため、作成する必要がない");        
       }
     }
 
@@ -769,9 +859,15 @@ EOT;
     foreach($this->members as $member){
       if($this->user_id == $member->user_id) continue;
       if(strtotime($member->user->created_at) > strtotime($date)) continue;
-      if($member->user->details()->status != 'regular' && $member->user->details()->status != 'trial') continue;
       //主催者以外を追加
-      $calendar->memberAdd($member->user_id, 1, $default_status);
+      $member = $calendar->memberAdd($member->user_id, 1, $default_status);
+      if(!isset($member)) continue;
+      $_st = $member->user->student->get_status($date);
+      if($_st == 'unsubcribe' || $_st=='recess') {
+        $remark = __('labels.'.$_st).'のためキャンセル';
+        //通知なし、自動キャンセル更新(rootユーザー使用)
+        $member->status_update('cancel', $remark, 1, false, false);
+      }
     }
     if($default_status=='fix'){
       UserCalendarMember::where('calendar_id', $calendar->id)->update(['status' => $default_status]);
@@ -827,7 +923,36 @@ EOT;
   public function get_tuition($user_id){
     $member = $this->members->where('user_id', $user_id)->first();
     $tuition = $member->get_tuition();
-    if(isset($tuition)) return $tuition->tuition;
+    if(isset($tuition)) return $tuition;
     return null;
+  }
+  public function is_passed(){
+    $d = intval(strtotime('now')) - intval(strtotime($this->enable_start_date));
+    $c = 0;
+    if($d < 0) return false;
+    return true;
+  }
+  public function auto_expired(){
+    $students = $this->get_students();
+    $is_enable = false;
+    $d = 0;
+    foreach($students as $member){
+      if(!isset($member->user->student)) continue;
+      //現在の生徒の状態を取得
+      $_st = $member->user->student->get_status();
+      if($_st!='unsubscribe'){
+        //一人でも退会ではない場合、この設定は有効
+        $is_enable = true;
+        continue;
+      }
+      if(empty($member->user->student->unsubscribe_date)) continue;
+      if($d < strtotime($member->user->student->unsubscribe_date)) $d = strtotime($member->user->student->unsubscribe_date);
+    }
+    if($is_enable==false && $d > 0 && $this->end_enable_date != date('Y-m-d', $d)){
+      $this->update(['enable_end_date' => date('Y-m-d', $d)]);
+      $this->send_slack("全員退会によりこのカレンダー設定の有効期限を設定：id=".$this->id.'/enable_end_date='.date('Y-m-d', $d), 'warning', "auto_set_enable_end_date");
+      return true;
+    }
+    return false;
   }
 }

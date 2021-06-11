@@ -2,30 +2,56 @@
   @foreach($fields as $key => $field)
     <td>
     @if($key==="buttons")
-      @foreach($field["button"] as $button)
-        @if($button==="edit")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
-          <i class="fa fa-edit"></i>
-        </a>
-        @elseif($button==="delete")
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
-          <i class="fa fa-trash"></i>
-        </a>
-        @elseif(isset($button['method']))
-        <a href="javascript:void(0);" page_title="{{$domain_name}}{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/{{$button['method']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
-        @elseif(isset($button['action']))
-        <a href="javascript:void(0);" page_title="{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action={{$button['action']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
-        @elseif(isset($button['link']))
-        <a href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
-          {{$button['label']}}
-        </a>
+      @foreach($field["button"] as $key => $button)
+        @if( (isset($button['type']) && $button['type']($row)) || !isset($button['type']) )
+          @if($button==="edit" || $key === "edit")
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.edit')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/edit" role="button" class="btn btn-success btn-sm float-left mr-1 my-1">
+            <i class="fa fa-edit"></i>
+          </a>
+          @elseif($button==="delete")
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{__('labels.delete')}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action=delete" role="button" class="btn btn-danger btn-sm float-left mr-1 my-1">
+            <i class="fa fa-trash"></i>
+          </a>
+          @elseif(isset($button['method']))
+          <a href="javascript:void(0);" page_title="{{$domain_name}}{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}/{{$button['method']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @elseif(isset($button['action']))
+          <a href="javascript:void(0);" page_title="{{$button['label']}}" page_form="dialog" page_url="/{{$domain}}/{{$row['id']}}?action={{$button['action']}}" role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @elseif(isset($button['link']))
+          <a 
+            @if(gettype($button['link'])=='string')
+              href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}"
+            @else
+              href="{{$button['link']($row)}}"
+            @endif
+            role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+            @if(isset($button['icon']))
+            <i class="fa fa-{{$button['icon']}} mr-1"></i>
+            @endif
+            {{$button['label']}}
+          </a>
+          @elseif($button === 'download')
+            @if(!empty($row->s3_url))
+              <a href="{{$row->s3_url}}" role="button" class="btn btn-info btn-sm float-left mr-1 my-1" target="_blank">
+                <i class="fa fa-cloud-download-alt"></i>
+              </a>
+            @endif
+          @endif
         @endif
       @endforeach
     @else
+      @if(isset($field['check_box']) === true)
+        <input class="frm-check-input icheck flat-green bulk_action_check" type="checkbox" name="list_check[]"  value="{{$row['id']}}" >
+      @endif
       @if(isset($field['link']))
         <a
         @if($field['link']==='show')
@@ -40,8 +66,8 @@
             href="{{$field['link']($row)}}"
           @endif
         @endif
-        @if(isset($field['style']))
-          class = "btn btn-sm btn-{{$field['style']}}"
+        @if(isset($field['blank']) && $field['blank'] == true)
+          target=_blank
         @endif
         >
       @endif
@@ -57,7 +83,7 @@
         @endforeach
       @else
         @empty($row[$key])
-          ー
+          ―
         @else
           {{str_limit($row[$key], 50, '...')}}
         @endempty

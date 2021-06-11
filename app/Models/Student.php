@@ -12,15 +12,64 @@ use App\Models\Tuition;
 use App\User;
 use App\Models\UserTag;
 use App\Models\Task;
+use App\Models\TextMaterial;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Common;
 use DB;
 
+/**
+ * App\Models\Student
+ *
+ * @property int $id
+ * @property int $user_id ユーザーID
+ * @property string $status ステータス/　trial=体験 / regular=入会 / recess=休会 / unsubscribe=退会
+ * @property string $name_first 姓
+ * @property string $name_last 名
+ * @property string $kana_first 姓カナ
+ * @property string $kana_last 名カナ
+ * @property int $gender 性別：1=男性 , 2=女性, 0=未設定
+ * @property string|null $birth_day
+ * @property string|null $entry_date 入社日
+ * @property string|null $recess_start_date 休会開始日
+ * @property string|null $recess_end_date 休会終了日
+ * @property string|null $unsubscribe_date 退会日
+ * @property int $create_user_id 作成者
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ChargeStudent[] $chargeStudents
+ * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $create_task
+ * @property-read mixed $created_date
+ * @property-read mixed $kana
+ * @property-read mixed $name
+ * @property-read mixed $updated_date
+ * @property-read \Illuminate\Database\Eloquent\Collection|StudentRelation[] $relations
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Milestone[] $target_milestone
+ * @property-read \Illuminate\Database\Eloquent\Collection|Task[] $target_task
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Trial[] $trials
+ * @property-read \Illuminate\Database\Eloquent\Collection|Tuition[] $tuitions
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Student fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findChargeStudent($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findChild($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findEmail($word, $or = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTag($tag_key, $tag_value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student hasTags($tag_key, $tag_values)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchSubjects($subjects)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Student searchWord($word)
+ * @mixin \Eloquent
+ */
 class Student extends Model
 {
   use Common;
   protected $table = 'common.students';
   protected $guarded = array('id');
+  protected $status_key_name = 'attribute.student_status';
   /**
    * 入力ルール
    */
@@ -35,6 +84,21 @@ class Student extends Model
     return $this->hasMany('App\Models\UserTag', 'user_id', 'user_id');
   }
 
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement','student_id');
+  }
+  public function agreementsByStatuses($statuses){
+    return $this->agreements()->whereIn('status',$statuses);
+  }
+
+  public function enable_agreements_by_type($type){
+    return $this->agreements()->enableByType($type);
+  }  
+  
+  public function prev_agreements(){
+    return $this->agreements()->where('status','commit')->orderby('start_date','desc');
+  }
+  
   /**
    *　プロパティ：年齢
    */
@@ -132,12 +196,13 @@ class Student extends Model
   /**
    *　プロパティ：ステータス名
    */
-  public function status_name(){
-    $status_name = "";
-    if(app()->getLocale()=='en') return $this->status;
+  public function status_name($status=''){
+    if(empty($status)) $status = $this->status;
 
-    if(isset(config('attribute.student_status')[$this->status])){
-      $status_name = config('attribute.student_status')[$this->status];
+    $status_name = "";
+    if(app()->getLocale()=='en') return $status;
+    if(isset(config($this->status_key_name)[$status])){
+      $status_name = config($this->status_key_name)[$status];
     }
     return $status_name;
   }
@@ -166,6 +231,20 @@ class Student extends Model
   public function relations(){
     return $this->hasMany('App\Models\StudentRelation', 'student_id');
   }
+  /**
+   *　リレーション：成績関係
+   */
+  public function school_grades(){
+    return $this->hasMany('App\Models\SchoolGrade', 'student_id');
+  }
+
+  /**
+  * リレーション　テスト
+  */
+  public function exams(){
+    return $this->hasMany('App\Models\Exam','student_id');
+  }
+
   /**
    * 体験申し込み
   */
@@ -211,6 +290,15 @@ EOT;
                   ->where('tag_key', $tag_key)
                   ->whereIn('tag_value', $tag_values);
     });
+  }
+  public function scopeSearchSubjects($query, $subjects){
+    $tags = [];
+    foreach($subjects as $subject){
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 10];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 20];
+      $tags[] = ['tag_key' => $subject.'_level', 'tag_value'=> 30];
+    }
+    return $this->scopeSearchTags($query, $tags);
   }
   /**
    *　スコープ：担当生徒
@@ -333,15 +421,17 @@ EOT;
       'kana_first' => "",
       'birth_day' => "9999-12-31",
       'gender' => "",
-      'entry_date' => null,
-
+      'entry_date' => '',
+      'unsubscribe_date' => '',
     ];
-    $update_form = [];
+    $update_form = [
+    ];
     foreach($update_field as $key => $val){
-      if(isset($form[$key])){
+      if(array_key_exists($key, $form)){
         $update_form[$key] = $form[$key];
       }
     }
+
     $this->update($update_form);
     //1:nタグ
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson', 'student_character', 'student_type'];
@@ -352,11 +442,14 @@ EOT;
       $tag_names[] = 'lesson_'.$lesson_week.'_time';
     }
     foreach($tag_names as $tag_name){
+      if(isset($form[$tag_name])){
+        UserTag::clearTags($this->user_id, $tag_name);
+      }
+    }
+
+    foreach($tag_names as $tag_name){
       if(isset($form[$tag_name]) && count($form[$tag_name])>0){
         UserTag::setTags($this->user_id, $tag_name, $form[$tag_name], $form['create_user_id']);
-      }
-      else {
-        UserTag::clearTags($this->user_id, $tag_name);
       }
     }
     //1:1タグ
@@ -401,6 +494,14 @@ EOT;
     if($this->user->has_tag('student_type', 'fee_free')) return true;
     return false;
   }
+  
+  //TODO 退会・休会に関して履歴がない
+  public function is_active($date=''){
+    //退会日を以前ならactive（次の日からno active)
+    $st = $this->get_status($date);
+    if($st=='unsubscribe' || $st=='recess') return false;
+    return true;
+  }
   public function get_brother(){
     $relations =StudentRelation::where('student_id', $this->id)->get();
     $parent_ids = [];
@@ -416,6 +517,15 @@ EOT;
       }
     }
     return $ret;
+  }
+  public function getNameAttribute(){
+    return $this->name();
+  }
+  public function getKanaAttribute(){
+    return $this->kana();
+  }
+  public function getStatusNameAttribute(){
+    return $this->status_name();
   }
   public function get_charge_subject(){
     //担当科目を取得
@@ -558,9 +668,11 @@ EOT;
       else $_param = explode(',', $filter["search_status"].',');
       $items = $items->findStatuses($_param);
     }
-    else {
+
+    if(!isset($filter["is_include_expired"])){
       $items = $items->enable();
     }
+
     if(isset($filter["search_place"])){
       $_param = "";
       if(gettype($filter["search_place"]) == "array") $_param  = $filter["search_place"];
@@ -765,16 +877,34 @@ EOT;
         'unsubscribe_date' => $start_date,
       ]);
       $this->unsubscribe();
+      $current_charge_teachers = $this->get_current_charge_teachers();
+      foreach($current_charge_teachers as $teacher){
+        $title = '生徒様退会についてのご連絡';
+        $unsubscribe_date = $this->dateweek_format($start_date);
+        if($teacher->user->locale=='en') {
+          $title = 'Contact about student unsubscribe';
+          $unsubscribe_date = $start_date;
+        }
+        $teacher->user->send_mail($title, [
+          'send_to' => 'teacher',
+          'student' => $this,
+          'unsubscribe_date' => $unsubscribe_date,
+        ], 'text', 'unsubscribe_complete');
+      }
+
     }
   }
   public function unsubscribe(){
     if($this->status!='regular') return null;
+    if(empty($this->unsubscribe_date)) return null;
     $user_calendar_members = [];
-
-    //退会以降の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->unsubscribe_date)
+    $unsubscribe_date_tomorrow = date('Y-m-d', strtotime('+1 day '.$this->unsubscribe_date));
+    //退会以降(退会日含まず）の授業予定をキャンセルにする
+    // 20201.01.20 update 通常授業のみキャンセルにする
+    $calendars = UserCalendar::where('start_time', '>=', $unsubscribe_date_tomorrow)
                   ->findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('user_calendar_setting_id' , '>', 0)
                   ->get();
 
     foreach($calendars as $calendar){
@@ -784,7 +914,7 @@ EOT;
         $user_calendar_members[$member->id] = $member;
       }
     }
-    if(strtotime($this->unsubscribe_date) <= strtotime(date('Y-m-d'))){
+    if(strtotime($unsubscribe_date_tomorrow) <= strtotime(date('Y-m-d'))){
       //退会開始日経過＝ステータスを退会
       $this->update(['status' => 'unsubscribe']);
       $this->user->update(['status' => 9]);
@@ -801,6 +931,8 @@ EOT;
     }
   }
   public function recess(){
+    if(empty($this->recess_end_date)) return null;
+    if(empty($this->recess_start_date)) return null;
 
     if(strtotime($this->recess_end_date) < strtotime(date('Y-m-d'))){
       //休会終了の場合
@@ -811,9 +943,10 @@ EOT;
 
     $user_calendar_members = [];
     //休会範囲の授業予定をキャンセルにする
-    $calendars = UserCalendar::rangeDate($this->recess_start_date, $this->recess_end_date)
-                  ->findUser($this->user_id)
+    $calendars = UserCalendar::findUser($this->user_id)
                   ->where('status', 'fix')
+                  ->where('start_time', '>=', $this->recess_start_date)
+                  ->where('start_time', '<=', $this->recess_end_date)
                   ->get();
     foreach($calendars as $calendar){
       foreach($calendar->members as $member){
@@ -946,6 +1079,7 @@ EOT;
       $update_form['recess_end_date'] = null;
       $update_form['unsubscribe_date'] = null;
     }
+    $update_form['entry_date'] = date('Y/m/d');
     $this->update($update_form);
     //カレンダー設定を有効にする
     /*
@@ -1094,12 +1228,91 @@ EOT;
     }
     return false;
   }
+  //TODO:入会金、月会費はマスタがない　マスタができたら消す
+  public function get_monthly_fee(){
+    //契約時の自動計算用
+    //契約を既に持っている場合はその値を返す
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $monthly_fee = $agreements->first()->monthly_fee;
+    }else{
+      $user = $this->user;
+      if($user->has_tag('lesson',1)==true){
+        //塾
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+        //英会話(中国語以外）
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        //幼児教室
+        $monthly_fee = 2000;
+      }elseif($user->has_tag('lesson',2)==true && $user->has_tag('english_talk_lesson','chinese')==true){
+        //中国語
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+        //そろばん
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',3)==true){
+        //ピアノ
+        $monthly_fee = 1500;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+        // ダンス
+        $monthly_fee = 500;
+      }else{
+        $monthly_fee = 0;
+      }
+
+    }
+
+    return $monthly_fee;
+  }
+  public function get_entry_fee(){
+    //契約時の自動計算用
+    //契約を持っていた場合はその値を取る
+    $agreements = $this->prev_agreements;
+    if($agreements->count() > 0){
+      $entry_fee = $agreements->first()->entry_fee;
+    }else{
+      $user = $this->user;
+      if($this->is_first_brother() == false){
+        return 0;
+      }
+      if($user->has_tag('lesson',1) == true ){
+        // 塾
+        $entry_fee = 20000;
+      }elseif($user->has_tag('lesson',2)==true  && $user->has_tag('english_talk_lesson','chinese')==false){
+        // 英会話(中国語以外）
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        // 中国語
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','infant_lesson')==true){
+        // 幼児教室
+        $entry_fee = 15000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','abacus')==true){
+        // そろばん
+        $entry_fee = 10000;
+      }elseif($user->has_tag('lesson',3)==true){
+        // ピアノ
+        $entry_fee = 10000;
+      }elseif($user->has_tag('lesson',4)==true && $user->has_tag('kids_lesson','dance')==true){
+        // ダンス
+        $entry_fee = 5000;
+      }else{
+        //該当しない場合0円
+        $entry_fee = 0;
+      }
+    }
+
+      return $entry_fee;
+  }
+
   public function get_current_charge_teachers(){
     $ret = [];
     $current_schedule = $this->get_current_schedule();
     if(isset($current_schedule)){
       foreach($current_schedule as $c){
-        $ret[$c->user_id] = $c->user->teacher;
+        $ret[$c->user->teacher->id] = $c->user->teacher;
       }
     }
     if(count($ret)==0){
@@ -1109,7 +1322,7 @@ EOT;
         foreach($calendar_settings[$lesson] as $method => $v1){
           foreach($v1 as $w => $_settings){
             foreach($_settings as $setting){
-              $ret[$setting->user_id] = $setting->user->teacher;
+              $ret[$setting->user->teacher->id] = $setting->user->teacher;
             }
           }
         }
@@ -1126,5 +1339,53 @@ EOT;
                     ->where('start_time', '>', $s)
                     ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
     return $c;
+  }
+  public function get_text_materials($search_form){
+    $t1 = $this->user->shared_text_materials();
+    $t2 = TextMaterial::where('target_user_id', $this->user_id)->orWhere('publiced_at', '<=', date('Y-m-d'));
+    if(!empty($search_form['is_publiced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
+    if(!empty($search_form['is_unpubliced_only'])){
+      $t1->where('publiced_at', '<=', date('Y-m-d'));
+      $t2->where('publiced_at', '<=', date('Y-m-d'));
+    }
+    if(!empty($search_form['search_curriculum'])){
+      $t1->searchCurriculums($search_form['search_curriculum']);
+      $t2->searchCurriculums($search_form['search_curriculum']);
+    }
+    if(!empty($search_form['search_keyword'])){
+      $t1->searchWord($search_form['search_keyword']);
+      $t2->searchWord($search_form['search_keyword']);
+    }
+    $t1 = $t1->get();
+    $t2 = $t2->get();
+    if(count($t1)>0 && count($t2)>0) {
+      return $t1->concat($t2);
+    }
+    else if(count($t1)>0){
+      return $t1;
+    }
+    else if(count($t2)>0){
+      return $t2;
+    }
+    return [];
+  }
+  public function get_status($date=''){
+    if(empty($date)) $_d = strtotime('now');
+    else $_d = strtotime($date);
+
+    if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < $_d) return 'unsubscribe';
+    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) && 
+        strtotime($this->recess_start_date) <= $_d && strtotime($this->recess_end_date) >= $_d){
+      return 'recess';
+    }
+    if(!empty($this->entry_date) && strtotime($this->entry_date) <= $_d) return 'regular';
+    return 'trial';
+  }
+  public function get_status_name($date=''){
+    $_st = $this->get_status($date);
+    return $this->status_name($_st);
   }
 }

@@ -12,7 +12,6 @@
         <label>To</label>
         @if($_reply == false)
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <div class="form-group w-100">
           <select name="target_user_id[]" class="form-control select2" width="100%" multiple="multiple" required="true">
             <option value=" "></option>
             @foreach($charge_users as $target_user)
@@ -28,7 +27,6 @@
             <input type="hidden" name="target_user_id[]" value="{{$item->create_user_id}}">
             @endif
           @endif
-        </div>
       </div>
       <div class="col-12 mt-2">
          <div class="form-group">
@@ -42,37 +40,20 @@
            @endif
          </div>
       </div>
-      @if($_reply)
+      @if($_reply == true)
         <div class="col-12">
           <label for="original_message" class="w-100">
             {{__('labels.original_message')}}
              <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#original_message"><i class="fas fa-plus"></i></button>
           </label>
         </div>
-        <div class="collapse" id="original_message">
-          <div class="col-12">
+        <div class="col-12">
+          <div class="collapse" id="original_message">
             {!!nl2br($item->body)!!}
           </div>
         </div>
       @endif
       <input type="hidden" name="type" value="information">
-      <!--
-      種別は用途が曖昧なためいったん出さない
-      <div class ="col-6">
-        <label>{{__('labels.message_type')}}</label>
-        @if($_reply == false)
-        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
-        <select name="type" class="form-control">
-          @foreach($message_type as $key => $value)
-            <option value="{{$key}}">{{$value}}</option>
-          @endforeach
-        </select>
-        @else
-        {{config('attribute.message_type')[$item->type]}}
-        <input type="hidden" name="type" value="{{$item->type}}">
-        @endif
-      </div>
-    -->
       <div class="col-12 mt-2">
         <div class="form-group">
           <label>{{__('labels.body')}}</label>
@@ -81,17 +62,13 @@
           @if($_reply == false)
           <input type="hidden" name="parent_message_id" value="0">
           @else
-          <input type="hidden" name="parent_message_id" value="
-          {{$item->parent_message_id == 0 ? $item->id : $item->parent_message_id}}
-          ">
+          <input type="hidden" name="parent_message_id" value="{{$item->parent_message_id == 0 ? $item->id : $item->parent_message_id}}">
           @endif
         </div>
       </div>
       <div class="col-12 mb-2">
         <input type="file" name="upload_file" class="form-control" placeholder="{{__('labels.file')}}">
       </div>
-    </div>
-    <div class="row">
       <div class="col-6">
         <div class="form-group">
           <button class="btn btn-submit btn-primary form-control" accesskey="{{$domain}}_create">
@@ -100,9 +77,11 @@
         </div>
       </div>
       <div class="col-6">
-        <button type="reset" class="btn btn-secondary btn-block">
-          {{__('labels.cancel')}}
-        </button>
+        <div class="form-group">
+          <button type="reset" class="btn btn-secondary btn-block">
+            {{__('labels.cancel')}}
+          </button>
+        </div>
       </div>
     </div>
   </form>
@@ -111,7 +90,7 @@
 <script>
 $(function(){
 
-  @if($_reply)
+  @if($_reply == true)
     var dataId = '{{$domain}}_create_{{$item->id}}';
   @else
     var dataId = '{{$domain}}_create';

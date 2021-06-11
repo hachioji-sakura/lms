@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\GeneralAttribute;
 use App\Models\MailLog;
+use App\Models\Student;
+use App\Models\UserCalendarMemberSetting;
+use App\Models\Agreement;
 
 trait Common
 {
@@ -74,7 +77,7 @@ trait Common
     $this->update($form);
     return $res;
   }
-  public function create_token($limit_second=86400){
+  public function create_token($limit_second=1728000){
     $controller = new Controller;
     $res = $controller->create_token($limit_second);
     return $res;
@@ -85,7 +88,7 @@ trait Common
     $res = $controller->call_api($req, $url, $method, $data);
     return $res;
   }
-  public function dateweek_format($date, $format = "n月j日"){
+  public function dateweek_format($date, $format = "Y年n月j日"){
     if(empty($date)) return "-";
 
     $date = str_replace('/', '-', $date);
@@ -178,10 +181,12 @@ trait Common
   }
   public function has_tag($key, $val=""){
     if(!isset($this->tags) || $this->tags==null) return null;
-    $tags = $this->tags;
-    foreach($tags as $tag){
-      if(empty($val) && $tag->tag_key==$key) return true;
-      if($tag->tag_key==$key && $tag->tag_value==$val) return true;
+    $tags = $this->tags->where('tag_key', $key);
+    if(empty($val)){
+      if(count($this->tags->where('tag_key', $key)) > 0) return true;
+    }
+    else {
+      if(count($this->tags->where('tag_key', $key)->where('tag_value', $val)) > 0) return true;
     }
     return false;
   }
@@ -245,12 +250,14 @@ trait Common
     if(!isset($tags)) return $query;
     if(!isset($this->tags)) return $query;
     return $query->whereHas('tags', function($query) use ($tags) {
-        $query = $query->where(function($query)use($tags){
+        $query->where(function($query)use($tags){
           foreach($tags as $tag){
-
-            $query = $query->orWhere(function($query)use($tag){
+            $query->orWhere(function($query)use($tag){
               if(!empty($tag["tag_key"]) && !empty($tag["tag_value"])){
-                $query->where('tag_key', $tag["tag_key"])->where('tag_value', $tag["tag_value"]);
+                $query->where('tag_key', $tag["tag_key"]);
+              }
+              if(!empty($tag["tag_key"]) && !empty($tag["tag_value"])){
+                $query->where('tag_value', $tag["tag_value"]);
               }
             });
           }
@@ -266,5 +273,16 @@ trait Common
       $res .= date($format,  strtotime($to));
     }
     return $res;
+  }
+  public function is_online(){
+    if($this->has_tag('is_online', 'true')) return true;
+    return false;
+  }
+  public function is_publiced(){
+    if(!isset($this->publiced_at)) return false;
+    if(empty($this->publiced_at)) return false;
+    if($this->publiced_at=='9999-12-31') return false;
+    if(strtotime($this->publiced_at.' 00:00:00') <= strtotime('now')) return true;
+    return false;
   }
 }

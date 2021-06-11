@@ -18,6 +18,44 @@ use App\User;
 use App\Models\Traits\Common;
 use View;
 use DB;
+/**
+ * App\Models\UserCalendarMember
+ *
+ * @property int $id
+ * @property int $calendar_id カレンダーID
+ * @property int $user_id 対象ユーザーID
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel / 休み: rest / 出席 : presence / 欠席 : absence
+ * @property int $place_floor_sheat_id 座席ID
+ * @property int $schedule_id 事務システムのカレンダーID
+ * @property string|null $rest_contact_date 休み連絡日
+ * @property string|null $exchange_limit_date 振替対象期限
+ * @property string|null $remark 備考
+ * @property int|null $exchanged_member_id 代講元ID
+ * @property string $access_key アクセスキー
+ * @property string|null $rest_type
+ * @property string|null $rest_result 休み判定理由
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read UserCalendar $calendar
+ * @property-read User $create_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $exchanged_calendars
+ * @property-read mixed $created_date
+ * @property-read mixed $status_name
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\PlaceFloorSheat $place_floor_sheat
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestStatuses($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember findRestType($is_not)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchExchangeLimitDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendarMember searchWord($word)
+ * @mixin \Eloquent
+ */
 class UserCalendarMember extends Model
 {
   use Common;
@@ -152,6 +190,9 @@ class UserCalendarMember extends Model
         $is_send_mail = false;
         $is_send_teacher_mail = false;
         break;
+      case "rest":
+        if($this->rest_contact_date == null) $update_form['rest_contact_date'] = date('Y-m-d H:i:s');
+        break;
     }
 
     if($is_update==true){
@@ -164,7 +205,7 @@ class UserCalendarMember extends Model
     }
     $this->calendar->set_endtime_for_single_group();
     //ステータス別のメッセージ文言取得
-    $title = __('messages.mail_title_calendar_'.$status);
+    $title = $this->calendar->schedule_type_name().__('messages.mail_title_calendar_'.$status);
     $type = 'text';
     $template = 'calendar_'.$status;
 
@@ -180,7 +221,7 @@ class UserCalendarMember extends Model
       //代理の場合
       $param['is_proxy'] = true;
     }
-    if($is_send_mail==true){
+    if($is_send_mail==true && $this->is_invalid()!=true){
       //このユーザーにメール送信
       \Log::warning("send_mail(".$title.")");
       $this->user->send_mail($title, $param, $type, $template);
@@ -195,26 +236,19 @@ class UserCalendarMember extends Model
   public function is_recess_or_unsubscribe(){
     $u = $this->user->details();
     if($u->role=='student'){
-      if(!empty($u->recess_start_date) && !empty($u->recess_end_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->recess_start_date) &&
-          strtotime($this->calendar->start_time) < strtotime($u->recess_end_date)){
-            return true;
-        }
-      }
-      if(!empty($u->unsubscribe_date)){
-        if(strtotime($this->calendar->start_time) > strtotime($u->unsubscribe_date)){
-            return true;
-        }
-      }
+      $st = $u->get_status($this->calendar->start_time);
+      if($st=='unsubscribe' || $st=='recess') return true;
     }
     return false;
   }
   public function status_name(){
     $status = $this->status;
+    /* TODO 退会日以降も授業予定となり可能性がある（2021.01.20)
     if($this->is_recess_or_unsubscribe()==true){
       //生徒が退会日以降、休会日範囲の場合、cancel表記
       $status = 'cancel';
     }
+    */
     if(app()->getLocale()=='en') return $status;
     $status_name = "";
     if(isset(config('attribute.calendar_status')[$status])){
@@ -338,15 +372,15 @@ class UserCalendarMember extends Model
     foreach($this->calendar->members as $_member){
       $user = $_member->user->details('students');
       if($user->role==="student"){
-        $student_no = $user->get_tag('student_no')["value"];
+        $student_no = $user->get_tag_value('student_no');
       }
       $user = $_member->user->details('teachers');
       if($user->role==="teacher"){
-        $teacher_no = $user->get_tag('teacher_no')["value"];
+        $teacher_no = $user->get_tag_value('teacher_no');
       }
       $user = $_member->user->details('managers');
       if($user->role==="manager" || $user->role==="staff"){
-        $manager_no = $user->get_tag('manager_no')["value"];
+        $manager_no = $user->get_tag_value('manager_no');
       }
     }
     \Log::warning("事務システムAPI student_no=:".$student_no."\nteacher_no=".$teacher_no);
@@ -489,6 +523,7 @@ class UserCalendarMember extends Model
           break;
       }
     }
+    if(empty($postdata['updateuser'])) $postdata['updateuser'] = 1;
 
     $message = "";
     foreach($postdata as $key => $val){
@@ -577,6 +612,11 @@ class UserCalendarMember extends Model
             //a1での更新の場合、振替期限をクリアする
             $update['exchange_limit_date'] = null;
           }
+          $is_update = true;
+        }
+        //体験授業で、振替期限を設定しようとしていたらnullにする
+        if($this->calendar->trial_id > 0 && (!empty($update['exchange_limit_date']) || !empty($this->exchange_limit_date))){
+          $update['exchange_limit_date'] = null;
           $is_update = true;
         }
         //cancel_reasonは空になる可能性がある
@@ -718,5 +758,73 @@ class UserCalendarMember extends Model
     $item['str_exchange_limit_date'] = $this->dateweek_format($this->exchange_limit_date);
 
     return $this;
+  }
+  //Todo 休み判定（暫定版）
+  //本休み判定は、会計システムリプレース時にoffice_system_apiで対応している更新＋休み判定を置き換える
+  public function _rest_judgement(){
+    if($this->status != 'rest') return null;
+    if($this->user_id == $this->calendar->user_id) return null;
+    if($this->user->get_role() != 'student') return null;
+    //休み2当日の期限＝その予定の前日21時
+    $d = date('Y-m-d 21:00:00', strtotime("-1 day ".$this->calendar->start_time));
+    //振替期限
+    $exchange_limit_date = date('Y-m-d', strtotime("+2 month ".$this->calendar->start_time));
+    //休み２当日かどうかの判定
+    if(strtotime($this->rest_contact_date) > strtotime($d)){
+      //休み２当日
+      return ['rest_type'=>'a2', 'exchange_limit_date' => null, 'rest_result' => '当日', 'description' => $d.'<['.$this->rest_contact_date.']/a2'];
+    }
+    //規定回数かチェック
+    $lesson = $this->calendar->lesson(true);
+    $lesson_week_count = 0;
+    foreach($this->user->get_enable_lesson_calendar_settings() as $lesson=>$d1){
+      foreach($d1 as $method => $d2){
+        foreach($d2 as $week => $d3){
+          foreach($d3 as $i => $d4){
+            //休み判定は部門ごとで独立しているので、同じ部門の通塾設定がいくつあるか取得する
+            if($this->calendar->has_tag('lesson', $lesson) && $d4->is_group()==$this->calendar->is_group()){
+              $lesson_week_count++;
+            }
+          }
+        }
+      }
+    }
+    $from = date('Y-m-1', strtotime($this->calendar->start_time));
+    $to = date('Y-m-1', strtotime('+1 month '.$from));
+    //当月のカレンダーを、休み連絡順にソート
+    $monthly_rests = UserCalendarMember::where('user_id', $this->user_id)->where('status', 'rest')
+              ->whereHas('calendar', function($query) use ($from, $to){
+                $query->where('start_time', '>=', $from)
+                      ->where('start_time', '<', $to);
+              })->orderBy('rest_contact_date')->orderBy('created_at')->get();
+    $rest_count = 0;
+    foreach($monthly_rests as $monthly_rest){
+      if($monthly_rest->id == $this->id){
+        if($rest_count < $lesson_week_count){
+          //規定回数以内の休み
+          //Todo 休み判定（暫定版）
+          //斬作業として、ユーザーごとの休み判定タグを参照し、さらにロジックコントロールする部分が未実装
+          if($this->calendar->is_group()){
+            //グループレッスンの場合：a1 / 無償休み
+            return ['rest_type'=>'a1', 'exchange_limit_date' => null, 'rest_result' => '', 'description' => 'group('.$rest_count.'/'.$lesson_week_count.')/a1'];
+          }
+          else {
+            //マンツーマンの場合： a2 /  有償＋振替あり
+            return ['rest_type'=>'a2', 'exchange_limit_date' => $exchange_limit_date, 'rest_result' => '', 'description' => 'single('.$rest_count.'/'.$lesson_week_count.')/a2+ex'];
+          }
+        }
+        else {
+          //規定回数以上 / 有償＋振替なし
+          return ['rest_type'=>'a2', 'exchange_limit_date' => null, 'rest_result' => '規定回数以上', 'description' => '規定回数以上'];
+        }
+      }
+      $rest_count++;
+    }
+    return null;
+  }
+  public function is_invalid(){
+    //Todo status=cancelはcancel更新時にメールを送信する可能性があるので、is_active=trueにしておく
+    if($this->status=='invalid' || $this->status=='dummy') return true;
+    return false;
   }
 }

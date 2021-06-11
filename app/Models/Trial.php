@@ -11,6 +11,40 @@ use App\Models\UserCalendar;
 use App\Models\Ask;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\Trial
+ *
+ * @property int $id
+ * @property int $student_parent_id 保護者ID
+ * @property int $student_id 生徒ID
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel
+ * @property string|null $schedule_start_hope_date 授業開始希望日
+ * @property string|null $trial_start_time1 体験希望日時（第１希望）
+ * @property string|null $trial_end_time1 体験希望日時（第１希望）
+ * @property string|null $trial_start_time2 体験希望日時（第２希望）
+ * @property string|null $trial_end_time2 体験希望日時（第２希望）
+ * @property string $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $trial_start_time3 体験希望日時（第３希望）
+ * @property string|null $trial_end_time3 体験希望日時（第３希望）
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendar[] $calendars
+ * @property-read mixed $created_date
+ * @property-read mixed $updated_date
+ * @property-read StudentParent $parent
+ * @property-read \App\Models\Student $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TrialTag[] $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarSetting[] $user_calendar_settings
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Trial searchWord($word)
+ * @mixin \Eloquent
+ */
 class Trial extends Model
 {
   use Common;
@@ -50,6 +84,10 @@ class Trial extends Model
   }
   public function student(){
     return $this->belongsTo('App\Models\Student', 'student_id');
+  }
+
+  public function agreements(){
+    return $this->hasMany('App\Models\Agreement', 'trial_id');
   }
   /**
    *　スコープ：ステータス
@@ -157,14 +195,14 @@ class Trial extends Model
     return $ret;
   }
   public function entry_contact_send_date(){
-      return $this->get_ask_created_date('hope_to_join');
+      return $this->get_ask_created_date('hope_to_join','trials');
   }
   public function entry_guidanced_send_date(){
-      return $this->get_ask_created_date('agreement');
+      return $this->get_ask_created_date('agreement','agreements');
   }
-  public function get_ask_created_date($type){
+  public function get_ask_created_date($type,$target_model = 'trials'){
     $a = Ask::where('type', $type)
-      ->where('target_model', 'trials')
+      ->where('target_model', $target_model)
       ->where('target_model_id', $this->id)
       ->first();
       if(!isset($a)) return "-";
@@ -325,8 +363,12 @@ class Trial extends Model
     }
     $this->update($data);
     $tag_names = ['lesson', 'lesson_place', 'kids_lesson', 'english_talk_lesson']; //生徒のuser_tagと共通
-    $tag_names[] ='entry_milestone'; //体験のみのタグ
-    $tag_names[] ='howto'; //体験のみのタグ
+    $trial_tag_names = ['entry_milestone','howto']; //体験のみのタグ 1 key = n tag
+    foreach($trial_tag_names as $trial_tag_name){
+        if(isset($form[$trial_tag_name])) {
+            $tag_names[] = $trial_tag_name;
+        }
+    }
     //通塾可能曜日・時間帯タグ
     $lesson_weeks = config('attribute.lesson_week');
     foreach($lesson_weeks as $lesson_week=>$name){
@@ -341,7 +383,13 @@ class Trial extends Model
       }
     }
     $tag_names = ['piano_level', 'english_teacher', 'lesson_week_count', 'english_talk_course_type', 'kids_lesson_course_type', 'course_minutes'
-      ,'entry_milestone_word','howto_word', 'course_type'];
+    ,'course_type', 'parent_interview'];
+    $trial_tag_names = ['entry_milestone_word','howto_word']; //体験のみのタグ 1 key = 1tag
+    foreach($trial_tag_names as $trial_tag_name){
+      if(isset($form[$trial_tag_name])) {
+        $tag_names[] = $trial_tag_name;
+      }
+    }
     //科目タグ
     $charge_subject_level_items = GeneralAttribute::get_items('charge_subject_level_item');
     foreach($charge_subject_level_items as $charge_subject_level_item){
@@ -351,10 +399,12 @@ class Trial extends Model
       if(empty($form[$tag_name])) $form[$tag_name] = '';
       TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
     }
-    $this->write_comment('trial');
+    $remark = '';
+    if(isset($form['remark'])) $remark = $form['remark'];
+    $this->write_comment('trial', $remark);
     $this->student->profile_update($form);
   }
-  public function remark_full(){
+  public function remark_full($remark=''){
     $tagdata = $this->get_tagdata()['tagdata'];
     $ret = "";
     $is_other = false;
@@ -377,9 +427,10 @@ class Trial extends Model
         }
       }
     }
-    if(!empty($this->remark)){
+    if(empty($remark)) $remark = $this->remark;
+    if(!empty($remark)){
       $ret .= "■".__('labels.other')."\n";
-      $ret .= $this->remark;
+      $ret .= $remark;
     }
     return $ret;
   }
@@ -1295,7 +1346,6 @@ class Trial extends Model
     //保護者にアクセスキーを設定
     \Log::warning("hope_to_join_ask");
 
-    $this->parent->user->update(['access_key' => $access_key]);
     //すでにある場合は一度削除
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'hope_to_join')->delete();
@@ -1304,6 +1354,7 @@ class Trial extends Model
       "type" => "hope_to_join",
       "end_date" => date("Y-m-d", strtotime("30 day")),
       "body" => "",
+      "access_key" => $access_key,
       "target_model" => "trials",
       "target_model_id" => $this->id,
       "create_user_id" => $create_user_id,
@@ -1358,7 +1409,9 @@ class Trial extends Model
         TrialTag::setTag($this->id, $tag_name, $form[$tag_name], $form['create_user_id']);
       }
       $this->student->profile_update($form);
-      $this->write_comment('entry');
+      $remark = '';
+      if(isset($form['remark'])) $remark = $form['remark'];
+      $this->write_comment('entry', $remark);
     }
     Trial::where('id', $this->id)->update($update_data);
     return true;
@@ -1373,7 +1426,7 @@ class Trial extends Model
 
     Ask::where('target_model', 'trials')->where('target_model_id', $this->id)
         ->where('status', 'new')->where('type', 'agreement')->delete();
-
+//askのtarget_modelはagreementsに変更
     $ask = Ask::add([
       "type" => "agreement",
       "end_date" => date("Y-m-d", strtotime("30 day")),
@@ -1401,8 +1454,9 @@ class Trial extends Model
     $daydiff = $seconddiff / (60 * 60 * 24);
     return $daydiff;
   }
-  public function write_comment($type){
-    $remark = $this->remark_full();
+
+  public function write_comment($type, $remark=''){
+    $remark = $this->remark_full($remark);
 
     $type_title = [
       "trial" => "体験申し込み時のご要望",

@@ -43,7 +43,17 @@
               </a>
               --}}
             @endif
-
+            @if(request()->is_include_expired==1)
+            <a class="btn btn-outline-info btn-sm float-left mr-1" href="/{{$domain}}/{{$item->id}}/calendar_settings">
+              <i class="fa fa-calendar-check"></i>
+              <span class="btn-label">{{__('labels.enabled_only')}}</span>
+            </a>
+            @else
+            <a class="btn btn-outline-secondary btn-sm float-left mr-1" href="/{{$domain}}/{{$item->id}}/calendar_settings?is_include_expired=1">
+              <i class="fa fa-calendar-times"></i>
+              <span class="btn-label">{{__('labels.is_include_expired')}}</span>
+            </a>
+            @endif
             <a class="btn btn-default btn-sm float-left" data-toggle="modal" data-target="#filter_form">
               <i class="fa fa-filter"></i>
               <span class="btn-label">{{__('labels.filter')}}</span>
@@ -71,7 +81,7 @@
             @endif
 
             <div class="row p-2 border-bottom
-              @if($setting['status']=='disabled' || $setting->has_enable_member()==false)
+              @if($setting['status']=='disabled' || $setting->is_enable()==false)
               calendar_rest
               @endif
               ">
@@ -109,13 +119,10 @@
                 </small>
                 @endif
               </div>
-              <div class="col-12 text-sm">
-                  設定有効期間：{{$setting->enable_date()}}
-              </div>
               <div class="col-12">
                 @if($setting->work!=9)
-                  @if($setting->has_enable_member()==false)
-                  <small class="ml-1 mr-1 text-sm text-danger">{{__('messages.error_user_calendar_settings_no_member')}}</small>
+                  @if($setting->is_enable()==false)
+                  <small class="ml-1 mr-1 text-sm text-danger">{{__('messages.error_user_calendar_settings_not_during_enabel_date')}}</small>
                   @endif
                   @foreach($setting->members as $member)
                     @if($member->user->details()->role==="student")
@@ -133,6 +140,9 @@
                   </span>
                   @endforeach
                 @endif
+              </div>
+              <div class="col-12 text-sm">
+              <i class="fa fa-cog mr-1"></i>{{__('labels.setting_term')}}:{{$setting->enable_date()}}
               </div>
               <div class="col-12 col-md-6 mt-1">
                 <a href="/{{$domain}}/{{$item['id']}}/schedule?list=history&user_calendar_setting_id={{$setting->id}}" class="text-sm">

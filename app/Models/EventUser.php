@@ -7,6 +7,54 @@ use App\Models\Event;
 use App\Models\EventUserMail;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\EventUser
+ *
+ * @property int $id
+ * @property int $event_id イベントID
+ * @property int $user_id ユーザーID
+ * @property string $status ステータス
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\User $create_user
+ * @property-read Event $event
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $grade
+ * @property-read mixed $importance_label
+ * @property-read mixed $lesson
+ * @property-read mixed $sended_date
+ * @property-read mixed $status_name
+ * @property-read mixed $tags
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read mixed $url
+ * @property-read mixed $user_name
+ * @property-read mixed $user_role
+ * @property-read \Illuminate\Database\Eloquent\Collection|EventUserMail[] $mails
+ * @property-read \App\Models\Manager $manager
+ * @property-read \App\Models\StudentParent $parent
+ * @property-read \App\Models\Student $student
+ * @property-read \App\User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read \App\Models\Teacher $teacher
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventUser newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EventUser newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|EventUser query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @mixin \Eloquent
+ */
 class EventUser extends Milestone
 {
   use Common;
@@ -30,16 +78,16 @@ class EventUser extends Milestone
     return $this->belongsTo('App\User', 'user_id');
   }
   public function student(){
-    return $this->belongsTo('App\Models\Student', 'user_id');
+    return $this->belongsTo('App\Models\Student', 'user_id', 'user_id');
   }
   public function teacher(){
-    return $this->belongsTo('App\Models\Teacher', 'user_id');
+    return $this->belongsTo('App\Models\Teacher', 'user_id', 'user_id');
   }
   public function manager(){
-    return $this->belongsTo('App\Manager', 'user_id');
+    return $this->belongsTo('App\Models\Manager', 'user_id', 'user_id');
   }
   public function parent(){
-    return $this->belongsTo('App\StudentParent', 'user_id');
+    return $this->belongsTo('App\Models\StudentParent', 'user_id', 'user_id');
   }
   public function getUserNameAttribute(){
     return $this->user->details()->name();

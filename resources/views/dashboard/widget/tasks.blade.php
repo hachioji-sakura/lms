@@ -72,7 +72,7 @@
                 <div class="row">
                   <div class="col-10 text-wrap">
                     <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" role="button" style="color: {{$item->type == "homework" ? 'red' : 'sky_blue'}};">
-                        {{$item->full_title}}
+                        {!!nl2br($item->full_title)!!}
                     </a>
                   </div>
                   <div class="col-2">
@@ -89,20 +89,28 @@
                     </small>
                   </div>
                   --}}
+                  <div class="col-12">
                   @if($item->curriculums->count() > 0)
-                    <div class="col-12">
                       <small class="badge badge-primary">
+                        <i class="fa fa-tag"></i>
                         {{$item->curriculums->first()->subjects->first()->name}}
                       </small>
-                    </div>
-                    <div class="col-12">
-                      @foreach($item->curriculums as $curriculum)
-                      <small class="badge badge-primary">
+                    @foreach($item->curriculums as $curriculum)
+                      <small class="badge badge-info">
+                        <i class="fa fa-pencil-alt"></i>
                         {{$curriculum->name}}
                       </small>
-                      @endforeach
-                    </div>
+                    @endforeach
                   @endif
+                  @if($item->textbooks->count() > 0)
+                    @foreach($item->textbooks as $textbook)
+                      <small class="badge badge-secondary">
+                        <i class="fa fa-book"></i>
+                        {{$textbook->name}}
+                      </small>
+                    @endforeach
+                  @endif
+                  </div>
                   <div class="col-12">
                     @if( $item->task_reviews->count() > 0)
                       @foreach($item->task_reviews as $review)
@@ -153,14 +161,17 @@
                   <a href="javascript:void(0)" title="{{__('labels.details')}}" page_form="dialog" page_title="{{__('labels.details')}}" page_url="/tasks/{{$item->id}}/detail_dialog" class="btn btn-secondary btn-sm mr-1" role="button">
                     <i class="fa fa-file-alt"></i>
                   </a>
-                  <a href="javascript:void(0)" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
-                    <i class="fa fa-edit"></i>
-                  </a>
-                @if($item->status != "cancel")
-                  <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
-                    <i class="fa fa-trash"></i>
-                  </a>
-                @endif
+                  @if(  $user->user_id == $item->create_user_id )
+                    <a href="javascript:void(0)" page_title="{{__('labels.details')}}" page_form="dialog" page_url="/tasks/{{$item->id}}/edit" title="{{__('labels.edit')}}" class="btn btn-sm btn-success mr-1" role="button">
+                      <i class="fa fa-edit"></i>
+                    </a>
+
+                    @if($item->status != "cancel")
+                    <a href="javascript:void(0)" title="{{__('labels.delete')}}" page_form="dialog" page_title="{{__('messages.confirm_delete')}}" page_url="/tasks/{{$item->id}}/cancel" class="btn btn-sm btn-danger mr-1" role="button">
+                      <i class="fa fa-trash"></i>
+                    </a>
+                    @endif
+                  @endif
                 </div>
               </div>
             </div>

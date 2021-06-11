@@ -2,13 +2,13 @@
   <div class="form-group">
     <label for="howto" class="w-100">
       当塾をお知りになった方法は何でしょうか？
-      <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+      <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
     </label>
     @foreach($attributes['howto'] as $index => $name)
     <label class="mx-2">
       <input type="checkbox" value="{{ $index }}" name="howto[]" class="icheck flat-green"  onChange="howto_checkbox_change(this)"
       @if($_edit==true && $item->has_tag('howto', $index)==true) checked @endif
-      >{{$name}}
+      required="true">{{$name}}
     </label>
     @endforeach
   </div>

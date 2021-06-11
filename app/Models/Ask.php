@@ -15,6 +15,59 @@ use Illuminate\Support\Facades\Auth;
 use View;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\Ask
+ *
+ * @property int $id
+ * @property string $title 件名
+ * @property string $body 内容
+ * @property string $type 種別
+ * @property int $parent_ask_id 親依頼ID
+ * @property string $status ステータス
+ * @property string|null $from_time_slot 開始時分
+ * @property string|null $to_time_slot 終了時分
+ * @property string|null $start_date 開始日
+ * @property string|null $end_date 終了日
+ * @property string $target_model 更新対象model
+ * @property int $target_model_id 更新対象model.id
+ * @property int $charge_user_id 担当ユーザーID
+ * @property int $target_user_id 対象ユーザーID
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User $charge_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\AskComment[] $comments
+ * @property-read User $create_user
+ * @property-read mixed $create_user_name
+ * @property-read mixed $created_date
+ * @property-read mixed $importance_label
+ * @property-read mixed $target_user_name
+ * @property-read mixed $type_name
+ * @property-read mixed $updated_date
+ * @property-read Ask $parent_ask
+ * @property-read User $target_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask chargeUser($user_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask findTargetModel($target_model, $target_model_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTargetUser($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone findTypes($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask findUser($user_id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask rangeDate($from_date, $to_date = null, $field = 'start_time')
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask rangeEndDate($from_date, $to_date = null, $field = 'start_time')
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone sortCreatedAt($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask sortEnddate($sort)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone status($val)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ask user($user_id)
+ * @mixin \Eloquent
+ */
 class Ask extends Milestone
 {
   use WebCache;
@@ -30,6 +83,11 @@ class Ask extends Milestone
   public function comments(){
     return $this->hasMany('App\Models\AskComment');
   }
+
+  public function getStatusNameAttribute(){
+    return config('attribute.ask_status')[$this->status];
+  }
+
   public function scopeRangeDate($query, $from_date, $to_date=null, $field='start_time')
   {
     //日付検索
@@ -127,6 +185,9 @@ EOT;
     if(!isset($form['body'])){
       $form['body'] = '';
     }
+    if(!isset($form['access_key'])){
+      $form['access_key'] = '';
+    }
     if( $form['type'] == "teacher_change"){
       $emp_ask = new Ask;
       $emp_ask->target_user_id = $form['target_user_id'];
@@ -164,6 +225,7 @@ EOT;
       'status' => $form['status'],
       'title' => $form['title'],
       'body' => $form['body'],
+      'access_key' => $form['access_key'],
       'from_time_slot' => $form['from_time_slot'],
       'to_time_slot' => $form['to_time_slot'],
       'target_model' => $form['target_model'],
@@ -207,6 +269,9 @@ EOT;
     $d = date('n月j日',  strtotime($this->end_date));
     $d .= '('.config('week')[date('w',  strtotime($this->end_date))].')';
     return $d;
+  }
+  public function getTypeNameAttribute(){
+    return $this->type_name();
   }
   public function type_name()
   {
@@ -267,10 +332,17 @@ EOT;
         $target_model_data->hope_to_join($is_commit, $form);
         break;
       case "agreement":
-        $ret = true;
         $is_complete = true;
-        //Trial->agreement()を実行
-        $target_model_data->agreement($is_commit);
+        $this->get_target_model_data()->student->regular();
+      case "agreement_confirm":
+        $ret = true;
+        //agreementを更新
+
+        $agreement = $this->get_target_model_data();
+        $agreement->commit_date =  date('Y/m/d H:i:s');
+        $agreement->status = 'commit';
+        $agreement->save();
+        $agreement->student_parent->user->update(['access_key' => $this->create_token()]);
         break;
       case "rest_cancel":
         $ret = true;
@@ -308,6 +380,7 @@ EOT;
     switch($this->type){
       case "hope_to_join":
       case "agreement":
+      case "agreement_confirm":
       case "recess":
       case "unsubscribe":
         $param['target_model'] = $target_model_data;
@@ -372,17 +445,15 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->target_user->details()["name"];
-    $param["access_key"] = $this->target_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = true;
     return $this->send_mail($this->target_user_id, $title, $param, 'text', $template);
   }
   public function charge_user_mail($param){
     $template = 'ask_'.$this->type.'_'.$this->status;
-    if (!View::exists('emails.'.$template.'_text')) {
+	if (!View::exists('emails.'.$template.'_text')) {
       return false;
-    }
-
-    if($this->charge_user_id==1) return false;
+    }    if($this->charge_user_id==1) return false;
     if($this->charge_user_id==$this->target_user_id) return false;
 
     $title = $this->get_mail_title();
@@ -393,7 +464,7 @@ EOT;
       $param['send_to'] = 'student';
     }
     $param["user_name"] = $this->charge_user->details()["name"];
-    $param["access_key"] = $this->charge_user->access_key;
+    $param["access_key"] = $this->access_key;
     $param['is_send_to_target_user'] = false;
 
     return $this->send_mail($this->charge_user_id, $title, $param, 'text', $template);
@@ -479,6 +550,10 @@ EOT;
         break;
       case 'user_calendars':
         $ret = UserCalendar::where('id', $this->target_model_id)->first();
+        break;
+      case 'agreements':
+      case 'agreement_confirm':
+        $ret = Agreement::where('id', $this->target_model_id)->first();
         break;
     }
     return $ret;

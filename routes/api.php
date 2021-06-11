@@ -19,5 +19,6 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
 
   Route::group(['middleware' => ['api']], function () {
       Route::post('info_mail_reply', 'MailLogController@info_mail_reply');
+      Route::get('curriculums', 'CurriculumController@api_index');
   });
 });

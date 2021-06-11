@@ -18,6 +18,71 @@ use DB;
 use App\Models\Traits\Common;
 use App\Models\Traits\WebCache;
 
+/**
+ * App\Models\UserCalendar
+ *
+ * @property int $id
+ * @property string|null $start_time 開始日時
+ * @property string|null $end_time 終了日時
+ * @property int $user_calendar_setting_id カレンダー設定ID
+ * @property int $trial_id 体験授業予定id
+ * @property int $user_id 主催者 / 基本的に講師
+ * @property int $lecture_id レクチャーID
+ * @property string $teaching_type 授業予定タイプ：trial=体験、exchange=振替、regular=通常、add=追加、season=期間講習, trainng=演習
+ * @property int $course_minutes 授業時間
+ * @property string $status 新規登録:new / 確定:fix / キャンセル:cancel / 休み: rest / 出席 : presence / 欠席 : absence
+ * @property int $place_floor_id 場所フロアID
+ * @property string|null $checked_at 月次確認日付
+ * @property int $exchanged_calendar_id 振替元カレンダーID
+ * @property string $work 職務種別
+ * @property string $remark 備考
+ * @property int $create_user_id 作成ユーザーID
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read User $create_user
+ * @property-read UserCalendar $exchanged_calendar
+ * @property-read mixed $course
+ * @property-read mixed $created_date
+ * @property-read mixed $date
+ * @property-read mixed $datetime
+ * @property-read mixed $dateweek
+ * @property-read mixed $lesson
+ * @property-read mixed $place_floor_name
+ * @property-read mixed $schedule_type_name
+ * @property-read mixed $status_name
+ * @property-read mixed $student_name
+ * @property-read mixed $subject
+ * @property-read mixed $teaching_type_name
+ * @property-read mixed $timezone
+ * @property-read mixed $updated_date
+ * @property-read mixed $user_name
+ * @property-read mixed $work_name
+ * @property-read Lecture $lecture
+ * @property-read \Illuminate\Database\Eloquent\Collection|UserCalendarMember[] $members
+ * @property-read PlaceFloor $place_floor
+ * @property-read \App\Models\UserCalendarSetting $setting
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserCalendarTag[] $tags
+ * @property-read Trial $trial
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findExchangeTarget($user_id = 0, $lesson = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findPlaces($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findStatuses($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findTeachingType($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findUser($user_id, $deactive_status = 'invalid')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar findWorks($vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar hiddenFilter()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar pagenation($page, $line)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar rangeDate($from_date, $to_date = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchDate($from_date, $to_date)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchTags($tags)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar searchWord($word)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserCalendar sortStarttime($sort)
+ * @mixin \Eloquent
+ */
 class UserCalendar extends Model
 {
   use Common;
@@ -36,7 +101,12 @@ class UserCalendar extends Model
   public function register_mail_title(){
     $trial = "";
     if($this->trial_id > 0){
-      $trial ='['. __('labels.trial_lesson').']';
+      if($this->is_teaching()==true){
+        $trial ='['. __('labels.trial_lesson').']';
+      }
+      else {
+        $trial ='['. $this->schedule_type_name().']';
+      }
     }
     $title = __('messages.info_calendar_add', ['trial' => $trial]);
     return __('messages.mail_title_until_today').$title;
@@ -247,8 +317,7 @@ EOT;
   }
   public function get_access_member(){
     $ret = [];
-    $user = Auth::user();
-    if(!isset($user)) {
+    $user = Auth::user();    if(!isset($user)) {
       return $ret;
     }
     $user = $user->details();
@@ -301,10 +370,6 @@ EOT;
     $c = 0;
     if($d < 0) return false;
     return true;
-  }
-  public function is_online(){
-    if($this->has_tag('is_online', 'true')) return true;
-    return false;
   }
   //振替対象の場合:true
   public function is_exchange_target(){
@@ -461,13 +526,17 @@ EOT;
     if(isset(config('attribute.calendar_status')[$this->status])){
       $status_name = config('attribute.calendar_status')[$this->status];
     }
-    switch($this->status){
-      case "fix":
-        if($this->work==9) return "勤務予定";
-      case "absence":
-        if($this->work==9) return "欠勤";
-      case "presence":
-      if($this->work==9) return "出勤";
+
+    if($this->is_teaching()==false){
+      switch($this->status){
+        case "fix":
+          if($this->work==9) return "勤務予定";
+          else return $this->schedule_type_name().__('labels.task_schedule');
+        case "absence":
+          if($this->work==9) return "欠勤";
+        case "presence":
+        if($this->work==9) return "出勤";
+      }  
     }
     return $status_name;
   }
@@ -546,7 +615,7 @@ EOT;
     return $this->members->where('user_id', $user_id)->first();
   }
   public function datetime(){
-    return $this->dateweek().' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
+    return $this->dateweek_format($this->start_time, 'Y年n月j日').' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
   public function getStartAttribute(){
     return $this->start_time;
@@ -583,6 +652,9 @@ EOT;
   }
   public function getLessonAttribute($user_id){
     return $this->lesson();
+  }
+  public function getLessonIdAttribute(){
+    return $this->get_attribute('lesson',true);
   }
   public function getWorkNameAttribute(){
     return $this->work();
@@ -841,6 +913,7 @@ EOT;
     foreach($update_fields as $field){
       if($field=='status') continue;
       if(!isset($form[$field])) continue;
+      if(empty($form[$field]) && ($field=='start_time' || $field=='end_time')) continue;
       $data[$field] = $form[$field];
     }
     if(isset($data['start_time']) && isset($data['end_time'])){
@@ -858,6 +931,10 @@ EOT;
     if($this->trial_id > 0 && isset($form['status'])){
       //体験授業予定の場合、体験授業のステータスも更新する
       Trial::where('id', $this->trial_id)->first()->update(['status' => $status]);
+    }
+    if($this->place_floor->place->is_home()==true){
+      //自宅の場合はオンラインタグを付与
+      $form['is_online'] = 'true';
     }
     //TODO 将来的にsubject_exprに関するロジックは不要
     $tag_names = ['matching_decide_word', 'course_type', 'lesson', 'subject_expr', 'is_online'];
@@ -906,10 +983,11 @@ EOT;
       if(isset($target_user)){
         //休会の場合、生成されるケースがある場合は、キャンセル扱いで入れる
         $target_user = $target_user->details();
-        if($target_user->status=='recess'){
+        $user_status = $target_user->get_status($this->start_time);
+        if($user_status=='recess'){
           $status = 'cancel';
         }
-        if($target_user->status=='unsubscribe'){
+        if($user_status=='unsubscribe'){
           //退会時は登録しない
           return null;
         }
@@ -963,6 +1041,7 @@ EOT;
       case 10:
         return true;
     }
+    if($this->trial_id > 0 && empty($this->work)) return true;
     return false;
   }
   public function is_conflict($start_time, $end_time, $place_id=0, $place_floor_id=0){
@@ -1043,6 +1122,7 @@ EOT;
     $is_send_mail = false;
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('teachers');
       if($u->role != "teacher") continue;
       $param['user_name'] = $u->name();
@@ -1059,6 +1139,7 @@ EOT;
     $param['item'] = UserCalendar::where('id', $this->id)->first()->details(1);
     foreach($this->members as $member){
       if(!isset($member->user)) continue;
+      if($member->is_invalid()==true) continue;
       $u = $member->user->details('students');
       if($u->role != "student") continue;
       //休み予定の場合送信しない
@@ -1215,7 +1296,9 @@ EOT;
       if($member->status=='cancel') continue;
       if($member->status=='fix' || $this->is_last_status($member->status)==true){
         $m = $member->user->details();
-        if($m->status!='unsubscribe' && $m->status!='recess') $active_students[] = $member;
+        if($m->is_active($this->start_time) == true) {
+          $active_students[] = $member;
+        }
       }
     }
     if(empty($end_time)) $end_time = $this->end_time;
@@ -1282,17 +1365,29 @@ EOT;
   }
 
   //TODO 事務システムリプレース後は不要
-    public function unk_schedule_update($schedule_ids, $teacher_id){
-      DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
-        'teacher_id' => $teacher_id,
-      ]);
-    }
+  public function unk_schedule_update($schedule_ids, $teacher_id){
+    DB::table('hachiojisakura_calendar.tbl_schedule_onetime')->whereIn('id',$schedule_ids)->update([
+      'teacher_id' => $teacher_id,
+    ]);
+  }
 
   public function cache_delete(){
     $this->delete_user_cache($this->user_id);
     foreach($this->members as $member){
       $this->delete_user_cache($member->user_id);
     }
+  }
+  public function is_first_place(){
+    $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
+    $c = self::where('user_id', $this->user_id)
+                    ->whereIn('place_floor_id', $place_floor_ids)
+                    ->where('id', '!=', $this->id)
+                    ->whereIn('status', ['fix', 'presence'])->first();
+    if($c==null){
+      return true;
+    }
+    return false;
+
   }
   public function registable_status(){
     $ret = '';
@@ -1330,5 +1425,4 @@ EOT;
 
     return "";
   }
-
 }

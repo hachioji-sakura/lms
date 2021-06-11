@@ -1,3 +1,8 @@
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="詳細" page_form="dialog" page_url="/asks/{{$ask->id}}" role="button" class="btn btn-default btn-sm">
+  <i class="fa fa-file mr-1"></i>
+  詳細
+</a>
+
 @if($user->role==="teacher" || $user->role==="manager" )
   @if($ask["status"]==="new" && ($ask["charge_user_id"]==$item->user_id || $domain=='managers'))
   {{-- 講師予定確認済み --}}
@@ -33,4 +38,18 @@
   <i class="fa fa-trash mr-1"></i>
   削除
 </a>
+@endif
+
+@if($user->role==="manager" )
+@if($ask->type=='unsubscribe' && $ask->status=='new')
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="退会予定日変更" page_form="dialog" page_url="/asks/{{$ask->id}}/edit_date" role="button" class="btn btn-success btn-sm">
+  <i class="fa fa-edit mr-1"></i>
+  退会予定日変更
+</a>
+@elseif($ask->type=='recess' && $ask->status=='new')
+<a title="{{$ask["id"]}}" href="javascript:void(0);" page_title="休会予定期間変更" page_form="dialog" page_url="/asks/{{$ask->id}}/edit_date" role="button" class="btn btn-success btn-sm">
+  <i class="fa fa-edit mr-1"></i>
+  休会予定期間変更
+</a>
+@endif
 @endif

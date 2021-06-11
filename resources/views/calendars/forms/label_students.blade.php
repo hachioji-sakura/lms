@@ -2,7 +2,9 @@
   @if($member->user->details()->role!="student") @continue @endif
 
   @if($user->role=="manager" || $user->role=="teacher")
-  <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}">
+  <a target="_blank" alt="student_name" href="/students/{{$member->user->details('students')->id}}" class="text-{{config('status_style')[$member->status]}}"
+
+  >
   @else
   <span>
   @endif
@@ -26,6 +28,11 @@
       @endif
     @endif
   @if($user->role=="manager" || $user->role=="teacher")
+    @if($member->user->student->get_status($item->start_time)!='regular')
+      <small title="{{$member->remark}}" 
+        class="badge badge-{{config('status_style')[$member->user->student->get_status($item->start_time)]}} mt-1" 
+        >{{$member->user->student->get_status_name($item->start_time)}}</small>
+    @endif
   </a>
   @else
   </span>

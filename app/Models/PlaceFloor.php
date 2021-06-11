@@ -6,6 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\UserCalendar;
 use App\Models\Traits\Common;
 
+/**
+ * App\Models\PlaceFloor
+ *
+ * @property int $id
+ * @property int $place_id 所在地ID
+ * @property string $name フロア名
+ * @property string|null $name_en 名称（英語）
+ * @property int $sort_no 表示順
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $created_date
+ * @property-read mixed $is_use
+ * @property-read mixed $sheat_count
+ * @property-read mixed $updated_date
+ * @property-read \App\Models\Place $place
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PlaceFloorSheat[] $sheats
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloor fieldWhereIn($field, $vals, $is_not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloor newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloor newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloor query()
+ * @method static \Illuminate\Database\Eloquent\Builder|PlaceFloor searchTags($tags)
+ * @mixin \Eloquent
+ */
 class PlaceFloor extends Model
 {
   use common;
