@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
-//TODO TrialとLessonRequest共通化
-//use App\Models\LessonRequest;
 use App\Models\Trial;
 use App\Models\Tuition;
 use App\Models\StudentParent;
@@ -104,8 +102,6 @@ class TrialController extends UserCalendarController
   ];
 
   public function model(){
-    //TODO TrialとLessonRequest共通化
-    //return LessonRequest::query();
     return Trial::query();
   }
   /**
@@ -192,7 +188,7 @@ class TrialController extends UserCalendarController
     }
     $ret = $this->get_common_param($request);
     if(is_numeric($id) && $id > 0){
-      $item = $this->model()->where('id','=',$id)->first();
+      $item = Trial::where('id','=',$id)->first();
       if(!isset($item)){
         abort(404);
       }
@@ -211,7 +207,7 @@ class TrialController extends UserCalendarController
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
-        $ret[$list.'_count'] = $this->model()->where('type', 'trial')->findStatuses($_status)->count();
+        $ret[$list.'_count'] = Trial::where('type', 'trial')->findStatuses($_status)->count();
       }
     }
     return $ret;
@@ -326,7 +322,7 @@ class TrialController extends UserCalendarController
     if(!$request->has('student_parent_id')) abort(403);
     dd(1);
     $param = $this->get_common_param($request);
-    $item = $this->model()->where('id', $id)->first();
+    $item = Trial::where('id', $id)->first();
     if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id')){
       abort(403);
     }
@@ -394,7 +390,7 @@ class TrialController extends UserCalendarController
        if(!empty($form['student2_name_last'])){
          $form['course_type'] = 'family';
        }
-       $item = $this->model()->entry($form);
+       $item = Trial::entry($form);
        $res = $this->api_response(200, '', '', $item);
      if($this->is_success_response($res)){
        $u = $res['data']->parent->user;
@@ -455,7 +451,7 @@ class TrialController extends UserCalendarController
        $form = $request->all();
        $form['create_user_id'] = $user->user_id;
        //カレンダーステータス変更
-       $trial = $this->model()->where('id', $id)->first();
+       $trial = Trial::where('id', $id)->first();
        $res = $trial->trial_to_calendar($form);
        return $res;
      }, '体験授業ステータス更新', __FILE__, __FUNCTION__, __LINE__ );
@@ -553,7 +549,7 @@ class TrialController extends UserCalendarController
       $user = $this->login_details($request);
       $form['create_user_id'] = $user->user_id;
       //カレンダーステータス変更
-      $trial = $this->model()->where('id', $id)->first();
+      $trial = Trial::where('id', $id)->first();
       $res = $trial->to_calendar_setting($form, $form['calendar_id']);
       return $res;
     }, '通常授業予定設定', __FILE__, __FUNCTION__, __LINE__ );
@@ -561,7 +557,7 @@ class TrialController extends UserCalendarController
   }
 
    public function ask_hope_to_join(Request $request, $id){
-     $trial = $this->model()->where('id', $id)->first();
+     $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
 
      $param = [
@@ -588,7 +584,7 @@ class TrialController extends UserCalendarController
    }
 
    public function ask_candidate(Request $request, $id){
-     $trial = $this->model()->where('id', $id)->first();
+     $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
 
      $param = [
@@ -609,7 +605,7 @@ class TrialController extends UserCalendarController
      $param['access_key'] = $access_key;
 
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-      $this->model()->where('id', $id)->update(['status' => 'reapply']);
+      Trial::where('id', $id)->update(['status' => 'reapply']);
        $p = StudentParent::where('id', $param['item']->student_parent_id)->first();
        $p->user->update(['access_key' => $access_key]);
        return $this->api_response(200, '', '', []);
@@ -625,7 +621,7 @@ class TrialController extends UserCalendarController
    }
 
    public function candidate_date_edit(Request $request, $id){
-     $trial = $this->model()->where('id', $id)->first();
+     $trial = Trial::where('id', $id)->first();
      if(!isset($trial)) abort(404);
      if(!$request->has('key')) abort(404);
      $access_key = $request->key;
@@ -654,7 +650,7 @@ class TrialController extends UserCalendarController
 
      $access_key = $this->create_token(2678400);
      $param = $this->get_common_param($request, false);
-     $param['item'] = $this->model()->where('id', $id)->first();
+     $param['item'] = Trial::where('id', $id)->first();
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
        $form = $this->create_form($request);
        $param['item']->update([
@@ -688,7 +684,7 @@ class TrialController extends UserCalendarController
        $form = $this->create_form($request);
        $user = $this->login_details($request);
        $form['create_user_id'] = $user->user_id;
-       $item = $this->model()->where('id', $id)->first();
+       $item = Trial::where('id', $id)->first();
        $item->trial_update($form);
        if($item->status=='reapply'){
          $item->update(['status' => 'confirm']);
@@ -699,7 +695,7 @@ class TrialController extends UserCalendarController
    }
    public function admission_mail(Request $request, $id){
     $access_key = '';
-    $trial = $this->model()->where('id', $id)->first();
+    $trial = Trial::where('id', $id)->first();
     $is_money_edit = true;
     if(!isset($trial)) abort(404);
     $this_month_date = date('Y-m-1');
@@ -743,7 +739,7 @@ class TrialController extends UserCalendarController
     TODO 季節講習の請求部分どうするか？
     $res = $this->transaction($request, function() use ($request, $id){
 
-      $trial = $this->model()->where('id', $id)->first();
+      $trial = Trial::where('id', $id)->first();
       //受講料初期設定
       foreach($trial->get_calendar_settings() as $setting){
         if($request->has($setting->id.'_tuition')){
@@ -764,7 +760,7 @@ class TrialController extends UserCalendarController
           $statement->save();
         }
       }
-      $trial = $this->model()->find($id);//details()後だとupdate通らない
+      $trial = Trial::find($id);//details()後だとupdate通らない
       $agreement = Agreement::find($request->get('agreements')['id']);
       $ask = $agreement->agreement_ask($param['user']->user_id, $access_key, 'agreement');
       $trial->update(['status' => 'entry_guidanced']);
@@ -774,7 +770,7 @@ class TrialController extends UserCalendarController
      TODO 季節講習の請求部分どうするか？
     if($this->is_success_response($res)){
       $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-        $trial = $this->model()->where('id', $id)->first();
+        $trial = Trial::where('id', $id)->first();
         $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
         return $this->api_response(200, '', '', $ask);
       }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
@@ -790,7 +786,7 @@ class TrialController extends UserCalendarController
   public function cancel(Request $request,$id){
     $param = $this->get_param($request,$id);
     $res = $this->transaction($request, function() use ($request, $id, $param){
-      $trial = $this->model()->where('id', $id)->first();
+      $trial = Trial::where('id', $id)->first();
       $trial->update(['status'=>'cancel']);
       return $this->api_response(200, '', '', $trial);
     }, __('labels.trial_lesson').__('labels.info_deleted'), __FILE__, __FUNCTION__, __LINE__ );
