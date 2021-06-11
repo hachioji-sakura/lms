@@ -726,9 +726,12 @@ class UserCalendarController extends MilestoneController
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
+      /*
+      TODO 登録可能か警告表示
       if(!empty($param['item']->registable_status())){
         $param['warning_message'] = __('messages.'.$param['item']->registable_status());
       }
+      */
       return view($this->domain.'.page', $form)->with($param);
     }
     /**
