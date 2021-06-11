@@ -490,4 +490,5 @@ return [
   'bulk' => 'Bulk',
   'school_textbooks' => 'Textbooks for School',
   'is_include_expired' => 'include expired',
+  'department' => 'Department',
 ];

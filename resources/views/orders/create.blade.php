@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <div class="col-12 mt-2">
+      <div class="col-6 mt-2">
         <label>{{__('labels.place')}}</label>
         <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
         <select name="place_id" class="form-control select2" width="100%">
@@ -77,11 +77,25 @@
           @endforeach
         </select>
       </div>
+      <div class="col-6 mt-2">
+        <label>{{__('labels.lesson')}}</label>
+        <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+        <div class="input-group">
+          @foreach(config('attribute.lesson') as $key => $val)
+          <div class="form-check">
+            <label class="form-check-label" for="type_{{$key}}">
+              <input class="frm-check-input icheck flat-green" type="radio" name="lesson_id" id="type_{{$key}}" value="{{$key}}" required="true" {{$_edit && $item->lesson_id == $key ? 'checked': ''}} >
+              {{$val}}
+            </label>
+          </div>
+          @endforeach
+        </div>
+      </div>
       <div class="col-12 mt-2">
         <label>{{__('labels.remark')}}</label>
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
         <div class="input-group mb-3">
-          <textarea name="remarks" class="form-control" maxlength=1000 >{{$_edit ? $item->remark : ''}}</textarea>
+          <textarea name="remarks" class="form-control" maxlength=1000 >{{$_edit ? $item->remarks : ''}}</textarea>
         </div>
       </div>
     </div>
