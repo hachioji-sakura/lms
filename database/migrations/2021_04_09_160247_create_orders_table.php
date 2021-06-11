@@ -24,6 +24,7 @@ class CreateOrdersTable extends Migration
             $table->integer('unit_price')->comment('単価');
             $table->string('item_type')->comment('品タイプ');
             $table->integer('place_id')->nullable(true)->comment('場所ID');
+            $table->integer('lesson_id')->nullable(true)->comment('部門ID');
             $table->string('orderable_type')->nullable(true)->comment('発注リレーションモデル');
             $table->integer('orderable_id')->nullable(true)->comment('発注リレーションID');
             $table->string('remarks',10000)->nullable(true)->comment('備考');

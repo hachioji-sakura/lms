@@ -31,6 +31,7 @@ class Order extends Model
       "unit_price",
       "item_type",
       "place_id",
+      "lesson_id",
       "orderable_id",
       "orderable_type",
       "remarks",
@@ -66,6 +67,17 @@ class Order extends Model
 
     public function getOrderedUserNameAttribute(){
       return $this->ordered_user->details()->name();
+    }
+
+    public function getPlaceNameAttribute(){
+      return $this->place->name;
+    }
+
+    public function getLessonNameAttribute(){
+      if(empty($this->lesson_id)){
+        return null;
+      }
+      return config('attribute.lesson')[$this->lesson_id];
     }
 
     public function status_update($status){

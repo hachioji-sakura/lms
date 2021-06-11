@@ -70,10 +70,11 @@ class OrderController extends MilestoneController
           "target_user_id" => $request->target_user_id,
           "ordered_user_id" => Auth::user()->id,
           "place_id" => $request->place_id,
+          "lesson_id" => $request->lesson_id,
           "amount" => $request->amount,
           "unit_price" => $request->unit_price,
           "item_type" => $request->item_type,
-          "remark" => $request->remark,
+          "remarks" => $request->remarks,
        ];
      }
 
@@ -107,6 +108,12 @@ class OrderController extends MilestoneController
          'ordered_user_name' => [
            'label' => __('labels.ordered_user')
          ],
+         'place_name' => [
+           'label' => __('labels.place')
+         ],
+         'lesson_name' => [
+           'label' =>__('labels.department')
+         ]
        ];
      }
 
