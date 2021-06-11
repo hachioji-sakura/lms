@@ -24,7 +24,7 @@
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>
-          <small title="id={{$item["id"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
+          <small title="id={{$item["id"]}},work={{$item["work"]}}" class="badge badge-{{config('status_style')[$item['status']]}} mt-1 mr-1">{{$item[$key]}}</small>
         @elseif($key==="place_floor_name")
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}

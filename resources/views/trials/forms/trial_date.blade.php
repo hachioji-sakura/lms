@@ -40,9 +40,9 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
           </div>
-          <input type="text" name="trial_date{{$i}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d', strtotime('+3 day'))}}"
+          <input type="text" name="trial_date{{($i+1)}}" class="form-control mr-2" required="true" uitype="datepicker" placeholder="例：{{date('Y/m/d', strtotime('+3 day'))}}"
           @if($_edit===true)
-           value="{{date('Y/m/d', strtotime($item["trial_start_time".$i]))}}"
+           value="{{date('Y/m/d', strtotime($item["trial_start_time".($i+1)]))}}"
           @else
            minvalue="{{date('Y/m/d', strtotime('+3 day'))}}"
            @if($i>1)

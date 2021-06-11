@@ -173,6 +173,9 @@ class Trial extends Model
     return true;
   }
   public function is_request_lesson_complete(){
+    return $this->is_trial_lesson_complete();
+  }
+  public function is_trial_lesson_complete(){
       switch($this->status){
         case "confirm":
         case "fix":

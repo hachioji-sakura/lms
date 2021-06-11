@@ -93,10 +93,8 @@ class MailLog extends Model
     $dst = [];
     $body = htmlentities($body, ENT_QUOTES, 'UTF-8');
     foreach($param as $key=>$val){
-      \Log::warning($key."=".gettype($val));
       if(gettype($val)=='array') continue;
       if(gettype($val)!='string' && gettype($val) !='integer' && gettype($val)!='double') continue;
-      \Log::warning($key."=".$val);
       $src[] = '#'.$key.'#';
       $dst[] = $val;
     }

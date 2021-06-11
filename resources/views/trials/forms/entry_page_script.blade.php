@@ -7,7 +7,7 @@ $(function(){
   util.removeLocalData(page_id);
   @else
   var form_data = util.getLocalData(page_id);
-  if(util.isEmpty(form_data) || util.isEmpty(form_data['url']) || form_data['url']!=location.href){
+  if(util.isEmpty(form_data) || (util.isEmpty(form_data['url']) && form_data['url']!=location.href)){
     form_data = null;
     util.removeLocalData(page_id);
   }
