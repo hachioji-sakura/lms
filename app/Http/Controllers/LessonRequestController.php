@@ -240,8 +240,8 @@ class LessonRequestController extends UserCalendarController
             abort(404);
           }
         }
-        else if($event_user->acces_key!=$event_user->access_key) {
-          abort(404);
+        else if($request->get('access_key')!=$event_user->access_key) {
+          abort(400);
         }
       }
 

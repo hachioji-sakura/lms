@@ -22,6 +22,7 @@
 
 @section('content')
 <div class="direct-chat-msg">
+
   @if($is_already_data == true)
     <h4 class="bg-success p-3 text-sm">
       授業をお申し込みいただきまして、
@@ -30,6 +31,14 @@
       ２営業日以内に、当塾よりご連絡いたしますので、
       何卒宜しくお願い致します。
     </h4>
+    <div class="row">
+      <div class="col-6 p-3 font-weight-bold" >イベント名</div>
+      <div class="col-6 p-3">{{$event->title}}</div>
+      <div class="col-6 p-3 font-weight-bold" >実施期間</div>
+      <div class="col-6 p-3">{{$event->event_term}}</div>
+      <div class="col-6 p-3 font-weight-bold" >回答期間</div>
+      <div class="col-6 p-3">{{$event->response_term}}</div>
+      </div>
     <div class="row">
       <div class="col-12 mb-1">
         <a href="javascript:void(0);" page_form="dialog" page_title="お申し込み内容の確認" page_url="/lesson_requests/{{$lesson_request->id}}?event_user_id={{$event_user_id}}&access_key={{$access_key}}" role="button" class="btn-next btn btn-secondary btn-block float-left mr-1">
@@ -125,7 +134,7 @@
           </div>
         </div>
         <div class="carousel-item" id="confirm_form">
-          @component($domain.'.season_lesson.confirm_form', ['attributes' => $attributes, 'is_trial' => true]) @endcomponent
+          @component('lesson_requests.season_lesson.confirm_form', ['attributes' => $attributes, 'is_trial' => true]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

@@ -1712,7 +1712,7 @@ class StudentController extends UserController
     else if($this->domain=='teachers'){
       $event = $event->forTeacher();
     }
-    $event = $event->first();
+    $event = $event->orderBy('event_from_date', 'desc')->first();
     if(isset($user) && $user->role=='manager'){
       if(isset($event)){
         $event_user = $event->event_users->where('user_id', $param['item']->user_id)->sortByDesc('id')->first();
@@ -1735,7 +1735,7 @@ class StudentController extends UserController
     $param['is_already_data'] = false;
 
     if(isset($param['item']->user->enable_lesson_requests)){
-      $param['lesson_request'] = $param['item']->user->enable_lesson_requests->sortByDesc('id')->first();
+      $param['lesson_request'] = $param['item']->user->enable_lesson_requests->where('event_id', $event_user->event_id)->sortByDesc('id')->first();
       if($param['lesson_request'] != null){
         $param['is_already_data'] = true;
       }

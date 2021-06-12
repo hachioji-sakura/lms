@@ -1219,12 +1219,13 @@ EOT;
   }
   public function has_lesson_request(){
     //TODO debug
-    return true;
     foreach($this->user->enable_lesson_requests as $l){
       if($l->status == 'new' && $l->event->is_need_request()==true && $l->event->is_answerable()==true) return true;
     }
-    foreach($this->user->event_users as $event_user){
-      if($event_user->event->is_need_request()==true && $event_user->event->is_answerable()==true) return true;
+    if(isset($this->user->event_users)){
+      foreach($this->user->event_users as $event_user){
+        if($event_user->event->is_need_request()==true && $event_user->event->is_answerable()==true) return true;
+      }
     }
     return false;
   }
@@ -1388,4 +1389,5 @@ EOT;
     $_st = $this->get_status($date);
     return $this->status_name($_st);
   }
+  
 }

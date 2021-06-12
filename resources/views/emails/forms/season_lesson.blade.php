@@ -27,8 +27,10 @@
 ■学校の休み期間をおしらせください
 @if(isset($item)){{$item->get_tag_name('school_vacation_start_date')}}～{{$item->get_tag_name('school_vacation_end_date')}}@endif
 
-■特に重視してやって欲しいこと（その他）
-@if(isset($item)){{$item->get_tags_name('entry_milestone_word')}}～{{$item->get_tag_name('school_vacation_end_date')}}@endif
+■特に重視してやって欲しいこと
+@if(isset($item))
+{{$item->get_tags_name('entry_milestone')}}@if(!empty($item->get_tag_name('entry_milestone_word')))({{$item->get_tag_name('entry_milestone_word')}})@endif
+@endif
 
 ■ご要望につきまして
 @if(!empty($item->remark))

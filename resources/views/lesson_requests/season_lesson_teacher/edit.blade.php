@@ -21,12 +21,14 @@
             </div>
             @component('students.forms.lesson_place', ['_edit'=>true, 'event'=>$event, 'attributes' => $attributes, 'title' => '勤務可能校舎', 'item'=>$item]) @endcomponent
           </div>
+          {{--
           @if($_edit==false)
           <div class="row">
             @component('lesson_requests.season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯']) @endcomponent
 
           </div>
           @endif
+          --}}
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">

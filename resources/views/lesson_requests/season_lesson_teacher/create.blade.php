@@ -11,6 +11,14 @@
 
 @section('content')
 <div class="direct-chat-msg">
+  <div class="row">
+    <div class="col-6 p-3 font-weight-bold" >イベント名</div>
+    <div class="col-6 p-3">{{$event->title}}</div>
+    <div class="col-6 p-3 font-weight-bold" >実施期間</div>
+    <div class="col-6 p-3">{{$event->event_term}}</div>
+    <div class="col-6 p-3 font-weight-bold" >回答期間</div>
+    <div class="col-6 p-3">{{$event->response_term}}</div>
+  </div>
   @if($is_already_data == true)
 
     <div class="row">
@@ -52,10 +60,11 @@
             </div>
             @component('students.forms.lesson_place', ['_edit'=>true, 'event'=>$event, 'attributes' => $attributes, 'title' => '勤務可能校舎', 'item'=>$item]) @endcomponent
           </div>
+          {{--
           <div class="row">
-            @component('lesson_requests.season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯']) @endcomponent
-
+            @component('lesson_requests.season_lesson.hope_timezone', ['_edit'=>$_edit, 'attributes' => $attributes, 'title' => '勤務可能時間帯', 'item' => $item]) @endcomponent
           </div>
+          --}}
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-next btn btn-primary btn-block float-left mr-1">
@@ -72,7 +81,7 @@
             <i class="fa fa-file-invoice mr-1"></i>
             勤務可能日時
           </div>
-          @component('lesson_requests.season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes]) @endcomponent
+          @component('lesson_requests.season_lesson.hope_datetime', ['_edit'=>$_edit, 'event_dates' => $event_dates ,'attributes' => $attributes, 'item' => $item]) @endcomponent
           <div class="row">
             <div class="col-12 mb-1">
               <a href="javascript:void(0);" role="button" class="btn-prev btn btn-secondary btn-block float-left mr-1">

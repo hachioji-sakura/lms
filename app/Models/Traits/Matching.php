@@ -6,11 +6,13 @@ use App\Models\GeneralAttribute;
 use App\Models\MailLog;
 use App\Models\Teacher;
 use App\Models\UserCalendar;
+use App\Models\LessonRequest;
 use App\Models\LessonRequestDate;
 use App\Models\LessonRequestTag;
 use App\Models\UserCalendarSetting;
 use App\Models\EventUser;
-
+use App\Models\StudentRelation;
+use App\Models\Comment;
 trait Matching
 {
   /**

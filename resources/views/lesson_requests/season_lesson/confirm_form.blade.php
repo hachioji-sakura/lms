@@ -116,9 +116,9 @@
   <div class="col-12 pl-3"><span id="entry_milestone_name">
     @if(isset($item)){{$item->get_tags_name('entry_milestone')}}@endif
   </span></div>
-  <div class="col-12 p-2 font-weight-bold entry_milestone_word_confirm collapse" >特に重視してやって欲しいこと（その他）</div>
-  <div class="col-12 pl-3 entry_milestone_word_confirm collapse"><span id="entry_milestone_word">
-    @if(isset($item)){{$item->get_tag_name('entry_milestone_word')}}@endif
+  <div class="col-12 p-2 font-weight-bold entry_milestone_word_confirm " >特に重視してやって欲しいこと（その他）</div>
+  <div class="col-12 pl-3 entry_milestone_word_confirm "><span id="entry_milestone_word">
+    @if(isset($item)){{$item->get_tag_value('entry_milestone_word')}}@endif
   </span></div>
   <div class="col-12 p-2 font-weight-bold" >ご要望につきまして</div>
   <div class="col-12 pl-3"><span id="remark">

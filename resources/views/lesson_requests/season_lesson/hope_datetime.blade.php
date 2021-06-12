@@ -12,6 +12,25 @@
   <?php
     $m = date('n', strtotime($d));
     if($_edit==true)  $hope_date = $item->get_hope_date($d);
+    $w = date('w', strtotime($d));
+    $week = ["sun", "mon", "tue", "wed", "thi", "fri", "sat"];
+    $lesson_week = $week[$w];
+    $is_date_checked = false;
+    if(isset($item)){
+      $from_hour = 23;
+      $to_hour = 0;
+      $tags = $item->get_tags('season_lesson_'.$lesson_week.'_time');
+      if($tags != null){
+        foreach($tags as $tag){
+          $hours = explode('_', $tag->tag_value);
+          if(intval($hours[0]) < $from_hour) $from_hour = intval($hours[0]);
+          if(intval($hours[1]) > $to_hour) $to_hour = intval($hours[1]);
+        }
+        if($from_hour < $to_hour ){
+          $is_date_checked = true;
+        }
+      }
+    }
   ?>
 
 <div class="col-12 bd-b bd-gray ">
@@ -20,6 +39,9 @@
       <div class="form-check p-0">
         <input type="hidden" name="hope_datetime[]" value="" accessKey="hope_{{strtotime($d)}}" >
         <input class="form-check-input icheck flat-green day_check" type="checkbox" name="hope_{{strtotime($d)}}_date" id="hope_{{strtotime($d)}}_date" date="{{date('Y-m-d', strtotime($d))}}" value="true"
+        @if($is_date_checked == true)
+          checked
+        @endif
         @if(isset($hope_date)) checked @endif
         onChange="hope_date_change('hope_{{strtotime($d)}}')"
         />
@@ -73,6 +95,8 @@
             <option value="{{$h}}"
             @if($_edit===true && isset($hope_date) && $hope_date->from_hour==$h)
             selected
+            @elseif($_edit===false && $from_hour==$h)
+            selected
             @endif
 
             >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>
@@ -88,6 +112,8 @@
           @for ($h = 11; $h < 19; $h++)
             <option value="{{$h}}"
             @if($_edit===true && isset($hope_date) && $hope_date->to_hour==$h)
+            selected
+            @elseif($_edit===false && $to_hour==$h)
             selected
             @endif
             >{{str_pad($h, 2, 0, STR_PAD_LEFT)}}</option>

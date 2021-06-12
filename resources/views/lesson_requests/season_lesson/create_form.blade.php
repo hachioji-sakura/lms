@@ -1,4 +1,3 @@
-<?php $debug = true ?>
 @section('first_form')
 <div class="row">
   <div class="col-12 bg-info p-2 pl-4 mb-4">
@@ -69,7 +68,6 @@
       <div class="input-group">
         <div class="form-check">
             <input class="form-check-input icheck flat-red" type="radio" name="regular_schedule_exchange" id="regular_schedule_exchange_t" value="true" required="true"
-            @if($debug==true && $_edit==false) checked @endif
             @if($_edit==true && $item->has_tag('regular_schedule_exchange', 'true')==true) checked @endif
             >
             <label class="form-check-label" for="regular_schedule_exchange_t">
@@ -98,7 +96,6 @@
           <span class="input-group-text"><i class="fa fa-calendar"></i></span>
         </div>
         <input type="text" name="school_vacation_start_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
-        @if($debug==true && $_edit==false) value="2020/12/26" @endif
         @if($_edit==true)
         value="{{$item->get_tag_value('school_vacation_start_date')}}"
         @endif
@@ -109,7 +106,6 @@
           <span class="input-group-text">～</span>
         </div>
         <input type="text"  name="school_vacation_end_date" class="form-control float-left" required="true" uitype="datepicker" placeholder="yyyy/mm/dd"
-        @if($debug==true && $_edit==false) value="2021/01/06" @endif
         @if($_edit==true)
         value="{{$item->get_tag_value('school_vacation_end_date')}}"
         @endif
@@ -127,7 +123,6 @@
       <div class="input-group">
         <div class="form-check">
             <input class="form-check-input icheck flat-red" type="radio" name="installment_payment" id="installment_payment_t" value="true" required="true"
-            @if($debug==true && $_edit==false) checked @endif
             @if($_edit==true && $item->has_tag('installment_payment', 'true')==true) checked @endif
             >
             <label class="form-check-label" for="installment_payment_t">
