@@ -9,6 +9,7 @@ use App\Models\UserCalendar;
 use App\Models\LessonRequestDate;
 use App\Models\LessonRequestTag;
 use App\Models\UserCalendarSetting;
+use App\Models\EventUser;
 
 trait Matching
 {

@@ -228,7 +228,6 @@ class TrialController extends UserCalendarController
     }
     $items = $this->_search_sort($request, $items);
     $items = $items->paginate($request->get('_line'));
-    \Log::warning("TrailController::search");
     return ['items' => $items, 'count' => $count];
   }
   /**
