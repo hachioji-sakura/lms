@@ -1484,4 +1484,18 @@ class Trial extends Model
       }
     }
   }
+  public function get_subject($is_juken=false){
+    $subject = [];
+    $filter_val = 1;
+    if($is_juken==true) $filter_val = 10;
+    foreach($this->tags as $tag){
+      $tag_data = $tag->details();
+      if(isset($tag_data['charge_subject_level_item'])){
+        if(intval($tag->tag_value) > $filter_val){
+          $subject[]= $tag->keyname();
+        }
+      }
+    }
+    return $subject;
+  }
 }

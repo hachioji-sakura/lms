@@ -112,28 +112,17 @@ class TrialController extends UserCalendarController
    */
   public function create_form(Request $request){
     $form = $request->all();
-    $form['request_dates'] = [];
-    $i = 0;
     if(!empty($form['trial_date1'])){
-      $form['request_dates'][] = [
-        "from_datetime" => $form['trial_date1'].' '.$form['trial_start_time1'].':00:00',
-        "to_datetime" => $form['trial_date1'].' '.$form['trial_end_time1'].':00:00',
-        "sort_no" => $i++
-      ];
+      $form['trial_start_time1'] = $form['trial_date1'].' '.$form['trial_start_time1'].':00:00';
+      $form['trial_end_time1'] = $form['trial_date1'].' '.$form['trial_end_time1'].':00:00';
     }
     if(!empty($form['trial_date2'])){
-      $form['request_dates'][] = [
-        "from_datetime" => $form['trial_date2'].' '.$form['trial_start_time2'].':00:00',
-        "to_datetime" => $form['trial_date2'].' '.$form['trial_end_time2'].':00:00',
-        "sort_no" => $i++
-      ];
+      $form['trial_start_time2'] = $form['trial_date2'].' '.$form['trial_start_time2'].':00:00';
+      $form['trial_end_time2'] = $form['trial_date2'].' '.$form['trial_end_time2'].':00:00';
     }
     if(!empty($form['trial_date3'])){
-      $form['request_dates'][] = [
-        "from_datetime" => $form['trial_date3'].' '.$form['trial_start_time3'].':00:00',
-        "to_datetime" => $form['trial_date3'].' '.$form['trial_end_time3'].':00:00',
-        "sort_no" => $i++
-      ];
+      $form['trial_start_time3'] = $form['trial_date3'].' '.$form['trial_start_time3'].':00:00';
+      $form['trial_end_time3'] = $form['trial_date3'].' '.$form['trial_end_time3'].':00:00';
     }
     return $form;
   }
@@ -381,8 +370,6 @@ class TrialController extends UserCalendarController
        }
      }
      $res = $this->transaction($request, function() use ($request){
-   }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
-
        $form = $this->create_form($request);
        $form['create_user_id'] = 1;
        $form["accesskey"] = '';
@@ -392,7 +379,9 @@ class TrialController extends UserCalendarController
        }
        $item = Trial::entry($form);
        $res = $this->api_response(200, '', '', $item);
-     if($this->is_success_response($res)){
+      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
+
+      if($this->is_success_response($res)){
        $u = $res['data']->parent->user;
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [

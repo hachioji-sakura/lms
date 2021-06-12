@@ -7,11 +7,11 @@
 ■ご希望の教室
 {{$item->get_tags_name('lesson_place')}}
 
-@if($item->is_request_lesson_complete()==false || $item->status=='entry_contact')
+@if($item->is_trial_lesson_complete()==false || $item->status=='entry_contact')
 ■体験希望日時
-@foreach($item->request_dates as $d)
-第{{$d->sort_no}}希望：{{$d->term}}
-@endforeach
+第１希望：{{$item["date1"]}}
+第２希望：{{$item["date2"]}}
+第３希望：{{$item["date3"]}}
 @else
 @if($item->is_request_lesson_complete()==false && !empty($item->start_hope_date))
 ■ご希望の授業開始日
