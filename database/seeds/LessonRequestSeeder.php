@@ -18,6 +18,7 @@ class LessonRequestSeeder extends Seeder
      */
     public function run()
     {
+      //体験申し込みをLessonRequestに変えるときに使う
       set_time_limit(3600);
       $trials = Trial::all();
       foreach($trials as $trial){

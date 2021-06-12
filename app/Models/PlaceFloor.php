@@ -82,7 +82,7 @@ class PlaceFloor extends Model
   public function get_free_seat($start_time, $end_time){
     //指定した時間帯・フロアのカレンダーを取得(新規、キャンセル、休み、休講は利用扱いではない）
     $calendars = UserCalendar::searchDate($start_time, $end_time)
-              ->whereNotIn('status', ['cancel', 'rest', 'lecture_cancel', 'new'])
+              ->findStatuses(['cancel', 'rest', 'lecture_cancel', 'new'], true)
               ->where('place_floor_id', $this->id)->get();
     foreach($this->sheats as $sheat){
       $is_use = false;
