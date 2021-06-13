@@ -6,7 +6,7 @@
 
 @section('contents')
 <section class="content-header">
-	<div class="container-fluid" id="trial_to_calendar">
+	<div class="container-fluid" id="request_to_calendar">
     @if($select_teacher_id > 0)
     <form method="POST"  action="/{{$domain}}/{{$item->id}}/to_calendar">
       @csrf
@@ -35,7 +35,7 @@
                 @component('calendar_settings.forms.course_type', ['item'=>$item, 'select_lesson' => $select_lesson, 'attributes' => $attributes]) @endcomponent
                 @component('calendars.forms.add_type', ['item'=>$item,]) @endcomponent
                 @component('trials.forms.select_trial_date', ['item'=>$item, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes, 'domain' => $domain, 'domain_name' => $domain_name, 'user' => $user]) @endcomponent
-                @if(count($candidate_teachers[0]->trial) < 1)
+                @if(isset($candidate_teachers[0]->request_lesson) && count($candidate_teachers[0]->request_lesson) < 1)
                 <div class="col-6 mb-1">
                     <button type="button" class="btn btn-primary btn-block" disabled>
                       <i class="fa fa-check mr-1"></i>
@@ -50,7 +50,7 @@
                 </div>
                 @else
                 @component('calendar_settings.forms.charge_subject', ['item'=>$item, 'select_lesson' => $select_lesson, 'candidate_teacher' => $candidate_teachers[0], 'attributes' => $attributes]) @endcomponent
-                @component('calendar_settings.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
+                @component('trials.forms.lesson_place_floor', ['item'=>$item, 'attributes' => $attributes]) @endcomponent
                 @component('trials.forms.matching_decide', ['attributes' => $attributes]) @endcomponent
                 {{-- TODO dummyを中継するので、通知を登録時にしなくてよい
                 @component('calendars.forms.mail_send_confirm', ['default_send_teacher' => true]); @endcomponent
@@ -86,15 +86,15 @@
 </section>
 <script>
 $(function(){
-  base.pageSettinged("trial_to_calendar", null);
-  $('#trial_to_calendar').carousel({ interval : false});
+  base.pageSettinged("request_to_calendar", null);
+  $('#request_to_calendar').carousel({ interval : false});
   //submit
   $("button.btn-submit").on('click', function(e){
     teacher_schedule_change();
     e.preventDefault();
-    if(front.validateFormValue('trial_to_calendar')){
+    if(front.validateFormValue('request_to_calendar')){
       $(this).prop("disabled",true);
-      $("#trial_to_calendar form").submit();
+      $("#request_to_calendar form").submit();
     }
   });
 

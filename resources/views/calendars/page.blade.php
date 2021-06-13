@@ -3,6 +3,10 @@
   @slot('page_message')
     @if(isset($page_message) && !empty(trim($page_message)))
       {{$page_message}}
+    @elseif(isset($warning_message) && !empty(trim($warning_message)))
+    <div class="col-12 mb-2 bg-warning p-4">
+      {!!$warning_message!!}
+    </div>
     @endif
   @endslot
   {{-- 表示部分カスタマイズ --}}
@@ -41,7 +45,7 @@
             </small>
             @endif
           @endif
-        @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true))
+        @elseif($key==='student_name' && ($action!='delete' || $item->is_group()!=true) && isset($item['students']))
           <label for="{{$key}}" class="w-100">
             {{$field['label']}}
           </label>

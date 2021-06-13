@@ -329,5 +329,27 @@ EOT;
                 });
           });
   }
-
+  public function has_charge_subject($subject_code){
+    $charge_subject = $this->get_charge_subject();
+    if(isset($charge_subject[$subject_code.'_level'])) {
+      return true;
+    }
+    return false;
+  }
+  public function enable_places($type='default'){
+    $ret = [];
+    $tags = null;
+    if($type=='season_lesson' && isset($this->user->lesson_requests)){
+      $tags = $this->user->lesson_requests[0]->tags;
+    }
+    else if($type=='default'){
+      $tags = $this->user->tags;
+    }
+    if($tags!=null){
+      foreach($tags->where('tag_key', 'lesson_place') as $tag){
+        $ret[intval($tag->tag_value)] = true;
+      }
+    }
+    return $ret;
+  }
 }

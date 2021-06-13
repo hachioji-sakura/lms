@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\Models\Trial;
+use App\Models\LessonRequest;
 use App\Models\Managers;
 use App\Models\Teachers;
 use App\Models\Students;
@@ -529,7 +530,11 @@ EOT;
     $ret = null;
     switch($this->target_model){
       case 'trials':
+        //TODO: lessonRequestに移行する
         $ret = Trial::where('id', $this->target_model_id)->first();
+        break;
+      case 'lesson_requests':
+        $ret = LessonRequest::where('id', $this->target_model_id)->first();
         break;
       case 'students':
         $ret = Student::where('id', $this->target_model_id)->first();

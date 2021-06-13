@@ -16,8 +16,9 @@ use App\Models\Message;
 use App\Models\Task;
 use App\Models\Exam;
 use App\Models\Agreement;
-
-
+use App\Models\Event;
+use App\Models\EventUser;
+use App\Models\LessonRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -1697,4 +1698,51 @@ class StudentController extends UserController
     }
   }
 
+  public function season_lesson_page(Request $request, $id){
+    $param = $this->get_common_param($request, false);
+    $view = 'lesson_requests.season_lesson.create';
+    $user = $this->login_details($request);
+    $param['item'] = $this->model()->find($id);
+
+    //TODO
+    $event = Event::findUser($param['item']->user_id);//->where('event_from_date', '>', date('Y-m-d'));
+    if($this->domain=='students'){
+      $event = $event->forStudent();
+    }
+    else if($this->domain=='teachers'){
+      $event = $event->forTeacher();
+    }
+    $event = $event->orderBy('event_from_date', 'desc')->first();
+    if(isset($user) && $user->role=='manager'){
+      if(isset($event)){
+        $event_user = $event->event_users->where('user_id', $param['item']->user_id)->sortByDesc('id')->first();
+      }
+      else {
+        abort(404);
+      }
+    }
+    else {
+      if(!$request->has('event_user_id')) abort(404);
+      if(!$request->has('access_key')) abort(404);
+      $event_user = EventUser::where('id', $request->get('event_user_id'))->first();
+      $event = $event_user->event;
+      if(!isset($event_user)) abort(404);
+      if($event_user->access_key != $request->get('access_key')) abort(403);
+    }
+    $param['event_user_id'] = $event_user->id;
+    $param['access_key'] = $event_user->access_key;
+    if($this->domain=='teachers') $view='lesson_requests.season_lesson_teacher.create';
+    $param['is_already_data'] = false;
+
+    if(isset($param['item']->user->enable_lesson_requests)){
+      $param['lesson_request'] = $param['item']->user->enable_lesson_requests->where('event_id', $event_user->event_id)->sortByDesc('id')->first();
+      if($param['lesson_request'] != null){
+        $param['is_already_data'] = true;
+      }
+    }
+    $param['event_dates'] = $event->get_event_dates();
+    $param['event'] = $event;
+    return view($view, ['_edit' => false])
+      ->with($param);
+  }
 }

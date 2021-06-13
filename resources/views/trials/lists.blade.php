@@ -27,8 +27,6 @@
           <ul class="mailbox-attachments clearfix row">
             @foreach($items as $item)
             <?php
-              $get_tagdata = $item->get_tagdata();
-              $tagdata = $get_tagdata["tagdata"];
               $status = $item->get_status();
              ?>
             <li class="col-12" accesskey="" target="">
@@ -44,32 +42,29 @@
                     <br>
                     <span class="text-xs ml-1">
                       <i class="fa fa-user mr-1"></i>
-                      {{$item->student->name()}} 様
-                      （{{$item->student->grade()}}）<br>
-                    </small>
+                      {{$item->student->full_name}} 様
+                      （{{$item->student->grade}}）<br>
+                    </span>
                     </a>
-                    @isset($tagdata["lesson"])
-                    @foreach($tagdata["lesson"] as $label)
+                    @foreach($item->get_tags('lesson') as $tag)
                     <span class="text-xs">
                       <small class="badge badge-primary p-1 mr-1">
                         <i class="fa fa-chalkboard mr-1"></i>
-                        {{$label}}
+                        {{$tag->name()}}
                       </small>
                     </span>
                     @endforeach
-                    @endisset
-                    @isset($tagdata["lesson_place"])
-                    @foreach($tagdata["lesson_place"] as $label)
+                    @foreach($item->get_tags('lesson_place') as $tag)
                     <span class="text-xs">
                       <small class="badge badge-success p-1 mr-1">
                         <i class="fa fa-map-marker mr-1"></i>
-                        {{$label}}
+                        {{$tag->name()}}
                       </small>
                     </span>
                     @endforeach
-                    @endisset
                   </div>
                   <div class="col-12 col-lg-4 col-md-6 mt-1 text-sm">
+
                     @if($item->is_trial_lesson_complete()==false)
                       第1希望:{{$item->trial_start_end_time(1)}}</span><br>
                       第2希望:{{$item->trial_start_end_time(2)}}</span><br>

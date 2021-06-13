@@ -5,6 +5,7 @@ use App;
 use App\Models\Image;
 use App\Models\StudentRelation;
 use App\Models\StudentParent;
+use App\Models\UserCalendar;
 use App\Models\UserCalendarSetting;
 use App\Models\Ask;
 use App\Models\Tuition;
@@ -251,6 +252,7 @@ class Student extends Model
   {
     return $this->hasMany('App\Models\Trial', 'student_id')->where('status', '!=', 'cancel');
   }
+
 
   /**
    *　スコープ：ユーザーステータス
@@ -536,6 +538,28 @@ EOT;
       }
     }
     return $subjects;
+  }
+  public function get_charge_subject_val($subject_code){
+    $subjects = $this->get_charge_subject();
+    if(isset($subjects[$subject_code.'_level'])){
+      return $subjects[$subject_code.'_level'];
+    }
+    return -1;
+  }
+  public function getFullNameAttribute(){
+    return $this->name();
+  }
+  public function getFullKanaAttribute(){
+    return $this->kana();
+  }
+  public function getGenderNameAttribute(){
+    return $this->gender();
+  }
+  public function getGradeNameAttribute(){
+    return $this->grade();
+  }
+  public function getSchoolNameAttribute(){
+    return $this->school_name();
   }
   public function get_subject($lesson=0){
     $ret = [];
@@ -1193,6 +1217,18 @@ EOT;
     if(strtotime($this->created_at) < strtotime('2020-09-17 00:00:00')) return true;
     return false;
   }
+  public function has_lesson_request(){
+    //TODO debug
+    foreach($this->user->enable_lesson_requests as $l){
+      if($l->status == 'new' && $l->event->is_need_request()==true && $l->event->is_answerable()==true) return true;
+    }
+    if(isset($this->user->event_users)){
+      foreach($this->user->event_users as $event_user){
+        if($event_user->event->is_need_request()==true && $event_user->event->is_answerable()==true) return true;
+      }
+    }
+    return false;
+  }
   //TODO:入会金、月会費はマスタがない　マスタができたら消す
   public function get_monthly_fee(){
     //契約時の自動計算用
@@ -1305,8 +1341,6 @@ EOT;
                     ->where('status', 'presence')->orderBy('start_time', 'desc')->get();
     return $c;
   }
-
-
   public function get_text_materials($search_form){
     $t1 = $this->user->shared_text_materials();
     $t2 = TextMaterial::where('target_user_id', $this->user_id)->orWhere('publiced_at', '<=', date('Y-m-d'));
@@ -1355,4 +1389,5 @@ EOT;
     $_st = $this->get_status($date);
     return $this->status_name($_st);
   }
+  
 }

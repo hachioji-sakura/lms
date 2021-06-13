@@ -1,7 +1,19 @@
 <div id="{{$action}}_form">
   <div class="row">
+    @if(isset($message))
+    <div class="col-12 mb-2 bg-warning p-4">
+      <i class="fa fa-exclamation-triangle mr-2"></i>
+      {!!$message!!}
+    </div>
+    @endif
     <div class="col-6">
-      <form method="POST" action="/{{$domain}}/{{$item->id}}/{{$action}}">
+      <form method="POST"
+        @if(isset($action_url))
+          action="{{$action_url}}"
+        @else
+          action="/{{$domain}}/{{$item->id}}/{{$action}}"
+        @endif
+        >
         @csrf
         @method('PUT')
         <button type="button" class="btn btn-submit btn-primary w-100" accesskey="{{$action}}_form">

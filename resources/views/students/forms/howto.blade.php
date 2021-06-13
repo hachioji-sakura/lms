@@ -22,18 +22,3 @@
     <input type="text" id="howto_word" name="howto_word" class="form-control" placeholder="例：八王子 学習塾" >
   </div>
 </div>
-<script>
-function howto_checkbox_change(obj){
-  //Google検索・Yahoo検索と答えた場合、検索ワードフォームを表示
-  var is_google = $('input[type="checkbox"][name="howto[]"][value="google"]').prop("checked");
-  var is_yahoo = $('input[type="checkbox"][name="howto[]"][value="yahoo"]').prop("checked");
-  if(is_google || is_yahoo){
-    $(".howto_word_form").collapse("show");
-    $(".howto_word_confirm").collapse("show");
-  }
-  else {
-    $(".howto_word_form").collapse("hide");
-    $(".howto_word_confirm").collapse("hide");
-  }
-}
-</script>

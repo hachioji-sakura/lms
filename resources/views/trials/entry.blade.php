@@ -34,6 +34,7 @@
   <form method="POST"  action="/entry">
     @csrf
     <input type="text" name="dummy" style="display:none;" / >
+    <input type="hidden" name="type" value="trial" / >
     <div id="trials_entry" class="carousel slide" data-ride="carousel" data-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item active">

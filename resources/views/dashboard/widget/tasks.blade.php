@@ -122,7 +122,7 @@
                           <span class="far fa-star fa-xs" style="color:gray"></span>
                           @endfor
                           <small class="text-muted">
-                            /{{$review->create_user->details()->name()}}
+                            /{{$review->create_user->details()->full_name}}
                           </small>
                         </div>
                       @endforeach
@@ -145,7 +145,7 @@
             <div class="col-12">
               <small class="text-muted float-right">
                 <i class="fa fa-clock"></i>
-                {{$item->create_user->details()->name()}}/
+                {{$item->create_user->details()->full_name}}/
                 {{$item->dateweek_format($item->created_at,'Y/m/d')}}  {{date('H:i',strtotime($item->created_at))}}
                 <a class="toggle-btn ml-2" data-toggle="collapse" target="setting_details{{$loop->iteration}}"><i class="fas fa-chevron-circle-down fa-lg"></i></a>
               </small>

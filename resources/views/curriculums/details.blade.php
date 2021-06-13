@@ -9,7 +9,7 @@
     <div class="col-6">
       <label>{{__('labels.create_user')}}</label>
       <div class="form-group">
-        {{$item->create_user->details()->name()}}
+        {{$item->create_user->full_name}}
       </div>
     </div>
   </div>

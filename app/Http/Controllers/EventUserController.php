@@ -153,6 +153,11 @@ class EventUserController extends EventController
       $items = $items->where('status',$request->search_status);
     }
 
+    //検索ワード
+    if($request->has('search_word')){
+      $items = $items->searchWord($request->search_word);
+    }
+
 
     return $items;
   }

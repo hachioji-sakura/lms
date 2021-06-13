@@ -35,7 +35,7 @@
             @if($member->user->details()->role==="student")
             <tr class="">
               <th class="p-1 pl-2">
-                {{$member->user->details()->name}}</th>
+                {{$member->user->details()->full_name}}</th>
               <td class="p-1 text-sm text-center">
                 @if($member->status=="fix")
                   <i class="fa fa-calendar mr-1"></i>{{__('labels.prev_presence')}}

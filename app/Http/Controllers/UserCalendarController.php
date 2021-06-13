@@ -726,7 +726,12 @@ class UserCalendarController extends MilestoneController
       if($request->has('user')){
         return view('calendars.simplepage', ["subpage"=>'', "page_title" => $page_title])->with($param);
       }
-
+      /*
+      TODO 登録可能か警告表示
+      if(!empty($param['item']->registable_status())){
+        $param['warning_message'] = __('messages.'.$param['item']->registable_status());
+      }
+      */
       return view($this->domain.'.page', $form)->with($param);
     }
     /**
@@ -1351,7 +1356,13 @@ class UserCalendarController extends MilestoneController
         }
       }
       if($param['item']->work!=9 && !isset($param['teacher_id'])) {
-        if(count($param["teachers"]) == 0) $param["teachers"] = Teacher::findStatuses(["regular"])->get();
+        if(count($param["teachers"]) == 0){
+          $teachers = Teacher::findStatuses(["regular"]);
+          if($param['lesson_id'] > 0){
+            $teachers->searchTags([['tag_key'=>'lesson', 'tag_value' => $param['lesson_id']]]);
+          }
+          $param["teachers"] = $teachers->get();
+        }
         return view('teachers.select_teacher',
           [ 'error_message' => '', '_edit' => false])
           ->with($param);

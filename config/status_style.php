@@ -34,5 +34,9 @@ return array(
   'progress' => 'primary',
   'reapply' => 'secondary',
   'dummy' => 'danger',
+  'free' => 'success',
+  'training' => 'secondary',
+  'season' => 'info',
+  'schedule_commit' => 'success',
   );
 ?>

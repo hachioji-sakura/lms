@@ -38,7 +38,7 @@
             <i class="fa fa-marker mr-1"></i>
             {{$comment["type_name"]}}
             {{--
-            {{$comment->create_user->details()->name}}
+            {{$comment->create_user->details()->full_name}}
             --}}
           </span>
           {!!nl2br($comment->body)!!}
@@ -129,7 +129,7 @@
         @endif
         ">
           <div class="direct-chat-info clearfix">
-            <span class="direct-chat-name float-left">{{$comment->create_user->details()->name}}</span>
+            <span class="direct-chat-name float-left">{{$comment->create_user->details()->full_name}}</span>
           </div>
           <img class="direct-chat-img" src="{{$comment->create_user->details()->icon}}" alt="message user image">
           <div class="direct-chat-text p-2 pb-5">

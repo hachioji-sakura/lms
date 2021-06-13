@@ -128,7 +128,7 @@
                     @if($member->user->details()->role==="student")
                       <span class="mr-2">
                       <i class="fa fa-user-graduate"></i>
-                      {{$member->user->details()->name}}
+                      {{$member->user->details()->full_name}}
                       </span>
                     @endif
                   @endforeach

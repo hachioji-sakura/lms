@@ -39,16 +39,23 @@ class EventController extends MilestoneController
   public function _search_scope(Request $request, $items)
   {
     //ID 検索
-    if(isset($request->id)){
+    if($request->has('id')){
       $items = $items->where('id',$request->id);
     }
     //ステータス 検索
-    if(isset($request->search_status)){
+    if($request->has('search_status')){
       $items = $items->findStatuses($request->search_status);
+    }
+    //forStudentのテスト
+    if($request->has('for_student')){
+      $items = $items->forStudent();
+    }
+    if($request->has('for_teacher')){
+      $items = $items->forTeacher();
     }
 
     //検索ワード
-    if(isset($request->search_word)){
+    if($request->has('search_word')){
       $search_words = explode(' ', $request->search_word);
       $items = $items->where(function($items)use($search_words){
         foreach($search_words as $_search_word){
@@ -137,6 +144,15 @@ class EventController extends MilestoneController
          return "/event_users?event_id=".$row['id'];
        }
      ],
+     'lesson_request_count' => [
+       'label' => '新規申込数',
+       'button_style' => 'primary',
+       "link" => function($row){
+         if(isset($row->event) && $row->event->is_need_request()==false) return '';
+         if(count($row->lesson_requests->whereIn('status', ['new','confirm','fix'])) == 0) return '';
+         return "/events/".$row['id']."/lesson_requests";
+       }
+     ],
    ];
    $fields['buttons'] = [
      'label' => '操作',
@@ -175,7 +191,7 @@ class EventController extends MilestoneController
     $form['response_from_date'] = $request->get('response_from_date');
     $form['response_to_date'] = $request->get('response_to_date');
     $form['title'] = $request->get('title');
-    $form['status'] = 'new';
+    //$form['status'] = 'new';
     $form['body'] = htmlentities($request->get('body'), ENT_QUOTES, 'UTF-8');
     return $form;
   }
@@ -191,11 +207,26 @@ class EventController extends MilestoneController
     if(!$this->is_success_response($res)){
       return $res;
     }
+    $res = $this->transaction($request, function() use ($request, $form){
       $item = Event::add($form);
       return $this->api_response(200, '', '', $item);
-      $res = $this->transaction($request, function() use ($request, $form){
     }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
     return $res;
+   }
+   public function _update(Request $request, $id)
+   {
+     $form = $this->create_form($request);
+     $res = $this->save_validate($request);
+     if(!$this->is_success_response($res)){
+       return $res;
+     }
+     $res =  $this->transaction($request, function() use ($request, $id){
+       $form = $this->create_form($request);
+       $item = $this->model()->where('id', $id)->first();
+       $item->change($form);
+       return $this->api_response(200, '', '', $item);
+     }, '更新しました。', __FILE__, __FUNCTION__, __LINE__ );
+     return $res;
    }
    public function to_inform_page(Request $request , $id){
      $param = $this->get_param($request, $id);
@@ -220,7 +251,7 @@ class EventController extends MilestoneController
      ->with($param);
    }
    public function to_inform(Request $request , $id){
-     set_time_limit(600);
+     set_time_limit(1200);
      $param = $this->get_param($request, $id);
      $select_send_user_ids = $request->get('select_send_user_ids');
      $send_users = EventUser::where('event_id', $id)->whereIn('id', $select_send_user_ids)->get();
@@ -236,5 +267,44 @@ class EventController extends MilestoneController
        }, '登録しました。', __FILE__, __FUNCTION__, __LINE__ );
      }
      return $this->save_redirect($res, $param, '送信しました');
+   }
+   public function calendar(Request $request, $id){
+     $param = $this->get_param($request, $id);
+     $view = "calendar";
+     $param['view'] = $view;
+     return view($this->domain.'.'.$view, [
+     ])->with($param);
+   }
+   public function schedule_lists(Request $request, $id){
+     set_time_limit(600);
+     $param = $this->get_param($request, $id);
+     $view = "schedules";
+     $request->merge([
+       '_sort' => 'start_time',
+     ]);
+     //当月1日より、checked_atに日にちが入っている
+     $is_checked = false;
+     //未入力の予定＝最終ステータス以外
+     $enable_confirm = true; //確認ボタン押せる場合 = true
+     foreach(['fix', 'complete'] as $index => $status){
+       $param[$status."_schedule_count"] = $param['item']->get_calendar_count(['search_status' => $status]);
+     }
+     $filter = ['search_status' => 'fix'];
+     if($request->has('lesson_request_id')){
+       $filter['lesson_request_id'] = $request->get('lesson_request_id');
+     }
+     if($request->has('search_status')){
+       $filter['search_status'] = $request->get('search_status');
+     }
+     if($request->has('search_date')){
+       $filter['search_date'] = $request->get('search_date');
+     }
+     $param["calendars"] = $param['item']->get_calendar($filter);
+     $param['view'] = $view;
+     $param['is_checked'] = false;
+     $param['enable_confirm'] = false;
+     //echo strtotime('now')-$s;
+     return view($this->domain.'.'.$view, [
+     ])->with($param);
    }
 }

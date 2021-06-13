@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        @if($item->is_trial_lesson_complete()==true)
+        @if($item->is_request_lesson_complete()==true)
         <div class="card card-widget mb-2">
           <div class="card-header">
             <i class="fa fa-clock mr-1"></i>通常授業設定

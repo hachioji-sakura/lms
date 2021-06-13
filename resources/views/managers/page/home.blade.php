@@ -78,6 +78,7 @@
         </div>
         <div class="col-12 col-lg-4 col-md-6 mb-1">
           <a href="/events">
+
             <div class="info-box">
             <span class="info-box-icon bg-danger">
               <i class="fa fa-envelope-open-text"></i>

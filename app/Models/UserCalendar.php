@@ -95,6 +95,7 @@ class UserCalendar extends Model
       'start_time' => 'required',
       'end_time' => 'required'
   );
+  protected $appends = ['start', 'end', 'status_name', 'created_date', 'updated_date'];
   public $register_mail_template = 'calendar_new';
   public $delete_mail_template = 'calendar_delete';
   public function register_mail_title(){
@@ -145,6 +146,9 @@ class UserCalendar extends Model
   public function trial(){
     return $this->belongsTo('App\Models\Trial');
   }
+  public function lesson_request(){
+    return $this->belongsTo('App\Models\LessonRequest');
+  }
   public function scopeSortStarttime($query, $sort){
     if(empty($sort)) $sort = 'asc';
     return $query->orderBy('start_time', $sort);
@@ -179,18 +183,17 @@ class UserCalendar extends Model
     }
     return $query;
   }
+
   public function scopeSearchDate($query, $from_date, $to_date)
   {
-    $where_raw = <<<EOT
-      ((user_calendars.start_time >= ?
-       AND user_calendars.start_time <= ?
-      )
-      OR (user_calendars.end_time >= ?
-        AND user_calendars.end_time <= ?
-      ))
-EOT;
-    return $query->whereRaw($where_raw,[$from_date, $to_date, $from_date, $to_date]);
-
+    return $query = $query->where(function($query)use($from_date, $to_date){
+        $query = $query->where(function($query)use($from_date, $to_date){
+          $query->where('start_time', '>=', $from_date)->where('start_time', '>=', $to_date);
+        });
+        $query = $query->orWhere(function($query)use($from_date, $to_date){
+          $query->where('end_time', '>=', $from_date)->where('end_time', '>=', $to_date);
+        });
+    });
   }
   public function scopeSearchWord($query, $word)
   {
@@ -236,21 +239,15 @@ EOT;
   }
   public function scopeFindPlaces($query, $vals, $is_not=false)
   {
-    $place_floors = PlaceFloor::whereIn('place_id', $vals)->get();
-    $ids = [];
-    foreach($place_floors as $place_floor){
-      $ids[] = $place_floor->id;
-    }
-    return $this->scopeFieldWhereIn($query, 'place_floor_id', $ids, $is_not);
+    return $this->scopeFieldWhereIn($query, 'place_floor_id', PlaceFloor::whereIn('place_id', $vals)->pluck('id'), $is_not);
   }
   public function scopeFindUser($query, $user_id, $deactive_status = 'invalid')
   {
-    $where_raw = <<<EOT
-      user_calendars.id in (select calendar_id from user_calendar_members where user_id=? and status != ?)
-EOT;
-    return $query->whereRaw($where_raw,[$user_id, $deactive_status]);
+    if(empty($user_id)) return $query;
+    return $query->whereHas('members', function($query) use ($user_id, $deactive_status) {
+        $query = $query->where('user_id', $user_id)->where('status', '!=', $deactive_status);
+    });
   }
-
   public function scopeHiddenFilter($query)
   {
     $user = Auth::user();
@@ -620,6 +617,12 @@ EOT;
   public function datetime(){
     return $this->dateweek_format($this->start_time, 'Y年n月j日').' '.date('H:i',  strtotime($this->start_time)).'～'.date('H:i',  strtotime($this->end_time));
   }
+  public function getStartAttribute(){
+    return $this->start_time;
+  }
+  public function getEndAttribute(){
+    return $this->end_time;
+  }
   public function getTimezoneAttribute(){
     return $this->timezone();
   }
@@ -661,6 +664,12 @@ EOT;
   }
   public function getScheduleTypeNameAttribute(){
     return $this->schedule_type_name();
+  }
+  public function getStartHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->start_time));
+  }
+  public function getEndHourMinuteAttribute(){
+    return date('H:i',  strtotime($this->end_time));
   }
   public function getStudentNameAttribute(){
     $student_name = "";
@@ -775,6 +784,7 @@ EOT;
   static protected function add($form){
 
     $ret = [];
+    $lesson_request_id = 0;
     $trial_id = 0;
     $user_calendar_setting_id = 0;
     if(isset($form['user_calendar_setting_id'])){
@@ -782,6 +792,7 @@ EOT;
     }
 
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+    if(isset($form['lesson_request_id'])) $lesson_request_id = $form['lesson_request_id'];
     if(!isset($form['work'])) $form['work'] = '';
 
     //TODO 重複登録、競合登録の防止が必要
@@ -834,6 +845,7 @@ EOT;
       'lecture_id' => 0,
       'course_minutes' => $course_minutes,
       'trial_id' => $trial_id,
+      'lesson_request_id' => $lesson_request_id,
       'user_calendar_setting_id' => $user_calendar_setting_id,
       'exchanged_calendar_id' => $form['exchanged_calendar_id'],
       'place_floor_id' => $form['place_floor_id'],
@@ -980,11 +992,14 @@ EOT;
           return null;
         }
       }
-
+      $free_sheat = $this->place_floor->get_free_seat($this->start_time, $this->end_time);
+      $free_sheat_id = 0;
+      if($free_sheat != null) $free_sheat_id = $free_sheat->id;
       $member = UserCalendarMember::create([
           'calendar_id' => $this->id,
           'user_id' => $user_id,
           'status' => $status,
+          'place_floor_sheat_id' => $free_sheat_id,
           'create_user_id' => $create_user_id,
       ]);
       if($is_api===true){
@@ -1362,8 +1377,6 @@ EOT;
       $this->delete_user_cache($member->user_id);
     }
   }
-
-
   public function is_first_place(){
     $place_floor_ids = PlaceFloor::where('place_id', $this->place_floor->place_id)->pluck('id');
     $c = self::where('user_id', $this->user_id)
@@ -1375,5 +1388,41 @@ EOT;
     }
     return false;
 
+  }
+  public function registable_status(){
+    $ret = '';
+    //競合する予定があるかどうかチェック
+    $calendar = UserCalendar::searchDate($this->start_time, $this->end_time)
+      ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+      ->where('user_id', $this->user_id)->get();
+    if(isset($calendar)) $ret = 'calendar_is_conflict';
+
+    //座席チェックはあとで対応する
+    /*
+    $free_sheat = PlaceFloor::find($form['place_floor_id'])->get_free_seat();
+    if($free_sheat==null) return $this->error_response('座席が取れません');
+    */
+    if(isset($calendar)){
+      $ret = 'calendar_is_move_conflict';
+    }
+    else {
+      $calendar = UserCalendar::where('end_time', $this->start_time)
+          ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+          ->where('place_floor_id', '!=', $this->place_floor_id)
+          ->where('user_id', $this->user_id)->get();
+
+      if(isset($calendar)){
+        $ret = 'calendar_is_move_conflict';
+      }
+      else{
+        $calendar = UserCalendar::where('start_time', $this->end_time)
+            ->whereNotIn('status', ['rest', 'cancel', 'lecture_cancel'])
+            ->where('place_floor_id', '!=', $this->place_floor_id)
+            ->where('user_id', $this->user_id)->get();
+        if(isset($calendar)) $ret = 'calendar_is_move_conflict';
+      }
+    }
+
+    return "";
   }
 }

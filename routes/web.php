@@ -17,6 +17,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //indexページをログインにする
   Route::redirect('/', '/login', 301);
   Route::get('send_access_key','AuthController@send_access_key');
+  Route::get('students/{id}/season_lesson','StudentController@season_lesson_page');
+  Route::get('teachers/{id}/season_lesson','TeacherController@season_lesson_page');
 
   Route::get('managers/login','ManagerController@login');
   Route::get('auth','AuthController@auth');
@@ -38,11 +40,24 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   //Auth::routesのログアウトは、postのためgetのルーティングを追加
   Route::get('logout','Auth\LoginController@logout');
 
+  Route::get('lesson_requests/{id}/estimate', 'LessonRequestController@estimate_page');
+  Route::post('lesson_requests/{id}/estimate', 'LessonRequestController@send_estimate');
+  Route::resource('lesson_requests','LessonRequestController');
+  Route::get('api_lesson_request_calendars','LessonRequestCalendarController@api_index');
+  Route::put('events/{event_id}/lesson_request_calendars/complete', 'LessonRequestCalendarController@complete_calendars');
+  Route::resource('lesson_request_calendars','LessonRequestCalendarController');
+
   Route::get('places/phone_list','PlaceController@phone_list');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
 
   Route::get('auth/mail','AuthController@mail_send');
+
+  Route::get('events/{event_id}/lesson_requests', 'LessonRequestController@index');
+  Route::put('events/{event_id}/lesson_requests/matching', 'LessonRequestController@save_matching');
+  Route::get('events/{id}/schedules', 'EventController@schedule_lists');
+  Route::get('events/{id}/calendar', 'EventController@calendar');
+
 
   Route::get('events/{id}/to_inform','EventController@to_inform_page');
   Route::post('events/{id}/to_inform','EventController@to_inform');
@@ -69,7 +84,8 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::resource('school_grade_reports','SchoolGradeReportController');
 
   Route::resource('exams','ExamController');
-  Route::post('exams/create','ExamController@store');  Route::resource('exam_results','ExamResultController');
+  Route::post('exams/create','ExamController@store');
+  Route::resource('exam_results','ExamResultController');
 
 
   Route::get('comments/{id}/publiced','CommentController@publiced_page');

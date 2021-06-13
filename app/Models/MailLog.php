@@ -99,7 +99,7 @@ class MailLog extends Model
       $dst[] = $val;
     }
     $body = str_replace($src, $dst, $body);
-    $body = html_entity_decode($body); 
+    $body = html_entity_decode($body);
     $create_form = [
       'from_address' => $from,
       'to_address' => $to,

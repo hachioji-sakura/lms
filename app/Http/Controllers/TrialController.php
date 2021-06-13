@@ -48,14 +48,6 @@ class TrialController extends UserCalendarController
       'label' => 'ステータス',
       'size' => 3,
     ],
-    'date1' => [
-      'label' => '第１希望',
-      'size' => 3,
-    ],
-    'date2' => [
-      'label' => '第２希望',
-      'size' => 3,
-    ],
     'lesson' => [
       'label' => '希望レッスン',
       'size' => 3,
@@ -194,7 +186,7 @@ class TrialController extends UserCalendarController
           abort(403);
         }
       }
-      $ret['item'] = $item->details();
+      $ret['item'] = $item;
     }
     else {
 
@@ -204,7 +196,7 @@ class TrialController extends UserCalendarController
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
         $_status = $list;
-        $ret[$list.'_count'] = $this->model()->findStatuses($_status)->count();
+        $ret[$list.'_count'] = $this->model()->where('type', 'trial')->findStatuses($_status)->count();
       }
     }
     return $ret;
@@ -236,7 +228,6 @@ class TrialController extends UserCalendarController
     }
     $items = $this->_search_sort($request, $items);
     $items = $items->paginate($request->get('_line'));
-    \Log::warning("TrailController::search");
     return ['items' => $items, 'count' => $count];
   }
   /**
@@ -248,6 +239,7 @@ class TrialController extends UserCalendarController
    */
   public function _search_scope(Request $request, $items)
   {
+    $items = $items->where('type','trial');
     //ID 検索
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
@@ -316,10 +308,11 @@ class TrialController extends UserCalendarController
   public function show_dialog(Request $request, $id)
   {
     if(!$request->has('student_parent_id')) abort(403);
+    dd(1);
     $param = $this->get_common_param($request);
     $item = Trial::where('id', $id)->first();
     if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id'))abort(403);
-    $param['item'] = $item->details();
+    $param['item'] = $item;
     return view('trials.dialog', [])
       ->with($param);
   }
@@ -383,9 +376,9 @@ class TrialController extends UserCalendarController
        }
        $item = Trial::entry($form);
        return $this->api_response(200, '', '', $item);
-     }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
+      }, '体験授業申込', __FILE__, __FUNCTION__, __LINE__ );
 
-     if($this->is_success_response($res)){
+      if($this->is_success_response($res)){
        $u = $res['data']->parent->user;
        $this->send_mail($form['email'],
          '体験授業のお申込み、ありがとうございます', [
@@ -554,7 +547,7 @@ class TrialController extends UserCalendarController
      if(!isset($trial)) abort(404);
 
      $param = [
-       'item' => $trial->details(),
+       'item' => $trial,
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -581,7 +574,7 @@ class TrialController extends UserCalendarController
      if(!isset($trial)) abort(404);
 
      $param = [
-       'item' => $trial->details(),
+       'item' => $trial,
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -598,7 +591,7 @@ class TrialController extends UserCalendarController
      $param['access_key'] = $access_key;
 
      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
-       Trial::where('id', $id)->update(['status' => 'reapply']);
+      Trial::where('id', $id)->update(['status' => 'reapply']);
        $p = StudentParent::where('id', $param['item']->student_parent_id)->first();
        $p->user->update(['access_key' => $access_key]);
        return $this->api_response(200, '', '', []);
@@ -627,7 +620,7 @@ class TrialController extends UserCalendarController
      }
      $param = [
        'user' => $user,
-       'item' => $trial->details(),
+       'item' => $trial,
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -687,10 +680,10 @@ class TrialController extends UserCalendarController
      return $res;
    }
    public function admission_mail(Request $request, $id){
-     $access_key = '';
-     $trial = Trial::where('id', $id)->first();
-     $is_money_edit = true;
-     if(!isset($trial)) abort(404);
+    $access_key = '';
+    $trial = Trial::where('id', $id)->first();
+    $is_money_edit = true;
+    if(!isset($trial)) abort(404);
     $this_month_date = date('Y-m-1');
     $next_month_date = date('Y-m-1',strtotime('+1 month'));
     //次月以降の予定で契約を作る
@@ -711,7 +704,7 @@ class TrialController extends UserCalendarController
     }
      
      $param = [
-       'item' => $trial->details(),
+       'item' => $trial,
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -727,6 +720,18 @@ class TrialController extends UserCalendarController
   public function admission_mail_send(Request $request, $id){
     $param = $this->get_param($request, $id);
     $access_key = $this->create_token(2678400);
+
+    /*
+    TODO 季節講習の請求部分どうするか？
+    $res = $this->transaction($request, function() use ($request, $id){
+
+      $trial = Trial::where('id', $id)->first();
+      //受講料初期設定
+      foreach($trial->get_calendar_settings() as $setting){
+        if($request->has($setting->id.'_tuition')){
+          $member = UserCalendarMemberSetting::where('user_calendar_setting_id', $setting->id)->where('user_id', $trial->student->user_id)->first();
+          $member->set_api_lesson_fee(intval($request->get($setting->id.'_tuition')));
+      */
     $res = $this->transaction($request, function() use ($request, $id,$param, $access_key){
       $agreement = Agreement::find($request->agreements['id']);
       $agreement->entry_fee = $request->agreements['entry_fee'];
@@ -747,6 +752,16 @@ class TrialController extends UserCalendarController
       $trial->update(['status' => 'entry_guidanced']);
       return $this->api_response(200, '', '', $ask);
     }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+    /*
+     TODO 季節講習の請求部分どうするか？
+    if($this->is_success_response($res)){
+      $res = $this->transaction($request, function() use ($request, $id, $param, $access_key){
+        $trial = Trial::where('id', $id)->first();
+        $ask = $trial->agreement_ask($param['user']->user_id, $access_key);
+        return $this->api_response(200, '', '', $ask);
+      }, '入会案内連絡', __FILE__, __FUNCTION__, __LINE__ );
+    }
+    */
     return $this->save_redirect($res, [], '入会案内メールを送信しました。');
   }
   public function show_cancel_page(Request $request, $id){

@@ -180,7 +180,7 @@ trait Common
     return $search_words;
   }
   public function has_tag($key, $val=""){
-    if(!isset($this->tags)) return false;
+    if(!isset($this->tags) || $this->tags==null) return null;
     $tags = $this->tags->where('tag_key', $key);
     if(empty($val)){
       if(count($this->tags->where('tag_key', $key)) > 0) return true;
@@ -265,9 +265,14 @@ trait Common
     });
   }
   public function term_format($from, $to, $format='Y-m-d'){
-    $start_hour_minute = date($format,  strtotime($from));
-    $end_hour_minute = date($format,  strtotime($to));
-    return $start_hour_minute.'～'.$end_hour_minute;
+    $res = '～';
+    if(!empty($from)){
+      $res = date($format,  strtotime($from)).'～';
+    }
+    if(!empty($to)){
+      $res .= date($format,  strtotime($to));
+    }
+    return $res;
   }
   public function is_online(){
     if($this->has_tag('is_online', 'true')) return true;
