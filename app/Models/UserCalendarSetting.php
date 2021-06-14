@@ -356,6 +356,7 @@ EOT;
 
     $ret = [];
     $trial_id = 0;
+    $lesson_request_id = 0;
     //TODO 重複登録、競合登録の防止が必要
     /*
     $user = User::where('id', $form['user_id'])->first();
@@ -369,6 +370,7 @@ EOT;
     }
     */
     if(isset($form['trial_id'])) $trial_id = $form['trial_id'];
+    if(isset($form['lesson_request_id'])) $lesson_request_id = $form['lesson_request_id'];
 
     $course_minutes = intval(strtotime('2000-01-01 '.$form['to_time_slot']) - strtotime('2000-01-01 '.$form['from_time_slot']))/60;
     $status = 'new';
@@ -405,6 +407,7 @@ EOT;
     $calendar_setting = UserCalendarSetting::create([
       'user_id' => $form['user_id'],
       'trial_id' => $trial_id,
+      'lesson_request_id' => $lesson_request_id,
       'schedule_method' => $form['schedule_method'],
       'lesson_week_count' => $form['lesson_week_count'],
       'lesson_week' => $form['lesson_week'],

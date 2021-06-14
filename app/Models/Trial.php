@@ -1499,6 +1499,6 @@ class Trial extends Model
     return $subject;
   }
   public function getStatusNameAttribute(){
-    return $this->get_status();
+    return $this->status_name();
   }
 }

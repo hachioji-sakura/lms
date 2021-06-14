@@ -9,32 +9,37 @@
   </div>
   <div class="col-12">
     <div class="form-group">
-      <?php $is_first=true; ?>
-      @foreach($item->request_dates as $d)
+      <?php
+      $d = [1=>date('Y-m-d',strtotime($item->trial_start_time1)),
+            2=>date('Y-m-d',strtotime($item->trial_start_time2)),
+            3=>date('Y-m-d',strtotime($item->trial_start_time3))];
+      $is_first = true;
+        ?>
+      @for($i=1;$i<4;$i++)
       <label class="mx-2">
-        @if(isset($candidate_teacher->matching_lessons[$d->day]) && count($candidate_teacher->matching_lessons[$d->day])>0)
+        @if(isset($candidate_teacher->trial["trial_date".$i]) && count($candidate_teacher->trial["trial_date".$i])>0)
           {{-- 空き予定が存在する --}}
-          <input type="radio" name="trial_date_hope" value="{{$d->day}}" class="icheck flat-green" required="true"
-          @if($is_first == true)
+          <input type="radio" name="trial_date_hope" value="{{$d[$i]}}" class="icheck flat-green" required="true"
+          @if($is_first==true)
           checked
           <?php $is_first=false; ?>
           @endif
-          attr="{{$d->sort_no}}"
+          attr="{{$i}}"
           onChange="trial_date_hope_change()"
           >
         @else
           <i class="fa fa-times mr-1"></i>
         @endif
-        第{{$d->sort_no}}希望({{$d->month_day}})
+        第{{$i}}希望({{$d[$i]}})
       </label>
-      @endforeach
+      @endfor
     </div>
   </div>
   <div class="col-md-6">
     @component('components.calendar', [
       'id' => 1,
       'item' => $candidate_teacher,
-      'defaultDate'=> date('Y-m-d',strtotime($item->request_dates[0]->day)),
+      'defaultDate'=> date('Y-m-d',strtotime($item->trial_start_time1)),
       'mode'=>'day',
       'user_id' => $candidate_teacher->user_id, 'teacher_id' => $candidate_teacher->id,
       'domain'=> $domain,
@@ -67,73 +72,73 @@
   <div class="col-md-6" id="trial_select">
     <span class="description-text" >
       <?php $is_first=false; $c=0; ?>
-      @foreach($item->get_teacher_request_dates_schedule($candidate_teacher->id) as $_lists)
+      @foreach($candidate_teacher->calendars as $remark=>$_lists)
         @foreach($_lists as $i => $_list)
         <?php $_list=$_list->details(1); ?>
-          <div class="form-check ml-2 teacher_schedule action_form action_add" remark="{{date('Y-m-d', strtotime($_list->start_time))}}">
+          <div class="form-check ml-2 teacher_schedule action_form action_add" remark="{{$remark}}">
             <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="calendar_{{$c}}"
              value="{{$_list->start_time}}_{{$_list->end_time}}"
              start_time="{{$_list->start_time}}"
              end_time="{{$_list->end_time}}"
              lesson_place_floor="{{$_list->place_floor_id}}"
-             remark="{{date('Y-m-d', strtotime($_list->start_time))}}"
+             remark="{{$remark}}"
              onChange="teacher_schedule_change()"
              validate="teacher_schedule_validate('#trial_select')"
              calendar_id = "{{$_list->id}}"
              @if($is_first==false) checked @endif
              >
             <label class="form-check-label" for="calendar_{{$c}}" >
-              {{$_list->start_time}} {{$_list['timezone']}}
+              {{$_list['timezone']}}
             </label>
           </div>
           <?php $is_first=true; $c++; ?>
         @endforeach
       @endforeach
       <?php $is_first=false; $c=0; ?>
-        @foreach($candidate_teacher->matching_lessons as $day => $_lists)
-          @foreach($_lists as $_list)
-          @if($_list->status=='free')
-          <div class="form-check ml-2 teacher_schedule action_form action_new" remark="{{$day}}">
-            <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$c}}"
-             value="{{$_list['start_time']}}_{{$_list['end_time']}}"
-             duration="{{$_list['duration']}}"
-             start_time="{{$_list['start_time']}}"
-             end_time="{{$_list['end_time']}}"
-             calendar_id="-1"
-             lesson_place_floor="{{$_list['free_place_floor']}}"
-             remark="{{$day}}"
-             onChange="teacher_schedule_change()"
-             validate="teacher_schedule_validate('#trial_select')"
-             @if($is_first==false) checked @endif
-             >
-            <label class="form-check-label" for="trial_{{$c}}" title="{{$_list['review']}}">
-              {{$_list->duration}}
-            </label>
-          </div>
-          <?php $is_first=true; $c++; ?>
-          @else
-          {{-- 空いてない場合の表示はなくなる --}}
-          <div class="form-check ml-2">
-            @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
-            <a  href="javascript:void(0);" page_title="{{__('labels.schedule_details')}}" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
-            @endif
-            <label class="form-check-label" for="trial_{{$i}}">
-              @if($_list['status']==='place_conflict')
-              <i class="fa fa-times mr-1"></i>
-              @elseif($_list['status']==='time_conflict')
-              <i class="fa fa-calendar-times mr-1"></i>
-              @else
-              <i class="fa fa-times-circle mr-1"></i>
+        @foreach($candidate_teacher->trial as $remark=>$_lists)
+          @foreach($_lists as $i => $_list)
+            @if($_list['status']==='free')
+            <div class="form-check ml-2 teacher_schedule action_form action_new" remark="{{$_list['remark']}}">
+              <input class="form-check-input icheck flat-green" type="radio" name="teacher_schedule" id="trial_{{$c}}"
+               value="{{$_list['start_time']}}_{{$_list['end_time']}}"
+               duration="{{$_list['duration']}}"
+               start_time="{{$_list['start_time']}}"
+               end_time="{{$_list['end_time']}}"
+               calendar_id="-1"
+               lesson_place_floor="{{$_list['free_place_floor']}}"
+               remark="{{$remark}}"
+               onChange="teacher_schedule_change()"
+               validate="teacher_schedule_validate('#trial_select')"
+               @if($is_first==false) checked @endif
+               >
+              <label class="form-check-label" for="trial_{{$c}}" title="{{$_list['review']}}">
+                {{$_list['duration']}}
+              </label>
+            </div>
+            <?php $is_first=true; $c++; ?>
+            @else
+            {{-- 空いてない場合の表示はなくなる --}}
+            <div class="form-check ml-2">
+              @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
+              <a  href="javascript:void(0);" page_title="{{__('labels.schedule_details')}}" page_form="dialog" page_url="/calendars/{{$_list['conflict_calendar']->id}}">
               @endif
-              {{$_list['duration']}}
-            </label>
-            @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
-            </a>
+              <label class="form-check-label" for="trial_{{$i}}">
+                @if($_list['status']==='place_conflict')
+                <i class="fa fa-times mr-1"></i>
+                @elseif($_list['status']==='time_conflict')
+                <i class="fa fa-calendar-times mr-1"></i>
+                @else
+                <i class="fa fa-times-circle mr-1"></i>
+                @endif
+                {{$_list['duration']}}
+              </label>
+              @if(isset($_list['conflict_calendar']) && isset($_list['conflict_calendar']->id))
+              </a>
+              @endif
+            </div>
             @endif
-          </div>
-          @endif
+          @endforeach
         @endforeach
-      @endforeach
     </span>
     <h6 class="text-sm p-1 pl-2 mt-2 bg-danger hide" id="no_data_message">
       <i class="fa fa-exclamation-triangle mr-1"></i>
@@ -173,7 +178,7 @@ function trial_date_hope_change(){
   $("#calendar1").fullCalendar("updateEvents", sources);
   $("#calendar1").fullCalendar("rerenderEvents");
 
-  var selecter = ".action_"+a+"[remark='"+d+"']";
+  var selecter = ".action_"+a+"[remark='trial_date"+no+"']";
   $(selecter).show();
   if($(selecter+" input").length < 1){
       $("#no_data_message").removeClass("hide");
