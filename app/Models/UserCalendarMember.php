@@ -162,6 +162,9 @@ class UserCalendarMember extends Model
     }
     $login_user = User::where('id', $login_user_id)->first();
     $update_form = ['status' => $status, 'remark' => $remark, 'access_key' => $this->create_token(1728000)];
+    if(!empty(request()->rest_result)) {
+      $update_form['rest_result'] = request()->rest_result;
+    }
     $param = [];
 
     if(!isset($login_user)){

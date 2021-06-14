@@ -64,16 +64,26 @@
           @endif
         @elseif($item['status']==="fix" && $subpage==="rest")
 
-            @csrf
-		        <input type="text" name="dummy" style="display:none;" / >
-            @method('PUT')
-            <input type="hidden" value="{{$user->user_id}}" name="user" />
-            <input type="hidden" value="{{$token}}" name="access_key" />
-            <input type="hidden" value="rest" name="status" />
-            <div class="row">
-              @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
-              @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest']) @endcomponent
+          @csrf
+          <input type="text" name="dummy" style="display:none;" / >
+          @method('PUT')
+          <input type="hidden" value="{{$user->user_id}}" name="user" />
+          <input type="hidden" value="{{$token}}" name="access_key" />
+          <input type="hidden" value="rest" name="status" />
+          <div class="row">
+            @component('calendars.forms.rest_form', ['item' => $item, 'user'=>$user]) @endcomponent
+            @component('calendars.forms.target_member', ['item' => $item, 'user'=>$user, 'status'=>'rest']) @endcomponent
+          </div>
+          <div class="row">
+            <div class="col-12 mb-6">
+              <label for="course_minutes" class="w-100">
+                休み理由
+                <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+              </label>
+              <input type="text" name="rest_result" class="form-control" placeholder="" inputtype="zenkaku">
             </div>
+           　
+          </div>
           <div class="row">
             <div class="col-12">
                 <button type="button" class="btn btn-submit btn-danger btn-block"  accesskey="_form" confirm="{{__('messages.confirm_rest_contact')}}">
