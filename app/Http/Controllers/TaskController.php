@@ -408,6 +408,9 @@ class TaskController extends MilestoneController
     }
 
     public function get_param(Request $request, $id=null){
+      if(!empty(request()->copy_id)){
+          $id = request()->copy_id;
+      }
       $user = $this->login_details($request);
       if(!isset($user)) {
         abort(403);
@@ -418,6 +421,7 @@ class TaskController extends MilestoneController
         if($this->is_student($user->role) &&
           $item['target_user_id'] !== $user->user_id){
             //生徒は自分宛てのもののみ
+
             abort(404);
         }
         $ret['item'] = $item;
