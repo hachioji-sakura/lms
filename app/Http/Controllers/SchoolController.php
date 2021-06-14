@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Domain\School\Repository\SchoolEntityRepository;
 use App\Domain\School\SchoolViewEntity;
 use App\Models\School;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\SchoolDepartment;
+use App\Models\SchoolDetail;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -20,22 +21,6 @@ class SchoolController extends MilestoneController
      * @var string
      */
     public $domain = 'schools';
-
-    /**
-     * @var \App\Domain\School\Repository\SchoolEntityRepository
-     */
-    protected $high_school_entity_repository;
-
-    /**
-     * SchoolController constructor.
-     *
-     * @param  \App\Domain\School\Repository\SchoolEntityRepository  $high_school_entity_repository
-     */
-    public function __construct(
-        SchoolEntityRepository $high_school_entity_repository
-    ) {
-        $this->high_school_entity_repository = $high_school_entity_repository;
-    }
 
     /**
      * Display a listing of the resource.
@@ -60,7 +45,8 @@ class SchoolController extends MilestoneController
             $schools = School::offset(($page_number - 1) * $per_page)->limit($per_page)->get();
             $total_count = School::get()->count();
         } else {
-            $schools = School::where('school_type', $request->school_type)->offset(($page_number - 1) * $per_page)->limit($per_page)->get();
+            $schools = School::where('school_type',
+                $request->school_type)->offset(($page_number - 1) * $per_page)->limit($per_page)->get();
             $total_count = School::where('school_type', $request->school_type)->get()->count();
         }
         $school_view_entity = new SchoolViewEntity();
@@ -247,14 +233,23 @@ class SchoolController extends MilestoneController
     public function destroy(Request $request, $id)
     {
         // リクエスト
-        $high_school_id = $id;
+        $school_id = $id;
 
         // 基盤として最低限必要な要素を用意
         $param = $this->get_common_param($request);
 
         // 削除処理
-        $res = $this->transaction($request, function () use ($high_school_id) {
-            $this->high_school_entity_repository->deleteByHighSchoolId($high_school_id);
+        $res = $this->transaction($request, function () use ($school_id) {
+            $school_model = new School();
+            $school = $school_model->newQuery()->where('id', $school_id)->first();
+            if ($school->school_type !== 'high_school') {
+                School::destroy($school_id);
+                SchoolDetail::destroy($school_id);
+            } else {
+                School::destroy($school_id);
+                SchoolDetail::destroy($school_id);
+                SchoolDepartment::where('school_type_id', $school_id)->delete();
+            }
 
             return $this->api_response();
         }, __('labels.delete_complete'), __FILE__, __FUNCTION__, __LINE__);
@@ -297,23 +292,5 @@ class SchoolController extends MilestoneController
         }, __('labels.update_complete'), __FILE__, __FUNCTION__, __LINE__);
 
         return $this->save_redirect($res, $param, __('labels.update_complete'));
-    }
-
-    /**
-     * ページネーションを作成
-     *
-     * Modelによるページネーションは負荷的に懸念があるため、Entity用のものを生成する
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array  $items
-     * @return \Illuminate\Pagination\LengthAwarePaginator
-     */
-    protected function getPaginator(Request $request, array $items): LengthAwarePaginator
-    {
-        $page_number = $request->page ?? 1;
-        $per_page = 25;
-        $page_slice = collect($items)->forPage($page_number, $per_page);
-
-        return new LengthAwarePaginator($page_slice, count($items), $per_page, $page_number, ['path' => $request->url()]);
     }
 }
