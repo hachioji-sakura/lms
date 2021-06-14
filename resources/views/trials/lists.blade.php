@@ -35,7 +35,7 @@
                     <a href="trials/{{$item->id}}">
                     <span class="text-xs">
                       <small class="badge badge-{{config('status_style')[$status]}} p-1 mr-1">
-                        {{$item->status_name()}}
+                        {{$item->status_name}}
                       </small>
                     </span>
                     <span class="text-sm time">申込日:{{$item->dateweek_format($item->created_at)}}</span>
@@ -43,7 +43,7 @@
                     <span class="text-xs ml-1">
                       <i class="fa fa-user mr-1"></i>
                       {{$item->student->full_name}} 様
-                      （{{$item->student->grade}}）<br>
+                      （{{$item->student->grade_name}}）<br>
                     </span>
                     </a>
                     @foreach($item->get_tags('lesson') as $tag)

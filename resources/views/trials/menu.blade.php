@@ -28,22 +28,34 @@
       <i class="nav-icon fa fa-envelope-open-text"></i>
       <p>
         対応状況
-        <small class="badge badge-{{config('status_style')[$item['status']]}} mx-2">
-          {{$item["status_name"]}}
+        <small class="badge badge-{{config('status_style')[$item->status]}} mx-2">
+          {{$item->status_name}}
         </small>
         <i class="right fa fa-angle-left"></i>
       </p>
     </a>
     <ul class="nav nav-treeview p-2">
-      @foreach($item->request_dates as $d)
-      <li class="nav-item text-light ml-2 mb-2">
-        第{{$d->sort_no}}希望：<span class="text-xs mx-2">
+    <li class="nav-item text-light ml-2 mb-2">
+        第１希望：<span class="text-xs mx-2">
           <small class="badge badge-secondary ">
-            {{$d->term}}
+            {{$item["date1"]}}
           </small>
         </span>
       </li>
-      @endforeach
+      <li class="nav-item text-light ml-2 mb-2">
+        第２希望：<span class="text-xs mx-2">
+          <small class="badge badge-secondary ">
+            {{$item["date2"]}}
+          </small>
+        </span>
+      </li>
+      <li class="nav-item text-light ml-2 mb-2">
+        第３希望：<span class="text-xs mx-2">
+          <small class="badge badge-secondary ">
+            {{$item["date3"]}}
+          </small>
+        </span>
+      </li>
       <li class="nav-item text-light ml-2 hr-1 bd-light mb-2">
         レッスン：
         <div class="nav-link w-100">

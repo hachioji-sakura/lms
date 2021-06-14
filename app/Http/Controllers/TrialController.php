@@ -158,8 +158,6 @@ class TrialController extends UserCalendarController
       abort(403);
     }
     $_table = $this->search($request);
-
-
     return view($this->domain.'.lists', $_table)
       ->with($param);
   }
@@ -186,7 +184,7 @@ class TrialController extends UserCalendarController
           abort(403);
         }
       }
-      $ret['item'] = $item;
+      $ret['item'] = $item->details();
     }
     else {
 
@@ -195,8 +193,7 @@ class TrialController extends UserCalendarController
       }
       $lists = ['cancel', 'new', 'fix', 'confirm', 'reapply',  'complete', 'presence', 'entry_contact', 'entry_hope', 'entry_guidanced', 'entry_cancel'];
       foreach($lists as $list){
-        $_status = $list;
-        $ret[$list.'_count'] = $this->model()->where('type', 'trial')->findStatuses($_status)->count();
+        $ret[$list.'_count'] = $this->model()->findStatuses([$list])->count();
       }
     }
     return $ret;
@@ -239,7 +236,6 @@ class TrialController extends UserCalendarController
    */
   public function _search_scope(Request $request, $items)
   {
-    $items = $items->where('type','trial');
     //ID 検索
     if(isset($request->id)){
       $items = $items->where('id',$request->id);
@@ -308,11 +304,10 @@ class TrialController extends UserCalendarController
   public function show_dialog(Request $request, $id)
   {
     if(!$request->has('student_parent_id')) abort(403);
-    dd(1);
     $param = $this->get_common_param($request);
     $item = Trial::where('id', $id)->first();
     if(!isset($item) || $item->student_parent_id != $request->has('student_parent_id'))abort(403);
-    $param['item'] = $item;
+    $param['item'] = $item->details();
     return view('trials.dialog', [])
       ->with($param);
   }
@@ -547,7 +542,7 @@ class TrialController extends UserCalendarController
      if(!isset($trial)) abort(404);
 
      $param = [
-       'item' => $trial,
+       'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -574,7 +569,7 @@ class TrialController extends UserCalendarController
      if(!isset($trial)) abort(404);
 
      $param = [
-       'item' => $trial,
+       'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -620,7 +615,7 @@ class TrialController extends UserCalendarController
      }
      $param = [
        'user' => $user,
-       'item' => $trial,
+       'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),
@@ -704,7 +699,7 @@ class TrialController extends UserCalendarController
     }
      
      $param = [
-       'item' => $trial,
+       'item' => $trial->details(),
        'domain' => $this->domain,
        'domain_name' => __('labels.'.$this->domain),
        'attributes' => $this->attributes(),

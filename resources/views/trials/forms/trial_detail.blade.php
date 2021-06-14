@@ -106,13 +106,21 @@
         <div class="description-block">
           <span class="description-text">
 
-            @foreach($item->request_dates as $d)
-            第{{$d->sort_no}}希望：<span class="text-xs mx-2">
+            第１希望：<span class="text-xs mx-2">
               <small class="badge badge-secondary ">
-                {{$d->term}}
+                {{$item["date1"]}}
               </small>
             </span><br>
-            @endforeach
+            第２希望：<span class="text-xs mx-2">
+              <small class="badge badge-secondary ">
+                {{$item["date2"]}}
+              </small>
+            </span><br>
+            第３希望：<span class="text-xs mx-2">
+              <small class="badge badge-secondary ">
+                {{$item["date3"]}}
+              </small>
+            </span>
 
           </span>
         </div>
