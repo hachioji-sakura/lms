@@ -103,14 +103,18 @@ class Trial extends Model
    */
   public function scopeSearchWord($query, $search_keyword)
   {
-    $_like = '%'.$search_keyword.'%';
-    $query->where('remark','like', $_like)
-    ->orWhereHas('student', function($query) use ($_like) {
-      $query->where('name_last','like', $_like)
-       ->orWhere('name_first','like', $_like)
-       ->orWhere('kana_last','like', $_like)
-       ->orWhere('kana_first','like', $_like);
-   });
+    $search_keywords = $this->get_search_word_array($search_keyword);
+
+    foreach($search_keywords as $search_keyword) {
+      $_like = '%' . $search_keyword . '%';
+      $query->orWhere('remark', 'like', $_like)
+        ->orWhereHas('student', function ($query) use ($_like) {
+          $query->where('name_last', 'like', $_like)
+            ->orWhere('name_first', 'like', $_like)
+            ->orWhere('kana_last', 'like', $_like)
+            ->orWhere('kana_first', 'like', $_like);
+        });
+    }
 
     return $query;
   }
