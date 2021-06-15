@@ -116,6 +116,18 @@
 @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
   @slot("search_form")
   <div class="col-12 mb-2">
+    <div class="form-group">
+      <label for="search_keyword" class="w-100">
+        {{__('labels.search_keyword')}}
+      </label>
+      <input type="text" name="search_keyword" class="form-control" placeholder="" inputtype=""
+         @if(!empty(request()->search_keyword))
+         value = "{{request()->search_keyword}}"
+         @endif
+      >
+    </div>
+  </div>
+  <div class="col-12 mb-2">
     <label for="search_status" class="w-100">
       {{__('labels.status')}}
     </label>

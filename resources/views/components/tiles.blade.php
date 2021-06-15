@@ -28,6 +28,14 @@
                 {{$item->status_name()}}
               </small>
             </span>
+            @if ($domain == "parents" && $item->enable_agreements_by_type('normal')->count() == 0)
+            <span class="text-xs ml-1">
+              <span class="badge badge-secondary mt-1 mr-1">
+                {{__('labels.no_agreements')}}
+              </span>
+            </span>
+            @endif
+
             <br>
             @foreach($fields as $field=>$style)
             <span class="text-xs ml-1">
@@ -52,6 +60,11 @@
         </div>
         <div class="row my-2">
           <div class="col-12">
+          @if ($domain == "students" && $item->enable_agreements_by_type('normal')->count() > 0)
+            <a title="契約情報" href="javascript:void(0);" page_title="ご契約内容" page_form="dialog" page_url="/students/{{$item->id}}/agreement" role="button" class="btn btn-primary btn-sm my-1 text-sm">
+              <i class="fa fa-address-card mr-1"></i>ご契約内容
+            </a>
+          @endif
             {{-- TODO user->status==1にて判断する必要がある。移行データが、regularかつ初回の登録依頼を出すために、user->status=1としているため --}}
             {{-- TODO status=regular かつ、user->status=1として、移行データのときだけ表示するほうが安全 --}}
           @if($domain!="students" && ($item->status==='trial' || $item->user->status==1))
