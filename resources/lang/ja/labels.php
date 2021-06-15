@@ -481,8 +481,12 @@ return [
   'school_page_side_menu_part_time_credit' => '定時単位制',
   'school_page_side_menu_part_time_credit_night_only' => '定時単位制夜間',
   'school_page_side_menu_part_online_school' => '通信制',
+  
   'memos' => 'メモ',
+  'no_agreements' => '契約なし',
   'bulk' => '一括',
   'school_textbooks' => '学校使用テキスト',
   'is_include_expired' => '期限切れ',
+  'copy_button' => 'コピーする',
+  'study_record_copy' => '学習記録コピー',
 ];

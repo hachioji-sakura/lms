@@ -1217,7 +1217,9 @@ class StudentController extends UserController
    $param['fields'] = [];
    $param['_edit'] = false;
    $param['student'] = $param['item'];
-   $param['agreement'] =$param['item']->enable_agreements_by_type('normal')->first();
+   //commitの最新契約を表示する
+   //月次生成なので、今月のものを表示
+   $param['agreement'] =$param['item']->prev_agreements->first();
    return view($this->domain.'.agreement',$param);
 
  }

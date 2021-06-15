@@ -101,14 +101,21 @@ class Trial extends Model
    *　スコープ：キーワード検索
    * @param  String $word  キーワード
    */
-  public function scopeSearchWord($query, $word)
+  public function scopeSearchWord($query, $search_keyword)
   {
-    $query = $query->where(function($query)use($search_words){
-      foreach($search_words as $_search_word){
-        $_like = '%'.$_search_word.'%';
-        $query = $query->orWhere('remark','like', $_like);
-      }
-    });
+    $search_keywords = $this->get_search_word_array($search_keyword);
+
+    foreach($search_keywords as $search_keyword) {
+      $_like = '%' . $search_keyword . '%';
+      $query->orWhere('remark', 'like', $_like)
+        ->orWhereHas('student', function ($query) use ($_like) {
+          $query->where('name_last', 'like', $_like)
+            ->orWhere('name_first', 'like', $_like)
+            ->orWhere('kana_last', 'like', $_like)
+            ->orWhere('kana_first', 'like', $_like);
+        });
+    }
+
     return $query;
   }
   public function get_status(){
