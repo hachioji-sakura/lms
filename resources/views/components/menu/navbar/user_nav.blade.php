@@ -95,6 +95,7 @@
       <a href="/maillogs?search_status[]=sended" class="dropdown-item">{{__('labels.maillogs')}}</a>
       <a href="/actionlogs" class="dropdown-item">{{__('labels.actionlogs')}}</a>
       <a href="/attributes?select_key=keys" class="dropdown-item">{{__('labels.attributes_list')}}</a>
+      <a href="/places" class="dropdown-item">{{__('labels.places').__('labels.list')}}</a>
     </div>
   </li>
 @endif
