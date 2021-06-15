@@ -491,4 +491,6 @@ return [
   'school_textbooks' => 'Textbooks for School',
   'is_include_expired' => 'include expired',
   'department' => 'Department',
+  'copy_button' => 'Copy Button',
+  'study_record_copy' => 'Study Record Copy',
 ];

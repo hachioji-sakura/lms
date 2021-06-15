@@ -490,4 +490,6 @@ return [
   'school_textbooks' => '学校使用テキスト',
   'is_include_expired' => '期限切れ',
   'department' => '部門',
+  'copy_button' => 'コピーする',
+  'study_record_copy' => '学習記録コピー',
 ];
