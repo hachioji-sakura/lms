@@ -444,13 +444,13 @@ class Trial extends Model
     if(empty($remark)) $remark = $this->remark;
     if(!empty($remark)){
       $ret .= "■".__('labels.other')."\n";
-      $ret .= $remark;
+      $ret .= $remark."\n";;
     }
     for($i=1;$i<4;$i++) {
         if (!empty($tagdata['choice_school'.$i])) {
             foreach ($tagdata['choice_school'.$i] as $value) {
                 $ret .= "■" . __('labels.choice_school_'.$i) . "\n";
-                $ret .= $value . "\n";;
+                $ret .= $value . "\n";
             }
         }
     }
