@@ -1,7 +1,7 @@
 @component('calendar_settings.page', ['item' => $item, 'fields' => $fields, 'domain' => $domain, 'action'=>'', 'user'=>$user])
   @slot('page_message')
   @if($item['status']==='confirm')
-  生徒あてに通常授業予定確認をを連絡します。
+  生徒あてに通常授業予定確認を連絡します。
   @elseif($item['status']==='fix')
   生徒、講師あてに通常授業予定を連絡します。
   @elseif($item['status']==='new')
