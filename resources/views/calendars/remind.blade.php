@@ -3,7 +3,7 @@
   @if($item['status']==='rest')
   講師あてに休み連絡を連絡します。
   @elseif($item['status']==='confirm')
-  生徒あてに予定確認をを連絡します。
+  生徒あてに予定確認を連絡します。
   @elseif($item['status']==='fix')
   生徒、講師あてに予定を連絡します。
   @endif

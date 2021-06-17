@@ -91,7 +91,7 @@ class PlaceController extends MilestoneController
         "label" => __('labels.control'),
         "button" => [
           "edit",
-          "delete"]
+          ]
         ],
     ];
     return $fields;
