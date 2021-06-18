@@ -263,8 +263,8 @@ class TrialController extends UserCalendarController
 
     }
     //検索ワード
-    if(isset($request->search_word)){
-      $items = $items->searchWord($request->search_word);
+    if(isset($request->search_keyword)){
+      $items = $items->searchWord($request->search_keyword);
     }
 
     return $items;
@@ -709,7 +709,7 @@ class TrialController extends UserCalendarController
         return $agreement;
       });
     }
-     
+
      $param = [
        'item' => $trial->details(),
        'domain' => $this->domain,

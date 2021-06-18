@@ -47,3 +47,7 @@
     {{__('labels.review_button')}}
     </a>
   @endif
+  <a href="javascript:void(0)" title="{{__('labels.copy_button')}}" page_form="dialog" page_title="{{__('labels.study_record_copy')}}" page_url="/tasks/create?copy_id={{$item->id}}&student_id={{$item->target_user->student->id}}" class="btn btn-sm btn-outline-{{$is_footer ? 'app' : 'primary'}} mr-1 mb-1" role="button">
+    {{__('labels.copy_button')}}
+  </a>
+
