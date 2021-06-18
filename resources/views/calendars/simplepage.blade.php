@@ -80,7 +80,7 @@
                 休み理由
                 <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
               </label>
-              <input type="text" name="rest_result" class="form-control" placeholder="" inputtype="zenkaku">
+              <input type="text" name="rest_reason" class="form-control" placeholder="" inputtype="zenkaku">
             </div>
            　
           </div>
