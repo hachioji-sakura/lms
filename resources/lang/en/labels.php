@@ -450,7 +450,10 @@ return [
   'amazon_price' =>'amazon price',
   'publisher_price' =>'publisher price',
   'other_price' => 'other price',
-
+  'choice_schools' => 'choice_schools',
+  'choice_school_1' => 'first_choice_school',
+  'choice_school_2' => 'second_choice_school',
+  'choice_school_3' => 'third_choice_school',
   // 学校ページに関するもの
   'schools' => 'School',
   'school_page_header_high_school_id' => 'High School Id',
