@@ -1,4 +1,4 @@
-@if($item->is_group()==true || ($item->trial_id>0 && $item->is_teaching()==true))
+@if($item->is_teaching()==true))
   <div class="col-6 mt-2">
     <div class="form-group">
       <label for="status_confirm" class="w-100">
