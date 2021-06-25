@@ -46,7 +46,7 @@
         {{__('labels.cancel_reason')}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
-      <textarea id="cancel_reason" name="cancel_reason" class="form-control" placeholder="" inputtype="zenkaku"></textarea>
+      <textarea id="cancel_reason" name="cancel_reason" class="form-control" placeholder=""></textarea>
     </div>
   </div>
   <input type="hidden" name="status" value="" id="hidden_status">
