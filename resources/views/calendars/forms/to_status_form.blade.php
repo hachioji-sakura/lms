@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div class="row status_change_form" style="display:none;">
+  <div class="status_change_form" style="display:none;">
     <div class="col-6 mb-2">
       <label for="cancel_reason" class="w-100">
         {{__('labels.cancel_reason')}}
