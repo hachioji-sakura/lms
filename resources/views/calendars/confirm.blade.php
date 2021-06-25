@@ -91,7 +91,7 @@
 
     <script>
       $(function(){
-        base.pageSettinged("{{$domain}}_member_setting", []);
+        base.pageSettinged("calendars_member_setting", []);
       });
 
       //休み理由
@@ -143,12 +143,6 @@
         }
       }
     </script>
-
-
-
-
-
-
   </div>
   @endslot
 @endcomponent
