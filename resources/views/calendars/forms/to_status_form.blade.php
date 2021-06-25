@@ -43,7 +43,7 @@
   <div class="row status_change_form" style="display:none;">
     <div class="col-6 mb-2">
       <label for="cancel_reason" class="w-100">
-        {{__('labels.require_student_confirm')}}
+        {{__('labels.cancel_reason')}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
       </label>
       <textarea id="cancel_reason" name="cancel_reason" class="form-control" placeholder="" inputtype="zenkaku"></textarea>
