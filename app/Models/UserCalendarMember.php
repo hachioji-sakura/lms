@@ -663,6 +663,12 @@ class UserCalendarMember extends Model
       if($this->calendar->status=='rest'){
         $this->calendar->update(['status' =>'fix']);
       }
+      //振替先のカレンダーをキャンセルにする
+      $this->exchanged_calendars()->update(['status' => 'cancel']);
+      $exchanged_calendars = $this->exchanged_calendars()->get();
+      foreach($exchanged_calendars as $exchanged_calendar){
+        $exchanged_calendar->members()->update(['status' => 'cancel']);
+      }
       $this->_office_system_api('PUT', '', '', true);
     }
     else {
