@@ -358,23 +358,27 @@ EOT;
           ->orWhere('kana_last','like', $_like)
           ->orWhere('kana_first','like', $_like);
         $query = $this->scopeFindEmail($query, $_search_word, true);
-        $query = $this->scopeFindSchoolName($query, $_search_word);
+        $query = $this->scopeFindSchoolName($query, $_search_word, true);
       }
     });
     return $query;
   }
 
-  public function scopeFindSchoolName($query, $word)
+  public function scopeFindSchoolName($query, $word, $or=false)
   {
     $_like = '%'.$word.'%';
-    return $query->orWhereIn('user_id' , function ($query) use($_like){
+    $f = function ($query) use($_like){
       $query->select('user_id')
         ->from('common.user_tags')
         ->orWhere(function($query) use($_like){
           $query->where('tag_key','like','school_name')
           ->where('tag_value','like',$_like);
         });
-    });
+    };
+    if($or == true){
+      return $query->orWhereIn('user_id' , $f);
+    }
+    return $query->WhereIn('user_id' , $f);
   }
 
 
