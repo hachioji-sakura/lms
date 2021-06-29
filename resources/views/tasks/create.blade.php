@@ -36,13 +36,25 @@
       @component('tasks.components.subjects', ['subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
       <div class="row mt-2">
         <div class="col-12">
+          <label>{{__('labels.textbooks')}}</label>
+          <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+          <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
+            @foreach($textbooks as $textbook)
+            <option value="{{$textbook->id}}" {{isset($item) && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-12">
           <label>{{__('labels.tasks_remarks')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
             <textarea name="title" id="title" class="form-control" placeholder="{{__('messages.task_body_placeholder')}}" required="true"  maxlength=1000 >{{request()->has('copy_id')?'(コピー)':''}}{{isset($item) ? $item->full_title : ''}}</textarea>
           </div>
         </div>
-      </div>
+     </div>
       {{--詳細の役割はtitleが担うのでコメントアウト
       <div class="row mt-2">
         <div class="col-12">
@@ -71,16 +83,6 @@
               <option value=" ">{{__('labels.selectable')}}</option>
               @foreach($target_student->target_milestone as $milestone)
                 <option value="{{$milestone->id}}" {{isset($item) && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
-              @endforeach
-            </select>
-          </div>
-
-          <div class="col-12 col-md-6">
-            <label>{{__('labels.textbooks')}}</label>
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
-              @foreach($textbooks as $textbook)
-                <option value="{{$textbook->id}}" {{isset($item) && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
               @endforeach
             </select>
           </div>

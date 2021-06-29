@@ -81,6 +81,7 @@ return [
   'schedule_to_confirm' => '予定を講師確認済みにします',
   'schedule_rest_cancel' => '休み取消連絡',
   'schedule_fix' => '予定を確定する',
+  'schedule_confirm' => 'この予定を確定しますか？',
   'schedule_edit' => '予定を変更する',
   'monthly_confirmed' => '月次確定済み',
   'schedule_presence' => '出欠をつける',
@@ -139,6 +140,7 @@ return [
   'edit' => '変更',
   'select' => '選択',
   'cancel' => 'キャンセル',
+  'do_cancel' => 'キャンセルする',
 
   'check' => '確認',
   'top' => 'トップ',
@@ -481,7 +483,7 @@ return [
   'school_page_side_menu_part_time_credit' => '定時単位制',
   'school_page_side_menu_part_time_credit_night_only' => '定時単位制夜間',
   'school_page_side_menu_part_online_school' => '通信制',
-  
+
   'memos' => 'メモ',
   'no_agreements' => '契約なし',
   'bulk' => '一括',
