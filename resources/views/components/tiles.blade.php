@@ -52,6 +52,8 @@
                   {{$item->grade()}}
                 @elseif($field=='lesson')
                   {{$item->lesson()}}
+                @elseif($field=='school_name')
+                {{$item->school_name()}}
                 @endif
               </small>
             </span>

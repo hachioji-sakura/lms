@@ -126,7 +126,7 @@
 @section('contents')
 @component('components.tiles', [
   'domain' => $domain, 'search_word'=>$search_word, 'items'=>$items, 'user'=>$user,
-  'fields' => ['lesson' => 'primary', 'grade' => 'primary'],
+  'fields' => ['lesson' => 'primary', 'grade' => 'primary', 'school_name' => 'primary'],
 ])
 @endcomponent
 @endsection

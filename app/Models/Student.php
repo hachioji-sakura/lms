@@ -92,12 +92,12 @@ class Student extends Model
 
   public function enable_agreements_by_type($type){
     return $this->agreements()->enableByType($type);
-  }  
-  
+  }
+
   public function prev_agreements(){
     return $this->agreements()->where('status','commit')->orderby('start_date','desc');
   }
-  
+
   /**
    *　プロパティ：年齢
    */
@@ -358,10 +358,30 @@ EOT;
           ->orWhere('kana_last','like', $_like)
           ->orWhere('kana_first','like', $_like);
         $query = $this->scopeFindEmail($query, $_search_word, true);
+        $query = $this->scopeFindSchoolName($query, $_search_word, true);
       }
     });
     return $query;
   }
+
+  public function scopeFindSchoolName($query, $word, $or=false)
+  {
+    $_like = '%'.$word.'%';
+    $f = function ($query) use($_like){
+      $query->select('user_id')
+        ->from('common.user_tags')
+        ->orWhere(function($query) use($_like){
+          $query->where('tag_key','like','school_name')
+          ->where('tag_value','like',$_like);
+        });
+    };
+    if($or == true){
+      return $query->orWhereIn('user_id' , $f);
+    }
+    return $query->WhereIn('user_id' , $f);
+  }
+
+
 
   /**
    *　メソッド：登録
@@ -492,7 +512,7 @@ EOT;
     if($this->user->has_tag('student_type', 'fee_free')) return true;
     return false;
   }
-  
+
   //TODO 退会・休会に関して履歴がない
   public function is_active($date=''){
     //退会日を以前ならactive（次の日からno active)
@@ -1344,7 +1364,7 @@ EOT;
     else $_d = strtotime($date);
 
     if(!empty($this->unsubscribe_date) && strtotime($this->unsubscribe_date) < $_d) return 'unsubscribe';
-    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) && 
+    if(!empty($this->recess_start_date) && !empty($this->recess_end_date) &&
         strtotime($this->recess_start_date) <= $_d && strtotime($this->recess_end_date) >= $_d){
       return 'recess';
     }

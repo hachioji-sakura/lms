@@ -81,6 +81,7 @@ return [
   'schedule_to_confirm' => 'Update the schedule to teachers confirmation',
   'schedule_rest_cancel' => 'Schedule Rest Cancel',
   'schedule_fix' => 'Fix',
+  'schedule_confirm' => 'Do you want to confirm this schedule?',
   'schedule_edit' => 'Edit',
   'monthly_confirmed' => 'Monthly Confirmed',
   'schedule_presence' => 'Schedule Presence',
@@ -139,7 +140,7 @@ return [
   'edit' => 'Edit',
   'select' => 'Select',
   'cancel' => 'Cancel',
-
+  'do_cancel' => 'Cancel',
   'check' => 'Check',
   'top' => 'Top',
   'exchange' => 'Alternate',
@@ -481,7 +482,7 @@ return [
   'school_page_side_menu_part_time_credit' => 'Part Time Credit',
   'school_page_side_menu_part_time_credit_night_only' => 'Part Time Credit Night Only',
   'school_page_side_menu_part_online_school' => 'Online School',
-  
+
   'memos' => 'Teacher Memo',
   'no_agreements' => 'No Agreements',
   'bulk' => 'Bulk',
