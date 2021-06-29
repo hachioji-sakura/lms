@@ -35,7 +35,7 @@
 
       @component('tasks.components.subjects', ['subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
       <div class="row mt-2">
-        <div class="col-12 col-md-6">
+        <div class="col-12">
           <label>{{__('labels.textbooks')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
           <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
