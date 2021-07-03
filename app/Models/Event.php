@@ -184,7 +184,7 @@ class Event extends Milestone
               $query->searchTags([['tag_key' => 'manager_type', 'tag_value'=>'admin']]);
             });
             break;
-          case "stuff":
+          case "staff":
             $target->orWhereHas('manager', function($query) use ($lesson_tag, $grade_tags) {
               $query->findStatuses(['regular'])->where('user_id', '!=', 1);
             });

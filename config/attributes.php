@@ -3297,8 +3297,8 @@
 			"parent_attribute_value" => "",
 			"sort_no" => "3",
 		],
-		"stuff" => [
-			"attribute_value" => "stuff",
+		"staff" => [
+			"attribute_value" => "staff",
 			"attribute_name" => "事務員",
 			"parent_attribute_key" => "",
 			"parent_attribute_value" => "",
