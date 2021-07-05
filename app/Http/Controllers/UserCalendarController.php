@@ -1288,6 +1288,11 @@ class UserCalendarController extends MilestoneController
       $param['lesson_id'] = 0;
       $param['exchanged_calendar_id'] = 0;
       $param['teachers'] = [];
+      if($request->has('work')){
+        //体験面談の呼び出し側でしかworkをクエリ文字列にはセットしていない
+        //Todo work=3にて面談登録フォームとしているが、workの判定で本来やるべきではない
+        $param['item']->work = $request->get('work');
+      }
       if($request->has('exchanged_calendar_id')){
         $param['exchanged_calendar_id'] = $request->get('exchanged_calendar_id');
       }
@@ -1313,6 +1318,15 @@ class UserCalendarController extends MilestoneController
         }
         $student = $trial->student;
         $param['student_id'] = $student->id;
+        if($param['item']->work==3){
+          //面談の場合 $param['teachers]に事務員をまぜる
+          $user_ids = [];
+          foreach($param['teachers'] as $teacher){
+            $user_ids[] = $teacher->user_id;
+          }
+          $managers = Manager::findStatuses(["regular"])->whereNotIn('user_id', $user_ids)->get();
+          $param['teachers'] = array_merge($param['teachers'], $managers->all());
+        }
       }
       if($request->has('exchanged_calendar_id')){
         //振替元指定あり
@@ -1371,11 +1385,6 @@ class UserCalendarController extends MilestoneController
       if($request->has('end_date') && $request->has('end_hours') && $request->has('end_minutes')){
         $param['item']['end_hours'] = intval($request->get('end_hours'));
         $param['item']['end_minutes'] = intval($request->get('end_minutes'));
-      }
-      if($request->has('work')){
-        //体験面談の呼び出し側でしかworkをクエリ文字列にはセットしていない
-        //Todo work=3にて面談登録フォームとしているが、workの判定で本来やるべきではない
-        $param['item']->work = $request->get('work');
       }
       return view($this->domain.'.create',
         [ 'error_message' => '', '_edit' => false])
