@@ -202,7 +202,9 @@ class Event extends Milestone
     public function event_user_add(){
       $targets = $this->get_event_user();
       foreach($targets as $target){
-        $eu = EventUser::where('event_id', $this->id)->where('user_id' , $target->id)->first();
+        $eu = $this->event_users->where('user_id',$target->id)->first();
+
+
         if(isset($eu)) continue;
         EventUser::create([
           'event_id' => $this->id,
