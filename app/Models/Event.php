@@ -4,10 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\EventUser;
-use App\Models\Student;
-use App\Models\Teacher;
-use App\Models\Manager;
-use App\Models\StudentParent;
+use App\User;
 /**
  * App\Models\Event
  *
@@ -155,47 +152,63 @@ class Event extends Milestone
       }
     }
     public function get_event_user(){
-      $user_role_tag = $this->template->get_tag('user_role');
-      if(!isset($user_role_tag)) return null;
-      $target = null;
-      switch($user_role_tag->tag_value){
-        case "student":
-          $target = Student::query();
-          break;
-        case "teacher":
-          $target = Teacher::query();
-          break;
-        case "manager":
-          $target = Manager::searchTags([['tag_key' => 'manager_type', 'tag_value'=>'admin']]);
-          break;
-        case "stuff":
-          $target = Manager::query();
-          break;
-        case "parent":
-          $target = StudentParent::query();
-          break;
+      $user_role_tags = $this->template->get_tags('user_role');
+      if(!isset($user_role_tags)) return null;
+      $lesson_tag = $this->template->get_tags('lesson');
+      $grade_tags = $this->template->get_tags('grade');
+      $target = User::query();
+      foreach($user_role_tags as $user_role_tag){
+        switch($user_role_tag->tag_value){
+          case "student":
+            $target->orWhereHas('student', function($query) use ($lesson_tag, $grade_tags) {
+              $query->findStatuses(['regular'])->where('user_id', '!=', 1);
+              if(isset($lesson_tag) && count($lesson_tag)>0){
+                $query = $query->searchTags($lesson_tag);
+              }
+              if(isset($grade_tags) && count($grade_tags)>0){
+                $query = $query->searchTags($grade_tags);
+              }
+            });
+            break;
+          case "teacher":
+            $target->orWhereHas('teacher', function($query) use ($lesson_tag, $grade_tags) {
+              $query->findStatuses(['regular'])->where('user_id', '!=', 1);
+              if(isset($lesson_tag) && count($lesson_tag)>0){
+                $query = $query->searchTags($lesson_tag);
+              }
+            });
+            break;
+          case "manager":
+            $target->orWhereHas('manager', function($query) use ($lesson_tag, $grade_tags) {
+              $query->findStatuses(['regular'])->where('user_id', '!=', 1);
+              $query->searchTags([['tag_key' => 'manager_type', 'tag_value'=>'admin']]);
+            });
+            break;
+          case "staff":
+            $target->orWhereHas('manager', function($query) use ($lesson_tag, $grade_tags) {
+              $query->findStatuses(['regular'])->where('user_id', '!=', 1);
+            });
+            break;
+          case "parent":
+            $target->orWhereHas('student_parent', function($query) use ($lesson_tag, $grade_tags) {
+              $query->findStatuses(['regular'])->where('user_id', '!=', 1);
+            });
+            break;
+        }
       }
       if($target==null) return null;
-      $targets = $target->findStatuses(['regular'])->where('user_id', '!=', 1);
-      $lesson_tag = $this->template->get_tags('lesson');
-      if(isset($lesson_tag) && count($lesson_tag)>0){
-        $targets = $targets->searchTags($lesson_tag);
-      }
-      $grade_tags = $this->template->get_tags('grade');
-      if(isset($grade_tags) && count($grade_tags)>0){
-        $targets = $targets->searchTags($grade_tags);
-      }
-      $targets = $targets->get();
-      return $targets;
+      return $target->get();
     }
     public function event_user_add(){
       $targets = $this->get_event_user();
       foreach($targets as $target){
-        $eu = EventUser::where('event_id', $this->id)->where('user_id' , $target->user_id)->first();
+        $eu = $this->event_users->where('user_id',$target->id)->first();
+
+
         if(isset($eu)) continue;
         EventUser::create([
           'event_id' => $this->id,
-          'user_id' => $target->user_id,
+          'user_id' => $target->id,
           'status' => 'new',
         ]);
       }

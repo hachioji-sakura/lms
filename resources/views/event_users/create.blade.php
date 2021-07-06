@@ -20,7 +20,7 @@
             @foreach($event->get_event_user() as $target)
               @if(!$event->has_user($target->user_id))
                 <option value="{{$target->user_id}}"
-                >{{$target->name()}}</option>
+                >{{$target->details()->name()}}</option>
               @endif
             @endforeach
           </select>
