@@ -29,6 +29,8 @@ class Agreement extends Model
       'start_date',
       'end_date',
       'status',
+      'consumption_tax_rate',
+      'consumption_tax_type',
       'student_parent_id',
       'create_user_id',
     ];
@@ -207,6 +209,16 @@ class Agreement extends Model
         $is_update = $agreement->is_same($statement_form);
       }else{
         $is_update = true;
+      }
+
+      //消費税率とタイプは前回のものを引き継ぐ
+      //新規作成なら税抜きかつconfigの値を読む
+      if(!empty($agreement)){
+        $new_agreement->consumption_tax_type = $agreement->consumption_tax_type;
+        $new_agreement->consumption_tax_rate = $agreement->consumption_tax_rate;
+      }else{
+        $new_agreement->consumption_tax_type = "exclude";
+        $new_agreement->consumption_tax_rate = config('attribute.taxes')["consumption_tax_rate"];
       }
 
       //更新があればnew,更新がなければcommitで登録
