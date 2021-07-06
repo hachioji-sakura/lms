@@ -34,11 +34,11 @@
       </div>
 
       @component('tasks.components.subjects', ['subjects' => $subjects, 'domain' => $domain, 'item' => (isset($item) ? $item : null)]) @endcomponent
-      <div class="row mt-2">
-        <div class="col-12">
+      <div class="row">
+        <div class="col-12 mt-2">
           <label>{{__('labels.textbooks')}}</label>
           <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-          <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple" >
+          <select name="textbook_ids[]" class="form-control select2" width="100%" multiple="multiple">
             @foreach($textbooks as $textbook)
             <option value="{{$textbook->id}}" {{isset($item) && in_array($textbook->id,$item->textbooks->pluck('id')->toArray()) ? 'selected ': ''}}>{{$textbook->name}}</option>
             @endforeach
@@ -46,8 +46,18 @@
         </div>
       </div>
 
-      <div class="row mt-2">
-        <div class="col-12">
+      <div class="row">
+        <div class="col-12 mt-2">
+            <label>{{__('labels.milestones')}}</label>
+            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
+            <select name="milestone_id" class="form-control select2" width="100%">
+              <option value=" ">{{__('labels.selectable')}}</option>
+              @foreach($target_student->target_milestone as $milestone)
+                <option value="{{$milestone->id}}" {{isset($item) && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
+              @endforeach
+            </select>
+         </div>
+        <div class="col-12 mt-2">
           <label>{{__('labels.tasks_remarks')}}</label>
           <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
           <div class="input-group mb-3">
@@ -76,16 +86,6 @@
       </div>
       <div class="collapse" id="setting_details">
         <div class="row mt-2 collpase" id="setting_details">
-          <div class="col-12 col-md-6">
-            <label>{{__('labels.milestones')}}</label>
-            <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-            <select name="milestone_id" class="form-control select2" width="100%">
-              <option value=" ">{{__('labels.selectable')}}</option>
-              @foreach($target_student->target_milestone as $milestone)
-                <option value="{{$milestone->id}}" {{isset($item) && $milestone->id == $item->milestone_id ? 'selected ': ''}}>{{$milestone->title}}</option>
-              @endforeach
-            </select>
-          </div>
 
           @if(isset($item))
           <div class="col-12 col-md-6">
