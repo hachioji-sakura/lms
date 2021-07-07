@@ -216,4 +216,5 @@ return [
         'CSVReader' => App\Supports\Facades\CSVReader::class,
     ],
 
+    "consumption_tax_rate" => 0.1,
 ];
