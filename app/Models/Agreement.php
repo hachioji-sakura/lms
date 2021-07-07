@@ -30,7 +30,7 @@ class Agreement extends Model
       'end_date',
       'status',
       'consumption_tax_rate',
-      'consumption_tax_type',
+      'is_tax_include',
       'student_parent_id',
       'create_user_id',
     ];
@@ -173,7 +173,7 @@ class Agreement extends Model
         'title' => $member->user->details()->name() . ' : ' . date('Y/m/d'),
         'type' => 'normal',
         'start_date' => date('Y/m/1',strtotime($date)),
-        'end_date' => date('Y/m/t', strtotime($date)),
+        'end_date' => date('Y/m/t 23:59:59', strtotime($date)),
         'student_id' => $member->user->details()->id,
         'student_parent_id' => $member->user->details()->relations()->first()->student_parent_id,
         'monthly_fee' => $member->user->details()->get_monthly_fee(),
@@ -214,11 +214,11 @@ class Agreement extends Model
       //消費税率とタイプは前回のものを引き継ぐ
       //新規作成なら税抜きかつconfigの値を読む
       if(!empty($agreement)){
-        $new_agreement->consumption_tax_type = $agreement->consumption_tax_type;
+        $new_agreement->is_tax_include = $agreement->is_tax_include;
         $new_agreement->consumption_tax_rate = $agreement->consumption_tax_rate;
       }else{
-        $new_agreement->consumption_tax_type = "exclude";
-        $new_agreement->consumption_tax_rate = config('attribute.taxes')["consumption_tax_rate"];
+        $new_agreement->is_tax_include = false;
+        $new_agreement->consumption_tax_rate = config('app.consumption_tax_rate');
       }
 
       //更新があればnew,更新がなければcommitで登録
