@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
@@ -471,6 +472,135 @@ class StudentController extends UserController
     'subjects' => $subjects,
    ])->with($param);
   }
+
+  public function show_student_textbooks_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.student_textbooks";
+    $param['view'] = $view;
+    $exams = $item->exams()->search($request)->get();
+    $select_exams = $item->exams->pluck('name','id')->unique()->sort();
+    $subjects = $this->get_subjects($exams,"exam");
+    $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
+    $subjects_eq = Subject::get();
+    $grades_eq = GeneralAttribute::findKey('grade')->get();
+
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+
+    $fields = [
+      'name' => [
+        'page_form' => 'dialog',
+        'label' => __('labels.textbook_name'),
+        'domain_name' => __('labels.textbooks'),
+        "link" => function($row){
+          return "/student_textbooks/".$row['id'];
+        },
+      ],
+      'subject_list' => [
+        'label' => __('labels.subject'),
+      ],
+      'grade_list' => [
+        'label' => __('labels.grade'),
+      ],
+      'difficulty_name' => [
+        'label' => __('labels.difficulty'),
+      ],
+      'buttons' => [
+        'label'  => __('labels.control'),
+        'button' => [
+          'students_textbooks' =>[
+            'style' => 'danger',
+            'icon' => 'trash',
+            'label' =>'',
+            "dialog" => function($row){
+              return '/student_textbooks/'.$row['id'].'?action=delete';
+            }
+          ],
+        ]
+      ],
+    ];
+
+    $student_textbooks = $item->textbooks();
+    $student_textbooks = $this->_search_scope_textbooks($request,$student_textbooks);
+    $student_textbooks = $student_textbooks->paginate($param['_line']);
+    //dd($school_grades);
+    return view($this->domain.'.'.$view, [
+      'items' => $student_textbooks,
+      'fields' => $fields,
+      'item' => $item,
+      'exams' => $exams,
+      'grades' => $grades,
+      'subjects' => $subjects,
+      'subjects_eq' =>$subjects_eq,
+      'grades_eq' =>$grades_eq,
+    ])->with($param);
+  }
+
+  public function search_textbooks(Request $request)
+  {
+    $user = $this->login_details($request);
+    if(!isset($user)) return $this->forbidden();
+    if($this->is_manager($user->role)!=true) return $this->forbidden();
+
+    $param = $this->get_param($request);
+    //検索条件
+    $items = $this->_search_scope($request, $param['school_textbooks']);
+    $items = $items->paginate($param['_line']);
+
+    return $items;
+  }
+
+  /**
+   * フィルタリングロジック
+   *
+   * @param Request $request
+   * @param  Collection $items
+   * @return Collection
+   */
+  public function _search_scope_textbooks(Request $request, $items)
+  {
+    $forms = $request->all();
+    $prefix = 'search_';
+
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      $items = $items->searchWord($search_words);
+    }
+    if(isset($request->search_keyword)){
+      $search_keyword = explode(' ', $request->search_keyword);
+      $items = $items->searchWord($search_keyword);
+    }
+
+    if(isset($forms['search_subject'])){
+      $items = $items->searchSubject($forms['search_subject']);
+    }
+
+    if(isset($forms['search_grade'])){
+      $items = $items->searchGrade($forms['search_grade']);
+    }
+
+    return $items;
+  }
+
 
   public function show_exam_result_page(Request $request, $id, $exam_id)
   {

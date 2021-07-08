@@ -27,7 +27,7 @@
             {{$button['label']}}
           </a>
           @elseif(isset($button['link']))
-          <a 
+          <a
             @if(gettype($button['link'])=='string')
               href="/{{$domain}}/{{$row['id']}}/{{$button['link']}}"
             @else
@@ -39,6 +39,19 @@
             @endif
             {{$button['label']}}
           </a>
+          @elseif(isset($button['dialog']))
+            <a href="javascript:void(0);" page_title="{{$button['label']}}" page_form="dialog"
+               @if(gettype($button['dialog'])=='string')
+               page_url="/{{$domain}}/{{$row['id']}}/{{$button['dialog']}}"
+               @else
+               page_url="{{$button['dialog']($row)}}"
+               @endif
+               role="button" class="btn btn-{{$button['style']}} btn-sm float-left mr-1 my-1">
+              @if(isset($button['icon']))
+                <i class="fa fa-{{$button['icon']}} mr-1"></i>
+              @endif
+              {{$button['label']}}
+            </a>
           @elseif($button === 'download')
             @if(!empty($row->s3_url))
               <a href="{{$row->s3_url}}" role="button" class="btn btn-info btn-sm float-left mr-1 my-1" target="_blank">
@@ -61,7 +74,7 @@
             page_title = "{{$field['page_title']}}"
           @endif
           @if(isset($field['page_form']))
-            href="javascript:void(0);"  page_form = "{{$field['page_form']}}" page_url="{{$field['link']($row)}}"
+            href="javascript:void(0);" page_title=" {{$field['domain_name']??$domain_name }}詳細" page_form = "{{$field['page_form']}}" page_url="{{$field['link']($row)}}"
           @else
             href="{{$field['link']($row)}}"
           @endif

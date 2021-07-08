@@ -97,6 +97,12 @@ class Student extends Model
   public function prev_agreements(){
     return $this->agreements()->where('status','commit')->orderby('start_date','desc');
   }
+  public function textbooks(){
+    return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
+  }
+  public function store_student_textbooks($form){
+    $this->textbooks()->sync($form['textbooks']);
+  }
 
   /**
    *　プロパティ：年齢
