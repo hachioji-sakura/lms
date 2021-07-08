@@ -16,9 +16,15 @@
             </label>
         </div>
         <div class="form-check">
-            <input class="form-check-input icheck flat-green" type="radio" name="agreements[status]" id="status_commit" value="dummy" required="true">
-            <label class="form-check-label" for="status_commit">
+            <input class="form-check-input icheck flat-green" type="radio" name="agreements[status]" id="status_dummy" value="dummy" required="true">
+            <label class="form-check-label" for="status_dummy">
                 {{config('attribute.agreement_status')['dummy']}}
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input icheck flat-green" type="radio" name="agreements[status]" id="status_cancel" value="cancel" required="true">
+            <label class="form-check-label" for="status_cancel">
+                {{config('attribute.agreement_status')['cancel']}}
             </label>
         </div>
       </div>

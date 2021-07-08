@@ -82,7 +82,7 @@ class AgreementController extends MilestoneController
               ],
               'edit' => [
                 'type' => function($row){
-                  if($row->status == "dummy"){
+                  if($row->student->status == 'regular'){
                     return true;
                   }else{
                     return false;
