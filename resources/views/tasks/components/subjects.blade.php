@@ -1,9 +1,9 @@
 <div class="row mt-2">
   <div class="col-12 mb-2">
     <label>{{__('labels.subjects')}}</label>
-    <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
-    <select name="subject_id" id="select_subject" width="100%" class="form-control select2">
-      <option value=" ">{{__('labels.selectable')}}</option>
+    <span class="right badge badge-danger ml-1">{{__('labels.required')}}</span>
+    <select name="subject_id" id="select_subject" width="100%" class="form-control select2" required="true">
+      <option value="">{{__('labels.selectable')}}</option>
       @foreach($subjects as $subject)
       <option value="{{$subject->id}}"
       @if(!empty($item))

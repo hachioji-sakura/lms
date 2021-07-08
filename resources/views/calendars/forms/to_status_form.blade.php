@@ -1,5 +1,5 @@
 @if($item->is_teaching()==true)
-  <div class="col-6 mt-2">
+  <div class="col-12 mt-2">
     <div class="form-group">
       <label for="status_confirm" class="w-100">
         {{__('labels.schedule_confirm')}}
@@ -20,8 +20,7 @@
       </div>
     </div>
   </div>
-
-  <div class="col-6 mt-2 collapse student_confirm_form">
+  <div class="col-12 mt-2 collapse student_confirm_form">
     <div class="form-group">
       <label for="send_mail" class="w-100">
         {{__('labels.updated_status')}}
@@ -41,7 +40,7 @@
   </div>
 
   <div class="status_change_form" style="display:none;">
-    <div class="col-6 mb-2">
+    <div class="col-12 mb-2">
       <label for="cancel_reason" class="w-100">
         {{__('labels.cancel_reason')}}
         <span class="right badge badge-secondary ml-1">{{__('labels.optional')}}</span>
@@ -70,3 +69,44 @@
   </div>
 </div>
 @endif
+<script>
+      //初期表示
+      $(function(){
+          $('.status_change_form').hide();
+          $('.student_confirm_form').show();
+          select_action_change();
+      });
+
+      function select_action_change(obj){
+        var confirm = $('#status_confirm').is(':checked');
+        var cancel = $('#status_cancel').is(':checked');
+
+        if(confirm){
+          $('.status_change_form').hide();
+          $('.student_confirm_form').show();
+
+          if($('#status_fix_student').is(':checked')){
+            $('#hidden_status').val('fix');
+          }else if ($('#status_confirm_student').is(':checked')){
+            $('#hidden_status').val('confirm');
+          }else{
+            $('#hidden_status').val('confirm');
+          }
+        }
+        else if(cancel){
+          $('.status_change_form').show();
+          $('.student_confirm_form').hide();
+          $('#hidden_status').val('cancel');
+        }
+      }
+      function student_confirm_change(obj){
+        var status_fix_student = $('#status_fix_student').is(':checked');
+        var status_confirm_student = $('#status_confirm_student').is(':checked');
+        if(status_confirm_student){
+          $('#hidden_status').val('confirm');
+        }
+        else if(status_fix_student){
+          $('#hidden_status').val('fix');
+        }
+      }
+  </script>
