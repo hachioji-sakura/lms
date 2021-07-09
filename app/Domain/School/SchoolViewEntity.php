@@ -2,7 +2,6 @@
 
 namespace App\Domain\School;
 
-use App\Domain\BaseEntity;
 use LogicException;
 
 /**
@@ -10,7 +9,7 @@ use LogicException;
  *
  * @package App\Domain\School
  */
-class SchoolViewEntity extends BaseEntity
+class SchoolViewEntity
 {
     /**
      * ページタイトル
@@ -97,8 +96,8 @@ class SchoolViewEntity extends BaseEntity
             'phone_number' => [
                 'label' => $this->localizeName('phone_number'),
             ],
-            'process'      => [
-                'label' => $this->localizeName('process'),
+            'school_type'      => [
+                'label' => $this->localizeName('school_type'),
             ],
             'buttons'      => [
                 'label'  => $this->localizeName('control'),
