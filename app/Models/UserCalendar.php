@@ -284,6 +284,7 @@ EOT;
           inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
+          and um.exchange_limit_date >= current_date
 
       and user_calendars.course_minutes > (
         select ifnull(sum(ec.course_minutes),0) from user_calendars ec where ec.exchanged_calendar_id = user_calendars.id
