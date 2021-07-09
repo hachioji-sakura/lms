@@ -46,7 +46,7 @@ return [
   'input_login_id' => 'ログインID またはメールアドレス',
   'input_password' => 'パスワード',
   'login_id' => 'ログインID',
-  'login_setting' => 'ログイン設定',
+  'student_account_add' => '生徒アカウント追加',
   'password' => 'パスワード',
   'password_confirm' => 'パスワード（確認）',
   'password_forget' => 'パスワード忘れた場合 ',
