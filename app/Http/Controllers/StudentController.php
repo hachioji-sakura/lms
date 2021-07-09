@@ -482,12 +482,6 @@ class StudentController extends UserController
 
     $view = "page.student_textbooks";
     $param['view'] = $view;
-    $exams = $item->exams()->search($request)->get();
-    $select_exams = $item->exams->pluck('name','id')->unique()->sort();
-    $subjects = $this->get_subjects($exams,"exam");
-    $grades = $item->exams->pluck('grade_name','grade')->unique()->sort();
-    $subjects_eq = Subject::get();
-    $grades_eq = GeneralAttribute::findKey('grade')->get();
 
     if(!$request->has('_line')){
       $request->merge([
@@ -541,16 +535,16 @@ class StudentController extends UserController
     $student_textbooks = $item->textbooks();
     $student_textbooks = $this->_search_scope_textbooks($request,$student_textbooks);
     $student_textbooks = $student_textbooks->paginate($param['_line']);
-    //dd($school_grades);
+
+    $subjects = Subject::get();
+    $grades = GeneralAttribute::findKey('grade')->get();
+
     return view($this->domain.'.'.$view, [
       'items' => $student_textbooks,
       'fields' => $fields,
       'item' => $item,
-      'exams' => $exams,
-      'grades' => $grades,
-      'subjects' => $subjects,
-      'subjects_eq' =>$subjects_eq,
-      'grades_eq' =>$grades_eq,
+      'subjects' =>$subjects,
+      'grades' =>$grades,
     ])->with($param);
   }
 
