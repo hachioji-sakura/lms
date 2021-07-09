@@ -41,7 +41,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('places/phone_list','PlaceController@phone_list');
   Route::resource('places','PlaceController');
   Route::resource('place_floors','PlaceFloorController');
-
+  Route::resource('place_textbooks','PlaceTextbookController');
   Route::get('auth/mail','AuthController@mail_send');
 
   Route::get('events/{id}/to_inform','EventController@to_inform_page');

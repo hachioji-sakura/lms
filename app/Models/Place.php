@@ -48,6 +48,12 @@ class Place extends Model
   public function floors(){
     return $this->hasMany('App\Models\PlaceFloor', 'place_id');
   }
+  public function textbooks(){
+    return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
+  }
+  public function store_place_textbooks($form){
+    $this->textbooks()->sync($form['textbooks']);
+  }
   public function name(){
     if(app()->getLocale()=='en') return $this->name_en;
     return $this->name;

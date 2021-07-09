@@ -487,6 +487,7 @@ return [
   'no_agreements' => 'No Agreements',
   'bulk' => 'Bulk',
   'school_textbooks' => 'Textbooks for School',
+  'place_textbooks' => 'Textbooks for Place',
   'is_include_expired' => 'include expired',
   'copy_button' => 'Copy Button',
   'study_record_copy' => 'Study Record Copy',

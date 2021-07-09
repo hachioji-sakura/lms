@@ -90,6 +90,13 @@ class PlaceController extends MilestoneController
       "buttons" => [
         "label" => __('labels.control'),
         "button" => [
+          'place_textbooks' =>[
+            'style' =>'outline-primary',
+            'label' => '使用テキスト',
+            "link" => function($row){
+              return "/place_textbooks?place_id=".$row['id'];
+            }
+          ],
           "edit",
           ]
         ],
