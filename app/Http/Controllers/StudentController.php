@@ -505,7 +505,7 @@ class StudentController extends UserController
         'label' => __('labels.textbook_name'),
         'domain_name' => __('labels.textbooks'),
         "link" => function($row){
-          return "/student_textbooks/".$row['id'];
+          return "/textbooks/".$row->id;
         },
       ],
       'subject_list' => [
