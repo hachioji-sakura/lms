@@ -46,7 +46,7 @@ return [
   'input_login_id' => 'login_id or your e-mail',
   'input_password' => 'login password',
   'login_id' => 'login id',
-  'login_setting' => 'login setting',
+  'student_account_add' => 'Student Account Add',
   'password' => 'Password',
   'password_confirm' => 'Password (confirm)',
   'password_forget' => 'Forgot your password? ',
