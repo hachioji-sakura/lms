@@ -81,6 +81,8 @@
           </small>
         </span>
         @endforeach
+      @elseif(isset($field['include']))
+        @include($domain.'.'.$field['include'])
       @else
         @empty($row[$key])
           ―

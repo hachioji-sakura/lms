@@ -171,6 +171,10 @@ class User extends Authenticatable
       });
     }
 
+    public function ordered_orders(){
+      return $this->hasMany('App\Models\Order','ordered_user_id');
+    }
+
     /**
      * パスワードリセット通知の送信
      *

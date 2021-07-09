@@ -165,4 +165,10 @@ return [
  "info_unsubscribe_for_teacher1" => ":student_name will be unsubscribe on the following dates.",
  "info_unsubscribe_for_teacher2" => "About exchange lessons, make sure to do it by the scheduled unsubscribe date.\nPlease register for the exchange lesson.",
  "error_skype_name_not_found" => "For online classes, you need to set a Skype Name.\nPlease set the Skype Name from the work settings.",
-  ];
+ "status_update_confirm" => "Would you like to update this item to :status?",
+ "delete_confirm" => "Do you want to delete it ?",
+ 'orders_title_placeholder' => "ex. Text Name",
+ 'orders_description' => 'orders about you',
+ ];
+
+

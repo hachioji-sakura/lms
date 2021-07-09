@@ -34,5 +34,7 @@ return array(
   'progress' => 'primary',
   'reapply' => 'secondary',
   'dummy' => 'danger',
+  'ordered' => 'info',
+  'recieved' => 'warning',
   );
 ?>

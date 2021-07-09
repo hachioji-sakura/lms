@@ -567,4 +567,35 @@ class TeacherController extends StudentController
       }, '担当生徒登録', __FILE__, __FUNCTION__, __LINE__ );
       return $this->save_redirect($res, $param, $res['message']);
     }
+
+    public function order_page(Request $request, $id){
+      $param = $this->get_param($request,$id);
+      $param['fields'] = $this->get_order_list_fields();
+      $param['items'] = $param['item']->user->ordered_orders()->paginate();;
+      $param['view'] = 'orders';
+      return view($this->domain.'.orders')->with($param);
+    }
+
+    public function get_order_list_fields(){
+      return [
+        'title' => [
+          'label' => __('labels.title'),
+          'page_title' => __('labels.details'),
+          'page_form' => 'dialog',
+          'link' => function($row){
+            return "/orders/".$row->id;
+          }
+        ],
+        'status_name' => [
+          'label' => __('labels.status'),
+        ],
+        'target_user_name' => [
+          'label' => __('labels.target_user')
+        ],
+        'order_buttons' =>[
+          'label' => __('labels.control'),
+          'include' => 'order_buttons'
+        ]
+      ];
+    }
 }
