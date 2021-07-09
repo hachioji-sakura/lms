@@ -300,7 +300,7 @@ EOT;
                 exchanged_calendar_id
             ) as ec 
              on ec.calendar_id = uc.id 
-            where uc.course_minutes >= ifnull(ec.course_minutes,0)
+            where uc.course_minutes > ifnull(ec.course_minutes,0)
 EOT;
     if($user_id > 0){
       $param[] = $user_id;
