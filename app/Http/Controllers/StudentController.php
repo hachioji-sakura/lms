@@ -527,7 +527,7 @@ class StudentController extends UserController
     $grades = GeneralAttribute::findKey('grade')->get();
 
     return view($this->domain.'.'.$view, [
-      'items' => $student_textbooks,
+      "textbooks" => $student_textbooks,
       'fields' => $fields,
       'item' => $item,
       'subjects' =>$subjects,
