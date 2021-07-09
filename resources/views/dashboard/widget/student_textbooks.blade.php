@@ -1,7 +1,7 @@
 @section('list_filter')
   @component('components.list_filter', ['filter' => $filter, '_page' => $_page, '_line' => $_line, 'domain' => $domain, 'domain_name' => $domain_name, 'attributes'=>$attributes])
     @slot("search_form")
-      @component('textbooks.forms.search_form', ['grades' => $grades_eq , 'subjects' => $subjects_eq ])
+      @component('textbooks.forms.search_form', ['grades' => $grades , 'subjects' => $subjects ])
       @endcomponent
       <input type="hidden" name="student_id" value="{{request()->student_id}}">
     @endslot
