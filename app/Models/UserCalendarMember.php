@@ -658,17 +658,18 @@ class UserCalendarMember extends Model
   }
   public function rest_cancel($is_exec=true){
     if($is_exec==true){
-      //授業予定に戻す
+
+      //キャンセル取り消し
       $this->update(['status' => 'fix']);
-      if($this->calendar->status=='rest'){
-        $this->calendar->update(['status' =>'fix']);
-      }
-      //振替先のカレンダーをキャンセルにする
-      $this->exchanged_calendars()->update(['status' => 'cancel']);
+      $this->calendar->set_status();
+
+      //振替　キャンセル
       $exchanged_calendars = $this->exchanged_calendars()->get();
       foreach($exchanged_calendars as $exchanged_calendar){
         $exchanged_calendar->members()->update(['status' => 'cancel']);
+        $exchanged_calendar->set_status();
       }
+
       $this->_office_system_api('PUT', '', '', true);
     }
     else {

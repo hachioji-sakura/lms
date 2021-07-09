@@ -284,7 +284,6 @@ EOT;
           inner join common.students s on s.user_id = um.user_id
         where
           um.status = 'rest'
-          and um.exchange_limit_date >= current_date
 
       and user_calendars.course_minutes > (
         select ifnull(sum(ec.course_minutes),0) from user_calendars ec where ec.exchanged_calendar_id = user_calendars.id
@@ -539,7 +538,7 @@ EOT;
           if($this->work==9) return "欠勤";
         case "presence":
         if($this->work==9) return "出勤";
-      }  
+      }
     }
     return $status_name;
   }
@@ -1212,6 +1211,9 @@ EOT;
     $status = "new";
     $is_update = false;
     //講師のステータスでみるものは、confirmとlecture_cancel
+
+    //振替カレンダーが存在するかつ、
+
     foreach($this->members as $member){
       if($member->user_id != $this->user_id) continue;
       if($this->work==9){
@@ -1225,6 +1227,8 @@ EOT;
             $status = $member->status;
             break;
         }
+
+
       }
     }
     if($this->work==9){
@@ -1260,6 +1264,7 @@ EOT;
           case "cancel":
             //new,confirm なんらかcancelステータスしかない場合、cancel
             if($status=='new' || $status=='confirm') $status='cancel';
+            if($this->exchanged_calendar_id !=0) $status ='cancel';
             break;
           case "confirm":
             if($status=='new') $status='confirm';
