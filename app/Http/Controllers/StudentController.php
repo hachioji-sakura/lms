@@ -517,19 +517,6 @@ class StudentController extends UserController
       'difficulty_name' => [
         'label' => __('labels.difficulty'),
       ],
-      'buttons' => [
-        'label'  => __('labels.control'),
-        'button' => [
-          'students_textbooks' =>[
-            'style' => 'danger',
-            'icon' => 'trash',
-            'label' =>'',
-            "dialog" => function($row){
-              return '/student_textbooks/'.$row['id'].'?action=delete';
-            }
-          ],
-        ]
-      ],
     ];
 
     $student_textbooks = $item->textbooks();
