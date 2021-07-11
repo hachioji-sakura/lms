@@ -1,5 +1,5 @@
 @section('title')
-  {{$domain_name}}試験一覧
+  {{$domain_name}}使用テキスト一覧
 @endsection
 @extends('students.page')
 @include($domain.'.menu')
