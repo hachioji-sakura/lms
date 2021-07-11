@@ -100,8 +100,8 @@ class Student extends Model
   public function textbooks(){
     return $this->morphToMany('App\Models\Textbook', 'textbookable')->withTimestamps();
   }
-  public function store_student_textbooks($form){
-    $this->textbooks()->sync($form['textbooks']);
+  public function store_student_textbooks($ids){
+    $this->textbooks()->sync($ids);
   }
 
   /**

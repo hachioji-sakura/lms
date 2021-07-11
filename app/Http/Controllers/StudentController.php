@@ -629,7 +629,7 @@ class StudentController extends UserController
       $form['textbooks'] = $request->get('textbooks');
 
       $item = Student::find($form['student_id']);
-      $item->store_student_textbooks($form);
+      $item->store_student_textbooks($form['textbooks']);
       return $this->api_response(200, '', '', $item);
     }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
 
