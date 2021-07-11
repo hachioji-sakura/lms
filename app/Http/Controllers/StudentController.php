@@ -474,7 +474,7 @@ class StudentController extends UserController
    ])->with($param);
   }
 
-  public function show_student_textbooks_page(Request $request, $id)
+  public function show_textbooks_page(Request $request, $id)
   {
     $init = $this->init_show_page($request,$id);
     $param = $init['param'];

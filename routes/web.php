@@ -278,7 +278,7 @@ Route::group(['middleware' => 'request.trace', 'prefix' => ''], function() {
   Route::get('students/{id}/school_grades','StudentController@show_school_grade_page');
   Route::get('students/{id}/exams','StudentController@show_exam_page');
   Route::get('students/{id}/exams/{exam_id}','StudentController@show_exam_result_page');
-  Route::get('students/{id}/textbooks','StudentController@show_student_textbooks_page');
+  Route::get('students/{id}/textbooks','StudentController@show_textbooks_page');
   Route::get('students/{id}/textbooks/create','StudentController@sync_textbooks_page');
   Route::post('students/{id}/textbooks/store','StudentController@sync_textbooks');
 
