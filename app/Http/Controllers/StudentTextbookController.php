@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\Textbook;
 class StudentTextbookController extends MilestoneController
 {
-  public $domain = 'student_textbooks';
-  public $table = 'student_textbooks';
+  public $domain = 'textbooks';
+  public $table = 'textbooks';
 
   public function model(){
     return Textbook::query();
@@ -21,7 +21,7 @@ class StudentTextbookController extends MilestoneController
    * 一覧表示
    *
    * @param  \Illuminate\Http\Request  $request
-   * @return view / student_textbooks.lists
+   * @return view / textbooks.lists
    */
   public function index(Request $request)
   {
@@ -82,7 +82,7 @@ class StudentTextbookController extends MilestoneController
 
     $param = $this->get_param($request);
     //検索条件
-    $items = $this->_search_scope($request, $param['student_textbooks']);
+    $items = $this->_search_scope($request, $param['textbooks']);
     $items = $items->paginate($param['_line']);
 
     $fields = [
@@ -194,7 +194,7 @@ class StudentTextbookController extends MilestoneController
         abort(404, 'ページがみつかりません(1)');
       }
       $ret['student_id'] = $student_id;
-      $ret['student_textbooks'] = $ret['student']->textbooks();
+      $ret['textbooks'] = $ret['student']->textbooks();
     } elseif (empty($id) && empty($student_id)){
       abort(400);
     }

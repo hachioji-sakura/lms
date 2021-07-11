@@ -1,5 +1,5 @@
 <div id="school_textbooks" class="direct-chat-msg">
-  @include('student_textbooks.create_form')
+  @include('students.textbooks.create_form')
   @if(isset($_edit) && $_edit===true)
   <form id="edit" method="POST" action="/students/{{$student_id}}/textbooks/store">
   @method('PUT')

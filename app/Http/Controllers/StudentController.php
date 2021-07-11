@@ -610,7 +610,7 @@ class StudentController extends UserController
     $param['textbooks'] = Textbook::get();
     $param['subjects'] = Subject::get();
     $param['grades'] = GeneralAttribute::findKey('grade')->get();
-    return view('student_textbooks'.'.create',['_edit' => false])
+    return view('students.textbooks.create',['_edit' => false])
       ->with($param);
   }
 
