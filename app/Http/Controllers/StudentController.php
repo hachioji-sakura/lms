@@ -481,7 +481,7 @@ class StudentController extends UserController
     $item = $init['item'];
     $model = $init['model'];
 
-    $view = "page.student_textbooks";
+    $view = "page.textbooks";
     $param['view'] = $view;
 
     if(!$request->has('_line')){
