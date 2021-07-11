@@ -191,7 +191,7 @@
               </a>
             </li>
             <li class="nav-item mr-1">
-              <a class="nav-link btn btn-sm btn-default {{$view == 'page.student_textbooks' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/student_textbooks">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.student_textbooks' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/textbooks">
                 <small>
                   <i class="fa fa-book"></i>
                   {{__(('labels.school_textbooks'))}}

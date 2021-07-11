@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Models\Textbook;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
@@ -582,6 +583,64 @@ class StudentController extends UserController
     return $items;
   }
 
+  /**
+   * 新規登録画面
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function sync_textbooks_page(Request $request,$id){
+
+    $student_id = $id;
+
+    if($request->has('student_id')) $student_id = $request->student_id;
+
+    $param = $this->get_common_param($request);
+    if(!empty($student_id)){
+      $param['student'] = Student::find($student_id);
+      if(!isset($param['student'])){
+        abort(404, 'ページがみつかりません(1)');
+      }
+      $param['student_id'] = $student_id;
+      $param['student_textbooks'] = $param['student']->textbooks();
+    } elseif (empty($id) && empty($student_id)){
+      abort(400);
+    }
+
+    $param['domain'] = 'textbooks';
+    $param['textbooks'] = Textbook::get();
+    $param['subjects'] = Subject::get();
+    $param['grades'] = GeneralAttribute::findKey('grade')->get();
+    return view('student_textbooks'.'.create',['_edit' => false])
+      ->with($param);
+  }
+
+  public function sync_textbooks(Request $request,$id){
+    $param = $this->get_param($request);
+
+    $form = $request->all();
+    if(empty($form['student_id'])){
+       $this->bad_request('リクエストエラー');
+    }
+
+    $res = $this->transaction($request, function() use ($request){
+      $user = $this->login_details($request);
+      $form['create_user_id'] = $user->user_id;
+      $form['student_id'] = $request->get('student_id');
+      $form['textbooks'] = $request->get('textbooks');
+
+      $item = Student::find($form['student_id']);
+      $item->store_student_textbooks($form);
+      return $this->api_response(200, '', '', $item);
+    }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
+
+    if(empty($res['message'])){
+      $message = '登録しました。';
+    }else{
+      $message = $res['message'];
+    }
+    //生徒詳細からもCALLされる
+    return $this->save_redirect($res, $param, $message);
+  }
 
   public function show_exam_result_page(Request $request, $id, $exam_id)
   {

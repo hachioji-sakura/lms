@@ -1,10 +1,10 @@
 <div id="school_textbooks" class="direct-chat-msg">
   @include('student_textbooks.create_form')
   @if(isset($_edit) && $_edit===true)
-  <form id="edit" method="POST" action="/{{$domain}}/{{$item['id']}}">
+  <form id="edit" method="POST" action="/students/{{$student_id}}/textbooks/store">
   @method('PUT')
   @else
-  <form id="edit" method="POST" action="/{{$domain}}">
+  <form id="edit" method="POST" action="/students/{{$student_id}}/textbooks/store">
     @endif
     @csrf
     @if(isset($origin))
