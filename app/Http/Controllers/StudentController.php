@@ -601,7 +601,7 @@ class StudentController extends UserController
   }
 
   public function sync_textbooks(Request $request,$id){
-    $param = $this->get_param($request);
+    $param = $this->get_param($request,$id);
 
     $form = $request->all();
     if(empty($form['student_id'])){
