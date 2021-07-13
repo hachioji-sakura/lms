@@ -566,6 +566,15 @@ class StudentController extends UserController
       $items = $items->searchGrade($forms['search_grade']);
     }
 
+    $forms = $request->all();
+    $scopes = ['difficulty'];
+
+    foreach($scopes as $scope){
+      if(isset($forms[$prefix.$scope])){
+        $items = $items->where($scope,$forms[$prefix.$scope]);
+      }
+    }
+
     return $items;
   }
 
