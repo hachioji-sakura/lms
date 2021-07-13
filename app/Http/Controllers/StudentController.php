@@ -536,20 +536,6 @@ class StudentController extends UserController
     ])->with($param);
   }
 
-  public function search_textbooks(Request $request)
-  {
-    $user = $this->login_details($request);
-    if(!isset($user)) return $this->forbidden();
-    if($this->is_manager($user->role)!=true) return $this->forbidden();
-
-    $param = $this->get_param($request);
-    //検索条件
-    $items = $this->_search_scope($request, $param['school_textbooks']);
-    $items = $items->paginate($param['_line']);
-
-    return $items;
-  }
-
   /**
    * フィルタリングロジック
    *
@@ -584,7 +570,7 @@ class StudentController extends UserController
   }
 
   /**
-   * 新規登録画面
+   * テキスト登録画面
    *
    * @return \Illuminate\Http\Response
    */
