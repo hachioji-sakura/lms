@@ -279,16 +279,28 @@ EOT;
     //かつ、振替が未登録(cancelは除く）
     $param = [];
     $where_raw = <<<EOT
-      user_calendars.id in (
-        select um.calendar_id from user_calendar_members um
-          inner join common.students s on s.user_id = um.user_id
-        where
-          um.status = 'rest'
-          and um.exchange_limit_date >= current_date
-
-      and user_calendars.course_minutes > (
-        select ifnull(sum(ec.course_minutes),0) from user_calendars ec where ec.exchanged_calendar_id = user_calendars.id
-      )
+      work = 6
+      and user_calendars.id in (
+        select uc.id from 
+          user_calendars uc
+          inner join user_calendar_members um on uc.id = um.calendar_id
+            and um.status = 'rest'
+            and um.exchange_limit_date >= current_date
+            inner join common.students s on s.user_id = um.user_id
+            left outer join  ( 
+              select
+                exchanged_calendar_id as calendar_id
+                , sum(ec.course_minutes) as course_minutes 
+              from
+                user_calendars ec 
+              where
+                ec.exchanged_calendar_id > 0 
+                and ec.status not in ('cancel', 'invalid') 
+              group by
+                exchanged_calendar_id
+            ) as ec 
+             on ec.calendar_id = uc.id 
+            where uc.course_minutes > ifnull(ec.course_minutes,0)
 EOT;
     if($user_id > 0){
       $param[] = $user_id;
@@ -296,14 +308,8 @@ EOT;
        and um.user_id = ?
 EOT;
     }
-    $where_raw .= <<<EOT
-        )
-        and user_calendars.id in (
-          select calendar_id from user_calendar_tags where
-            tag_value = 'single'
-            and tag_key = 'course_type'
-          )
-EOT;
+    $where_raw .= ')';
+
     if($lesson > 0){
       $param[] = $lesson;
       $where_raw .= <<<EOT
@@ -314,6 +320,8 @@ EOT;
             )
 EOT;
     }
+
+
     $query = $query->whereRaw($where_raw,$param);
     //$query = $this->scopeSearchDate($query, $from, $to);
     return $query;
