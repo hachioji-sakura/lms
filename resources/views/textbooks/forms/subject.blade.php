@@ -1,3 +1,4 @@
+@empty(!$subjects)
 <div class="col-12">
   <div class="form-group">
     <label for="{{$prefix}}subject" class="w-100">
@@ -22,3 +23,4 @@
     </select>
   </div>
 </div>
+@endempty

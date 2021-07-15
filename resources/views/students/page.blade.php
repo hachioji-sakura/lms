@@ -190,6 +190,14 @@
                 </small>
               </a>
             </li>
+            <li class="nav-item mr-1">
+              <a class="nav-link btn btn-sm btn-default {{$view == 'page.textbooks' ? 'active' : ''}}" href="/{{$domain}}/{{$item->id}}/textbooks">
+                <small>
+                  <i class="fa fa-book"></i>
+                  {{__(('labels.school_textbooks'))}}
+                </small>
+              </a>
+            </li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab_milestones">

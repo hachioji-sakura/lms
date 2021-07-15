@@ -488,7 +488,9 @@ return [
   'no_agreements' => '契約なし',
   'bulk' => '一括',
   'school_textbooks' => '学校使用テキスト',
+  'student_textbooks' => '生徒使用テキスト',
   'is_include_expired' => '期限切れ',
   'copy_button' => 'コピーする',
   'study_record_copy' => '学習記録コピー',
+
 ];

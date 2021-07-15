@@ -1,3 +1,4 @@
+@empty(!$grades)
 <div class="col-12 col-md-6">
   <div class="form-group">
     <label for="{{$prefix}}grade" class="w-100">
@@ -22,3 +23,4 @@
     </select>
   </div>
 </div>
+@endempty

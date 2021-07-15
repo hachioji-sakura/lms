@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
+use App\Models\Textbook;
 use App\User;
 use App\Models\Student;
 use App\Models\StudentParent;
@@ -470,6 +472,169 @@ class StudentController extends UserController
     'grades' => $grades,
     'subjects' => $subjects,
    ])->with($param);
+  }
+
+  public function show_textbooks_page(Request $request, $id)
+  {
+    $init = $this->init_show_page($request,$id);
+    $param = $init['param'];
+    $item = $init['item'];
+    $model = $init['model'];
+
+    $view = "page.textbooks";
+    $param['view'] = $view;
+
+    if(!$request->has('_line')){
+      $request->merge([
+        '_line' => $this->pagenation_line,
+      ]);
+    }
+    if(!$request->has('_page')){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+    else if($request->get('_page')==0){
+      $request->merge([
+        '_page' => 1,
+      ]);
+    }
+
+    $fields = [
+      'name' => [
+        'page_form' => 'dialog',
+        'label' => __('labels.textbook_name'),
+        'domain_name' => __('labels.textbooks'),
+        "link" => function($row){
+          return "/textbooks/".$row->id;
+        },
+      ],
+      'subject_list' => [
+        'label' => __('labels.subject'),
+      ],
+      'grade_list' => [
+        'label' => __('labels.grade'),
+      ],
+      'difficulty_name' => [
+        'label' => __('labels.difficulty'),
+      ],
+    ];
+
+    $student_textbooks = $item->textbooks();
+    $student_textbooks = $this->_search_scope_textbooks($request,$student_textbooks);
+    $student_textbooks = $student_textbooks->paginate($param['_line']);
+
+    $subjects = Subject::get();
+    $grades = GeneralAttribute::findKey('grade')->get();
+
+    return view($this->domain.'.'.$view, [
+      "textbooks" => $student_textbooks,
+      'fields' => $fields,
+      'item' => $item,
+      'subjects' =>$subjects,
+      'grades' =>$grades,
+    ])->with($param);
+  }
+
+  /**
+   * フィルタリングロジック
+   *
+   * @param Request $request
+   * @param  Collection $items
+   * @return Collection
+   */
+  public function _search_scope_textbooks(Request $request, $items)
+  {
+    $forms = $request->all();
+    $prefix = 'search_';
+
+    //検索ワード
+    if(isset($request->search_word)){
+      $search_words = explode(' ', $request->search_word);
+      $items = $items->searchWord($search_words);
+    }
+    if(isset($request->search_keyword)){
+      $search_keyword = explode(' ', $request->search_keyword);
+      $items = $items->searchWord($search_keyword);
+    }
+
+    if(isset($forms['search_subject'])){
+      $items = $items->searchSubject($forms['search_subject']);
+    }
+
+    if(isset($forms['search_grade'])){
+      $items = $items->searchGrade($forms['search_grade']);
+    }
+
+    $forms = $request->all();
+    $scopes = ['difficulty'];
+
+    foreach($scopes as $scope){
+      if(isset($forms[$prefix.$scope])){
+        $items = $items->where($scope,$forms[$prefix.$scope]);
+      }
+    }
+
+    return $items;
+  }
+
+  /**
+   * テキスト登録画面
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function sync_textbooks_page(Request $request,$id){
+
+    $student_id = $id;
+
+    if($request->has('student_id')) $student_id = $request->student_id;
+
+    $param = $this->get_common_param($request);
+    if(!empty($student_id)){
+      $param['student'] = Student::find($student_id);
+      if(!isset($param['student'])){
+        abort(404, 'ページがみつかりません(1)');
+      }
+      $param['student_id'] = $student_id;
+      $param['student_textbooks'] = $param['student']->textbooks();
+    } elseif (empty($id) && empty($student_id)){
+      abort(400);
+    }
+
+    $param['domain'] = 'textbooks';
+    $param['textbooks'] = Textbook::get();
+    $param['subjects'] = Subject::get();
+    $param['grades'] = GeneralAttribute::findKey('grade')->get();
+    return view('students.textbooks.create',['_edit' => false])
+      ->with($param);
+  }
+
+  public function sync_textbooks(Request $request,$id){
+    $param = $this->get_param($request,$id);
+
+    $form = $request->all();
+    if(empty($form['student_id'])){
+       $this->bad_request('リクエストエラー');
+    }
+
+    $res = $this->transaction($request, function() use ($request){
+      $user = $this->login_details($request);
+      $form['create_user_id'] = $user->user_id;
+      $form['student_id'] = $request->get('student_id');
+      $form['textbooks'] = $request->get('textbooks');
+
+      $item = Student::find($form['student_id']);
+      $item->store_student_textbooks($form['textbooks']);
+      return $this->api_response(200, '', '', $item);
+    }, '情報更新', __FILE__, __FUNCTION__, __LINE__ );
+
+    if(empty($res['message'])){
+      $message = '登録しました。';
+    }else{
+      $message = $res['message'];
+    }
+    //生徒詳細からもCALLされる
+    return $this->save_redirect($res, $param, $message);
   }
 
   public function show_exam_result_page(Request $request, $id, $exam_id)

@@ -1,3 +1,4 @@
+@empty(!$suppliers)
 <div class="col-12 col-md-6">
   <div class="form-group">
     <label for='{{$prefix}}supplier_id' class="w-100">
@@ -25,3 +26,4 @@
     </div>
   </div>
 </div>
+@endempty
