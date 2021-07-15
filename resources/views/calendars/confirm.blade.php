@@ -76,7 +76,7 @@
       <div class="col-12 mb-1">
         <button type="button" class="btn btn-submit btn-success btn-block"  accesskey="{{$domain}}_confirm">
           <i class="fa fa-check mr-1"></i>
-          {{__('labels.add_button')}}
+          {{__('labels.schedule_to_confirm')}}
         </button>
       </div>
     @endif
