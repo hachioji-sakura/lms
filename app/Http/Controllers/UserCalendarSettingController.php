@@ -541,30 +541,7 @@ class UserCalendarSettingController extends UserCalendarController
         'action' => $request->get('action')
       ])->with($param);
     }
-    /**
-     * カレンダー登録画面表示
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function all_to_calendar_page(Request $request)
-    {
-      if(!$request->has('teacher_id')){
-        abort(400);
-      }
-      $teacher = Teacher::where('id', $request->get('teacher_id'))->first();
-      $user_id = $teacher->user_id;
-      if(!isset($teacher)){
-        abort(400);
-      }
 
-      $param = $this->get_param($request);
-      $param['target_user_id'] = $user_id;
-
-      return view($this->domain.'.all_to_calendar', [
-        'action' => $request->get('action')
-      ])->with($param);
-    }
     /**
      * カレンダー削除画面表示
      *
