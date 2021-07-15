@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+  @if($item->trial_id == 0)
   <div class="col-12 mt-2 collapse student_confirm_form">
     <div class="form-group">
       <label for="send_mail" class="w-100">
@@ -38,7 +39,7 @@
       </div>
     </div>
   </div>
-
+  @endif
   <div class="status_change_form" style="display:none;">
     <div class="col-12 mb-2">
       <label for="cancel_reason" class="w-100">

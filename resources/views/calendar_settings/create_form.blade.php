@@ -32,6 +32,7 @@
 <div class="row">
   @if($item->work!=9)
     @component('calendars.forms.course_type', ['_edit'=>$_edit, 'item'=>$item, 'teacher' => $teacher,'attributes' => $attributes]); @endcomponent
+    @component('calendars.forms.select_work', ['_edit'=>$_edit, 'item'=>$item, 'teacher'=>$teacher,'attributes' => $attributes]); @endcomponent
     @component('calendars.forms.select_student_group', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
     @component('calendars.forms.select_student', ['_edit' => $_edit, 'item'=>$item]); @endcomponent
   @endif
