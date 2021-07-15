@@ -396,7 +396,7 @@ EOT;
       }
     }
     //TODO Workの補間どうにかしたい
-    if(isset($form['course_type']) && !isset($form['work']) && isset($work_data[$form["course_type"]])){
+    if(isset($form['course_type']) && !isset($form['work']) ){
       $work_data = ["single" => 6, "group"=>7, "family"=>8, "other" => 9];
       $form['work'] = $work_data[$form["course_type"]];
     }
