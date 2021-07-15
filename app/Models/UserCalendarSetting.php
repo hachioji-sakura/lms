@@ -396,8 +396,8 @@ EOT;
       }
     }
     //TODO Workの補間どうにかしたい
-    if(isset($form['course_type']) && !isset($form['work'])){
-      $work_data = ["single" => 6, "group"=>7, "family"=>8];
+    if(isset($form['course_type']) && !isset($form['work']) ){
+      $work_data = ["single" => 6, "group"=>7, "family"=>8, "other" => 9];
       $form['work'] = $work_data[$form["course_type"]];
     }
 
@@ -466,7 +466,7 @@ EOT;
 
     $lecture_id = 0;
     \Log::warning("TODO lectureの補間どうにかしたい");
-    if(isset($form['lesson']) && isset($form['course_type'])){
+    if(isset($form['lesson']) && isset($form['course_type']) && isset(config('replace.course')[$form["course_type"]])){
       $course_id = config('replace.course')[$form["course_type"]];
       $lecture = Lecture::where('lesson', $form['lesson'])
           ->where('course', $course_id)
